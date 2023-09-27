@@ -17,10 +17,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
+import 'package:yubico_authenticator/piv/keys.dart';
 
 import 'android/util.dart' as android_test_util;
 import '../_approved_yubikeys.dart';
@@ -188,6 +190,37 @@ extension AppWidgetTester on WidgetTester {
     }
 
     collectedYubiKeyInformation = true;
+  }
+
+  Future<void> resetPiv() async {
+    // 1. open PIV view
+    var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+    await tap(pivDrawerButton);
+    await pump(const Duration(milliseconds: 500));
+    // 1.3. Reset PIV
+    // 1. Click Configure JubiKey
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await pump(const Duration(milliseconds: 500));
+    // 2. Click Reset PIV
+    await tap(find.byKey(resetAction).hitTestable());
+    await pump(const Duration(milliseconds: 2000));
+    // 3. Click Reset
+    await tap(find.byKey(resetButton).hitTestable());
+    await pump(const Duration(milliseconds: 2000));
+    // 4. Verify Resetedness
+    expect(find.byWidgetPredicate((widget) {
+      if (widget is AppListItem) {
+        final AppListItem textWidget = widget;
+        if ((textWidget.key == appListItem9a ||
+                textWidget.key == appListItem9c ||
+                textWidget.key == appListItem9d ||
+                textWidget.key == appListItem9e) &&
+            textWidget.subtitle == 'No certificate loaded') {
+          return true;
+        }
+      }
+      return false;
+    }), findsNWidgets(4));
   }
 }
 

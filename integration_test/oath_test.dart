@@ -39,40 +39,49 @@ void main() {
   });
 
   group('Account creation', () {
-    appTest('Create 32+1 Accounts', (WidgetTester tester) async {  });
-    appTest('Create weird character-accounts and check byte count', (WidgetTester tester) async {  });
+    appTest('Create 32+1 Accounts', (WidgetTester tester) async {});
+    appTest('Create weird character-accounts and check byte count',
+        (WidgetTester tester) async {});
     group('TOTP account tests', () {
       appTest('Create regular TOTP account', (WidgetTester tester) async {
-      // account with issuer field
-      var testAccount = const Account(
-        issuer: 'IssuerForTests',
-        name: 'NameForTests',
-        secret: 'aaaaaaaaaaaaaaaa',
-      );
-      await tester.addAccount(testAccount);
-      /// TODO: Change testAccount
-      ///   Rename:       await tester.renameAccount(testAccount, 'RenamedIssuer', 'RenamedName');
-      ///   Custom Icon:  await duddu
-      ///   
-      await tester.deleteAccount(testAccount);
+        // account with issuer field
+        var testAccount = const Account(
+          issuer: 'IssuerForTests',
+          name: 'NameForTests',
+          secret: 'aaaaaaaaaaaaaaaa',
+        );
+        await tester.addAccount(testAccount);
+
+        /// TODO: Change testAccount
+        ///   Rename:       await tester.renameAccount(testAccount, 'RenamedIssuer', 'RenamedName');
+        ///   Custom Icon:  await duddu
+        ///
+        await tester.deleteAccount(testAccount);
       });
 
       appTest('Create issuer-less TOTP account', (WidgetTester tester) async {
         // account without issuer field
-        testAccount = const Account(
+        var testAccount = const Account(
           name: 'NoIssuerName',
           secret: 'bbbbbbbbbbbbbbbb',
         );
         await tester.deleteAccount(testAccount);
+
         /// TODO: change testAccount (rename, add icons)
         await tester.addAccount(testAccount);
       });
-      appTest('Create TOTP account, 6-digits, SHA-1', (WidgetTester tester) async {  });
-      appTest('Create TOTP account, 6-digits, SHA-256', (WidgetTester tester) async {  });
-      appTest('Create TOTP account, 6-digits, SHA-512', (WidgetTester tester) async {  });
-      appTest('Create TOTP account, 8-digits, SHA-1', (WidgetTester tester) async {  });
-      appTest('Create TOTP account, 8-digits, SHA-256', (WidgetTester tester) async {  });
-      appTest('Create TOTP account, 8-digits, SHA-512', (WidgetTester tester) async {  });
+      appTest('Create TOTP account, 6-digits, SHA-1',
+          (WidgetTester tester) async {});
+      appTest('Create TOTP account, 6-digits, SHA-256',
+          (WidgetTester tester) async {});
+      appTest('Create TOTP account, 6-digits, SHA-512',
+          (WidgetTester tester) async {});
+      appTest('Create TOTP account, 8-digits, SHA-1',
+          (WidgetTester tester) async {});
+      appTest('Create TOTP account, 8-digits, SHA-256',
+          (WidgetTester tester) async {});
+      appTest('Create TOTP account, 8-digits, SHA-512',
+          (WidgetTester tester) async {});
     });
     group('HOTP account tests', () {
       appTest('Create regular HOTP account', (WidgetTester tester) async {
@@ -89,7 +98,7 @@ void main() {
       });
       appTest('Create issuer-less HOTP account', (WidgetTester tester) async {
         // account without issuer field
-        testAccount = const Account(
+        var testAccount = const Account(
           name: 'NoIssuerName',
           secret: 'bbbbbbbbbbbbbbbb',
         );
@@ -98,16 +107,20 @@ void main() {
         /// TODO: change testAccount (rename, add icons)
         await tester.addAccount(testAccount);
       });
-      appTest('Create HOTP account, 6-digits, SHA-1', (WidgetTester tester) async {});
-      appTest('Create HOTP account, 6-digits, SHA-256', (WidgetTester tester) async {});
-      appTest('Create HOTP account, 6-digits, SHA-512', (WidgetTester tester) async {});
-      appTest('Create HOTP account, 8-digits, SHA-1', (WidgetTester tester) async {});
-      appTest('Create HOTP account, 8-digits, SHA-256', (WidgetTester tester) async {});
-      appTest('Create HOTP account, 8-digits, SHA-512', (WidgetTester tester) async {});
+      appTest('Create HOTP account, 6-digits, SHA-1',
+          (WidgetTester tester) async {});
+      appTest('Create HOTP account, 6-digits, SHA-256',
+          (WidgetTester tester) async {});
+      appTest('Create HOTP account, 6-digits, SHA-512',
+          (WidgetTester tester) async {});
+      appTest('Create HOTP account, 8-digits, SHA-1',
+          (WidgetTester tester) async {});
+      appTest('Create HOTP account, 8-digits, SHA-256',
+          (WidgetTester tester) async {});
+      appTest('Create HOTP account, 8-digits, SHA-512',
+          (WidgetTester tester) async {});
     });
-    group('QR Code scanning', () {
-    });
-
+    group('QR Code scanning', () {});
 
     appTest('Delete OATH account', (WidgetTester tester) async {
       var testAccount =
@@ -140,11 +153,11 @@ void main() {
 
       appTest('Set second OATH password', (WidgetTester tester) async {
         /// TODO: Without removing the first, set a second password
-      };
+      });
 
       appTest('Set third OATH password', (WidgetTester tester) async {
         /// TODO: Without removing the second, set a third password
-      };
+      });
 
       appTest('Remove OATH password', (WidgetTester tester) async {
         await tester.unlockOathSession(testPassword);

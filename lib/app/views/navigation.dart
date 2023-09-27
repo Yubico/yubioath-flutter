@@ -146,6 +146,7 @@ class NavigationContent extends ConsumerWidget {
                 if (data != null) ...[
                   // Normal YubiKey Applications
                   ...availableApps.map((app) => NavigationItem(
+                        key: app.getAppDrawerKey(),
                         title: app.getDisplayName(l10n),
                         leading: app == currentApp
                             ? Icon(app._filledIcon)

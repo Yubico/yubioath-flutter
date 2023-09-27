@@ -18,6 +18,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/app/views/keys.dart';
 
 import '../../management/models.dart';
 import '../core/models.dart';
@@ -55,6 +56,16 @@ enum Application {
         Application.fido => l10n.s_webauthn,
         Application.piv => l10n.s_piv,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
+      };
+
+  Key getAppDrawerKey() => switch (this) {
+        Application.oath => oathAppDrawer,
+        Application.fido => fidoAppDrawer,
+        Application.otp => otpAppDrawer,
+        Application.piv => pivAppDrawer,
+        Application.hsmauth => hsmauthAppDrawer,
+        Application.management => managementAppDrawer,
+        Application.openpgp => openpgpAppDrawer,
       };
 
   Availability getAvailability(YubiKeyData data) {

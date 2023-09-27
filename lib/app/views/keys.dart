@@ -26,6 +26,12 @@ const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
 
 // drawer items
 const managementAppDrawer = Key('$_prefix.drawer.management');
+const oathAppDrawer = Key('$_prefix.drawer.oath');
+const fidoAppDrawer = Key('$_prefix.drawer.fido');
+const otpAppDrawer = Key('$_prefix.drawer.otp');
+const pivAppDrawer = Key('$_prefix.drawer.piv');
+const hsmauthAppDrawer = Key('$_prefix.drawer.hsmauth');
+const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
 
 // settings page
 const themeModeSetting = Key('$_prefix.settings.theme_mode');

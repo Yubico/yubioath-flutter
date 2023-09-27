@@ -16,10 +16,43 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
-import 'package:yubico_authenticator/oath/keys.dart' as keys;
+import 'package:yubico_authenticator/piv/keys.dart';
+import 'package:yubico_authenticator/widgets/tooltip_if_truncated.dart';
 
 import 'utils/test_util.dart';
+
+// Future<void> resetPiv(WidgetTester tester) async {
+//   // 1. open PIV view
+//   var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+//   await tester.tap(pivDrawerButton);
+//   await tester.pump(const Duration(milliseconds: 500));
+//   // 1.3. Reset PIV
+//   // 1. Click Configure JubiKey
+//   await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+//   await tester.pump(const Duration(milliseconds: 500));
+//   // 2. Click Reset PIV
+//   await tester.tap(find.byKey(resetAction).hitTestable());
+//   await tester.pump(const Duration(milliseconds: 2000));
+//   // 3. Click Reset
+//   await tester.tap(find.byKey(resetButton).hitTestable());
+//   await tester.pump(const Duration(milliseconds: 2000));
+//   // 4. Verify Resetedness
+//   expect(find.byWidgetPredicate((widget) {
+//     if (widget is AppListItem) {
+//       final AppListItem textWidget = widget;
+//       if ((textWidget.key == appListItem9a ||
+//               textWidget.key == appListItem9c ||
+//               textWidget.key == appListItem9d ||
+//               textWidget.key == appListItem9e) &&
+//           textWidget.subtitle == 'No certificate loaded') {
+//         return true;
+//       }
+//     }
+//     return false;
+//   }), findsNWidgets(4));
+// }
 
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +65,9 @@ void main() {
     appTest('Change PUK', (WidgetTester tester) async {});
     appTest('Change Management Key', (WidgetTester tester) async {});
     appTest('Lock Management Key with PIN', (WidgetTester tester) async {});
-    appTest('Reset PIV', (WidgetTester tester) async {});
+    appTest('Reset PIV', (WidgetTester tester) async {
+      await tester.resetPiv();
+    });
   });
 
   ///   Distinguished name schema according to RFC 4514
@@ -50,6 +85,54 @@ void main() {
 
   group('PIV Certificate load', skip: isAndroid, () {
     appTest('Generate 9a', (WidgetTester tester) async {
+      await tester.resetPiv();
+    });
+    appTest('Generate 9a', (WidgetTester tester) async {
+      // 1. open PIV view
+      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+      await tester.tap(pivDrawerButton);
+      await tester.pump(const Duration(milliseconds: 500));
+      // 2. click meatball menu for 9a
+      await tester.tap(find.byKey(meatballButton9a).hitTestable());
+      await tester.pump(const Duration(milliseconds: 500));
+      // 3. click generate
+      await tester.tap(find.byKey(generateAction).hitTestable());
+      await tester.pump(const Duration(milliseconds: 500));
+      // 4. enter PIN and click Unlock
+      await tester.enterText(
+          find.byKey(managementKeyField).hitTestable(), '123456');
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.byKey(unlockButton).hitTestable());
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // 5. Enter CN=apa
+      await tester.enterText(
+          find.byKey(subjectField).hitTestable(), 'CN=foobar');
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // 6. Change algorithm
+      // 7. set date
+      // 8. click save
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.pump(const Duration(milliseconds: 2000));
+      // 9 Verify Subject, verify Date
+      expect(find.byWidgetPredicate((widget) {
+        if (widget is TooltipIfTruncated) {
+          final TooltipIfTruncated textWidget = widget;
+          if (textWidget.key == certInfoSubjectKey &&
+              textWidget.text == 'CN=foobar') {
+            return true;
+          }
+        }
+        return false;
+      }), findsOneWidget);
+
+      // 10. Click Delete Certificate
+      // 11. Click Delete
+      // 12. Click Close
+      // 13 Verify subtitle 9a "Key without certificate loaded"
+
+      await tester.pump(const Duration(milliseconds: 5000));
       //  Subject:
       //  RSA1024
       //  Certificate
