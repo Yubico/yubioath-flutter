@@ -196,12 +196,11 @@ packages:
   desktop_drop:
     dependency: "direct main"
     description:
-      path: "packages/desktop_drop"
-      ref: "feature/AGP8_namespace"
-      resolved-ref: a68f43ede4cb20ee2324048b4d960d47b93dddce
-      url: "https://github.com/AdamVe/mixin-network-flutter-plugins.git"
-    source: git
-    version: "0.4.3"
+      name: desktop_drop
+      sha256: d55a010fe46c8e8fcff4ea4b451a9ff84a162217bdb3b2a0aa1479776205e15d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.4"
   fake_async:
     dependency: transitive
     description:
