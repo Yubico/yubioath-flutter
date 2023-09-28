@@ -131,7 +131,9 @@ class AppPage extends StatelessWidget {
                 const SizedBox(width: 48),
               ],
             ),
-            NavigationContent(key: _navExpandedKey, extended: true),
+            Material(
+                type: MaterialType.transparency,
+                child: NavigationContent(key: _navExpandedKey, extended: true)),
           ],
         ),
       ),
