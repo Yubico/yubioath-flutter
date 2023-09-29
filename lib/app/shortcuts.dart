@@ -71,6 +71,10 @@ class DeleteIntent extends Intent {
   const DeleteIntent();
 }
 
+class RefreshIntent extends Intent {
+  const RefreshIntent();
+}
+
 /// Use cmd on macOS, use ctrl on the other platforms
 SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
     SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
@@ -151,6 +155,7 @@ Widget registerGlobalShortcuts(
           ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
           const SingleActivator(LogicalKeyboardKey.copy): const CopyIntent(),
           ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
+          ctrlOrCmd(LogicalKeyboardKey.keyR): const RefreshIntent(),
           if (isDesktop) ...{
             const SingleActivator(LogicalKeyboardKey.tab, control: true):
                 const NextDeviceIntent(),

@@ -111,7 +111,7 @@ class AccountDialog extends ConsumerWidget {
           Timer.run(() {
             // Only call if credential hasn't been deleted/renamed
             if (ref.read(credentialsProvider)?.contains(credential) == true) {
-              Actions.invoke(context, const CalculateIntent());
+              Actions.invoke(context, const RefreshIntent());
             }
           });
         }
