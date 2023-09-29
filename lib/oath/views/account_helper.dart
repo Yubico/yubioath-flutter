@@ -82,7 +82,8 @@ class AccountHelper {
                 icon: const Icon(Icons.refresh),
                 title: l10n.s_calculate,
                 subtitle: l10n.l_calculate_code_desc,
-                intent: ready ? const CalculateIntent() : null,
+                shortcut: Platform.isMacOS ? '\u2318 R' : 'Ctrl+R',
+                intent: ready ? const RefreshIntent() : null,
               ),
             ActionItem(
               key: keys.togglePinAction,
@@ -171,7 +172,7 @@ class _CodeLabel extends StatelessWidget {
             // This helps with vertical centering on desktop
             applyHeightToFirstAscent: !isDesktop,
           ),
-          semanticsLabel: code?.value.characters.map((c) => '$c ' ).toString(),
+          semanticsLabel: code?.value.characters.map((c) => '$c ').toString(),
         ),
       );
 }
