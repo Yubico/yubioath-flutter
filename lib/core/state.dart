@@ -51,3 +51,38 @@ abstract class ApplicationStateNotifier<T>
     state = AsyncValue.data(value);
   }
 }
+
+// Feature flags
+abstract class BaseFeature {
+  String get path;
+
+  Feature feature(String key, {bool enabled = true}) =>
+      Feature(this, key, enabled: enabled);
+}
+
+class _RootFeature extends BaseFeature {
+  _RootFeature._();
+  @override
+  String get path => '';
+}
+
+class Feature extends BaseFeature {
+  final BaseFeature parent;
+  final String key;
+  final bool _defaultState;
+
+  Feature(this.parent, this.key, {bool enabled = true})
+      : _defaultState = enabled;
+
+  @override
+  String get path => '${parent.path}.$key';
+}
+
+final BaseFeature root = _RootFeature._();
+
+typedef FeatureProvider = bool Function(Feature feature);
+
+final featureProvider = Provider<FeatureProvider>((ref) {
+  // TODO: Read file, check parents
+  return (feature) => feature._defaultState;
+});

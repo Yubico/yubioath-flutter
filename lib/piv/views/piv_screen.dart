@@ -25,9 +25,11 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
+import '../features.dart' as features;
 import 'actions.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
@@ -40,6 +42,7 @@ class PivScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final hasFeature = ref.watch(featureProvider);
     return ref.watch(pivStateProvider(devicePath)).when(
           loading: () => MessagePage(
             title: Text(l10n.s_piv),
@@ -54,8 +57,10 @@ class PivScreen extends ConsumerWidget {
             final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
             return AppPage(
               title: Text(l10n.s_piv),
-              keyActionsBuilder: (context) =>
-                  pivBuildActions(context, devicePath, pivState, ref),
+              keyActionsBuilder: hasFeature(features.actions)
+                  ? (context) =>
+                      pivBuildActions(context, devicePath, pivState, ref)
+                  : null,
               child: Column(
                 children: [
                   ListTitle(l10n.s_certificates),
@@ -86,16 +91,17 @@ class PivScreen extends ConsumerWidget {
   }
 }
 
-class _CertificateListItem extends StatelessWidget {
+class _CertificateListItem extends ConsumerWidget {
   final PivSlot pivSlot;
   const _CertificateListItem(this.pivSlot);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final slot = pivSlot.slot;
     final certInfo = pivSlot.certInfo;
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final hasFeature = ref.watch(featureProvider);
 
     return Semantics(
         label: slot.getDisplayName(l10n),
@@ -116,8 +122,9 @@ class _CertificateListItem extends StatelessWidget {
             onPressed: Actions.handler(context, const OpenIntent()),
             child: const Icon(Icons.more_horiz),
           ),
-          buildPopupActions: (context) =>
-              buildSlotActions(certInfo != null, l10n),
+          buildPopupActions: hasFeature(features.slots)
+              ? (context) => buildSlotActions(certInfo != null, l10n)
+              : null,
         ));
   }
 }

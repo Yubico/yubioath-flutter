@@ -633,6 +633,7 @@ mixin _$ActionItem {
   Intent? get intent => throw _privateConstructorUsedError;
   ActionStyle? get actionStyle => throw _privateConstructorUsedError;
   Key? get key => throw _privateConstructorUsedError;
+  Feature? get feature => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ActionItemCopyWith<ActionItem> get copyWith =>
@@ -653,7 +654,8 @@ abstract class $ActionItemCopyWith<$Res> {
       Widget? trailing,
       Intent? intent,
       ActionStyle? actionStyle,
-      Key? key});
+      Key? key,
+      Feature? feature});
 }
 
 /// @nodoc
@@ -677,6 +679,7 @@ class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
     Object? intent = freezed,
     Object? actionStyle = freezed,
     Object? key = freezed,
+    Object? feature = freezed,
   }) {
     return _then(_value.copyWith(
       icon: null == icon
@@ -711,6 +714,10 @@ class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
           ? _value.key
           : key // ignore: cast_nullable_to_non_nullable
               as Key?,
+      feature: freezed == feature
+          ? _value.feature
+          : feature // ignore: cast_nullable_to_non_nullable
+              as Feature?,
     ) as $Val);
   }
 }
@@ -731,7 +738,8 @@ abstract class _$$_ActionItemCopyWith<$Res>
       Widget? trailing,
       Intent? intent,
       ActionStyle? actionStyle,
-      Key? key});
+      Key? key,
+      Feature? feature});
 }
 
 /// @nodoc
@@ -753,6 +761,7 @@ class __$$_ActionItemCopyWithImpl<$Res>
     Object? intent = freezed,
     Object? actionStyle = freezed,
     Object? key = freezed,
+    Object? feature = freezed,
   }) {
     return _then(_$_ActionItem(
       icon: null == icon
@@ -787,6 +796,10 @@ class __$$_ActionItemCopyWithImpl<$Res>
           ? _value.key
           : key // ignore: cast_nullable_to_non_nullable
               as Key?,
+      feature: freezed == feature
+          ? _value.feature
+          : feature // ignore: cast_nullable_to_non_nullable
+              as Feature?,
     ));
   }
 }
@@ -802,7 +815,8 @@ class _$_ActionItem implements _ActionItem {
       this.trailing,
       this.intent,
       this.actionStyle,
-      this.key});
+      this.key,
+      this.feature});
 
   @override
   final Widget icon;
@@ -820,10 +834,12 @@ class _$_ActionItem implements _ActionItem {
   final ActionStyle? actionStyle;
   @override
   final Key? key;
+  @override
+  final Feature? feature;
 
   @override
   String toString() {
-    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key)';
+    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
   }
 
   @override
@@ -842,12 +858,13 @@ class _$_ActionItem implements _ActionItem {
             (identical(other.intent, intent) || other.intent == intent) &&
             (identical(other.actionStyle, actionStyle) ||
                 other.actionStyle == actionStyle) &&
-            (identical(other.key, key) || other.key == key));
+            (identical(other.key, key) || other.key == key) &&
+            (identical(other.feature, feature) || other.feature == feature));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, icon, title, subtitle, shortcut,
-      trailing, intent, actionStyle, key);
+      trailing, intent, actionStyle, key, feature);
 
   @JsonKey(ignore: true)
   @override
@@ -865,7 +882,8 @@ abstract class _ActionItem implements ActionItem {
       final Widget? trailing,
       final Intent? intent,
       final ActionStyle? actionStyle,
-      final Key? key}) = _$_ActionItem;
+      final Key? key,
+      final Feature? feature}) = _$_ActionItem;
 
   @override
   Widget get icon;
@@ -883,6 +901,8 @@ abstract class _ActionItem implements ActionItem {
   ActionStyle? get actionStyle;
   @override
   Key? get key;
+  @override
+  Feature? get feature;
   @override
   @JsonKey(ignore: true)
   _$$_ActionItemCopyWith<_$_ActionItem> get copyWith =>

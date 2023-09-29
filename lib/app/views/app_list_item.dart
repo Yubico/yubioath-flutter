@@ -16,13 +16,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
 import '../models.dart';
 import '../shortcuts.dart';
 import 'action_popup_menu.dart';
 
-class AppListItem extends StatefulWidget {
+class AppListItem extends ConsumerStatefulWidget {
   final Widget? leading;
   final String title;
   final String? subtitle;
@@ -41,10 +42,10 @@ class AppListItem extends StatefulWidget {
   });
 
   @override
-  State<StatefulWidget> createState() => _AppListItemState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AppListItemState();
 }
 
-class _AppListItemState extends State<AppListItem> {
+class _AppListItemState extends ConsumerState<AppListItem> {
   final FocusNode _focusNode = FocusNode();
   int _lastTap = 0;
 
@@ -60,6 +61,7 @@ class _AppListItemState extends State<AppListItem> {
     final buildPopupActions = widget.buildPopupActions;
     final activationIntent = widget.activationIntent;
     final trailing = widget.trailing;
+    final hasFeature = ref.watch(featureProvider);
 
     return Shortcuts(
       shortcuts: {
@@ -75,7 +77,10 @@ class _AppListItemState extends State<AppListItem> {
                 showPopupMenu(
                   context,
                   details.globalPosition,
-                  buildPopupActions(context),
+                  buildPopupActions(context)
+                      .where((action) =>
+                          action.feature == null || hasFeature(action.feature!))
+                      .toList(),
                 );
               },
         onTap: () {

@@ -27,6 +27,7 @@ import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
 import '../models.dart';
+import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../state.dart';
 import 'add_account_page.dart';
@@ -49,6 +50,7 @@ Widget oathBuildActions(
       children: [
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
+              feature: features.actionsAdd,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first
@@ -104,6 +106,7 @@ Widget oathBuildActions(
         ActionListSection(l10n.s_manage, children: [
           ActionListItem(
               key: keys.customIconsAction,
+              feature: features.actionsIcons,
               title: l10n.s_custom_icons,
               subtitle: l10n.l_set_icons_for_accounts,
               icon: const Icon(Icons.image_outlined),
@@ -118,6 +121,7 @@ Widget oathBuildActions(
               }),
           ActionListItem(
               key: keys.setOrManagePasswordAction,
+              feature: features.actionsPassword,
               title: oathState.hasKey
                   ? l10n.s_manage_password
                   : l10n.s_set_password,
@@ -133,6 +137,7 @@ Widget oathBuildActions(
               }),
           ActionListItem(
               key: keys.resetAction,
+              feature: features.actionsReset,
               icon: const Icon(Icons.delete_outline),
               actionStyle: ActionStyle.error,
               title: l10n.s_reset_oath,

@@ -53,39 +53,37 @@ Future<Widget> initialize() async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWithValue([
+      supportedAppsProvider.overrideWith(implementedApps([
         Application.oath,
-      ]),
+      ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
-      attachedDevicesProvider
-          .overrideWith(
-                () => AndroidAttachedDevicesNotifier(),
-          ),
+      attachedDevicesProvider.overrideWith(
+        () => AndroidAttachedDevicesNotifier(),
+      ),
       currentDeviceDataProvider.overrideWith(
-            (ref) => ref.watch(androidDeviceDataProvider),
+        (ref) => ref.watch(androidDeviceDataProvider),
       ),
       oathStateProvider.overrideWithProvider(androidOathStateProvider),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider),
       currentAppProvider.overrideWith(
-            (ref) => AndroidSubPageNotifier(ref.watch(supportedAppsProvider))
-      ),
+          (ref) => AndroidSubPageNotifier(ref.watch(supportedAppsProvider))),
       managementStateProvider.overrideWithProvider(androidManagementState),
       currentDeviceProvider.overrideWith(
-            () => AndroidCurrentDeviceNotifier(),
+        () => AndroidCurrentDeviceNotifier(),
       ),
       qrScannerProvider
           .overrideWith(androidQrScannerProvider(await getHasCamera())),
-      windowStateProvider.overrideWith((ref) => ref.watch(androidWindowStateProvider)),
+      windowStateProvider
+          .overrideWith((ref) => ref.watch(androidWindowStateProvider)),
       clipboardProvider.overrideWith(
-            (ref) => ref.watch(androidClipboardProvider),
+        (ref) => ref.watch(androidClipboardProvider),
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
-      supportedThemesProvider
-          .overrideWith(
-            (ref) => ref.watch(androidSupportedThemesProvider),
+      supportedThemesProvider.overrideWith(
+        (ref) => ref.watch(androidSupportedThemesProvider),
       )
     ],
     child: DismissKeyboard(

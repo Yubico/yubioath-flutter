@@ -27,6 +27,7 @@ import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
 import 'models.dart';
+import 'features.dart' as features;
 
 final _log = Logger('app.state');
 
@@ -37,7 +38,25 @@ const officialLocales = [
 
 // Override this to alter the set of supported apps.
 final supportedAppsProvider =
-    Provider<List<Application>>((ref) => Application.values);
+    Provider<List<Application>>(implementedApps(Application.values));
+
+extension on Application {
+  Feature get _feature => switch (this) {
+        Application.oath => features.oath,
+        Application.fido => features.fido,
+        Application.otp => features.otp,
+        Application.piv => features.piv,
+        Application.management => features.management,
+        Application.openpgp => features.openpgp,
+        Application.hsmauth => features.oath,
+      };
+}
+
+List<Application> Function(Ref) implementedApps(List<Application> apps) =>
+    (ref) {
+      final hasFeature = ref.watch(featureProvider);
+      return apps.where((app) => hasFeature(app._feature)).toList();
+    };
 
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(

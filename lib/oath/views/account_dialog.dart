@@ -27,6 +27,7 @@ import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
 import 'account_helper.dart';
@@ -49,6 +50,7 @@ class AccountDialog extends ConsumerWidget {
       return const SizedBox();
     }
 
+    final hasFeature = ref.watch(featureProvider);
     final helper = AccountHelper(context, ref, credential);
     final subtitle = helper.subtitle;
 
@@ -56,54 +58,58 @@ class AccountDialog extends ConsumerWidget {
       credential,
       ref: ref,
       actions: {
-        EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
-          final credentials = ref.read(credentialsProvider);
-          final withContext = ref.read(withContextProvider);
-          final renamed =
-              await withContext((context) async => await showBlurDialog(
+        if (hasFeature(features.accountsRename))
+          EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
+            final credentials = ref.read(credentialsProvider);
+            final withContext = ref.read(withContextProvider);
+            final renamed =
+                await withContext((context) async => await showBlurDialog(
+                    context: context,
+                    builder: (context) => RenameAccountDialog.forOathCredential(
+                          ref,
+                          node,
+                          credential,
+                          credentials
+                                  ?.map((e) => (e.issuer, e.name))
+                                  .toList() ??
+                              [],
+                        )));
+            if (renamed != null) {
+              // Replace the dialog with the renamed credential
+              await withContext((context) async {
+                Navigator.of(context).pop();
+                await showBlurDialog(
                   context: context,
-                  builder: (context) => RenameAccountDialog.forOathCredential(
-                        ref,
+                  builder: (context) {
+                    return AccountDialog(renamed);
+                  },
+                );
+              });
+            }
+            return renamed;
+          }),
+        if (hasFeature(features.accountsDelete))
+          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+            final withContext = ref.read(withContextProvider);
+            final bool? deleted =
+                await ref.read(withContextProvider)((context) async =>
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) => DeleteAccountDialog(
                         node,
                         credential,
-                        credentials?.map((e) => (e.issuer, e.name)).toList() ??
-                            [],
-                      )));
-          if (renamed != null) {
-            // Replace the dialog with the renamed credential
-            await withContext((context) async {
-              Navigator.of(context).pop();
-              await showBlurDialog(
-                context: context,
-                builder: (context) {
-                  return AccountDialog(renamed);
-                },
-              );
-            });
-          }
-          return renamed;
-        }),
-        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          final withContext = ref.read(withContextProvider);
-          final bool? deleted =
-              await ref.read(withContextProvider)((context) async =>
-                  await showBlurDialog(
-                    context: context,
-                    builder: (context) => DeleteAccountDialog(
-                      node,
-                      credential,
-                    ),
-                  ) ??
-                  false);
+                      ),
+                    ) ??
+                    false);
 
-          // Pop the account dialog if deleted
-          if (deleted == true) {
-            await withContext((context) async {
-              Navigator.of(context).pop();
-            });
-          }
-          return deleted;
-        }),
+            // Pop the account dialog if deleted
+            if (deleted == true) {
+              await withContext((context) async {
+                Navigator.of(context).pop();
+              });
+            }
+            return deleted;
+          }),
       },
       builder: (context) {
         if (helper.code == null &&
