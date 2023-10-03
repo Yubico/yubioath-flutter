@@ -1,0 +1,154 @@
+/*
+ * Copyright (C) 2022 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:yubico_authenticator/app/views/app_list_item.dart';
+import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/management/views/keys.dart';
+import 'package:yubico_authenticator/piv/keys.dart';
+
+import 'android/util.dart' as android_test_util;
+import '../_approved_yubikeys.dart';
+import 'desktop/util.dart' as desktop_test_util;
+
+const shortWaitMs = 500;
+const longWaitMs = 2000;
+
+  Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
+    var result = isAndroid == true
+        ? await android_test_util.startUp(this, startUpParams)
+        : await desktop_test_util.startUp(this, startUpParams);
+
+    await collectYubiKeyInformation();
+
+    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
+      testLog(false,
+          'The connected key is refused by the tests: $yubiKeySerialNumber');
+      expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true));
+    }
+
+    return result;
+  }
+
+  void testLog(bool quiet, String message) {
+    if (!quiet) {
+      printToConsole(message);
+    }
+  }
+
+  /// get key information
+  Future<void> collectYubiKeyInformation() async {
+    if (collectedYubiKeyInformation) {
+      return;
+    }
+
+    await openDrawer();
+
+    var deviceInfo = find.byKey(app_keys.deviceInfoListTile);
+    if (deviceInfo.evaluate().isNotEmpty) {
+      ListTile lt = find
+          .descendant(of: deviceInfo, matching: find.byType(ListTile))
+          .evaluate()
+          .single
+          .widget as ListTile;
+      //ListTile lt = deviceInfo.evaluate().single.widget as ListTile;
+      yubiKeyName = (lt.title as Text).data;
+      var subtitle = (lt.subtitle as Text?)?.data;
+
+      if (subtitle != null) {
+        RegExpMatch? match =
+        RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)').firstMatch(subtitle);
+        if (match != null) {
+          yubiKeySerialNumber = match.group(1);
+          yubiKeyFirmware = match.group(2);
+        } else {
+          match = RegExp(r'F/W: (\d\.\d\.\d)').firstMatch(subtitle);
+          if (match != null) {
+            yubiKeyFirmware = match.group(1);
+          }
+        }
+      }
+    }
+
+    // close the opened menu
+    await closeDrawer();
+
+    testLog(false,
+        'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
+
+    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
+      if (yubiKeySerialNumber == null) {
+        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true),
+            reason: 'No YubiKey connected');
+      } else {
+        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true),
+            reason:
+            'YubiKey with S/N $yubiKeySerialNumber is not approved for integration tests.');
+      }
+    }
+
+    collectedYubiKeyInformation = true;
+  }
+
+  // PIV reset function
+  Future<void> resetPiv() async {
+    // 1. open PIV view
+    var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+    await tap(pivDrawerButton);
+    await pump(const Duration(milliseconds: 500));
+    // 1.3. Reset PIV
+    // 1. Click Configure JubiKey
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await pump(const Duration(milliseconds: 500));
+    // 2. Click Reset PIV
+    await tap(find.byKey(resetAction).hitTestable());
+    await pump(const Duration(milliseconds: 2000));
+    // 3. Click Reset
+    await tap(find.byKey(resetButton).hitTestable());
+    await pump(const Duration(milliseconds: 2000));
+    // 4. Verify Resetedness
+    expect(find.byWidgetPredicate((widget) {
+      if (widget is AppListItem) {
+        final AppListItem textWidget = widget;
+        if ((textWidget.key == appListItem9a ||
+            textWidget.key == appListItem9c ||
+            textWidget.key == appListItem9d ||
+            textWidget.key == appListItem9e) &&
+            textWidget.subtitle == 'No certificate loaded') {
+          return true;
+        }
+      }
+      return false;
+    }), findsNWidgets(4));
+  }
+}
+
+@isTest
+void appTest(
+    String description,
+    WidgetTesterCallback callback, {
+      bool? skip,
+      Map startUpParams = const {},
+    }) {
+  testWidgets(description, (WidgetTester tester) async {
+    await tester.startUp(startUpParams);
+    await callback(tester);
+  });
+}
