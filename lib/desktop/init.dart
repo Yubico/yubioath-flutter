@@ -157,6 +157,11 @@ Future<Widget> initialize(List<String> argv) async {
         .toFilePath();
   }
 
+  // Locate feature flags file
+  final featureFile = File(Uri.file(Platform.resolvedExecutable)
+      .resolve('features.json')
+      .toFilePath());
+
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
 
@@ -218,15 +223,33 @@ Future<Widget> initialize(List<String> argv) async {
             ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
 
+          // Load feature flags, if they exist
+          featureFile.exists().then(
+            (exists) async {
+              if (exists) {
+                try {
+                  final featureConfig =
+                      jsonDecode(await featureFile.readAsString());
+                  ref
+                      .read(featureFlagProvider.notifier)
+                      .loadConfig(featureConfig);
+                } catch (error) {
+                  _log.error('Failed to parse feature flags', error);
+                }
+              }
+            },
+          );
+
           // Initialize systray
           ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
-          return ref.watch(rpcProvider).when(
-                data: (data) => const MainPage(),
-                error: (error, stackTrace) => AppFailurePage(cause: error),
-                loading: () => _HelperWaiter(),
-              );
+          return Consumer(
+              builder: (context, ref, child) => ref.watch(rpcProvider).when(
+                    data: (data) => const MainPage(),
+                    error: (error, stackTrace) => AppFailurePage(cause: error),
+                    loading: () => _HelperWaiter(),
+                  ));
         }),
       ),
     ),

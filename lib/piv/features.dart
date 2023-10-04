@@ -20,12 +20,12 @@ final actions = piv.feature('actions');
 
 final actionsPin = actions.feature('pin');
 final actionsPuk = actions.feature('puk');
-final actionsManagementKey = actions.feature('managementKey', enabled: false);
-final actionsReset = actions.feature('reset', enabled: false);
+final actionsManagementKey = actions.feature('managementKey');
+final actionsReset = actions.feature('reset');
 
 final slots = piv.feature('slots');
 
-final slotsGenerate = slots.feature('generate', enabled: false);
-final slotsImport = slots.feature('import', enabled: false);
+final slotsGenerate = slots.feature('generate');
+final slotsImport = slots.feature('import');
 final slotsExport = slots.feature('export');
-final slotsDelete = slots.feature('delete', enabled: false);
+final slotsDelete = slots.feature('delete');
