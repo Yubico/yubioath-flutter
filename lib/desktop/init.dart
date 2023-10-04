@@ -114,7 +114,7 @@ Future<Widget> initialize(List<String> argv) async {
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
-  final isHidden = prefs.getBool(windowHidden) ?? false;
+  final isHidden = _getIsHidden(argv, prefs);
 
   final bounds = Rect.fromLTWH(
     prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
@@ -296,6 +296,16 @@ void _initLicenses() async {
       yield LicenseEntryWithLineBreaks([e['Name']], e['LicenseText']);
     }
   });
+}
+
+bool _getIsHidden(List<String> argv, SharedPreferences prefs) {
+  if (argv.contains('--hidden') || argv.contains('--shown')) {
+    final isHidden = argv.contains('--hidden') && !argv.contains('--shown');
+    prefs.setBool(windowHidden, isHidden);
+    return isHidden;
+  } else {
+    return prefs.getBool(windowHidden) ?? false;
+  }
 }
 
 class _HelperWaiter extends ConsumerStatefulWidget {
