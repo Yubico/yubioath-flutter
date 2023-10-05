@@ -641,12 +641,12 @@ description = "Python bindings for the zxing-cpp barcode library"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "zxing_cpp-2.1.0-cp311-cp311-win_amd64.whl", hash = "sha256:ced97aac933484556fcaa40fb402459b7af801dace4d87f4ac515661d267b211"},
+    {file = "zxing_cpp-2.1.0-cp312-cp312-win_amd64.whl", hash = "sha256:fb18dcd86fcc26c8d86e7de03645827141f0f7194dcec3e09d46f0a9dda64cc2"},
 ]
 
 [package.source]
 type = "file"
-url = "zxing_cpp-2.1.0-cp311-cp311-win_amd64.whl"
+url = "zxing_cpp-2.1.0-cp312-cp312-win_amd64.whl"
 
 [[package]]
 name = "zxing-cpp"
@@ -667,4 +667,4 @@ subdirectory = "wrappers/python"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "da0c9137314609318eb48a4a262942add4e75014e55e36cc1715c94b6b9cefd2"
+content-hash = "1c10a85b3420fb1057c6371465b7007ff63f562e5cfed9178f25eee2185c45c3"
