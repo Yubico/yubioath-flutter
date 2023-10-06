@@ -154,16 +154,6 @@ Future<Widget> initialize(List<String> argv) async {
     exe = Uri.file(Platform.resolvedExecutable)
         .resolve(relativePath)
         .toFilePath();
-
-    if (Platform.isMacOS && Platform.version.contains('arm64')) {
-      // See if there is an arm64 specific helper on arm64 Mac.
-      final arm64exe = Uri.file(exe)
-          .resolve('../helper-arm64/authenticator-helper')
-          .toFilePath();
-      if (await File(arm64exe).exists()) {
-        exe = arm64exe;
-      }
-    }
   }
 
   final rpcFuture = _initHelper(exe!);
