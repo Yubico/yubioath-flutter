@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023   Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,69 +19,76 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../keys.dart' as keys;
 import 'qr_scanner_scan_status.dart';
-import 'qr_scanner_util.dart';
 
 class QRScannerUI extends StatelessWidget {
   final ScanStatus status;
   final Size screenSize;
+  final GlobalKey overlayWidgetKey;
 
-  const QRScannerUI({
-    super.key,
-    required this.status,
-    required this.screenSize,
-  });
+  const QRScannerUI(
+      {super.key,
+      required this.status,
+      required this.screenSize,
+      required this.overlayWidgetKey});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final scannerAreaWidth = getScannerAreaWidth(screenSize);
 
-    return Stack(children: [
-      /// instruction text under the scanner area
-      Positioned.fromRect(
-        rect: Rect.fromCenter(
-            center: Offset(screenSize.width / 2,
-                screenSize.height + scannerAreaWidth / 2.0 + 8.0),
-            width: screenSize.width,
-            height: screenSize.height),
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Text(
-            status != ScanStatus.error
-                ? l10n.l_point_camera_scan
-                : l10n.l_invalid_qr,
-            style: const TextStyle(color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-
-      /// button for manual entry
-      Positioned.fromRect(
-        rect: Rect.fromCenter(
-            center: Offset(screenSize.width / 2,
-                screenSize.height + scannerAreaWidth / 2.0 + 80.0),
-            width: screenSize.width,
-            height: screenSize.height),
-        child: Column(
-          children: [
-            Text(
-              l10n.q_no_qr,
-              textScaleFactor: 0.7,
-              style: const TextStyle(color: Colors.white),
-            ),
-            OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).pop('');
-                },
-                key: keys.manualEntryButton,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16, right: 16, top: 0, bottom: 0),
+                  child: SizedBox(
+                    // other widgets can find the RenderObject of this
+                    // widget by its key value and query its size and offset.
+                    key: overlayWidgetKey,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 0.0),
                 child: Text(
-                  l10n.s_enter_manually,
+                  status != ScanStatus.error
+                      ? l10n.l_point_camera_scan
+                      : l10n.l_invalid_qr,
                   style: const TextStyle(color: Colors.white),
-                )),
-          ],
-        ),
-      ),
-    ]);
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Column(
+                children: [
+                  Text(
+                    l10n.q_no_qr,
+                    textScaleFactor: 0.7,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop('');
+                      },
+                      key: keys.manualEntryButton,
+                      child: Text(
+                        l10n.s_enter_manually,
+                        style: const TextStyle(color: Colors.white),
+                      )),
+                ],
+              ),
+              const SizedBox(height: 8)
+            ],
+          ),
+        )
+      ],
+    );
   }
 }

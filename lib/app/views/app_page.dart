@@ -66,7 +66,11 @@ class AppPage extends StatelessWidget {
             // Single column layout, maybe with rail
             return _buildScaffold(context, true, hasRail);
           } else {
-            // Fully expanded layout
+            // Fully expanded layout, close existing drawer if open
+            final scaffoldState = scaffoldGlobalKey.currentState;
+            if (scaffoldState?.isDrawerOpen == true) {
+              scaffoldState?.openEndDrawer();
+            }
             return Scaffold(
               body: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +135,9 @@ class AppPage extends StatelessWidget {
                 const SizedBox(width: 48),
               ],
             ),
-            NavigationContent(key: _navExpandedKey, extended: true),
+            Material(
+                type: MaterialType.transparency,
+                child: NavigationContent(key: _navExpandedKey, extended: true)),
           ],
         ),
       ),

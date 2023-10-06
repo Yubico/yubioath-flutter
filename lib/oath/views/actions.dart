@@ -25,10 +25,6 @@ import '../../exception/cancellation_exception.dart';
 import '../models.dart';
 import '../state.dart';
 
-class CalculateIntent extends Intent {
-  const CalculateIntent();
-}
-
 class TogglePinIntent extends Intent {
   const TogglePinIntent();
 }
@@ -53,8 +49,14 @@ Widget registerOathActions(
 }) =>
     Actions(
       actions: {
-        CalculateIntent: CallbackAction<CalculateIntent>(onInvoke: (_) {
-          return _calculateCode(credential, ref);
+        RefreshIntent: CallbackAction<RefreshIntent>(onInvoke: (_) {
+          final code = ref.read(codeProvider(credential));
+          if (!(credential.oathType == OathType.totp &&
+              code != null &&
+              !ref.read(expiredProvider(code.validTo)))) {
+            return _calculateCode(credential, ref);
+          }
+          return code;
         }),
         CopyIntent: CallbackAction<CopyIntent>(onInvoke: (_) async {
           var code = ref.read(codeProvider(credential));

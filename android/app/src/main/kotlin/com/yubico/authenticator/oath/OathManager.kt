@@ -27,7 +27,6 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
-import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
 import com.yubico.authenticator.oath.data.Credential
@@ -62,6 +61,7 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.net.URI
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -554,29 +554,47 @@ class OathManager(
             NULL
         }
 
-    private suspend fun requestRefresh() =
+    private suspend fun requestRefresh() {
+
+        val clearCodes = {
+            val currentCredentials = oathViewModel.credentials.value
+            oathViewModel.updateCredentials(currentCredentials?.associate {
+                it.credential to null
+            } ?: emptyMap())
+        }
+
         appViewModel.connectedYubiKey.value?.let { usbYubiKeyDevice ->
-            useOathSessionUsb(usbYubiKeyDevice) { session ->
-                try {
-                    oathViewModel.updateCredentials(calculateOathCodes(session))
-                } catch (apduException: ApduException) {
-                    if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
-                        logger.debug("Handled oath credential refresh on locked session.")
-                        oathViewModel.setSessionState(
-                            Session(
-                                session,
-                                keyManager.isRemembered(session.deviceId)
+            try {
+                useOathSessionUsb(usbYubiKeyDevice) { session ->
+                    try {
+                        oathViewModel.updateCredentials(calculateOathCodes(session))
+                    } catch (apduException: ApduException) {
+                        if (apduException.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
+                            logger.debug("Handled oath credential refresh on locked session.")
+                            oathViewModel.setSessionState(
+                                Session(
+                                    session,
+                                    keyManager.isRemembered(session.deviceId)
+                                )
                             )
-                        )
-                    } else {
-                        logger.error(
-                            "Unexpected sw when refreshing oath credentials",
-                            apduException
-                        )
+                        } else {
+                            logger.error(
+                                "Unexpected sw when refreshing oath credentials",
+                                apduException
+                            )
+                        }
                     }
                 }
+            } catch (ioException: IOException) {
+                logger.error("IOException when accessing USB device: ", ioException)
+                clearCodes()
+            } catch (illegalStateException: IllegalStateException) {
+                logger.error("IllegalStateException when accessing USB device: ", illegalStateException)
+                clearCodes()
             }
         }
+    }
+
 
     private suspend fun calculate(credentialId: String): String =
         useOathSession(OathActionDescription.CalculateCode) { session ->

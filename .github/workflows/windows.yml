@@ -67,9 +67,9 @@ jobs:
       - name: Move .dll files
         run: |
           $dest = "build\windows\runner\Release"
-          cp $dest\helper\MSVCP140.dll $dest\
-          cp $dest\helper\VCRUNTIME140.dll $dest\
-          cp $dest\helper\VCRUNTIME140_1.dll $dest\
+          cp $dest\helper\_internal/MSVCP140.dll $dest\
+          cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
+          cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
 
       - name: Create an unsigned .msi installer package
         run: |

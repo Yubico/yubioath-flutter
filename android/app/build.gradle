@@ -66,6 +66,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        buildConfig true
+    }
+
     lint {
         abortOnError false
     }
@@ -91,15 +96,16 @@ dependencies {
     api "com.yubico.yubikit:android:$project.yubiKitVersion"
     api "com.yubico.yubikit:management:$project.yubiKitVersion"
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
+    api "com.yubico.yubikit:fido:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0'
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
 
-    implementation "androidx.core:core-ktx:1.10.1"
+    implementation "androidx.core:core-ktx:1.12.0"
     implementation 'androidx.fragment:fragment-ktx:1.6.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
