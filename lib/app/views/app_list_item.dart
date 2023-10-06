@@ -74,14 +74,17 @@ class _AppListItemState extends ConsumerState<AppListItem> {
         onSecondaryTapDown: buildPopupActions == null
             ? null
             : (details) {
-                showPopupMenu(
-                  context,
-                  details.globalPosition,
-                  buildPopupActions(context)
-                      .where((action) =>
-                          action.feature == null || hasFeature(action.feature!))
-                      .toList(),
-                );
+                final menuItems = buildPopupActions(context)
+                    .where((action) =>
+                        action.feature == null || hasFeature(action.feature!))
+                    .toList();
+                if (menuItems.isNotEmpty) {
+                  showPopupMenu(
+                    context,
+                    details.globalPosition,
+                    menuItems,
+                  );
+                }
               },
         onTap: () {
           if (isDesktop) {
