@@ -23,6 +23,7 @@ import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
+import '../features.dart' as features;
 import 'add_fingerprint_dialog.dart';
 import 'pin_dialog.dart';
 import 'reset_dialog.dart';
@@ -48,6 +49,7 @@ Widget fidoBuildActions(
             children: [
               ActionListItem(
                 key: keys.addFingerprintAction,
+                feature: features.actionsAddFingerprint,
                 actionStyle: ActionStyle.primary,
                 icon: const Icon(Icons.fingerprint_outlined),
                 title: l10n.s_add_fingerprint,
@@ -76,6 +78,7 @@ Widget fidoBuildActions(
           children: [
             ActionListItem(
                 key: keys.managePinAction,
+                feature: features.actionsPin,
                 icon: const Icon(Icons.pin_outlined),
                 title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
                 subtitle: state.hasPin
@@ -96,6 +99,7 @@ Widget fidoBuildActions(
                 }),
             ActionListItem(
               key: keys.resetAction,
+              feature: features.actionsReset,
               actionStyle: ActionStyle.error,
               icon: const Icon(Icons.delete_outline),
               title: l10n.s_reset_fido,
