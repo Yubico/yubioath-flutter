@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:typed_data';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'qrscanner_zxing_method_channel.dart';
@@ -40,6 +42,10 @@ abstract class QRScannerZxingPlatform extends PlatformInterface {
   }
 
   Future<String?> getPlatformVersion() {
+    throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  Future<String?> scanBitmap(Uint8List bitmap) {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 }

@@ -36,7 +36,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.google.zxing.*
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.NotFoundException
+import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -290,11 +292,6 @@ internal class QRScannerView(
     ) : ImageAnalysis.Analyzer {
 
         var analysisPaused = false
-
-        val multiFormatReader = MultiFormatReader().also {
-            it.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
-        }
-
         var analyzedImagesCount = 0
 
         private fun ByteBuffer.toByteArray(lastRowPadding: Int): ByteArray {
@@ -392,14 +389,14 @@ internal class QRScannerView(
                     fullSize
                 }
 
-                val result: com.google.zxing.Result = multiFormatReader.decode(bitmapToProcess)
+                val result = QrCodeScanner.scan(bitmapToProcess)
                 if (analysisPaused) {
                     return
                 }
 
                 analysisPaused = true // pause
-                Log.v(TAG, "Analysis result: ${result.text}")
-                listener.invoke(Result.success(result.text))
+                Log.v(TAG, "Analysis result: $result")
+                listener.invoke(Result.success(result))
             } catch (_: NotFoundException) {
                 if (analyzedImagesCount == 0) {
                     Log.v(TAG, "  No QR code found (NotFoundException)")

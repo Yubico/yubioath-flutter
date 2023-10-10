@@ -22,6 +22,7 @@ const _prefix = 'android.keys';
 
 const okButton = Key('$_prefix.ok');
 const manualEntryButton = Key('$_prefix.manual_entry');
+const readFromImage = Key('$_prefix.read_image_file');
 
 const nfcBypassTouchSetting = Key('$_prefix.nfc_bypass_touch');
 const nfcSilenceSoundsSettings = Key('$_prefix.nfc_silence_sounds');

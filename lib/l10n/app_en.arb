@@ -516,6 +516,7 @@
     "q_want_to_scan": "Would like to scan?",
     "q_no_qr": "No QR code?",
     "s_enter_manually": "Enter manually",
+    "s_read_from_image": "Provide image file",
 
     "@_factory_reset": {},
     "s_reset": "Reset",

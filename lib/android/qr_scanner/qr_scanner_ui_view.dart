@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/app/state.dart';
 
 import '../keys.dart' as keys;
 import 'qr_scanner_scan_status.dart';
 
-class QRScannerUI extends StatelessWidget {
+class QRScannerUI extends ConsumerWidget {
   final ScanStatus status;
   final Size screenSize;
   final GlobalKey overlayWidgetKey;
@@ -32,7 +37,7 @@ class QRScannerUI extends StatelessWidget {
       required this.overlayWidgetKey});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
 
     return Stack(
@@ -73,15 +78,51 @@ class QRScannerUI extends StatelessWidget {
                     textScaleFactor: 0.7,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop('');
-                      },
-                      key: keys.manualEntryButton,
-                      child: Text(
-                        l10n.s_enter_manually,
-                        style: const TextStyle(color: Colors.white),
-                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop('');
+                          },
+                          key: keys.manualEntryButton,
+                          child: Text(
+                            l10n.s_enter_manually,
+                            style: const TextStyle(color: Colors.white),
+                          )),
+                      OutlinedButton(
+                          onPressed: () async {
+                            Navigator.of(context).pop('');
+                            final result = await FilePicker.platform.pickFiles(
+                                allowedExtensions: ['png', 'jpg'],
+                                type: FileType.custom,
+                                allowMultiple: false,
+                                lockParentWindow: true,
+                                dialogTitle: 'Select file with QR code');
+                            if (result != null && result.files.isNotEmpty) {
+                              final fileWithCode = result.files.first;
+                              final bytes = fileWithCode.bytes;
+                              if (bytes == null || bytes.isEmpty) {
+                                //err return
+                                return;
+                              }
+                              if (bytes.length > 3 * 1024 * 1024) {
+                                // too big file
+                                return;
+                              }
+                              final scanner = ref.read(qrScannerProvider);
+                              if (scanner != null) {
+                                await scanner.scanQr(base64UrlEncode(bytes));
+                              }
+                            }
+                          },
+                          key: keys.readFromImage,
+                          child: Text(
+                            l10n.s_read_from_image,
+                            style: const TextStyle(color: Colors.white),
+                          )),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 8)

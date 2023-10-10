@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing.dart';
@@ -25,6 +27,10 @@ class MockQRScannerZxingPlatform
     implements QRScannerZxingPlatform {
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
+
+  @override
+  Future<String?> scanBitmap(Uint8List bitmap) =>
+      Future.value(bitmap.length.toString());
 }
 
 void main() {
@@ -41,5 +47,13 @@ void main() {
     QRScannerZxingPlatform.instance = fakePlatform;
 
     expect(await qrscannerZxingPlugin.getPlatformVersion(), '42');
+  });
+
+  test('scanBitmap', () async {
+    QRScannerZxing qrscannerZxingPlugin = QRScannerZxing();
+    MockQRScannerZxingPlatform fakePlatform = MockQRScannerZxingPlatform();
+    QRScannerZxingPlatform.instance = fakePlatform;
+
+    expect(await qrscannerZxingPlugin.scanBitmap(Uint8List(10)), '10');
   });
 }

@@ -14,39 +14,50 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/exception/cancellation_exception.dart';
 import 'package:yubico_authenticator/theme.dart';
 
+import 'package:qrscanner_zxing/qrscanner_zxing_method_channel.dart';
+
 import 'qr_scanner_view.dart';
 
 class AndroidQrScanner implements QrScanner {
   final WithContext _withContext;
+
   AndroidQrScanner(this._withContext);
 
   @override
-  Future<String?> scanQr([String? _]) async {
-    var scannedCode = await _withContext(
-        (context) async => await Navigator.of(context).push(PageRouteBuilder(
-              pageBuilder: (_, __, ___) =>
-                  Theme(data: AppTheme.darkTheme, child: const QrScannerView()),
-              settings: const RouteSettings(name: 'android_qr_scanner_view'),
-              transitionDuration: const Duration(seconds: 0),
-              reverseTransitionDuration: const Duration(seconds: 0),
-            )));
-    if (scannedCode == null) {
-      // user has cancelled the scan
-      throw CancellationException();
+  Future<String?> scanQr([String? imageData]) async {
+    if (imageData == null) {
+      var scannedCode = await _withContext(
+              (context) async =>
+          await Navigator.of(context).push(PageRouteBuilder(
+            pageBuilder: (_, __, ___) =>
+                Theme(data: AppTheme.darkTheme, child: const QrScannerView()),
+            settings: const RouteSettings(name: 'android_qr_scanner_view'),
+            transitionDuration: const Duration(seconds: 0),
+            reverseTransitionDuration: const Duration(seconds: 0),
+          )));
+      if (scannedCode == null) {
+        // user has cancelled the scan
+        throw CancellationException();
+      }
+      if (scannedCode == '') {
+        return null;
+      }
+      return scannedCode;
+    } else {
+      var zxingChannel = MethodChannelQRScannerZxing();
+      return await zxingChannel.scanBitmap(base64Decode(imageData));
     }
-    if (scannedCode == '') {
-      return null;
-    }
-    return scannedCode;
   }
 }
 
 QrScanner? Function(dynamic) androidQrScannerProvider(hasCamera) {
   return (ref) =>
-      hasCamera ? AndroidQrScanner(ref.watch(withContextProvider)) : null;
+  hasCamera ? AndroidQrScanner(ref.watch(withContextProvider)) : null;
 }
