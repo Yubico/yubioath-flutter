@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,10 @@ class NextDeviceIntent extends Intent {
   const NextDeviceIntent();
 }
 
+class KeyCustomizationIntent extends Intent {
+  const KeyCustomizationIntent();
+}
+
 class SettingsIntent extends Intent {
   const SettingsIntent();
 }
@@ -61,26 +65,31 @@ class AboutIntent extends Intent {
 
 class OpenIntent<T> extends Intent {
   final T target;
+
   const OpenIntent(this.target);
 }
 
 class CopyIntent<T> extends Intent {
   final T target;
+
   const CopyIntent(this.target);
 }
 
 class EditIntent<T> extends Intent {
   final T target;
+
   const EditIntent(this.target);
 }
 
 class DeleteIntent<T> extends Intent {
   final T target;
+
   const DeleteIntent(this.target);
 }
 
 class RefreshIntent<T> extends Intent {
   final T target;
+
   const RefreshIntent(this.target);
 }
 
@@ -92,6 +101,7 @@ SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
 class ItemShortcuts<T> extends StatelessWidget {
   final T item;
   final Widget child;
+
   const ItemShortcuts({super.key, required this.item, required this.child});
 
   @override
@@ -112,6 +122,7 @@ class ItemShortcuts<T> extends StatelessWidget {
 /// Global keyboard shortcuts
 class GlobalShortcuts extends ConsumerWidget {
   final Widget child;
+
   const GlobalShortcuts({super.key, required this.child});
 
   @override

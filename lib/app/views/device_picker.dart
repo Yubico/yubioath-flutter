@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
+import '../key_customization.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
@@ -34,6 +35,7 @@ final _hiddenDevicesProvider =
 class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
   static const String _key = 'DEVICE_PICKER_HIDDEN';
   final SharedPreferences _prefs;
+
   _HiddenDevicesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
 
   void showAll() {
@@ -49,7 +51,8 @@ class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
-  const DevicePickerContent({super.key, this.extended = true});
+
+  const DevicePickerContent({required this.extended, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -188,6 +191,7 @@ class _DeviceRow extends StatelessWidget {
   final String subtitle;
   final bool extended;
   final bool selected;
+  final Color? background;
   final void Function() onTap;
 
   const _DeviceRow({
@@ -197,6 +201,7 @@ class _DeviceRow extends StatelessWidget {
     required this.subtitle,
     required this.extended,
     required this.selected,
+    this.background,
     required this.onTap,
   });
 
@@ -218,7 +223,8 @@ class _DeviceRow extends StatelessWidget {
           subtitle:
               Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
           dense: true,
-          tileColor: selected ? colorScheme.primary : null,
+          tileColor:
+              selected ? colorScheme.primary : background?.withOpacity(0.3),
           textColor: selected ? colorScheme.onPrimary : null,
           iconColor: selected ? colorScheme.onPrimary : null,
           onTap: onTap,
@@ -260,12 +266,35 @@ _DeviceRow _buildDeviceRow(
         : _getDeviceInfoString(context, info),
     nfcReader: (_, __) => l10n.s_select_to_scan,
   );
+
+  String displayName = node.name;
+  Color? displayColor;
+  if (info?.serial != null) {
+    final properties = ref
+        .read(keyCustomizationManagerProvider)
+        .get(info?.serial?.toString())
+        ?.properties;
+    var customizedName = properties?['display_name'];
+    if (customizedName != null && customizedName != '') {
+      displayName = customizedName + ' (${node.name})';
+    }
+    var displayColorCustomization = properties?['display_color'];
+    if (displayColorCustomization != null) {
+      displayColor = Color(int.parse(displayColorCustomization, radix: 16));
+    }
+  }
+
   return _DeviceRow(
     key: ValueKey(node.path.key),
-    leading: DeviceAvatar.deviceNode(node),
-    title: node.name,
+    leading: IconTheme(
+      // Force the standard icon theme
+      data: IconTheme.of(context),
+      child: DeviceAvatar.deviceNode(node, ref),
+    ),
+    title: displayName,
     subtitle: subtitle,
     extended: extended,
+    background: displayColor,
     selected: false,
     onTap: () {
       ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
@@ -288,16 +317,37 @@ _DeviceRow _buildCurrentDeviceRow(
   final title = messages.removeAt(0);
   final subtitle = messages.join('\n');
 
+  String displayName = title;
+  Color? displayColor;
+  if (node is UsbYubiKeyNode) {
+    if (node.info?.serial != null) {
+      final properties = ref
+          .read(keyCustomizationManagerProvider)
+          .get(node.info?.serial.toString())
+          ?.properties;
+      var customizedName = properties?['display_name'];
+      if (customizedName != null && customizedName != '') {
+        displayName = customizedName + ' (${node.name})';
+      }
+      var displayColorCustomization = properties?['display_color'];
+      if (displayColorCustomization != null) {
+        displayColor = Color(int.parse(displayColorCustomization, radix: 16));
+      }
+    }
+  }
+
   return _DeviceRow(
     key: keys.deviceInfoListTile,
     leading: data.maybeWhen(
       data: (data) =>
-          DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),
-      orElse: () => DeviceAvatar.deviceNode(node, radius: extended ? null : 16),
+          DeviceAvatar.yubiKeyData(data, ref, radius: extended ? null : 16),
+      orElse: () =>
+          DeviceAvatar.deviceNode(node, ref, radius: extended ? null : 16),
     ),
-    title: title,
+    title: displayName,
     subtitle: subtitle,
     extended: extended,
+    background: displayColor,
     selected: true,
     onTap: () {},
   );

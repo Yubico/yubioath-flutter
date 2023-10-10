@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -143,4 +145,16 @@ class WindowState with _$WindowState {
     required bool active,
     @Default(false) bool hidden,
   }) = _WindowState;
+}
+
+class KeyCustomization {
+  final String serialNumber;
+  final Map<String, dynamic> properties;
+
+  const KeyCustomization(this.serialNumber, this.properties);
+
+  factory KeyCustomization.fromString(String serialNumber, String encodedJson) {
+    final data = json.decode(String.fromCharCodes(base64Decode(encodedJson)));
+    return KeyCustomization(serialNumber, data);
+  }
 }

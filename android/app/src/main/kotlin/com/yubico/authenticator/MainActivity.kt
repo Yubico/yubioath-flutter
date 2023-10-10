@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.DynamicColors
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
@@ -383,6 +384,11 @@ class MainActivity : FlutterFragmentActivity() {
                             methodCall.arguments as Boolean,
                         )
                     )
+
+                    "getPrimaryColor" -> result.success(
+                        getPrimaryColor(this@MainActivity)
+                    )
+
                     "getAndroidSdkVersion" -> result.success(
                         Build.VERSION.SDK_INT
                     )
@@ -456,6 +462,30 @@ class MainActivity : FlutterFragmentActivity() {
         return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
     }
 
+    private fun getPrimaryColor(context: Context): Int? {
+        if (DynamicColors.isDynamicColorAvailable()) {
+            val dynamicColorContext = DynamicColors.wrapContextIfAvailable(
+                context,
+                com.google.android.material.R.style.ThemeOverlay_Material3_DynamicColors_DayNight
+            )
+
+            val typedArray = dynamicColorContext.obtainStyledAttributes(
+                intArrayOf(
+                    android.R.attr.colorPrimary,
+                )
+            )
+            try {
+                return if (typedArray.hasValue(0))
+                    typedArray.getColor(0, 0)
+                else
+                    null
+            } finally {
+                typedArray.recycle()
+            }
+        }
+        return null
+    }
+
     @SuppressLint("SourceLockedOrientationActivity")
     private fun forcePortraitOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -465,5 +495,5 @@ class MainActivity : FlutterFragmentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
-    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only);
+    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only)
 }

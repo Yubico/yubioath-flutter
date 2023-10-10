@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,10 @@ Future<void> openNfcSettings() async {
 
 Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
+}
+
+Future<int?> getPrimaryColor() async {
+  return await appMethodsChannel.invokeMethod('getPrimaryColor');
 }
 
 Future<void> setPrimaryClip(String toClipboard, bool isSensitive) async {

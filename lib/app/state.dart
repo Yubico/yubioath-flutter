@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/state.dart';
+import '../theme.dart';
 import 'features.dart' as features;
 import 'logging.dart';
 import 'models.dart';
@@ -137,6 +138,42 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   static ThemeMode _fromName(String? name, List<ThemeMode> supportedThemes) =>
       supportedThemes.firstWhere((element) => element.name == name,
           orElse: () => supportedThemes.first);
+}
+
+final primaryColorProvider = Provider<Color?>((ref) => null);
+
+final darkThemeProvider = StateNotifierProvider<ThemeNotifier, ThemeData>(
+  (ref) => ThemeNotifier(ref.watch(primaryColorProvider), ThemeMode.dark),
+);
+
+final lightThemeProvider = StateNotifierProvider<ThemeNotifier, ThemeData>(
+  (ref) => ThemeNotifier(ref.watch(primaryColorProvider), ThemeMode.light),
+);
+
+class ThemeNotifier extends StateNotifier<ThemeData> {
+  final ThemeMode _themeMode;
+
+  ThemeNotifier(Color? systemPrimaryColor, this._themeMode)
+      : super(_get(systemPrimaryColor, _themeMode));
+
+  static ThemeData _getDefault(ThemeMode themeMode) =>
+      themeMode == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
+
+  static ThemeData _get(Color? primaryColor, ThemeMode themeMode) =>
+      (primaryColor != null)
+          ? _getDefault(themeMode).copyWith(
+              colorScheme: ColorScheme.fromSeed(
+                      brightness: themeMode == ThemeMode.dark
+                          ? Brightness.dark
+                          : Brightness.light,
+                      seedColor: primaryColor)
+                  .copyWith(primary: primaryColor))
+          : _getDefault(themeMode);
+
+  void setPrimaryColor(Color? primaryColor) {
+    _log.debug('Set primary color to $primaryColor');
+    state = _get(primaryColor, _themeMode);
+  }
 }
 
 // Override with platform implementation

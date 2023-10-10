@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,9 @@ Future<Widget> initialize() async {
 
   _initLicenses();
 
+  final primaryColor = await getPrimaryColor();
+  final primaryColorInt = primaryColor != null ? Color(primaryColor) : null;
+
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
@@ -84,7 +87,8 @@ Future<Widget> initialize() async {
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
-      )
+      ),
+      primaryColorProvider.overrideWithValue(primaryColorInt),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
