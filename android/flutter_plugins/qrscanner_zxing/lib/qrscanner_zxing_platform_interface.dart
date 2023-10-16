@@ -45,7 +45,7 @@ abstract class QRScannerZxingPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<String?> scanBitmap(Uint8List bitmap) {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<String?> scanBitmap(Uint8List bytes) {
+    throw UnimplementedError('scanBitmap(Uint8List) has not been implemented.');
   }
 }

@@ -68,8 +68,10 @@ class AppHomePage extends StatelessWidget {
                 child: const Text("Open QR Scanner")),
             ElevatedButton(
                 onPressed: () async {
+                  var channel = MethodChannelQRScannerZxing();
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
                   final result = await FilePicker.platform.pickFiles(
-                      allowedExtensions: ['png', 'jpg'],
+                      allowedExtensions: ['png', 'jpg', 'gif', 'webp'],
                       type: FileType.custom,
                       allowMultiple: false,
                       lockParentWindow: true,
@@ -82,11 +84,13 @@ class AppHomePage extends StatelessWidget {
                   }
 
                   final bytes = result.files.first.bytes;
-
                   if (bytes != null) {
-                    var channel = MethodChannelQRScannerZxing();
                     var value = await channel.scanBitmap(bytes);
-                    debugPrint(value);
+                    final snackBar = SnackBar(
+                        content: Text(value == null
+                            ? 'No QR code detected'
+                            : 'QR: $value'));
+                    scaffoldMessenger.showSnackBar(snackBar);
                   } else {
                     // no files selected
                   }

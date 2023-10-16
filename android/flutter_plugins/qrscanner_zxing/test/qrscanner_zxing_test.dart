@@ -29,8 +29,8 @@ class MockQRScannerZxingPlatform
   Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
-  Future<String?> scanBitmap(Uint8List bitmap) =>
-      Future.value(bitmap.length.toString());
+  Future<String?> scanBitmap(Uint8List bytes) =>
+      Future.value(bytes.length.toString());
 }
 
 void main() {

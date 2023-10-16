@@ -389,7 +389,7 @@ internal class QRScannerView(
                     fullSize
                 }
 
-                val result = QrCodeScanner.scan(bitmapToProcess)
+                val result = QrCodeScanner.decodeFromBinaryBitmap(bitmapToProcess)
                 if (analysisPaused) {
                     return
                 }

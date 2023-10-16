@@ -16,12 +16,6 @@
 
 package com.yubico.authenticator.flutter_plugins.qrscanner_zxing
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
-import com.google.zxing.BinaryBitmap
-import com.google.zxing.RGBLuminanceSource
-import com.google.zxing.common.HybridBinarizer
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -30,7 +24,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import java.lang.Exception
 
 class PermissionsResultRegistrar {
 
@@ -76,41 +69,17 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             "getPlatformVersion" -> {
                 result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
-            "scanBitmap" -> {
-                val imageFileData = call.argument<ByteArray>("bitmap")
-                var bitmap: Bitmap? = null
-                try {
-                    imageFileData?.let { byteArray ->
-                        Log.i(TAG, "Received ${byteArray.size} bytes")
-                        val options = BitmapFactory.Options()
-                        options.inSampleSize = 4
-                        bitmap = BitmapFactory.decodeByteArray(imageFileData, 0, byteArray.size, options)
-                        bitmap?.let {
-                            val intArray = IntArray(it.allocationByteCount)
-                            it.getPixels(intArray, 0, it.width, 0, 0, it.width, it.height)
-                            val luminanceSource =
-                                RGBLuminanceSource(it.rowBytes, it.height, intArray)
-                            val binaryBitmap = BinaryBitmap(HybridBinarizer(luminanceSource))
-                            val scanResult = QrCodeScanner.scan(binaryBitmap)
-                            Log.i(TAG, "Scan result: $scanResult")
-                            result.success(scanResult)
-                            return
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failure decoding data: $e")
-                    result.error("Failed to decode", e.message, e)
-                    return
-                } finally {
-                    bitmap?.let {
-                        it.recycle()
-                        bitmap = null
-                    }
-                }
 
-                Log.e(TAG, "Failure decoding data: Invalid image format ")
-                result.error("Failed to decode", "Invalid image format", null)
+            "scanBitmap" -> {
+                val bytes = call.argument<ByteArray>("bytes")
+                if (bytes != null) {
+                    val scanResult = QrCodeScanner.decodeFromBytes(bytes)
+                    result.success(scanResult)
+                } else {
+                    result.error("Failure", "Invalid image", null)
+                }
             }
+
             else -> {
                 result.notImplemented()
             }
@@ -141,9 +110,5 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         grantResults: IntArray
     ): Boolean {
         return registrar.onResult(requestCode, permissions, grantResults)
-    }
-
-    companion object {
-        const val TAG = "QRScannerZxPlugin"
     }
 }
