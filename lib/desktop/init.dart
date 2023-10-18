@@ -243,7 +243,24 @@ Future<RpcSession> _initHelper(String exe) async {
 }
 
 void _initLogging(List<String> argv) {
+  final logFileIndex = argv.indexOf('--log-file');
+  File? file;
+  if (logFileIndex != -1) {
+    final path = argv[logFileIndex + 1];
+    file = File(path);
+  }
   Logger.root.onRecord.listen((record) {
+    if (logFileIndex != -1) {
+      if (file != null) {
+        file.writeAsStringSync(
+            '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+            mode: FileMode.append);
+        if (record.error != null) {
+          file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
+              mode: FileMode.append);
+        }
+      }
+    }
     stderr.writeln(
         '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
