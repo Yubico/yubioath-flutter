@@ -97,6 +97,7 @@ class _UnlockedView extends ConsumerStatefulWidget {
 class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
+  bool showSearch = false;
 
   @override
   void initState() {
@@ -135,9 +136,13 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     return Actions(
       actions: {
         SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
+          setState(() {
+            showSearch = true;
+          });
           searchController.selection = TextSelection(
               baseOffset: 0, extentOffset: searchController.text.length);
           searchFocus.requestFocus();
+
           return null;
         }),
       },
