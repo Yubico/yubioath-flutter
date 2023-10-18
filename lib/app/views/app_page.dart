@@ -165,18 +165,13 @@ class AppPage extends StatelessWidget {
     return SingleChildScrollView(
       primary: false,
       child: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 700,
-            child: delayedContent
-                ? DelayedVisibility(
-                    key: GlobalKey(), // Ensure we reset the delay on rebuild
-                    delay: const Duration(milliseconds: 400),
-                    child: content,
-                  )
-                : content,
-          ),
-        ),
+        child: delayedContent
+            ? DelayedVisibility(
+                key: GlobalKey(), // Ensure we reset the delay on rebuild
+                delay: const Duration(milliseconds: 400),
+                child: content,
+              )
+            : content,
       ),
     );
   }
