@@ -30,10 +30,10 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../exception/apdu_exception.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
+import '../../exception/apdu_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
@@ -56,6 +56,7 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
   final OathState? state;
   final List<OathCredential>? credentials;
   final CredentialData? credentialData;
+
   const OathAddAccountPage(
     this.devicePath,
     this.state, {

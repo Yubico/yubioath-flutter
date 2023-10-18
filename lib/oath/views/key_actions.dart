@@ -20,6 +20,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
 import 'package:yubico_authenticator/oath/views/add_account_dialog.dart';
 
+import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -28,11 +29,8 @@ import '../../app/views/action_list.dart';
 import '../../core/state.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
-import '../state.dart';
-import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
-import 'utils.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -59,38 +57,14 @@ Widget oathBuildActions(
               icon: const Icon(Icons.person_add_alt_1_outlined),
               onTap: used != null && (capacity == null || capacity > used)
                   ? (context) async {
-                      final credentials = ref.read(credentialsProvider);
-                      final withContext = ref.read(withContextProvider);
                       Navigator.of(context).pop();
                       if (isAndroid) {
                         final qrScanner = ref.read(qrScannerProvider);
                         if (qrScanner != null) {
                           final qrData = await qrScanner.scanQr();
-                          if (qrData != null) {
-                            await withContext((context) => handleUri(
-                                  context,
-                                  credentials,
-                                  qrData,
-                                  devicePath,
-                                  oathState,
-                                  l10n,
-                                ));
-                            return;
-                          }
+                          await AndroidQrScanner.handleScannedData(
+                              qrData, ref, l10n);
                         }
-                        await withContext((context) => showBlurDialog(
-                              context: context,
-                              routeSettings:
-                                  const RouteSettings(name: 'oath_add_account'),
-                              builder: (context) {
-                                return OathAddAccountPage(
-                                  devicePath,
-                                  oathState,
-                                  credentials: credentials,
-                                  credentialData: null,
-                                );
-                              },
-                            ));
                       } else {
                         await showBlurDialog(
                           context: context,

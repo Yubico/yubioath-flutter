@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_provider.dart';
 
 import '../keys.dart' as keys;
 import 'qr_scanner_scan_status.dart';
@@ -79,53 +76,34 @@ class QRScannerUI extends ConsumerWidget {
                     style: const TextStyle(color: Colors.white),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       OutlinedButton(
                           onPressed: () {
-                            Navigator.of(context).pop('');
+                            Navigator.of(context).pop(
+                                AndroidQrScanner.kQrScannerRequestManualEntry);
                           },
                           key: keys.manualEntryButton,
                           child: Text(
                             l10n.s_enter_manually,
                             style: const TextStyle(color: Colors.white),
                           )),
+                      const SizedBox(width: 16),
                       OutlinedButton(
-                          onPressed: () async {
-                            Navigator.of(context).pop('');
-                            final result = await FilePicker.platform.pickFiles(
-                                allowedExtensions: ['png', 'jpg'],
-                                type: FileType.custom,
-                                allowMultiple: false,
-                                lockParentWindow: true,
-                                dialogTitle: 'Select file with QR code');
-                            if (result != null && result.files.isNotEmpty) {
-                              final fileWithCode = result.files.first;
-                              final bytes = fileWithCode.bytes;
-                              if (bytes == null || bytes.isEmpty) {
-                                //err return
-                                return;
-                              }
-                              if (bytes.length > 3 * 1024 * 1024) {
-                                // too big file
-                                return;
-                              }
-                              final scanner = ref.read(qrScannerProvider);
-                              if (scanner != null) {
-                                await scanner.scanQr(base64UrlEncode(bytes));
-                              }
-                            }
+                          onPressed: () {
+                            Navigator.of(context).pop(
+                                AndroidQrScanner.kQrScannerRequestReadFromFile);
                           },
                           key: keys.readFromImage,
                           child: Text(
-                            l10n.s_read_from_image,
+                            l10n.s_read_from_file,
                             style: const TextStyle(color: Colors.white),
-                          )),
+                          ))
                     ],
                   ),
                 ],
               ),
-              const SizedBox(height: 8)
+              const SizedBox(height: 16)
             ],
           ),
         )
