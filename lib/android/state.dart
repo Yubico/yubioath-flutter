@@ -142,12 +142,13 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
     final copyOtp = prefs.getBool(_prefNfcCopyOtp) ?? false;
     final NfcTapAction action;
     if (launchApp && copyOtp) {
-      action = NfcTapAction.both;
+      action = NfcTapAction.launchAndCopy;
     } else if (copyOtp) {
       action = NfcTapAction.copy;
-    } else {
-      // This is the default value if both are false.
+    } else if (launchApp) {
       action = NfcTapAction.launch;
+    } else {
+      action = NfcTapAction.noAction;
     }
     return NfcTapActionNotifier._(prefs, action);
   }
@@ -155,8 +156,10 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   Future<void> setTapAction(NfcTapAction value) async {
     if (state != value) {
       state = value;
-      await _prefs.setBool(_prefNfcOpenApp, value != NfcTapAction.copy);
-      await _prefs.setBool(_prefNfcCopyOtp, value != NfcTapAction.launch);
+      await _prefs.setBool(_prefNfcOpenApp,
+          value == NfcTapAction.launch || value == NfcTapAction.launchAndCopy);
+      await _prefs.setBool(_prefNfcCopyOtp,
+          value == NfcTapAction.copy || value == NfcTapAction.launchAndCopy);
     }
   }
 }

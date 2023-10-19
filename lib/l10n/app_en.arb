@@ -579,6 +579,7 @@
     "@_android_settings": {},
     "s_nfc_options": "NFC options",
     "l_on_yk_nfc_tap": "On YubiKey NFC tap",
+    "l_do_nothing": "Do nothing",
     "l_launch_ya": "Launch Yubico Authenticator",
     "l_copy_otp_clipboard": "Copy OTP to clipboard",
     "l_launch_and_copy_otp": "Launch app and copy OTP",

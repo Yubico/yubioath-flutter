@@ -66,7 +66,7 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectBothOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.both)));
+    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.launchAndCopy)));
     await pumpAndSettle();
   }
 
