@@ -154,14 +154,15 @@ extension _WidgetTesterHelper on WidgetTester {
   }
 }
 
-Widget androidWidget({
-  required SharedPreferences sharedPrefs,
+Future<Widget> androidWidget({
+  SharedPreferences? sharedPrefs,
   int sdkVersion = 33,
   bool hasNfcSupport = true,
   Widget? child,
-}) =>
+}) async =>
     ProviderScope(overrides: [
-      prefProvider.overrideWithValue(sharedPrefs),
+      prefProvider.overrideWithValue(
+          sharedPrefs ?? await SharedPreferences.getInstance()),
       androidSdkVersionProvider.overrideWithValue(sdkVersion),
       supportedThemesProvider
           .overrideWith((ref) => ref.watch(androidSupportedThemesProvider)),
@@ -179,7 +180,7 @@ void main() {
 
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(sharedPrefs: sharedPrefs));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // launch - preserves original value
     await tester.selectLaunchOption();
@@ -216,7 +217,7 @@ void main() {
 
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(sharedPrefs: sharedPrefs));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // option is disabled for "do nothing"
     await tester.selectDoNothingOption();
@@ -254,7 +255,7 @@ void main() {
     SharedPreferences.setMockInitialValues({prefNfcBypassTouch: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(sharedPrefs: sharedPrefs));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // change to true
     await tester.tapBypassTouch();
@@ -271,7 +272,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-      await tester.pumpWidget(androidWidget(
+      await tester.pumpWidget(await androidWidget(
         sharedPrefs: sharedPrefs,
         // Android 10 (API Level 29)
         sdkVersion: 29,
@@ -287,7 +288,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-      await tester.pumpWidget(androidWidget(
+      await tester.pumpWidget(await androidWidget(
         sharedPrefs: sharedPrefs,
         // Android 9 (API Level 28)
         sdkVersion: 28,
@@ -304,7 +305,7 @@ void main() {
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
       const prefTheme = 'APP_STATE_THEME';
 
-      await tester.pumpWidget(androidWidget(sharedPrefs: sharedPrefs));
+      await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
       await tester.selectSystemTheme();
       expect(sharedPrefs.getString(prefTheme), equals('system'));
@@ -322,7 +323,7 @@ void main() {
     SharedPreferences.setMockInitialValues({prefUsbOpenApp: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(sharedPrefs: sharedPrefs));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // change to true
     await tester.tapOpenAppOnUsb();
@@ -338,7 +339,7 @@ void main() {
     SharedPreferences.setMockInitialValues({prefNfcSilenceSounds: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(sharedPrefs: sharedPrefs));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // change to true
     await tester.tapSilenceNfcSounds();
@@ -353,7 +354,7 @@ void main() {
       (WidgetTester tester) async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
+    await tester.pumpWidget(await androidWidget(
       sharedPrefs: sharedPrefs,
       hasNfcSupport: true,
     ));
@@ -368,7 +369,7 @@ void main() {
       (WidgetTester tester) async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
+    await tester.pumpWidget(await androidWidget(
       sharedPrefs: sharedPrefs,
       hasNfcSupport: false,
     ));
@@ -381,24 +382,14 @@ void main() {
 
   testWidgets('USB options visible on device with NFC support',
       (WidgetTester tester) async {
-    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      hasNfcSupport: true,
-    ));
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: true));
 
     expect(find.byKey(android_keys.usbOpenApp), findsOneWidget);
   });
 
   testWidgets('USB options visible on device without NFC support',
       (WidgetTester tester) async {
-    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      hasNfcSupport: false,
-    ));
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: false));
 
     expect(find.byKey(android_keys.usbOpenApp), findsOneWidget);
   });
