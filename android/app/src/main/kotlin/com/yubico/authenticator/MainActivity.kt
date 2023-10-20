@@ -71,6 +71,7 @@ class MainActivity : FlutterFragmentActivity() {
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
     private val nfcAdapterStateChangeBR = NfcAdapterStateChangedBR()
+    private val activityUtil = ActivityUtil(this)
 
     private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
@@ -86,70 +87,6 @@ class MainActivity : FlutterFragmentActivity() {
         allowScreenshots(false)
 
         yubikit = YubiKitManager(this)
-    }
-
-    /**
-     * Enables or disables .AliasMainActivity component. This activity alias adds intent-filter
-     * for android.hardware.usb.action.USB_DEVICE_ATTACHED. When enabled, the app will be opened
-     * when a compliant USB device (defined in `res/xml/device_filter.xml`) is attached.
-     *
-     * By default the activity alias is disabled through AndroidManifest.xml.
-     *
-     * @param enable if true, alias activity will be enabled
-     */
-    private fun enableActivityAlias(aliasName: String, enabledState: Int) {
-        val componentName = ComponentName(packageName, "com.yubico.authenticator.$aliasName")
-        applicationContext.packageManager.setComponentEnabledSetting(
-            componentName,
-            enabledState,
-            PackageManager.DONT_KILL_APP
-        )
-        logger.trace("Activity alias '$aliasName' is enabled: $enabledState")
-    }
-
-    /**
-     * Sets state of AliasMainActivity to enabled. This will enable USB discovery.
-     */
-    private fun enableAppUsbDiscovery() {
-        enableActivityAlias(
-            "AliasMainActivity",
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-        )
-    }
-
-    /**
-     * Sets state of AliasMainActivity to default. This will deactivate the USB discovery.
-     *
-     * The default for AliasMainActivity is disabled.
-     */
-    private fun disableAppUsbDiscovery() {
-        enableActivityAlias(
-            "AliasMainActivity",
-            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-        )
-    }
-
-    /**
-     * Sets state of AliasNdefActivity to defaut. This will activate NFC intent filters.
-     *
-     * The default for AliasNdefActivity is enabled.
-     */
-    private fun enableAppNfcDiscovery() {
-        enableActivityAlias(
-            "AliasNdefActivity",
-            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-        )
-    }
-
-    /**
-     * Sets state of AliasNdefActivity to disabled. This will deactivate NFC intent filters.
-     */
-    private fun disableAppNfcDiscovery() {
-        // enable NFC discovery based on user preferences
-        enableActivityAlias(
-            "AliasNdefActivity",
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -225,13 +162,13 @@ class MainActivity : FlutterFragmentActivity() {
         stopNfcDiscovery()
 
         if (!appPreferences.openAppOnUsb) {
-            disableAppUsbDiscovery()
+            activityUtil.disableSystemUsbDiscovery()
         }
 
         if (appPreferences.openAppOnNfcTap || appPreferences.copyOtpOnNfcTap) {
-            enableAppNfcDiscovery()
+            activityUtil.enableAppNfcDiscovery()
         } else {
-            disableAppNfcDiscovery()
+            activityUtil.disableAppNfcDiscovery()
         }
 
         super.onPause()
@@ -240,7 +177,7 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onResume() {
         super.onResume()
 
-        enableAppUsbDiscovery()
+        activityUtil.enableSystemUsbDiscovery()
 
         // Handle opening through otpauth:// link
         val intentData = intent.data
