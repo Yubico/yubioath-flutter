@@ -17,13 +17,15 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum NfcTapAction {
+  noAction,
   launch,
   copy,
-  both;
+  launchAndCopy;
 
   String getDescription(AppLocalizations l10n) => switch (this) {
+        NfcTapAction.noAction => l10n.l_do_nothing,
         NfcTapAction.launch => l10n.l_launch_ya,
         NfcTapAction.copy => l10n.l_copy_otp_clipboard,
-        NfcTapAction.both => l10n.l_launch_and_copy_otp
+        NfcTapAction.launchAndCopy => l10n.l_launch_and_copy_otp
       };
 }

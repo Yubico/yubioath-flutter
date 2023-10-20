@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../android/state.dart';
 import '../../android/views/settings_views.dart';
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
@@ -122,12 +123,15 @@ class SettingsPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isAndroid) ...[
+            // add nfc options only on devices with NFC capability
+            if (isAndroid && ref.watch(androidNfcSupportProvider)) ...[
               ListTitle(l10n.s_nfc_options),
               const NfcTapActionView(),
               const NfcKbdLayoutView(),
               const NfcBypassTouchView(),
               const NfcSilenceSoundsView(),
+            ],
+            if (isAndroid) ...[
               ListTitle(l10n.s_usb_options),
               const UsbOpenAppView(),
             ],

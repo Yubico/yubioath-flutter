@@ -71,6 +71,7 @@ class MainActivity : FlutterFragmentActivity() {
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
     private val nfcAdapterStateChangeBR = NfcAdapterStateChangedBR()
+    private val activityUtil = ActivityUtil(this)
 
     private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
@@ -86,27 +87,6 @@ class MainActivity : FlutterFragmentActivity() {
         allowScreenshots(false)
 
         yubikit = YubiKitManager(this)
-    }
-
-    /**
-     * Enables or disables .AliasMainActivity component. This activity alias adds intent-filter
-     * for android.hardware.usb.action.USB_DEVICE_ATTACHED. When enabled, the app will be opened
-     * when a compliant USB device (defined in `res/xml/device_filter.xml`) is attached.
-     *
-     * By default the activity alias is disabled through AndroidManifest.xml.
-     *
-     * @param enable if true, alias activity will be enabled
-     */
-    private fun enableAliasMainActivityComponent(enable: Boolean) {
-        val componentName = ComponentName(packageName, "com.yubico.authenticator.AliasMainActivity")
-        applicationContext.packageManager.setComponentEnabledSetting(
-            componentName,
-            if (enable)
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-            else
-                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
-            PackageManager.DONT_KILL_APP
-        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -180,16 +160,24 @@ class MainActivity : FlutterFragmentActivity() {
 
         stopUsbDiscovery()
         stopNfcDiscovery()
+
         if (!appPreferences.openAppOnUsb) {
-            enableAliasMainActivityComponent(false)
+            activityUtil.disableSystemUsbDiscovery()
         }
+
+        if (appPreferences.openAppOnNfcTap || appPreferences.copyOtpOnNfcTap) {
+            activityUtil.enableAppNfcDiscovery()
+        } else {
+            activityUtil.disableAppNfcDiscovery()
+        }
+
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
 
-        enableAliasMainActivityComponent(true)
+        activityUtil.enableSystemUsbDiscovery()
 
         // Handle opening through otpauth:// link
         val intentData = intent.data
