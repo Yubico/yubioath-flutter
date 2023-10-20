@@ -247,8 +247,10 @@ void _initLogging(List<String> argv) {
   final logFileIndex = argv.indexOf('--log-file');
   File? file;
   if (logFileIndex != -1) {
-    final path = argv[logFileIndex + 1];
-    if (path.isEmpty) {
+    String path;
+    try {
+      path = argv[logFileIndex + 1];
+    } catch (e) {
       throw InitializationException(
           'USAGE: Missing argument for option --log-file');
     }

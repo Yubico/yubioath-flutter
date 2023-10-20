@@ -18,4 +18,9 @@ class InitializationException implements Exception {
   final String message;
 
   InitializationException(this.message);
+
+  @override
+  String toString() {
+    return 'InitializationException[$message]';
+  }
 }
