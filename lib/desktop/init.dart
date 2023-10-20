@@ -28,6 +28,7 @@ import 'package:logging/logging.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/exception/initialization_exception.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
@@ -247,6 +248,10 @@ void _initLogging(List<String> argv) {
   File? file;
   if (logFileIndex != -1) {
     final path = argv[logFileIndex + 1];
+    if (path.isEmpty) {
+      throw InitializationException(
+          'USAGE: Missing argument for option --log-file');
+    }
     file = File(path);
   }
   Logger.root.onRecord.listen((record) {
