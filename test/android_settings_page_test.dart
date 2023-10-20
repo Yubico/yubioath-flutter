@@ -352,12 +352,7 @@ void main() {
 
   testWidgets('NFC options visible on device with NFC support',
       (WidgetTester tester) async {
-    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-
-    await tester.pumpWidget(await androidWidget(
-      sharedPrefs: sharedPrefs,
-      hasNfcSupport: true,
-    ));
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: true));
 
     expect(find.byKey(android_keys.nfcTapSetting), findsOneWidget);
     expect(find.byKey(android_keys.nfcKeyboardLayoutSetting), findsOneWidget);
@@ -367,12 +362,7 @@ void main() {
 
   testWidgets('NFC options hidden on device without NFC support',
       (WidgetTester tester) async {
-    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-
-    await tester.pumpWidget(await androidWidget(
-      sharedPrefs: sharedPrefs,
-      hasNfcSupport: false,
-    ));
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: false));
 
     expect(find.byKey(android_keys.nfcTapSetting), findsNothing);
     expect(find.byKey(android_keys.nfcKeyboardLayoutSetting), findsNothing);
