@@ -28,6 +28,7 @@ import 'package:logging/logging.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yubico_authenticator/exception/initialization_exception.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
@@ -243,7 +244,30 @@ Future<RpcSession> _initHelper(String exe) async {
 }
 
 void _initLogging(List<String> argv) {
+  final logFileIndex = argv.indexOf('--log-file');
+  File? file;
+  if (logFileIndex != -1) {
+    String path;
+    try {
+      path = argv[logFileIndex + 1];
+    } catch (e) {
+      throw InitializationException(
+          'USAGE: Missing argument for option --log-file');
+    }
+    file = File(path);
+  }
   Logger.root.onRecord.listen((record) {
+    if (logFileIndex != -1) {
+      if (file != null) {
+        file.writeAsStringSync(
+            '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+            mode: FileMode.append);
+        if (record.error != null) {
+          file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
+              mode: FileMode.append);
+        }
+      }
+    }
     stderr.writeln(
         '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
