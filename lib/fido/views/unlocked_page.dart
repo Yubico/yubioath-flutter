@@ -25,9 +25,11 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
+import '../features.dart' as features;
 import 'actions.dart';
 import 'credential_dialog.dart';
 import 'delete_credential_dialog.dart';
@@ -45,7 +47,9 @@ class FidoUnlockedPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final hasFeature = ref.watch(featureProvider);
     List<Widget> children = [];
+
     if (state.credMgmt) {
       final data = ref.watch(credentialProvider(node.path)).asData;
       if (data == null) {
@@ -62,15 +66,16 @@ class FidoUnlockedPage extends ConsumerWidget {
                           barrierColor: Colors.transparent,
                           builder: (context) => CredentialDialog(cred),
                         )),
-                DeleteIntent: CallbackAction<DeleteIntent>(
-                  onInvoke: (_) => showBlurDialog(
-                    context: context,
-                    builder: (context) => DeleteCredentialDialog(
-                      node.path,
-                      cred,
+                if (hasFeature(features.credentialsDelete))
+                  DeleteIntent: CallbackAction<DeleteIntent>(
+                    onInvoke: (_) => showBlurDialog(
+                      context: context,
+                      builder: (context) => DeleteCredentialDialog(
+                        node.path,
+                        cred,
+                      ),
                     ),
                   ),
-                ),
               },
               child: _CredentialListItem(cred),
             )));
@@ -95,33 +100,38 @@ class FidoUnlockedPage extends ConsumerWidget {
                           barrierColor: Colors.transparent,
                           builder: (context) => FingerprintDialog(fp),
                         )),
-                EditIntent: CallbackAction<EditIntent>(
-                    onInvoke: (_) => showBlurDialog(
-                          context: context,
-                          builder: (context) => RenameFingerprintDialog(
-                            node.path,
-                            fp,
-                          ),
-                        )),
-                DeleteIntent: CallbackAction<DeleteIntent>(
-                    onInvoke: (_) => showBlurDialog(
-                          context: context,
-                          builder: (context) => DeleteFingerprintDialog(
-                            node.path,
-                            fp,
-                          ),
-                        )),
+                if (hasFeature(features.fingerprintsEdit))
+                  EditIntent: CallbackAction<EditIntent>(
+                      onInvoke: (_) => showBlurDialog(
+                            context: context,
+                            builder: (context) => RenameFingerprintDialog(
+                              node.path,
+                              fp,
+                            ),
+                          )),
+                if (hasFeature(features.fingerprintsDelete))
+                  DeleteIntent: CallbackAction<DeleteIntent>(
+                      onInvoke: (_) => showBlurDialog(
+                            context: context,
+                            builder: (context) => DeleteFingerprintDialog(
+                              node.path,
+                              fp,
+                            ),
+                          )),
               },
               child: _FingerprintListItem(fp),
             )));
       }
     }
 
+    final hasActions = ref.watch(featureProvider)(features.actions);
+
     if (children.isNotEmpty) {
       return AppPage(
         title: Text(l10n.s_webauthn),
-        keyActionsBuilder: (context) =>
-            fidoBuildActions(context, node, state, nFingerprints),
+        keyActionsBuilder: hasActions
+            ? (context) => fidoBuildActions(context, node, state, nFingerprints)
+            : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
@@ -134,8 +144,9 @@ class FidoUnlockedPage extends ConsumerWidget {
         graphic: noFingerprints,
         header: l10n.s_no_fingerprints,
         message: l10n.l_add_one_or_more_fps,
-        keyActionsBuilder: (context) =>
-            fidoBuildActions(context, node, state, 0),
+        keyActionsBuilder: hasActions
+            ? (context) => fidoBuildActions(context, node, state, 0)
+            : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
@@ -145,7 +156,9 @@ class FidoUnlockedPage extends ConsumerWidget {
       graphic: manageAccounts,
       header: l10n.l_no_discoverable_accounts,
       message: l10n.l_register_sk_on_websites,
-      keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),
+      keyActionsBuilder: hasActions
+          ? (context) => fidoBuildActions(context, node, state, 0)
+          : null,
       keyActionsBadge: fidoShowActionsNotifier(state),
     );
   }

@@ -22,8 +22,10 @@ import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../core/state.dart';
 import '../models.dart';
 import '../state.dart';
+import '../features.dart' as features;
 import 'key_actions.dart';
 
 class FidoLockedPage extends ConsumerWidget {
@@ -35,6 +37,9 @@ class FidoLockedPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final hasFeature = ref.watch(featureProvider);
+    final hasActions = hasFeature(features.actions);
+
     if (!state.hasPin) {
       if (state.bioEnroll != null) {
         return MessagePage(
@@ -42,7 +47,7 @@ class FidoLockedPage extends ConsumerWidget {
           graphic: noFingerprints,
           header: l10n.s_no_fingerprints,
           message: l10n.l_set_pin_fingerprints,
-          keyActionsBuilder: _buildActions,
+          keyActionsBuilder: hasActions ? _buildActions : null,
           keyActionsBadge: fidoShowActionsNotifier(state),
         );
       } else {
@@ -53,7 +58,7 @@ class FidoLockedPage extends ConsumerWidget {
               ? l10n.l_no_discoverable_accounts
               : l10n.l_ready_to_use,
           message: l10n.l_optionally_set_a_pin,
-          keyActionsBuilder: _buildActions,
+          keyActionsBuilder: hasActions ? _buildActions : null,
           keyActionsBadge: fidoShowActionsNotifier(state),
         );
       }
@@ -65,7 +70,7 @@ class FidoLockedPage extends ConsumerWidget {
         graphic: manageAccounts,
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
-        keyActionsBuilder: _buildActions,
+        keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
@@ -75,14 +80,14 @@ class FidoLockedPage extends ConsumerWidget {
         title: Text(l10n.s_webauthn),
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
-        keyActionsBuilder: _buildActions,
+        keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
 
     return AppPage(
       title: Text(l10n.s_webauthn),
-      keyActionsBuilder: _buildActions,
+      keyActionsBuilder: hasActions ? _buildActions : null,
       child: Column(
         children: [
           _PinEntryForm(state, node),

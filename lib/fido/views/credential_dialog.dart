@@ -7,6 +7,8 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../core/state.dart';
+import '../features.dart' as features;
 import '../models.dart';
 import 'actions.dart';
 import 'delete_credential_dialog.dart';
@@ -26,29 +28,32 @@ class CredentialDialog extends ConsumerWidget {
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final hasFeature = ref.watch(featureProvider);
+
     return Actions(
       actions: {
-        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          final withContext = ref.read(withContextProvider);
-          final bool? deleted =
-              await ref.read(withContextProvider)((context) async =>
-                  await showBlurDialog(
-                    context: context,
-                    builder: (context) => DeleteCredentialDialog(
-                      node.path,
-                      credential,
-                    ),
-                  ) ??
-                  false);
+        if (hasFeature(features.credentialsDelete))
+          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+            final withContext = ref.read(withContextProvider);
+            final bool? deleted =
+                await ref.read(withContextProvider)((context) async =>
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) => DeleteCredentialDialog(
+                        node.path,
+                        credential,
+                      ),
+                    ) ??
+                    false);
 
-          // Pop the account dialog if deleted
-          if (deleted == true) {
-            await withContext((context) async {
-              Navigator.of(context).pop();
-            });
-          }
-          return deleted;
-        }),
+            // Pop the account dialog if deleted
+            if (deleted == true) {
+              await withContext((context) async {
+                Navigator.of(context).pop();
+              });
+            }
+            return deleted;
+          }),
       },
       child: FocusScope(
         autofocus: true,

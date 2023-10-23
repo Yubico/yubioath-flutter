@@ -25,9 +25,11 @@ import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/models.dart';
+import '../../core/state.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
+import '../features.dart' as features;
 import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';
@@ -75,9 +77,11 @@ Widget registerPivActions(
   required WidgetRef ref,
   required Widget Function(BuildContext context) builder,
   Map<Type, Action<Intent>> actions = const {},
-}) =>
-    Actions(
-      actions: {
+}) {
+  final hasFeature = ref.watch(featureProvider);
+  return Actions(
+    actions: {
+      if (hasFeature(features.slotsGenerate))
         GenerateIntent:
             CallbackAction<GenerateIntent>(onInvoke: (intent) async {
           final withContext = ref.read(withContextProvider);
@@ -129,6 +133,7 @@ Widget registerPivActions(
             return result != null;
           });
         }),
+      if (hasFeature(features.slotsImport))
         ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
           final withContext = ref.read(withContextProvider);
 
@@ -164,6 +169,7 @@ Widget registerPivActions(
               ) ??
               false);
         }),
+      if (hasFeature(features.slotsExport))
         ExportIntent: CallbackAction<ExportIntent>(onInvoke: (intent) async {
           final (_, cert) = await ref
               .read(pivSlotsProvider(devicePath).notifier)
@@ -198,6 +204,7 @@ Widget registerPivActions(
           });
           return true;
         }),
+      if (hasFeature(features.slotsDelete))
         DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
           final withContext = ref.read(withContextProvider);
           if (!await withContext(
@@ -216,15 +223,17 @@ Widget registerPivActions(
               false);
           return deleted;
         }),
-        ...actions,
-      },
-      child: Builder(builder: builder),
-    );
+      ...actions,
+    },
+    child: Builder(builder: builder),
+  );
+}
 
 List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
   return [
     ActionItem(
       key: keys.generateAction,
+      feature: features.slotsGenerate,
       icon: const Icon(Icons.add_outlined),
       actionStyle: ActionStyle.primary,
       title: l10n.s_generate_key,
@@ -233,6 +242,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
     ),
     ActionItem(
       key: keys.importAction,
+      feature: features.slotsImport,
       icon: const Icon(Icons.file_download_outlined),
       title: l10n.l_import_file,
       subtitle: l10n.l_import_desc,
@@ -241,6 +251,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
     if (hasCert) ...[
       ActionItem(
         key: keys.exportAction,
+        feature: features.slotsExport,
         icon: const Icon(Icons.file_upload_outlined),
         title: l10n.l_export_certificate,
         subtitle: l10n.l_export_certificate_desc,
@@ -248,6 +259,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
       ),
       ActionItem(
         key: keys.deleteAction,
+        feature: features.slotsDelete,
         actionStyle: ActionStyle.error,
         icon: const Icon(Icons.delete_outline),
         title: l10n.l_delete_certificate,

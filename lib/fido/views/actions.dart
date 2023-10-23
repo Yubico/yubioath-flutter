@@ -20,11 +20,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../keys.dart' as keys;
+import '../features.dart' as features;
 
 List<ActionItem> buildFingerprintActions(AppLocalizations l10n) {
   return [
     ActionItem(
       key: keys.editFingerintAction,
+      feature: features.fingerprintsEdit,
       icon: const Icon(Icons.edit),
       title: l10n.s_rename_fp,
       subtitle: l10n.l_rename_fp_desc,
@@ -32,6 +34,7 @@ List<ActionItem> buildFingerprintActions(AppLocalizations l10n) {
     ),
     ActionItem(
       key: keys.deleteFingerprintAction,
+      feature: features.fingerprintsDelete,
       actionStyle: ActionStyle.error,
       icon: const Icon(Icons.delete),
       title: l10n.s_delete_fingerprint,
@@ -45,6 +48,7 @@ List<ActionItem> buildCredentialActions(AppLocalizations l10n) {
   return [
     ActionItem(
       key: keys.deleteCredentialAction,
+      feature: features.credentialsDelete,
       actionStyle: ActionStyle.error,
       icon: const Icon(Icons.delete),
       title: l10n.s_delete_passkey,

@@ -15,7 +15,9 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
 
@@ -26,6 +28,7 @@ class ActionListItem extends StatelessWidget {
   final Widget? trailing;
   final void Function(BuildContext context)? onTap;
   final ActionStyle actionStyle;
+  final Feature? feature;
 
   const ActionListItem({
     super.key,
@@ -35,6 +38,7 @@ class ActionListItem extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.actionStyle = ActionStyle.normal,
+    this.feature,
   });
 
   @override
@@ -67,7 +71,7 @@ class ActionListItem extends StatelessWidget {
   }
 }
 
-class ActionListSection extends StatelessWidget {
+class ActionListSection extends ConsumerWidget {
   final String title;
   final List<ActionListItem> children;
 
@@ -82,6 +86,7 @@ class ActionListSection extends StatelessWidget {
         final intent = action.intent;
         return ActionListItem(
           key: action.key,
+          feature: action.feature,
           actionStyle: action.actionStyle ?? ActionStyle.normal,
           icon: action.icon,
           title: action.title,
@@ -96,14 +101,22 @@ class ActionListSection extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        width: 360,
-        child: Column(children: [
-          ListTitle(
-            title,
-            textStyle: Theme.of(context).textTheme.bodyLarge,
-          ),
-          ...children,
-        ]),
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasFeature = ref.watch(featureProvider);
+    final enabledChildren = children
+        .where((item) => item.feature == null || hasFeature(item.feature!));
+    if (enabledChildren.isEmpty) {
+      return const SizedBox();
+    }
+    return SizedBox(
+      width: 360,
+      child: Column(children: [
+        ListTitle(
+          title,
+          textStyle: Theme.of(context).textTheme.bodyLarge,
+        ),
+        ...enabledChildren,
+      ]),
+    );
+  }
 }
