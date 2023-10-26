@@ -182,6 +182,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                       _isObscure = !_isObscure;
                     });
                   },
+                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
               ),
               onChanged: (value) {

@@ -438,6 +438,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 _isObscure = !_isObscure;
                               });
                             },
+                            tooltip: _isObscure
+                                ? l10n.s_show_secret_key
+                                : l10n.s_hide_secret_key,
                           ),
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.key_outlined),
