@@ -26,6 +26,7 @@ import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
 import '../state.dart';
@@ -49,6 +50,7 @@ Widget oathBuildActions(
       children: [
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
+              key: addAccountAction,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first

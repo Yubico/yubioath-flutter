@@ -27,11 +27,11 @@ import 'utils/test_util.dart';
 //   // 1. open PIV view
 //   var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
 //   await tester.tap(pivDrawerButton);
-//   await tester.pump(const Duration(milliseconds: 500));
+//   await tester.longWait();
 //   // 1.3. Reset PIV
-//   // 1. Click Configure JubiKey
+//   // 1. Click Configure YubiKey
 //   await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-//   await tester.pump(const Duration(milliseconds: 500));
+//   await tester.longWait();
 //   // 2. Click Reset PIV
 //   await tester.tap(find.byKey(resetAction).hitTestable());
 //   await tester.pump(const Duration(milliseconds: 2000));
@@ -70,9 +70,9 @@ void main() {
     });
   });
 
-  ///   Distinguished name schema according to RFC 4514
-  ///   https://www.ietf.org/rfc/rfc4514.txt
-  ///      CN      commonName (2.5.4.3)
+  //    Distinguished name schema according to RFC 4514
+  //    https://www.ietf.org/rfc/rfc4514.txt
+  //       CN      commonName (2.5.4.3)
   //       L       localityName (2.5.4.7)
   //       ST      stateOrProvinceName (2.5.4.8)
   //       O       organizationName (2.5.4.10)
@@ -91,30 +91,30 @@ void main() {
       // 1. open PIV view
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
       await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 2. click meatball menu for 9a
       await tester.tap(find.byKey(meatballButton9a).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 3. click generate
       await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 4. enter PIN and click Unlock
       await tester.enterText(
           find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
           find.byKey(subjectField).hitTestable(), 'CN=Generate9a');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 6. Change algorithm: RSA1024
       // 7. Date [unchanged]
       // 8. click save
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 9 Verify Subject, verify Date
 /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {
@@ -133,40 +133,40 @@ void main() {
       // await tester.enterText(
       // find.byKey($$Save as$$).hitTestable(), 'Generate9a');
       // await tester.tap(find.byKey($$Save button$$).hitTestable());
-      // await tester.pump(const Duration(milliseconds: 500));
+      // await tester.longWait();
       // 11. Delete Certificate
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
     });
     appTest('Generate 9c', (WidgetTester tester) async {
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
       await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 2. click meatball menu for 9c
       await tester.tap(find.byKey(meatballButton9c).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 3. click generate
       await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 4. enter PIN and click Unlock
       await tester.enterText(
           find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
           find.byKey(subjectField).hitTestable(), 'CN=Generate9c');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 6. Change algorithm: RSA2048
       // 7. set date
       // 8. click save
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 9 Verify Subject, verify Date
       //      TODO: this seems not to work!
 /*      expect(find.byWidgetPredicate((widget) {
@@ -180,41 +180,41 @@ void main() {
         return false;
       }), findsOneWidget);*/
 
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 10. Delete Certificate
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
     });
     appTest('Generate 9d', (WidgetTester tester) async {
       // 1. open PIV view
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
       await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 2. click meatball menu for 9d
       await tester.tap(find.byKey(meatballButton9d).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 3. click generate
       await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 4. enter PIN and click Unlock
       await tester.enterText(
           find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
           find.byKey(subjectField).hitTestable(), 'CN=Generate9d');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 6. Change algorithm: ECCP256
       // 7. Date [unchanged]
       // 8. click save
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 9 Verify Subject, verify Date
 /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {
@@ -227,47 +227,47 @@ void main() {
         return false;
       }), findsOneWidget);*/
 
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 10. Export Certificate
       // await tester.tap(find.byKey(exportAction).hitTestable());
       // await tester.enterText(
       // find.byKey($$Save as$$).hitTestable(), 'Generate9d');
       // await tester.tap(find.byKey($$Save button$$).hitTestable());
-      // await tester.pump(const Duration(milliseconds: 500));
+      // await tester.longWait();
       // 11. Delete Certificate
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
     });
     appTest('Generate 9e', (WidgetTester tester) async {
       // 1. open PIV view
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
       await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 2. click meatball menu for 9e
       await tester.tap(find.byKey(meatballButton9e).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 3. click generate
       await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 4. enter PIN and click Unlock
       await tester.enterText(
           find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
           find.byKey(subjectField).hitTestable(), 'CN=Generate9e');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 6. Change algorithm: ECCP384
       // 7. Date [unchanged]
       // 8. click save
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 9 Verify Subject, verify Date
 /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {
@@ -280,98 +280,100 @@ void main() {
         return false;
       }), findsOneWidget);*/
 
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 10. Export Certificate
       // await tester.tap(find.byKey(exportAction).hitTestable());
       // await tester.enterText(
       // find.byKey($$Save as$$).hitTestable(), 'Generate9e');
       // await tester.tap(find.byKey($$Save button$$).hitTestable());
-      // await tester.pump(const Duration(milliseconds: 500));
+      // await tester.longWait();
       // 11. Delete Certificate
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
     });
-    appTest('Import outdated Key+Certificate from file',
-        (WidgetTester tester) async {
-      // 1. open PIV view
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
-      // 2. click meatball menu for 9c
-      await tester.tap(find.byKey(meatballButton9c).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 3. click import
-      await tester.tap(find.byKey(importAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 4. pick key: outdated_key.pem and "Choose"
-      // 5. TODO: tap close
-      // 6. Verify slot 9c "Key without certificate loaded"
-      // 7. click meatball menu for 9c
-      await tester.tap(find.byKey(meatballButton9c).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 8. click import
-      await tester.tap(find.byKey(importAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 9. pick key: outdated_cert.pem and "Choose"
-      // 10. Tap "Import" on 'Import File Dialogue'
-      // Verify Certificate
-    });
-    appTest('Import neverexpire Key+Certificate from file',
-        (WidgetTester tester) async {
-      // 1. open PIV view
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
-      // 2. click meatball menu for 9d
-      await tester.tap(find.byKey(meatballButton9d).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 3. click import
-      await tester.tap(find.byKey(importAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 4. pick key: neverexpire_key.pem and "Choose"
-      // 5. TODO: tap close
-      // 6. Verify slot 9c "Key without certificate loaded"
-      // 7. click meatball menu for 9d
-      await tester.tap(find.byKey(meatballButton9d).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 8. click import
-      await tester.tap(find.byKey(importAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
-      // 9. pick key: neverexpire_cert.pem and "Choose"
-      // 10. Tap "Import" on 'Import File Dialogue'
-      // Verify Certificate
-    });
+    // appTest('Import outdated Key+Certificate from file',
+    //     (WidgetTester tester) async {
+    //   /// TODO fileload needs to be handled
+    //   // 1. open PIV view
+    //   var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+    //   await tester.tap(pivDrawerButton);
+    //   await tester.longWait();
+    //   // 2. click meatball menu for 9c
+    //   await tester.tap(find.byKey(meatballButton9c).hitTestable());
+    //   await tester.longWait();
+    //   // 3. click import
+    //   await tester.tap(find.byKey(importAction).hitTestable());
+    //   await tester.longWait();
+    //   // 4. pick key: outdated_key.pem and "Choose"
+    //   // 5. TODO: tap close
+    //   // 6. Verify slot 9c "Key without certificate loaded"
+    //   // 7. click meatball menu for 9c
+    //   await tester.tap(find.byKey(meatballButton9c).hitTestable());
+    //   await tester.longWait();
+    //   // 8. click import
+    //   await tester.tap(find.byKey(importAction).hitTestable());
+    //   await tester.longWait();
+    //   // 9. pick key: outdated_cert.pem and "Choose"
+    //   // 10. Tap "Import" on 'Import File Dialogue'
+    //   // Verify Certificate
+    // });
+    // appTest('Import neverexpire Key+Certificate from file',
+    //     (WidgetTester tester) async {
+    //   /// TODO fileload needs to be handled
+    //   // // 1. open PIV view
+    //   // var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+    //   // await tester.tap(pivDrawerButton);
+    //   // await tester.longWait();
+    //   // // 2. click meatball menu for 9d
+    //   // await tester.tap(find.byKey(meatballButton9d).hitTestable());
+    //   // await tester.longWait();
+    //   // // 3. click import
+    //   // await tester.tap(find.byKey(importAction).hitTestable());
+    //   // await tester.longWait();
+    //   // // 4. pick key: neverexpire_key.pem and "Choose"
+    //   // // 5. TODO: tap close
+    //   // // 6. Verify slot 9c "Key without certificate loaded"
+    //   // // 7. click meatball menu for 9d
+    //   // await tester.tap(find.byKey(meatballButton9d).hitTestable());
+    //   // await tester.longWait();
+    //   // // 8. click import
+    //   // await tester.tap(find.byKey(importAction).hitTestable());
+    //   // await tester.longWait();
+    //   // // 9. pick key: neverexpire_cert.pem and "Choose"
+    //   // // 10. Tap "Import" on 'Import File Dialogue'
+    //   // // Verify Certificate
+    // });
     appTest('Generate a CSR', (WidgetTester tester) async {
       // 1. open PIV view
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
       await tester.tap(pivDrawerButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 2. click meatball menu for 9e
       await tester.tap(find.byKey(meatballButton9e).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 3. click generate
       await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 4. enter PIN and click Unlock
       await tester.enterText(
           find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
           find.byKey(subjectField).hitTestable(), 'CN=Generate9e-CSR');
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 6. Change 'output format': CSR
       //      enum models.dart, generate_key_dialog.dart
       // 7. Choose File Name > Save As > 'File Name generate93-csr'
       //    TODO: where are files saved?
       // 8. click save
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.longWait();
       // 9 Verify 'No certificate loaded'
 /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {

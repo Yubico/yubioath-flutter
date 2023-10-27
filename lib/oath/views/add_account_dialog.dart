@@ -24,6 +24,7 @@ import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
 import '../../app/models.dart';
 import '../../widgets/file_drop_target.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'add_account_page.dart';
@@ -101,6 +102,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                         },
                       ),
                       ActionChip(
+                          key: addAccountManuallyButton,
                           avatar: const Icon(Icons.edit_outlined),
                           label: Text(l10n.s_add_manually),
                           onPressed: () async {

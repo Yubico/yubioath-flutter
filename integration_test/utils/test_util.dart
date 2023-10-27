@@ -28,8 +28,9 @@ import 'android/util.dart' as android_test_util;
 import '../_approved_yubikeys.dart';
 import 'desktop/util.dart' as desktop_test_util;
 
-const shortWaitMs = 500;
+const shortWaitMs = 200;
 const longWaitMs = 500;
+const ultraLongWaitMs = 5000;
 
 /// information about YubiKey as seen by the app
 String? yubiKeyName;
@@ -44,6 +45,10 @@ extension AppWidgetTester on WidgetTester {
 
   Future<void> longWait() async {
     await pump(const Duration(milliseconds: longWaitMs));
+  }
+
+  Future<void> ultraLongWait() async {
+    await pump(const Duration(milliseconds: ultraLongWaitMs));
   }
 
   /// waits up to [timeOutSec] seconds evaluating whether [Finder] f is

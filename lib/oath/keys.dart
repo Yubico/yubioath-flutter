@@ -29,7 +29,9 @@ const setOrManagePasswordAction =
 const addAccountAction = Key('$_keyAction.add_account');
 const migrateAccountAction = Key('$_keyAction.migrate_account');
 const resetAction = Key('$_keyAction.reset');
+const resetButton = Key('$_keyAction.reset_button');
 const customIconsAction = Key('$_keyAction.custom_icons');
+const addAccountManuallyButton = Key('$_keyAction.add_account_manually');
 
 // Credential actions
 const copyAction = Key('$_accountAction.copy');
