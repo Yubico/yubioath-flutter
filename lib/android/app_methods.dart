@@ -34,6 +34,16 @@ Future<bool> isNfcEnabled() async {
   return await appMethodsChannel.invokeMethod('isNfcEnabled');
 }
 
+/// The next onPause/onResume lifecycle event will not stop and start
+/// USB/NFC discovery which will preserve the current YubiKey connection.
+///
+/// This function should be called before showing system dialogs, such as
+/// native file picker or permission request dialogs.
+/// The state automatically resets during onResume call.
+Future<void> preserveConnectedDeviceWhenPaused() async {
+  await appMethodsChannel.invokeMethod('preserveConnectionOnPause');
+}
+
 Future<void> openNfcSettings() async {
   await appMethodsChannel.invokeMethod('openNfcSettings');
 }

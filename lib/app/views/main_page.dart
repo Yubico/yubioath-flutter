@@ -98,11 +98,13 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
-              final scanner = ref.read(qrScannerProvider);
-              if (scanner != null) {
+              final withContext = ref.read(withContextProvider);
+              final qrScanner = ref.read(qrScannerProvider);
+              if (qrScanner != null) {
                 try {
-                  final qrData = await scanner.scanQr();
-                  await AndroidQrScanner.handleScannedData(qrData, ref, l10n);
+                  final qrData = await qrScanner.scanQr();
+                  await AndroidQrScanner.handleScannedData(
+                      qrData, withContext, qrScanner, l10n);
                 } on CancellationException catch (_) {
                   // ignored - user cancelled
                   return;

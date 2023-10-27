@@ -57,13 +57,15 @@ Widget oathBuildActions(
               icon: const Icon(Icons.person_add_alt_1_outlined),
               onTap: used != null && (capacity == null || capacity > used)
                   ? (context) async {
+
                       Navigator.of(context).pop();
                       if (isAndroid) {
+                        final withContext = ref.read(withContextProvider);
                         final qrScanner = ref.read(qrScannerProvider);
                         if (qrScanner != null) {
                           final qrData = await qrScanner.scanQr();
                           await AndroidQrScanner.handleScannedData(
-                              qrData, ref, l10n);
+                              qrData, withContext, qrScanner, l10n);
                         }
                       } else {
                         await showBlurDialog(

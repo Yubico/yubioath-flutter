@@ -19,8 +19,8 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_method_channel.dart';
+import 'package:yubico_authenticator/android/app_methods.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/exception/cancellation_exception.dart';
 import 'package:yubico_authenticator/theme.dart';
@@ -65,8 +65,11 @@ class AndroidQrScanner implements QrScanner {
   }
 
   static Future<void> handleScannedData(
-      String? qrData, WidgetRef ref, AppLocalizations l10n) async {
-    final withContext = ref.read(withContextProvider);
+    String? qrData,
+    WithContext withContext,
+    QrScanner qrScanner,
+    AppLocalizations l10n,
+  ) async {
     switch (qrData) {
       case null:
         break;
@@ -83,6 +86,7 @@ class AndroidQrScanner implements QrScanner {
               },
             ));
       case kQrScannerRequestReadFromFile:
+        await preserveConnectedDeviceWhenPaused();
         final result = await FilePicker.platform.pickFiles(
             allowedExtensions: ['png', 'jpg', 'gif', 'webp'],
             type: FileType.custom,
@@ -97,13 +101,12 @@ class AndroidQrScanner implements QrScanner {
         }
 
         final bytes = result.files.first.bytes;
-        final scanner = ref.read(qrScannerProvider);
-        if (bytes != null && scanner != null) {
+        if (bytes != null) {
           final b64bytes = base64Encode(bytes);
-          final qrData = await scanner.scanQr(b64bytes);
-          if (qrData != null) {
+          final imageQrData = await qrScanner.scanQr(b64bytes);
+          if (imageQrData != null) {
             await withContext((context) =>
-                handleUri(context, null, qrData, null, null, l10n));
+                handleUri(context, null, imageQrData, null, null, l10n));
             return;
           }
         }
