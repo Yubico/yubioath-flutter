@@ -226,36 +226,88 @@ void main() {
       });
     });
     // group('HOTP account tests', () {
-    //   appTest('Create regular HOTP account', (WidgetTester tester) async {});
-    //   appTest(
-    //       'Create issuer-less HOTP account', (WidgetTester tester) async {});
-    //   appTest('Create HOTP account, 6-digits, SHA-1',
-    //       (WidgetTester tester) async {});
-    //   appTest('Create HOTP account, 6-digits, SHA-256',
-    //       (WidgetTester tester) async {});
-    //   appTest('Create HOTP account, 6-digits, SHA-512',
-    //       (WidgetTester tester) async {});
-    //   appTest('Create HOTP account, 8-digits, SHA-1',
-    //       (WidgetTester tester) async {});
-    //   appTest('Create HOTP account, 8-digits, SHA-256',
-    //       (WidgetTester tester) async {});
-    //   appTest('Create HOTP account, 8-digits, SHA-512',
-    //       (WidgetTester tester) async {});
-    // });
+    appTest('HOTP: sha-1', (WidgetTester tester) async {
+      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+      await tester.tap(oathDrawerButton);
+      await tester.longWait();
+      const testAccount = Account(
+          issuer: 'i_hotp_sha1',
+          name: 'n__hotp_sha1',
+          secret: 'abbaabba',
+          touch: false,
+          oathType: OathType.hotp,
+          hashAlgorithm: HashAlgorithm.sha1);
+      await tester.addAccount(testAccount);
+      expect(
+          find.descendant(
+              of: find.byType(AccountList),
+              matching: find.textContaining(testAccount.name)),
+          findsOneWidget);
+
+      await tester.shortWait();
+    });
+    appTest('HOTP: sha-256', (WidgetTester tester) async {
+      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+      await tester.tap(oathDrawerButton);
+      await tester.longWait();
+      const testAccount = Account(
+          issuer: 'i_hotp_sha256',
+          name: 'n__hotp_sha256',
+          secret: 'abbaabba',
+          touch: false,
+          oathType: OathType.hotp,
+          hashAlgorithm: HashAlgorithm.sha256);
+      await tester.addAccount(testAccount);
+      expect(
+          find.descendant(
+              of: find.byType(AccountList),
+              matching: find.textContaining(testAccount.name)),
+          findsOneWidget);
+
+      await tester.shortWait();
+    });
+    appTest('HOTP: sha-512', (WidgetTester tester) async {
+      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+      await tester.tap(oathDrawerButton);
+      await tester.longWait();
+      const testAccount = Account(
+          issuer: 'i_hotp_sha512',
+          name: 'n__hotp_sha512',
+          secret: 'abbaabba',
+          touch: false,
+          oathType: OathType.hotp,
+          hashAlgorithm: HashAlgorithm.sha512);
+      await tester.addAccount(testAccount);
+      expect(
+          find.descendant(
+              of: find.byType(AccountList),
+              matching: find.textContaining(testAccount.name)),
+          findsOneWidget);
+
+      await tester.shortWait();
+    });
+    // appTest('TOTP: digits-8',
+    //     (WidgetTester tester) async {});
+    appTest('HOTP: touch', (WidgetTester tester) async {
+      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+      await tester.tap(oathDrawerButton);
+      await tester.longWait();
+      const testAccount = Account(
+          issuer: 'i_hotp_touch',
+          name: 'n_hotp_touch',
+          secret: 'abbaabba',
+          touch: true,
+          oathType: OathType.hotp,
+          hashAlgorithm: HashAlgorithm.sha1);
+      await tester.addAccount(testAccount);
+      expect(
+          find.descendant(
+              of: find.byType(AccountList),
+              matching: find.textContaining(testAccount.name)),
+          findsOneWidget);
+      await tester.shortWait();
+    });
     // group('QR Code scanning', () {});
-    //
-    // appTest('Delete OATH account', (WidgetTester tester) async {
-    //   /// TODO deleteAccount
-    //   var testAccount =
-    //       const Account(issuer: 'IssuerForTests', name: 'NameForTests');
-    //
-    //   await tester.addAccount(testAccount);
-    //   expect(await tester.findAccount(testAccount), isNull);
-    //
-    //   testAccount = const Account(issuer: null, name: 'NoIssuerName');
-    //   await tester.deleteAccount(testAccount);
-    //   expect(await tester.findAccount(testAccount), isNull);
-    // });
     appTest('Final reset OATH', (WidgetTester tester) async {
       /// reset OATH application
       var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
