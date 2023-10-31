@@ -95,7 +95,7 @@ void main() {
                 matching: find.textContaining(testAccount.name)),
             findsOneWidget);
 
-        await tester.pump(const Duration(milliseconds: 50));
+        await tester.shortWait();
       }
       // TODO: verify one more addAccount() is not possible
       await tester.resetOATH();
@@ -104,63 +104,126 @@ void main() {
     // appTest('Create weird character-accounts and check byte count',
     //     (WidgetTester tester) async {});
     group('TOTP account tests', () {
-      appTest('Create regular TOTP account', (WidgetTester tester) async {
-        // account with issuer field
-        // var issuer = generateRandomIssuer();
-        // var name = generateRandomName();
-        // var secret = 'abcdabcd';
-        var testAccount = const Account(
-          issuer: 'IssuerForTests',
-          name: 'NameForTests',
-          secret: 'abcdabcd',
-        );
-        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-        await tester.tap(oathDrawerButton);
-        await tester.longWait();
-
-        await tester.addAccount(testAccount);
-        await tester.longWait();
-
-        // TODO: Verify account exists
-        // TODO: Change testAccount
-        await tester.deleteAccount(testAccount);
-      });
-
-      appTest('Create issuer-less TOTP account', (WidgetTester tester) async {
-        // account without issuer field
-        var testAccount = const Account(
-          name: 'NoIssuerName',
-          secret: 'bbbbbbbbbbbbbbbb',
-        );
-        await tester.deleteAccount(testAccount);
-
-        /// TODO: change issuer functionality in oath_test_util
-        await tester.addAccount(testAccount);
-      });
-      // appTest('Create TOTP account, 6-digits, SHA-1',
-      //     (WidgetTester tester) async {});
-      // appTest('Create TOTP account, 6-digits, SHA-256',
-      //     (WidgetTester tester) async {});
-      // appTest('Create TOTP account, 6-digits, SHA-512',
-      //     (WidgetTester tester) async {});
-      appTest('Create TOTP account, 8-digits, SHA-1',
-          (WidgetTester tester) async {
+      // appTest('Create regular TOTP account', (WidgetTester tester) async {
+      //   // account with issuer field
+      //   // var issuer = generateRandomIssuer();
+      //   // var name = generateRandomName();
+      //   // var secret = 'abcdabcd';
+      //   var testAccount = const Account(
+      //     issuer: 'IssuerForTests',
+      //     name: 'NameForTests',
+      //     secret: 'abcdabcd',
+      //   );
+      //   var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+      //   await tester.tap(oathDrawerButton);
+      //   await tester.longWait();
+      //
+      //   await tester.addAccount(testAccount);
+      //   await tester.longWait();
+      //
+      //   // TODO: Verify account exists
+      //   // TODO: Change testAccount
+      //   await tester.deleteAccount(testAccount);
+      // });
+      //
+      // appTest('Create issuer-less TOTP account', (WidgetTester tester) async {
+      //   // account without issuer field
+      //   var testAccount = const Account(
+      //     name: 'NoIssuerName',
+      //     secret: 'bbbbbbbbbbbbbbbb',
+      //   );
+      //   await tester.deleteAccount(testAccount);
+      //
+      //   /// TODO: change issuer functionality in oath_test_util
+      //   await tester.addAccount(testAccount);
+      // });
+      appTest('TOTP: sha-1', (WidgetTester tester) async {
         var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
         await tester.tap(oathDrawerButton);
         await tester.longWait();
         const testAccount = Account(
-            issuer: 'TOTP_SHA-1',
-            name: 'TOTP_SHA-1',
+            issuer: 'i_totp_sha1',
+            name: 'n__totp_sha1',
             secret: 'abbaabba',
-            touch: true,
-            oathType: OathType.hotp,
+            touch: false,
+            oathType: OathType.totp,
+            hashAlgorithm: HashAlgorithm.sha1);
+        await tester.addAccount(testAccount);
+        expect(
+            find.descendant(
+                of: find.byType(AccountList),
+                matching: find.textContaining(testAccount.name)),
+            findsOneWidget);
+
+        await tester.shortWait();
+      });
+      appTest('TOTP: sha-256', (WidgetTester tester) async {
+        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+        await tester.tap(oathDrawerButton);
+        await tester.longWait();
+        const testAccount = Account(
+            issuer: 'i_totp_sha256',
+            name: 'n__totp_sha256',
+            secret: 'abbaabba',
+            touch: false,
+            oathType: OathType.totp,
             hashAlgorithm: HashAlgorithm.sha256);
         await tester.addAccount(testAccount);
+        expect(
+            find.descendant(
+                of: find.byType(AccountList),
+                matching: find.textContaining(testAccount.name)),
+            findsOneWidget);
+
+        await tester.shortWait();
       });
-      // appTest('Create TOTP account, 8-digits, SHA-256',
+      appTest('TOTP: sha-512', (WidgetTester tester) async {
+        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+        await tester.tap(oathDrawerButton);
+        await tester.longWait();
+        const testAccount = Account(
+            issuer: 'i_totp_sha512',
+            name: 'n__totp_sha512',
+            secret: 'abbaabba',
+            touch: false,
+            oathType: OathType.totp,
+            hashAlgorithm: HashAlgorithm.sha512);
+        await tester.addAccount(testAccount);
+        expect(
+            find.descendant(
+                of: find.byType(AccountList),
+                matching: find.textContaining(testAccount.name)),
+            findsOneWidget);
+
+        await tester.shortWait();
+      });
+      // appTest('TOTP: period-20',
       //     (WidgetTester tester) async {});
-      // appTest('Create TOTP account, 8-digits, SHA-512',
+      // appTest('TOTP: period-45',
       //     (WidgetTester tester) async {});
+      // appTest('TOTP: period-60',
+      //     (WidgetTester tester) async {});
+      // appTest('TOTP: digits-8',
+      //     (WidgetTester tester) async {});
+      appTest('TOTP: touch', (WidgetTester tester) async {
+        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+        await tester.tap(oathDrawerButton);
+        await tester.longWait();
+        const testAccount = Account(
+            issuer: 'i_totp_touch',
+            name: 'n_totp_touch',
+            secret: 'abbaabba',
+            touch: true,
+            oathType: OathType.totp,
+            hashAlgorithm: HashAlgorithm.sha1);
+        await tester.addAccount(testAccount);
+        expect(
+            find.descendant(
+                of: find.byType(AccountList),
+                matching: find.textContaining(testAccount.name)),
+            findsOneWidget);
+        await tester.shortWait();
+      });
     });
     // group('HOTP account tests', () {
     //   appTest('Create regular HOTP account', (WidgetTester tester) async {});

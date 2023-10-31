@@ -29,6 +29,8 @@ import 'package:yubico_authenticator/oath/views/account_view.dart';
 import 'android/util.dart';
 import '../utils/test_util.dart';
 
+/// THESE SHOULD PROBABLY BE REMOVOVED:
+///
 String randomPadded() {
   return randomNum(999).toString().padLeft(3, '0');
 }
@@ -56,6 +58,9 @@ String staticSecret() {
   return 'abba';
 }
 
+///
+/// THESE SHOULD PROBABLY BE REMOVOVED
+
 class Account {
   final String? issuer;
   final String name;
@@ -63,14 +68,19 @@ class Account {
   final bool? touch;
   final OathType? oathType;
   final HashAlgorithm? hashAlgorithm;
+  // final PeriodValues? periodValues;
+  // final bool? digits;
 
-  const Account(
-      {this.issuer,
-      this.name = '',
-      this.secret = 'abba',
-      this.touch,
-      this.oathType,
-      this.hashAlgorithm});
+  const Account({
+    this.issuer,
+    this.name = '',
+    this.secret = 'abba',
+    this.touch,
+    this.oathType,
+    this.hashAlgorithm,
+    //    this.periodValues,
+    //    this.digits
+  });
 
   @override
   String toString() => '$issuer/$name';

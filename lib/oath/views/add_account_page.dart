@@ -30,10 +30,10 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../exception/apdu_exception.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
+import '../../exception/apdu_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
@@ -56,6 +56,7 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
   final OathState? state;
   final List<OathCredential>? credentials;
   final CredentialData? credentialData;
+
   const OathAddAccountPage(
     this.devicePath,
     this.state, {
@@ -366,8 +367,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '',
+                        // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.business_outlined),
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
@@ -395,8 +396,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.person_outline),
                         labelText: l10n.s_account_name,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '',
+                        // Prevents dialog resizing when disabled
                         errorText: (byteLength(nameText) > nameMaxLength)
                             ? '' // needs empty string to render as error
                             : isUnique
@@ -512,6 +513,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         ),
                         if (_oathType == OathType.totp)
                           ChoiceFilterChip<int>(
+                            key: keys.periodFilterChip,
                             items: _periodValues,
                             value: int.tryParse(_periodController.text) ??
                                 defaultPeriod,
@@ -528,11 +530,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 : null,
                           ),
                         ChoiceFilterChip<int>(
+                          key: keys.digitsFilterChip,
                           items: _digitsValues,
                           value: _digits,
                           selected: _digits != defaultDigits,
                           itemBuilder: (value) =>
                               Text(l10n.s_num_digits(value)),
+                          // TODO: need to figure out how to add values for
+                          //    digits6FilterValue
+                          //    digits8FilterValue
                           onChanged: !_dataLoaded
                               ? (digits) {
                                   setState(() {

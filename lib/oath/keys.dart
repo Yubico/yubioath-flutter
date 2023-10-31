@@ -68,3 +68,11 @@ const hashAlgorithmSha256FilterValue =
     Key('$_prefix.hash_algorithm_sha256_filter_value');
 const hashAlgorithmSha512FilterValue =
     Key('$_prefix.hash_algorithm_sha512_filter_value');
+const digitsFilterChip = Key('$_prefix.digits_filter_chip');
+const digits6FilterValue = Key('$_prefix.digits_6_filter_value');
+const digits8FilterValue = Key('$_prefix.digits_8_filter_value');
+const periodFilterChip = Key('$_prefix.period_filter_chip');
+const period30Value = Key('$_prefix.period_30_filter_value');
+const period20Value = Key('$_prefix.period_20_filter_value');
+const period45Value = Key('$_prefix.period_45_filter_value');
+const period60Value = Key('$_prefix.period_60_filter_value');

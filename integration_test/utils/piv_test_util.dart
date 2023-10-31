@@ -19,6 +19,8 @@ import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
 
+import 'test_util.dart';
+
 class Account {
   final String? issuer;
   final String name;
@@ -40,18 +42,18 @@ extension PIVFunctions on WidgetTester {
     // 1. open PIV view
     var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
     await tap(pivDrawerButton);
-    await pump(const Duration(milliseconds: 500));
-    // 1.3. Reset PIV
-    // 1. Click Configure JubiKey
+    await shortWait();
+// 1.3. Reset PIV
+    // 1. Click Configure YubiKey
     await tap(find.byKey(actionsIconButtonKey).hitTestable());
-    await pump(const Duration(milliseconds: 500));
-    // 2. Click Reset PIV
+    await shortWait();
+// 2. Click Reset PIV
     await tap(find.byKey(resetAction).hitTestable());
-    await pump(const Duration(milliseconds: 500));
-    // 3. Click Reset
+    await shortWait();
+// 3. Click Reset
     await tap(find.byKey(resetButton).hitTestable());
-    await pump(const Duration(milliseconds: 500));
-    // 4. Verify Resetedness
+    await shortWait();
+// 4. Verify Resetedness
     expect(find.byWidgetPredicate((widget) {
       if (widget is AppListItem) {
         final AppListItem textWidget = widget;
