@@ -22,6 +22,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
+import 'package:yubico_authenticator/oath/views/account_list.dart';
 
 import 'utils/oath_test_util.dart';
 import 'utils/test_util.dart';
@@ -72,28 +73,28 @@ void main() {
       await tester.longWait();
     });
     appTest('Create 32 Accounts', (WidgetTester tester) async {
-      // just now merely 32 accounts
-      var testAccount = const Account(
-        issuer: 'IssuerForTests',
-        name: 'NameForTests',
-        secret: 'abcdabcd',
-      );
       var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
       await tester.tap(oathDrawerButton);
       await tester.longWait();
 
       /// TODO change back to 32 after flakiness eval
-      for (var i = 0; i < 10; i += 1) {
+      for (var i = 0; i < 32; i += 1) {
+        // just now merely 32 accounts
+        var testAccount = Account(
+          issuer: 'MaxAccount_issuer_$i',
+          name: 'MaxAccount_name_$i',
+          secret: 'abbaabba',
+        );
         await tester.addAccount(testAccount);
-        await tester.longWait();
+        await tester.shortWait();
 
-        // expect(
-        //     find.descendant(
-        //         of: find.byType(AccountList),
-        //         matching: find.textContaining(issuer)),
-        //     findsOneWidget);
-        //
-        // await tester.pump(const Duration(milliseconds: 50));
+        expect(
+            find.descendant(
+                of: find.byType(AccountList),
+                matching: find.textContaining(testAccount.name)),
+            findsOneWidget);
+
+        await tester.pump(const Duration(milliseconds: 50));
       }
       // TODO: verify one more addAccount() is not possible
       await tester.resetOATH();

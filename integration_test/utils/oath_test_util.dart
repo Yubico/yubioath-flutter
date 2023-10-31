@@ -52,7 +52,7 @@ String generateRandomSecret() {
 }
 
 String staticSecret() {
-  return 'abcdabcd';
+  return 'abba';
 }
 
 class Account {
@@ -63,7 +63,7 @@ class Account {
   const Account({
     this.issuer,
     this.name = '',
-    this.secret = 'abcdabcd',
+    this.secret = 'abba',
   });
 
   @override
@@ -99,22 +99,19 @@ extension OathFunctions on WidgetTester {
     ///
     var issuerText = find.byKey(keys.issuerField).hitTestable();
     await tap(issuerText);
-    await generateRandomIssuer();
-    await enterText(issuerText, generateRandomIssuer());
-    //await enterText(issuerText, a.issuer ?? '');
+    // await enterText(issuerText, generateRandomIssuer());
+    await enterText(issuerText, a.issuer ?? '');
     await shortWait();
     var nameText = find.byKey(keys.nameField).hitTestable();
     await tap(nameText);
-    await generateRandomName();
-    await enterText(issuerText, generateRandomName());
-    //await enterText(nameText, a.name);
+    // await enterText(nameText, generateRandomName());
+    await enterText(nameText, a.name);
     await shortWait();
     var secretText = find.byKey(keys.secretField).hitTestable();
     await tap(secretText);
     // await generateRandomSecret();
     // await enterText(issuerText, generateRandomSecret());
-    await enterText(issuerText, staticSecret());
-    // await enterText(secretText, a.secret);
+    await enterText(secretText, a.secret);
     await shortWait();
 
     await tap(find.byKey(keys.saveButton));
