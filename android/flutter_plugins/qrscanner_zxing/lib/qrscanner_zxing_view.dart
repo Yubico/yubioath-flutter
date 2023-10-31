@@ -24,13 +24,21 @@ import 'package:flutter/services.dart';
 
 class QRScannerZxingView extends StatefulWidget {
   final int marginPct;
+  /// Called when a code has been detected.
   final Function(String rawData) onDetect;
+  /// Called before the system UI with runtime permissions request is
+  /// displayed.
+  final Function()? beforePermissionsRequest;
+  /// Called after the view is completely initialized.
+  ///
+  /// permissionsGranted is true if the user granted camera permissions.
   final Function(bool permissionsGranted) onViewInitialized;
 
   const QRScannerZxingView(
       {Key? key,
       required this.marginPct,
       required this.onDetect,
+      this.beforePermissionsRequest,
       required this.onViewInitialized})
       : super(key: key);
 
@@ -50,6 +58,9 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
             var arguments = jsonDecode(call.arguments);
             var rawValue = arguments["value"];
             widget.onDetect(rawValue);
+            return;
+          case "beforePermissionsRequest":
+            widget.beforePermissionsRequest?.call();
             return;
           case "viewInitialized":
             var arguments = jsonDecode(call.arguments);

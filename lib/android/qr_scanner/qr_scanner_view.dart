@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
+import 'package:yubico_authenticator/android/app_methods.dart';
 
 import '../../oath/models.dart';
 import 'qr_scanner_overlay_view.dart';
@@ -138,17 +139,21 @@ class _QrScannerViewState extends State<QrScannerView> {
               maintainSize: true,
               visible: _permissionsGranted,
               child: QRScannerZxingView(
-                  key: _zxingViewKey,
-                  marginPct: 10,
-                  onDetect: (scannedData) => handleResult(scannedData),
-                  onViewInitialized: (bool permissionsGranted) {
-                    Future.delayed(const Duration(milliseconds: 50), () {
-                      setState(() {
-                        _previewInitialized = true;
-                        _permissionsGranted = permissionsGranted;
-                      });
+                key: _zxingViewKey,
+                marginPct: 10,
+                onDetect: (scannedData) => handleResult(scannedData),
+                onViewInitialized: (bool permissionsGranted) {
+                  Future.delayed(const Duration(milliseconds: 50), () {
+                    setState(() {
+                      _previewInitialized = true;
+                      _permissionsGranted = permissionsGranted;
                     });
-                  })),
+                  });
+                },
+                beforePermissionsRequest: () async {
+                  await preserveConnectedDeviceWhenPaused();
+                },
+              )),
           Visibility(
               visible: _permissionsGranted,
               child: QRScannerOverlay(

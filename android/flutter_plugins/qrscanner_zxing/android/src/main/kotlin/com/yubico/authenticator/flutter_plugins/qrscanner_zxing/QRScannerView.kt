@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
@@ -36,7 +34,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.google.zxing.*
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.NotFoundException
+import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -44,6 +44,9 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
@@ -80,7 +83,7 @@ internal class QRScannerView(
 ) : PlatformView {
 
     private val stateChangeObserver = StateChangeObserver(context)
-    private val uiThreadHandler = Handler(Looper.getMainLooper())
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     companion object {
         const val TAG = "QRScannerView"
@@ -104,11 +107,17 @@ internal class QRScannerView(
     }
 
     private fun requestPermissions(activity: Activity) {
-        ActivityCompat.requestPermissions(
-            activity,
-            PERMISSIONS_TO_REQUEST,
-            PERMISSION_REQUEST_CODE
-        )
+        coroutineScope.launch {
+            methodChannel.invokeMethod(
+                "beforePermissionsRequest", null
+            )
+
+            ActivityCompat.requestPermissions(
+                activity,
+                PERMISSIONS_TO_REQUEST,
+                PERMISSION_REQUEST_CODE
+            )
+        }
     }
 
     private val qrScannerView = View.inflate(context, R.layout.qr_scanner_view, null)
@@ -146,7 +155,6 @@ internal class QRScannerView(
         barcodeAnalyzer.analysisPaused = false
         return qrScannerView
     }
-
 
     override fun dispose() {
         cameraProvider?.unbindAll()
@@ -229,7 +237,7 @@ internal class QRScannerView(
     }
 
     private fun reportViewInitialized(permissionsGranted: Boolean) {
-        uiThreadHandler.post {
+        coroutineScope.launch {
             methodChannel.invokeMethod(
                 "viewInitialized",
                 JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
@@ -238,7 +246,7 @@ internal class QRScannerView(
     }
 
     private fun reportCodeFound(code: String) {
-        uiThreadHandler.post {
+        coroutineScope.launch {
             methodChannel.invokeMethod(
                 "codeFound", JSONObject(
                     mapOf("value" to code)
@@ -290,11 +298,6 @@ internal class QRScannerView(
     ) : ImageAnalysis.Analyzer {
 
         var analysisPaused = false
-
-        val multiFormatReader = MultiFormatReader().also {
-            it.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
-        }
-
         var analyzedImagesCount = 0
 
         private fun ByteBuffer.toByteArray(lastRowPadding: Int): ByteArray {
@@ -392,14 +395,14 @@ internal class QRScannerView(
                     fullSize
                 }
 
-                val result: com.google.zxing.Result = multiFormatReader.decode(bitmapToProcess)
+                val result = QrCodeScanner.decodeFromBinaryBitmap(bitmapToProcess)
                 if (analysisPaused) {
                     return
                 }
 
                 analysisPaused = true // pause
-                Log.v(TAG, "Analysis result: ${result.text}")
-                listener.invoke(Result.success(result.text))
+                Log.v(TAG, "Analysis result: $result")
+                listener.invoke(Result.success(result))
             } catch (_: NotFoundException) {
                 if (analyzedImagesCount == 0) {
                     Log.v(TAG, "  No QR code found (NotFoundException)")

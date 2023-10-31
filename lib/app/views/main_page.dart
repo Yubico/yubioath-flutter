@@ -15,19 +15,18 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../android/app_methods.dart';
+import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../fido/views/fido_screen.dart';
-import '../../oath/views/add_account_page.dart';
 import '../../oath/views/oath_screen.dart';
-import '../../oath/views/utils.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
@@ -100,32 +99,17 @@ class MainPage extends ConsumerWidget {
             tooltip: l10n.s_add_account,
             onPressed: () async {
               final withContext = ref.read(withContextProvider);
-              final scanner = ref.read(qrScannerProvider);
-              if (scanner != null) {
+              final qrScanner = ref.read(qrScannerProvider);
+              if (qrScanner != null) {
                 try {
-                  final qrData = await scanner.scanQr();
-                  if (qrData != null) {
-                    await withContext((context) =>
-                        handleUri(context, null, qrData, null, null, l10n));
-                    return;
-                  }
+                  final qrData = await qrScanner.scanQr();
+                  await AndroidQrScanner.handleScannedData(
+                      qrData, withContext, qrScanner, l10n);
                 } on CancellationException catch (_) {
                   // ignored - user cancelled
                   return;
                 }
               }
-              await withContext((context) => showBlurDialog(
-                    context: context,
-                    routeSettings:
-                        const RouteSettings(name: 'oath_add_account'),
-                    builder: (context) {
-                      return const OathAddAccountPage(
-                        null,
-                        null,
-                        credentials: null,
-                      );
-                    },
-                  ));
             },
           ),
         );

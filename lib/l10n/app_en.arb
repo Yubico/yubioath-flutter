@@ -509,6 +509,7 @@
     "l_qr_scanned": "Scanned QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
+    "l_qr_select_file": "Select file with QR code",
     "l_qr_not_read": "Failed reading QR code: {message}",
     "@l_qr_not_read" : {
         "placeholders": {
@@ -519,6 +520,7 @@
     "q_want_to_scan": "Would like to scan?",
     "q_no_qr": "No QR code?",
     "s_enter_manually": "Enter manually",
+    "s_read_from_file": "Read from file",
 
     "@_factory_reset": {},
     "s_reset": "Reset",

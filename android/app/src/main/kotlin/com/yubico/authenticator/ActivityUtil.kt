@@ -40,6 +40,7 @@ class ActivityUtil(private val activity: Activity) {
             MAIN_ACTIVITY_ALIAS,
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED
         )
+        logger.debug("Enabled USB discovery by setting state of $MAIN_ACTIVITY_ALIAS to ENABLED")
     }
 
     /**
@@ -55,6 +56,7 @@ class ActivityUtil(private val activity: Activity) {
             MAIN_ACTIVITY_ALIAS,
             PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
         )
+        logger.debug("Disabled USB discovery by setting state of $MAIN_ACTIVITY_ALIAS to DEFAULT")
     }
 
     /**
@@ -73,6 +75,7 @@ class ActivityUtil(private val activity: Activity) {
             NDEF_ACTIVITY_ALIAS,
             PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
         )
+        logger.debug("Enabled NFC discovery by setting state of $NDEF_ACTIVITY_ALIAS to DEFAULT")
     }
 
     /**
@@ -88,6 +91,7 @@ class ActivityUtil(private val activity: Activity) {
             NDEF_ACTIVITY_ALIAS,
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED
         )
+        logger.debug("Disabled NFC discovery by setting state of $NDEF_ACTIVITY_ALIAS to DISABLED")
     }
 
     private fun setState(aliasName: String, enabledState: Int) {

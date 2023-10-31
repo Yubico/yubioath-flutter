@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,5 +30,12 @@ class MethodChannelQRScannerZxing extends QRScannerZxingPlatform {
     final version =
         await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
+  }
+
+  @override
+  Future<String?> scanBitmap(Uint8List bytes) async {
+    final result = await methodChannel
+        .invokeMethod<String>('scanBitmap', {'bytes': bytes});
+    return result;
   }
 }

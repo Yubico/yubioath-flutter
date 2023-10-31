@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import 'dart:typed_data';
+
 import 'qrscanner_zxing_platform_interface.dart';
 
 class QRScannerZxing {
   Future<String?> getPlatformVersion() {
     return QRScannerZxingPlatform.instance.getPlatformVersion();
+  }
+
+  Future<String?> scanBitmap(Uint8List bitmap) {
+    return QRScannerZxingPlatform.instance.scanBitmap(bitmap);
   }
 }
