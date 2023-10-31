@@ -22,6 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
+import 'package:yubico_authenticator/oath/models.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 
@@ -59,12 +60,17 @@ class Account {
   final String? issuer;
   final String name;
   final String secret;
+  final bool? touch;
+  final OathType? oathType;
+  final HashAlgorithm? hashAlgorithm;
 
-  const Account({
-    this.issuer,
-    this.name = '',
-    this.secret = 'abba',
-  });
+  const Account(
+      {this.issuer,
+      this.name = '',
+      this.secret = 'abba',
+      this.touch,
+      this.oathType,
+      this.hashAlgorithm});
 
   @override
   String toString() => '$issuer/$name';
@@ -113,7 +119,45 @@ extension OathFunctions on WidgetTester {
     // await enterText(issuerText, generateRandomSecret());
     await enterText(secretText, a.secret);
     await shortWait();
-
+    if (a.touch != null && a.touch == true) {
+      var requireTouchFilterChip =
+          find.byKey(keys.requireTouchFilterChip).hitTestable();
+      await tap(requireTouchFilterChip);
+    }
+    await shortWait();
+    if (a.oathType != null) {
+      var oathTypeFilterChip =
+          find.byKey(keys.oathTypeFilterChip).hitTestable();
+      await tap(oathTypeFilterChip);
+      await shortWait();
+      if (a.oathType == OathType.hotp) {
+        var hotp = find.byKey(keys.oathTypeHotpFilterValue).hitTestable();
+        await tap(hotp);
+      } else {
+        var totp = find.byKey(keys.oathTypeTotpFilterValue).hitTestable();
+        await tap(totp);
+      }
+    }
+    await shortWait();
+    if (a.hashAlgorithm != null) {
+      var algoTypeFilterChip =
+          find.byKey(keys.hashAlgorithmFilterChip).hitTestable();
+      await tap(algoTypeFilterChip);
+      await shortWait();
+      if (a.hashAlgorithm == HashAlgorithm.sha1) {
+        var sha1 = find.byKey(keys.hashAlgorithmSha1FilterValue).hitTestable();
+        await tap(sha1);
+      } else if (a.hashAlgorithm == HashAlgorithm.sha256) {
+        var sha256 =
+            find.byKey(keys.hashAlgorithmSha256FilterValue).hitTestable();
+        await tap(sha256);
+      } else {
+        var sha512 =
+            find.byKey(keys.hashAlgorithmSha512FilterValue).hitTestable();
+        await tap(sha512);
+      }
+    }
+    await shortWait();
     await tap(find.byKey(keys.saveButton));
 
     /// TODO:

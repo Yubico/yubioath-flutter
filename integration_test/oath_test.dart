@@ -22,6 +22,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
+import 'package:yubico_authenticator/oath/models.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 
 import 'utils/oath_test_util.dart';
@@ -142,8 +143,20 @@ void main() {
       //     (WidgetTester tester) async {});
       // appTest('Create TOTP account, 6-digits, SHA-512',
       //     (WidgetTester tester) async {});
-      // appTest('Create TOTP account, 8-digits, SHA-1',
-      //     (WidgetTester tester) async {});
+      appTest('Create TOTP account, 8-digits, SHA-1',
+          (WidgetTester tester) async {
+        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
+        await tester.tap(oathDrawerButton);
+        await tester.longWait();
+        const testAccount = Account(
+            issuer: 'TOTP_SHA-1',
+            name: 'TOTP_SHA-1',
+            secret: 'abbaabba',
+            touch: true,
+            oathType: OathType.hotp,
+            hashAlgorithm: HashAlgorithm.sha256);
+        await tester.addAccount(testAccount);
+      });
       // appTest('Create TOTP account, 8-digits, SHA-256',
       //     (WidgetTester tester) async {});
       // appTest('Create TOTP account, 8-digits, SHA-512',

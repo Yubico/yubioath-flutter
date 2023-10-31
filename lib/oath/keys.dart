@@ -55,3 +55,16 @@ const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
 const savePasswordButton = Key('$_prefix.save_password');
 const removePasswordButton = Key('$_prefix.remove_password');
+
+// Filter Chips
+const requireTouchFilterChip = Key('$_prefix.require_touch_filter_chip');
+const oathTypeFilterChip = Key('$_prefix.oath_type_filter_chip');
+const oathTypeTotpFilterValue = Key('$_prefix.oath_type_totp_filter_value');
+const oathTypeHotpFilterValue = Key('$_prefix.oath_type_hotp_filter_value');
+const hashAlgorithmFilterChip = Key('$_prefix.hash_algorithm_filter_chip');
+const hashAlgorithmSha1FilterValue =
+    Key('$_prefix.hash_algorithm_sha1_filter_value');
+const hashAlgorithmSha256FilterValue =
+    Key('$_prefix.hash_algorithm_sha256_filter_value');
+const hashAlgorithmSha512FilterValue =
+    Key('$_prefix.hash_algorithm_sha512_filter_value');

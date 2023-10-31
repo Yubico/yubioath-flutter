@@ -464,6 +464,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       children: [
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
+                            key: keys.requireTouchFilterChip,
                             label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {
@@ -473,11 +474,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             },
                           ),
                         ChoiceFilterChip<OathType>(
+                          key: keys.oathTypeFilterChip,
                           items: OathType.values,
                           value: _oathType,
                           selected: _oathType != defaultOathType,
-                          itemBuilder: (value) =>
-                              Text(value.getDisplayName(l10n)),
+                          itemBuilder: (value) => Text(
+                              value.getDisplayName(l10n),
+                              key: value == OathType.totp
+                                  ? keys.oathTypeTotpFilterValue
+                                  : keys.oathTypeHotpFilterValue),
                           onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
@@ -487,10 +492,16 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                               : null,
                         ),
                         ChoiceFilterChip<HashAlgorithm>(
+                          key: keys.hashAlgorithmFilterChip,
                           items: hashAlgorithms,
                           value: _hashAlgorithm,
                           selected: _hashAlgorithm != defaultHashAlgorithm,
-                          itemBuilder: (value) => Text(value.displayName),
+                          itemBuilder: (value) => Text(value.displayName,
+                              key: value == HashAlgorithm.sha1
+                                  ? keys.hashAlgorithmSha1FilterValue
+                                  : value == HashAlgorithm.sha256
+                                      ? keys.hashAlgorithmSha256FilterValue
+                                      : keys.hashAlgorithmSha512FilterValue),
                           onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
