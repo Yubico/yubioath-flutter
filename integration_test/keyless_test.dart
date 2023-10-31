@@ -25,14 +25,14 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Settings', () {
-    appTest('Menu items exist', (WidgetTester tester) async {
+    appTest('Clickety settings', (WidgetTester tester) async {
       var settingDrawerButton = find.byKey(settingDrawerIcon).hitTestable();
       await tester.tap(settingDrawerButton);
       await tester.longWait();
     });
   });
   group('Help and about', () {
-    appTest('Menu items exist', (WidgetTester tester) async {
+    appTest('Clickety help', (WidgetTester tester) async {
       var helpDrawerButton = find.byKey(helpDrawerIcon).hitTestable();
       await tester.tap(helpDrawerButton);
       await tester.longWait();
