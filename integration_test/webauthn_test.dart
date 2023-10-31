@@ -17,7 +17,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/core/state.dart';
-import 'package:yubico_authenticator/oath/keys.dart' as keys;
 
 import 'utils/test_util.dart';
 
