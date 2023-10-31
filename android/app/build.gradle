@@ -53,7 +53,7 @@ android {
     defaultConfig {
         applicationId "com.yubico.yubioath"
         minSdkVersion project.minSdkVersion
-        targetSdkVersion project.targetSdkVersion
+        targetSdk project.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
