@@ -187,6 +187,7 @@ class NavigationContent extends ConsumerWidget {
           // Non-YubiKey pages
           NavigationItem(
             leading: const Icon(Icons.settings_outlined),
+            key: settingDrawerIcon,
             title: l10n.s_settings,
             collapsed: !extended,
             onTap: () {
@@ -198,6 +199,7 @@ class NavigationContent extends ConsumerWidget {
           ),
           NavigationItem(
             leading: const Icon(Icons.help_outline),
+            key: helpDrawerIcon,
             title: l10n.s_help_and_about,
             collapsed: !extended,
             onTap: () {

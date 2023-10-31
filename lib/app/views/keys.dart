@@ -34,6 +34,8 @@ const hsmauthAppDrawer = Key('$_prefix.drawer.hsmauth');
 const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
 
 // settings page
+const settingDrawerIcon = Key('$_prefix.settings_drawer_icon');
+const helpDrawerIcon = Key('$_prefix.setting_drawer_icon');
 const themeModeSetting = Key('$_prefix.settings.theme_mode');
 Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
 
