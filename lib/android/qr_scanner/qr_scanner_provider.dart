@@ -93,7 +93,7 @@ class AndroidQrScanner implements QrScanner {
             allowMultiple: false,
             lockParentWindow: true,
             withData: true,
-            dialogTitle: 'Select file with QR code');
+            dialogTitle: l10n.l_qr_select_file);
 
         if (result == null || !result.isSinglePick) {
           // no result

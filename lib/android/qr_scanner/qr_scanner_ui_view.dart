@@ -16,13 +16,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_provider.dart';
 
 import '../keys.dart' as keys;
 import 'qr_scanner_scan_status.dart';
 
-class QRScannerUI extends ConsumerWidget {
+class QRScannerUI extends StatelessWidget {
   final ScanStatus status;
   final Size screenSize;
   final GlobalKey overlayWidgetKey;
@@ -34,7 +33,7 @@ class QRScannerUI extends ConsumerWidget {
       required this.overlayWidgetKey});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Stack(
@@ -75,32 +74,29 @@ class QRScannerUI extends ConsumerWidget {
                     textScaleFactor: 0.7,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(
-                                AndroidQrScanner.kQrScannerRequestManualEntry);
-                          },
-                          key: keys.manualEntryButton,
-                          child: Text(
-                            l10n.s_enter_manually,
-                            style: const TextStyle(color: Colors.white),
-                          )),
-                      const SizedBox(width: 16),
-                      OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(
-                                AndroidQrScanner.kQrScannerRequestReadFromFile);
-                          },
-                          key: keys.readFromImage,
-                          child: Text(
-                            l10n.s_read_from_file,
-                            style: const TextStyle(color: Colors.white),
-                          ))
-                    ],
-                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    OutlinedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(
+                              AndroidQrScanner.kQrScannerRequestManualEntry);
+                        },
+                        key: keys.manualEntryButton,
+                        child: Text(
+                          l10n.s_enter_manually,
+                          style: const TextStyle(color: Colors.white),
+                        )),
+                    const SizedBox(width: 16),
+                    OutlinedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(
+                              AndroidQrScanner.kQrScannerRequestReadFromFile);
+                        },
+                        key: keys.readFromImage,
+                        child: Text(
+                          l10n.s_read_from_file,
+                          style: const TextStyle(color: Colors.white),
+                        ))
+                  ])
                 ],
               ),
               const SizedBox(height: 16)
