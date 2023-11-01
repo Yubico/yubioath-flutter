@@ -24,6 +24,7 @@ import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../models.dart';
 import '../keys.dart' as keys;
+import '../features.dart' as features;
 import 'manage_key_dialog.dart';
 import 'manage_pin_puk_dialog.dart';
 import 'reset_dialog.dart';
@@ -49,6 +50,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
           children: [
             ActionListItem(
                 key: keys.managePinAction,
+                feature: features.actionsPin,
                 title: l10n.s_pin,
                 subtitle: pinBlocked
                     ? (pukAttempts != 0
@@ -73,6 +75,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                     : null),
             ActionListItem(
                 key: keys.managePukAction,
+                feature: features.actionsPuk,
                 title: l10n.s_puk,
                 subtitle: pukAttempts != null
                     ? (pukAttempts == 0
@@ -93,6 +96,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                     : null),
             ActionListItem(
                 key: keys.manageManagementKeyAction,
+                feature: features.actionsManagementKey,
                 title: l10n.s_management_key,
                 subtitle: usingDefaultMgmtKey
                     ? l10n.l_warning_default_key
@@ -110,6 +114,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                 }),
             ActionListItem(
                 key: keys.resetAction,
+                feature: features.actionsReset,
                 icon: const Icon(Icons.delete_outline),
                 actionStyle: ActionStyle.error,
                 title: l10n.s_reset_piv,

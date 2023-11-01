@@ -25,6 +25,8 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
+import '../../core/state.dart';
+import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -65,10 +67,12 @@ class _LockedView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
       title: Text(AppLocalizations.of(context)!.s_authenticator),
-      keyActionsBuilder: (context) =>
-          oathBuildActions(context, devicePath, oathState, ref),
+      keyActionsBuilder: hasActions
+          ? (context) => oathBuildActions(context, devicePath, oathState, ref)
+          : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: UnlockForm(
@@ -114,15 +118,18 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     // ONLY rebuild if the number of credentials changes.
     final numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
+    final hasActions = ref.watch(featureProvider)(features.actions);
     if (numCreds == 0) {
       return MessagePage(
         title: Text(l10n.s_authenticator),
         key: keys.noAccountsView,
         graphic: noAccounts,
         header: l10n.s_no_accounts,
-        keyActionsBuilder: (context) => oathBuildActions(
-            context, widget.devicePath, widget.oathState, ref,
-            used: 0),
+        keyActionsBuilder: hasActions
+            ? (context) => oathBuildActions(
+                context, widget.devicePath, widget.oathState, ref,
+                used: 0)
+            : null,
       );
     }
     return Actions(
@@ -184,13 +191,15 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             );
           }),
         ),
-        keyActionsBuilder: (context) => oathBuildActions(
-          context,
-          widget.devicePath,
-          widget.oathState,
-          ref,
-          used: numCreds ?? 0,
-        ),
+        keyActionsBuilder: hasActions
+            ? (context) => oathBuildActions(
+                  context,
+                  widget.devicePath,
+                  widget.oathState,
+                  ref,
+                  used: numCreds ?? 0,
+                )
+            : null,
         centered: numCreds == null,
         delayedContent: numCreds == null,
         child: numCreds != null

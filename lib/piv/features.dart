@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import 'dart:typed_data';
+import '../app/features.dart';
 
-import 'qrscanner_zxing_platform_interface.dart';
+final actions = piv.feature('actions');
 
-class QRScannerZxing {
-  Future<String?> getPlatformVersion() {
-    return QRScannerZxingPlatform.instance.getPlatformVersion();
-  }
+final actionsPin = actions.feature('pin');
+final actionsPuk = actions.feature('puk');
+final actionsManagementKey = actions.feature('managementKey');
+final actionsReset = actions.feature('reset');
 
-  Future<String?> scanBitmap(Uint8List bitmap) {
-    return QRScannerZxingPlatform.instance.scanBitmap(bitmap);
-  }
-}
+final slots = piv.feature('slots');
+
+final slotsGenerate = slots.feature('generate');
+final slotsImport = slots.feature('import');
+final slotsExport = slots.feature('export');
+final slotsDelete = slots.feature('delete');

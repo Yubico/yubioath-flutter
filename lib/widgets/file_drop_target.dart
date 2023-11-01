@@ -17,6 +17,8 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
+import '../core/state.dart';
+
 class FileDropTarget extends StatefulWidget {
   final Widget child;
   final Function(List<int> filedata) onFileDropped;
@@ -64,6 +66,7 @@ class _FileDropTargetState extends State<FileDropTarget> {
             widget.onFileDropped(await file.readAsBytes());
           }
         },
+        enable: !isAndroid,
         child: Stack(
           alignment: Alignment.center,
           children: [

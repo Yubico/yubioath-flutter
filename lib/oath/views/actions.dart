@@ -21,8 +21,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../models.dart';
+import '../features.dart' as features;
 import '../state.dart';
 
 class TogglePinIntent extends Intent {
@@ -46,18 +48,20 @@ Widget registerOathActions(
   required WidgetRef ref,
   required Widget Function(BuildContext context) builder,
   Map<Type, Action<Intent>> actions = const {},
-}) =>
-    Actions(
-      actions: {
-        RefreshIntent: CallbackAction<RefreshIntent>(onInvoke: (_) {
-          final code = ref.read(codeProvider(credential));
-          if (!(credential.oathType == OathType.totp &&
-              code != null &&
-              !ref.read(expiredProvider(code.validTo)))) {
-            return _calculateCode(credential, ref);
-          }
-          return code;
-        }),
+}) {
+  final hasFeature = ref.read(featureProvider);
+  return Actions(
+    actions: {
+      RefreshIntent: CallbackAction<RefreshIntent>(onInvoke: (_) {
+        final code = ref.read(codeProvider(credential));
+        if (!(credential.oathType == OathType.totp &&
+            code != null &&
+            !ref.read(expiredProvider(code.validTo)))) {
+          return _calculateCode(credential, ref);
+        }
+        return code;
+      }),
+      if (hasFeature(features.accountsClipboard))
         CopyIntent: CallbackAction<CopyIntent>(onInvoke: (_) async {
           var code = ref.read(codeProvider(credential));
           if (code == null ||
@@ -77,11 +81,13 @@ Widget registerOathActions(
           }
           return code;
         }),
+      if (hasFeature(features.accountsPin))
         TogglePinIntent: CallbackAction<TogglePinIntent>(onInvoke: (_) {
           ref.read(favoritesProvider.notifier).toggleFavorite(credential.id);
           return null;
         }),
-        ...actions,
-      },
-      child: Builder(builder: builder),
-    );
+      ...actions,
+    },
+    child: Builder(builder: builder),
+  );
+}

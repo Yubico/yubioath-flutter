@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_provider.dart';
 
 import 'qr_scanner_scan_status.dart';
 
@@ -47,45 +48,69 @@ class QRScannerPermissionsUI extends StatelessWidget {
               style: const TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
             ),
-            Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
+            Column(
+              children: [
+                Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        l10n.q_have_account_info,
-                        textScaleFactor: 0.7,
-                        style: const TextStyle(color: Colors.white),
-                      ),
+                      Column(
+                        children: [
+                          Text(
+                            l10n.q_want_to_scan,
+                            textScaleFactor: 0.7,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          OutlinedButton(
+                              onPressed: () {
+                                onPermissionRequest();
+                              },
+                              child: Text(
+                                l10n.s_review_permissions,
+                                style: const TextStyle(color: Colors.white),
+                              )),
+                        ],
+                      )
+                    ]),
+                const SizedBox(height: 16),
+                Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(children: [
+                        Text(
+                          l10n.q_have_account_info,
+                          textScaleFactor: 0.7,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ])
+                    ]),
+                Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                       OutlinedButton(
                           onPressed: () {
-                            Navigator.of(context).pop('');
+                            Navigator.of(context).pop(
+                                AndroidQrScanner.kQrScannerRequestManualEntry);
                           },
                           child: Text(
                             l10n.s_enter_manually,
                             style: const TextStyle(color: Colors.white),
                           )),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        l10n.q_want_to_scan,
-                        textScaleFactor: 0.7,
-                        style: const TextStyle(color: Colors.white),
-                      ),
+                      const SizedBox(width: 16),
                       OutlinedButton(
                           onPressed: () {
-                            onPermissionRequest();
+                            Navigator.of(context).pop(
+                                AndroidQrScanner.kQrScannerRequestReadFromFile);
                           },
                           child: Text(
-                            l10n.s_review_permissions,
+                            l10n.s_read_from_file,
                             style: const TextStyle(color: Colors.white),
-                          )),
-                    ],
-                  )
-                ])
+                          ))
+                    ]),
+              ],
+            )
           ],
         ),
       ),

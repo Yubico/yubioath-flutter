@@ -72,6 +72,8 @@
     "s_configure_yk": "Configure YubiKey",
     "s_please_wait": "Please wait\u2026",
     "s_secret_key": "Secret key",
+    "s_show_secret_key": "Show secret key",
+    "s_hide_secret_key": "Hide secret key",
     "s_private_key": "Private key",
     "s_invalid_length": "Invalid length",
     "s_require_touch": "Require touch",
@@ -182,6 +184,8 @@
     "s_set_pin": "Set PIN",
     "s_change_pin": "Change PIN",
     "s_change_puk": "Change PUK",
+    "s_show_pin": "Show PIN",
+    "s_hide_pin": "Hide PIN",
     "s_current_pin": "Current PIN",
     "s_current_puk": "Current PUK",
     "s_new_pin": "New PIN",
@@ -256,6 +260,8 @@
     "s_manage_password": "Manage password",
     "s_set_password": "Set password",
     "s_password_set": "Password set",
+    "s_show_password": "Show password",
+    "s_hide_password": "Hide password",
     "l_optional_password_protection": "Optional password protection",
     "s_new_password": "New password",
     "s_current_password": "Current password",
@@ -509,6 +515,7 @@
     "l_qr_scanned": "Scanned QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
+    "l_qr_select_file": "Select file with QR code",
     "l_qr_not_read": "Failed reading QR code: {message}",
     "@l_qr_not_read" : {
         "placeholders": {
@@ -519,6 +526,7 @@
     "q_want_to_scan": "Would like to scan?",
     "q_no_qr": "No QR code?",
     "s_enter_manually": "Enter manually",
+    "s_read_from_file": "Read from file",
 
     "@_factory_reset": {},
     "s_reset": "Reset",
