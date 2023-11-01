@@ -110,6 +110,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                       _isObscure = !_isObscure;
                     });
                   },
+                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
               ),
               textInputAction: TextInputAction.next,

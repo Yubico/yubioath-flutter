@@ -54,6 +54,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           title: widget.title,
           actions: widget.actions,
           leading: IconButton(
+              tooltip: AppLocalizations.of(context)!.s_close,
               icon: const Icon(Icons.close),
               onPressed: widget.allowCancel
                   ? () {
