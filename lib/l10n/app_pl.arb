@@ -16,7 +16,7 @@
     },
 
     "@_lint_rules": {
-        "s_max_words": 4,
+        "s_max_words": 5,
         "s_max_length": 32
     },
 
@@ -72,6 +72,8 @@
     "s_configure_yk": "Skonfiguruj YubiKey",
     "s_please_wait": "Proszę czekać…",
     "s_secret_key": "Tajny klucz",
+    "s_show_secret_key": "Pokaż tajny klucz",
+    "s_hide_secret_key": "Ukryj tajny klucz",
     "s_private_key": "Klucz prywatny",
     "s_invalid_length": "Nieprawidłowa długość",
     "s_require_touch": "Wymagaj dotknięcia",
@@ -182,6 +184,8 @@
     "s_set_pin": "Ustaw PIN",
     "s_change_pin": "Zmień PIN",
     "s_change_puk": "Zmień PUK",
+    "s_show_pin": "Pokaż PIN",
+    "s_hide_pin": "Ukryj PIN",
     "s_current_pin": "Aktualny PIN",
     "s_current_puk": "Aktualny PUK",
     "s_new_pin": "Nowy PIN",
@@ -231,7 +235,7 @@
     "l_unlock_pin_first": "Najpierw odblokuj kodem PIN",
     "l_pin_soft_locked": "PIN został zablokowany do momentu ponownego podłączenia klucza YubiKey",
     "l_pin_change_required_desc": "Wymagane ustawienie nowego kodu PIN przed użyciem tej funkcji",
-    "p_enter_current_pin_or_reset": "Wprowadź aktualny PIN. Jeśli nie znasz kodu PIN, musisz go odblokować za pomocą PUK lub zresetować klucz YubiKey.",
+    "p_enter_current_pin_or_reset": "Wprowadź aktualny kod PIN. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Wprowadź aktualny PIN. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
     "p_enter_current_puk_or_reset": "Wprowadź aktualny kod PUK. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
     "p_enter_new_fido2_pin": "Wprowadź nowy kod PIN. Musi zawierać co najmniej {length} znaków. Może zawierać litery, cyfry i znaki specjalne.",
@@ -256,6 +260,8 @@
     "s_manage_password": "Zarządzaj hasłem",
     "s_set_password": "Ustaw hasło",
     "s_password_set": "Hasło zostało ustawione",
+    "s_show_password": "Pokaż hasło",
+    "s_hide_password": "Ukryj hasło",
     "l_optional_password_protection": "Opcjonalna ochrona hasłem",
     "s_new_password": "Nowe hasło",
     "s_current_password": "Aktualne hasło",
@@ -509,6 +515,7 @@
     "l_qr_scanned": "Zeskanowany kod QR",
     "l_invalid_qr": "Nieprawidłowy kod QR",
     "l_qr_not_found": "Nie znaleziono kodu QR",
+    "l_qr_select_file": "Wybierz plik z kodem QR",
     "l_qr_not_read": "Odczytanie kodu QR nie powiodło się: {message}",
     "@l_qr_not_read": {
         "placeholders": {
@@ -519,6 +526,7 @@
     "q_want_to_scan": "Czy chcesz zeskanować?",
     "q_no_qr": "Nie masz kodu QR?",
     "s_enter_manually": "Wprowadź ręcznie",
+    "s_read_from_file": "Odczytaj z pliku",
 
     "@_factory_reset": {},
     "s_reset": "Zresetuj",
