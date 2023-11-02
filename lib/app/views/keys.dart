@@ -44,7 +44,8 @@ const licensesButton = Key('$_prefix.licenses_button');
 const feedbackButton = Key('$_prefix.feedback_button');
 const helpButton = Key('$_prefix.help_button');
 const diagnosticsChip = Key('$_prefix.diagnostics_chip');
-const logChip = Key('$_prefix.logChip');
+const logChip = Key('$_prefix.log_chip');
+const screenshotChip = Key('$_prefix.screenshot_chip');
 
 // misc buttons
 const closeButton = Key('$_prefix.close_button');

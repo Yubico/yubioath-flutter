@@ -187,6 +187,7 @@ class AboutPage extends ConsumerWidget {
             if (isAndroid) ...[
               const SizedBox(height: 12.0),
               FilterChip(
+                key: screenshotChip,
                 label: Text(l10n.s_allow_screenshots),
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {

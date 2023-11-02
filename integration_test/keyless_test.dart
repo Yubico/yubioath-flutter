@@ -14,20 +14,37 @@
  * limitations under the License.
  */
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 
 import 'utils/test_util.dart';
 
+/// TODO: These need to be able to run keyless to run in CI.
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Settings', () {
-    appTest('Clickety settings', (WidgetTester tester) async {
+    appTest('Click through all Themes', (WidgetTester tester) async {
       var settingDrawerButton = find.byKey(settingDrawerIcon).hitTestable();
       await tester.tap(settingDrawerButton);
+      await tester.longWait();
+      await tester.tap(find.byKey(themeModeSetting));
+      await tester.longWait();
+      await tester
+          .tap(find.byKey(themeModeOption(ThemeMode.light)).hitTestable());
+      await tester.longWait();
+      await tester.tap(find.byKey(themeModeSetting));
+      await tester.longWait();
+      await tester
+          .tap(find.byKey(themeModeOption(ThemeMode.dark)).hitTestable());
+      await tester.longWait();
+      await tester.tap(find.byKey(themeModeSetting));
+      await tester.longWait();
+      await tester
+          .tap(find.byKey(themeModeOption(ThemeMode.system)).hitTestable());
       await tester.longWait();
     });
   });
@@ -69,15 +86,28 @@ void main() {
         await tester.longWait();
       });
     });
-    group('Desktop logging', () {
+    group('Troubleshooting', () {
       appTest('Diagnostics Button', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
-        await tester.shortWait();
+        await tester.longWait();
+        await tester.tap(find.byKey(diagnosticsChip).hitTestable());
+        await tester.longWait();
       });
       appTest('Log button', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
-        await tester.shortWait();
+        await tester.longWait();
+        await tester.tap(find.byKey(logChip).hitTestable());
+        await tester.longWait();
       });
+      // appTest('Allow screenshots', (WidgetTester tester) async {
+      //   /// Pausing test until we have Android CI.
+      //   await tester.tap(helpDrawerButton);
+      //   await tester.shortWait();
+      //   await tester.tap(find.byKey(screenshotChip).hitTestable());
+      //   await tester.longWait();
+      //   await tester.tap(find.byKey(screenshotChip).hitTestable());
+      //   await tester.shortWait();
+      // });
     });
   });
 }
