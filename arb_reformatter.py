@@ -44,12 +44,6 @@ def equalize_key_order(source, target):
                     target_result[key] = None
         return target_result
 
-    elif isinstance(source, list) and isinstance(target, list):
-        return [
-            equalize_key_order(source_item, target_item)
-            for source_item, target_item in zip(source, target, strict=True)
-        ]
-
     else:
         return target
 
