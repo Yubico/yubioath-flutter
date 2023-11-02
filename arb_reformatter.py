@@ -42,12 +42,6 @@ def equalize_key_order(source, target):
                     target_result[key] = source[key]
                 else:
                     target_result[key] = None
-
-        for key in target.keys():
-            if key not in target_result:
-                print(f"WARNING: Key not present in source; moving to end of file: {key}")
-                target_result[key] = target[key]
-
         return target_result
 
     elif isinstance(source, list) and isinstance(target, list):
