@@ -32,10 +32,52 @@ void main() {
     });
   });
   group('Help and about', () {
-    appTest('Clickety help', (WidgetTester tester) async {
-      var helpDrawerButton = find.byKey(helpDrawerIcon).hitTestable();
+    var helpDrawerButton = find.byKey(helpDrawerIcon).hitTestable();
+
+    appTest('Check Licenses view', (WidgetTester tester) async {
       await tester.tap(helpDrawerButton);
-      await tester.longWait();
+      await tester.shortWait();
+      var licensesButtonText = find.byKey(licensesButton).hitTestable();
+      await tester.tap(licensesButtonText);
+      await tester.shortWait();
+
+      /// TODO: do want to click all licenses and see that they show?
+    });
+    group('Opening of URLs', () {
+      appTest('TOS link', (WidgetTester tester) async {
+        await tester.tap(helpDrawerButton);
+        await tester.longWait();
+        await tester.tap(find.byKey(tosButton).hitTestable());
+        await tester.longWait();
+      });
+      appTest('Privacy link', (WidgetTester tester) async {
+        await tester.tap(helpDrawerButton);
+        await tester.longWait();
+        await tester.tap(find.byKey(privacyButton).hitTestable());
+        await tester.longWait();
+      });
+      appTest('Feedback link', (WidgetTester tester) async {
+        await tester.tap(helpDrawerButton);
+        await tester.longWait();
+        await tester.tap(find.byKey(feedbackButton).hitTestable());
+        await tester.longWait();
+      });
+      appTest('Help link', (WidgetTester tester) async {
+        await tester.tap(helpDrawerButton);
+        await tester.longWait();
+        await tester.tap(find.byKey(helpButton).hitTestable());
+        await tester.longWait();
+      });
+    });
+    group('Desktop logging', () {
+      appTest('Diagnostics Button', (WidgetTester tester) async {
+        await tester.tap(helpDrawerButton);
+        await tester.shortWait();
+      });
+      appTest('Log button', (WidgetTester tester) async {
+        await tester.tap(helpDrawerButton);
+        await tester.shortWait();
+      });
     });
   });
 }

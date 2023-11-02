@@ -27,6 +27,7 @@ import 'app/app_url_launcher.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
 import 'app/state.dart';
+import 'app/views/keys.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
 import 'version.dart';
@@ -63,6 +64,7 @@ class AboutPage extends ConsumerWidget {
               children: [
                 TextButton(
                   child: Text(
+                    key: tosButton,
                     l10n.s_terms_of_use,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
@@ -73,6 +75,7 @@ class AboutPage extends ConsumerWidget {
                 ),
                 TextButton(
                   child: Text(
+                    key: privacyButton,
                     l10n.s_privacy_policy,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
@@ -85,6 +88,7 @@ class AboutPage extends ConsumerWidget {
             ),
             TextButton(
               child: Text(
+                key: licensesButton,
                 l10n.s_open_src_licenses,
                 style: const TextStyle(decoration: TextDecoration.underline),
               ),
@@ -104,6 +108,7 @@ class AboutPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
+                key: helpButton,
                 l10n.s_help_and_feedback,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -113,6 +118,7 @@ class AboutPage extends ConsumerWidget {
               children: [
                 TextButton(
                   child: Text(
+                    key: feedbackButton,
                     l10n.s_send_feedback,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
@@ -150,6 +156,7 @@ class AboutPage extends ConsumerWidget {
             if (isDesktop) ...[
               const SizedBox(height: 12.0),
               ActionChip(
+                key: diagnosticsChip,
                 avatar: const Icon(Icons.bug_report_outlined),
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
@@ -226,6 +233,7 @@ class LoggingPanel extends ConsumerWidget {
           },
         ),
         ActionChip(
+          key: logChip,
           avatar: const Icon(Icons.copy),
           label: Text(l10n.s_copy_log),
           onPressed: () async {
