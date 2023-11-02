@@ -99,7 +99,7 @@ with open(target, encoding='utf-8') as f:
 strings = {k: v for k, v in values.items() if not k.startswith("@")}
 
 print(target, f"- checking {len(strings)} strings")
-lint_strings(strings, strings.get("@_lint_rules", {}))
+lint_strings(strings, values.get("@_lint_rules", {}))
 check_duplicate_values(strings)
 
 if errors:
