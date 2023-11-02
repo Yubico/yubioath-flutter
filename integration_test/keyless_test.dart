@@ -20,6 +20,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 
 import 'utils/test_util.dart';
+import 'utils/keyless_util.dart';
 
 /// TODO: These need to be able to run keyless to run in CI.
 void main() {
@@ -27,7 +28,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Settings', () {
-    appTest('Click through all Themes', (WidgetTester tester) async {
+    appTestKeyless('Click through all Themes', (WidgetTester tester) async {
       var settingDrawerButton = find.byKey(settingDrawerIcon).hitTestable();
       await tester.tap(settingDrawerButton);
       await tester.longWait();
@@ -51,7 +52,7 @@ void main() {
   group('Help and about', () {
     var helpDrawerButton = find.byKey(helpDrawerIcon).hitTestable();
 
-    appTest('Check Licenses view', (WidgetTester tester) async {
+    appTestKeyless('Check Licenses view', (WidgetTester tester) async {
       await tester.tap(helpDrawerButton);
       await tester.shortWait();
       var licensesButtonText = find.byKey(licensesButton).hitTestable();
@@ -61,25 +62,25 @@ void main() {
       /// TODO: do want to click all licenses and see that they show?
     });
     group('Opening of URLs', () {
-      appTest('TOS link', (WidgetTester tester) async {
+      appTestKeyless('TOS link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(tosButton).hitTestable());
         await tester.longWait();
       });
-      appTest('Privacy link', (WidgetTester tester) async {
+      appTestKeyless('Privacy link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(privacyButton).hitTestable());
         await tester.longWait();
       });
-      appTest('Feedback link', (WidgetTester tester) async {
+      appTestKeyless('Feedback link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(feedbackButton).hitTestable());
         await tester.longWait();
       });
-      appTest('Help link', (WidgetTester tester) async {
+      appTestKeyless('Help link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(helpButton).hitTestable());
@@ -87,19 +88,19 @@ void main() {
       });
     });
     group('Troubleshooting', () {
-      appTest('Diagnostics Button', (WidgetTester tester) async {
+      appTestKeyless('Diagnostics Button', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(diagnosticsChip).hitTestable());
         await tester.longWait();
       });
-      appTest('Log button', (WidgetTester tester) async {
+      appTestKeyless('Log button', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(logChip).hitTestable());
         await tester.longWait();
       });
-      // appTest('Allow screenshots', (WidgetTester tester) async {
+      // appTestKeyless('Allow screenshots', (WidgetTester tester) async {
       //   /// Pausing test until we have Android CI.
       //   await tester.tap(helpDrawerButton);
       //   await tester.shortWait();
