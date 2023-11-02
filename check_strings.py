@@ -40,7 +40,7 @@ def check_duplicate_values(strings):
                 seen[v] = k
 
 
-def check_prefixes(k, v, s_max_words, s_max_len):
+def check_prefixes(k, v, s_max_words, s_max_len, p_ending_chars, q_ending_chars):
     errs = []
     if k.startswith("s_"):
         if len(v) > s_max_len:
@@ -53,11 +53,11 @@ def check_prefixes(k, v, s_max_words, s_max_len):
         if ". " in v:
             errs.append("Spans multiple sentences")
     elif k.startswith("p_"):
-        if v[-1] not in ".!":
+        if p_ending_chars and not any(v.endswith(p) for p in p_ending_chars):
             errs.append("Doesn't end in punctuation")
     elif k.startswith("q_"):
-        if not v.endswith("?"):
-            errs.append("Doesn't end in '?'")
+        if q_ending_chars and not any(v.endswith(q) for q in q_ending_chars):
+            errs.append("Doesn't end in question mark.")
     return errs
 
 
@@ -81,6 +81,8 @@ def lint_strings(strings, rules):
                 v,
                 rules.get("s_max_words", 4),
                 rules.get("s_max_len", 32),
+                rules.get("p_ending_chars", ".!"),
+                rules.get("q_ending_chars", "?"),
             )
         )
         errs.extend(check_misc(k, v))
@@ -101,7 +103,7 @@ with open(target, encoding='utf-8') as f:
 strings = {k: v for k, v in values.items() if not k.startswith("@")}
 
 print(target, f"- checking {len(strings)} strings")
-lint_strings(strings, strings.get("@_lint_rules", {}))
+lint_strings(strings, values.get("@_lint_rules", {}))
 check_duplicate_values(strings)
 
 if errors:
