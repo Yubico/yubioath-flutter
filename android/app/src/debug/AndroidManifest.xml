@@ -5,6 +5,10 @@
     -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <!-- support ACTION_RUN for debug builds -->
     <application
         android:icon="@mipmap/ic_launcher"

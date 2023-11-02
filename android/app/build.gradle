@@ -53,7 +53,7 @@ android {
     defaultConfig {
         applicationId "com.yubico.yubioath"
         minSdkVersion project.minSdkVersion
-        targetSdkVersion project.targetSdkVersion
+        targetSdk project.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -109,7 +109,7 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.6.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
 
     implementation 'com.github.tony19:logback-android:3.0.0'
 
