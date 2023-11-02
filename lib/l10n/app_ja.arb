@@ -16,8 +16,8 @@
     },
 
     "@_lint_rules": {
-        "p_endings": ["。", "！"],
-        "q_endings": ["?", "？"],
+        "p_ending_chars": "。！",
+        "q_ending_chars": "?",
         "s_max_words": 4,
         "s_max_length": 32
     },
