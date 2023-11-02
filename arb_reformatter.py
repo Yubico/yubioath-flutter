@@ -53,12 +53,32 @@ def update_arb_file(source_path, target_path, language_code):
         if ':' in line:
             key, value = line.split(':', 1)
             key = key.strip().strip('"')
-            translation_dict[key] = value.strip()
+            value = value.strip().strip(",").strip('"')
+            if not key.startswith("@"):
+                # only add non special keys
+                translation_dict[key] = value
 
     # Update the target file based on the source file
     updated_target_lines = []
 
     for line in source_lines:
+        if line.strip() == '"placeholders": {':
+            in_placeholders = True
+        elif line.strip() == '"@_readme": {':
+            in_readme = True
+        elif line.strip() == '"@_lint_rules": {':
+            in_lint_rules = True
+
+        if in_placeholders:
+            if line.strip() == '},':
+                in_placeholders = False
+        elif in_readme:
+            if line.strip() == '},':
+                in_readme = False
+        elif in_lint_rules:
+            if line.strip() == '},':
+                in_lint_rules = False
+
         if '"@@locale": "en"' in line:
             line = line.replace('"@@locale": "en"', f'"@@locale": "{language_code}"')
 
@@ -66,10 +86,17 @@ def update_arb_file(source_path, target_path, language_code):
             key, value = line.split(':', 1)
             key = key.strip().strip('"')
             if key in translation_dict:
-                updated_line = f'    "{key}": {translation_dict[key]}\n'
+                updated_line = f'    "{key}": "{translation_dict[key]}",\n'
                 updated_target_lines.append(updated_line)
-            else:
+            elif key.startswith("@_eof"):
+                # eof will be the last line, will not have trailing comma
+                updated_target_lines.append(line.strip(","))
+            elif in_readme or in_lint_rules or in_placeholders or key.startswith("@"):
+                # replicate lines from special sections
                 updated_target_lines.append(line)
+            else:
+                # if a key is missing, don't include it at all
+                updated_target_lines.append('\n')
         else:
             updated_target_lines.append(line)
 
