@@ -32,7 +32,13 @@ def equalize_key_order(source, target):
             if key in target and target[key] is not None:
                 source_value = source[key]
                 target_value = target[key]
-                target_result[key] = equalize_key_order(source_value, target_value)
+
+                if key == "placeholders":
+                    # Placeholders might use different variable names than in
+                    # the source file; don't delete them if they do.
+                    target_result[key] = target_value
+                else:
+                    target_result[key] = equalize_key_order(source_value, target_value)
 
             else:
                 if key.startswith("@"):
