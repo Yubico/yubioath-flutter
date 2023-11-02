@@ -65,7 +65,7 @@ def update_arb_file(source_path, target_path, language_code):
         if line.strip() == "":
             target_lines.insert(i, "")
 
-    write_to_file(target_path, "\n".join(target_lines))
+    write_to_file(target_path, "\n".join(target_lines).strip() + "\n")
 
 
 if __name__ == "__main__":
