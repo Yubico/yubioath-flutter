@@ -16,7 +16,7 @@
     },
 
     "@_lint_rules": {
-        "punctuation": ["。", "！"],
+        "p_endings": ["。", "！"],
         "q_endings": ["?", "？"],
         "s_max_words": 4,
         "s_max_length": 32
