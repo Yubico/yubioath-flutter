@@ -72,6 +72,8 @@ def check_misc(k, v):
 
 def lint_strings(strings, rules):
     for k, v in strings.items():
+        if v is None:
+            continue
         errs = []
         errs.extend(
             check_prefixes(
