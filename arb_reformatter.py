@@ -4,19 +4,16 @@ import json
 import os
 
 
-# Function to load the contents of a file into a line list
 def read_file_lines(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.readlines()
 
 
-# Function to load the contents of a file into a line list
 def read_file_json(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
 
-# Function to save a list of lines to a file
 def write_to_file(file_path, text):
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
