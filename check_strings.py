@@ -15,8 +15,9 @@
 #  limitations under the License.
 
 
-import sys
 import json
+import os
+import sys
 
 errors = []
 
@@ -70,6 +71,14 @@ def check_misc(k, v):
     return errs
 
 
+def check_keys_exist_in_reference(reference_strings, checked_strings):
+    errs = []
+    for key in checked_strings.keys():
+        if key not in reference_strings:
+            errs.append(f"Invalid key: {key}")
+    return errs
+
+
 def lint_strings(strings, rules):
     for k, v in strings.items():
         errs = []
@@ -101,6 +110,11 @@ strings = {k: v for k, v in values.items() if not k.startswith("@")}
 print(target, f"- checking {len(strings)} strings")
 lint_strings(strings, strings.get("@_lint_rules", {}))
 check_duplicate_values(strings)
+
+with open(os.path.join(os.path.dirname(target), 'app_en.arb'), encoding='utf-8') as f:
+    reference_values = json.load(f)
+errors.extend(check_keys_exist_in_reference(reference_values, values))
+
 
 if errors:
     print()
