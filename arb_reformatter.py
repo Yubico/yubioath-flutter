@@ -73,7 +73,7 @@ if __name__ == "__main__":
     target_directory = 'lib/l10n'
 
     for file_name in os.listdir(target_directory):
-        if file_name.startswith('app_') and file_name.endswith('.arb') and file_name != os.path.basename(source_file_path):
+        if file_name.startswith('app_') and file_name.endswith('.arb'):
             target_file_path = os.path.join(target_directory, file_name)
             language_code = file_name.split('_')[1].split('.')[0]
             update_arb_file(source_file_path, target_file_path, language_code)
