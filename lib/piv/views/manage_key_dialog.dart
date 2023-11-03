@@ -235,6 +235,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 prefixIcon: const Icon(Icons.key_outlined),
                 enabled: currentLenOk,
                 suffixIcon: IconButton(
+                  key: keys.managementKeyRefresh,
                   icon: const Icon(Icons.refresh),
                   tooltip: l10n.s_generate_random,
                   onPressed: currentLenOk
