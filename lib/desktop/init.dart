@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -110,12 +111,20 @@ class _WindowEventListener extends WindowListener {
 }
 
 Future<Widget> initialize(List<String> argv) async {
-  _initLogging(argv);
+  var parser = ArgParser();
+  parser.addOption('log-file');
+  parser.addOption('log-level');
+  parser.addFlag('hidden');
+  parser.addFlag('shown');
+  var args = parser.parse(argv);
+  _initLogging(args);
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
-  final isHidden = _getIsHidden(argv, prefs);
+  final isHidden = _getIsHidden(args, prefs);
+
+  _log.info('Window hidden on startup: $isHidden');
 
   final bounds = Rect.fromLTWH(
     prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
@@ -266,29 +275,27 @@ Future<RpcSession> _initHelper(String exe) async {
   return rpc;
 }
 
-void _initLogging(List<String> argv) {
-  final logFileIndex = argv.indexOf('--log-file');
+void _initLogging(ArgResults args) {
   File? file;
-  if (logFileIndex != -1) {
-    String path;
+  String path;
+  if (args['log-file'] != null) {
     try {
-      path = argv[logFileIndex + 1];
+      path = args['log-file'];
     } catch (e) {
       throw InitializationException(
           'USAGE: Missing argument for option --log-file');
     }
     file = File(path);
   }
+
   Logger.root.onRecord.listen((record) {
-    if (logFileIndex != -1) {
-      if (file != null) {
-        file.writeAsStringSync(
-            '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+    if (file != null) {
+      file.writeAsStringSync(
+          '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+          mode: FileMode.append);
+      if (record.error != null) {
+        file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
             mode: FileMode.append);
-        if (record.error != null) {
-          file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
-              mode: FileMode.append);
-        }
       }
     }
     stderr.writeln(
@@ -298,10 +305,9 @@ void _initLogging(List<String> argv) {
     }
   });
 
-  final logLevelIndex = argv.indexOf('--log-level');
-  if (logLevelIndex != -1) {
+  if (args['log-level'] != null) {
     try {
-      final levelName = argv[logLevelIndex + 1];
+      final levelName = args['log-level'];
       Level level = Levels.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;
@@ -335,9 +341,9 @@ void _initLicenses() async {
   });
 }
 
-bool _getIsHidden(List<String> argv, SharedPreferences prefs) {
-  if (argv.contains('--hidden') || argv.contains('--shown')) {
-    final isHidden = argv.contains('--hidden') && !argv.contains('--shown');
+bool _getIsHidden(ArgResults args, SharedPreferences prefs) {
+  if (args['hidden'] || args['shown']) {
+    final isHidden = args['hidden'] && !args['shown'];
     prefs.setBool(windowHidden, isHidden);
     return isHidden;
   } else {
