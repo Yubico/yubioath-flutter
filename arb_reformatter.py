@@ -18,7 +18,7 @@ def write_to_file(file_path, text):
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
 
-# Translation table for unicode characters we want to keep readable.
+# Translation table for unicode characters we want to keep in escaped form.
 trans = str.maketrans({
     '\u00a0': r"\u00a0", # No-Break Space (NBSP)
     '\u2026': r"\u2026"  # Horizontal Ellipsis
