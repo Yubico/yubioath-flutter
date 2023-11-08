@@ -16,6 +16,8 @@
     },
 
     "@_lint_rules": {
+        "p_ending_chars": null,
+        "q_ending_chars": null,
         "s_max_words": 5,
         "s_max_length": 32
     },
