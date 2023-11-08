@@ -41,6 +41,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^1.0.2
 
+  args: ^2.4.2
   async: ^2.8.2
   logging: ^1.2.0
   collection: ^1.16.0

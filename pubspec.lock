@@ -26,7 +26,7 @@ packages:
     source: hosted
     version: "3.3.9"
   args:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: args
       sha256: eef6c46b622e0494a36c5a12d10d77fb4e855501a91c1b9ef9339326e58f0596

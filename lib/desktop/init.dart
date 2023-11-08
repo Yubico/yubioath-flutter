@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,6 @@ import 'package:logging/logging.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/exception/initialization_exception.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
@@ -62,6 +62,10 @@ const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
 const String _keyTop = 'DESKTOP_WINDOW_TOP';
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
+const String _logLevel = 'log-level';
+const String _logFile = 'log-file';
+const String _hidden = 'hidden';
+const String _shown = 'shown';
 
 void _saveWindowBounds(WindowManagerHelper helper) async {
   final bounds = await helper.getBounds();
@@ -110,12 +114,20 @@ class _WindowEventListener extends WindowListener {
 }
 
 Future<Widget> initialize(List<String> argv) async {
-  _initLogging(argv);
+  final parser = ArgParser();
+  parser.addOption(_logFile);
+  parser.addOption(_logLevel);
+  parser.addFlag(_hidden);
+  parser.addFlag(_shown);
+  final args = parser.parse(argv);
+  _initLogging(args);
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
-  final isHidden = _getIsHidden(argv, prefs);
+  final isHidden = _getIsHidden(args, prefs);
+
+  _log.info('Window hidden on startup: $isHidden');
 
   final bounds = Rect.fromLTWH(
     prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
@@ -266,29 +278,23 @@ Future<RpcSession> _initHelper(String exe) async {
   return rpc;
 }
 
-void _initLogging(List<String> argv) {
-  final logFileIndex = argv.indexOf('--log-file');
+void _initLogging(ArgResults args) {
+  final path = args[_logFile];
+  final levelName = args[_logLevel];
+
   File? file;
-  if (logFileIndex != -1) {
-    String path;
-    try {
-      path = argv[logFileIndex + 1];
-    } catch (e) {
-      throw InitializationException(
-          'USAGE: Missing argument for option --log-file');
-    }
+  if (path != null) {
     file = File(path);
   }
+
   Logger.root.onRecord.listen((record) {
-    if (logFileIndex != -1) {
-      if (file != null) {
-        file.writeAsStringSync(
-            '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+    if (file != null) {
+      file.writeAsStringSync(
+          '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+          mode: FileMode.append);
+      if (record.error != null) {
+        file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
             mode: FileMode.append);
-        if (record.error != null) {
-          file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
-              mode: FileMode.append);
-        }
       }
     }
     stderr.writeln(
@@ -298,10 +304,8 @@ void _initLogging(List<String> argv) {
     }
   });
 
-  final logLevelIndex = argv.indexOf('--log-level');
-  if (logLevelIndex != -1) {
+  if (levelName != null) {
     try {
-      final levelName = argv[logLevelIndex + 1];
       Level level = Levels.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;
@@ -335,9 +339,9 @@ void _initLicenses() async {
   });
 }
 
-bool _getIsHidden(List<String> argv, SharedPreferences prefs) {
-  if (argv.contains('--hidden') || argv.contains('--shown')) {
-    final isHidden = argv.contains('--hidden') && !argv.contains('--shown');
+bool _getIsHidden(ArgResults args, SharedPreferences prefs) {
+  if (args[_hidden] || args[_shown]) {
+    final isHidden = args[_hidden] && !args[_shown];
     prefs.setBool(windowHidden, isHidden);
     return isHidden;
   } else {
