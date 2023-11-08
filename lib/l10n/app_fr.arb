@@ -72,7 +72,7 @@
     "s_privacy_policy": "Politique de confidentialité",
     "s_open_src_licenses": "Licenses Open source",
     "s_configure_yk": "Configurer la YubiKey",
-    "s_please_wait": "Veuillez patienter…",
+    "s_please_wait": "Veuillez patienter\u2026",
     "s_secret_key": "Clé secrète",
     "s_show_secret_key": null,
     "s_hide_secret_key": null,
@@ -88,7 +88,7 @@
         }
     },
     "s_character_count": "Nombre de caractères",
-    "s_learn_more": "En savoir plus",
+    "s_learn_more": "En savoir\u00a0plus",
 
     "@_language": {},
     "s_language": "Langue",
@@ -132,12 +132,12 @@
     "p_try_reinsert_yk": "Essayez de réinsérer votre YubiKey.",
     "s_touch_required": "Touché requis",
     "l_touch_button_now": "Touchez votre YubiKey maintenant",
-    "l_keep_touching_yk": "Continuez de toucher votre YubiKey…",
+    "l_keep_touching_yk": "Continuez de toucher votre YubiKey\u2026",
 
     "@_app_configuration": {},
     "s_toggle_applications": "Changer les applications",
     "l_min_one_interface": "Au moins une interface doit être activée",
-    "s_reconfiguring_yk": "Reconfiguration de la YubiKey…",
+    "s_reconfiguring_yk": "Reconfiguration de la YubiKey\u2026",
     "s_config_updated": "Configuration mise à jour",
     "l_config_updated_reinsert": "Configuration mise à jour; retirez et réinsérez votre YubiKey",
     "s_app_not_supported": "Application non supportée",
@@ -439,7 +439,7 @@
     "l_certificate_exported": "Certificat exporté",
     "l_import_file": "Importer un fichier",
     "l_import_desc": "Importer une clé et/ou un certificat",
-    "l_importing_file": "Importation d'un fichier…",
+    "l_importing_file": "Importation d'un fichier\u2026",
     "s_file_imported": "Fichier importé",
     "l_delete_certificate": "Supprimer un certificat",
     "l_delete_certificate_desc": "Supprimer un certificat de votre YubiKey",
@@ -458,7 +458,7 @@
             "slot": {}
         }
     },
-    "l_generating_private_key": "Génération d'une clé privée…",
+    "l_generating_private_key": "Génération d'une clé privée\u2026",
     "s_private_key_generated": "Clé privée générée",
     "p_warning_delete_certificate": "Attention! Cette action supprimera le certificat de votre YubiKey.",
     "q_delete_certificate_confirm": "Supprimer le certficat du slot PIV {slot}?",
@@ -506,7 +506,7 @@
     "@_permissions": {},
     "s_enable_nfc": "Activer le NFC",
     "s_permission_denied": "Permission refusée",
-    "l_elevating_permissions": "Élevation des permissions…",
+    "l_elevating_permissions": "Élevation des permissions\u2026",
     "s_review_permissions": "Révision des permissions",
     "p_elevated_permissions_required": "Gérer cet appareil demande des privilèges plus élevés.",
     "p_webauthn_elevated_permissions_required": "La gestion WebAuthn demande des privilèges plus élevés.",
@@ -538,7 +538,7 @@
     "l_oath_application_reset": "L'application OATH à été réinitialisée",
     "s_reset_fido": "Réinitialiser le FIDO",
     "l_fido_app_reset": "L'application FIDO à été réinitialisée",
-    "l_press_reset_to_begin": "Appuyez sur réinitialiser pour commencer…",
+    "l_press_reset_to_begin": "Appuyez sur réinitialiser pour commencer\u2026",
     "l_reset_failed": "Erreur pendant la réinitialisation: {message}",
     "@l_reset_failed": {
         "placeholders": {
@@ -573,7 +573,7 @@
     "l_set_icons_for_accounts": "Sélectionner les icônes pour les comptes",
     "p_custom_icons_description": "Les packs d'icônes peuvent rendre vos comptes plus facilement repérables grâce à des logos et couleurs familières.",
     "s_replace_icon_pack": "Remplacer le pack d'icônes",
-    "l_loading_icon_pack": "Chargement du pack d'icônes…",
+    "l_loading_icon_pack": "Chargement du pack d'icônes\u2026",
     "s_load_icon_pack": "Charger le pack d'icônes",
     "s_remove_icon_pack": "Supprimer le pack d'icônes",
     "l_icon_pack_removed": "Pack d'icônes supprimé",

@@ -72,7 +72,7 @@
     "s_privacy_policy": "Privacy policy",
     "s_open_src_licenses": "Open source licenses",
     "s_configure_yk": "Configure YubiKey",
-    "s_please_wait": "Please wait…",
+    "s_please_wait": "Please wait\u2026",
     "s_secret_key": "Secret key",
     "s_show_secret_key": "Show secret key",
     "s_hide_secret_key": "Hide secret key",
@@ -88,7 +88,7 @@
         }
     },
     "s_character_count": "Character count",
-    "s_learn_more": "Learn more",
+    "s_learn_more": "Learn\u00a0more",
 
     "@_language": {},
     "s_language": "Language",
@@ -132,12 +132,12 @@
     "p_try_reinsert_yk": "Try to remove and reinsert your YubiKey.",
     "s_touch_required": "Touch required",
     "l_touch_button_now": "Touch the button on your YubiKey now",
-    "l_keep_touching_yk": "Keep touching your YubiKey repeatedly…",
+    "l_keep_touching_yk": "Keep touching your YubiKey repeatedly\u2026",
 
     "@_app_configuration": {},
     "s_toggle_applications": "Toggle applications",
     "l_min_one_interface": "At least one interface must be enabled",
-    "s_reconfiguring_yk": "Reconfiguring YubiKey…",
+    "s_reconfiguring_yk": "Reconfiguring YubiKey\u2026",
     "s_config_updated": "Configuration updated",
     "l_config_updated_reinsert": "Configuration updated, remove and reinsert your YubiKey",
     "s_app_not_supported": "Application not supported",
@@ -439,7 +439,7 @@
     "l_certificate_exported": "Certificate exported",
     "l_import_file": "Import file",
     "l_import_desc": "Import a key and/or certificate",
-    "l_importing_file": "Importing file…",
+    "l_importing_file": "Importing file\u2026",
     "s_file_imported": "File imported",
     "l_delete_certificate": "Delete certificate",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
@@ -458,7 +458,7 @@
             "slot": {}
         }
     },
-    "l_generating_private_key": "Generating private key…",
+    "l_generating_private_key": "Generating private key\u2026",
     "s_private_key_generated": "Private key generated",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "q_delete_certificate_confirm": "Delete the certficate in PIV slot {slot}?",
@@ -506,7 +506,7 @@
     "@_permissions": {},
     "s_enable_nfc": "Enable NFC",
     "s_permission_denied": "Permission denied",
-    "l_elevating_permissions": "Elevating permissions…",
+    "l_elevating_permissions": "Elevating permissions\u2026",
     "s_review_permissions": "Review permissions",
     "p_elevated_permissions_required": "Managing this device requires elevated privileges.",
     "p_webauthn_elevated_permissions_required": "WebAuthn management requires elevated privileges.",
@@ -538,7 +538,7 @@
     "l_oath_application_reset": "OATH application reset",
     "s_reset_fido": "Reset FIDO",
     "l_fido_app_reset": "FIDO application reset",
-    "l_press_reset_to_begin": "Press reset to begin…",
+    "l_press_reset_to_begin": "Press reset to begin\u2026",
     "l_reset_failed": "Error performing reset: {message}",
     "@l_reset_failed": {
         "placeholders": {
@@ -573,7 +573,7 @@
     "l_set_icons_for_accounts": "Set icons for accounts",
     "p_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors.",
     "s_replace_icon_pack": "Replace icon pack",
-    "l_loading_icon_pack": "Loading icon pack…",
+    "l_loading_icon_pack": "Loading icon pack\u2026",
     "s_load_icon_pack": "Load icon pack",
     "s_remove_icon_pack": "Remove icon pack",
     "l_icon_pack_removed": "Icon pack removed",
