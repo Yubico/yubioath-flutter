@@ -63,6 +63,10 @@ const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
 const String _keyTop = 'DESKTOP_WINDOW_TOP';
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
+const String _logLevel = 'log-level';
+const String _logFile = 'log-file';
+const String _hidden = 'hidden';
+const String _shown = 'shown';
 
 void _saveWindowBounds(WindowManagerHelper helper) async {
   final bounds = await helper.getBounds();
@@ -111,12 +115,12 @@ class _WindowEventListener extends WindowListener {
 }
 
 Future<Widget> initialize(List<String> argv) async {
-  var parser = ArgParser();
-  parser.addOption('log-file');
-  parser.addOption('log-level');
-  parser.addFlag('hidden');
-  parser.addFlag('shown');
-  var args = parser.parse(argv);
+  final parser = ArgParser();
+  parser.addOption(_logFile);
+  parser.addOption(_logLevel);
+  parser.addFlag(_hidden);
+  parser.addFlag(_shown);
+  final args = parser.parse(argv);
   _initLogging(args);
 
   await windowManager.ensureInitialized();
@@ -276,15 +280,11 @@ Future<RpcSession> _initHelper(String exe) async {
 }
 
 void _initLogging(ArgResults args) {
+  final path = args[_logFile];
+  final levelName = args[_logLevel];
+
   File? file;
-  String path;
-  if (args['log-file'] != null) {
-    try {
-      path = args['log-file'];
-    } catch (e) {
-      throw InitializationException(
-          'USAGE: Missing argument for option --log-file');
-    }
+  if (path != null) {
     file = File(path);
   }
 
@@ -305,9 +305,8 @@ void _initLogging(ArgResults args) {
     }
   });
 
-  if (args['log-level'] != null) {
+  if (levelName != null) {
     try {
-      final levelName = args['log-level'];
       Level level = Levels.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;
@@ -342,8 +341,8 @@ void _initLicenses() async {
 }
 
 bool _getIsHidden(ArgResults args, SharedPreferences prefs) {
-  if (args['hidden'] || args['shown']) {
-    final isHidden = args['hidden'] && !args['shown'];
+  if (args[_hidden] || args[_shown]) {
+    final isHidden = args[_hidden] && !args[_shown];
     prefs.setBool(windowHidden, isHidden);
     return isHidden;
   } else {
