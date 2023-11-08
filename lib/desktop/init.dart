@@ -29,7 +29,6 @@ import 'package:logging/logging.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yubico_authenticator/exception/initialization_exception.dart';
 
 import '../app/app.dart';
 import '../app/logging.dart';
