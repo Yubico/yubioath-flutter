@@ -18,6 +18,11 @@ def write_to_file(file_path, text):
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
 
+# Translation table for unicode characters we want to keep in escaped form.
+trans = str.maketrans({
+    '\u00a0': r"\u00a0", # No-Break Space (NBSP)
+    '\u2026': r"\u2026"  # Horizontal Ellipsis
+})
 
 # Move keys in target into same order as in source.
 # Keys not present in source are removed from target.
@@ -56,6 +61,7 @@ def update_arb_file(source_path, target_path, language_code):
 
     target_reordered = equalize_key_order(source_json, target_json)
     target_text = json.dumps(target_reordered, indent=4, ensure_ascii=False)
+    target_text = target_text.translate(trans)
     target_lines = target_text.splitlines()
 
     for i, line in enumerate(source_lines):
