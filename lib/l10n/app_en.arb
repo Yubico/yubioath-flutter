@@ -63,6 +63,7 @@
     "s_settings": "Settings",
     "s_piv": "PIV",
     "s_webauthn": "WebAuthn",
+    "s_otp": "OTP",
     "s_help_and_about": "Help and about",
     "s_help_and_feedback": "Help and feedback",
     "s_send_feedback": "Send us feedback",
@@ -503,6 +504,69 @@
     "s_slot_9c": "Digital Signature",
     "s_slot_9d": "Key Management",
     "s_slot_9e": "Card Authentication",
+
+    "@_otp_slots": {},
+    "s_otp_slots": "Slots",
+    "s_otp_slot_display_name": "{name} (Slot {id})",
+    "@s_otp_slot_display_name" : {
+        "placeholders": {
+            "name": {},
+            "id": {}
+        }
+    },
+    "s_otp_slot_one": "Short touch",
+    "s_otp_slot_two": "Long touch",
+    "l_otp_slot_not_programmed": "Slot is empty",
+    "l_otp_slot_programmed": "Slot is programmed",
+
+    "@_otp_slot_configurations": {},
+    "s_yubiotp": "Yubico OTP",
+    "l_yubiotp_desc": "YubiCloud verified OTP's",
+    "s_challenge_response": "Challenge-response",
+    "l_challenge_response_desc": "Show me yours and I'll show you mine",
+    "s_static_password": "Static password",
+    "l_static_password_desc": "Use complex passwords with a touch",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "HMAC based OTP's",
+    "s_public_id": "Public ID",
+    "s_private_id": "Private ID",
+    "s_allow_any_character": "Allow any character",
+    "s_use_serial": "Use serial",
+    "s_generate_private_id": "Generate private ID",
+    "s_generate_secret_key": "Generate secret key",
+    "s_generate_passowrd": "Generate password",
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": "Delete slot",
+    "l_delete_slot_desc": "Delete configuration in slot",
+    "p_warning_delete_slot_configuration": "Warning! This action will delete the configuration in OTP slot {slot}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_slot_deleted": "Slot configuration deleted",
+    "s_swap": "Swap",
+    "s_swap_slots": "Swap slots",
+    "l_swap_slots_desc": "Swap short/long touch",
+    "p_swap_slots_desc": "This will swap the configuration of the two slots.",
+    "l_slots_swapped": "Slot configurations swapped",
+    "l_slot_configuration_programmed": "Configured {type} credential",
+    "@l_slot_configuration_programmed": {
+        "placeholders": {
+            "type": {}
+        }
+    },
+    "s_append_enter": "Append enter",
+    "l_append_enter_desc": "Append an Enter keystroke after emitting the OTP",
+
+    "@_otp_errors": {},
+    "p_otp_slot_configuration_error": "Failed to modify {slot}! Make sure the YubiKey does not have restrictive access.",
+    "@p_otp_slot_configuration_error": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
 
     "@_permissions": {},
     "s_enable_nfc": "Enable NFC",

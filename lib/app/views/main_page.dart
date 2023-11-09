@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/otp/views/otp_screen.dart';
 
 import '../../android/app_methods.dart';
 import '../../android/qr_scanner/qr_scanner_provider.dart';
@@ -150,6 +151,7 @@ class MainPage extends ConsumerWidget {
                 Application.oath => OathScreen(data.node.path),
                 Application.fido => FidoScreen(data),
                 Application.piv => PivScreen(data.node.path),
+                Application.otp => OtpScreen(data.node.path),
                 _ => MessagePage(
                     header: l10n.s_app_not_supported,
                     message: l10n.l_app_not_supported_desc,

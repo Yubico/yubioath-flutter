@@ -55,6 +55,7 @@ enum Application {
         Application.oath => l10n.s_authenticator,
         Application.fido => l10n.s_webauthn,
         Application.piv => l10n.s_piv,
+        Application.otp => l10n.s_otp,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
       };
 
