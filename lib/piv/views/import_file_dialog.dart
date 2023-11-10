@@ -24,9 +24,10 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/app_text_field.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'cert_info_view.dart';
 import 'overwrite_confirm_dialog.dart';
 
@@ -122,7 +123,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l10n.p_password_protected_file),
-              TextField(
+              AppTextField(
                 autofocus: true,
                 obscureText: true,
                 autofillHints: const [AutofillHints.password],

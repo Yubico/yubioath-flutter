@@ -21,8 +21,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../state.dart';
+import '../../widgets/app_text_field.dart';
 import '../keys.dart' as keys;
+import '../state.dart';
 
 class PinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -85,7 +86,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.p_pin_required_desc),
-            TextField(
+            AppTextField(
               autofocus: true,
               obscureText: _isObscure,
               maxLength: 8,

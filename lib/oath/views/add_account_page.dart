@@ -30,15 +30,16 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../exception/apdu_exception.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
+import '../../exception/apdu_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -353,7 +354,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
+                    AppTextField(
                       key: keys.issuerField,
                       controller: _issuerController,
                       autofocus: widget.credentialData == null,
@@ -385,7 +386,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (isValid) submit();
                       },
                     ),
-                    TextField(
+                    AppTextField(
                       key: keys.nameField,
                       controller: _accountController,
                       maxLength: nameMaxLength,
@@ -413,7 +414,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (isValid) submit();
                       },
                     ),
-                    TextField(
+                    AppTextField(
                       key: keys.secretField,
                       controller: _secretController,
                       obscureText: _isObscure,

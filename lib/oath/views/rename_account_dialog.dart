@@ -23,14 +23,15 @@ import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../desktop/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/utf8_utils.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'utils.dart';
 
 final _log = Logger('oath.view.rename_account_dialog');
@@ -171,7 +172,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 ? '${widget.issuer} (${widget.name})'
                 : widget.name)),
             Text(l10n.p_rename_will_change_account_displayed),
-            TextFormField(
+            AppTextFormField(
               initialValue: _issuer,
               enabled: issuerRemaining > 0,
               maxLength: issuerRemaining > 0 ? issuerRemaining : null,
@@ -191,7 +192,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 });
               },
             ),
-            TextFormField(
+            AppTextFormField(
               initialValue: _name,
               maxLength: nameRemaining,
               inputFormatters: [limitBytesLength(nameRemaining)],

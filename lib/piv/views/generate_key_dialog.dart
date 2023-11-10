@@ -24,9 +24,10 @@ import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/app_text_field.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'overwrite_confirm_dialog.dart';
 
 class GenerateKeyDialog extends ConsumerStatefulWidget {
@@ -157,7 +158,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
               style: textTheme.bodyLarge,
             ),
             Text(l10n.p_subject_desc),
-            TextField(
+            AppTextField(
               autofocus: true,
               key: keys.subjectField,
               decoration: InputDecoration(
