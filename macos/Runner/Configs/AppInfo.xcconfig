@@ -12,3 +12,6 @@ PRODUCT_BUNDLE_IDENTIFIER = com.yubico.yubioath
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © Yubico. All rights reserved.
+
+// Setup custom signing if available
+#include? "Signing-Generated.xcconfig"

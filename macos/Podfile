@@ -31,6 +31,21 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
+
+  sign_config_path = File.expand_path(File.join('..', 'Runner', 'Configs', 'Signing-Generated.xcconfig'), __FILE__)
+  if ENV['YA_DEV_TEAM']
+    File.open(sign_config_path, 'w+') do |file|
+      file.write("CODE_SIGN_IDENTITY[sdk=macosx*] = Apple Development\n")
+      file.write("DEVELOPMENT_TEAM = #{ENV['YA_DEV_TEAM']}\n")
+    end
+    puts "Generated sign config: #{sign_config_path}"
+  else
+    if File.exist?(sign_config_path)
+      File.delete(sign_config_path)
+      puts "Removed sign config: #{sign_config_path}"
+    end
+  end
+
 end
 
 post_install do |installer|
