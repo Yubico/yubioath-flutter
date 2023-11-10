@@ -76,19 +76,23 @@ class _ModeForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      ...UsbInterface.values.map(
-        (iface) => CheckboxListTile(
-          title: Text(iface.name.toUpperCase()),
-          value: iface.value & interfaces != 0,
-          onChanged: (_) {
-            onChanged(interfaces ^ iface.value);
-          },
-        ),
-      ),
-      Text(interfaces == 0
-          ? AppLocalizations.of(context)!.l_min_one_interface
-          : ''),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Wrap(
+                  spacing: 8,
+                  runSpacing: 16,
+                  children: UsbInterface.values
+                      .map((iface) => FilterChip(
+                            label: Text(iface.name.toUpperCase()),
+                            selected: iface.value & interfaces != 0,
+                            onSelected: (_) {
+                              onChanged(interfaces ^ iface.value);
+                            },
+                          ))
+                      .toList()))),
     ]);
   }
 }
@@ -309,7 +313,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 18.0),
                         child: _buildCapabilitiesForm(context, ref, info),
                       )
-                    : _buildModeForm(context, ref, info),
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: _buildModeForm(context, ref, info),
+                      )
               ],
             );
           },
