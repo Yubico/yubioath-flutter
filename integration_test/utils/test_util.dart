@@ -23,7 +23,6 @@ import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
-import '../_approved_yubikeys.dart';
 import 'desktop/util.dart' as desktop_test_util;
 
 const shortWaitMs = 500;
@@ -115,16 +114,30 @@ extension AppWidgetTester on WidgetTester {
   }
 
   Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
+    // YA_TEST_APPROVED_KEY_SN should contain comma separated list of
+    // YubiKey serial numbers which are approved for tests
+    // To pass the variable to the test use:
+    // flutter --dart-define=YA_TEST_APPROVED_KEY_SN=SN1,SN2,...,SNn test t
+    const envVar = String.fromEnvironment('YA_TEST_APPROVED_KEY_SN');
+    final approvedSerialNumbers = envVar.split(',');
+
     var result = isAndroid == true
         ? await android_test_util.startUp(this, startUpParams)
         : await desktop_test_util.startUp(this, startUpParams);
 
     await collectYubiKeyInformation();
 
-    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
-      testLog(false,
-          'The connected key is refused by the tests: $yubiKeySerialNumber');
-      expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true));
+    if (!approvedSerialNumbers.contains(yubiKeySerialNumber)) {
+      if (yubiKeySerialNumber == null) {
+        expect(
+            approvedSerialNumbers.contains(yubiKeySerialNumber), equals(true),
+            reason: 'No YubiKey connected');
+      } else {
+        expect(
+            approvedSerialNumbers.contains(yubiKeySerialNumber), equals(true),
+            reason:
+                'YubiKey with S/N $yubiKeySerialNumber is not approved for integration tests.');
+      }
     }
 
     return result;
@@ -151,7 +164,7 @@ extension AppWidgetTester on WidgetTester {
           .evaluate()
           .single
           .widget as ListTile;
-      //ListTile lt = deviceInfo.evaluate().single.widget as ListTile;
+
       yubiKeyName = (lt.title as Text).data;
       var subtitle = (lt.subtitle as Text?)?.data;
 
@@ -175,17 +188,6 @@ extension AppWidgetTester on WidgetTester {
 
     testLog(false,
         'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
-
-    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
-      if (yubiKeySerialNumber == null) {
-        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true),
-            reason: 'No YubiKey connected');
-      } else {
-        expect(approvedYubiKeys.contains(yubiKeySerialNumber), equals(true),
-            reason:
-                'YubiKey with S/N $yubiKeySerialNumber is not approved for integration tests.');
-      }
-    }
 
     collectedYubiKeyInformation = true;
   }
