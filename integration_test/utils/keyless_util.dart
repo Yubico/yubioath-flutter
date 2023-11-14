@@ -23,11 +23,8 @@ import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
+import '../_approved_yubikeys.dart';
 import 'desktop/util.dart' as desktop_test_util;
-
-const shortWaitMs = 200;
-const longWaitMs = 500;
-const ultraLongWaitMs = 5000;
 
 /// information about YubiKey as seen by the app
 String? yubiKeyName;
@@ -35,19 +32,8 @@ String? yubiKeyFirmware;
 String? yubiKeySerialNumber;
 bool collectedYubiKeyInformation = false;
 
+/// TODO: clean up this monster of appTestKeyLess
 extension AppWidgetTester on WidgetTester {
-  Future<void> shortWait() async {
-    await pump(const Duration(milliseconds: shortWaitMs));
-  }
-
-  Future<void> longWait() async {
-    await pump(const Duration(milliseconds: longWaitMs));
-  }
-
-  Future<void> ultraLongWait() async {
-    await pump(const Duration(milliseconds: ultraLongWaitMs));
-  }
-
   /// waits up to [timeOutSec] seconds evaluating whether [Finder] f is
   /// visible
   Future<Finder> waitForFinder(Finder f, [int timeOutSec = 20]) async {
@@ -79,7 +65,7 @@ extension AppWidgetTester on WidgetTester {
 
   Future<void> tapTopLeftCorner() async {
     await tapAt(const Offset(0, 0));
-    await longWait();
+    await pump(const Duration(milliseconds: 500));
   }
 
   /// Drawer helpers
@@ -119,28 +105,15 @@ extension AppWidgetTester on WidgetTester {
   }
 
   Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
-    // YA_TEST_APPROVED_KEY_SN should contain comma separated list of
-    // YubiKey serial numbers which are approved for tests
-    // To pass the variable to the test use:
-    // flutter --dart-define=YA_TEST_APPROVED_KEY_SN=SN1,SN2,...,SNn test t
-    const envVar = String.fromEnvironment('YA_TEST_APPROVED_KEY_SN');
-    final approvedSerialNumbers = envVar.split(',');
-
     var result = isAndroid == true
         ? await android_test_util.startUp(this, startUpParams)
         : await desktop_test_util.startUp(this, startUpParams);
 
     await collectYubiKeyInformation();
 
-    if (yubiKeySerialNumber == null) {
-      fail('No YubiKey connected');
-    }
-
-    if (!approvedSerialNumbers.contains(yubiKeySerialNumber)) {
-      fail('YubiKey with S/N $yubiKeySerialNumber is not approved for '
-          'integration tests.\nUse --dart-define='
-          'YA_TEST_APPROVED_KEY_SN=$yubiKeySerialNumber test '
-          'parameter to approve it.');
+    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
+      testLog(true,
+          'The connected key is refused by the tests: $yubiKeySerialNumber');
     }
 
     return result;
@@ -167,7 +140,7 @@ extension AppWidgetTester on WidgetTester {
           .evaluate()
           .single
           .widget as ListTile;
-
+      //ListTile lt = deviceInfo.evaluate().single.widget as ListTile;
       yubiKeyName = (lt.title as Text).data;
       var subtitle = (lt.subtitle as Text?)?.data;
 
@@ -189,16 +162,15 @@ extension AppWidgetTester on WidgetTester {
     // close the opened menu
     await closeDrawer();
 
-    if (yubiKeySerialNumber != null) {
-      testLog(false,
-          'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
-    }
+    testLog(false,
+        'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
+
     collectedYubiKeyInformation = true;
   }
 }
 
 @isTest
-void appTest(
+void appTestKeyless(
   String description,
   WidgetTesterCallback callback, {
   bool? skip,

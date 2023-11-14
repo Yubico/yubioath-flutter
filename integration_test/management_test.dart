@@ -82,6 +82,7 @@ void main() {
         expect(find.byKey(management_keys.screenKey), findsNothing);
         await tester.longWait();
       }
+      await tester.ultraLongWait();
     });
   });
 }

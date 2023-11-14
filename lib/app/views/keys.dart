@@ -26,10 +26,26 @@ const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
 
 // drawer items
 const managementAppDrawer = Key('$_prefix.drawer.management');
+const oathAppDrawer = Key('$_prefix.drawer.oath');
+const fidoAppDrawer = Key('$_prefix.drawer.fido');
+const otpAppDrawer = Key('$_prefix.drawer.otp');
+const pivAppDrawer = Key('$_prefix.drawer.piv');
+const hsmauthAppDrawer = Key('$_prefix.drawer.hsmauth');
+const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
 
 // settings page
+const settingDrawerIcon = Key('$_prefix.settings_drawer_icon');
+const helpDrawerIcon = Key('$_prefix.setting_drawer_icon');
 const themeModeSetting = Key('$_prefix.settings.theme_mode');
 Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
+const tosButton = Key('$_prefix.tos_button');
+const privacyButton = Key('$_prefix.privacy_button');
+const licensesButton = Key('$_prefix.licenses_button');
+const feedbackButton = Key('$_prefix.feedback_button');
+const helpButton = Key('$_prefix.help_button');
+const diagnosticsChip = Key('$_prefix.diagnostics_chip');
+const logChip = Key('$_prefix.log_chip');
+const screenshotChip = Key('$_prefix.screenshot_chip');
 
 // misc buttons
 const closeButton = Key('$_prefix.close_button');

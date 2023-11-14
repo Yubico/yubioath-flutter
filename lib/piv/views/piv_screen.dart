@@ -106,6 +106,7 @@ class _CertificateListItem extends ConsumerWidget {
     return Semantics(
         label: slot.getDisplayName(l10n),
         child: AppListItem(
+          key: slot.getAppListItemKey(),
           leading: CircleAvatar(
             foregroundColor: colorScheme.onSecondary,
             backgroundColor: colorScheme.secondary,
@@ -119,6 +120,7 @@ class _CertificateListItem extends ConsumerWidget {
                   ? l10n.l_key_no_certificate
                   : l10n.l_no_certificate,
           trailing: OutlinedButton(
+            key: slot.getMeatballKey(),
             onPressed: Actions.handler(context, const OpenIntent()),
             child: const Icon(Icons.more_horiz),
           ),

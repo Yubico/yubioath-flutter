@@ -27,6 +27,7 @@ import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
@@ -49,6 +50,7 @@ Widget oathBuildActions(
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
               feature: features.actionsAdd,
+              key: addAccountAction,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first
@@ -59,7 +61,6 @@ Widget oathBuildActions(
               icon: const Icon(Icons.person_add_alt_1_outlined),
               onTap: used != null && (capacity == null || capacity > used)
                   ? (context) async {
-
                       Navigator.of(context).pop();
                       if (isAndroid) {
                         final withContext = ref.read(withContextProvider);

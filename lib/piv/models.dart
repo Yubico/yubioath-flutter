@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yubico_authenticator/piv/keys.dart';
 
 import '../core/models.dart';
 
@@ -57,6 +59,24 @@ enum SlotId {
       SlotId.signature => nameFor(l10n.s_slot_9c),
       SlotId.keyManagement => nameFor(l10n.s_slot_9d),
       SlotId.cardAuth => nameFor(l10n.s_slot_9e),
+    };
+  }
+
+  Key getMeatballKey() {
+    return switch (this) {
+      SlotId.authentication => meatballButton9a,
+      SlotId.signature => meatballButton9c,
+      SlotId.keyManagement => meatballButton9d,
+      SlotId.cardAuth => meatballButton9e,
+    };
+  }
+
+  Key getAppListItemKey() {
+    return switch (this) {
+      SlotId.authentication => appListItem9a,
+      SlotId.signature => appListItem9c,
+      SlotId.keyManagement => appListItem9d,
+      SlotId.cardAuth => appListItem9e
     };
   }
 

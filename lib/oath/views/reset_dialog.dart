@@ -27,7 +27,6 @@ import '../../app/state.dart';
 class ResetDialog extends ConsumerWidget {
   final DevicePath devicePath;
   const ResetDialog(this.devicePath, {super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;

@@ -36,9 +36,30 @@ const deleteAction = Key('$_slotAction.delete');
 const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
 const unlockButton = Key('$_prefix.unlock');
+const resetButton = Key('$_prefix.reset');
 
 const managementKeyField = Key('$_prefix.management_key');
+const managementKeyRefresh = Key('$_prefix.management_key_refresh');
 const pinPukField = Key('$_prefix.pin_puk');
 const newPinPukField = Key('$_prefix.new_pin_puk');
 const confirmPinPukField = Key('$_prefix.confirm_pin_puk');
 const subjectField = Key('$_prefix.subject');
+
+const meatballButton9a = Key('$_prefix.9a.meatball.button');
+const meatballButton9c = Key('$_prefix.9c.meatball.button');
+const meatballButton9d = Key('$_prefix.9d.meatball.button');
+const meatballButton9e = Key('$_prefix.9e.meatball.button');
+
+const appListItem9a = Key('$_prefix.9a.applistitem');
+const appListItem9c = Key('$_prefix.9c.applistitem');
+const appListItem9d = Key('$_prefix.9d.applistitem');
+const appListItem9e = Key('$_prefix.9e.applistitem');
+
+// CertInfo body keys
+
+const certInfoSubjectKey = Key('$_prefix.certInfo.subject');
+const certInfoIssuerKey = Key('$_prefix.certInfo.issuer');
+const certInfoSerialKey = Key('$_prefix.certInfo.serial');
+const certInfoFingerprintKey = Key('$_prefix.certInfo.fingerprint');
+const certInfoValidFromKey = Key('$_prefix.certInfo.validFrom');
+const certInfoValidToKey = Key('$_prefix.certInfo.validTo');
