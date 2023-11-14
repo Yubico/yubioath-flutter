@@ -1,0 +1,29 @@
+== Testing Yubico Authenticator
+
+We have set up testing of the Yubico Authenticator flutter as a part of one of the following groups.
+
+* Automatic tests in CI pipeline
+* Automatic tests requiring a Yubikey
+* Manual tests
+
+The automated tests requiring a key and the manual tests are run by the developer team as part of
+regression tests for releasing new versions of the app. The manual tests are problematic to automate
+as they depend on other technology which are a bit to expensive to automate (camera, webauthn) in
+the flutter test framework.
+
+To run the tests you need to specify the serial number of a Yubikey which the tests are able to run
+on (OBS this key will be reset and by running the tests).
+
+=== Desktop
+Running the tests for the CI environment:
+
+    $ flutter test integration_test/keyless_test.dart
+
+Running all the tests for desktop (requires a Yubikey):
+
+    $ flutter test integration_test
+
+We will have this handled through a shell interface, more info to come.
+
+=== Android
+TBD
