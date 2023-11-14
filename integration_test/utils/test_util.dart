@@ -127,17 +127,15 @@ extension AppWidgetTester on WidgetTester {
 
     await collectYubiKeyInformation();
 
+    if (yubiKeySerialNumber == null) {
+      fail('No YubiKey connected');
+    }
+
     if (!approvedSerialNumbers.contains(yubiKeySerialNumber)) {
-      if (yubiKeySerialNumber == null) {
-        expect(
-            approvedSerialNumbers.contains(yubiKeySerialNumber), equals(true),
-            reason: 'No YubiKey connected');
-      } else {
-        expect(
-            approvedSerialNumbers.contains(yubiKeySerialNumber), equals(true),
-            reason:
-                'YubiKey with S/N $yubiKeySerialNumber is not approved for integration tests.');
-      }
+      fail('YubiKey with S/N $yubiKeySerialNumber is not approved for '
+          'integration tests.\nUse --dart-define='
+          'YA_TEST_APPROVED_KEY_SN=$yubiKeySerialNumber test '
+          'parameter to approve it.');
     }
 
     return result;
@@ -186,9 +184,10 @@ extension AppWidgetTester on WidgetTester {
     // close the opened menu
     await closeDrawer();
 
-    testLog(false,
-        'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
-
+    if (yubiKeySerialNumber != null) {
+      testLog(false,
+          'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
+    }
     collectedYubiKeyInformation = true;
   }
 }
