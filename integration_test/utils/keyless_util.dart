@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
-import '../_approved_yubikeys.dart';
 import 'desktop/util.dart' as desktop_test_util;
 
 /// information about YubiKey as seen by the app
@@ -108,14 +105,6 @@ extension AppWidgetTester on WidgetTester {
     var result = isAndroid == true
         ? await android_test_util.startUp(this, startUpParams)
         : await desktop_test_util.startUp(this, startUpParams);
-
-    await collectYubiKeyInformation();
-
-    if (!approvedYubiKeys.contains(yubiKeySerialNumber)) {
-      testLog(true,
-          'The connected key is refused by the tests: $yubiKeySerialNumber');
-    }
-
     return result;
   }
 
@@ -123,49 +112,6 @@ extension AppWidgetTester on WidgetTester {
     if (!quiet) {
       printToConsole(message);
     }
-  }
-
-  /// get key information
-  Future<void> collectYubiKeyInformation() async {
-    if (collectedYubiKeyInformation) {
-      return;
-    }
-
-    await openDrawer();
-
-    var deviceInfo = find.byKey(app_keys.deviceInfoListTile);
-    if (deviceInfo.evaluate().isNotEmpty) {
-      ListTile lt = find
-          .descendant(of: deviceInfo, matching: find.byType(ListTile))
-          .evaluate()
-          .single
-          .widget as ListTile;
-      //ListTile lt = deviceInfo.evaluate().single.widget as ListTile;
-      yubiKeyName = (lt.title as Text).data;
-      var subtitle = (lt.subtitle as Text?)?.data;
-
-      if (subtitle != null) {
-        RegExpMatch? match =
-            RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)').firstMatch(subtitle);
-        if (match != null) {
-          yubiKeySerialNumber = match.group(1);
-          yubiKeyFirmware = match.group(2);
-        } else {
-          match = RegExp(r'F/W: (\d\.\d\.\d)').firstMatch(subtitle);
-          if (match != null) {
-            yubiKeyFirmware = match.group(1);
-          }
-        }
-      }
-    }
-
-    // close the opened menu
-    await closeDrawer();
-
-    testLog(false,
-        'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
-
-    collectedYubiKeyInformation = true;
   }
 }
 
