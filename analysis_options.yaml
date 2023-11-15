@@ -33,6 +33,8 @@ linter:
 analyzer:
   optional-checks:
     chrome-os-manifest-checks
+  plugins:
+    - custom_lint
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
