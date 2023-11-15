@@ -254,6 +254,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 ),
               ),
               textInputAction: TextInputAction.next,
+              onChanged: (_) {
+                setState(() {
+                  // Update length
+                });
+              },
               onSubmitted: (_) {
                 if (currentLenOk && newLenOk) {
                   _submit();

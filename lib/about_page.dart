@@ -165,6 +165,7 @@ class AboutPage extends ConsumerWidget {
                     'os': Platform.operatingSystem,
                     'os_version': Platform.operatingSystemVersion,
                   });
+                  data.insert(data.length - 1, ref.read(featureFlagProvider));
                   final text = const JsonEncoder.withIndent('  ').convert(data);
                   await ref.read(clipboardProvider).setText(text);
                   await ref.read(withContextProvider)(

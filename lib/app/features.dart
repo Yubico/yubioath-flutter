@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import 'dart:typed_data';
+import '../core/state.dart';
 
-import 'qrscanner_zxing_platform_interface.dart';
-
-class QRScannerZxing {
-  Future<String?> getPlatformVersion() {
-    return QRScannerZxingPlatform.instance.getPlatformVersion();
-  }
-
-  Future<String?> scanBitmap(Uint8List bitmap) {
-    return QRScannerZxingPlatform.instance.scanBitmap(bitmap);
-  }
-}
+final oath = root.feature('oath');
+final fido = root.feature('fido');
+final piv = root.feature('piv');
+final management = root.feature('management');
+final openpgp = root.feature('openpgp');
+final hsmauth = root.feature('hsmauth');
+final otp = root.feature('otp');

@@ -94,6 +94,9 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                         _isObscure = !_isObscure;
                       });
                     },
+                    tooltip: _isObscure
+                        ? l10n.s_show_password
+                        : l10n.s_hide_password,
                   ),
                 ),
                 onChanged: (_) => setState(() {

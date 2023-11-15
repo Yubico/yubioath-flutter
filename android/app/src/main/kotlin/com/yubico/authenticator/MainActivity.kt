@@ -79,9 +79,12 @@ class MainActivity : FlutterFragmentActivity() {
 
     private lateinit var yubikit: YubiKitManager
 
+    private var preserveConnectionOnPause: Boolean = false
+
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
     private val nfcAdapterStateChangeBR = NfcAdapterStateChangedBR()
+    private val activityUtil = ActivityUtil(this)
 
     private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
@@ -113,27 +116,6 @@ class MainActivity : FlutterFragmentActivity() {
         yubikit = YubiKitManager(
             UsbYubiKeyManager(this),
             NfcYubiKeyManager(this, NfcActivityDispatcher(nfcActivityListener))
-        )
-    }
-
-    /**
-     * Enables or disables .AliasMainActivity component. This activity alias adds intent-filter
-     * for android.hardware.usb.action.USB_DEVICE_ATTACHED. When enabled, the app will be opened
-     * when a compliant USB device (defined in `res/xml/device_filter.xml`) is attached.
-     *
-     * By default the activity alias is disabled through AndroidManifest.xml.
-     *
-     * @param enable if true, alias activity will be enabled
-     */
-    private fun enableAliasMainActivityComponent(enable: Boolean) {
-        val componentName = ComponentName(packageName, "com.yubico.authenticator.AliasMainActivity")
-        applicationContext.packageManager.setComponentEnabledSetting(
-            componentName,
-            if (enable)
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-            else
-                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
-            PackageManager.DONT_KILL_APP
         )
     }
 
@@ -206,75 +188,93 @@ class MainActivity : FlutterFragmentActivity() {
 
         appPreferences.unregisterListener(sharedPreferencesListener)
 
-        stopUsbDiscovery()
-        stopNfcDiscovery()
-        if (!appPreferences.openAppOnUsb) {
-            enableAliasMainActivityComponent(false)
+        if (!preserveConnectionOnPause) {
+            stopUsbDiscovery()
+            stopNfcDiscovery()
+        } else {
+            logger.debug("Any existing connections are preserved")
         }
+
+        if (!appPreferences.openAppOnUsb) {
+            activityUtil.disableSystemUsbDiscovery()
+        }
+
+        if (appPreferences.openAppOnNfcTap || appPreferences.copyOtpOnNfcTap) {
+            activityUtil.enableAppNfcDiscovery()
+        } else {
+            activityUtil.disableAppNfcDiscovery()
+        }
+
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
 
-        enableAliasMainActivityComponent(true)
+        activityUtil.enableSystemUsbDiscovery()
 
-        // Handle opening through otpauth:// link
-        val intentData = intent.data
-        if (intentData != null &&
-            (intentData.scheme == "otpauth" ||
-                    intentData.scheme == "otpauth-migration")
-        ) {
-            intent.data = null
-            appLinkMethodChannel.handleUri(intentData)
-        }
+        if (!preserveConnectionOnPause) {
+            // Handle opening through otpauth:// link
+            val intentData = intent.data
+            if (intentData != null &&
+                (intentData.scheme == "otpauth" ||
+                        intentData.scheme == "otpauth-migration")
+            ) {
+                intent.data = null
+                appLinkMethodChannel.handleUri(intentData)
+            }
 
-        // Handle existing tag when launched from NDEF
-        val tag = intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-        if (tag != null) {
-            intent.removeExtra(NfcAdapter.EXTRA_TAG)
+            // Handle existing tag when launched from NDEF
+            val tag = intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            if (tag != null) {
+                intent.removeExtra(NfcAdapter.EXTRA_TAG)
 
-            val executor = Executors.newSingleThreadExecutor()
-            val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
-            lifecycleScope.launch {
-                try {
-                    contextManager?.processYubiKey(device)
-                    device.remove {
-                        executor.shutdown()
-                        startNfcDiscovery()
+                val executor = Executors.newSingleThreadExecutor()
+                val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
+                lifecycleScope.launch {
+                    try {
+                        contextManager?.processYubiKey(device)
+                        device.remove {
+                            executor.shutdown()
+                            startNfcDiscovery()
+                        }
+                    } catch (e: Throwable) {
+                        logger.error("Error processing YubiKey in AppContextManager", e)
                     }
-                } catch (e: Throwable) {
-                    logger.error("Error processing YubiKey in AppContextManager", e)
                 }
+            } else {
+                startNfcDiscovery()
             }
-        } else {
-            startNfcDiscovery()
-        }
 
-        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
-            val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
-            if (device != null) {
-                // start the USB discover only if the user approved the app to use the device
-                if (usbManager.hasPermission(device)) {
-                    startUsbDiscovery()
+            val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+            if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+                val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
+                if (device != null) {
+                    // start the USB discover only if the user approved the app to use the device
+                    if (usbManager.hasPermission(device)) {
+                        startUsbDiscovery()
+                    }
+                }
+            } else {
+                // if any YubiKeys are connected, use them directly
+                val deviceIterator = usbManager.deviceList.values.iterator()
+                while (deviceIterator.hasNext()) {
+                    val device = deviceIterator.next()
+                    if (device.vendorId == YUBICO_VENDOR_ID) {
+                        // the device might not have a USB permission
+                        // it will be requested during during the UsbDiscovery
+                        startUsbDiscovery()
+                        break
+                    }
                 }
             }
         } else {
-            // if any YubiKeys are connected, use them directly
-            val deviceIterator = usbManager.deviceList.values.iterator()
-            while (deviceIterator.hasNext()) {
-                val device = deviceIterator.next()
-                if (device.vendorId == YUBICO_VENDOR_ID) {
-                    // the device might not have a USB permission
-                    // it will be requested during during the UsbDiscovery
-                    startUsbDiscovery()
-                    break
-                }
-            }
+            logger.debug("Resume with preserved connection")
         }
 
         appPreferences.registerListener(sharedPreferencesListener)
+
+        preserveConnectionOnPause = false
     }
 
     override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
@@ -423,6 +423,14 @@ class MainActivity : FlutterFragmentActivity() {
                     "getAndroidSdkVersion" -> result.success(
                         Build.VERSION.SDK_INT
                     )
+
+                    "preserveConnectionOnPause" -> {
+                        preserveConnectionOnPause = true
+                        result.success(
+                            true
+                        )
+                    }
+
                     "setPrimaryClip" -> {
                         val toClipboard = methodCall.argument<String>("toClipboard")
                         val isSensitive = methodCall.argument<Boolean>("isSensitive")

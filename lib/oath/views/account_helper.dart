@@ -27,6 +27,7 @@ import '../../app/state.dart';
 import '../../core/state.dart';
 import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
+import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
@@ -68,6 +69,7 @@ class AccountHelper {
           return [
             ActionItem(
               key: keys.copyAction,
+              feature: features.accountsClipboard,
               icon: const Icon(Icons.copy),
               title: l10n.l_copy_to_clipboard,
               subtitle: l10n.l_copy_code_desc,
@@ -82,10 +84,12 @@ class AccountHelper {
                 icon: const Icon(Icons.refresh),
                 title: l10n.s_calculate,
                 subtitle: l10n.l_calculate_code_desc,
-                intent: ready ? const CalculateIntent() : null,
+                shortcut: Platform.isMacOS ? '\u2318 R' : 'Ctrl+R',
+                intent: ready ? const RefreshIntent() : null,
               ),
             ActionItem(
               key: keys.togglePinAction,
+              feature: features.accountsPin,
               icon: pinned
                   ? pushPinStrokeIcon
                   : const Icon(Icons.push_pin_outlined),
@@ -96,6 +100,7 @@ class AccountHelper {
             if (data.info.version.isAtLeast(5, 3))
               ActionItem(
                 key: keys.editAction,
+                feature: features.accountsRename,
                 icon: const Icon(Icons.edit_outlined),
                 title: l10n.s_rename_account,
                 subtitle: l10n.l_rename_account_desc,
@@ -103,6 +108,7 @@ class AccountHelper {
               ),
             ActionItem(
               key: keys.deleteAction,
+              feature: features.accountsDelete,
               actionStyle: ActionStyle.error,
               icon: const Icon(Icons.delete_outline),
               title: l10n.s_delete_account,
@@ -171,7 +177,7 @@ class _CodeLabel extends StatelessWidget {
             // This helps with vertical centering on desktop
             applyHeightToFirstAscent: !isDesktop,
           ),
-          semanticsLabel: code?.value.characters.map((c) => '$c ' ).toString(),
+          semanticsLabel: code?.value.characters.map((c) => '$c ').toString(),
         ),
       );
 }

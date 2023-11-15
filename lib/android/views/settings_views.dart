@@ -105,7 +105,8 @@ class NfcKbdLayoutView extends ConsumerWidget {
       title: Text(l10n.l_kbd_layout_for_static),
       subtitle: Text(clipKbdLayout),
       key: keys.nfcKeyboardLayoutSetting,
-      enabled: tapAction != NfcTapAction.launch,
+      enabled: tapAction == NfcTapAction.copy ||
+          tapAction == NfcTapAction.launchAndCopy,
       onTap: () async {
         final newValue = await _selectKbdLayout(
           context,

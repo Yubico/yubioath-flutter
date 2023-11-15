@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-/// list of YubiKey serial numbers which are approved to be used with integration tests
-var approvedYubiKeys = <String>[
-  '',
-];
+import '../app/features.dart';
+
+final actions = fido.feature('actions');
+
+final actionsPin = actions.feature('pin');
+final actionsAddFingerprint = actions.feature('addFingerprint');
+final actionsReset = actions.feature('reset');
+
+final credentials = fido.feature('credentials');
+
+final credentialsDelete = credentials.feature('delete');
+
+final fingerprints = fido.feature('fingerprints');
+
+final fingerprintsEdit = fingerprints.feature('edit');
+final fingerprintsDelete = fingerprints.feature('delete');

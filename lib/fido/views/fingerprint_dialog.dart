@@ -7,7 +7,9 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../core/state.dart';
 import '../models.dart';
+import '../features.dart' as features;
 import 'actions.dart';
 import 'delete_fingerprint_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
@@ -27,53 +29,56 @@ class FingerprintDialog extends ConsumerWidget {
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final hasFeature = ref.watch(featureProvider);
     return Actions(
       actions: {
-        EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
-          final withContext = ref.read(withContextProvider);
-          final Fingerprint? renamed =
-              await withContext((context) async => await showBlurDialog(
-                    context: context,
-                    builder: (context) => RenameFingerprintDialog(
-                      node.path,
-                      fingerprint,
-                    ),
-                  ));
-          if (renamed != null) {
-            // Replace the dialog with the renamed credential
-            await withContext((context) async {
-              Navigator.of(context).pop();
-              await showBlurDialog(
-                context: context,
-                builder: (context) {
-                  return FingerprintDialog(renamed);
-                },
-              );
-            });
-          }
-          return renamed;
-        }),
-        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          final withContext = ref.read(withContextProvider);
-          final bool? deleted =
-              await ref.read(withContextProvider)((context) async =>
-                  await showBlurDialog(
-                    context: context,
-                    builder: (context) => DeleteFingerprintDialog(
-                      node.path,
-                      fingerprint,
-                    ),
-                  ) ??
-                  false);
+        if (hasFeature(features.fingerprintsEdit))
+          EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
+            final withContext = ref.read(withContextProvider);
+            final Fingerprint? renamed =
+                await withContext((context) async => await showBlurDialog(
+                      context: context,
+                      builder: (context) => RenameFingerprintDialog(
+                        node.path,
+                        fingerprint,
+                      ),
+                    ));
+            if (renamed != null) {
+              // Replace the dialog with the renamed credential
+              await withContext((context) async {
+                Navigator.of(context).pop();
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) {
+                    return FingerprintDialog(renamed);
+                  },
+                );
+              });
+            }
+            return renamed;
+          }),
+        if (hasFeature(features.fingerprintsDelete))
+          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+            final withContext = ref.read(withContextProvider);
+            final bool? deleted =
+                await ref.read(withContextProvider)((context) async =>
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) => DeleteFingerprintDialog(
+                        node.path,
+                        fingerprint,
+                      ),
+                    ) ??
+                    false);
 
-          // Pop the account dialog if deleted
-          if (deleted == true) {
-            await withContext((context) async {
-              Navigator.of(context).pop();
-            });
-          }
-          return deleted;
-        }),
+            // Pop the account dialog if deleted
+            if (deleted == true) {
+              await withContext((context) async {
+                Navigator.of(context).pop();
+              });
+            }
+            return deleted;
+          }),
       },
       child: FocusScope(
         autofocus: true,

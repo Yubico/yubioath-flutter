@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yubico_authenticator/android/models.dart';
-import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/android/keys.dart' as android_keys;
+import 'package:yubico_authenticator/android/models.dart';
 import 'package:yubico_authenticator/android/state.dart';
 import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/app/views/settings_page.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
@@ -52,6 +52,12 @@ extension _WidgetTesterHelper on WidgetTester {
     await pumpAndSettle();
   }
 
+  Future<void> selectDoNothingOption() async {
+    await openNfcTapOptionSelection();
+    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.noAction)));
+    await pumpAndSettle();
+  }
+
   Future<void> selectLaunchOption() async {
     await openNfcTapOptionSelection();
     await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.launch)));
@@ -66,7 +72,8 @@ extension _WidgetTesterHelper on WidgetTester {
 
   Future<void> selectBothOption() async {
     await openNfcTapOptionSelection();
-    await tap(find.byKey(android_keys.nfcTapOption(NfcTapAction.both)));
+    await tap(
+        find.byKey(android_keys.nfcTapOption(NfcTapAction.launchAndCopy)));
     await pumpAndSettle();
   }
 
@@ -147,21 +154,23 @@ extension _WidgetTesterHelper on WidgetTester {
   }
 }
 
-Widget androidWidget({
-  required SharedPreferences sharedPrefs,
-  required Widget child,
+Future<Widget> androidWidget({
+  SharedPreferences? sharedPrefs,
   int sdkVersion = 33,
-}) =>
+  bool hasNfcSupport = true,
+  Widget? child,
+}) async =>
     ProviderScope(overrides: [
-      prefProvider.overrideWithValue(sharedPrefs),
+      prefProvider.overrideWithValue(
+          sharedPrefs ?? await SharedPreferences.getInstance()),
       androidSdkVersionProvider.overrideWithValue(sdkVersion),
       supportedThemesProvider
-          .overrideWith((ref) => ref.watch(androidSupportedThemesProvider))
-    ], child: child);
+          .overrideWith((ref) => ref.watch(androidSupportedThemesProvider)),
+      androidNfcSupportProvider.overrideWithValue(hasNfcSupport)
+    ], child: child ?? createMaterialApp(child: const SettingsPage()));
 
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.android;
-  var widget = createMaterialApp(child: const SettingsPage());
 
   testWidgets('NFC Tap options', (WidgetTester tester) async {
     const prefNfcOpenApp = 'prefNfcOpenApp';
@@ -171,10 +180,7 @@ void main() {
 
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      child: widget,
-    ));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // launch - preserves original value
     await tester.selectLaunchOption();
@@ -191,6 +197,11 @@ void main() {
     expect(sharedPrefs.getBool(prefNfcOpenApp), equals(true));
     expect(sharedPrefs.getBool(prefNfcCopyOtp), equals(true));
 
+    // do nothing
+    await tester.selectDoNothingOption();
+    expect(sharedPrefs.getBool(prefNfcOpenApp), equals(false));
+    expect(sharedPrefs.getBool(prefNfcCopyOtp), equals(false));
+
     // launch - changes to value
     await tester.selectLaunchOption();
     expect(sharedPrefs.getBool(prefNfcOpenApp), equals(true));
@@ -206,10 +217,11 @@ void main() {
 
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      child: widget,
-    ));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
+
+    // option is disabled for "do nothing"
+    await tester.selectDoNothingOption();
+    expect(tester.keyboardLayoutListTile().enabled, equals(false));
 
     // option is disabled for "open"
     expect(tester.keyboardLayoutListTile().enabled, equals(false));
@@ -243,10 +255,7 @@ void main() {
     SharedPreferences.setMockInitialValues({prefNfcBypassTouch: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      child: widget,
-    ));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // change to true
     await tester.tapBypassTouch();
@@ -263,9 +272,8 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-      await tester.pumpWidget(androidWidget(
+      await tester.pumpWidget(await androidWidget(
         sharedPrefs: sharedPrefs,
-        child: widget,
         // Android 10 (API Level 29)
         sdkVersion: 29,
       ));
@@ -280,9 +288,8 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-      await tester.pumpWidget(androidWidget(
+      await tester.pumpWidget(await androidWidget(
         sharedPrefs: sharedPrefs,
-        child: widget,
         // Android 9 (API Level 28)
         sdkVersion: 28,
       ));
@@ -298,10 +305,7 @@ void main() {
       SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
       const prefTheme = 'APP_STATE_THEME';
 
-      await tester.pumpWidget(androidWidget(
-        sharedPrefs: sharedPrefs,
-        child: widget,
-      ));
+      await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
       await tester.selectSystemTheme();
       expect(sharedPrefs.getString(prefTheme), equals('system'));
@@ -319,10 +323,7 @@ void main() {
     SharedPreferences.setMockInitialValues({prefUsbOpenApp: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      child: widget,
-    ));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // change to true
     await tester.tapOpenAppOnUsb();
@@ -338,10 +339,7 @@ void main() {
     SharedPreferences.setMockInitialValues({prefNfcSilenceSounds: false});
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(androidWidget(
-      sharedPrefs: sharedPrefs,
-      child: widget,
-    ));
+    await tester.pumpWidget(await androidWidget(sharedPrefs: sharedPrefs));
 
     // change to true
     await tester.tapSilenceNfcSounds();
@@ -350,6 +348,40 @@ void main() {
     // change to false
     await tester.tapSilenceNfcSounds();
     expect(sharedPrefs.getBool(prefNfcSilenceSounds), equals(false));
+  });
+
+  testWidgets('NFC options visible on device with NFC support',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: true));
+
+    expect(find.byKey(android_keys.nfcTapSetting), findsOneWidget);
+    expect(find.byKey(android_keys.nfcKeyboardLayoutSetting), findsOneWidget);
+    expect(find.byKey(android_keys.nfcSilenceSoundsSettings), findsOneWidget);
+    expect(find.byKey(android_keys.nfcBypassTouchSetting), findsOneWidget);
+  });
+
+  testWidgets('NFC options hidden on device without NFC support',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: false));
+
+    expect(find.byKey(android_keys.nfcTapSetting), findsNothing);
+    expect(find.byKey(android_keys.nfcKeyboardLayoutSetting), findsNothing);
+    expect(find.byKey(android_keys.nfcSilenceSoundsSettings), findsNothing);
+    expect(find.byKey(android_keys.nfcBypassTouchSetting), findsNothing);
+  });
+
+  testWidgets('USB options visible on device with NFC support',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: true));
+
+    expect(find.byKey(android_keys.usbOpenApp), findsOneWidget);
+  });
+
+  testWidgets('USB options visible on device without NFC support',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(await androidWidget(hasNfcSupport: false));
+
+    expect(find.byKey(android_keys.usbOpenApp), findsOneWidget);
   });
 
   debugDefaultTargetPlatformOverride = null;

@@ -20,6 +20,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
 import 'package:yubico_authenticator/oath/views/add_account_dialog.dart';
 
+import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -27,12 +28,10 @@ import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
 import '../../core/state.dart';
 import '../models.dart';
+import '../features.dart' as features;
 import '../keys.dart' as keys;
-import '../state.dart';
-import 'add_account_page.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
-import 'utils.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -49,6 +48,7 @@ Widget oathBuildActions(
       children: [
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
+              feature: features.actionsAdd,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first
@@ -59,38 +59,16 @@ Widget oathBuildActions(
               icon: const Icon(Icons.person_add_alt_1_outlined),
               onTap: used != null && (capacity == null || capacity > used)
                   ? (context) async {
-                      final credentials = ref.read(credentialsProvider);
-                      final withContext = ref.read(withContextProvider);
+
                       Navigator.of(context).pop();
                       if (isAndroid) {
+                        final withContext = ref.read(withContextProvider);
                         final qrScanner = ref.read(qrScannerProvider);
                         if (qrScanner != null) {
                           final qrData = await qrScanner.scanQr();
-                          if (qrData != null) {
-                            await withContext((context) => handleUri(
-                                  context,
-                                  credentials,
-                                  qrData,
-                                  devicePath,
-                                  oathState,
-                                  l10n,
-                                ));
-                            return;
-                          }
+                          await AndroidQrScanner.handleScannedData(
+                              qrData, withContext, qrScanner, l10n);
                         }
-                        await withContext((context) => showBlurDialog(
-                              context: context,
-                              routeSettings:
-                                  const RouteSettings(name: 'oath_add_account'),
-                              builder: (context) {
-                                return OathAddAccountPage(
-                                  devicePath,
-                                  oathState,
-                                  credentials: credentials,
-                                  credentialData: null,
-                                );
-                              },
-                            ));
                       } else {
                         await showBlurDialog(
                           context: context,
@@ -104,6 +82,7 @@ Widget oathBuildActions(
         ActionListSection(l10n.s_manage, children: [
           ActionListItem(
               key: keys.customIconsAction,
+              feature: features.actionsIcons,
               title: l10n.s_custom_icons,
               subtitle: l10n.l_set_icons_for_accounts,
               icon: const Icon(Icons.image_outlined),
@@ -118,6 +97,7 @@ Widget oathBuildActions(
               }),
           ActionListItem(
               key: keys.setOrManagePasswordAction,
+              feature: features.actionsPassword,
               title: oathState.hasKey
                   ? l10n.s_manage_password
                   : l10n.s_set_password,
@@ -133,6 +113,7 @@ Widget oathBuildActions(
               }),
           ActionListItem(
               key: keys.resetAction,
+              feature: features.actionsReset,
               icon: const Icon(Icons.delete_outline),
               actionStyle: ActionStyle.error,
               title: l10n.s_reset_oath,

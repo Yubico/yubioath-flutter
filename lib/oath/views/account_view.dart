@@ -23,7 +23,9 @@ import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/app_list_item.dart';
+import '../../core/state.dart';
 import '../models.dart';
+import '../features.dart' as features;
 import '../state.dart';
 import 'account_dialog.dart';
 import 'account_helper.dart';
@@ -81,6 +83,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final darkMode = theme.brightness == Brightness.dark;
+    final hasFeature = ref.watch(featureProvider);
 
     return registerOathActions(
       credential,
@@ -94,29 +97,31 @@ class _AccountViewState extends ConsumerState<AccountView> {
           );
           return null;
         }),
-        EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
-          final node = ref.read(currentDeviceProvider)!;
-          final credentials = ref.read(credentialsProvider);
-          final withContext = ref.read(withContextProvider);
-          return await withContext((context) async => await showBlurDialog(
-                context: context,
-                builder: (context) => RenameAccountDialog.forOathCredential(
-                  ref,
-                  node,
-                  credential,
-                  credentials?.map((e) => (e.issuer, e.name)).toList() ?? [],
-                ),
-              ));
-        }),
-        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          final node = ref.read(currentDeviceProvider)!;
-          return await ref.read(withContextProvider)((context) async =>
-              await showBlurDialog(
-                context: context,
-                builder: (context) => DeleteAccountDialog(node, credential),
-              ) ??
-              false);
-        }),
+        if (hasFeature(features.accountsRename))
+          EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
+            final node = ref.read(currentDeviceProvider)!;
+            final credentials = ref.read(credentialsProvider);
+            final withContext = ref.read(withContextProvider);
+            return await withContext((context) async => await showBlurDialog(
+                  context: context,
+                  builder: (context) => RenameAccountDialog.forOathCredential(
+                    ref,
+                    node,
+                    credential,
+                    credentials?.map((e) => (e.issuer, e.name)).toList() ?? [],
+                  ),
+                ));
+          }),
+        if (hasFeature(features.accountsDelete))
+          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+            final node = ref.read(currentDeviceProvider)!;
+            return await ref.read(withContextProvider)((context) async =>
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => DeleteAccountDialog(node, credential),
+                ) ??
+                false);
+          }),
       },
       builder: (context) {
         final helper = AccountHelper(context, ref, credential);
@@ -162,7 +167,9 @@ class _AccountViewState extends ConsumerState<AccountView> {
                           onPressed:
                               Actions.handler(context, const OpenIntent()),
                           child: helper.buildCodeIcon()),
-                  activationIntent: const CopyIntent(),
+                  activationIntent: hasFeature(features.accountsClipboard)
+                      ? const CopyIntent()
+                      : const OpenIntent(),
                   buildPopupActions: (_) => helper.buildActions(),
                 ),
               ));

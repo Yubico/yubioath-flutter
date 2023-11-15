@@ -179,7 +179,7 @@ class OathManager(
                         delay(delayMs)
                     }
                     val currentState = lifecycleOwner.lifecycle.currentState
-                    if (currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                    if (currentState.isAtLeast(Lifecycle.State.STARTED)) {
                         requestRefresh()
                     } else {
                         logger.debug(

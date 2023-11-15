@@ -16,6 +16,8 @@
     },
 
     "@_lint_rules": {
+        "p_ending_chars": ".!",
+        "q_ending_chars": "?",
         "s_max_words": 4,
         "s_max_length": 32
     },
@@ -39,13 +41,13 @@
     "s_show_window": "Show window",
     "s_hide_window": "Hide window",
     "q_rename_target": "Rename {label}?",
-    "@q_rename_target" : {
+    "@q_rename_target": {
         "placeholders": {
             "label": {}
         }
     },
     "l_bullet": "• {item}",
-    "@l_bullet" : {
+    "@l_bullet": {
         "placeholders": {
             "item": {}
         }
@@ -72,6 +74,8 @@
     "s_configure_yk": "Configure YubiKey",
     "s_please_wait": "Please wait\u2026",
     "s_secret_key": "Secret key",
+    "s_show_secret_key": "Show secret key",
+    "s_hide_secret_key": "Hide secret key",
     "s_private_key": "Private key",
     "s_invalid_length": "Invalid length",
     "s_require_touch": "Require touch",
@@ -105,13 +109,13 @@
     "s_hide_device": "Hide device",
     "s_show_hidden_devices": "Show hidden devices",
     "s_sn_serial": "S/N: {serial}",
-    "@s_sn_serial" : {
+    "@s_sn_serial": {
         "placeholders": {
             "serial": {}
         }
     },
     "s_fw_version": "F/W: {version}",
-    "@s_fw_version" : {
+    "@s_fw_version": {
         "placeholders": {
             "version": {}
         }
@@ -138,7 +142,7 @@
     "l_config_updated_reinsert": "Configuration updated, remove and reinsert your YubiKey",
     "s_app_not_supported": "Application not supported",
     "l_app_not_supported_on_yk": "The used YubiKey does not support '{app}' application",
-    "@l_app_not_supported_on_yk" : {
+    "@l_app_not_supported_on_yk": {
         "placeholders": {
             "app": {}
         }
@@ -146,7 +150,7 @@
     "l_app_not_supported_desc": "This application is not supported",
     "s_app_disabled": "Application disabled",
     "l_app_disabled_desc": "Enable the '{app}' application on your YubiKey to access",
-    "@l_app_disabled_desc" : {
+    "@l_app_disabled_desc": {
         "placeholders": {
             "app": {}
         }
@@ -182,6 +186,8 @@
     "s_set_pin": "Set PIN",
     "s_change_pin": "Change PIN",
     "s_change_puk": "Change PUK",
+    "s_show_pin": "Show PIN",
+    "s_hide_pin": "Hide PIN",
     "s_current_pin": "Current PIN",
     "s_current_puk": "Current PUK",
     "s_new_pin": "New PIN",
@@ -190,7 +196,7 @@
     "s_confirm_puk": "Confirm PUK",
     "s_unblock_pin": "Unblock PIN",
     "l_new_pin_len": "New PIN must be at least {length} characters",
-    "@l_new_pin_len" : {
+    "@l_new_pin_len": {
         "placeholders": {
             "length": {}
         }
@@ -198,30 +204,31 @@
     "s_pin_set": "PIN set",
     "s_puk_set": "PUK set",
     "l_set_pin_failed": "Failed to set PIN: {message}",
-    "@l_set_pin_failed" : {
+    "@l_set_pin_failed": {
         "placeholders": {
             "message": {}
         }
     },
     "l_attempts_remaining": "{retries} attempt(s) remaining",
-    "@l_attempts_remaining" : {
+    "@l_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
     "l_wrong_pin_attempts_remaining": "Wrong PIN, {retries} attempt(s) remaining",
-    "@l_wrong_pin_attempts_remaining" : {
+    "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
     "l_wrong_puk_attempts_remaining": "Wrong PUK, {retries} attempt(s) remaining",
-    "@l_wrong_puk_attempts_remaining" : {
+    "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
     "s_fido_pin_protection": "FIDO PIN protection",
+    "s_pin_change_required": "PIN change required",
     "l_fido_pin_protection_optional": "Optional FIDO PIN protection",
     "l_enter_fido2_pin": "Enter the FIDO2 PIN for your YubiKey",
     "l_optionally_set_a_pin": "Optionally set a PIN to protect access to your YubiKey\nRegister as a Security Key on websites",
@@ -229,10 +236,12 @@
     "l_set_pin_first": "A PIN is required first",
     "l_unlock_pin_first": "Unlock with PIN first",
     "l_pin_soft_locked": "PIN has been blocked until the YubiKey is removed and reinserted",
+    "l_pin_change_required_desc": "A new PIN must be set before you can use this application",
     "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to unblock it with the PUK or reset the YubiKey.",
+    "p_enter_current_pin_or_reset_no_puk": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
     "p_enter_current_puk_or_reset": "Enter your current PUK. If you don't know your PUK, you'll need to reset the YubiKey.",
     "p_enter_new_fido2_pin": "Enter your new PIN. A PIN must be at least {length} characters long and may contain letters, numbers and special characters.",
-    "@p_enter_new_fido2_pin" : {
+    "@p_enter_new_fido2_pin": {
         "placeholders": {
             "length": {}
         }
@@ -242,7 +251,7 @@
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
     "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be 6-8 characters.",
-    "@p_enter_new_piv_pin_puk" : {
+    "@p_enter_new_piv_pin_puk": {
         "placeholders": {
             "name": {}
         }
@@ -253,6 +262,8 @@
     "s_manage_password": "Manage password",
     "s_set_password": "Set password",
     "s_password_set": "Password set",
+    "s_show_password": "Show password",
+    "s_hide_password": "Hide password",
     "l_optional_password_protection": "Optional password protection",
     "s_new_password": "New password",
     "s_current_password": "Current password",
@@ -289,7 +300,7 @@
 
     "@_oath_accounts": {},
     "l_account": "Account: {label}",
-    "@l_account" : {
+    "@l_account": {
         "placeholders": {
             "label": {}
         }
@@ -297,12 +308,12 @@
     "s_accounts": "Accounts",
     "s_no_accounts": "No accounts",
     "s_add_account": "Add account",
-    "s_add_accounts" : "Add account(s)",
-    "p_add_description" : "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
-    "s_add_manually" : "Add manually",
+    "s_add_accounts": "Add account(s)",
+    "p_add_description": "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
+    "s_add_manually": "Add manually",
     "s_account_added": "Account added",
     "l_account_add_failed": "Failed adding account: {message}",
-    "@l_account_add_failed" : {
+    "@l_account_add_failed": {
         "placeholders": {
             "message": {}
         }
@@ -311,7 +322,7 @@
     "l_name_already_exists": "This name already exists for the issuer",
     "l_account_already_exists": "This account already exists on the YubiKey",
     "l_invalid_character_issuer": "Invalid character: ':' is not allowed in issuer",
-    "l_select_accounts" : "Select account(s) to add to the YubiKey",
+    "l_select_accounts": "Select account(s) to add to the YubiKey",
     "s_pinned": "Pinned",
     "s_pin_account": "Pin account",
     "s_unpin_account": "Unpin account",
@@ -329,20 +340,20 @@
     "s_account_name": "Account name",
     "s_search_accounts": "Search accounts",
     "l_accounts_used": "{used} of {capacity} accounts used",
-    "@l_accounts_used" : {
+    "@l_accounts_used": {
         "placeholders": {
             "used": {},
             "capacity": {}
         }
     },
     "s_num_digits": "{num} digits",
-    "@s_num_digits" : {
+    "@s_num_digits": {
         "placeholders": {
             "num": {}
         }
     },
     "s_num_sec": "{num} sec",
-    "@s_num_sec" : {
+    "@s_num_sec": {
         "placeholders": {
             "num": {}
         }
@@ -356,7 +367,7 @@
 
     "@_fido_credentials": {},
     "l_passkey": "Passkey: {label}",
-    "@l_passkey" : {
+    "@l_passkey": {
         "placeholders": {
             "label": {}
         }
@@ -372,7 +383,7 @@
 
     "@_fingerprints": {},
     "l_fingerprint": "Fingerprint: {label}",
-    "@l_fingerprint" : {
+    "@l_fingerprint": {
         "placeholders": {
             "label": {}
         }
@@ -381,7 +392,7 @@
     "l_fingerprint_captured": "Fingerprint captured successfully!",
     "s_fingerprint_added": "Fingerprint added",
     "l_setting_name_failed": "Error setting name: {message}",
-    "@l_setting_name_failed" : {
+    "@l_setting_name_failed": {
         "placeholders": {
             "message": {}
         }
@@ -400,7 +411,7 @@
     "l_rename_fp_desc": "Change the label",
     "s_fingerprint_renamed": "Fingerprint renamed",
     "l_rename_fp_failed": "Error renaming: {message}",
-    "@l_rename_fp_failed" : {
+    "@l_rename_fp_failed": {
         "placeholders": {
             "message": {}
         }
@@ -442,7 +453,7 @@
     "s_generate_key": "Generate key",
     "l_generate_desc": "Generate a new certificate or CSR",
     "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
-    "@p_generate_desc" : {
+    "@p_generate_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -451,7 +462,7 @@
     "s_private_key_generated": "Private key generated",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "q_delete_certificate_confirm": "Delete the certficate in PIV slot {slot}?",
-    "@q_delete_certificate_confirm" : {
+    "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
@@ -459,7 +470,7 @@
     "l_certificate_deleted": "Certificate deleted",
     "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
     "p_import_items_desc": "The following item(s) will be imported into PIV slot {slot}.",
-    "@p_import_items_desc" : {
+    "@p_import_items_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -470,7 +481,7 @@
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "s_overwrite_slot": "Overwrite slot",
     "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
-    "@p_overwrite_slot_desc" : {
+    "@p_overwrite_slot_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -481,7 +492,7 @@
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",
-    "@s_slot_display_name" : {
+    "@s_slot_display_name": {
         "placeholders": {
             "name": {},
             "hexid": {}
@@ -506,8 +517,9 @@
     "l_qr_scanned": "Scanned QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
+    "l_qr_select_file": "Select file with QR code",
     "l_qr_not_read": "Failed reading QR code: {message}",
-    "@l_qr_not_read" : {
+    "@l_qr_not_read": {
         "placeholders": {
             "message": {}
         }
@@ -516,6 +528,7 @@
     "q_want_to_scan": "Would like to scan?",
     "q_no_qr": "No QR code?",
     "s_enter_manually": "Enter manually",
+    "s_read_from_file": "Read from file",
 
     "@_factory_reset": {},
     "s_reset": "Reset",
@@ -527,7 +540,7 @@
     "l_fido_app_reset": "FIDO application reset",
     "l_press_reset_to_begin": "Press reset to begin\u2026",
     "l_reset_failed": "Error performing reset: {message}",
-    "@l_reset_failed" : {
+    "@l_reset_failed": {
         "placeholders": {
             "message": {}
         }
@@ -549,7 +562,7 @@
     "l_log_copied": "Log copied to clipboard",
     "l_diagnostics_copied": "Diagnostic data copied to clipboard",
     "p_target_copied_clipboard": "{label} copied to clipboard.",
-    "@p_target_copied_clipboard" : {
+    "@p_target_copied_clipboard": {
         "placeholders": {
             "label": {}
         }
@@ -579,6 +592,7 @@
     "@_android_settings": {},
     "s_nfc_options": "NFC options",
     "l_on_yk_nfc_tap": "On YubiKey NFC tap",
+    "l_do_nothing": "Do nothing",
     "l_launch_ya": "Launch Yubico Authenticator",
     "l_copy_otp_clipboard": "Copy OTP to clipboard",
     "l_launch_and_copy_otp": "Launch app and copy OTP",

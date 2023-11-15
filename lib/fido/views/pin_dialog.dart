@@ -71,7 +71,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasPin) ...[
-              Text(l10n.p_enter_current_pin_or_reset),
+              Text(l10n.p_enter_current_pin_or_reset_no_puk),
               TextFormField(
                 initialValue: _currentPin,
                 autofocus: true,

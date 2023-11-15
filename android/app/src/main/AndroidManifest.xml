@@ -13,6 +13,10 @@
         android:required="false" />
 
     <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-feature
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
@@ -78,6 +82,16 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/NdefActivityTheme">
+        </activity>
+
+        <activity-alias
+            android:name=".AliasNdefActivity"
+            android:exported="true"
+            android:enabled="true"
+            android:launchMode="singleTop"
+            android:theme="@style/NdefActivityTheme"
+            android:targetActivity=".NdefActivity">
+
             <intent-filter
                 android:autoVerify="true"
                 tools:ignore="UnusedAttribute">
@@ -89,7 +103,7 @@
 
             </intent-filter>
 
-        </activity>
+        </activity-alias>
 
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

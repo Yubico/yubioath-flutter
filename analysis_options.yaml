@@ -31,6 +31,8 @@ linter:
 # https://dart.dev/guides/language/analysis-options
 
 analyzer:
+  optional-checks:
+    chrome-os-manifest-checks
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"

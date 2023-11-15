@@ -43,6 +43,8 @@ class FidoState with _$FidoState {
   bool? get bioEnroll => info['options']['bioEnroll'];
 
   bool get alwaysUv => info['options']['alwaysUv'] == true;
+
+  bool get forcePinChange => info['force_pin_change'] == true;
 }
 
 @freezed

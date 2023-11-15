@@ -21,6 +21,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../management/models.dart';
 import '../core/models.dart';
+import '../core/state.dart';
 
 part 'models.freezed.dart';
 
@@ -129,6 +130,7 @@ class ActionItem with _$ActionItem {
     Intent? intent,
     ActionStyle? actionStyle,
     Key? key,
+    Feature? feature,
   }) = _ActionItem;
 }
 

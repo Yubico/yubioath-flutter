@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,6 +62,10 @@ const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
 const String _keyTop = 'DESKTOP_WINDOW_TOP';
 const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
 const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
+const String _logLevel = 'log-level';
+const String _logFile = 'log-file';
+const String _hidden = 'hidden';
+const String _shown = 'shown';
 
 void _saveWindowBounds(WindowManagerHelper helper) async {
   final bounds = await helper.getBounds();
@@ -109,12 +114,20 @@ class _WindowEventListener extends WindowListener {
 }
 
 Future<Widget> initialize(List<String> argv) async {
-  _initLogging(argv);
+  final parser = ArgParser();
+  parser.addOption(_logFile);
+  parser.addOption(_logLevel);
+  parser.addFlag(_hidden);
+  parser.addFlag(_shown);
+  final args = parser.parse(argv);
+  _initLogging(args);
 
   await windowManager.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
-  final isHidden = prefs.getBool(windowHidden) ?? false;
+  final isHidden = _getIsHidden(args, prefs);
+
+  _log.info('Window hidden on startup: $isHidden');
 
   final bounds = Rect.fromLTWH(
     prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
@@ -154,17 +167,12 @@ Future<Widget> initialize(List<String> argv) async {
     exe = Uri.file(Platform.resolvedExecutable)
         .resolve(relativePath)
         .toFilePath();
-
-    if (Platform.isMacOS && Platform.version.contains('arm64')) {
-      // See if there is an arm64 specific helper on arm64 Mac.
-      final arm64exe = Uri.file(exe)
-          .resolve('../helper-arm64/authenticator-helper')
-          .toFilePath();
-      if (await File(arm64exe).exists()) {
-        exe = arm64exe;
-      }
-    }
   }
+
+  // Locate feature flags file
+  final featureFile = File(Uri.file(Platform.resolvedExecutable)
+      .resolve('features.json')
+      .toFilePath());
 
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
@@ -176,12 +184,12 @@ Future<Widget> initialize(List<String> argv) async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWithValue([
+      supportedAppsProvider.overrideWith(implementedApps([
         Application.oath,
         Application.fido,
         Application.piv,
         Application.management,
-      ]),
+      ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
@@ -227,15 +235,33 @@ Future<Widget> initialize(List<String> argv) async {
             ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
           });
 
+          // Load feature flags, if they exist
+          featureFile.exists().then(
+            (exists) async {
+              if (exists) {
+                try {
+                  final featureConfig =
+                      jsonDecode(await featureFile.readAsString());
+                  ref
+                      .read(featureFlagProvider.notifier)
+                      .loadConfig(featureConfig);
+                } catch (error) {
+                  _log.error('Failed to parse feature flags', error);
+                }
+              }
+            },
+          );
+
           // Initialize systray
           ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
-          return ref.watch(rpcProvider).when(
-                data: (data) => const MainPage(),
-                error: (error, stackTrace) => AppFailurePage(cause: error),
-                loading: () => _HelperWaiter(),
-              );
+          return Consumer(
+              builder: (context, ref, child) => ref.watch(rpcProvider).when(
+                    data: (data) => const MainPage(),
+                    error: (error, stackTrace) => AppFailurePage(cause: error),
+                    loading: () => _HelperWaiter(),
+                  ));
         }),
       ),
     ),
@@ -252,8 +278,25 @@ Future<RpcSession> _initHelper(String exe) async {
   return rpc;
 }
 
-void _initLogging(List<String> argv) {
+void _initLogging(ArgResults args) {
+  final path = args[_logFile];
+  final levelName = args[_logLevel];
+
+  File? file;
+  if (path != null) {
+    file = File(path);
+  }
+
   Logger.root.onRecord.listen((record) {
+    if (file != null) {
+      file.writeAsStringSync(
+          '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+          mode: FileMode.append);
+      if (record.error != null) {
+        file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
+            mode: FileMode.append);
+      }
+    }
     stderr.writeln(
         '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
     if (record.error != null) {
@@ -261,10 +304,8 @@ void _initLogging(List<String> argv) {
     }
   });
 
-  final logLevelIndex = argv.indexOf('--log-level');
-  if (logLevelIndex != -1) {
+  if (levelName != null) {
     try {
-      final levelName = argv[logLevelIndex + 1];
       Level level = Levels.LEVELS
           .firstWhere((level) => level.name == levelName.toUpperCase());
       Logger.root.level = level;
@@ -296,6 +337,16 @@ void _initLicenses() async {
       yield LicenseEntryWithLineBreaks([e['Name']], e['LicenseText']);
     }
   });
+}
+
+bool _getIsHidden(ArgResults args, SharedPreferences prefs) {
+  if (args[_hidden] || args[_shown]) {
+    final isHidden = args[_hidden] && !args[_shown];
+    prefs.setBool(windowHidden, isHidden);
+    return isHidden;
+  } else {
+    return prefs.getBool(windowHidden) ?? false;
+  }
 }
 
 class _HelperWaiter extends ConsumerStatefulWidget {

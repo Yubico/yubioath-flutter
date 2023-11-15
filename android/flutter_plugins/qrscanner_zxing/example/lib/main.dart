@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:qrscanner_zxing/qrscanner_zxing_method_channel.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
 import 'cutout_overlay.dart';
@@ -64,6 +66,36 @@ class AppHomePage extends StatelessWidget {
                       ));
                 },
                 child: const Text("Open QR Scanner")),
+            ElevatedButton(
+                onPressed: () async {
+                  var channel = MethodChannelQRScannerZxing();
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final result = await FilePicker.platform.pickFiles(
+                      allowedExtensions: ['png', 'jpg', 'gif', 'webp'],
+                      type: FileType.custom,
+                      allowMultiple: false,
+                      lockParentWindow: true,
+                      withData: true,
+                      dialogTitle: 'Select file with QR code');
+
+                  if (result == null || !result.isSinglePick) {
+                    // no result
+                    return;
+                  }
+
+                  final bytes = result.files.first.bytes;
+                  if (bytes != null) {
+                    var value = await channel.scanBitmap(bytes);
+                    final snackBar = SnackBar(
+                        content: Text(value == null
+                            ? 'No QR code detected'
+                            : 'QR: $value'));
+                    scaffoldMessenger.showSnackBar(snackBar);
+                  } else {
+                    // no files selected
+                  }
+                },
+                child: const Text("Scan from file")),
           ],
         ),
       ),

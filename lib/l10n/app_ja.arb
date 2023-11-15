@@ -16,6 +16,8 @@
     },
 
     "@_lint_rules": {
+        "p_ending_chars": "。！",
+        "q_ending_chars": "?？",
         "s_max_words": 4,
         "s_max_length": 32
     },
@@ -39,13 +41,13 @@
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを表示しない",
     "q_rename_target": "{label}の名前を変更しますか?",
-    "@q_rename_target" : {
+    "@q_rename_target": {
         "placeholders": {
             "label": {}
         }
     },
     "l_bullet": "• {item}",
-    "@l_bullet" : {
+    "@l_bullet": {
         "placeholders": {
             "item": {}
         }
@@ -72,6 +74,8 @@
     "s_configure_yk": "YubiKeyを構成する",
     "s_please_wait": "お待ちください\u2026",
     "s_secret_key": "秘密鍵",
+    "s_show_secret_key": null,
+    "s_hide_secret_key": null,
     "s_private_key": "秘密鍵",
     "s_invalid_length": "無効な長さです",
     "s_require_touch": "タッチが必要",
@@ -105,13 +109,13 @@
     "s_hide_device": "デバイスを非表示",
     "s_show_hidden_devices": "非表示のデバイスを表示",
     "s_sn_serial": "S/N: {serial}",
-    "@s_sn_serial" : {
+    "@s_sn_serial": {
         "placeholders": {
             "serial": {}
         }
     },
     "s_fw_version": "F/W: {version}",
-    "@s_fw_version" : {
+    "@s_fw_version": {
         "placeholders": {
             "version": {}
         }
@@ -138,7 +142,7 @@
     "l_config_updated_reinsert": "設定が更新されました。YubiKeyを取り外して再挿入してください",
     "s_app_not_supported": "アプリケーションがサポートされていません",
     "l_app_not_supported_on_yk": "使用されているYubiKeyは '{app}' アプリケーションをサポートしていません",
-    "@l_app_not_supported_on_yk" : {
+    "@l_app_not_supported_on_yk": {
         "placeholders": {
             "app": {}
         }
@@ -146,7 +150,7 @@
     "l_app_not_supported_desc": "このアプリケーションはサポートされていません",
     "s_app_disabled": "アプリケーションが無効になっています",
     "l_app_disabled_desc": "YubiKeyの「{app}」アプリケーションへのアクセスを許可",
-    "@l_app_disabled_desc" : {
+    "@l_app_disabled_desc": {
         "placeholders": {
             "app": {}
         }
@@ -182,6 +186,8 @@
     "s_set_pin": "PINを設定する",
     "s_change_pin": "PINを変更する",
     "s_change_puk": "PUKを変更する",
+    "s_show_pin": null,
+    "s_hide_pin": null,
     "s_current_pin": "現在のPIN",
     "s_current_puk": "現在のPUK",
     "s_new_pin": "新しいPIN",
@@ -190,7 +196,7 @@
     "s_confirm_puk": "PUKの確認",
     "s_unblock_pin": "ブロックを解除",
     "l_new_pin_len": "新しいPINは少なくとも{length}文字である必要があります",
-    "@l_new_pin_len" : {
+    "@l_new_pin_len": {
         "placeholders": {
             "length": {}
         }
@@ -198,30 +204,31 @@
     "s_pin_set": "PINの設定",
     "s_puk_set": "PUKの設定",
     "l_set_pin_failed": "PIN設定に失敗しました:{message}",
-    "@l_set_pin_failed" : {
+    "@l_set_pin_failed": {
         "placeholders": {
             "message": {}
         }
     },
     "l_attempts_remaining": "あと{retries}回試行できます",
-    "@l_attempts_remaining" : {
+    "@l_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
     "l_wrong_pin_attempts_remaining": "PINが間違っています。あと{retries}回試行できます",
-    "@l_wrong_pin_attempts_remaining" : {
+    "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
     "l_wrong_puk_attempts_remaining": "PUKが間違っています。あと{retries}回試行できます",
-    "@l_wrong_puk_attempts_remaining" : {
+    "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
     "s_fido_pin_protection": "FIDO PINによる保護",
+    "s_pin_change_required": null,
     "l_fido_pin_protection_optional": "任意FIDO PINによる保護",
     "l_enter_fido2_pin": "YubiKeyのFIDO2 PINを入力してください",
     "l_optionally_set_a_pin": "YubiKeyアクセスを保護するために、任意でPINの設定ができます\nWebサイトにはセキュリティ キーとして登録されます",
@@ -229,10 +236,12 @@
     "l_set_pin_first": "最初にPINが必要です",
     "l_unlock_pin_first": "最初にPINでロックを解除してください",
     "l_pin_soft_locked": "YubiKeyを取り外して再挿入するまで、PINはブロックされています",
+    "l_pin_change_required_desc": null,
     "p_enter_current_pin_or_reset": "現在のPINを入力してください。PIN がわからない場合は、PUK でブロック解除するか、YubiKey をリセットする必要があります",
+    "p_enter_current_pin_or_reset_no_puk": null,
     "p_enter_current_puk_or_reset": "現在のPUKを入力してください。 PUK がわからない場合は、YubiKeyをリセットする必要があります",
     "p_enter_new_fido2_pin": "新しいPINを入力してください。 PINは少なくとも{length}文字の長さである必要があり、文字、数字、特殊文字を含めることができます",
-    "@p_enter_new_fido2_pin" : {
+    "@p_enter_new_fido2_pin": {
         "placeholders": {
             "length": {}
         }
@@ -242,7 +251,7 @@
     "l_piv_pin_blocked": "ブロックされています。PUK を使用してリセットしてください",
     "l_piv_pin_puk_blocked": "ブロックされています。工場出荷リセットしてください",
     "p_enter_new_piv_pin_puk": "新{name}を入力してください。6 ～ 8 文字でなければな りま せん。",
-    "@p_enter_new_piv_pin_puk" : {
+    "@p_enter_new_piv_pin_puk": {
         "placeholders": {
             "name": {}
         }
@@ -253,6 +262,8 @@
     "s_manage_password": "パスワードの管理",
     "s_set_password": "パスワードを設定",
     "s_password_set": "パスワード設定",
+    "s_show_password": null,
+    "s_hide_password": null,
     "l_optional_password_protection": "任意パスワードによる保護",
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
@@ -289,7 +300,7 @@
 
     "@_oath_accounts": {},
     "l_account": "アカウント：{label}",
-    "@l_account" : {
+    "@l_account": {
         "placeholders": {
             "label": {}
         }
@@ -297,12 +308,12 @@
     "s_accounts": "アカウント",
     "s_no_accounts": "アカウントがありません",
     "s_add_account": "アカウントの追加",
-    "s_add_accounts" : "アカウントの追加",
-    "p_add_description" : "QR コードをスキャンするには、コード全体が画面に表示されていることを確認し、下のボタンを押してください。保存した画像をこのダイアログにドラッグすることもできます。アカウントクレデンシャル情報を書面で持っている場合は、代わりに手動で入力をしてください。",
-    "s_add_manually" : "手動で追加",
+    "s_add_accounts": "アカウントの追加",
+    "p_add_description": "QR コードをスキャンするには、コード全体が画面に表示されていることを確認し、下のボタンを押してください。保存した画像をこのダイアログにドラッグすることもできます。アカウントクレデンシャル情報を書面で持っている場合は、代わりに手動で入力をしてください。",
+    "s_add_manually": "手動で追加",
     "s_account_added": "アカウントが追加されました",
     "l_account_add_failed": "アカウントの追加に失敗しました:{message}",
-    "@l_account_add_failed" : {
+    "@l_account_add_failed": {
         "placeholders": {
             "message": {}
         }
@@ -311,7 +322,7 @@
     "l_name_already_exists": "発行者名は既に使われています",
     "l_account_already_exists": "このアカウントはすでに YubiKey に存在します",
     "l_invalid_character_issuer": "無効な文字: ':' は発行者名で使用できません",
-    "l_select_accounts" : "YubiKey に追加するアカウントを選択してください",
+    "l_select_accounts": "YubiKey に追加するアカウントを選択してください",
     "s_pinned": "固定",
     "s_pin_account": "アカウントを固定する",
     "s_unpin_account": "アカウントの固定を解除する",
@@ -329,20 +340,20 @@
     "s_account_name": "アカウント名",
     "s_search_accounts": "アカウントを検索",
     "l_accounts_used": "{capacity}個のアカウントのうち{used}個が使用されています",
-    "@l_accounts_used" : {
+    "@l_accounts_used": {
         "placeholders": {
             "used": {},
             "capacity": {}
         }
     },
     "s_num_digits": "{num}桁",
-    "@s_num_digits" : {
+    "@s_num_digits": {
         "placeholders": {
             "num": {}
         }
     },
     "s_num_sec": "{num}秒",
-    "@s_num_sec" : {
+    "@s_num_sec": {
         "placeholders": {
             "num": {}
         }
@@ -356,7 +367,7 @@
 
     "@_fido_credentials": {},
     "l_passkey": "パスキー: {label}",
-    "@l_passkey" : {
+    "@l_passkey": {
         "placeholders": {
             "label": {}
         }
@@ -372,7 +383,7 @@
 
     "@_fingerprints": {},
     "l_fingerprint": "指紋:{label}",
-    "@l_fingerprint" : {
+    "@l_fingerprint": {
         "placeholders": {
             "label": {}
         }
@@ -381,7 +392,7 @@
     "l_fingerprint_captured": "指紋の取得に成功しました！",
     "s_fingerprint_added": "指紋が追加されました",
     "l_setting_name_failed": "名前設定時名エラー:{message}",
-    "@l_setting_name_failed" : {
+    "@l_setting_name_failed": {
         "placeholders": {
             "message": {}
         }
@@ -400,7 +411,7 @@
     "l_rename_fp_desc": "ラベルの変更",
     "s_fingerprint_renamed": "指紋の名前が変更されました",
     "l_rename_fp_failed": "大友:名前変更エラー:{message}",
-    "@l_rename_fp_failed" : {
+    "@l_rename_fp_failed": {
         "placeholders": {
             "message": {}
         }
@@ -442,7 +453,7 @@
     "s_generate_key": "鍵の生成",
     "l_generate_desc": "新しい証明書またはCSRの生成",
     "p_generate_desc": "これにより、YubiKeyのPIVスロット{slot}に新しい鍵が生成されます。公開鍵は、YubiKeyに保存されている自己署名証明書、またはファイルに保存されている証明書署名要求(CSR)に埋め込まれます",
-    "@p_generate_desc" : {
+    "@p_generate_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -451,7 +462,7 @@
     "s_private_key_generated": "秘密鍵を生成しました",
     "p_warning_delete_certificate": "警告！この操作によってYubiKeyから証明書が削除されます",
     "q_delete_certificate_confirm": "PIVスロット{slot}の証明書を削除しますか?",
-    "@q_delete_certificate_confirm" : {
+    "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
@@ -459,7 +470,7 @@
     "l_certificate_deleted": "証明書が削除されました",
     "p_password_protected_file": "選択したファイルはパスワードで保護されています。パスワードを入力して続行します",
     "p_import_items_desc": "次のアイテムはPIVスロット{slot}にインポートされます",
-    "@p_import_items_desc" : {
+    "@p_import_items_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -470,7 +481,7 @@
     "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限 (該当する場合)",
     "s_overwrite_slot": "スロットの上書き",
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存のデータが永久に上書きされます",
-    "@p_overwrite_slot_desc" : {
+    "@p_overwrite_slot_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -481,7 +492,7 @@
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",
-    "@s_slot_display_name" : {
+    "@s_slot_display_name": {
         "placeholders": {
             "name": {},
             "hexid": {}
@@ -506,8 +517,9 @@
     "l_qr_scanned": "スキャンしたQRコード",
     "l_invalid_qr": "無効なQRコード",
     "l_qr_not_found": "QRコードが見つかりませんでした",
+    "l_qr_select_file": null,
     "l_qr_not_read": "QRコードの読み取りに失敗しました:{message}",
-    "@l_qr_not_read" : {
+    "@l_qr_not_read": {
         "placeholders": {
             "message": {}
         }
@@ -516,6 +528,7 @@
     "q_want_to_scan": "スキャンしますか？",
     "q_no_qr": "QRコードはありませんか？",
     "s_enter_manually": "手動で入力",
+    "s_read_from_file": null,
 
     "@_factory_reset": {},
     "s_reset": "リセット",
@@ -527,7 +540,7 @@
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_press_reset_to_begin": "リセットを押して開始してください\u2026",
     "l_reset_failed": "リセット実行中のエラー:{message}",
-    "@l_reset_failed" : {
+    "@l_reset_failed": {
         "placeholders": {
             "message": {}
         }
@@ -549,7 +562,7 @@
     "l_log_copied": "ログをクリップボードにコピーしました",
     "l_diagnostics_copied": "診断データをクリップボードにコピーしました",
     "p_target_copied_clipboard": "{label}をクリップボードにコピーしました",
-    "@p_target_copied_clipboard" : {
+    "@p_target_copied_clipboard": {
         "placeholders": {
             "label": {}
         }
@@ -579,6 +592,7 @@
     "@_android_settings": {},
     "s_nfc_options": "NFCオプション",
     "l_on_yk_nfc_tap": "YubiKey NFCタップ時",
+    "l_do_nothing": null,
     "l_launch_ya": "Yubico Authenticatorを起動",
     "l_copy_otp_clipboard": "OTPをクリップボードにコピー",
     "l_launch_and_copy_otp": "アプリを起動してOTPをコピー",

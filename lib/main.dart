@@ -23,6 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'android/init.dart' as android;
 import 'app/app.dart';
+import 'app/state.dart';
 import 'core/state.dart';
 import 'desktop/init.dart' as desktop;
 import 'error_page.dart';
@@ -48,7 +49,8 @@ void main(List<String> argv) async {
     runApp(
       ProviderScope(
         overrides: [
-          prefProvider.overrideWithValue(await SharedPreferences.getInstance())
+          prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
+          supportedThemesProvider.overrideWith((ref) => ThemeMode.values),
         ],
         child: YubicoAuthenticatorApp(page: ErrorPage(error: e.toString())),
       ),

@@ -18,7 +18,6 @@ package com.yubico.authenticator.logging
 
 import ch.qos.logback.classic.Level
 import com.yubico.authenticator.BuildConfig
-
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

@@ -51,3 +51,65 @@ abstract class ApplicationStateNotifier<T>
     state = AsyncValue.data(value);
   }
 }
+
+// Feature flags
+sealed class BaseFeature {
+  String get path;
+  String _subpath(String key);
+
+  Feature feature(String key, {bool enabled = true}) =>
+      Feature._(this, key, enabled: enabled);
+}
+
+class _RootFeature extends BaseFeature {
+  _RootFeature._();
+  @override
+  String get path => '';
+
+  @override
+  String _subpath(String key) => key;
+}
+
+class Feature extends BaseFeature {
+  final BaseFeature parent;
+  final String key;
+  final bool _defaultState;
+
+  Feature._(this.parent, this.key, {bool enabled = true})
+      : _defaultState = enabled;
+
+  @override
+  String get path => parent._subpath(key);
+
+  @override
+  String _subpath(String key) => '$path.$key';
+}
+
+final BaseFeature root = _RootFeature._();
+
+typedef FeatureProvider = bool Function(Feature feature);
+
+final featureFlagProvider =
+    StateNotifierProvider<FeatureFlagsNotifier, Map<String, bool>>(
+        (_) => FeatureFlagsNotifier());
+
+class FeatureFlagsNotifier extends StateNotifier<Map<String, bool>> {
+  FeatureFlagsNotifier() : super({});
+
+  void loadConfig(Map<String, dynamic> config) {
+    const falsey = [0, false, null];
+    state = {for (final k in config.keys) k: !falsey.contains(config[k])};
+  }
+}
+
+final featureProvider = Provider<FeatureProvider>((ref) {
+  final featureMap = ref.watch(featureFlagProvider);
+
+  bool isEnabled(BaseFeature feature) => switch (feature) {
+        _RootFeature() => true,
+        Feature() => isEnabled(feature.parent) &&
+            (featureMap[feature.path] ?? feature._defaultState),
+      };
+
+  return isEnabled;
+});
