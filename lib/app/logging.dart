@@ -19,9 +19,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../core/state.dart';
 import '../android/state.dart';
+import '../core/state.dart';
+
+part 'logging.g.dart';
 
 String _pad(int value, int zeroes) => value.toString().padLeft(zeroes, '0');
 
@@ -64,12 +67,10 @@ extension LoggerExt on Logger {
       log(Levels.TRAFFIC, message, error, stackTrace);
 }
 
-final logLevelProvider =
-    StateNotifierProvider<LogLevelNotifier, Level>((ref) => LogLevelNotifier());
-
-class LogLevelNotifier extends StateNotifier<Level> {
-  final List<String> _buffer = [];
-  LogLevelNotifier() : super(Logger.root.level) {
+@Riverpod(keepAlive: true)
+class LogLevel extends _$LogLevel {
+  @override
+  Level build() {
     Logger.root.onRecord.listen((record) {
       _buffer.add(
           '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
@@ -80,7 +81,10 @@ class LogLevelNotifier extends StateNotifier<Level> {
         _buffer.removeAt(0);
       }
     });
+    return Logger.root.level;
   }
+
+  final List<String> _buffer = [];
 
   void setLogLevel(Level level) {
     state = level;

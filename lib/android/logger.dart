@@ -20,10 +20,10 @@ import 'package:yubico_authenticator/app/logging.dart';
 
 final _log = Logger('android.logger');
 
-class AndroidLogger extends LogLevelNotifier {
+class AndroidLogLevel extends LogLevel {
   final MethodChannel _channel = const MethodChannel('android.log.redirect');
 
-  AndroidLogger() : super() {
+  AndroidLogLevel() {
     Logger.root.onRecord.listen((record) {
       if (record.level >= Logger.root.level) {
         log(record);

@@ -57,7 +57,7 @@ Future<Widget> initialize() async {
         Application.oath,
       ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
-      logLevelProvider.overrideWith((ref) => AndroidLogger()),
+      logLevelProvider.overrideWith(AndroidLogLevel.new),
       attachedDevicesProvider.overrideWith(
         () => AndroidAttachedDevicesNotifier(),
       ),
@@ -77,7 +77,7 @@ Future<Widget> initialize() async {
           .overrideWith(androidQrScannerProvider(await getHasCamera())),
       windowStateProvider
           .overrideWith((ref) => ref.watch(androidWindowStateProvider)),
-      appClipboardProvider.overrideWith(() => AndroidClipboard()),
+      appClipboardProvider.overrideWith(AndroidClipboard.new),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
       supportedThemesProvider.overrideWith(
