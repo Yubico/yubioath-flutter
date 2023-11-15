@@ -13,13 +13,13 @@ dependencies:
   qrscanner_zxing:
     path: ../
 
-  cupertino_icons: ^1.0.2
-  file_picker: ^5.3.2
+  cupertino_icons: ^1.0.6
+  file_picker: ^6.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true

@@ -6,30 +6,30 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_PinMetadata _$$_PinMetadataFromJson(Map<String, dynamic> json) =>
-    _$_PinMetadata(
+_$PinMetadataImpl _$$PinMetadataImplFromJson(Map<String, dynamic> json) =>
+    _$PinMetadataImpl(
       json['default_value'] as bool,
       json['total_attempts'] as int,
       json['attempts_remaining'] as int,
     );
 
-Map<String, dynamic> _$$_PinMetadataToJson(_$_PinMetadata instance) =>
+Map<String, dynamic> _$$PinMetadataImplToJson(_$PinMetadataImpl instance) =>
     <String, dynamic>{
       'default_value': instance.defaultValue,
       'total_attempts': instance.totalAttempts,
       'attempts_remaining': instance.attemptsRemaining,
     };
 
-_$_ManagementKeyMetadata _$$_ManagementKeyMetadataFromJson(
+_$ManagementKeyMetadataImpl _$$ManagementKeyMetadataImplFromJson(
         Map<String, dynamic> json) =>
-    _$_ManagementKeyMetadata(
+    _$ManagementKeyMetadataImpl(
       $enumDecode(_$ManagementKeyTypeEnumMap, json['key_type']),
       json['default_value'] as bool,
       $enumDecode(_$TouchPolicyEnumMap, json['touch_policy']),
     );
 
-Map<String, dynamic> _$$_ManagementKeyMetadataToJson(
-        _$_ManagementKeyMetadata instance) =>
+Map<String, dynamic> _$$ManagementKeyMetadataImplToJson(
+        _$ManagementKeyMetadataImpl instance) =>
     <String, dynamic>{
       'key_type': _$ManagementKeyTypeEnumMap[instance.keyType]!,
       'default_value': instance.defaultValue,
@@ -50,8 +50,8 @@ const _$TouchPolicyEnumMap = {
   TouchPolicy.cached: 3,
 };
 
-_$_SlotMetadata _$$_SlotMetadataFromJson(Map<String, dynamic> json) =>
-    _$_SlotMetadata(
+_$SlotMetadataImpl _$$SlotMetadataImplFromJson(Map<String, dynamic> json) =>
+    _$SlotMetadataImpl(
       $enumDecode(_$KeyTypeEnumMap, json['key_type']),
       $enumDecode(_$PinPolicyEnumMap, json['pin_policy']),
       $enumDecode(_$TouchPolicyEnumMap, json['touch_policy']),
@@ -59,7 +59,7 @@ _$_SlotMetadata _$$_SlotMetadataFromJson(Map<String, dynamic> json) =>
       json['public_key_encoded'] as String,
     );
 
-Map<String, dynamic> _$$_SlotMetadataToJson(_$_SlotMetadata instance) =>
+Map<String, dynamic> _$$SlotMetadataImplToJson(_$SlotMetadataImpl instance) =>
     <String, dynamic>{
       'key_type': _$KeyTypeEnumMap[instance.keyType]!,
       'pin_policy': _$PinPolicyEnumMap[instance.pinPolicy]!,
@@ -82,8 +82,9 @@ const _$PinPolicyEnumMap = {
   PinPolicy.always: 3,
 };
 
-_$_PivStateMetadata _$$_PivStateMetadataFromJson(Map<String, dynamic> json) =>
-    _$_PivStateMetadata(
+_$PivStateMetadataImpl _$$PivStateMetadataImplFromJson(
+        Map<String, dynamic> json) =>
+    _$PivStateMetadataImpl(
       managementKeyMetadata: ManagementKeyMetadata.fromJson(
           json['management_key_metadata'] as Map<String, dynamic>),
       pinMetadata:
@@ -92,14 +93,16 @@ _$_PivStateMetadata _$$_PivStateMetadataFromJson(Map<String, dynamic> json) =>
           PinMetadata.fromJson(json['puk_metadata'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_PivStateMetadataToJson(_$_PivStateMetadata instance) =>
+Map<String, dynamic> _$$PivStateMetadataImplToJson(
+        _$PivStateMetadataImpl instance) =>
     <String, dynamic>{
       'management_key_metadata': instance.managementKeyMetadata,
       'pin_metadata': instance.pinMetadata,
       'puk_metadata': instance.pukMetadata,
     };
 
-_$_PivState _$$_PivStateFromJson(Map<String, dynamic> json) => _$_PivState(
+_$PivStateImpl _$$PivStateImplFromJson(Map<String, dynamic> json) =>
+    _$PivStateImpl(
       version: Version.fromJson(json['version'] as List<dynamic>),
       authenticated: json['authenticated'] as bool,
       derivedKey: json['derived_key'] as bool,
@@ -112,7 +115,7 @@ _$_PivState _$$_PivStateFromJson(Map<String, dynamic> json) => _$_PivState(
           : PivStateMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_PivStateToJson(_$_PivState instance) =>
+Map<String, dynamic> _$$PivStateImplToJson(_$PivStateImpl instance) =>
     <String, dynamic>{
       'version': instance.version,
       'authenticated': instance.authenticated,
@@ -124,7 +127,8 @@ Map<String, dynamic> _$$_PivStateToJson(_$_PivState instance) =>
       'metadata': instance.metadata,
     };
 
-_$_CertInfo _$$_CertInfoFromJson(Map<String, dynamic> json) => _$_CertInfo(
+_$CertInfoImpl _$$CertInfoImplFromJson(Map<String, dynamic> json) =>
+    _$CertInfoImpl(
       subject: json['subject'] as String,
       issuer: json['issuer'] as String,
       serial: json['serial'] as String,
@@ -133,7 +137,7 @@ _$_CertInfo _$$_CertInfoFromJson(Map<String, dynamic> json) => _$_CertInfo(
       fingerprint: json['fingerprint'] as String,
     );
 
-Map<String, dynamic> _$$_CertInfoToJson(_$_CertInfo instance) =>
+Map<String, dynamic> _$$CertInfoImplToJson(_$CertInfoImpl instance) =>
     <String, dynamic>{
       'subject': instance.subject,
       'issuer': instance.issuer,
@@ -143,7 +147,8 @@ Map<String, dynamic> _$$_CertInfoToJson(_$_CertInfo instance) =>
       'fingerprint': instance.fingerprint,
     };
 
-_$_PivSlot _$$_PivSlotFromJson(Map<String, dynamic> json) => _$_PivSlot(
+_$PivSlotImpl _$$PivSlotImplFromJson(Map<String, dynamic> json) =>
+    _$PivSlotImpl(
       slot: SlotId.fromJson(json['slot'] as int),
       hasKey: json['has_key'] as bool?,
       certInfo: json['cert_info'] == null
@@ -151,7 +156,7 @@ _$_PivSlot _$$_PivSlotFromJson(Map<String, dynamic> json) => _$_PivSlot(
           : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_PivSlotToJson(_$_PivSlot instance) =>
+Map<String, dynamic> _$$PivSlotImplToJson(_$PivSlotImpl instance) =>
     <String, dynamic>{
       'slot': _$SlotIdEnumMap[instance.slot]!,
       'has_key': instance.hasKey,
@@ -165,8 +170,8 @@ const _$SlotIdEnumMap = {
   SlotId.cardAuth: 'cardAuth',
 };
 
-_$_ExamineResult _$$_ExamineResultFromJson(Map<String, dynamic> json) =>
-    _$_ExamineResult(
+_$ExamineResultImpl _$$ExamineResultImplFromJson(Map<String, dynamic> json) =>
+    _$ExamineResultImpl(
       password: json['password'] as bool,
       keyType: $enumDecodeNullable(_$KeyTypeEnumMap, json['key_type']),
       certInfo: json['cert_info'] == null
@@ -175,7 +180,7 @@ _$_ExamineResult _$$_ExamineResultFromJson(Map<String, dynamic> json) =>
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$_ExamineResultToJson(_$_ExamineResult instance) =>
+Map<String, dynamic> _$$ExamineResultImplToJson(_$ExamineResultImpl instance) =>
     <String, dynamic>{
       'password': instance.password,
       'key_type': _$KeyTypeEnumMap[instance.keyType],
@@ -183,25 +188,28 @@ Map<String, dynamic> _$$_ExamineResultToJson(_$_ExamineResult instance) =>
       'runtimeType': instance.$type,
     };
 
-_$_InvalidPassword _$$_InvalidPasswordFromJson(Map<String, dynamic> json) =>
-    _$_InvalidPassword(
+_$InvalidPasswordImpl _$$InvalidPasswordImplFromJson(
+        Map<String, dynamic> json) =>
+    _$InvalidPasswordImpl(
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$_InvalidPasswordToJson(_$_InvalidPassword instance) =>
+Map<String, dynamic> _$$InvalidPasswordImplToJson(
+        _$InvalidPasswordImpl instance) =>
     <String, dynamic>{
       'runtimeType': instance.$type,
     };
 
-_$_PivGenerateResult _$$_PivGenerateResultFromJson(Map<String, dynamic> json) =>
-    _$_PivGenerateResult(
+_$PivGenerateResultImpl _$$PivGenerateResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$PivGenerateResultImpl(
       generateType: $enumDecode(_$GenerateTypeEnumMap, json['generate_type']),
       publicKey: json['public_key'] as String,
       result: json['result'] as String,
     );
 
-Map<String, dynamic> _$$_PivGenerateResultToJson(
-        _$_PivGenerateResult instance) =>
+Map<String, dynamic> _$$PivGenerateResultImplToJson(
+        _$PivGenerateResultImpl instance) =>
     <String, dynamic>{
       'generate_type': _$GenerateTypeEnumMap[instance.generateType]!,
       'public_key': instance.publicKey,
@@ -213,8 +221,9 @@ const _$GenerateTypeEnumMap = {
   GenerateType.csr: 'csr',
 };
 
-_$_PivImportResult _$$_PivImportResultFromJson(Map<String, dynamic> json) =>
-    _$_PivImportResult(
+_$PivImportResultImpl _$$PivImportResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$PivImportResultImpl(
       metadata: json['metadata'] == null
           ? null
           : SlotMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
@@ -222,7 +231,8 @@ _$_PivImportResult _$$_PivImportResultFromJson(Map<String, dynamic> json) =>
       certificate: json['certificate'] as String?,
     );
 
-Map<String, dynamic> _$$_PivImportResultToJson(_$_PivImportResult instance) =>
+Map<String, dynamic> _$$PivImportResultImplToJson(
+        _$PivImportResultImpl instance) =>
     <String, dynamic>{
       'metadata': instance.metadata,
       'public_key': instance.publicKey,
