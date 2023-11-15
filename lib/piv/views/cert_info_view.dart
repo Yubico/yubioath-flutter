@@ -39,7 +39,7 @@ class CertInfoTable extends ConsumerWidget {
     );
     final dateFormat =
         DateFormat.yMMMEd(ref.watch(currentLocaleProvider).toString());
-    final clipboard = ref.watch(clipboardProvider);
+    final clipboard = ref.watch(appClipboardProvider.notifier);
     final withContext = ref.watch(withContextProvider);
 
     Widget header(String title) => Text(

@@ -195,8 +195,8 @@ Future<Widget> initialize(List<String> argv) async {
       windowStateProvider.overrideWith(
         (ref) => ref.watch(desktopWindowStateProvider),
       ),
-      clipboardProvider.overrideWith(
-        (ref) => ref.watch(desktopClipboardProvider),
+      appClipboardProvider.overrideWith(
+        () => DesktopClipboard(),
       ),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(desktopSupportedThemesProvider),
@@ -388,7 +388,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
               final logs = await ref.read(logLevelProvider.notifier).getLogs();
-              var clipboard = ref.read(clipboardProvider);
+              var clipboard = ref.read(appClipboardProvider.notifier);
               await clipboard.setText(logs.join('\n'));
               if (!clipboard.platformGivesFeedback()) {
                 await ref.read(withContextProvider)(

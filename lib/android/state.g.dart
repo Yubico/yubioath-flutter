@@ -6,21 +6,6 @@ part of 'state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$androidClipboardHash() => r'9a6b81659fd4968b19180b8451789786ba50dbf7';
-
-/// See also [androidClipboard].
-@ProviderFor(androidClipboard)
-final androidClipboardProvider = Provider<AppClipboard>.internal(
-  androidClipboard,
-  name: r'androidClipboardProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$androidClipboardHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef AndroidClipboardRef = ProviderRef<AppClipboard>;
 String _$androidAllowScreenshotsHash() =>
     r'29489e7a1bf79d4c2b35c3da17958aafca8ced35';
 

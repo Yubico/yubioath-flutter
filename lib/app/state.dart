@@ -229,16 +229,16 @@ class ContextConsumer extends StateNotifier<Function(BuildContext)?> {
   }
 }
 
-abstract class AppClipboard {
-  const AppClipboard();
-
-  Future<void> setText(String toClipboard, {bool isSensitive = false});
-
-  bool platformGivesFeedback();
-}
-
 @Riverpod(keepAlive: true)
-AppClipboard clipboard(ClipboardRef ref) => throw UnimplementedError();
+class AppClipboard extends _$AppClipboard {
+  @override
+  void build() => throw UnimplementedError();
+
+  Future<void> setText(String toClipboard, {bool isSensitive = false}) =>
+      throw UnimplementedError();
+
+  bool platformGivesFeedback() => throw UnimplementedError();
+}
 
 /// A callback which will be invoked with a [BuildContext] that can be used to
 /// open dialogs, show Snackbars, etc.

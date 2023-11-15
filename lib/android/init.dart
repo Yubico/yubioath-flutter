@@ -77,9 +77,7 @@ Future<Widget> initialize() async {
           .overrideWith(androidQrScannerProvider(await getHasCamera())),
       windowStateProvider
           .overrideWith((ref) => ref.watch(androidWindowStateProvider)),
-      clipboardProvider.overrideWith(
-        (ref) => ref.watch(androidClipboardProvider),
-      ),
+      appClipboardProvider.overrideWith(() => AndroidClipboard()),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
       supportedThemesProvider.overrideWith(

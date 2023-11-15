@@ -15,16 +15,16 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
-import '../models.dart';
 import '../features.dart' as features;
+import '../models.dart';
 import '../state.dart';
 
 class TogglePinIntent extends Intent {
@@ -70,7 +70,7 @@ Widget registerOathActions(
             code = await _calculateCode(credential, ref);
           }
           if (code != null) {
-            final clipboard = ref.watch(clipboardProvider);
+            final clipboard = ref.watch(appClipboardProvider.notifier);
             await clipboard.setText(code.value, isSensitive: true);
             if (!clipboard.platformGivesFeedback()) {
               await ref.read(withContextProvider)((context) async {

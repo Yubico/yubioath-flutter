@@ -43,18 +43,10 @@ class AndroidAllowScreenshots extends _$AndroidAllowScreenshots {
   }
 }
 
-@Riverpod(keepAlive: true)
-AppClipboard androidClipboard(AndroidClipboardRef ref) =>
-    _AndroidClipboard(ref);
-
-class _AndroidClipboard extends AppClipboard {
-  final ProviderRef<AppClipboard> _ref;
-
-  const _AndroidClipboard(this._ref);
-
+class AndroidClipboard extends AppClipboard {
   @override
   bool platformGivesFeedback() {
-    return _ref.read(androidSdkVersionProvider) >= 33;
+    return ref.read(androidSdkVersionProvider) >= 33;
   }
 
   @override

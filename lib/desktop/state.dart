@@ -147,11 +147,7 @@ class DesktopWindowStateNotifier extends StateNotifier<WindowState>
   }
 }
 
-final desktopClipboardProvider = Provider<AppClipboard>(
-  (ref) => _DesktopClipboard(),
-);
-
-class _DesktopClipboard extends AppClipboard {
+class DesktopClipboard extends AppClipboard {
   @override
   bool platformGivesFeedback() {
     return false;

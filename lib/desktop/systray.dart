@@ -19,11 +19,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app/models.dart';
 import '../app/shortcuts.dart';
@@ -109,6 +109,7 @@ class _Systray extends TrayListener {
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
   bool _isHidden = false;
+
   _Systray(this._ref) : _l10n = _ref.read(l10nProvider) {
     _init();
   }
@@ -185,7 +186,7 @@ class _Systray extends TrayListener {
                   final code = await _calculateCode(_devicePath, e, _ref);
                   if (code != null) {
                     await _ref
-                        .read(clipboardProvider)
+                        .read(appClipboardProvider.notifier)
                         .setText(code.value, isSensitive: true);
                     final notification = LocalNotification(
                       title: _l10n.s_code_copied,

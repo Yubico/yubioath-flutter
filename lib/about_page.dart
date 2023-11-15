@@ -167,7 +167,7 @@ class AboutPage extends ConsumerWidget {
                   });
                   data.insert(data.length - 1, ref.read(featureFlagProvider));
                   final text = const JsonEncoder.withIndent('  ').convert(data);
-                  await ref.read(clipboardProvider).setText(text);
+                  await ref.read(appClipboardProvider.notifier).setText(text);
                   await ref.read(withContextProvider)(
                     (context) async {
                       showMessage(context, l10n.l_diagnostics_copied);
@@ -232,7 +232,7 @@ class LoggingPanel extends ConsumerWidget {
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');
             final logs = await ref.read(logLevelProvider.notifier).getLogs();
-            var clipboard = ref.read(clipboardProvider);
+            var clipboard = ref.read(appClipboardProvider.notifier);
             await clipboard.setText(logs.join('\n'));
             if (!clipboard.platformGivesFeedback()) {
               await ref.read(withContextProvider)(

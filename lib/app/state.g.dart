@@ -108,20 +108,6 @@ final qrScannerProvider = Provider<QrScanner?>.internal(
 );
 
 typedef QrScannerRef = ProviderRef<QrScanner?>;
-String _$clipboardHash() => r'ba2d4329370e3b6e8ec190332872634948446851';
-
-/// See also [clipboard].
-@ProviderFor(clipboard)
-final clipboardProvider = Provider<AppClipboard>.internal(
-  clipboard,
-  name: r'clipboardProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$clipboardHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef ClipboardRef = ProviderRef<AppClipboard>;
 String _$withContextHash() => r'de4a8eda3ee29ae2d07c5e55a1923dab291a9e66';
 
 /// See also [withContext].
@@ -153,5 +139,19 @@ final communityTranslationsProvider =
 );
 
 typedef _$CommunityTranslations = Notifier<bool>;
+String _$appClipboardHash() => r'74c3d6a8bd0823f58c1780ada06ca8c1c362d467';
+
+/// See also [AppClipboard].
+@ProviderFor(AppClipboard)
+final appClipboardProvider = NotifierProvider<AppClipboard, void>.internal(
+  AppClipboard.new,
+  name: r'appClipboardProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$appClipboardHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AppClipboard = Notifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
