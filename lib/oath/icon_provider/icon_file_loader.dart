@@ -19,7 +19,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
@@ -31,16 +30,16 @@ import 'icon_cache.dart';
 final _log = Logger('icon_file_loader');
 
 class IconFileLoader extends BytesLoader {
-  final WidgetRef _ref;
+  final IconCache _iconCache;
   final File _file;
 
-  const IconFileLoader(this._ref, this._file);
+  const IconFileLoader(this._iconCache, this._file);
 
   @override
   Future<ByteData> loadBytes(BuildContext? context) async {
     final cacheFileName = basename(_file.path);
 
-    final memCache = _ref.read(iconCacheProvider).memCache;
+    final memCache = _iconCache.memCache;
 
     // check if the requested file exists in memory cache
     var cachedData = memCache.read(cacheFileName);
@@ -49,7 +48,7 @@ class IconFileLoader extends BytesLoader {
       return cachedData;
     }
 
-    final fsCache = _ref.read(iconCacheProvider).fsCache;
+    final fsCache = _iconCache.fsCache;
 
     // check if the requested file exists in fs cache
     cachedData = await fsCache.read(cacheFileName);

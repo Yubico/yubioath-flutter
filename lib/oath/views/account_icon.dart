@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
+import 'package:yubico_authenticator/oath/icon_provider/icon_cache.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_file_loader.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack.dart';
 import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
@@ -40,7 +41,7 @@ class AccountIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final iconPack = ref.watch(iconPackProvider);
+    final iconPack = ref.watch(iconPackManagerProvider);
     return iconPack.when(
         data: (IconPack? iconPack) {
           final issuerImageFile = iconPack?.getFileForIssuer(issuer);
@@ -49,50 +50,15 @@ class AccountIcon extends ConsumerWidget {
           }
 
           return switch (extension(issuerImageFile.path)) {
-            '.svg' => _decodeSvg(ref, issuerImageFile),
-            '.jpg' || '.png' => _decodeRasterImage(ref, issuerImageFile),
+            '.svg' =>
+              _DecodedSvg(issuerImageFile, defaultWidget, _width, _height),
+            '.jpg' || '.png' => _DecodedRasterImage(
+                issuerImageFile, defaultWidget, _width, _height),
             _ => defaultWidget
           };
         },
         error: (_, __) => defaultWidget,
         loading: () => defaultWidget);
-  }
-
-  Widget _decodeSvg(WidgetRef ref, File file) {
-    return VectorGraphic(
-        width: _width,
-        height: _height,
-        fit: BoxFit.fill,
-        loader: IconFileLoader(ref, file),
-        placeholderBuilder: (BuildContext _) {
-          return DelayedVisibility(
-            delay: const Duration(milliseconds: 10),
-            child: Stack(alignment: Alignment.center, children: [
-              Opacity(
-                opacity: 0.5,
-                child: defaultWidget,
-              ),
-              const CircularProgressIndicator(),
-            ]),
-          );
-        });
-  }
-
-  Widget _decodeRasterImage(WidgetRef ref, File file) {
-    return ClipOval(
-      // This clipper makes the oval small enough to hide artifacts
-      // on the oval border for images not supporting transparency.
-      clipper: _AccountIconClipper(_width, _height),
-      child: Image.file(
-        file,
-        filterQuality: FilterQuality.medium,
-        fit: BoxFit.cover,
-        alignment: Alignment.center,
-        width: _width,
-        height: _height,
-        errorBuilder: (_, __, ___) => defaultWidget,
-      ),
-    );
   }
 }
 
@@ -115,4 +81,61 @@ class _AccountIconClipper extends CustomClipper<Rect> {
   bool shouldReclip(oldClipper) {
     return true;
   }
+}
+
+class _DecodedSvg extends ConsumerWidget {
+  final File _file;
+  final double _width;
+  final double _height;
+  final Widget _defaultWidget;
+
+  const _DecodedSvg(this._file, this._defaultWidget, this._width, this._height);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final iconCache = ref.watch(iconCacheProvider);
+    return VectorGraphic(
+        width: _width,
+        height: _height,
+        fit: BoxFit.fill,
+        loader: IconFileLoader(iconCache, _file),
+        placeholderBuilder: (BuildContext _) {
+          return DelayedVisibility(
+            delay: const Duration(milliseconds: 10),
+            child: Stack(alignment: Alignment.center, children: [
+              Opacity(
+                opacity: 0.5,
+                child: _defaultWidget,
+              ),
+              const CircularProgressIndicator(),
+            ]),
+          );
+        });
+  }
+}
+
+class _DecodedRasterImage extends ConsumerWidget {
+  final File _file;
+  final double _width;
+  final double _height;
+  final Widget _defaultWidget;
+
+  const _DecodedRasterImage(
+      this._file, this._defaultWidget, this._width, this._height);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ClipOval(
+        // This clipper makes the oval small enough to hide artifacts
+        // on the oval border for images not supporting transparency.
+        clipper: _AccountIconClipper(_width, _height),
+        child: Image.file(
+          _file,
+          filterQuality: FilterQuality.medium,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          width: _width,
+          height: _height,
+          errorBuilder: (_, __, ___) => _defaultWidget,
+        ),
+      );
 }

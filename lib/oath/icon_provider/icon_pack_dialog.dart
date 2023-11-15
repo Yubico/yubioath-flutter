@@ -32,7 +32,7 @@ class IconPackDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final iconPack = ref.watch(iconPackProvider);
+    final iconPack = ref.watch(iconPackManagerProvider);
     return ResponsiveDialog(
       title: Text(l10n.s_custom_icons),
       child: Padding(
@@ -137,8 +137,9 @@ class _IconPackDescription extends ConsumerWidget {
               IconButton(
                   tooltip: l10n.s_remove_icon_pack,
                   onPressed: () async {
-                    final removePackStatus =
-                        await ref.read(iconPackProvider.notifier).removePack();
+                    final removePackStatus = await ref
+                        .read(iconPackManagerProvider.notifier)
+                        .removePack();
                     await ref.read(withContextProvider)(
                       (context) async {
                         if (removePackStatus) {
@@ -183,7 +184,7 @@ class _ImportActionChip extends ConsumerWidget {
         dialogTitle: l10n.s_choose_icon_pack);
     if (result != null && result.files.isNotEmpty) {
       final importStatus = await ref
-          .read(iconPackProvider.notifier)
+          .read(iconPackManagerProvider.notifier)
           .importPack(l10n, result.paths.first!);
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
@@ -192,8 +193,7 @@ class _ImportActionChip extends ConsumerWidget {
           showMessage(
               context,
               l10n.l_import_icon_pack_failed(
-                  ref.read(iconPackProvider.notifier).lastError ??
-                      l10n.l_import_error));
+                  ref.read(lastIconPackErrorProvider) ?? l10n.l_import_error));
         }
       });
     }

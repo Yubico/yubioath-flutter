@@ -19,29 +19,37 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:io/io.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import 'icon_cache.dart';
 import 'icon_pack.dart';
 
+part 'icon_pack_manager.g.dart';
+
 final _log = Logger('icon_pack_manager');
 
-class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
-  final IconCache _iconCache;
+@riverpod
+class LastIconPackError extends _$LastIconPackError {
+  @override
+  String? build() => null;
 
-  String? _lastError;
+  void set(String? error) => state = error;
+}
+
+@riverpod
+class IconPackManager extends _$IconPackManager {
   final _packSubDir = 'issuer_icons';
 
-  IconPackManager(this._iconCache) : super(const AsyncValue.data(null)) {
+  @override
+  FutureOr<IconPack?> build() async {
     readPack();
+    return null;
   }
-
-  String? get lastError => _lastError;
 
   void readPack() async {
     final packDirectory = await _packDirectory;
@@ -96,14 +104,14 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
     if (!await packFile.exists()) {
       _log.error('Input file does not exist');
-      _lastError = l10n.l_file_not_found;
+      ref.read(lastIconPackErrorProvider.notifier).set(l10n.l_file_not_found);
       state = AsyncValue.error('Input file does not exist', StackTrace.current);
       return false;
     }
 
     if (await packFile.length() > 5 * 1024 * 1024) {
       _log.error('File size too big.');
-      _lastError = l10n.l_file_too_big;
+      ref.read(lastIconPackErrorProvider.notifier).set(l10n.l_file_too_big);
       state = AsyncValue.error('File size too big', StackTrace.current);
       return false;
     }
@@ -121,7 +129,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       archive = ZipDecoder().decodeBytes(bytes, verify: true);
     } on Exception catch (_) {
       _log.error('File is not an icon pack: zip decoding failed');
-      _lastError = l10n.l_invalid_icon_pack;
+      ref
+          .read(lastIconPackErrorProvider.notifier)
+          .set(l10n.l_invalid_icon_pack);
       state = AsyncValue.error('File is not an icon pack', StackTrace.current);
       return false;
     }
@@ -143,7 +153,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
         File(join(unpackDirectory.path, getLocalIconFileName('pack.json')));
     if (!await packJsonFile.exists()) {
       _log.error('File is not an icon pack: missing pack.json');
-      _lastError = l10n.l_invalid_icon_pack;
+      ref
+          .read(lastIconPackErrorProvider.notifier)
+          .set(l10n.l_invalid_icon_pack);
       state = AsyncValue.error('File is not an icon pack', StackTrace.current);
       await _deleteDirectory(tempDirectory);
       return false;
@@ -155,7 +167,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       const JsonDecoder().convert(packContent);
     } catch (e) {
       _log.error('Failed to parse pack.json: $e');
-      _lastError = l10n.l_invalid_icon_pack;
+      ref
+          .read(lastIconPackErrorProvider.notifier)
+          .set(l10n.l_invalid_icon_pack);
       state = AsyncValue.error('File is not an icon pack', StackTrace.current);
       await _deleteDirectory(tempDirectory);
       return false;
@@ -165,22 +179,25 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     final packDirectory = await _packDirectory;
     if (!await _deleteDirectory(packDirectory)) {
       _log.error('Failure when deleting original pack directory');
-      _lastError = l10n.l_filesystem_error;
+      ref.read(lastIconPackErrorProvider.notifier).set(l10n.l_filesystem_error);
       state = AsyncValue.error(
           'Failure deleting original pack directory', StackTrace.current);
       await _deleteDirectory(tempDirectory);
       return false;
     }
 
-    await _iconCache.fsCache.clear();
-    _iconCache.memCache.clear();
+    final iconCache = ref.read(iconCacheProvider);
+    await iconCache.fsCache.clear();
+    iconCache.memCache.clear();
 
     // copy unpacked files from temporary directory to the icon pack directory
     try {
       await copyPath(unpackDirectory.path, packDirectory.path);
     } catch (e) {
       _log.error('Failed to copy icon pack files to destination: $e');
-      _lastError = l10n.l_icon_pack_copy_failed;
+      ref
+          .read(lastIconPackErrorProvider.notifier)
+          .set(l10n.l_icon_pack_copy_failed);
       state = AsyncValue.error(
           'Failed to copy icon pack files.', StackTrace.current);
       return false;
@@ -194,8 +211,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
   /// removes imported icon pack
   Future<bool> removePack() async {
-    _iconCache.memCache.clear();
-    await _iconCache.fsCache.clear();
+    final iconCache = ref.watch(iconCacheProvider);
+    iconCache.memCache.clear();
+    await iconCache.fsCache.clear();
     final cleanupStatus = await _deleteDirectory(await _packDirectory);
     state = const AsyncValue.data(null);
     return cleanupStatus;
@@ -219,7 +237,3 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     return Directory(join(supportDirectory.path, _packSubDir));
   }
 }
-
-final iconPackProvider =
-    StateNotifierProvider<IconPackManager, AsyncValue<IconPack?>>(
-        (ref) => IconPackManager(ref.watch(iconCacheProvider)));

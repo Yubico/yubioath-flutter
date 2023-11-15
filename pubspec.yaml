@@ -47,6 +47,7 @@ dependencies:
   collection: ^1.17.2
   shared_preferences: ^2.2.2
   flutter_riverpod: ^2.4.6
+  riverpod_annotation: ^2.3.1
   json_annotation: ^4.8.1
   freezed_annotation: ^2.2.0
   window_manager: ^0.3.7
@@ -87,7 +88,6 @@ dev_dependencies:
 
   custom_lint:
   riverpod_lint:
-  riverpod_annotation: ^2.3.1
   riverpod_generator: ^2.3.6
 
 # For information on the generic Dart part of this file, see the
