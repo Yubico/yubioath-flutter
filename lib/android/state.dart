@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
@@ -26,28 +27,25 @@ import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
 
+part 'state.g.dart';
+
 const _contextChannel = MethodChannel('android.state.appContext');
 
-final androidAllowScreenshotsProvider =
-    StateNotifierProvider<AllowScreenshotsNotifier, bool>(
-  (ref) => AllowScreenshotsNotifier(),
-);
-
-class AllowScreenshotsNotifier extends StateNotifier<bool> {
-  AllowScreenshotsNotifier() : super(false);
+@Riverpod(keepAlive: true)
+class AndroidAllowScreenshots extends _$AndroidAllowScreenshots {
+  @override
+  bool build() => false;
 
   void setAllowScreenshots(bool value) async {
     final result =
         await appMethodsChannel.invokeMethod('allowScreenshots', value);
-    if (mounted) {
-      state = result;
-    }
+    state = result;
   }
 }
 
-final androidClipboardProvider = Provider<AppClipboard>(
-  (ref) => _AndroidClipboard(ref),
-);
+@Riverpod(keepAlive: true)
+AppClipboard androidClipboard(AndroidClipboardRef ref) =>
+    _AndroidClipboard(ref);
 
 class _AndroidClipboard extends AppClipboard {
   final ProviderRef<AppClipboard> _ref;
@@ -135,6 +133,7 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   static const _prefNfcOpenApp = 'prefNfcOpenApp';
   static const _prefNfcCopyOtp = 'prefNfcCopyOtp';
   final SharedPreferences _prefs;
+
   NfcTapActionNotifier._(this._prefs, super._state);
 
   factory NfcTapActionNotifier(SharedPreferences prefs) {
@@ -176,6 +175,7 @@ class NfcKbdLayoutNotifier extends StateNotifier<String> {
   static const String _defaultClipKbdLayout = 'US';
   static const _prefClipKbdLayout = 'prefClipKbdLayout';
   final SharedPreferences _prefs;
+
   NfcKbdLayoutNotifier(this._prefs)
       : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
 
@@ -194,6 +194,7 @@ final androidNfcBypassTouchProvider =
 class NfcBypassTouchNotifier extends StateNotifier<bool> {
   static const _prefNfcBypassTouch = 'prefNfcBypassTouch';
   final SharedPreferences _prefs;
+
   NfcBypassTouchNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
 
@@ -212,6 +213,7 @@ final androidNfcSilenceSoundsProvider =
 class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
   static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
   final SharedPreferences _prefs;
+
   NfcSilenceSoundsNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
 
@@ -230,6 +232,7 @@ final androidUsbLaunchAppProvider =
 class UsbLaunchAppNotifier extends StateNotifier<bool> {
   static const _prefUsbOpenApp = 'prefUsbOpenApp';
   final SharedPreferences _prefs;
+
   UsbLaunchAppNotifier(this._prefs)
       : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
 
