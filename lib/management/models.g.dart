@@ -6,8 +6,8 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_DeviceConfig _$$_DeviceConfigFromJson(Map<String, dynamic> json) =>
-    _$_DeviceConfig(
+_$DeviceConfigImpl _$$DeviceConfigImplFromJson(Map<String, dynamic> json) =>
+    _$DeviceConfigImpl(
       (json['enabled_capabilities'] as Map<String, dynamic>).map(
         (k, e) => MapEntry($enumDecode(_$TransportEnumMap, k), e as int),
       ),
@@ -16,7 +16,7 @@ _$_DeviceConfig _$$_DeviceConfigFromJson(Map<String, dynamic> json) =>
       json['device_flags'] as int?,
     );
 
-Map<String, dynamic> _$$_DeviceConfigToJson(_$_DeviceConfig instance) =>
+Map<String, dynamic> _$$DeviceConfigImplToJson(_$DeviceConfigImpl instance) =>
     <String, dynamic>{
       'enabled_capabilities': instance.enabledCapabilities
           .map((k, e) => MapEntry(_$TransportEnumMap[k]!, e)),
@@ -30,8 +30,8 @@ const _$TransportEnumMap = {
   Transport.nfc: 'nfc',
 };
 
-_$_DeviceInfo _$$_DeviceInfoFromJson(Map<String, dynamic> json) =>
-    _$_DeviceInfo(
+_$DeviceInfoImpl _$$DeviceInfoImplFromJson(Map<String, dynamic> json) =>
+    _$DeviceInfoImpl(
       DeviceConfig.fromJson(json['config'] as Map<String, dynamic>),
       json['serial'] as int?,
       Version.fromJson(json['version'] as List<dynamic>),
@@ -44,7 +44,7 @@ _$_DeviceInfo _$$_DeviceInfoFromJson(Map<String, dynamic> json) =>
       json['is_sky'] as bool,
     );
 
-Map<String, dynamic> _$$_DeviceInfoToJson(_$_DeviceInfo instance) =>
+Map<String, dynamic> _$$DeviceInfoImplToJson(_$DeviceInfoImpl instance) =>
     <String, dynamic>{
       'config': instance.config,
       'serial': instance.serial,

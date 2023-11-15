@@ -67,20 +67,21 @@ class _$VersionCopyWithImpl<$Res, $Val extends Version>
 }
 
 /// @nodoc
-abstract class _$$_VersionCopyWith<$Res> implements $VersionCopyWith<$Res> {
-  factory _$$_VersionCopyWith(
-          _$_Version value, $Res Function(_$_Version) then) =
-      __$$_VersionCopyWithImpl<$Res>;
+abstract class _$$VersionImplCopyWith<$Res> implements $VersionCopyWith<$Res> {
+  factory _$$VersionImplCopyWith(
+          _$VersionImpl value, $Res Function(_$VersionImpl) then) =
+      __$$VersionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int major, int minor, int patch});
 }
 
 /// @nodoc
-class __$$_VersionCopyWithImpl<$Res>
-    extends _$VersionCopyWithImpl<$Res, _$_Version>
-    implements _$$_VersionCopyWith<$Res> {
-  __$$_VersionCopyWithImpl(_$_Version _value, $Res Function(_$_Version) _then)
+class __$$VersionImplCopyWithImpl<$Res>
+    extends _$VersionCopyWithImpl<$Res, _$VersionImpl>
+    implements _$$VersionImplCopyWith<$Res> {
+  __$$VersionImplCopyWithImpl(
+      _$VersionImpl _value, $Res Function(_$VersionImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -90,7 +91,7 @@ class __$$_VersionCopyWithImpl<$Res>
     Object? minor = null,
     Object? patch = null,
   }) {
-    return _then(_$_Version(
+    return _then(_$VersionImpl(
       null == major
           ? _value.major
           : major // ignore: cast_nullable_to_non_nullable
@@ -109,8 +110,8 @@ class __$$_VersionCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_Version extends _Version {
-  const _$_Version(this.major, this.minor, this.patch)
+class _$VersionImpl extends _Version {
+  const _$VersionImpl(this.major, this.minor, this.patch)
       : assert(major >= 0),
         assert(major < 256),
         assert(minor >= 0),
@@ -130,7 +131,7 @@ class _$_Version extends _Version {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Version &&
+            other is _$VersionImpl &&
             (identical(other.major, major) || other.major == major) &&
             (identical(other.minor, minor) || other.minor == minor) &&
             (identical(other.patch, patch) || other.patch == patch));
@@ -142,13 +143,13 @@ class _$_Version extends _Version {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_VersionCopyWith<_$_Version> get copyWith =>
-      __$$_VersionCopyWithImpl<_$_Version>(this, _$identity);
+  _$$VersionImplCopyWith<_$VersionImpl> get copyWith =>
+      __$$VersionImplCopyWithImpl<_$VersionImpl>(this, _$identity);
 }
 
 abstract class _Version extends Version {
   const factory _Version(final int major, final int minor, final int patch) =
-      _$_Version;
+      _$VersionImpl;
   const _Version._() : super._();
 
   @override
@@ -159,6 +160,6 @@ abstract class _Version extends Version {
   int get patch;
   @override
   @JsonKey(ignore: true)
-  _$$_VersionCopyWith<_$_Version> get copyWith =>
+  _$$VersionImplCopyWith<_$VersionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
