@@ -19,15 +19,18 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
-import 'models.dart';
 import 'features.dart' as features;
+import 'models.dart';
+
+part 'state.g.dart';
 
 final _log = Logger('app.state');
 
@@ -59,32 +62,32 @@ List<Application> Function(Ref) implementedApps(List<Application> apps) =>
     };
 
 // Default implementation is always focused, override with platform specific version.
-final windowStateProvider = Provider<WindowState>(
-  (ref) => WindowState(focused: true, visible: true, active: true),
-);
+@Riverpod(keepAlive: true)
+WindowState windowState(WindowStateRef ref) =>
+    WindowState(focused: true, visible: true, active: true);
 
-final supportedThemesProvider = StateProvider<List<ThemeMode>>(
-  (ref) => throw UnimplementedError(),
-);
+@Riverpod(keepAlive: true)
+List<ThemeMode> supportedThemes(SupportedThemesRef ref) =>
+    throw UnimplementedError();
 
-final communityTranslationsProvider =
-    StateNotifierProvider<CommunityTranslationsNotifier, bool>(
-        (ref) => CommunityTranslationsNotifier(ref.watch(prefProvider)));
-
-class CommunityTranslationsNotifier extends StateNotifier<bool> {
+@Riverpod(keepAlive: true)
+class CommunityTranslations extends _$CommunityTranslations {
   static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
-  final SharedPreferences _prefs;
 
-  CommunityTranslationsNotifier(this._prefs)
-      : super(_prefs.getBool(_key) == true);
+  @override
+  bool build() {
+    return ref.read(prefProvider).getBool(_key) == true;
+  }
 
   void setEnableCommunityTranslations(bool value) {
     state = value;
-    _prefs.setBool(_key, value);
+    final prefs = ref.read(prefProvider);
+    prefs.setBool(_key, value);
   }
 }
 
-final supportedLocalesProvider = Provider<List<Locale>>((ref) {
+@Riverpod(keepAlive: true)
+List<Locale> supportedLocales(SupportedLocalesRef ref) {
   final locales = [...officialLocales];
   final localeStr = Platform.environment['_YA_LOCALE'];
   if (localeStr != null) {
@@ -95,26 +98,25 @@ final supportedLocalesProvider = Provider<List<Locale>>((ref) {
   return ref.watch(communityTranslationsProvider)
       ? AppLocalizations.supportedLocales
       : locales;
-});
+}
 
-final currentLocaleProvider = Provider<Locale>(
-  (ref) {
-    final localeStr = Platform.environment['_YA_LOCALE'];
-    if (localeStr != null) {
-      // Force locale
-      final locale = Locale(localeStr, '');
-      return basicLocaleListResolution(
-          [locale], AppLocalizations.supportedLocales);
-    }
-    // Choose from supported
-    return basicLocaleListResolution(PlatformDispatcher.instance.locales,
-        ref.watch(supportedLocalesProvider));
-  },
-);
+@Riverpod(keepAlive: true)
+Locale currentLocale(CurrentLocaleRef ref) {
+  final localeStr = Platform.environment['_YA_LOCALE'];
+  if (localeStr != null) {
+    // Force locale
+    final locale = Locale(localeStr, '');
+    return basicLocaleListResolution(
+        [locale], AppLocalizations.supportedLocales);
+  }
+  // Choose from supported
+  return basicLocaleListResolution(
+      PlatformDispatcher.instance.locales, ref.watch(supportedLocalesProvider));
+}
 
-final l10nProvider = Provider<AppLocalizations>(
-  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
-);
+@Riverpod(keepAlive: true)
+AppLocalizations l10n(L10nRef ref) =>
+    lookupAppLocalizations(ref.watch(currentLocaleProvider));
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(
@@ -151,9 +153,9 @@ abstract class AttachedDevicesNotifier extends Notifier<List<DeviceNode>> {
 }
 
 // Override with platform implementation
-final currentDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
-  (ref) => throw UnimplementedError(),
-);
+@Riverpod(keepAlive: true)
+AsyncValue<YubiKeyData> currentDeviceData(CurrentDeviceDataRef ref) =>
+    throw UnimplementedError();
 
 // Override with platform implementation
 final currentDeviceProvider =
@@ -204,9 +206,8 @@ abstract class QrScanner {
   Future<String?> scanQr([String? imageData]);
 }
 
-final qrScannerProvider = Provider<QrScanner?>(
-  (ref) => null,
-);
+@Riverpod(keepAlive: true)
+QrScanner? qrScanner(QrScannerRef ref) => null;
 
 final contextConsumer =
     StateNotifierProvider<ContextConsumer, Function(BuildContext)?>(
@@ -236,9 +237,8 @@ abstract class AppClipboard {
   bool platformGivesFeedback();
 }
 
-final clipboardProvider = Provider<AppClipboard>(
-  (ref) => throw UnimplementedError(),
-);
+@Riverpod(keepAlive: true)
+AppClipboard clipboard(ClipboardRef ref) => throw UnimplementedError();
 
 /// A callback which will be invoked with a [BuildContext] that can be used to
 /// open dialogs, show Snackbars, etc.
@@ -247,5 +247,6 @@ final clipboardProvider = Provider<AppClipboard>(
 typedef WithContext = Future<T> Function<T>(
     Future<T> Function(BuildContext context) action);
 
-final withContextProvider = Provider<WithContext>(
-    (ref) => ref.watch(contextConsumer.notifier).withContext);
+@Riverpod(keepAlive: true)
+WithContext withContext(WithContextRef ref) =>
+    ref.watch(contextConsumer.notifier).withContext;

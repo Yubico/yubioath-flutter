@@ -43,6 +43,8 @@ void main(List<String> argv) async {
       _initializeDebugLogging();
       throw UnimplementedError('Platform not supported');
     }
+// we use the scope properly in the initialize methods
+// ignore: missing_provider_scope
     runApp(initializedApp);
   } catch (e) {
     _log.warning('Platform initialization failed: $e');

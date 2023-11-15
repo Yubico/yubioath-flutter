@@ -16,9 +16,12 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
+
+part 'state.g.dart';
 
 bool get isDesktop {
   return const [
@@ -33,9 +36,8 @@ bool get isAndroid {
 }
 
 // This must be initialized before use, in main.dart.
-final prefProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError();
-});
+@Riverpod(keepAlive: true, dependencies: [])
+SharedPreferences pref(PrefRef ref) => throw UnimplementedError();
 
 abstract class ApplicationStateNotifier<T>
     extends AutoDisposeFamilyAsyncNotifier<T, DevicePath> {
