@@ -61,7 +61,7 @@ def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
 
     // add zxing_licenses which are not detected
     println "adding zxing licenses"
-    licenseList.add(PackageName: "ZXing Core (3.3.0)", PackageLicense: "https://www.apache.org/licenses/LICENSE-2.0.txt")
+    licenseList.add(PackageName: "ZXing Core (3.5.2)", PackageLicense: "https://www.apache.org/licenses/LICENSE-2.0.txt")
     licenseList.add(PackageName: "ZXing Android Core (3.3.0)", PackageLicense: "https://www.apache.org/licenses/LICENSE-2.0.txt")
 
     outFile.write(new JsonOutput().toJson(licenseList))
@@ -82,7 +82,7 @@ def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
     metadata.delete()
 }
 
-task collectLicenses() {
+tasks.register('collectLicenses') {
     dependsOn(":app:releaseOssLicensesTask")
     doLast {
         def ossPluginResDir = new File(project.buildDir, "generated/third_party_licenses/release/res/raw/")
