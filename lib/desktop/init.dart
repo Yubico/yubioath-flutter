@@ -155,26 +155,11 @@ Future<Widget> initialize(List<String> argv) async {
     screenRetriever.addListener(_ScreenRetrieverListener(windowManagerHelper));
   }));
 
-  // Either use the _HELPER_PATH environment variable, or look relative to executable.
-  var exe = Platform.environment['_HELPER_PATH'];
-  if (exe?.isEmpty ?? true) {
-    var relativePath = 'helper/authenticator-helper';
-    if (Platform.isMacOS) {
-      relativePath = '../Resources/$relativePath';
-    } else if (Platform.isWindows) {
-      relativePath += '.exe';
-    }
-    exe = Uri.file(Platform.resolvedExecutable)
-        .resolve(relativePath)
-        .toFilePath();
-  }
-
   // Locate feature flags file
   final featureFile = File(Uri.file(Platform.resolvedExecutable)
       .resolve('features.json')
       .toFilePath());
 
-  final rpcFuture = _initHelper(exe!);
   _initLicenses();
 
   await localNotifier.setup(
@@ -191,7 +176,6 @@ Future<Widget> initialize(List<String> argv) async {
         Application.management,
       ])),
       prefProvider.overrideWithValue(prefs),
-      rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
         (ref) => ref.watch(desktopWindowStateProvider),
       ),
@@ -264,13 +248,15 @@ Future<Widget> initialize(List<String> argv) async {
   );
 }
 
-Future<RpcSession> _initHelper(String exe) async {
+Future<RpcSession> initHelper(String exe) async {
   _log.info('Starting Helper subprocess: $exe');
   final rpc = RpcSession(exe);
   await rpc.initialize();
   _log.info('Helper process started');
   await rpc.setLogLevel(Logger.root.level);
   _log.info('Helper log level set');
+  await Future.delayed(const Duration(seconds: 5));
+  //throw Exception('blab');
   return rpc;
 }
 

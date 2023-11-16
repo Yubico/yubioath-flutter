@@ -20,7 +20,7 @@ final windowStateProvider = Provider<WindowState>.internal(
 );
 
 typedef WindowStateRef = ProviderRef<WindowState>;
-String _$supportedThemesHash() => r'bc21b04f22a67450eba0e1cf08c86aa1feb23614';
+String _$supportedThemesHash() => r'0499ad1ad4965dd63251e525b2662241c458cac9';
 
 /// See also [supportedThemes].
 @ProviderFor(supportedThemes)
@@ -30,12 +30,12 @@ final supportedThemesProvider = Provider<List<ThemeMode>>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$supportedThemesHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: const <ProviderOrFamily>[],
+  allTransitiveDependencies: const <ProviderOrFamily>{},
 );
 
 typedef SupportedThemesRef = ProviderRef<List<ThemeMode>>;
-String _$supportedLocalesHash() => r'db5301530aa7ade608e515b86b1488b65cd09ea2';
+String _$supportedLocalesHash() => r'38fd408b4f3fc35568f1b036ea91b1cc23ededa6';
 
 /// See also [supportedLocales].
 @ProviderFor(supportedLocales)
@@ -45,12 +45,15 @@ final supportedLocalesProvider = Provider<List<Locale>>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$supportedLocalesHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[communityTranslationsProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    communityTranslationsProvider,
+    ...?communityTranslationsProvider.allTransitiveDependencies
+  },
 );
 
 typedef SupportedLocalesRef = ProviderRef<List<Locale>>;
-String _$currentLocaleHash() => r'dd59a8d8f6a59f1fa3bc965b9a10d88e67589bf6';
+String _$currentLocaleHash() => r'6073128c053e5e4546320acdd7239fa20832411a';
 
 /// See also [currentLocale].
 @ProviderFor(currentLocale)
@@ -60,8 +63,11 @@ final currentLocaleProvider = Provider<Locale>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$currentLocaleHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[supportedLocalesProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    supportedLocalesProvider,
+    ...?supportedLocalesProvider.allTransitiveDependencies
+  },
 );
 
 typedef CurrentLocaleRef = ProviderRef<Locale>;
@@ -79,7 +85,7 @@ final l10nProvider = Provider<AppLocalizations>.internal(
 );
 
 typedef L10nRef = ProviderRef<AppLocalizations>;
-String _$currentDeviceDataHash() => r'ea4ebb353bd875ed9b128692ad468b6a10ea479e';
+String _$currentDeviceDataHash() => r'6ec053541579722e386fcf28bae998d7a001d404';
 
 /// See also [currentDeviceData].
 @ProviderFor(currentDeviceData)
@@ -89,8 +95,8 @@ final currentDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$currentDeviceDataHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: const <ProviderOrFamily>[],
+  allTransitiveDependencies: const <ProviderOrFamily>{},
 );
 
 typedef CurrentDeviceDataRef = ProviderRef<AsyncValue<YubiKeyData>>;
@@ -123,7 +129,7 @@ final withContextProvider = Provider<WithContext>.internal(
 
 typedef WithContextRef = ProviderRef<WithContext>;
 String _$communityTranslationsHash() =>
-    r'84a33fe183c4f75b345b501f7b739e5d70643341';
+    r'9dd535f5c7c38f3d6748c978e811fa3424f7d856';
 
 /// See also [CommunityTranslations].
 @ProviderFor(CommunityTranslations)
@@ -134,12 +140,15 @@ final communityTranslationsProvider =
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$communityTranslationsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[prefProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    prefProvider,
+    ...?prefProvider.allTransitiveDependencies
+  },
 );
 
 typedef _$CommunityTranslations = Notifier<bool>;
-String _$appClipboardHash() => r'74c3d6a8bd0823f58c1780ada06ca8c1c362d467';
+String _$appClipboardHash() => r'348743f64c544642c64a9afcb508ece82e6775a2';
 
 /// See also [AppClipboard].
 @ProviderFor(AppClipboard)
@@ -148,8 +157,8 @@ final appClipboardProvider = NotifierProvider<AppClipboard, void>.internal(
   name: r'appClipboardProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$appClipboardHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: const <ProviderOrFamily>[],
+  allTransitiveDependencies: const <ProviderOrFamily>{},
 );
 
 typedef _$AppClipboard = Notifier<void>;

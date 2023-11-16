@@ -17,8 +17,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models.dart';
 import '../../desktop/state.dart';
@@ -32,13 +32,14 @@ import 'message_page.dart';
 class DeviceErrorScreen extends ConsumerWidget {
   final DeviceNode node;
   final Object? error;
+
   const DeviceErrorScreen(this.node, {this.error, super.key});
 
   Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
     final l10n = AppLocalizations.of(context)!;
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
-          !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+          !ref.watch(asyncRpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
           graphic: noPermission,
           message: l10n.p_elevated_permissions_required,

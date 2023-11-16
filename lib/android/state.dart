@@ -63,9 +63,11 @@ class NfcStateNotifier extends StateNotifier<bool> {
   }
 }
 
-final androidSdkVersionProvider = Provider<int>((ref) => -1);
+@Riverpod(keepAlive: true)
+int androidSdkVersion(AndroidSdkVersionRef ref) => -1;
 
-final androidNfcSupportProvider = Provider<bool>((ref) => false);
+@Riverpod(keepAlive: true)
+bool androidNfcSupport(AndroidNfcSupportRef ref) => false;
 
 final androidNfcStateProvider =
     StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());

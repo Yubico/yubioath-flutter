@@ -6,7 +6,7 @@ part of 'logging.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$logLevelHash() => r'1952a3ebb993bfa3a37878d414e19153c0ff39be';
+String _$logLevelHash() => r'984b733b27aa81bb94c43946894ee455b879df76';
 
 /// See also [LogLevel].
 @ProviderFor(LogLevel)
@@ -15,8 +15,8 @@ final logLevelProvider = NotifierProvider<LogLevel, Level>.internal(
   name: r'logLevelProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$logLevelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: const <ProviderOrFamily>[],
+  allTransitiveDependencies: const <ProviderOrFamily>{},
 );
 
 typedef _$LogLevel = Notifier<Level>;

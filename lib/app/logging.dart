@@ -67,7 +67,7 @@ extension LoggerExt on Logger {
       log(Levels.TRAFFIC, message, error, stackTrace);
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [])
 class LogLevel extends _$LogLevel {
   @override
   Level build() {

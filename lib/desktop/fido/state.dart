@@ -75,7 +75,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
     _session = ref.watch(_sessionProvider(devicePath));
     if (Platform.isWindows) {
       // Make sure to rebuild if isAdmin changes
-      ref.watch(rpcStateProvider.select((state) => state.isAdmin));
+      ref.watch(asyncRpcStateProvider.select((state) => state.isAdmin));
     }
 
     ref.listen<WindowState>(

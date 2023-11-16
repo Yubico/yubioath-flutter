@@ -19,7 +19,9 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/desktop/state.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
@@ -27,7 +29,8 @@ import '../core/models.dart';
 import '../management/models.dart';
 import 'models.dart';
 import 'rpc.dart';
-import 'state.dart';
+
+part 'devices.g.dart';
 
 const _usbPollDelay = Duration(milliseconds: 500);
 
@@ -37,20 +40,22 @@ const _nfcDetachPollDelay = Duration(seconds: 5);
 
 final _log = Logger('desktop.devices');
 
-final _usbDevicesProvider =
-    StateNotifierProvider<UsbDeviceNotifier, List<UsbYubiKeyNode>>((ref) {
-  final notifier = UsbDeviceNotifier(ref.watch(rpcProvider).valueOrNull);
-  ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-    notifier._notifyWindowState(windowState);
-  }, fireImmediately: true);
-  return notifier;
-});
-
-class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
-  final RpcSession? _rpc;
+@Riverpod(keepAlive: true)
+class UsbDevice extends _$UsbDevice {
   Timer? _pollTimer;
   int _usbState = -1;
-  UsbDeviceNotifier(this._rpc) : super([]);
+
+  @override
+  List<UsbYubiKeyNode> build() {
+    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+      _notifyWindowState(windowState);
+    }, fireImmediately: true);
+
+    ref.onDispose(() {
+      _pollTimer?.cancel();
+    });
+    return [];
+  }
 
   void refresh() {
     _log.debug('Refreshing all USB devices');
@@ -64,19 +69,14 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
     } else {
       _pollTimer?.cancel();
       // Release any held device
-      _rpc?.command('get', ['usb']);
+      final rpc = ref.watch(rpcProvider).valueOrNull;
+      rpc?.command('get', ['usb']);
     }
-  }
-
-  @override
-  void dispose() {
-    _pollTimer?.cancel();
-    super.dispose();
   }
 
   void _pollDevices() async {
     _pollTimer?.cancel();
-    final rpc = _rpc;
+    final rpc = ref.watch(rpcProvider).valueOrNull;
     if (rpc == null) {
       return;
     }
@@ -84,9 +84,9 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
     try {
       var scan = await rpc.command('scan', ['usb']);
 
-      if (!mounted) {
-        return;
-      }
+      // if (!mounted) {
+      //   return;
+      // }
 
       final pids = {
         for (var e in (scan['pids'] as Map).entries)
@@ -127,17 +127,17 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
         }
 
         _log.info('USB state updated, unaccounted for: $pids');
-        if (mounted) {
-          state = usbDevices;
-        }
+        //if (mounted) {
+        state = usbDevices;
+        //}
       }
     } on RpcError catch (e) {
       _log.error('Error polling USB', jsonEncode(e));
     }
 
-    if (mounted) {
-      _pollTimer = Timer(_usbPollDelay, _pollDevices);
-    }
+    //if (mounted) {
+    _pollTimer = Timer(_usbPollDelay, _pollDevices);
+    //}
   }
 }
 
@@ -154,6 +154,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
   final RpcSession? _rpc;
   Timer? _pollTimer;
   String _nfcState = '';
+
   NfcDeviceNotifier(this._rpc) : super([]);
 
   void _notifyWindowState(WindowState windowState) {
@@ -205,7 +206,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
 class DesktopDevicesNotifier extends AttachedDevicesNotifier {
   @override
   List<DeviceNode> build() {
-    final usbDevices = ref.watch(_usbDevicesProvider).toList();
+    final usbDevices = ref.watch(usbDeviceProvider).toList();
     final nfcDevices = ref.watch(_nfcDevicesProvider).toList();
     usbDevices.sort((a, b) => a.name.compareTo(b.name));
     nfcDevices.sort((a, b) => a.name.compareTo(b.name));
@@ -214,7 +215,7 @@ class DesktopDevicesNotifier extends AttachedDevicesNotifier {
 
   @override
   refresh() {
-    ref.read(_usbDevicesProvider.notifier).refresh();
+    ref.read(usbDeviceProvider.notifier).refresh();
   }
 }
 

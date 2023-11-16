@@ -66,11 +66,11 @@ List<Application> Function(Ref) implementedApps(List<Application> apps) =>
 WindowState windowState(WindowStateRef ref) =>
     WindowState(focused: true, visible: true, active: true);
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [])
 List<ThemeMode> supportedThemes(SupportedThemesRef ref) =>
     throw UnimplementedError();
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [pref])
 class CommunityTranslations extends _$CommunityTranslations {
   static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
 
@@ -86,7 +86,7 @@ class CommunityTranslations extends _$CommunityTranslations {
   }
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [CommunityTranslations])
 List<Locale> supportedLocales(SupportedLocalesRef ref) {
   final locales = [...officialLocales];
   final localeStr = Platform.environment['_YA_LOCALE'];
@@ -100,7 +100,7 @@ List<Locale> supportedLocales(SupportedLocalesRef ref) {
       : locales;
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [supportedLocales])
 Locale currentLocale(CurrentLocaleRef ref) {
   final localeStr = Platform.environment['_YA_LOCALE'];
   if (localeStr != null) {
@@ -153,7 +153,7 @@ abstract class AttachedDevicesNotifier extends Notifier<List<DeviceNode>> {
 }
 
 // Override with platform implementation
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [])
 AsyncValue<YubiKeyData> currentDeviceData(CurrentDeviceDataRef ref) =>
     throw UnimplementedError();
 
@@ -229,7 +229,7 @@ class ContextConsumer extends StateNotifier<Function(BuildContext)?> {
   }
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [])
 class AppClipboard extends _$AppClipboard {
   @override
   void build() => throw UnimplementedError();

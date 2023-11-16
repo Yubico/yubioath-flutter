@@ -6,6 +6,36 @@ part of 'state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$androidSdkVersionHash() => r'd69b669a678fa3d1e516fcc963236af7d5943b77';
+
+/// See also [androidSdkVersion].
+@ProviderFor(androidSdkVersion)
+final androidSdkVersionProvider = Provider<int>.internal(
+  androidSdkVersion,
+  name: r'androidSdkVersionProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$androidSdkVersionHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AndroidSdkVersionRef = ProviderRef<int>;
+String _$androidNfcSupportHash() => r'c4a122eb3ffab69220205e7b21937ae9dcb6a4ce';
+
+/// See also [androidNfcSupport].
+@ProviderFor(androidNfcSupport)
+final androidNfcSupportProvider = Provider<bool>.internal(
+  androidNfcSupport,
+  name: r'androidNfcSupportProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$androidNfcSupportHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AndroidNfcSupportRef = ProviderRef<bool>;
 String _$androidSupportedThemesHash() =>
     r'b37850e8e4b37f934074472e75d4b354433b943c';
 

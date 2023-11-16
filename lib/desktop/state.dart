@@ -37,25 +37,47 @@ part 'state.g.dart';
 
 final _log = Logger('state');
 
-// This must be initialized before use in initialize.dart.
-final rpcProvider = FutureProvider<RpcSession>((ref) {
-  throw UnimplementedError();
-});
+@Riverpod(keepAlive: true)
+class Rpc extends _$Rpc {
+  @override
+  Future<RpcSession> build() async {
+    var exe = Platform.environment['_HELPER_PATH'];
+    if (exe?.isEmpty ?? true) {
+      var relativePath = 'helper/authenticator-helper';
+      if (Platform.isMacOS) {
+        relativePath = '../Resources/$relativePath';
+      } else if (Platform.isWindows) {
+        relativePath += '.exe';
+      }
+      exe = Uri.file(Platform.resolvedExecutable)
+          .resolve(relativePath)
+          .toFilePath();
+    }
 
-final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
-  (ref) => _RpcStateNotifier(ref.watch(rpcProvider).valueOrNull),
-);
+    _log.info('Starting Helper subprocess: $exe');
+    final rpc = RpcSession(exe!);
+    await rpc.initialize();
+    _log.info('Helper process started');
+    await rpc.setLogLevel(Logger.root.level);
+    _log.info('Helper log level set');
+    await Future.delayed(const Duration(seconds: 5));
+    //throw Exception('blab');
+    return rpc;
+  }
+}
 
-class _RpcStateNotifier extends StateNotifier<RpcState> {
-  final RpcSession? _rpc;
-
-  _RpcStateNotifier(this._rpc) : super(const RpcState('unknown', false)) {
+@Riverpod(keepAlive: true)
+class AsyncRpcState extends _$AsyncRpcState {
+  @override
+  RpcState build() {
     _init();
+    return const RpcState('unknown', false);
   }
 
   _init() async {
-    final response = await _rpc?.command('get', []);
-    if (mounted && response != null) {
+    final rpc = ref.watch(rpcProvider).valueOrNull;
+    final response = await rpc?.command('get', []);
+    if (response != null) {
       state = RpcState.fromJson(response['data']);
     }
   }

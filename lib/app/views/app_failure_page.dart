@@ -30,6 +30,7 @@ import 'message_page.dart';
 class AppFailurePage extends ConsumerWidget {
   final Widget? title;
   final Object cause;
+
   const AppFailurePage({this.title, required this.cause, super.key}) : super();
 
   @override
@@ -57,7 +58,8 @@ class AppFailurePage extends ConsumerWidget {
             break;
           case 'fido':
             if (Platform.isWindows &&
-                !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+                !ref.watch(
+                    asyncRpcStateProvider.select((state) => state.isAdmin))) {
               graphic = noPermission;
               header = null;
               message = l10n.p_webauthn_elevated_permissions_required;
