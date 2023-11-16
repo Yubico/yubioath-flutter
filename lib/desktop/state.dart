@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -31,6 +32,8 @@ import '../app/state.dart';
 import '../core/state.dart';
 import 'models.dart';
 import 'rpc.dart';
+
+part 'state.g.dart';
 
 final _log = Logger('state');
 
@@ -181,9 +184,9 @@ class DesktopClipboard extends AppClipboard {
   }
 }
 
-final desktopSupportedThemesProvider = StateProvider<List<ThemeMode>>(
-  (ref) => ThemeMode.values,
-);
+@Riverpod(keepAlive: true)
+List<ThemeMode> desktopSupportedThemes(DesktopSupportedThemesRef ref) =>
+    ThemeMode.values;
 
 class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   static const String _lastDevice = 'APP_STATE_LAST_DEVICE';

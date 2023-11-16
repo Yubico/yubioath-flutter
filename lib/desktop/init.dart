@@ -195,12 +195,8 @@ Future<Widget> initialize(List<String> argv) async {
       windowStateProvider.overrideWith(
         (ref) => ref.watch(desktopWindowStateProvider),
       ),
-      appClipboardProvider.overrideWith(
-        DesktopClipboard.new,
-      ),
-      supportedThemesProvider.overrideWith(
-        (ref) => ref.watch(desktopSupportedThemesProvider),
-      ),
+      appClipboardProvider.overrideWith(DesktopClipboard.new),
+      supportedThemesProvider.overrideWith(desktopSupportedThemes),
       attachedDevicesProvider.overrideWith(
         () => DesktopDevicesNotifier(),
       ),

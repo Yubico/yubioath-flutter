@@ -70,7 +70,8 @@ final androidNfcSupportProvider = Provider<bool>((ref) => false);
 final androidNfcStateProvider =
     StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());
 
-final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
+@Riverpod(keepAlive: true)
+List<ThemeMode> androidSupportedThemes(AndroidSupportedThemesRef ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
     // the user can select from light or dark theme of the app
     return [ThemeMode.light, ThemeMode.dark];
@@ -78,7 +79,7 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
     // the user can also select system theme on newer Android versions
     return ThemeMode.values;
   }
-});
+}
 
 class AndroidSubPageNotifier extends CurrentAppNotifier {
   AndroidSubPageNotifier(super.supportedApps) {

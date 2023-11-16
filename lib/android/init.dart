@@ -80,9 +80,7 @@ Future<Widget> initialize() async {
       appClipboardProvider.overrideWith(AndroidClipboard.new),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
-      supportedThemesProvider.overrideWith(
-        (ref) => ref.watch(androidSupportedThemesProvider),
-      )
+      supportedThemesProvider.overrideWith(androidSupportedThemes)
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
