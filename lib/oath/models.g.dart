@@ -6,8 +6,8 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_OathCredential _$$_OathCredentialFromJson(Map<String, dynamic> json) =>
-    _$_OathCredential(
+_$OathCredentialImpl _$$OathCredentialImplFromJson(Map<String, dynamic> json) =>
+    _$OathCredentialImpl(
       json['device_id'] as String,
       json['id'] as String,
       json['issuer'] as String?,
@@ -17,7 +17,8 @@ _$_OathCredential _$$_OathCredentialFromJson(Map<String, dynamic> json) =>
       json['touch_required'] as bool,
     );
 
-Map<String, dynamic> _$$_OathCredentialToJson(_$_OathCredential instance) =>
+Map<String, dynamic> _$$OathCredentialImplToJson(
+        _$OathCredentialImpl instance) =>
     <String, dynamic>{
       'device_id': instance.deviceId,
       'id': instance.id,
@@ -33,33 +34,36 @@ const _$OathTypeEnumMap = {
   OathType.totp: 32,
 };
 
-_$_OathCode _$$_OathCodeFromJson(Map<String, dynamic> json) => _$_OathCode(
+_$OathCodeImpl _$$OathCodeImplFromJson(Map<String, dynamic> json) =>
+    _$OathCodeImpl(
       json['value'] as String,
       json['valid_from'] as int,
       json['valid_to'] as int,
     );
 
-Map<String, dynamic> _$$_OathCodeToJson(_$_OathCode instance) =>
+Map<String, dynamic> _$$OathCodeImplToJson(_$OathCodeImpl instance) =>
     <String, dynamic>{
       'value': instance.value,
       'valid_from': instance.validFrom,
       'valid_to': instance.validTo,
     };
 
-_$_OathPair _$$_OathPairFromJson(Map<String, dynamic> json) => _$_OathPair(
+_$OathPairImpl _$$OathPairImplFromJson(Map<String, dynamic> json) =>
+    _$OathPairImpl(
       OathCredential.fromJson(json['credential'] as Map<String, dynamic>),
       json['code'] == null
           ? null
           : OathCode.fromJson(json['code'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_OathPairToJson(_$_OathPair instance) =>
+Map<String, dynamic> _$$OathPairImplToJson(_$OathPairImpl instance) =>
     <String, dynamic>{
       'credential': instance.credential,
       'code': instance.code,
     };
 
-_$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
+_$OathStateImpl _$$OathStateImplFromJson(Map<String, dynamic> json) =>
+    _$OathStateImpl(
       json['device_id'] as String,
       Version.fromJson(json['version'] as List<dynamic>),
       hasKey: json['has_key'] as bool,
@@ -68,7 +72,7 @@ _$_OathState _$$_OathStateFromJson(Map<String, dynamic> json) => _$_OathState(
       keystore: $enumDecode(_$KeystoreStateEnumMap, json['keystore']),
     );
 
-Map<String, dynamic> _$$_OathStateToJson(_$_OathState instance) =>
+Map<String, dynamic> _$$OathStateImplToJson(_$OathStateImpl instance) =>
     <String, dynamic>{
       'device_id': instance.deviceId,
       'version': instance.version,
@@ -84,8 +88,8 @@ const _$KeystoreStateEnumMap = {
   KeystoreState.failed: 'failed',
 };
 
-_$_CredentialData _$$_CredentialDataFromJson(Map<String, dynamic> json) =>
-    _$_CredentialData(
+_$CredentialDataImpl _$$CredentialDataImplFromJson(Map<String, dynamic> json) =>
+    _$CredentialDataImpl(
       issuer: json['issuer'] as String?,
       name: json['name'] as String,
       secret: json['secret'] as String,
@@ -99,7 +103,8 @@ _$_CredentialData _$$_CredentialDataFromJson(Map<String, dynamic> json) =>
       counter: json['counter'] as int? ?? defaultCounter,
     );
 
-Map<String, dynamic> _$$_CredentialDataToJson(_$_CredentialData instance) =>
+Map<String, dynamic> _$$CredentialDataImplToJson(
+        _$CredentialDataImpl instance) =>
     <String, dynamic>{
       'issuer': instance.issuer,
       'name': instance.name,

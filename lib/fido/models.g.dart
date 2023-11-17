@@ -6,38 +6,40 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_FidoState _$$_FidoStateFromJson(Map<String, dynamic> json) => _$_FidoState(
+_$FidoStateImpl _$$FidoStateImplFromJson(Map<String, dynamic> json) =>
+    _$FidoStateImpl(
       info: json['info'] as Map<String, dynamic>,
       unlocked: json['unlocked'] as bool,
     );
 
-Map<String, dynamic> _$$_FidoStateToJson(_$_FidoState instance) =>
+Map<String, dynamic> _$$FidoStateImplToJson(_$FidoStateImpl instance) =>
     <String, dynamic>{
       'info': instance.info,
       'unlocked': instance.unlocked,
     };
 
-_$_Fingerprint _$$_FingerprintFromJson(Map<String, dynamic> json) =>
-    _$_Fingerprint(
+_$FingerprintImpl _$$FingerprintImplFromJson(Map<String, dynamic> json) =>
+    _$FingerprintImpl(
       json['template_id'] as String,
       json['name'] as String?,
     );
 
-Map<String, dynamic> _$$_FingerprintToJson(_$_Fingerprint instance) =>
+Map<String, dynamic> _$$FingerprintImplToJson(_$FingerprintImpl instance) =>
     <String, dynamic>{
       'template_id': instance.templateId,
       'name': instance.name,
     };
 
-_$_FidoCredential _$$_FidoCredentialFromJson(Map<String, dynamic> json) =>
-    _$_FidoCredential(
+_$FidoCredentialImpl _$$FidoCredentialImplFromJson(Map<String, dynamic> json) =>
+    _$FidoCredentialImpl(
       rpId: json['rp_id'] as String,
       credentialId: json['credential_id'] as String,
       userId: json['user_id'] as String,
       userName: json['user_name'] as String,
     );
 
-Map<String, dynamic> _$$_FidoCredentialToJson(_$_FidoCredential instance) =>
+Map<String, dynamic> _$$FidoCredentialImplToJson(
+        _$FidoCredentialImpl instance) =>
     <String, dynamic>{
       'rp_id': instance.rpId,
       'credential_id': instance.credentialId,

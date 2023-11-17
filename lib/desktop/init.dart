@@ -211,21 +211,21 @@ Future<Widget> initialize(List<String> argv) async {
         (ref) => ref.watch(desktopDeviceDataProvider),
       ),
       // OATH
-      oathStateProvider.overrideWithProvider(desktopOathState),
+      oathStateProvider.overrideWithProvider(desktopOathState.call),
       credentialListProvider
-          .overrideWithProvider(desktopOathCredentialListProvider),
+          .overrideWithProvider(desktopOathCredentialListProvider.call),
       qrScannerProvider.overrideWith(
         (ref) => ref.watch(desktopQrScannerProvider),
       ),
       // Management
-      managementStateProvider.overrideWithProvider(desktopManagementState),
+      managementStateProvider.overrideWithProvider(desktopManagementState.call),
       // FIDO
-      fidoStateProvider.overrideWithProvider(desktopFidoState),
-      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
-      credentialProvider.overrideWithProvider(desktopCredentialProvider),
+      fidoStateProvider.overrideWithProvider(desktopFidoState.call),
+      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider.call),
+      credentialProvider.overrideWithProvider(desktopCredentialProvider.call),
       // PIV
-      pivStateProvider.overrideWithProvider(desktopPivState),
-      pivSlotsProvider.overrideWithProvider(desktopPivSlots),
+      pivStateProvider.overrideWithProvider(desktopPivState.call),
+      pivSlotsProvider.overrideWithProvider(desktopPivSlots.call),
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(

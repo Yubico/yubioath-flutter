@@ -120,19 +120,22 @@ class _$RpcResponseCopyWithImpl<$Res, $Val extends RpcResponse>
 }
 
 /// @nodoc
-abstract class _$$SuccessCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
-  factory _$$SuccessCopyWith(_$Success value, $Res Function(_$Success) then) =
-      __$$SuccessCopyWithImpl<$Res>;
+abstract class _$$SuccessImplCopyWith<$Res>
+    implements $RpcResponseCopyWith<$Res> {
+  factory _$$SuccessImplCopyWith(
+          _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
+      __$$SuccessImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, dynamic> body});
 }
 
 /// @nodoc
-class __$$SuccessCopyWithImpl<$Res>
-    extends _$RpcResponseCopyWithImpl<$Res, _$Success>
-    implements _$$SuccessCopyWith<$Res> {
-  __$$SuccessCopyWithImpl(_$Success _value, $Res Function(_$Success) _then)
+class __$$SuccessImplCopyWithImpl<$Res>
+    extends _$RpcResponseCopyWithImpl<$Res, _$SuccessImpl>
+    implements _$$SuccessImplCopyWith<$Res> {
+  __$$SuccessImplCopyWithImpl(
+      _$SuccessImpl _value, $Res Function(_$SuccessImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -140,7 +143,7 @@ class __$$SuccessCopyWithImpl<$Res>
   $Res call({
     Object? body = null,
   }) {
-    return _then(_$Success(
+    return _then(_$SuccessImpl(
       null == body
           ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
@@ -151,13 +154,13 @@ class __$$SuccessCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$Success implements Success {
-  _$Success(final Map<String, dynamic> body, {final String? $type})
+class _$SuccessImpl implements Success {
+  _$SuccessImpl(final Map<String, dynamic> body, {final String? $type})
       : _body = body,
         $type = $type ?? 'success';
 
-  factory _$Success.fromJson(Map<String, dynamic> json) =>
-      _$$SuccessFromJson(json);
+  factory _$SuccessImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SuccessImplFromJson(json);
 
   final Map<String, dynamic> _body;
   @override
@@ -179,7 +182,7 @@ class _$Success implements Success {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Success &&
+            other is _$SuccessImpl &&
             const DeepCollectionEquality().equals(other._body, _body));
   }
 
@@ -191,8 +194,8 @@ class _$Success implements Success {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SuccessCopyWith<_$Success> get copyWith =>
-      __$$SuccessCopyWithImpl<_$Success>(this, _$identity);
+  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
+      __$$SuccessImplCopyWithImpl<_$SuccessImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -268,39 +271,42 @@ class _$Success implements Success {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SuccessToJson(
+    return _$$SuccessImplToJson(
       this,
     );
   }
 }
 
 abstract class Success implements RpcResponse {
-  factory Success(final Map<String, dynamic> body) = _$Success;
+  factory Success(final Map<String, dynamic> body) = _$SuccessImpl;
 
-  factory Success.fromJson(Map<String, dynamic> json) = _$Success.fromJson;
+  factory Success.fromJson(Map<String, dynamic> json) = _$SuccessImpl.fromJson;
 
   @override
   Map<String, dynamic> get body;
   @override
   @JsonKey(ignore: true)
-  _$$SuccessCopyWith<_$Success> get copyWith =>
+  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$SignalCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
-  factory _$$SignalCopyWith(_$Signal value, $Res Function(_$Signal) then) =
-      __$$SignalCopyWithImpl<$Res>;
+abstract class _$$SignalImplCopyWith<$Res>
+    implements $RpcResponseCopyWith<$Res> {
+  factory _$$SignalImplCopyWith(
+          _$SignalImpl value, $Res Function(_$SignalImpl) then) =
+      __$$SignalImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String status, Map<String, dynamic> body});
 }
 
 /// @nodoc
-class __$$SignalCopyWithImpl<$Res>
-    extends _$RpcResponseCopyWithImpl<$Res, _$Signal>
-    implements _$$SignalCopyWith<$Res> {
-  __$$SignalCopyWithImpl(_$Signal _value, $Res Function(_$Signal) _then)
+class __$$SignalImplCopyWithImpl<$Res>
+    extends _$RpcResponseCopyWithImpl<$Res, _$SignalImpl>
+    implements _$$SignalImplCopyWith<$Res> {
+  __$$SignalImplCopyWithImpl(
+      _$SignalImpl _value, $Res Function(_$SignalImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -309,7 +315,7 @@ class __$$SignalCopyWithImpl<$Res>
     Object? status = null,
     Object? body = null,
   }) {
-    return _then(_$Signal(
+    return _then(_$SignalImpl(
       null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -324,13 +330,14 @@ class __$$SignalCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$Signal implements Signal {
-  _$Signal(this.status, final Map<String, dynamic> body, {final String? $type})
+class _$SignalImpl implements Signal {
+  _$SignalImpl(this.status, final Map<String, dynamic> body,
+      {final String? $type})
       : _body = body,
         $type = $type ?? 'signal';
 
-  factory _$Signal.fromJson(Map<String, dynamic> json) =>
-      _$$SignalFromJson(json);
+  factory _$SignalImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SignalImplFromJson(json);
 
   @override
   final String status;
@@ -354,7 +361,7 @@ class _$Signal implements Signal {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Signal &&
+            other is _$SignalImpl &&
             (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(other._body, _body));
   }
@@ -367,8 +374,8 @@ class _$Signal implements Signal {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SignalCopyWith<_$Signal> get copyWith =>
-      __$$SignalCopyWithImpl<_$Signal>(this, _$identity);
+  _$$SignalImplCopyWith<_$SignalImpl> get copyWith =>
+      __$$SignalImplCopyWithImpl<_$SignalImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -444,7 +451,7 @@ class _$Signal implements Signal {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SignalToJson(
+    return _$$SignalImplToJson(
       this,
     );
   }
@@ -452,34 +459,36 @@ class _$Signal implements Signal {
 
 abstract class Signal implements RpcResponse {
   factory Signal(final String status, final Map<String, dynamic> body) =
-      _$Signal;
+      _$SignalImpl;
 
-  factory Signal.fromJson(Map<String, dynamic> json) = _$Signal.fromJson;
+  factory Signal.fromJson(Map<String, dynamic> json) = _$SignalImpl.fromJson;
 
   String get status;
   @override
   Map<String, dynamic> get body;
   @override
   @JsonKey(ignore: true)
-  _$$SignalCopyWith<_$Signal> get copyWith =>
+  _$$SignalImplCopyWith<_$SignalImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$RpcErrorCopyWith<$Res> implements $RpcResponseCopyWith<$Res> {
-  factory _$$RpcErrorCopyWith(
-          _$RpcError value, $Res Function(_$RpcError) then) =
-      __$$RpcErrorCopyWithImpl<$Res>;
+abstract class _$$RpcErrorImplCopyWith<$Res>
+    implements $RpcResponseCopyWith<$Res> {
+  factory _$$RpcErrorImplCopyWith(
+          _$RpcErrorImpl value, $Res Function(_$RpcErrorImpl) then) =
+      __$$RpcErrorImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String status, String message, Map<String, dynamic> body});
 }
 
 /// @nodoc
-class __$$RpcErrorCopyWithImpl<$Res>
-    extends _$RpcResponseCopyWithImpl<$Res, _$RpcError>
-    implements _$$RpcErrorCopyWith<$Res> {
-  __$$RpcErrorCopyWithImpl(_$RpcError _value, $Res Function(_$RpcError) _then)
+class __$$RpcErrorImplCopyWithImpl<$Res>
+    extends _$RpcResponseCopyWithImpl<$Res, _$RpcErrorImpl>
+    implements _$$RpcErrorImplCopyWith<$Res> {
+  __$$RpcErrorImplCopyWithImpl(
+      _$RpcErrorImpl _value, $Res Function(_$RpcErrorImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -489,7 +498,7 @@ class __$$RpcErrorCopyWithImpl<$Res>
     Object? message = null,
     Object? body = null,
   }) {
-    return _then(_$RpcError(
+    return _then(_$RpcErrorImpl(
       null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -508,14 +517,14 @@ class __$$RpcErrorCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$RpcError implements RpcError {
-  _$RpcError(this.status, this.message, final Map<String, dynamic> body,
+class _$RpcErrorImpl implements RpcError {
+  _$RpcErrorImpl(this.status, this.message, final Map<String, dynamic> body,
       {final String? $type})
       : _body = body,
         $type = $type ?? 'error';
 
-  factory _$RpcError.fromJson(Map<String, dynamic> json) =>
-      _$$RpcErrorFromJson(json);
+  factory _$RpcErrorImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RpcErrorImplFromJson(json);
 
   @override
   final String status;
@@ -541,7 +550,7 @@ class _$RpcError implements RpcError {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$RpcError &&
+            other is _$RpcErrorImpl &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.message, message) || other.message == message) &&
             const DeepCollectionEquality().equals(other._body, _body));
@@ -555,8 +564,8 @@ class _$RpcError implements RpcError {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$RpcErrorCopyWith<_$RpcError> get copyWith =>
-      __$$RpcErrorCopyWithImpl<_$RpcError>(this, _$identity);
+  _$$RpcErrorImplCopyWith<_$RpcErrorImpl> get copyWith =>
+      __$$RpcErrorImplCopyWithImpl<_$RpcErrorImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -632,7 +641,7 @@ class _$RpcError implements RpcError {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RpcErrorToJson(
+    return _$$RpcErrorImplToJson(
       this,
     );
   }
@@ -640,9 +649,10 @@ class _$RpcError implements RpcError {
 
 abstract class RpcError implements RpcResponse {
   factory RpcError(final String status, final String message,
-      final Map<String, dynamic> body) = _$RpcError;
+      final Map<String, dynamic> body) = _$RpcErrorImpl;
 
-  factory RpcError.fromJson(Map<String, dynamic> json) = _$RpcError.fromJson;
+  factory RpcError.fromJson(Map<String, dynamic> json) =
+      _$RpcErrorImpl.fromJson;
 
   String get status;
   String get message;
@@ -650,7 +660,7 @@ abstract class RpcError implements RpcResponse {
   Map<String, dynamic> get body;
   @override
   @JsonKey(ignore: true)
-  _$$RpcErrorCopyWith<_$RpcError> get copyWith =>
+  _$$RpcErrorImplCopyWith<_$RpcErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -707,21 +717,22 @@ class _$RpcStateCopyWithImpl<$Res, $Val extends RpcState>
 }
 
 /// @nodoc
-abstract class _$$_RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res> {
-  factory _$$_RpcStateCopyWith(
-          _$_RpcState value, $Res Function(_$_RpcState) then) =
-      __$$_RpcStateCopyWithImpl<$Res>;
+abstract class _$$RpcStateImplCopyWith<$Res>
+    implements $RpcStateCopyWith<$Res> {
+  factory _$$RpcStateImplCopyWith(
+          _$RpcStateImpl value, $Res Function(_$RpcStateImpl) then) =
+      __$$RpcStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String version, bool isAdmin});
 }
 
 /// @nodoc
-class __$$_RpcStateCopyWithImpl<$Res>
-    extends _$RpcStateCopyWithImpl<$Res, _$_RpcState>
-    implements _$$_RpcStateCopyWith<$Res> {
-  __$$_RpcStateCopyWithImpl(
-      _$_RpcState _value, $Res Function(_$_RpcState) _then)
+class __$$RpcStateImplCopyWithImpl<$Res>
+    extends _$RpcStateCopyWithImpl<$Res, _$RpcStateImpl>
+    implements _$$RpcStateImplCopyWith<$Res> {
+  __$$RpcStateImplCopyWithImpl(
+      _$RpcStateImpl _value, $Res Function(_$RpcStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -730,7 +741,7 @@ class __$$_RpcStateCopyWithImpl<$Res>
     Object? version = null,
     Object? isAdmin = null,
   }) {
-    return _then(_$_RpcState(
+    return _then(_$RpcStateImpl(
       null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
@@ -745,11 +756,11 @@ class __$$_RpcStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_RpcState implements _RpcState {
-  const _$_RpcState(this.version, this.isAdmin);
+class _$RpcStateImpl implements _RpcState {
+  const _$RpcStateImpl(this.version, this.isAdmin);
 
-  factory _$_RpcState.fromJson(Map<String, dynamic> json) =>
-      _$$_RpcStateFromJson(json);
+  factory _$RpcStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RpcStateImplFromJson(json);
 
   @override
   final String version;
@@ -765,7 +776,7 @@ class _$_RpcState implements _RpcState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RpcState &&
+            other is _$RpcStateImpl &&
             (identical(other.version, version) || other.version == version) &&
             (identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
   }
@@ -777,12 +788,12 @@ class _$_RpcState implements _RpcState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RpcStateCopyWith<_$_RpcState> get copyWith =>
-      __$$_RpcStateCopyWithImpl<_$_RpcState>(this, _$identity);
+  _$$RpcStateImplCopyWith<_$RpcStateImpl> get copyWith =>
+      __$$RpcStateImplCopyWithImpl<_$RpcStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RpcStateToJson(
+    return _$$RpcStateImplToJson(
       this,
     );
   }
@@ -790,9 +801,10 @@ class _$_RpcState implements _RpcState {
 
 abstract class _RpcState implements RpcState {
   const factory _RpcState(final String version, final bool isAdmin) =
-      _$_RpcState;
+      _$RpcStateImpl;
 
-  factory _RpcState.fromJson(Map<String, dynamic> json) = _$_RpcState.fromJson;
+  factory _RpcState.fromJson(Map<String, dynamic> json) =
+      _$RpcStateImpl.fromJson;
 
   @override
   String get version;
@@ -800,6 +812,6 @@ abstract class _RpcState implements RpcState {
   bool get isAdmin;
   @override
   @JsonKey(ignore: true)
-  _$$_RpcStateCopyWith<_$_RpcState> get copyWith =>
+  _$$RpcStateImplCopyWith<_$RpcStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

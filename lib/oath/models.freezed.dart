@@ -105,11 +105,11 @@ class _$OathCredentialCopyWithImpl<$Res, $Val extends OathCredential>
 }
 
 /// @nodoc
-abstract class _$$_OathCredentialCopyWith<$Res>
+abstract class _$$OathCredentialImplCopyWith<$Res>
     implements $OathCredentialCopyWith<$Res> {
-  factory _$$_OathCredentialCopyWith(
-          _$_OathCredential value, $Res Function(_$_OathCredential) then) =
-      __$$_OathCredentialCopyWithImpl<$Res>;
+  factory _$$OathCredentialImplCopyWith(_$OathCredentialImpl value,
+          $Res Function(_$OathCredentialImpl) then) =
+      __$$OathCredentialImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -123,11 +123,11 @@ abstract class _$$_OathCredentialCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_OathCredentialCopyWithImpl<$Res>
-    extends _$OathCredentialCopyWithImpl<$Res, _$_OathCredential>
-    implements _$$_OathCredentialCopyWith<$Res> {
-  __$$_OathCredentialCopyWithImpl(
-      _$_OathCredential _value, $Res Function(_$_OathCredential) _then)
+class __$$OathCredentialImplCopyWithImpl<$Res>
+    extends _$OathCredentialCopyWithImpl<$Res, _$OathCredentialImpl>
+    implements _$$OathCredentialImplCopyWith<$Res> {
+  __$$OathCredentialImplCopyWithImpl(
+      _$OathCredentialImpl _value, $Res Function(_$OathCredentialImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -141,7 +141,7 @@ class __$$_OathCredentialCopyWithImpl<$Res>
     Object? period = null,
     Object? touchRequired = null,
   }) {
-    return _then(_$_OathCredential(
+    return _then(_$OathCredentialImpl(
       null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
@@ -176,12 +176,12 @@ class __$$_OathCredentialCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_OathCredential implements _OathCredential {
-  _$_OathCredential(this.deviceId, this.id, this.issuer, this.name,
+class _$OathCredentialImpl implements _OathCredential {
+  _$OathCredentialImpl(this.deviceId, this.id, this.issuer, this.name,
       this.oathType, this.period, this.touchRequired);
 
-  factory _$_OathCredential.fromJson(Map<String, dynamic> json) =>
-      _$$_OathCredentialFromJson(json);
+  factory _$OathCredentialImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OathCredentialImplFromJson(json);
 
   @override
   final String deviceId;
@@ -207,7 +207,7 @@ class _$_OathCredential implements _OathCredential {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_OathCredential &&
+            other is _$OathCredentialImpl &&
             (identical(other.deviceId, deviceId) ||
                 other.deviceId == deviceId) &&
             (identical(other.id, id) || other.id == id) &&
@@ -228,12 +228,13 @@ class _$_OathCredential implements _OathCredential {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_OathCredentialCopyWith<_$_OathCredential> get copyWith =>
-      __$$_OathCredentialCopyWithImpl<_$_OathCredential>(this, _$identity);
+  _$$OathCredentialImplCopyWith<_$OathCredentialImpl> get copyWith =>
+      __$$OathCredentialImplCopyWithImpl<_$OathCredentialImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathCredentialToJson(
+    return _$$OathCredentialImplToJson(
       this,
     );
   }
@@ -247,10 +248,10 @@ abstract class _OathCredential implements OathCredential {
       final String name,
       final OathType oathType,
       final int period,
-      final bool touchRequired) = _$_OathCredential;
+      final bool touchRequired) = _$OathCredentialImpl;
 
   factory _OathCredential.fromJson(Map<String, dynamic> json) =
-      _$_OathCredential.fromJson;
+      _$OathCredentialImpl.fromJson;
 
   @override
   String get deviceId;
@@ -268,7 +269,7 @@ abstract class _OathCredential implements OathCredential {
   bool get touchRequired;
   @override
   @JsonKey(ignore: true)
-  _$$_OathCredentialCopyWith<_$_OathCredential> get copyWith =>
+  _$$OathCredentialImplCopyWith<_$OathCredentialImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -331,21 +332,22 @@ class _$OathCodeCopyWithImpl<$Res, $Val extends OathCode>
 }
 
 /// @nodoc
-abstract class _$$_OathCodeCopyWith<$Res> implements $OathCodeCopyWith<$Res> {
-  factory _$$_OathCodeCopyWith(
-          _$_OathCode value, $Res Function(_$_OathCode) then) =
-      __$$_OathCodeCopyWithImpl<$Res>;
+abstract class _$$OathCodeImplCopyWith<$Res>
+    implements $OathCodeCopyWith<$Res> {
+  factory _$$OathCodeImplCopyWith(
+          _$OathCodeImpl value, $Res Function(_$OathCodeImpl) then) =
+      __$$OathCodeImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String value, int validFrom, int validTo});
 }
 
 /// @nodoc
-class __$$_OathCodeCopyWithImpl<$Res>
-    extends _$OathCodeCopyWithImpl<$Res, _$_OathCode>
-    implements _$$_OathCodeCopyWith<$Res> {
-  __$$_OathCodeCopyWithImpl(
-      _$_OathCode _value, $Res Function(_$_OathCode) _then)
+class __$$OathCodeImplCopyWithImpl<$Res>
+    extends _$OathCodeCopyWithImpl<$Res, _$OathCodeImpl>
+    implements _$$OathCodeImplCopyWith<$Res> {
+  __$$OathCodeImplCopyWithImpl(
+      _$OathCodeImpl _value, $Res Function(_$OathCodeImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -355,7 +357,7 @@ class __$$_OathCodeCopyWithImpl<$Res>
     Object? validFrom = null,
     Object? validTo = null,
   }) {
-    return _then(_$_OathCode(
+    return _then(_$OathCodeImpl(
       null == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
@@ -374,11 +376,11 @@ class __$$_OathCodeCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_OathCode implements _OathCode {
-  _$_OathCode(this.value, this.validFrom, this.validTo);
+class _$OathCodeImpl implements _OathCode {
+  _$OathCodeImpl(this.value, this.validFrom, this.validTo);
 
-  factory _$_OathCode.fromJson(Map<String, dynamic> json) =>
-      _$$_OathCodeFromJson(json);
+  factory _$OathCodeImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OathCodeImplFromJson(json);
 
   @override
   final String value;
@@ -396,7 +398,7 @@ class _$_OathCode implements _OathCode {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_OathCode &&
+            other is _$OathCodeImpl &&
             (identical(other.value, value) || other.value == value) &&
             (identical(other.validFrom, validFrom) ||
                 other.validFrom == validFrom) &&
@@ -410,12 +412,12 @@ class _$_OathCode implements _OathCode {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_OathCodeCopyWith<_$_OathCode> get copyWith =>
-      __$$_OathCodeCopyWithImpl<_$_OathCode>(this, _$identity);
+  _$$OathCodeImplCopyWith<_$OathCodeImpl> get copyWith =>
+      __$$OathCodeImplCopyWithImpl<_$OathCodeImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathCodeToJson(
+    return _$$OathCodeImplToJson(
       this,
     );
   }
@@ -423,9 +425,11 @@ class _$_OathCode implements _OathCode {
 
 abstract class _OathCode implements OathCode {
   factory _OathCode(
-      final String value, final int validFrom, final int validTo) = _$_OathCode;
+          final String value, final int validFrom, final int validTo) =
+      _$OathCodeImpl;
 
-  factory _OathCode.fromJson(Map<String, dynamic> json) = _$_OathCode.fromJson;
+  factory _OathCode.fromJson(Map<String, dynamic> json) =
+      _$OathCodeImpl.fromJson;
 
   @override
   String get value;
@@ -435,7 +439,7 @@ abstract class _OathCode implements OathCode {
   int get validTo;
   @override
   @JsonKey(ignore: true)
-  _$$_OathCodeCopyWith<_$_OathCode> get copyWith =>
+  _$$OathCodeImplCopyWith<_$OathCodeImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -515,10 +519,11 @@ class _$OathPairCopyWithImpl<$Res, $Val extends OathPair>
 }
 
 /// @nodoc
-abstract class _$$_OathPairCopyWith<$Res> implements $OathPairCopyWith<$Res> {
-  factory _$$_OathPairCopyWith(
-          _$_OathPair value, $Res Function(_$_OathPair) then) =
-      __$$_OathPairCopyWithImpl<$Res>;
+abstract class _$$OathPairImplCopyWith<$Res>
+    implements $OathPairCopyWith<$Res> {
+  factory _$$OathPairImplCopyWith(
+          _$OathPairImpl value, $Res Function(_$OathPairImpl) then) =
+      __$$OathPairImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({OathCredential credential, OathCode? code});
@@ -530,11 +535,11 @@ abstract class _$$_OathPairCopyWith<$Res> implements $OathPairCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_OathPairCopyWithImpl<$Res>
-    extends _$OathPairCopyWithImpl<$Res, _$_OathPair>
-    implements _$$_OathPairCopyWith<$Res> {
-  __$$_OathPairCopyWithImpl(
-      _$_OathPair _value, $Res Function(_$_OathPair) _then)
+class __$$OathPairImplCopyWithImpl<$Res>
+    extends _$OathPairCopyWithImpl<$Res, _$OathPairImpl>
+    implements _$$OathPairImplCopyWith<$Res> {
+  __$$OathPairImplCopyWithImpl(
+      _$OathPairImpl _value, $Res Function(_$OathPairImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -543,7 +548,7 @@ class __$$_OathPairCopyWithImpl<$Res>
     Object? credential = null,
     Object? code = freezed,
   }) {
-    return _then(_$_OathPair(
+    return _then(_$OathPairImpl(
       null == credential
           ? _value.credential
           : credential // ignore: cast_nullable_to_non_nullable
@@ -558,11 +563,11 @@ class __$$_OathPairCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_OathPair implements _OathPair {
-  _$_OathPair(this.credential, this.code);
+class _$OathPairImpl implements _OathPair {
+  _$OathPairImpl(this.credential, this.code);
 
-  factory _$_OathPair.fromJson(Map<String, dynamic> json) =>
-      _$$_OathPairFromJson(json);
+  factory _$OathPairImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OathPairImplFromJson(json);
 
   @override
   final OathCredential credential;
@@ -578,7 +583,7 @@ class _$_OathPair implements _OathPair {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_OathPair &&
+            other is _$OathPairImpl &&
             (identical(other.credential, credential) ||
                 other.credential == credential) &&
             (identical(other.code, code) || other.code == code));
@@ -591,12 +596,12 @@ class _$_OathPair implements _OathPair {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_OathPairCopyWith<_$_OathPair> get copyWith =>
-      __$$_OathPairCopyWithImpl<_$_OathPair>(this, _$identity);
+  _$$OathPairImplCopyWith<_$OathPairImpl> get copyWith =>
+      __$$OathPairImplCopyWithImpl<_$OathPairImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathPairToJson(
+    return _$$OathPairImplToJson(
       this,
     );
   }
@@ -604,9 +609,10 @@ class _$_OathPair implements _OathPair {
 
 abstract class _OathPair implements OathPair {
   factory _OathPair(final OathCredential credential, final OathCode? code) =
-      _$_OathPair;
+      _$OathPairImpl;
 
-  factory _OathPair.fromJson(Map<String, dynamic> json) = _$_OathPair.fromJson;
+  factory _OathPair.fromJson(Map<String, dynamic> json) =
+      _$OathPairImpl.fromJson;
 
   @override
   OathCredential get credential;
@@ -614,7 +620,7 @@ abstract class _OathPair implements OathPair {
   OathCode? get code;
   @override
   @JsonKey(ignore: true)
-  _$$_OathPairCopyWith<_$_OathPair> get copyWith =>
+  _$$OathPairImplCopyWith<_$OathPairImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -711,10 +717,11 @@ class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
 }
 
 /// @nodoc
-abstract class _$$_OathStateCopyWith<$Res> implements $OathStateCopyWith<$Res> {
-  factory _$$_OathStateCopyWith(
-          _$_OathState value, $Res Function(_$_OathState) then) =
-      __$$_OathStateCopyWithImpl<$Res>;
+abstract class _$$OathStateImplCopyWith<$Res>
+    implements $OathStateCopyWith<$Res> {
+  factory _$$OathStateImplCopyWith(
+          _$OathStateImpl value, $Res Function(_$OathStateImpl) then) =
+      __$$OathStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -730,11 +737,11 @@ abstract class _$$_OathStateCopyWith<$Res> implements $OathStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_OathStateCopyWithImpl<$Res>
-    extends _$OathStateCopyWithImpl<$Res, _$_OathState>
-    implements _$$_OathStateCopyWith<$Res> {
-  __$$_OathStateCopyWithImpl(
-      _$_OathState _value, $Res Function(_$_OathState) _then)
+class __$$OathStateImplCopyWithImpl<$Res>
+    extends _$OathStateCopyWithImpl<$Res, _$OathStateImpl>
+    implements _$$OathStateImplCopyWith<$Res> {
+  __$$OathStateImplCopyWithImpl(
+      _$OathStateImpl _value, $Res Function(_$OathStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -747,7 +754,7 @@ class __$$_OathStateCopyWithImpl<$Res>
     Object? locked = null,
     Object? keystore = null,
   }) {
-    return _then(_$_OathState(
+    return _then(_$OathStateImpl(
       null == deviceId
           ? _value.deviceId
           : deviceId // ignore: cast_nullable_to_non_nullable
@@ -778,15 +785,15 @@ class __$$_OathStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_OathState implements _OathState {
-  _$_OathState(this.deviceId, this.version,
+class _$OathStateImpl implements _OathState {
+  _$OathStateImpl(this.deviceId, this.version,
       {required this.hasKey,
       required this.remembered,
       required this.locked,
       required this.keystore});
 
-  factory _$_OathState.fromJson(Map<String, dynamic> json) =>
-      _$$_OathStateFromJson(json);
+  factory _$OathStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OathStateImplFromJson(json);
 
   @override
   final String deviceId;
@@ -810,7 +817,7 @@ class _$_OathState implements _OathState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_OathState &&
+            other is _$OathStateImpl &&
             (identical(other.deviceId, deviceId) ||
                 other.deviceId == deviceId) &&
             (identical(other.version, version) || other.version == version) &&
@@ -830,12 +837,12 @@ class _$_OathState implements _OathState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_OathStateCopyWith<_$_OathState> get copyWith =>
-      __$$_OathStateCopyWithImpl<_$_OathState>(this, _$identity);
+  _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>
+      __$$OathStateImplCopyWithImpl<_$OathStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OathStateToJson(
+    return _$$OathStateImplToJson(
       this,
     );
   }
@@ -846,10 +853,10 @@ abstract class _OathState implements OathState {
       {required final bool hasKey,
       required final bool remembered,
       required final bool locked,
-      required final KeystoreState keystore}) = _$_OathState;
+      required final KeystoreState keystore}) = _$OathStateImpl;
 
   factory _OathState.fromJson(Map<String, dynamic> json) =
-      _$_OathState.fromJson;
+      _$OathStateImpl.fromJson;
 
   @override
   String get deviceId;
@@ -865,7 +872,7 @@ abstract class _OathState implements OathState {
   KeystoreState get keystore;
   @override
   @JsonKey(ignore: true)
-  _$$_OathStateCopyWith<_$_OathState> get copyWith =>
+  _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -967,11 +974,11 @@ class _$CredentialDataCopyWithImpl<$Res, $Val extends CredentialData>
 }
 
 /// @nodoc
-abstract class _$$_CredentialDataCopyWith<$Res>
+abstract class _$$CredentialDataImplCopyWith<$Res>
     implements $CredentialDataCopyWith<$Res> {
-  factory _$$_CredentialDataCopyWith(
-          _$_CredentialData value, $Res Function(_$_CredentialData) then) =
-      __$$_CredentialDataCopyWithImpl<$Res>;
+  factory _$$CredentialDataImplCopyWith(_$CredentialDataImpl value,
+          $Res Function(_$CredentialDataImpl) then) =
+      __$$CredentialDataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -986,11 +993,11 @@ abstract class _$$_CredentialDataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CredentialDataCopyWithImpl<$Res>
-    extends _$CredentialDataCopyWithImpl<$Res, _$_CredentialData>
-    implements _$$_CredentialDataCopyWith<$Res> {
-  __$$_CredentialDataCopyWithImpl(
-      _$_CredentialData _value, $Res Function(_$_CredentialData) _then)
+class __$$CredentialDataImplCopyWithImpl<$Res>
+    extends _$CredentialDataCopyWithImpl<$Res, _$CredentialDataImpl>
+    implements _$$CredentialDataImplCopyWith<$Res> {
+  __$$CredentialDataImplCopyWithImpl(
+      _$CredentialDataImpl _value, $Res Function(_$CredentialDataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1005,7 +1012,7 @@ class __$$_CredentialDataCopyWithImpl<$Res>
     Object? period = null,
     Object? counter = null,
   }) {
-    return _then(_$_CredentialData(
+    return _then(_$CredentialDataImpl(
       issuer: freezed == issuer
           ? _value.issuer
           : issuer // ignore: cast_nullable_to_non_nullable
@@ -1044,8 +1051,8 @@ class __$$_CredentialDataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CredentialData extends _CredentialData {
-  _$_CredentialData(
+class _$CredentialDataImpl extends _CredentialData {
+  _$CredentialDataImpl(
       {this.issuer,
       required this.name,
       required this.secret,
@@ -1056,8 +1063,8 @@ class _$_CredentialData extends _CredentialData {
       this.counter = defaultCounter})
       : super._();
 
-  factory _$_CredentialData.fromJson(Map<String, dynamic> json) =>
-      _$$_CredentialDataFromJson(json);
+  factory _$CredentialDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CredentialDataImplFromJson(json);
 
   @override
   final String? issuer;
@@ -1090,7 +1097,7 @@ class _$_CredentialData extends _CredentialData {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CredentialData &&
+            other is _$CredentialDataImpl &&
             (identical(other.issuer, issuer) || other.issuer == issuer) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.secret, secret) || other.secret == secret) &&
@@ -1111,12 +1118,13 @@ class _$_CredentialData extends _CredentialData {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CredentialDataCopyWith<_$_CredentialData> get copyWith =>
-      __$$_CredentialDataCopyWithImpl<_$_CredentialData>(this, _$identity);
+  _$$CredentialDataImplCopyWith<_$CredentialDataImpl> get copyWith =>
+      __$$CredentialDataImplCopyWithImpl<_$CredentialDataImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CredentialDataToJson(
+    return _$$CredentialDataImplToJson(
       this,
     );
   }
@@ -1131,11 +1139,11 @@ abstract class _CredentialData extends CredentialData {
       final HashAlgorithm hashAlgorithm,
       final int digits,
       final int period,
-      final int counter}) = _$_CredentialData;
+      final int counter}) = _$CredentialDataImpl;
   _CredentialData._() : super._();
 
   factory _CredentialData.fromJson(Map<String, dynamic> json) =
-      _$_CredentialData.fromJson;
+      _$CredentialDataImpl.fromJson;
 
   @override
   String? get issuer;
@@ -1155,6 +1163,6 @@ abstract class _CredentialData extends CredentialData {
   int get counter;
   @override
   @JsonKey(ignore: true)
-  _$$_CredentialDataCopyWith<_$_CredentialData> get copyWith =>
+  _$$CredentialDataImplCopyWith<_$CredentialDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

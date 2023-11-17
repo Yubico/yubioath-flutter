@@ -74,22 +74,22 @@ class _$PinMetadataCopyWithImpl<$Res, $Val extends PinMetadata>
 }
 
 /// @nodoc
-abstract class _$$_PinMetadataCopyWith<$Res>
+abstract class _$$PinMetadataImplCopyWith<$Res>
     implements $PinMetadataCopyWith<$Res> {
-  factory _$$_PinMetadataCopyWith(
-          _$_PinMetadata value, $Res Function(_$_PinMetadata) then) =
-      __$$_PinMetadataCopyWithImpl<$Res>;
+  factory _$$PinMetadataImplCopyWith(
+          _$PinMetadataImpl value, $Res Function(_$PinMetadataImpl) then) =
+      __$$PinMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({bool defaultValue, int totalAttempts, int attemptsRemaining});
 }
 
 /// @nodoc
-class __$$_PinMetadataCopyWithImpl<$Res>
-    extends _$PinMetadataCopyWithImpl<$Res, _$_PinMetadata>
-    implements _$$_PinMetadataCopyWith<$Res> {
-  __$$_PinMetadataCopyWithImpl(
-      _$_PinMetadata _value, $Res Function(_$_PinMetadata) _then)
+class __$$PinMetadataImplCopyWithImpl<$Res>
+    extends _$PinMetadataCopyWithImpl<$Res, _$PinMetadataImpl>
+    implements _$$PinMetadataImplCopyWith<$Res> {
+  __$$PinMetadataImplCopyWithImpl(
+      _$PinMetadataImpl _value, $Res Function(_$PinMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -99,7 +99,7 @@ class __$$_PinMetadataCopyWithImpl<$Res>
     Object? totalAttempts = null,
     Object? attemptsRemaining = null,
   }) {
-    return _then(_$_PinMetadata(
+    return _then(_$PinMetadataImpl(
       null == defaultValue
           ? _value.defaultValue
           : defaultValue // ignore: cast_nullable_to_non_nullable
@@ -118,11 +118,12 @@ class __$$_PinMetadataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PinMetadata implements _PinMetadata {
-  _$_PinMetadata(this.defaultValue, this.totalAttempts, this.attemptsRemaining);
+class _$PinMetadataImpl implements _PinMetadata {
+  _$PinMetadataImpl(
+      this.defaultValue, this.totalAttempts, this.attemptsRemaining);
 
-  factory _$_PinMetadata.fromJson(Map<String, dynamic> json) =>
-      _$$_PinMetadataFromJson(json);
+  factory _$PinMetadataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PinMetadataImplFromJson(json);
 
   @override
   final bool defaultValue;
@@ -140,7 +141,7 @@ class _$_PinMetadata implements _PinMetadata {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PinMetadata &&
+            other is _$PinMetadataImpl &&
             (identical(other.defaultValue, defaultValue) ||
                 other.defaultValue == defaultValue) &&
             (identical(other.totalAttempts, totalAttempts) ||
@@ -157,12 +158,12 @@ class _$_PinMetadata implements _PinMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PinMetadataCopyWith<_$_PinMetadata> get copyWith =>
-      __$$_PinMetadataCopyWithImpl<_$_PinMetadata>(this, _$identity);
+  _$$PinMetadataImplCopyWith<_$PinMetadataImpl> get copyWith =>
+      __$$PinMetadataImplCopyWithImpl<_$PinMetadataImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PinMetadataToJson(
+    return _$$PinMetadataImplToJson(
       this,
     );
   }
@@ -170,10 +171,10 @@ class _$_PinMetadata implements _PinMetadata {
 
 abstract class _PinMetadata implements PinMetadata {
   factory _PinMetadata(final bool defaultValue, final int totalAttempts,
-      final int attemptsRemaining) = _$_PinMetadata;
+      final int attemptsRemaining) = _$PinMetadataImpl;
 
   factory _PinMetadata.fromJson(Map<String, dynamic> json) =
-      _$_PinMetadata.fromJson;
+      _$PinMetadataImpl.fromJson;
 
   @override
   bool get defaultValue;
@@ -183,7 +184,7 @@ abstract class _PinMetadata implements PinMetadata {
   int get attemptsRemaining;
   @override
   @JsonKey(ignore: true)
-  _$$_PinMetadataCopyWith<_$_PinMetadata> get copyWith =>
+  _$$PinMetadataImplCopyWith<_$PinMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -249,25 +250,25 @@ class _$PinVerificationStatusCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_PinSuccessCopyWith<$Res> {
-  factory _$$_PinSuccessCopyWith(
-          _$_PinSuccess value, $Res Function(_$_PinSuccess) then) =
-      __$$_PinSuccessCopyWithImpl<$Res>;
+abstract class _$$PinSuccessImplCopyWith<$Res> {
+  factory _$$PinSuccessImplCopyWith(
+          _$PinSuccessImpl value, $Res Function(_$PinSuccessImpl) then) =
+      __$$PinSuccessImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_PinSuccessCopyWithImpl<$Res>
-    extends _$PinVerificationStatusCopyWithImpl<$Res, _$_PinSuccess>
-    implements _$$_PinSuccessCopyWith<$Res> {
-  __$$_PinSuccessCopyWithImpl(
-      _$_PinSuccess _value, $Res Function(_$_PinSuccess) _then)
+class __$$PinSuccessImplCopyWithImpl<$Res>
+    extends _$PinVerificationStatusCopyWithImpl<$Res, _$PinSuccessImpl>
+    implements _$$PinSuccessImplCopyWith<$Res> {
+  __$$PinSuccessImplCopyWithImpl(
+      _$PinSuccessImpl _value, $Res Function(_$PinSuccessImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$_PinSuccess implements _PinSuccess {
-  const _$_PinSuccess();
+class _$PinSuccessImpl implements _PinSuccess {
+  const _$PinSuccessImpl();
 
   @override
   String toString() {
@@ -277,7 +278,7 @@ class _$_PinSuccess implements _PinSuccess {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_PinSuccess);
+        (other.runtimeType == runtimeType && other is _$PinSuccessImpl);
   }
 
   @override
@@ -347,24 +348,24 @@ class _$_PinSuccess implements _PinSuccess {
 }
 
 abstract class _PinSuccess implements PinVerificationStatus {
-  const factory _PinSuccess() = _$_PinSuccess;
+  const factory _PinSuccess() = _$PinSuccessImpl;
 }
 
 /// @nodoc
-abstract class _$$_PinFailureCopyWith<$Res> {
-  factory _$$_PinFailureCopyWith(
-          _$_PinFailure value, $Res Function(_$_PinFailure) then) =
-      __$$_PinFailureCopyWithImpl<$Res>;
+abstract class _$$PinFailureImplCopyWith<$Res> {
+  factory _$$PinFailureImplCopyWith(
+          _$PinFailureImpl value, $Res Function(_$PinFailureImpl) then) =
+      __$$PinFailureImplCopyWithImpl<$Res>;
   @useResult
   $Res call({int attemptsRemaining});
 }
 
 /// @nodoc
-class __$$_PinFailureCopyWithImpl<$Res>
-    extends _$PinVerificationStatusCopyWithImpl<$Res, _$_PinFailure>
-    implements _$$_PinFailureCopyWith<$Res> {
-  __$$_PinFailureCopyWithImpl(
-      _$_PinFailure _value, $Res Function(_$_PinFailure) _then)
+class __$$PinFailureImplCopyWithImpl<$Res>
+    extends _$PinVerificationStatusCopyWithImpl<$Res, _$PinFailureImpl>
+    implements _$$PinFailureImplCopyWith<$Res> {
+  __$$PinFailureImplCopyWithImpl(
+      _$PinFailureImpl _value, $Res Function(_$PinFailureImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -372,7 +373,7 @@ class __$$_PinFailureCopyWithImpl<$Res>
   $Res call({
     Object? attemptsRemaining = null,
   }) {
-    return _then(_$_PinFailure(
+    return _then(_$PinFailureImpl(
       null == attemptsRemaining
           ? _value.attemptsRemaining
           : attemptsRemaining // ignore: cast_nullable_to_non_nullable
@@ -383,8 +384,8 @@ class __$$_PinFailureCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_PinFailure implements _PinFailure {
-  _$_PinFailure(this.attemptsRemaining);
+class _$PinFailureImpl implements _PinFailure {
+  _$PinFailureImpl(this.attemptsRemaining);
 
   @override
   final int attemptsRemaining;
@@ -398,7 +399,7 @@ class _$_PinFailure implements _PinFailure {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PinFailure &&
+            other is _$PinFailureImpl &&
             (identical(other.attemptsRemaining, attemptsRemaining) ||
                 other.attemptsRemaining == attemptsRemaining));
   }
@@ -409,8 +410,8 @@ class _$_PinFailure implements _PinFailure {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PinFailureCopyWith<_$_PinFailure> get copyWith =>
-      __$$_PinFailureCopyWithImpl<_$_PinFailure>(this, _$identity);
+  _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
+      __$$PinFailureImplCopyWithImpl<_$PinFailureImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -476,11 +477,11 @@ class _$_PinFailure implements _PinFailure {
 }
 
 abstract class _PinFailure implements PinVerificationStatus {
-  factory _PinFailure(final int attemptsRemaining) = _$_PinFailure;
+  factory _PinFailure(final int attemptsRemaining) = _$PinFailureImpl;
 
   int get attemptsRemaining;
   @JsonKey(ignore: true)
-  _$$_PinFailureCopyWith<_$_PinFailure> get copyWith =>
+  _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -547,11 +548,12 @@ class _$ManagementKeyMetadataCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_ManagementKeyMetadataCopyWith<$Res>
+abstract class _$$ManagementKeyMetadataImplCopyWith<$Res>
     implements $ManagementKeyMetadataCopyWith<$Res> {
-  factory _$$_ManagementKeyMetadataCopyWith(_$_ManagementKeyMetadata value,
-          $Res Function(_$_ManagementKeyMetadata) then) =
-      __$$_ManagementKeyMetadataCopyWithImpl<$Res>;
+  factory _$$ManagementKeyMetadataImplCopyWith(
+          _$ManagementKeyMetadataImpl value,
+          $Res Function(_$ManagementKeyMetadataImpl) then) =
+      __$$ManagementKeyMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -559,11 +561,12 @@ abstract class _$$_ManagementKeyMetadataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ManagementKeyMetadataCopyWithImpl<$Res>
-    extends _$ManagementKeyMetadataCopyWithImpl<$Res, _$_ManagementKeyMetadata>
-    implements _$$_ManagementKeyMetadataCopyWith<$Res> {
-  __$$_ManagementKeyMetadataCopyWithImpl(_$_ManagementKeyMetadata _value,
-      $Res Function(_$_ManagementKeyMetadata) _then)
+class __$$ManagementKeyMetadataImplCopyWithImpl<$Res>
+    extends _$ManagementKeyMetadataCopyWithImpl<$Res,
+        _$ManagementKeyMetadataImpl>
+    implements _$$ManagementKeyMetadataImplCopyWith<$Res> {
+  __$$ManagementKeyMetadataImplCopyWithImpl(_$ManagementKeyMetadataImpl _value,
+      $Res Function(_$ManagementKeyMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -573,7 +576,7 @@ class __$$_ManagementKeyMetadataCopyWithImpl<$Res>
     Object? defaultValue = null,
     Object? touchPolicy = null,
   }) {
-    return _then(_$_ManagementKeyMetadata(
+    return _then(_$ManagementKeyMetadataImpl(
       null == keyType
           ? _value.keyType
           : keyType // ignore: cast_nullable_to_non_nullable
@@ -592,11 +595,12 @@ class __$$_ManagementKeyMetadataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ManagementKeyMetadata implements _ManagementKeyMetadata {
-  _$_ManagementKeyMetadata(this.keyType, this.defaultValue, this.touchPolicy);
+class _$ManagementKeyMetadataImpl implements _ManagementKeyMetadata {
+  _$ManagementKeyMetadataImpl(
+      this.keyType, this.defaultValue, this.touchPolicy);
 
-  factory _$_ManagementKeyMetadata.fromJson(Map<String, dynamic> json) =>
-      _$$_ManagementKeyMetadataFromJson(json);
+  factory _$ManagementKeyMetadataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ManagementKeyMetadataImplFromJson(json);
 
   @override
   final ManagementKeyType keyType;
@@ -614,7 +618,7 @@ class _$_ManagementKeyMetadata implements _ManagementKeyMetadata {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ManagementKeyMetadata &&
+            other is _$ManagementKeyMetadataImpl &&
             (identical(other.keyType, keyType) || other.keyType == keyType) &&
             (identical(other.defaultValue, defaultValue) ||
                 other.defaultValue == defaultValue) &&
@@ -630,13 +634,13 @@ class _$_ManagementKeyMetadata implements _ManagementKeyMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ManagementKeyMetadataCopyWith<_$_ManagementKeyMetadata> get copyWith =>
-      __$$_ManagementKeyMetadataCopyWithImpl<_$_ManagementKeyMetadata>(
-          this, _$identity);
+  _$$ManagementKeyMetadataImplCopyWith<_$ManagementKeyMetadataImpl>
+      get copyWith => __$$ManagementKeyMetadataImplCopyWithImpl<
+          _$ManagementKeyMetadataImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ManagementKeyMetadataToJson(
+    return _$$ManagementKeyMetadataImplToJson(
       this,
     );
   }
@@ -646,10 +650,10 @@ abstract class _ManagementKeyMetadata implements ManagementKeyMetadata {
   factory _ManagementKeyMetadata(
       final ManagementKeyType keyType,
       final bool defaultValue,
-      final TouchPolicy touchPolicy) = _$_ManagementKeyMetadata;
+      final TouchPolicy touchPolicy) = _$ManagementKeyMetadataImpl;
 
   factory _ManagementKeyMetadata.fromJson(Map<String, dynamic> json) =
-      _$_ManagementKeyMetadata.fromJson;
+      _$ManagementKeyMetadataImpl.fromJson;
 
   @override
   ManagementKeyType get keyType;
@@ -659,8 +663,8 @@ abstract class _ManagementKeyMetadata implements ManagementKeyMetadata {
   TouchPolicy get touchPolicy;
   @override
   @JsonKey(ignore: true)
-  _$$_ManagementKeyMetadataCopyWith<_$_ManagementKeyMetadata> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$ManagementKeyMetadataImplCopyWith<_$ManagementKeyMetadataImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 SlotMetadata _$SlotMetadataFromJson(Map<String, dynamic> json) {
@@ -740,11 +744,11 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
 }
 
 /// @nodoc
-abstract class _$$_SlotMetadataCopyWith<$Res>
+abstract class _$$SlotMetadataImplCopyWith<$Res>
     implements $SlotMetadataCopyWith<$Res> {
-  factory _$$_SlotMetadataCopyWith(
-          _$_SlotMetadata value, $Res Function(_$_SlotMetadata) then) =
-      __$$_SlotMetadataCopyWithImpl<$Res>;
+  factory _$$SlotMetadataImplCopyWith(
+          _$SlotMetadataImpl value, $Res Function(_$SlotMetadataImpl) then) =
+      __$$SlotMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -756,11 +760,11 @@ abstract class _$$_SlotMetadataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SlotMetadataCopyWithImpl<$Res>
-    extends _$SlotMetadataCopyWithImpl<$Res, _$_SlotMetadata>
-    implements _$$_SlotMetadataCopyWith<$Res> {
-  __$$_SlotMetadataCopyWithImpl(
-      _$_SlotMetadata _value, $Res Function(_$_SlotMetadata) _then)
+class __$$SlotMetadataImplCopyWithImpl<$Res>
+    extends _$SlotMetadataCopyWithImpl<$Res, _$SlotMetadataImpl>
+    implements _$$SlotMetadataImplCopyWith<$Res> {
+  __$$SlotMetadataImplCopyWithImpl(
+      _$SlotMetadataImpl _value, $Res Function(_$SlotMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -772,7 +776,7 @@ class __$$_SlotMetadataCopyWithImpl<$Res>
     Object? generated = null,
     Object? publicKeyEncoded = null,
   }) {
-    return _then(_$_SlotMetadata(
+    return _then(_$SlotMetadataImpl(
       null == keyType
           ? _value.keyType
           : keyType // ignore: cast_nullable_to_non_nullable
@@ -799,12 +803,12 @@ class __$$_SlotMetadataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_SlotMetadata implements _SlotMetadata {
-  _$_SlotMetadata(this.keyType, this.pinPolicy, this.touchPolicy,
+class _$SlotMetadataImpl implements _SlotMetadata {
+  _$SlotMetadataImpl(this.keyType, this.pinPolicy, this.touchPolicy,
       this.generated, this.publicKeyEncoded);
 
-  factory _$_SlotMetadata.fromJson(Map<String, dynamic> json) =>
-      _$$_SlotMetadataFromJson(json);
+  factory _$SlotMetadataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SlotMetadataImplFromJson(json);
 
   @override
   final KeyType keyType;
@@ -826,7 +830,7 @@ class _$_SlotMetadata implements _SlotMetadata {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SlotMetadata &&
+            other is _$SlotMetadataImpl &&
             (identical(other.keyType, keyType) || other.keyType == keyType) &&
             (identical(other.pinPolicy, pinPolicy) ||
                 other.pinPolicy == pinPolicy) &&
@@ -846,12 +850,12 @@ class _$_SlotMetadata implements _SlotMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SlotMetadataCopyWith<_$_SlotMetadata> get copyWith =>
-      __$$_SlotMetadataCopyWithImpl<_$_SlotMetadata>(this, _$identity);
+  _$$SlotMetadataImplCopyWith<_$SlotMetadataImpl> get copyWith =>
+      __$$SlotMetadataImplCopyWithImpl<_$SlotMetadataImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SlotMetadataToJson(
+    return _$$SlotMetadataImplToJson(
       this,
     );
   }
@@ -863,10 +867,10 @@ abstract class _SlotMetadata implements SlotMetadata {
       final PinPolicy pinPolicy,
       final TouchPolicy touchPolicy,
       final bool generated,
-      final String publicKeyEncoded) = _$_SlotMetadata;
+      final String publicKeyEncoded) = _$SlotMetadataImpl;
 
   factory _SlotMetadata.fromJson(Map<String, dynamic> json) =
-      _$_SlotMetadata.fromJson;
+      _$SlotMetadataImpl.fromJson;
 
   @override
   KeyType get keyType;
@@ -880,7 +884,7 @@ abstract class _SlotMetadata implements SlotMetadata {
   String get publicKeyEncoded;
   @override
   @JsonKey(ignore: true)
-  _$$_SlotMetadataCopyWith<_$_SlotMetadata> get copyWith =>
+  _$$SlotMetadataImplCopyWith<_$SlotMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -977,11 +981,11 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
 }
 
 /// @nodoc
-abstract class _$$_PivStateMetadataCopyWith<$Res>
+abstract class _$$PivStateMetadataImplCopyWith<$Res>
     implements $PivStateMetadataCopyWith<$Res> {
-  factory _$$_PivStateMetadataCopyWith(
-          _$_PivStateMetadata value, $Res Function(_$_PivStateMetadata) then) =
-      __$$_PivStateMetadataCopyWithImpl<$Res>;
+  factory _$$PivStateMetadataImplCopyWith(_$PivStateMetadataImpl value,
+          $Res Function(_$PivStateMetadataImpl) then) =
+      __$$PivStateMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -998,11 +1002,11 @@ abstract class _$$_PivStateMetadataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PivStateMetadataCopyWithImpl<$Res>
-    extends _$PivStateMetadataCopyWithImpl<$Res, _$_PivStateMetadata>
-    implements _$$_PivStateMetadataCopyWith<$Res> {
-  __$$_PivStateMetadataCopyWithImpl(
-      _$_PivStateMetadata _value, $Res Function(_$_PivStateMetadata) _then)
+class __$$PivStateMetadataImplCopyWithImpl<$Res>
+    extends _$PivStateMetadataCopyWithImpl<$Res, _$PivStateMetadataImpl>
+    implements _$$PivStateMetadataImplCopyWith<$Res> {
+  __$$PivStateMetadataImplCopyWithImpl(_$PivStateMetadataImpl _value,
+      $Res Function(_$PivStateMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1012,7 +1016,7 @@ class __$$_PivStateMetadataCopyWithImpl<$Res>
     Object? pinMetadata = null,
     Object? pukMetadata = null,
   }) {
-    return _then(_$_PivStateMetadata(
+    return _then(_$PivStateMetadataImpl(
       managementKeyMetadata: null == managementKeyMetadata
           ? _value.managementKeyMetadata
           : managementKeyMetadata // ignore: cast_nullable_to_non_nullable
@@ -1031,14 +1035,14 @@ class __$$_PivStateMetadataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PivStateMetadata implements _PivStateMetadata {
-  _$_PivStateMetadata(
+class _$PivStateMetadataImpl implements _PivStateMetadata {
+  _$PivStateMetadataImpl(
       {required this.managementKeyMetadata,
       required this.pinMetadata,
       required this.pukMetadata});
 
-  factory _$_PivStateMetadata.fromJson(Map<String, dynamic> json) =>
-      _$$_PivStateMetadataFromJson(json);
+  factory _$PivStateMetadataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PivStateMetadataImplFromJson(json);
 
   @override
   final ManagementKeyMetadata managementKeyMetadata;
@@ -1056,7 +1060,7 @@ class _$_PivStateMetadata implements _PivStateMetadata {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PivStateMetadata &&
+            other is _$PivStateMetadataImpl &&
             (identical(other.managementKeyMetadata, managementKeyMetadata) ||
                 other.managementKeyMetadata == managementKeyMetadata) &&
             (identical(other.pinMetadata, pinMetadata) ||
@@ -1073,12 +1077,13 @@ class _$_PivStateMetadata implements _PivStateMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PivStateMetadataCopyWith<_$_PivStateMetadata> get copyWith =>
-      __$$_PivStateMetadataCopyWithImpl<_$_PivStateMetadata>(this, _$identity);
+  _$$PivStateMetadataImplCopyWith<_$PivStateMetadataImpl> get copyWith =>
+      __$$PivStateMetadataImplCopyWithImpl<_$PivStateMetadataImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PivStateMetadataToJson(
+    return _$$PivStateMetadataImplToJson(
       this,
     );
   }
@@ -1088,10 +1093,10 @@ abstract class _PivStateMetadata implements PivStateMetadata {
   factory _PivStateMetadata(
       {required final ManagementKeyMetadata managementKeyMetadata,
       required final PinMetadata pinMetadata,
-      required final PinMetadata pukMetadata}) = _$_PivStateMetadata;
+      required final PinMetadata pukMetadata}) = _$PivStateMetadataImpl;
 
   factory _PivStateMetadata.fromJson(Map<String, dynamic> json) =
-      _$_PivStateMetadata.fromJson;
+      _$PivStateMetadataImpl.fromJson;
 
   @override
   ManagementKeyMetadata get managementKeyMetadata;
@@ -1101,7 +1106,7 @@ abstract class _PivStateMetadata implements PivStateMetadata {
   PinMetadata get pukMetadata;
   @override
   @JsonKey(ignore: true)
-  _$$_PivStateMetadataCopyWith<_$_PivStateMetadata> get copyWith =>
+  _$$PivStateMetadataImplCopyWith<_$PivStateMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1225,10 +1230,11 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
 }
 
 /// @nodoc
-abstract class _$$_PivStateCopyWith<$Res> implements $PivStateCopyWith<$Res> {
-  factory _$$_PivStateCopyWith(
-          _$_PivState value, $Res Function(_$_PivState) then) =
-      __$$_PivStateCopyWithImpl<$Res>;
+abstract class _$$PivStateImplCopyWith<$Res>
+    implements $PivStateCopyWith<$Res> {
+  factory _$$PivStateImplCopyWith(
+          _$PivStateImpl value, $Res Function(_$PivStateImpl) then) =
+      __$$PivStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1248,11 +1254,11 @@ abstract class _$$_PivStateCopyWith<$Res> implements $PivStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PivStateCopyWithImpl<$Res>
-    extends _$PivStateCopyWithImpl<$Res, _$_PivState>
-    implements _$$_PivStateCopyWith<$Res> {
-  __$$_PivStateCopyWithImpl(
-      _$_PivState _value, $Res Function(_$_PivState) _then)
+class __$$PivStateImplCopyWithImpl<$Res>
+    extends _$PivStateCopyWithImpl<$Res, _$PivStateImpl>
+    implements _$$PivStateImplCopyWith<$Res> {
+  __$$PivStateImplCopyWithImpl(
+      _$PivStateImpl _value, $Res Function(_$PivStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1267,7 +1273,7 @@ class __$$_PivStateCopyWithImpl<$Res>
     Object? ccc = freezed,
     Object? metadata = freezed,
   }) {
-    return _then(_$_PivState(
+    return _then(_$PivStateImpl(
       version: null == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
@@ -1306,8 +1312,8 @@ class __$$_PivStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PivState extends _PivState {
-  _$_PivState(
+class _$PivStateImpl extends _PivState {
+  _$PivStateImpl(
       {required this.version,
       required this.authenticated,
       required this.derivedKey,
@@ -1318,8 +1324,8 @@ class _$_PivState extends _PivState {
       this.metadata})
       : super._();
 
-  factory _$_PivState.fromJson(Map<String, dynamic> json) =>
-      _$$_PivStateFromJson(json);
+  factory _$PivStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PivStateImplFromJson(json);
 
   @override
   final Version version;
@@ -1347,7 +1353,7 @@ class _$_PivState extends _PivState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PivState &&
+            other is _$PivStateImpl &&
             (identical(other.version, version) || other.version == version) &&
             (identical(other.authenticated, authenticated) ||
                 other.authenticated == authenticated) &&
@@ -1371,12 +1377,12 @@ class _$_PivState extends _PivState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PivStateCopyWith<_$_PivState> get copyWith =>
-      __$$_PivStateCopyWithImpl<_$_PivState>(this, _$identity);
+  _$$PivStateImplCopyWith<_$PivStateImpl> get copyWith =>
+      __$$PivStateImplCopyWithImpl<_$PivStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PivStateToJson(
+    return _$$PivStateImplToJson(
       this,
     );
   }
@@ -1391,10 +1397,11 @@ abstract class _PivState extends PivState {
       required final int pinAttempts,
       final String? chuid,
       final String? ccc,
-      final PivStateMetadata? metadata}) = _$_PivState;
+      final PivStateMetadata? metadata}) = _$PivStateImpl;
   _PivState._() : super._();
 
-  factory _PivState.fromJson(Map<String, dynamic> json) = _$_PivState.fromJson;
+  factory _PivState.fromJson(Map<String, dynamic> json) =
+      _$PivStateImpl.fromJson;
 
   @override
   Version get version;
@@ -1414,7 +1421,7 @@ abstract class _PivState extends PivState {
   PivStateMetadata? get metadata;
   @override
   @JsonKey(ignore: true)
-  _$$_PivStateCopyWith<_$_PivState> get copyWith =>
+  _$$PivStateImplCopyWith<_$PivStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1501,10 +1508,11 @@ class _$CertInfoCopyWithImpl<$Res, $Val extends CertInfo>
 }
 
 /// @nodoc
-abstract class _$$_CertInfoCopyWith<$Res> implements $CertInfoCopyWith<$Res> {
-  factory _$$_CertInfoCopyWith(
-          _$_CertInfo value, $Res Function(_$_CertInfo) then) =
-      __$$_CertInfoCopyWithImpl<$Res>;
+abstract class _$$CertInfoImplCopyWith<$Res>
+    implements $CertInfoCopyWith<$Res> {
+  factory _$$CertInfoImplCopyWith(
+          _$CertInfoImpl value, $Res Function(_$CertInfoImpl) then) =
+      __$$CertInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1517,11 +1525,11 @@ abstract class _$$_CertInfoCopyWith<$Res> implements $CertInfoCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_CertInfoCopyWithImpl<$Res>
-    extends _$CertInfoCopyWithImpl<$Res, _$_CertInfo>
-    implements _$$_CertInfoCopyWith<$Res> {
-  __$$_CertInfoCopyWithImpl(
-      _$_CertInfo _value, $Res Function(_$_CertInfo) _then)
+class __$$CertInfoImplCopyWithImpl<$Res>
+    extends _$CertInfoCopyWithImpl<$Res, _$CertInfoImpl>
+    implements _$$CertInfoImplCopyWith<$Res> {
+  __$$CertInfoImplCopyWithImpl(
+      _$CertInfoImpl _value, $Res Function(_$CertInfoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1534,7 +1542,7 @@ class __$$_CertInfoCopyWithImpl<$Res>
     Object? notValidAfter = null,
     Object? fingerprint = null,
   }) {
-    return _then(_$_CertInfo(
+    return _then(_$CertInfoImpl(
       subject: null == subject
           ? _value.subject
           : subject // ignore: cast_nullable_to_non_nullable
@@ -1565,8 +1573,8 @@ class __$$_CertInfoCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CertInfo implements _CertInfo {
-  _$_CertInfo(
+class _$CertInfoImpl implements _CertInfo {
+  _$CertInfoImpl(
       {required this.subject,
       required this.issuer,
       required this.serial,
@@ -1574,8 +1582,8 @@ class _$_CertInfo implements _CertInfo {
       required this.notValidAfter,
       required this.fingerprint});
 
-  factory _$_CertInfo.fromJson(Map<String, dynamic> json) =>
-      _$$_CertInfoFromJson(json);
+  factory _$CertInfoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CertInfoImplFromJson(json);
 
   @override
   final String subject;
@@ -1599,7 +1607,7 @@ class _$_CertInfo implements _CertInfo {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CertInfo &&
+            other is _$CertInfoImpl &&
             (identical(other.subject, subject) || other.subject == subject) &&
             (identical(other.issuer, issuer) || other.issuer == issuer) &&
             (identical(other.serial, serial) || other.serial == serial) &&
@@ -1619,12 +1627,12 @@ class _$_CertInfo implements _CertInfo {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CertInfoCopyWith<_$_CertInfo> get copyWith =>
-      __$$_CertInfoCopyWithImpl<_$_CertInfo>(this, _$identity);
+  _$$CertInfoImplCopyWith<_$CertInfoImpl> get copyWith =>
+      __$$CertInfoImplCopyWithImpl<_$CertInfoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CertInfoToJson(
+    return _$$CertInfoImplToJson(
       this,
     );
   }
@@ -1637,9 +1645,10 @@ abstract class _CertInfo implements CertInfo {
       required final String serial,
       required final String notValidBefore,
       required final String notValidAfter,
-      required final String fingerprint}) = _$_CertInfo;
+      required final String fingerprint}) = _$CertInfoImpl;
 
-  factory _CertInfo.fromJson(Map<String, dynamic> json) = _$_CertInfo.fromJson;
+  factory _CertInfo.fromJson(Map<String, dynamic> json) =
+      _$CertInfoImpl.fromJson;
 
   @override
   String get subject;
@@ -1655,7 +1664,7 @@ abstract class _CertInfo implements CertInfo {
   String get fingerprint;
   @override
   @JsonKey(ignore: true)
-  _$$_CertInfoCopyWith<_$_CertInfo> get copyWith =>
+  _$$CertInfoImplCopyWith<_$CertInfoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1731,10 +1740,10 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
 }
 
 /// @nodoc
-abstract class _$$_PivSlotCopyWith<$Res> implements $PivSlotCopyWith<$Res> {
-  factory _$$_PivSlotCopyWith(
-          _$_PivSlot value, $Res Function(_$_PivSlot) then) =
-      __$$_PivSlotCopyWithImpl<$Res>;
+abstract class _$$PivSlotImplCopyWith<$Res> implements $PivSlotCopyWith<$Res> {
+  factory _$$PivSlotImplCopyWith(
+          _$PivSlotImpl value, $Res Function(_$PivSlotImpl) then) =
+      __$$PivSlotImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({SlotId slot, bool? hasKey, CertInfo? certInfo});
@@ -1744,10 +1753,11 @@ abstract class _$$_PivSlotCopyWith<$Res> implements $PivSlotCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PivSlotCopyWithImpl<$Res>
-    extends _$PivSlotCopyWithImpl<$Res, _$_PivSlot>
-    implements _$$_PivSlotCopyWith<$Res> {
-  __$$_PivSlotCopyWithImpl(_$_PivSlot _value, $Res Function(_$_PivSlot) _then)
+class __$$PivSlotImplCopyWithImpl<$Res>
+    extends _$PivSlotCopyWithImpl<$Res, _$PivSlotImpl>
+    implements _$$PivSlotImplCopyWith<$Res> {
+  __$$PivSlotImplCopyWithImpl(
+      _$PivSlotImpl _value, $Res Function(_$PivSlotImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1757,7 +1767,7 @@ class __$$_PivSlotCopyWithImpl<$Res>
     Object? hasKey = freezed,
     Object? certInfo = freezed,
   }) {
-    return _then(_$_PivSlot(
+    return _then(_$PivSlotImpl(
       slot: null == slot
           ? _value.slot
           : slot // ignore: cast_nullable_to_non_nullable
@@ -1776,11 +1786,11 @@ class __$$_PivSlotCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PivSlot implements _PivSlot {
-  _$_PivSlot({required this.slot, this.hasKey, this.certInfo});
+class _$PivSlotImpl implements _PivSlot {
+  _$PivSlotImpl({required this.slot, this.hasKey, this.certInfo});
 
-  factory _$_PivSlot.fromJson(Map<String, dynamic> json) =>
-      _$$_PivSlotFromJson(json);
+  factory _$PivSlotImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PivSlotImplFromJson(json);
 
   @override
   final SlotId slot;
@@ -1798,7 +1808,7 @@ class _$_PivSlot implements _PivSlot {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PivSlot &&
+            other is _$PivSlotImpl &&
             (identical(other.slot, slot) || other.slot == slot) &&
             (identical(other.hasKey, hasKey) || other.hasKey == hasKey) &&
             (identical(other.certInfo, certInfo) ||
@@ -1812,12 +1822,12 @@ class _$_PivSlot implements _PivSlot {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PivSlotCopyWith<_$_PivSlot> get copyWith =>
-      __$$_PivSlotCopyWithImpl<_$_PivSlot>(this, _$identity);
+  _$$PivSlotImplCopyWith<_$PivSlotImpl> get copyWith =>
+      __$$PivSlotImplCopyWithImpl<_$PivSlotImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PivSlotToJson(
+    return _$$PivSlotImplToJson(
       this,
     );
   }
@@ -1827,9 +1837,9 @@ abstract class _PivSlot implements PivSlot {
   factory _PivSlot(
       {required final SlotId slot,
       final bool? hasKey,
-      final CertInfo? certInfo}) = _$_PivSlot;
+      final CertInfo? certInfo}) = _$PivSlotImpl;
 
-  factory _PivSlot.fromJson(Map<String, dynamic> json) = _$_PivSlot.fromJson;
+  factory _PivSlot.fromJson(Map<String, dynamic> json) = _$PivSlotImpl.fromJson;
 
   @override
   SlotId get slot;
@@ -1839,7 +1849,7 @@ abstract class _PivSlot implements PivSlot {
   CertInfo? get certInfo;
   @override
   @JsonKey(ignore: true)
-  _$$_PivSlotCopyWith<_$_PivSlot> get copyWith =>
+  _$$PivSlotImplCopyWith<_$PivSlotImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1922,10 +1932,10 @@ class _$PivExamineResultCopyWithImpl<$Res, $Val extends PivExamineResult>
 }
 
 /// @nodoc
-abstract class _$$_ExamineResultCopyWith<$Res> {
-  factory _$$_ExamineResultCopyWith(
-          _$_ExamineResult value, $Res Function(_$_ExamineResult) then) =
-      __$$_ExamineResultCopyWithImpl<$Res>;
+abstract class _$$ExamineResultImplCopyWith<$Res> {
+  factory _$$ExamineResultImplCopyWith(
+          _$ExamineResultImpl value, $Res Function(_$ExamineResultImpl) then) =
+      __$$ExamineResultImplCopyWithImpl<$Res>;
   @useResult
   $Res call({bool password, KeyType? keyType, CertInfo? certInfo});
 
@@ -1933,11 +1943,11 @@ abstract class _$$_ExamineResultCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_ExamineResultCopyWithImpl<$Res>
-    extends _$PivExamineResultCopyWithImpl<$Res, _$_ExamineResult>
-    implements _$$_ExamineResultCopyWith<$Res> {
-  __$$_ExamineResultCopyWithImpl(
-      _$_ExamineResult _value, $Res Function(_$_ExamineResult) _then)
+class __$$ExamineResultImplCopyWithImpl<$Res>
+    extends _$PivExamineResultCopyWithImpl<$Res, _$ExamineResultImpl>
+    implements _$$ExamineResultImplCopyWith<$Res> {
+  __$$ExamineResultImplCopyWithImpl(
+      _$ExamineResultImpl _value, $Res Function(_$ExamineResultImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1947,7 +1957,7 @@ class __$$_ExamineResultCopyWithImpl<$Res>
     Object? keyType = freezed,
     Object? certInfo = freezed,
   }) {
-    return _then(_$_ExamineResult(
+    return _then(_$ExamineResultImpl(
       password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
@@ -1978,16 +1988,16 @@ class __$$_ExamineResultCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ExamineResult implements _ExamineResult {
-  _$_ExamineResult(
+class _$ExamineResultImpl implements _ExamineResult {
+  _$ExamineResultImpl(
       {required this.password,
       required this.keyType,
       required this.certInfo,
       final String? $type})
       : $type = $type ?? 'result';
 
-  factory _$_ExamineResult.fromJson(Map<String, dynamic> json) =>
-      _$$_ExamineResultFromJson(json);
+  factory _$ExamineResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ExamineResultImplFromJson(json);
 
   @override
   final bool password;
@@ -2008,7 +2018,7 @@ class _$_ExamineResult implements _ExamineResult {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ExamineResult &&
+            other is _$ExamineResultImpl &&
             (identical(other.password, password) ||
                 other.password == password) &&
             (identical(other.keyType, keyType) || other.keyType == keyType) &&
@@ -2023,8 +2033,8 @@ class _$_ExamineResult implements _ExamineResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ExamineResultCopyWith<_$_ExamineResult> get copyWith =>
-      __$$_ExamineResultCopyWithImpl<_$_ExamineResult>(this, _$identity);
+  _$$ExamineResultImplCopyWith<_$ExamineResultImpl> get copyWith =>
+      __$$ExamineResultImplCopyWithImpl<_$ExamineResultImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2094,7 +2104,7 @@ class _$_ExamineResult implements _ExamineResult {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ExamineResultToJson(
+    return _$$ExamineResultImplToJson(
       this,
     );
   }
@@ -2104,43 +2114,43 @@ abstract class _ExamineResult implements PivExamineResult {
   factory _ExamineResult(
       {required final bool password,
       required final KeyType? keyType,
-      required final CertInfo? certInfo}) = _$_ExamineResult;
+      required final CertInfo? certInfo}) = _$ExamineResultImpl;
 
   factory _ExamineResult.fromJson(Map<String, dynamic> json) =
-      _$_ExamineResult.fromJson;
+      _$ExamineResultImpl.fromJson;
 
   bool get password;
   KeyType? get keyType;
   CertInfo? get certInfo;
   @JsonKey(ignore: true)
-  _$$_ExamineResultCopyWith<_$_ExamineResult> get copyWith =>
+  _$$ExamineResultImplCopyWith<_$ExamineResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$_InvalidPasswordCopyWith<$Res> {
-  factory _$$_InvalidPasswordCopyWith(
-          _$_InvalidPassword value, $Res Function(_$_InvalidPassword) then) =
-      __$$_InvalidPasswordCopyWithImpl<$Res>;
+abstract class _$$InvalidPasswordImplCopyWith<$Res> {
+  factory _$$InvalidPasswordImplCopyWith(_$InvalidPasswordImpl value,
+          $Res Function(_$InvalidPasswordImpl) then) =
+      __$$InvalidPasswordImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_InvalidPasswordCopyWithImpl<$Res>
-    extends _$PivExamineResultCopyWithImpl<$Res, _$_InvalidPassword>
-    implements _$$_InvalidPasswordCopyWith<$Res> {
-  __$$_InvalidPasswordCopyWithImpl(
-      _$_InvalidPassword _value, $Res Function(_$_InvalidPassword) _then)
+class __$$InvalidPasswordImplCopyWithImpl<$Res>
+    extends _$PivExamineResultCopyWithImpl<$Res, _$InvalidPasswordImpl>
+    implements _$$InvalidPasswordImplCopyWith<$Res> {
+  __$$InvalidPasswordImplCopyWithImpl(
+      _$InvalidPasswordImpl _value, $Res Function(_$InvalidPasswordImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$_InvalidPassword implements _InvalidPassword {
-  _$_InvalidPassword({final String? $type})
+class _$InvalidPasswordImpl implements _InvalidPassword {
+  _$InvalidPasswordImpl({final String? $type})
       : $type = $type ?? 'invalidPassword';
 
-  factory _$_InvalidPassword.fromJson(Map<String, dynamic> json) =>
-      _$$_InvalidPasswordFromJson(json);
+  factory _$InvalidPasswordImpl.fromJson(Map<String, dynamic> json) =>
+      _$$InvalidPasswordImplFromJson(json);
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -2153,7 +2163,7 @@ class _$_InvalidPassword implements _InvalidPassword {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_InvalidPassword);
+        (other.runtimeType == runtimeType && other is _$InvalidPasswordImpl);
   }
 
   @JsonKey(ignore: true)
@@ -2228,17 +2238,17 @@ class _$_InvalidPassword implements _InvalidPassword {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_InvalidPasswordToJson(
+    return _$$InvalidPasswordImplToJson(
       this,
     );
   }
 }
 
 abstract class _InvalidPassword implements PivExamineResult {
-  factory _InvalidPassword() = _$_InvalidPassword;
+  factory _InvalidPassword() = _$InvalidPasswordImpl;
 
   factory _InvalidPassword.fromJson(Map<String, dynamic> json) =
-      _$_InvalidPassword.fromJson;
+      _$InvalidPasswordImpl.fromJson;
 }
 
 /// @nodoc
@@ -2327,22 +2337,22 @@ class _$PivGenerateParametersCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_GenerateCertificateCopyWith<$Res>
+abstract class _$$GenerateCertificateImplCopyWith<$Res>
     implements $PivGenerateParametersCopyWith<$Res> {
-  factory _$$_GenerateCertificateCopyWith(_$_GenerateCertificate value,
-          $Res Function(_$_GenerateCertificate) then) =
-      __$$_GenerateCertificateCopyWithImpl<$Res>;
+  factory _$$GenerateCertificateImplCopyWith(_$GenerateCertificateImpl value,
+          $Res Function(_$GenerateCertificateImpl) then) =
+      __$$GenerateCertificateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String subject, DateTime validFrom, DateTime validTo});
 }
 
 /// @nodoc
-class __$$_GenerateCertificateCopyWithImpl<$Res>
-    extends _$PivGenerateParametersCopyWithImpl<$Res, _$_GenerateCertificate>
-    implements _$$_GenerateCertificateCopyWith<$Res> {
-  __$$_GenerateCertificateCopyWithImpl(_$_GenerateCertificate _value,
-      $Res Function(_$_GenerateCertificate) _then)
+class __$$GenerateCertificateImplCopyWithImpl<$Res>
+    extends _$PivGenerateParametersCopyWithImpl<$Res, _$GenerateCertificateImpl>
+    implements _$$GenerateCertificateImplCopyWith<$Res> {
+  __$$GenerateCertificateImplCopyWithImpl(_$GenerateCertificateImpl _value,
+      $Res Function(_$GenerateCertificateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2352,7 +2362,7 @@ class __$$_GenerateCertificateCopyWithImpl<$Res>
     Object? validFrom = null,
     Object? validTo = null,
   }) {
-    return _then(_$_GenerateCertificate(
+    return _then(_$GenerateCertificateImpl(
       subject: null == subject
           ? _value.subject
           : subject // ignore: cast_nullable_to_non_nullable
@@ -2371,8 +2381,8 @@ class __$$_GenerateCertificateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_GenerateCertificate implements _GenerateCertificate {
-  _$_GenerateCertificate(
+class _$GenerateCertificateImpl implements _GenerateCertificate {
+  _$GenerateCertificateImpl(
       {required this.subject, required this.validFrom, required this.validTo});
 
   @override
@@ -2391,7 +2401,7 @@ class _$_GenerateCertificate implements _GenerateCertificate {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GenerateCertificate &&
+            other is _$GenerateCertificateImpl &&
             (identical(other.subject, subject) || other.subject == subject) &&
             (identical(other.validFrom, validFrom) ||
                 other.validFrom == validFrom) &&
@@ -2404,8 +2414,8 @@ class _$_GenerateCertificate implements _GenerateCertificate {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GenerateCertificateCopyWith<_$_GenerateCertificate> get copyWith =>
-      __$$_GenerateCertificateCopyWithImpl<_$_GenerateCertificate>(
+  _$$GenerateCertificateImplCopyWith<_$GenerateCertificateImpl> get copyWith =>
+      __$$GenerateCertificateImplCopyWithImpl<_$GenerateCertificateImpl>(
           this, _$identity);
 
   @override
@@ -2479,7 +2489,7 @@ abstract class _GenerateCertificate implements PivGenerateParameters {
   factory _GenerateCertificate(
       {required final String subject,
       required final DateTime validFrom,
-      required final DateTime validTo}) = _$_GenerateCertificate;
+      required final DateTime validTo}) = _$GenerateCertificateImpl;
 
   @override
   String get subject;
@@ -2487,27 +2497,27 @@ abstract class _GenerateCertificate implements PivGenerateParameters {
   DateTime get validTo;
   @override
   @JsonKey(ignore: true)
-  _$$_GenerateCertificateCopyWith<_$_GenerateCertificate> get copyWith =>
+  _$$GenerateCertificateImplCopyWith<_$GenerateCertificateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$_GenerateCsrCopyWith<$Res>
+abstract class _$$GenerateCsrImplCopyWith<$Res>
     implements $PivGenerateParametersCopyWith<$Res> {
-  factory _$$_GenerateCsrCopyWith(
-          _$_GenerateCsr value, $Res Function(_$_GenerateCsr) then) =
-      __$$_GenerateCsrCopyWithImpl<$Res>;
+  factory _$$GenerateCsrImplCopyWith(
+          _$GenerateCsrImpl value, $Res Function(_$GenerateCsrImpl) then) =
+      __$$GenerateCsrImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String subject});
 }
 
 /// @nodoc
-class __$$_GenerateCsrCopyWithImpl<$Res>
-    extends _$PivGenerateParametersCopyWithImpl<$Res, _$_GenerateCsr>
-    implements _$$_GenerateCsrCopyWith<$Res> {
-  __$$_GenerateCsrCopyWithImpl(
-      _$_GenerateCsr _value, $Res Function(_$_GenerateCsr) _then)
+class __$$GenerateCsrImplCopyWithImpl<$Res>
+    extends _$PivGenerateParametersCopyWithImpl<$Res, _$GenerateCsrImpl>
+    implements _$$GenerateCsrImplCopyWith<$Res> {
+  __$$GenerateCsrImplCopyWithImpl(
+      _$GenerateCsrImpl _value, $Res Function(_$GenerateCsrImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2515,7 +2525,7 @@ class __$$_GenerateCsrCopyWithImpl<$Res>
   $Res call({
     Object? subject = null,
   }) {
-    return _then(_$_GenerateCsr(
+    return _then(_$GenerateCsrImpl(
       subject: null == subject
           ? _value.subject
           : subject // ignore: cast_nullable_to_non_nullable
@@ -2526,8 +2536,8 @@ class __$$_GenerateCsrCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_GenerateCsr implements _GenerateCsr {
-  _$_GenerateCsr({required this.subject});
+class _$GenerateCsrImpl implements _GenerateCsr {
+  _$GenerateCsrImpl({required this.subject});
 
   @override
   final String subject;
@@ -2541,7 +2551,7 @@ class _$_GenerateCsr implements _GenerateCsr {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GenerateCsr &&
+            other is _$GenerateCsrImpl &&
             (identical(other.subject, subject) || other.subject == subject));
   }
 
@@ -2551,8 +2561,8 @@ class _$_GenerateCsr implements _GenerateCsr {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GenerateCsrCopyWith<_$_GenerateCsr> get copyWith =>
-      __$$_GenerateCsrCopyWithImpl<_$_GenerateCsr>(this, _$identity);
+  _$$GenerateCsrImplCopyWith<_$GenerateCsrImpl> get copyWith =>
+      __$$GenerateCsrImplCopyWithImpl<_$GenerateCsrImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2622,13 +2632,13 @@ class _$_GenerateCsr implements _GenerateCsr {
 }
 
 abstract class _GenerateCsr implements PivGenerateParameters {
-  factory _GenerateCsr({required final String subject}) = _$_GenerateCsr;
+  factory _GenerateCsr({required final String subject}) = _$GenerateCsrImpl;
 
   @override
   String get subject;
   @override
   @JsonKey(ignore: true)
-  _$$_GenerateCsrCopyWith<_$_GenerateCsr> get copyWith =>
+  _$$GenerateCsrImplCopyWith<_$GenerateCsrImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2692,22 +2702,22 @@ class _$PivGenerateResultCopyWithImpl<$Res, $Val extends PivGenerateResult>
 }
 
 /// @nodoc
-abstract class _$$_PivGenerateResultCopyWith<$Res>
+abstract class _$$PivGenerateResultImplCopyWith<$Res>
     implements $PivGenerateResultCopyWith<$Res> {
-  factory _$$_PivGenerateResultCopyWith(_$_PivGenerateResult value,
-          $Res Function(_$_PivGenerateResult) then) =
-      __$$_PivGenerateResultCopyWithImpl<$Res>;
+  factory _$$PivGenerateResultImplCopyWith(_$PivGenerateResultImpl value,
+          $Res Function(_$PivGenerateResultImpl) then) =
+      __$$PivGenerateResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({GenerateType generateType, String publicKey, String result});
 }
 
 /// @nodoc
-class __$$_PivGenerateResultCopyWithImpl<$Res>
-    extends _$PivGenerateResultCopyWithImpl<$Res, _$_PivGenerateResult>
-    implements _$$_PivGenerateResultCopyWith<$Res> {
-  __$$_PivGenerateResultCopyWithImpl(
-      _$_PivGenerateResult _value, $Res Function(_$_PivGenerateResult) _then)
+class __$$PivGenerateResultImplCopyWithImpl<$Res>
+    extends _$PivGenerateResultCopyWithImpl<$Res, _$PivGenerateResultImpl>
+    implements _$$PivGenerateResultImplCopyWith<$Res> {
+  __$$PivGenerateResultImplCopyWithImpl(_$PivGenerateResultImpl _value,
+      $Res Function(_$PivGenerateResultImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2717,7 +2727,7 @@ class __$$_PivGenerateResultCopyWithImpl<$Res>
     Object? publicKey = null,
     Object? result = null,
   }) {
-    return _then(_$_PivGenerateResult(
+    return _then(_$PivGenerateResultImpl(
       generateType: null == generateType
           ? _value.generateType
           : generateType // ignore: cast_nullable_to_non_nullable
@@ -2736,14 +2746,14 @@ class __$$_PivGenerateResultCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PivGenerateResult implements _PivGenerateResult {
-  _$_PivGenerateResult(
+class _$PivGenerateResultImpl implements _PivGenerateResult {
+  _$PivGenerateResultImpl(
       {required this.generateType,
       required this.publicKey,
       required this.result});
 
-  factory _$_PivGenerateResult.fromJson(Map<String, dynamic> json) =>
-      _$$_PivGenerateResultFromJson(json);
+  factory _$PivGenerateResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PivGenerateResultImplFromJson(json);
 
   @override
   final GenerateType generateType;
@@ -2761,7 +2771,7 @@ class _$_PivGenerateResult implements _PivGenerateResult {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PivGenerateResult &&
+            other is _$PivGenerateResultImpl &&
             (identical(other.generateType, generateType) ||
                 other.generateType == generateType) &&
             (identical(other.publicKey, publicKey) ||
@@ -2776,13 +2786,13 @@ class _$_PivGenerateResult implements _PivGenerateResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PivGenerateResultCopyWith<_$_PivGenerateResult> get copyWith =>
-      __$$_PivGenerateResultCopyWithImpl<_$_PivGenerateResult>(
+  _$$PivGenerateResultImplCopyWith<_$PivGenerateResultImpl> get copyWith =>
+      __$$PivGenerateResultImplCopyWithImpl<_$PivGenerateResultImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PivGenerateResultToJson(
+    return _$$PivGenerateResultImplToJson(
       this,
     );
   }
@@ -2792,10 +2802,10 @@ abstract class _PivGenerateResult implements PivGenerateResult {
   factory _PivGenerateResult(
       {required final GenerateType generateType,
       required final String publicKey,
-      required final String result}) = _$_PivGenerateResult;
+      required final String result}) = _$PivGenerateResultImpl;
 
   factory _PivGenerateResult.fromJson(Map<String, dynamic> json) =
-      _$_PivGenerateResult.fromJson;
+      _$PivGenerateResultImpl.fromJson;
 
   @override
   GenerateType get generateType;
@@ -2805,7 +2815,7 @@ abstract class _PivGenerateResult implements PivGenerateResult {
   String get result;
   @override
   @JsonKey(ignore: true)
-  _$$_PivGenerateResultCopyWith<_$_PivGenerateResult> get copyWith =>
+  _$$PivGenerateResultImplCopyWith<_$PivGenerateResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2883,11 +2893,11 @@ class _$PivImportResultCopyWithImpl<$Res, $Val extends PivImportResult>
 }
 
 /// @nodoc
-abstract class _$$_PivImportResultCopyWith<$Res>
+abstract class _$$PivImportResultImplCopyWith<$Res>
     implements $PivImportResultCopyWith<$Res> {
-  factory _$$_PivImportResultCopyWith(
-          _$_PivImportResult value, $Res Function(_$_PivImportResult) then) =
-      __$$_PivImportResultCopyWithImpl<$Res>;
+  factory _$$PivImportResultImplCopyWith(_$PivImportResultImpl value,
+          $Res Function(_$PivImportResultImpl) then) =
+      __$$PivImportResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({SlotMetadata? metadata, String? publicKey, String? certificate});
@@ -2897,11 +2907,11 @@ abstract class _$$_PivImportResultCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PivImportResultCopyWithImpl<$Res>
-    extends _$PivImportResultCopyWithImpl<$Res, _$_PivImportResult>
-    implements _$$_PivImportResultCopyWith<$Res> {
-  __$$_PivImportResultCopyWithImpl(
-      _$_PivImportResult _value, $Res Function(_$_PivImportResult) _then)
+class __$$PivImportResultImplCopyWithImpl<$Res>
+    extends _$PivImportResultCopyWithImpl<$Res, _$PivImportResultImpl>
+    implements _$$PivImportResultImplCopyWith<$Res> {
+  __$$PivImportResultImplCopyWithImpl(
+      _$PivImportResultImpl _value, $Res Function(_$PivImportResultImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2911,7 +2921,7 @@ class __$$_PivImportResultCopyWithImpl<$Res>
     Object? publicKey = freezed,
     Object? certificate = freezed,
   }) {
-    return _then(_$_PivImportResult(
+    return _then(_$PivImportResultImpl(
       metadata: freezed == metadata
           ? _value.metadata
           : metadata // ignore: cast_nullable_to_non_nullable
@@ -2930,14 +2940,14 @@ class __$$_PivImportResultCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PivImportResult implements _PivImportResult {
-  _$_PivImportResult(
+class _$PivImportResultImpl implements _PivImportResult {
+  _$PivImportResultImpl(
       {required this.metadata,
       required this.publicKey,
       required this.certificate});
 
-  factory _$_PivImportResult.fromJson(Map<String, dynamic> json) =>
-      _$$_PivImportResultFromJson(json);
+  factory _$PivImportResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PivImportResultImplFromJson(json);
 
   @override
   final SlotMetadata? metadata;
@@ -2955,7 +2965,7 @@ class _$_PivImportResult implements _PivImportResult {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PivImportResult &&
+            other is _$PivImportResultImpl &&
             (identical(other.metadata, metadata) ||
                 other.metadata == metadata) &&
             (identical(other.publicKey, publicKey) ||
@@ -2972,12 +2982,13 @@ class _$_PivImportResult implements _PivImportResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PivImportResultCopyWith<_$_PivImportResult> get copyWith =>
-      __$$_PivImportResultCopyWithImpl<_$_PivImportResult>(this, _$identity);
+  _$$PivImportResultImplCopyWith<_$PivImportResultImpl> get copyWith =>
+      __$$PivImportResultImplCopyWithImpl<_$PivImportResultImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PivImportResultToJson(
+    return _$$PivImportResultImplToJson(
       this,
     );
   }
@@ -2987,10 +2998,10 @@ abstract class _PivImportResult implements PivImportResult {
   factory _PivImportResult(
       {required final SlotMetadata? metadata,
       required final String? publicKey,
-      required final String? certificate}) = _$_PivImportResult;
+      required final String? certificate}) = _$PivImportResultImpl;
 
   factory _PivImportResult.fromJson(Map<String, dynamic> json) =
-      _$_PivImportResult.fromJson;
+      _$PivImportResultImpl.fromJson;
 
   @override
   SlotMetadata? get metadata;
@@ -3000,6 +3011,6 @@ abstract class _PivImportResult implements PivImportResult {
   String? get certificate;
   @override
   @JsonKey(ignore: true)
-  _$$_PivImportResultCopyWith<_$_PivImportResult> get copyWith =>
+  _$$PivImportResultImplCopyWith<_$PivImportResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
