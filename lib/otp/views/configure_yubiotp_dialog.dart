@@ -15,7 +15,9 @@
  */
 
 import 'dart:math';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,6 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:logging/logging.dart';
+import 'package:yubico_authenticator/widgets/choice_filter_chip.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -37,6 +40,18 @@ final _log = Logger('otp.view.configure_yubiotp_dialog');
 
 final _modhexPattern = RegExp('[cbdefghijklnrtuv]', caseSensitive: false);
 
+enum OutputActions {
+  selectFile,
+  noOutput;
+
+  const OutputActions();
+
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OutputActions.selectFile => 'Select file',
+        OutputActions.noOutput => 'No output'
+      };
+}
+
 class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
@@ -49,18 +64,19 @@ class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
 
 class _ConfigureYubiOtpDialogState
     extends ConsumerState<ConfigureYubiOtpDialog> {
-  final _keyController = TextEditingController();
+  final _secretController = TextEditingController();
   final _publicIdController = TextEditingController();
   final _privateIdController = TextEditingController();
-  final maxLengthKey = 32;
-  final maxLengthPublicId = 12;
-  final maxLengthPrivateId = 12;
+  final secretLength = 32;
+  final publicIdLength = 12;
+  final privateIdLength = 12;
+  OutputActions _action = OutputActions.selectFile;
+  File? _outputFile = File('~/secrets.csv');
   bool _appendEnter = true;
-  bool _configuring = false;
 
   @override
   void dispose() {
-    _keyController.dispose();
+    _secretController.dispose();
     _publicIdController.dispose();
     _privateIdController.dispose();
     super.dispose();
@@ -72,41 +88,46 @@ class _ConfigureYubiOtpDialogState
 
     final info = ref.watch(currentDeviceDataProvider).valueOrNull?.info;
 
-    final secret = _keyController.text.replaceAll(' ', '');
+    final secret = _secretController.text.replaceAll(' ', '');
+    final secretLengthValid = secret.length == secretLength;
+
     final privateId = _privateIdController.text;
-    String publicId = _publicIdController.text;
+    final privateIdLengthValid = privateId.length == privateIdLength;
+
+    final publicId = _publicIdController.text;
+    final publicIdLengthValid = publicId.length == publicIdLength;
+
+    final isValid =
+        secretLengthValid && privateIdLengthValid && publicIdLengthValid;
+
+    Future<File?> selectFile() async {
+      final filePath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Export configuration to file',
+          allowedExtensions: ['csv'],
+          type: FileType.custom,
+          lockParentWindow: true);
+
+      if (filePath == null) {
+        return null;
+      }
+
+      return File(filePath);
+    }
 
     return ResponsiveDialog(
-      allowCancel: !_configuring,
       title: Text(l10n.s_yubiotp),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: _configuring
-              ? null
-              : () async {
-                  if (!(secret.isNotEmpty && secret.length * 5 % 8 < 5)) {
-                    setState(() {
-                      _configuring = false;
-                    });
-                    return;
-                  }
-
+          onPressed: isValid
+              ? () async {
                   if (!await confirmOverwrite(context, widget.otpSlot)) {
                     return;
                   }
 
-                  setState(() {
-                    _configuring = true;
-                  });
-
                   final otpNotifier =
                       ref.read(otpStateProvider(widget.devicePath).notifier);
                   try {
-                    if (info != null && publicId == info.serial.toString()) {
-                      publicId =
-                          await otpNotifier.modhexEncodeSerial(info.serial!);
-                    }
                     await otpNotifier.configureSlot(widget.otpSlot.slot,
                         configuration: SlotConfiguration.yubiotp(
                             publicId: publicId,
@@ -114,23 +135,45 @@ class _ConfigureYubiOtpDialogState
                             key: secret,
                             options: SlotConfigurationOptions(
                                 appendCr: _appendEnter)));
+                    if (_outputFile != null) {
+                      final csv = await otpNotifier.formatYubiOtpCsv(
+                          info!.serial!, publicId, privateId, secret);
+
+                      await _outputFile!.writeAsString(
+                          '$csv${Platform.lineTerminator}',
+                          mode: FileMode.append);
+                    }
                     await ref.read(withContextProvider)((context) async {
                       Navigator.of(context).pop();
-                      showMessage(context,
-                          l10n.l_slot_configuration_programmed(l10n.s_yubiotp));
+                      showMessage(
+                          context,
+                          _outputFile != null
+                              ? l10n
+                                  .l_slot_configuration_programmed_and_exported(
+                                      l10n.s_yubiotp,
+                                      _outputFile!.uri.pathSegments.last)
+                              : l10n.l_slot_configuration_programmed(
+                                  l10n.s_yubiotp));
                     });
                   } catch (e) {
                     _log.error('Failed to program credential', e);
                     await ref.read(withContextProvider)((context) async {
+                      final String errorMessage;
+                      if (e is PathNotFoundException) {
+                        errorMessage = '${e.message} ${e.path.toString()}';
+                      } else {
+                        errorMessage = l10n.p_otp_slot_configuration_error(
+                            widget.otpSlot.slot.getDisplayName(l10n));
+                      }
                       showMessage(
                         context,
-                        l10n.p_otp_slot_configuration_error(
-                            widget.otpSlot.slot.getDisplayName(l10n)),
+                        errorMessage,
                         duration: const Duration(seconds: 4),
                       );
                     });
                   }
-                },
+                }
+              : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -144,16 +187,22 @@ class _ConfigureYubiOtpDialogState
               autofocus: true,
               controller: _publicIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              maxLength: maxLengthPublicId,
+              maxLength: publicIdLength,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     tooltip: l10n.s_use_serial,
                     icon: const Icon(Icons.auto_awesome_outlined),
-                    onPressed: () {
-                      setState(() {
-                        _publicIdController.text = info!.serial.toString();
-                      });
-                    },
+                    onPressed: (info?.serial != null)
+                        ? () async {
+                            final publicId = await ref
+                                .read(otpStateProvider(widget.devicePath)
+                                    .notifier)
+                                .modhexEncodeSerial(info!.serial!);
+                            setState(() {
+                              _publicIdController.text = publicId;
+                            });
+                          }
+                        : null,
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.public_outlined),
@@ -162,12 +211,17 @@ class _ConfigureYubiOtpDialogState
                 FilteringTextInputFormatter.allow(_modhexPattern)
               ],
               textInputAction: TextInputAction.next,
+              onChanged: (value) {
+                setState(() {
+                  // Update lengths
+                });
+              },
             ),
             TextField(
               key: keys.privateIdField,
               controller: _privateIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              maxLength: maxLengthPrivateId,
+              maxLength: privateIdLength,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     tooltip: l10n.s_generate_private_id,
@@ -193,12 +247,17 @@ class _ConfigureYubiOtpDialogState
                     RegExp('[a-f0-9]', caseSensitive: false))
               ],
               textInputAction: TextInputAction.next,
+              onChanged: (value) {
+                setState(() {
+                  // Update lengths
+                });
+              },
             ),
             TextField(
               key: keys.secretField,
-              controller: _keyController,
+              controller: _secretController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              maxLength: maxLengthKey,
+              maxLength: secretLength,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     tooltip: l10n.s_generate_secret_key,
@@ -212,7 +271,7 @@ class _ConfigureYubiOtpDialogState
                               .toRadixString(16)
                               .padLeft(2, '0')).join();
                       setState(() {
-                        _keyController.text = key;
+                        _secretController.text = key;
                       });
                     },
                   ),
@@ -224,6 +283,11 @@ class _ConfigureYubiOtpDialogState
                     RegExp('[a-f0-9]', caseSensitive: false))
               ],
               textInputAction: TextInputAction.next,
+              onChanged: (value) {
+                setState(() {
+                  // Update lengths
+                });
+              },
             ),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -239,7 +303,44 @@ class _ConfigureYubiOtpDialogState
                       _appendEnter = value;
                     });
                   },
-                )
+                ),
+                ChoiceFilterChip<OutputActions>(
+                  tooltip: _outputFile?.path ?? 'No export',
+                  selected: _outputFile != null,
+                  avatar: _outputFile != null
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).colorScheme.secondary)
+                      : null,
+                  value: _action,
+                  items: OutputActions.values,
+                  itemBuilder: (value) => Text(value.getDisplayName(l10n)),
+                  labelBuilder: (_) {
+                    String? fileName = _outputFile?.uri.pathSegments.last;
+                    return Container(
+                      constraints: const BoxConstraints(maxWidth: 140),
+                      child: Text(
+                        'Output ${fileName ?? 'No output'}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  },
+                  onChanged: (value) async {
+                    if (value == OutputActions.noOutput) {
+                      setState(() {
+                        _action = value;
+                        _outputFile = null;
+                      });
+                    } else if (value == OutputActions.selectFile) {
+                      final file = await selectFile();
+                      if (file != null) {
+                        setState(() {
+                          _action = value;
+                          _outputFile = file;
+                        });
+                      }
+                    }
+                  },
+                ),
               ],
             )
           ]

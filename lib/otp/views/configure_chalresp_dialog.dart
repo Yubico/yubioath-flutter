@@ -47,15 +47,14 @@ class ConfigureChalrespDialog extends ConsumerStatefulWidget {
 
 class _ConfigureChalrespDialogState
     extends ConsumerState<ConfigureChalrespDialog> {
-  final _keyController = TextEditingController();
-  bool _invalidKeyLength = false;
-  bool _configuring = false;
+  final _secretController = TextEditingController();
+  bool _validateSecretLength = false;
   bool _requireTouch = false;
-  final int maxLength = 40;
+  final int secretMaxLength = 40;
 
   @override
   void dispose() {
-    _keyController.dispose();
+    _secretController.dispose();
     super.dispose();
   }
 
@@ -63,21 +62,20 @@ class _ConfigureChalrespDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final secret = _keyController.text.replaceAll(' ', '');
+    final secret = _secretController.text.replaceAll(' ', '');
+    final secretLengthValid =
+        secret.isNotEmpty && secret.length <= secretMaxLength;
 
     return ResponsiveDialog(
-      allowCancel: !_configuring,
       title: Text(l10n.s_challenge_response),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: _configuring || _invalidKeyLength
-              ? null
-              : () async {
-                  if (!(secret.isNotEmpty && secret.length <= maxLength)) {
+          onPressed: !_validateSecretLength
+              ? () async {
+                  if (!secretLengthValid) {
                     setState(() {
-                      _configuring = false;
-                      _invalidKeyLength = true;
+                      _validateSecretLength = true;
                     });
                     return;
                   }
@@ -85,10 +83,6 @@ class _ConfigureChalrespDialogState
                   if (!await confirmOverwrite(context, widget.otpSlot)) {
                     return;
                   }
-
-                  setState(() {
-                    _configuring = true;
-                  });
 
                   final otpNotifier =
                       ref.read(otpStateProvider(widget.devicePath).notifier);
@@ -114,7 +108,8 @@ class _ConfigureChalrespDialogState
                       );
                     });
                   }
-                },
+                }
+              : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -126,9 +121,9 @@ class _ConfigureChalrespDialogState
             TextField(
               key: keys.secretField,
               autofocus: true,
-              controller: _keyController,
+              controller: _secretController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              maxLength: maxLength,
+              maxLength: secretMaxLength,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     tooltip: l10n.s_generate_secret_key,
@@ -142,14 +137,16 @@ class _ConfigureChalrespDialogState
                               .toRadixString(16)
                               .padLeft(2, '0')).join();
                       setState(() {
-                        _keyController.text = key;
+                        _secretController.text = key;
                       });
                     },
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
                   labelText: l10n.s_secret_key,
-                  errorText: _invalidKeyLength ? l10n.s_invalid_length : null),
+                  errorText: _validateSecretLength && !secretLengthValid
+                      ? l10n.s_invalid_length
+                      : null),
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(
                     RegExp('[a-f0-9]', caseSensitive: false))
@@ -157,7 +154,7 @@ class _ConfigureChalrespDialogState
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _invalidKeyLength = false;
+                  _validateSecretLength = false;
                 });
               },
             ),

@@ -49,16 +49,18 @@ class ConfigureStaticDialog extends ConsumerStatefulWidget {
 
 class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   final _passwordController = TextEditingController();
-  bool _invalidPasswordLength = false;
-  bool _configuring = false;
+  final passwordMaxLength = 38;
+  bool _validatePassword = false;
   bool _appendEnter = true;
   String _keyboardLayout = '';
-  final maxLength = 38;
+  String _defaultKeyboardLayout = '';
 
   @override
   void initState() {
     super.initState();
-    _keyboardLayout = widget.keyboardLayouts.keys.toList()[0];
+    final modhexLayout = widget.keyboardLayouts.keys.toList()[0];
+    _keyboardLayout = modhexLayout;
+    _defaultKeyboardLayout = modhexLayout;
   }
 
   @override
@@ -67,34 +69,37 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
     super.dispose();
   }
 
-  RegExp generateFormatterPattern(String layout) {
+  String generateFormatterPattern(String layout) {
     final allowedCharacters = widget.keyboardLayouts[layout] ?? [];
 
     final pattern =
         allowedCharacters.map((char) => RegExp.escape(char)).join('');
 
-    return RegExp('[$pattern]', caseSensitive: false);
+    return '[$pattern]';
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final secret = _passwordController.text.replaceAll(' ', '');
+    final password = _passwordController.text.replaceAll(' ', '');
+    final passwordLengthValid =
+        password.isNotEmpty && password.length <= passwordMaxLength;
+
+    final layoutPattern = generateFormatterPattern(_keyboardLayout);
+    final regex = RegExp('^$layoutPattern', caseSensitive: false);
+    final passwordFormatValid = regex.hasMatch(password);
 
     return ResponsiveDialog(
-      allowCancel: !_configuring,
       title: Text(l10n.s_static_password),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: _configuring || _invalidPasswordLength
-              ? null
-              : () async {
-                  if (!(secret.isNotEmpty && secret.length <= maxLength)) {
+          onPressed: !_validatePassword
+              ? () async {
+                  if (!passwordLengthValid || !passwordFormatValid) {
                     setState(() {
-                      _configuring = false;
-                      _invalidPasswordLength = true;
+                      _validatePassword = true;
                     });
                     return;
                   }
@@ -103,16 +108,12 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                     return;
                   }
 
-                  setState(() {
-                    _configuring = true;
-                  });
-
                   final otpNotifier =
                       ref.read(otpStateProvider(widget.devicePath).notifier);
                   try {
                     await otpNotifier.configureSlot(widget.otpSlot.slot,
                         configuration: SlotConfiguration.static(
-                            password: secret,
+                            password: password,
                             keyboardLayout: _keyboardLayout,
                             options: SlotConfigurationOptions(
                                 appendCr: _appendEnter)));
@@ -134,7 +135,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       );
                     });
                   }
-                },
+                }
+              : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -148,7 +150,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
               autofocus: true,
               controller: _passwordController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              maxLength: maxLength,
+              maxLength: passwordMaxLength,
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     tooltip: l10n.s_generate_passowrd,
@@ -156,7 +158,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                     onPressed: () async {
                       final password = await ref
                           .read(otpStateProvider(widget.devicePath).notifier)
-                          .generateStaticPassword(maxLength, _keyboardLayout);
+                          .generateStaticPassword(
+                              passwordMaxLength, _keyboardLayout);
                       setState(() {
                         _passwordController.text = password;
                       });
@@ -165,16 +168,24 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
                   labelText: l10n.s_password,
-                  errorText:
-                      _invalidPasswordLength ? l10n.s_invalid_length : null),
+                  errorText: _validatePassword &&
+                          !passwordLengthValid &&
+                          passwordFormatValid
+                      ? l10n.s_invalid_length
+                      : _validatePassword &&
+                              passwordLengthValid &&
+                              !passwordFormatValid
+                          ? l10n.s_invalid_format
+                          : null),
               inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    generateFormatterPattern(_keyboardLayout))
+                FilteringTextInputFormatter.allow(RegExp(
+                    generateFormatterPattern(_keyboardLayout),
+                    caseSensitive: false))
               ],
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _invalidPasswordLength = false;
+                  _validatePassword = false;
                 });
               },
             ),
@@ -186,10 +197,12 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                 ChoiceFilterChip(
                     items: widget.keyboardLayouts.keys.toList(),
                     value: _keyboardLayout,
+                    selected: _keyboardLayout != _defaultKeyboardLayout,
                     itemBuilder: (value) => Text(value),
                     onChanged: (layout) {
                       setState(() {
                         _keyboardLayout = layout;
+                        _validatePassword = false;
                       });
                     }),
                 FilterChip(

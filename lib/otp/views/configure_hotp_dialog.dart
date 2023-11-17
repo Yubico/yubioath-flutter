@@ -46,17 +46,16 @@ class ConfigureHotpDialog extends ConsumerStatefulWidget {
 }
 
 class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
-  final _keyController = TextEditingController();
-  bool _invalidKeyLength = false;
+  final _secretController = TextEditingController();
+  bool _validateSecretLength = false;
   int _digits = defaultDigits;
   final List<int> _digitsValues = [6, 8];
   bool _appendEnter = true;
-  bool _configuring = false;
   bool _isObscure = true;
 
   @override
   void dispose() {
-    _keyController.dispose();
+    _secretController.dispose();
     super.dispose();
   }
 
@@ -64,21 +63,19 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final secret = _keyController.text.replaceAll(' ', '');
+    final secret = _secretController.text.replaceAll(' ', '');
+    final secretLengthValid = secret.isNotEmpty && secret.length * 5 % 8 < 5;
 
     return ResponsiveDialog(
-      allowCancel: !_configuring,
       title: Text(l10n.s_hotp),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: _configuring || _invalidKeyLength
-              ? null
-              : () async {
-                  if (!(secret.isNotEmpty && secret.length * 5 % 8 < 5)) {
+          onPressed: !_validateSecretLength
+              ? () async {
+                  if (!secretLengthValid) {
                     setState(() {
-                      _configuring = false;
-                      _invalidKeyLength = true;
+                      _validateSecretLength = true;
                     });
                     return;
                   }
@@ -86,10 +83,6 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                   if (!await confirmOverwrite(context, widget.otpSlot)) {
                     return;
                   }
-
-                  setState(() {
-                    _configuring = true;
-                  });
 
                   final otpNotifier =
                       ref.read(otpStateProvider(widget.devicePath).notifier);
@@ -116,7 +109,8 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       );
                     });
                   }
-                },
+                }
+              : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -127,7 +121,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
           children: [
             TextField(
               key: keys.secretField,
-              controller: _keyController,
+              controller: _secretController,
               obscureText: _isObscure,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               inputFormatters: <TextInputFormatter>[
@@ -150,11 +144,13 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
                   labelText: l10n.s_secret_key,
-                  errorText: _invalidKeyLength ? l10n.s_invalid_length : null),
+                  errorText: _validateSecretLength && !secretLengthValid
+                      ? l10n.s_invalid_length
+                      : null),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _invalidKeyLength = false;
+                  _validateSecretLength = false;
                 });
               },
             ),

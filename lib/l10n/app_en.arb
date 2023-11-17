@@ -79,6 +79,7 @@
     "s_hide_secret_key": "Hide secret key",
     "s_private_key": "Private key",
     "s_invalid_length": "Invalid length",
+    "s_invalid_format": "Invalid format",
     "s_require_touch": "Require touch",
     "q_have_account_info": "Have account info?",
     "s_run_diagnostics": "Run diagnostics",
@@ -555,6 +556,13 @@
     "@l_slot_configuration_programmed": {
         "placeholders": {
             "type": {}
+        }
+    },
+    "l_slot_configuration_programmed_and_exported": "Configured {type} credential and exported to {file}",
+    "@l_slot_configuration_programmed_and_exported": {
+        "placeholders": {
+            "type": {},
+            "file": {}
         }
     },
     "s_append_enter": "Append enter",

@@ -26,7 +26,7 @@ from yubikit.yubiotp import (
     YubiOtpSlotConfiguration,
     StaticTicketSlotConfiguration,
 )
-from ykman.otp import generate_static_pw
+from ykman.otp import generate_static_pw, format_csv
 from yubikit.oath import parse_b32_key
 from ykman.scancodes import KEYBOARD_LAYOUT, encode
 
@@ -93,6 +93,16 @@ class YubiOtpNode(RpcNode):
     def keyboard_layouts(self, params, event, signal):
         return {layout.name:[sc for sc in layout.value] for layout in KEYBOARD_LAYOUT}
 
+    @action(closes_child=False)
+    def format_yubiotp_csv(self, params, even, signal):
+        serial = params["serial"]
+        public_id = modhex_decode(params["public_id"])
+        private_id = bytes.fromhex(params["private_id"])
+        key = bytes.fromhex(params["key"])
+
+        return dict(csv=format_csv(serial, public_id, private_id, key))
+
+
 _CONFIG_TYPES = dict(
     hmac_sha1=HmacSha1SlotConfiguration,
     hotp=HotpSlotConfiguration,
@@ -100,7 +110,6 @@ _CONFIG_TYPES = dict(
     yubiotp=YubiOtpSlotConfiguration,
     static_ticket=StaticTicketSlotConfiguration,
 )
-
 
 class SlotNode(RpcNode):
     def __init__(self, session, slot):

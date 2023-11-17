@@ -85,6 +85,18 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
   }
 
   @override
+  Future<String> formatYubiOtpCsv(
+      int serial, String publicId, String privateId, String key) async {
+    final result = await _session.command('format_yubiotp_csv', params: {
+      'serial': serial,
+      'public_id': publicId,
+      'private_id': privateId,
+      'key': key
+    });
+    return result['csv'];
+  }
+
+  @override
   Future<void> deleteSlot(SlotId slot) async {
     await _session.command('delete', target: [slot.id]);
     ref.invalidateSelf();
