@@ -26,6 +26,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import '../keys.dart' as keys;
@@ -284,6 +285,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       },
                     ),
                   FilterChip(
+                    key: pinLockManagementKeyChip,
                     label: Text(l10n.s_protect_key),
                     selected: _storeKey,
                     onSelected: (value) {

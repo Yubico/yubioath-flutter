@@ -24,6 +24,7 @@ const _slotAction = '$_prefix.slot.actions';
 const managePinAction = Key('$_keyAction.manage_pin');
 const managePukAction = Key('$_keyAction.manage_puk');
 const manageManagementKeyAction = Key('$_keyAction.manage_management_key');
+const pinLockManagementKeyChip = Key('$_keyAction.pinlock_managementkey');
 const resetAction = Key('$_keyAction.reset');
 const setupMacOsAction = Key('$_keyAction.setup_macos');
 
@@ -40,6 +41,7 @@ const resetButton = Key('$_prefix.reset');
 
 const managementKeyField = Key('$_prefix.management_key');
 const managementKeyRefresh = Key('$_prefix.management_key_refresh');
+
 const pinPukField = Key('$_prefix.pin_puk');
 const newPinPukField = Key('$_prefix.new_pin_puk');
 const confirmPinPukField = Key('$_prefix.confirm_pin_puk');

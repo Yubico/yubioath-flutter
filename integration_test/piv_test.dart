@@ -153,46 +153,117 @@ void main() {
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.longWait();
     });
-    appTest('Change Management Key', (WidgetTester tester) async {
+    group('PIV Management Key', () {
       const newmanagementkey =
           'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbcccc';
-      await tester.configurePiv();
-      await tester.shortWait();
-      await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+      const boundsmanagementkey =
+          'llllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkmmmm';
+      const shortmanagementkey =
+          'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbccc';
 
-      /// TODO: new management key field is broken, remove managementKeyRefresh when this is fixed
-      await tester.shortWait();
-      await tester.enterText(
-          find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-      await tester.configurePiv();
-      await tester.shortWait();
-      await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-      await tester.shortWait();
-      await tester.enterText(
-          find.byKey(managementKeyField).hitTestable(), newmanagementkey);
-      await tester.longWait();
-      await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+      appTest('Bad managementkey key', (WidgetTester tester) async {
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.longWait();
+        // testing out of bounds management key does not work
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), boundsmanagementkey);
+        await tester.longWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
+        // testing too short management key does not work
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), shortmanagementkey);
+        await tester.longWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
+        // TODO: verify state
+      });
+      appTest('Change managementkey key', (WidgetTester tester) async {
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.shortWait();
+        // setting newmanagementkey
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+        await tester.longWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
+        // verifying newmanagementkey
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.shortWait();
+        await tester.enterText(
+            find.byKey(managementKeyField).hitTestable(), newmanagementkey);
+        await tester.shortWait();
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+        await tester.shortWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
+        await tester.resetPiv();
+      });
+      appTest('Change managementkey type', (WidgetTester tester) async {
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.shortWait();
+        // TODO: this needs to use manageManagementKeyAction chip
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+        await tester.shortWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
 
-      /// TODO: 'new management key' field is broken, remove managementKeyRefresh when this is fixed
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      await tester.enterText(
-          find.byKey(newPinPukField).hitTestable(), factoryManagemenKey);
-      await tester.longWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      await tester.resetPiv();
-    });
+        await tester.resetPiv();
+        await tester.shortWait();
+      });
+      appTest('Change managementkey PIN-lock', (WidgetTester tester) async {
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.shortWait();
+        // testing out of bounds management key does not work
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+        await tester.shortWait();
+        // TODO: Investigate why chip-tap fails
+        //await tester.tap(find.byKey(pinLockManagementKeyChip).hitTestable());
+        //await tester.shortWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
+        await tester.resetPiv();
+        await tester.shortWait();
+      });
 
-    /// TODO: The rest of management key settings, when input fields are fixed
-    appTest('Reset PIV (settings-exit)', (WidgetTester tester) async {
-      await tester.resetPiv();
-      await tester.shortWait();
+      appTest('Random managementkeytype', (WidgetTester tester) async {
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.shortWait();
+        // rndm 3x, for luck
+        await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+        await tester.shortWait();
+        await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+        await tester.shortWait();
+        await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+        await tester.shortWait();
+        await tester.enterText(
+            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+        await tester.shortWait();
+        await tester.tap(find.byKey(saveButton).hitTestable());
+        await tester.longWait();
+        await tester.resetPiv();
+      });
+
+      /// TODO: The rest of management key settings, when input fields are fixed
+      appTest('Reset PIV (settings-exit)', (WidgetTester tester) async {
+        await tester.resetPiv();
+        await tester.shortWait();
+      });
     });
   });
 
