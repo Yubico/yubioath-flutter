@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
@@ -118,14 +119,42 @@ extension AppWidgetTester on WidgetTester {
     expect(find.byKey(screenKey), findsOneWidget);
   }
 
-  Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
-    // YA_TEST_APPROVED_KEY_SN should contain comma separated list of
-    // YubiKey serial numbers which are approved for tests
-    // To pass the variable to the test use:
-    // flutter --dart-define=YA_TEST_APPROVED_KEY_SN=SN1,SN2,...,SNn test t
-    const envVar = String.fromEnvironment('YA_TEST_APPROVED_KEY_SN');
-    final approvedSerialNumbers = envVar.split(',');
+  /// Retrieve a list of test approved serial numbers.
+  ///
+  /// There are two ways how to provide approved serial numbers:
+  ///
+  /// 1. Serial numbers defined in test resource file
+  /// To add testing keys add comma separated serial numbers to a file
+  /// `approved_serial_numbers.csv` in `integration_test/test_res/resources/`.
+  /// This file is bundled only during test runs and is explicitly ignored from
+  /// version control.
+  ///
+  /// 2. Serial numbers passed through build environment
+  /// YA_TEST_APPROVED_KEY_SN should contain comma separated list of
+  /// YubiKey serial numbers which are approved for tests
+  /// To pass the variable to the test use:
+  /// flutter --dart-define=YA_TEST_APPROVED_KEY_SN=SN1,SN2,...,SNn test t
+  Future<List<String>> getApprovedSerialNumbers() async {
+    const approvedKeysResource = 'approved_serial_numbers.csv';
+    String approved = '';
 
+    const envVar = String.fromEnvironment('YA_TEST_APPROVED_KEY_SN');
+
+    try {
+      approved = await rootBundle.loadString(
+        'packages/test_res/resources/$approvedKeysResource',
+      );
+    } catch (_) {
+      testLog(false, 'Failed to read $approvedKeysResource');
+    }
+
+    return (approved + (approved.isEmpty ? ',' : '') + envVar)
+        .split(',')
+        .map((e) => e.trim())
+        .toList(growable: false);
+  }
+
+  Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
     var result = isAndroid == true
         ? await android_test_util.startUp(this, startUpParams)
         : await desktop_test_util.startUp(this, startUpParams);
@@ -135,6 +164,8 @@ extension AppWidgetTester on WidgetTester {
     if (yubiKeySerialNumber == null) {
       fail('No YubiKey connected');
     }
+
+    final approvedSerialNumbers = await getApprovedSerialNumbers();
 
     if (!approvedSerialNumbers.contains(yubiKeySerialNumber)) {
       fail('YubiKey with S/N $yubiKeySerialNumber is not approved for '
