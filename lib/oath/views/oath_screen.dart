@@ -147,55 +147,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         }),
       },
       child: AppPage(
-        title: Focus(
-          canRequestFocus: false,
-          onKeyEvent: (node, event) {
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              node.focusInDirection(TraversalDirection.down);
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: Builder(builder: (context) {
-            final textTheme = Theme.of(context).textTheme;
-            return TextFormField(
-              key: keys.searchAccountsField,
-              controller: searchController,
-              focusNode: searchFocus,
-              // Use the default style, but with a smaller font size:
-              style: textTheme.titleMedium
-                  ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-              decoration: InputDecoration(
-                hintText: l10n.s_search_accounts,
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-                prefixIcon: const Icon(Icons.search_outlined),
-                prefixIconConstraints:
-                    const BoxConstraints(minHeight: 30, minWidth: 30),
-                /*
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.highlight_off),
-                  iconSize: 16,
-                  color: Colors.white54,
-                  onPressed: searchController.clear,
-                ),
-                suffixIconConstraints:
-                    const BoxConstraints(minHeight: 30, minWidth: 30),
-                    */
-              ),
-              onChanged: (value) {
-                ref.read(searchProvider.notifier).setFilter(value);
-              },
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (value) {
-                Focus.of(context).focusInDirection(TraversalDirection.down);
-              },
-            );
-          }),
-        ),
+        title: Text(l10n.s_authenticator),
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
@@ -210,8 +162,68 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         child: numCreds != null
             ? Consumer(
                 builder: (context, ref, _) {
-                  return AccountList(
-                    ref.watch(credentialListProvider(widget.devicePath)) ?? [],
+                  return Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      Focus(
+                        canRequestFocus: false,
+                        onKeyEvent: (node, event) {
+                          if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowDown) {
+                            node.focusInDirection(TraversalDirection.down);
+                            return KeyEventResult.handled;
+                          }
+                          return KeyEventResult.ignored;
+                        },
+                        child: Builder(builder: (context) {
+                          final textTheme = Theme.of(context).textTheme;
+                          return TextFormField(
+                            key: keys.searchAccountsField,
+                            controller: searchController,
+                            focusNode: searchFocus,
+                            // Use the default style, but with a smaller font size:
+                            style: textTheme.titleMedium?.copyWith(
+                                fontSize: textTheme.titleSmall?.fontSize),
+                            decoration: InputDecoration(
+                              hintText: l10n.s_search_accounts,
+                              border: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(32)),
+                              ),
+                              contentPadding: EdgeInsets.zero,
+                              isDense: true,
+                              prefixIcon: const Icon(Icons.search_outlined),
+                              prefixIconConstraints: const BoxConstraints(
+                                  minHeight: 30, minWidth: 30),
+                              /*
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.highlight_off),
+                                iconSize: 16,
+                                color: Colors.white54,
+                                onPressed: searchController.clear,
+                              ),
+                              suffixIconConstraints:
+                                  const BoxConstraints(minHeight: 30, minWidth: 30),
+                              */
+                            ),
+                            onChanged: (value) {
+                              ref
+                                  .read(searchProvider.notifier)
+                                  .setFilter(value);
+                            },
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (value) {
+                              Focus.of(context)
+                                  .focusInDirection(TraversalDirection.down);
+                            },
+                          );
+                        }),
+                      ),
+                      AccountList(
+                        ref.watch(credentialListProvider(widget.devicePath)) ??
+                            [],
+                      )
+                    ],
                   );
                 },
               )
