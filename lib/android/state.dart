@@ -202,20 +202,39 @@ class NfcBypassTouchNotifier extends StateNotifier<bool> {
 }
 
 final androidNfcSilenceSoundsProvider =
-    StateNotifierProvider<NfcSilenceSoundsNotifier, bool>(
-        (ref) => NfcSilenceSoundsNotifier(ref.watch(prefProvider)));
+    NotifierProvider<NfcSilenceSoundsNotifier, bool>(
+        NfcSilenceSoundsNotifier.new);
 
-class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
+class NfcSilenceSoundsNotifier extends Notifier<bool> {
   static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
-  final SharedPreferences _prefs;
 
-  NfcSilenceSoundsNotifier(this._prefs)
-      : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
+  @override
+  bool build() {
+    return ref.watch(prefProvider).getBool(_prefNfcSilenceSounds) ?? false;
+  }
 
   Future<void> setNfcSilenceSounds(bool value) async {
     if (state != value) {
       state = value;
-      await _prefs.setBool(_prefNfcSilenceSounds, value);
+      await ref.read(prefProvider).setBool(_prefNfcSilenceSounds, state);
+    }
+  }
+}
+
+// generated version
+@Riverpod(dependencies: [pref])
+class NfcSilenceSounds extends _$NfcSilenceSounds {
+  static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
+
+  @override
+  bool build() {
+    return ref.watch(prefProvider).getBool(_prefNfcSilenceSounds) ?? false;
+  }
+
+  Future<void> setNfcSilenceSounds(bool value) async {
+    if (state != value) {
+      state = value;
+      await ref.read(prefProvider).setBool(_prefNfcSilenceSounds, state);
     }
   }
 }

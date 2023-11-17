@@ -69,5 +69,24 @@ final androidAllowScreenshotsProvider =
 );
 
 typedef _$AndroidAllowScreenshots = Notifier<bool>;
+String _$nfcSilenceSoundsHash() => r'1b99e25fcd4786162c286dc85b03e053f50ff5f5';
+
+/// See also [NfcSilenceSounds].
+@ProviderFor(NfcSilenceSounds)
+final nfcSilenceSoundsProvider =
+    AutoDisposeNotifierProvider<NfcSilenceSounds, bool>.internal(
+  NfcSilenceSounds.new,
+  name: r'nfcSilenceSoundsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$nfcSilenceSoundsHash,
+  dependencies: <ProviderOrFamily>[prefProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    prefProvider,
+    ...?prefProvider.allTransitiveDependencies
+  },
+);
+
+typedef _$NfcSilenceSounds = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
