@@ -166,7 +166,9 @@ class NavigationContent extends ConsumerWidget {
                     NavigationItem(
                       key: managementAppDrawer,
                       leading: Icon(Application.management._icon),
-                      title: l10n.s_toggle_applications,
+                      title: data.info.version.major > 4
+                          ? l10n.s_toggle_applications
+                          : l10n.s_toggle_interfaces,
                       collapsed: !extended,
                       onTap: () {
                         showBlurDialog(
