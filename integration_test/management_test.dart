@@ -42,8 +42,8 @@ void main() {
     });
   });
 
-  group('Change OTP', () {
-    appTest('Disable OTP', (WidgetTester tester) async {
+  group('Toggle Applications on key', () {
+    appTest('Toggle OTP', (WidgetTester tester) async {
       await tester.openManagementScreen();
 
       // find USB OTP capability
@@ -53,10 +53,50 @@ void main() {
         // we expect OTP to be enabled on the Key for this test
         expect(otpChip.selected, equals(true));
         await tester.tap(find.byKey(usbOtpKey));
-        await tester.pump(const Duration(milliseconds: 500));
+        await tester.shortWait();
         await tester.tap(find.byKey(management_keys.saveButtonKey));
         // long wait
-        await tester.pump(const Duration(milliseconds: 2500));
+        await tester.ultraLongWait();
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.shortWait();
+      }
+      await tester.openManagementScreen();
+      if (otpChip != null) {
+        await tester.tap(find.byKey(usbOtpKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
+
+        // no management screen visible now
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.longWait();
+      }
+    });
+    appTest('Toggle PIV', (WidgetTester tester) async {
+      await tester.openManagementScreen();
+      var usbPivKey = _getCapabilityWidgetKey(true, 'PIV');
+      var pivChip = await _getCapabilityWidget(usbPivKey);
+
+      // find USB OTP capability
+      if (pivChip != null) {
+        expect(pivChip.selected, equals(true));
+        await tester.tap(find.byKey(usbPivKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.shortWait();
+      }
+      await tester.openManagementScreen();
+      if (pivChip != null) {
+        // we expect OTP to be enabled on the Key for this test
+        await tester.tap(find.byKey(usbPivKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
 
         // no management screen visible now
         expect(find.byKey(management_keys.screenKey), findsNothing);
@@ -64,25 +104,155 @@ void main() {
       }
     });
 
-    appTest('Enable OTP', (WidgetTester tester) async {
+    appTest('Toggle OATH', (WidgetTester tester) async {
       await tester.openManagementScreen();
 
       // find USB OTP capability
-      var usbOtpKey = _getCapabilityWidgetKey(true, 'OTP');
-      var otpChip = await _getCapabilityWidget(usbOtpKey);
-      if (otpChip != null) {
-        expect(otpChip.selected, equals(false));
-        await tester.tap(find.byKey(usbOtpKey));
-        await tester.pump(const Duration(milliseconds: 500));
+      var usbOathKey = _getCapabilityWidgetKey(true, 'OATH');
+      var oathChip = await _getCapabilityWidget(usbOathKey);
+      if (oathChip != null) {
+        // we expect OTP to be enabled on the Key for this test
+        expect(oathChip.selected, equals(true));
+        await tester.tap(find.byKey(usbOathKey));
+        await tester.shortWait();
         await tester.tap(find.byKey(management_keys.saveButtonKey));
         // long wait
-        await tester.pump(const Duration(milliseconds: 2500));
+        await tester.ultraLongWait();
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.shortWait();
+      }
+      await tester.openManagementScreen();
+      if (oathChip != null) {
+        await tester.tap(find.byKey(usbOathKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
 
         // no management screen visible now
         expect(find.byKey(management_keys.screenKey), findsNothing);
         await tester.longWait();
       }
-      await tester.ultraLongWait();
     });
+    appTest('Toggle OpenPGP', (WidgetTester tester) async {
+      await tester.openManagementScreen();
+
+      // find USB OTP capability
+      var usbPgpKey = _getCapabilityWidgetKey(true, 'OpenPGP');
+      var pgpChip = await _getCapabilityWidget(usbPgpKey);
+      if (pgpChip != null) {
+        // we expect OTP to be enabled on the Key for this test
+        expect(pgpChip.selected, equals(true));
+        await tester.tap(find.byKey(usbPgpKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.shortWait();
+      }
+      await tester.openManagementScreen();
+      if (pgpChip != null) {
+        await tester.tap(find.byKey(usbPgpKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
+
+        // no management screen visible now
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.longWait();
+      }
+    });
+    appTest('Toggle YubiHSM Auth', (WidgetTester tester) async {
+      await tester.openManagementScreen();
+
+      // find USB OTP capability
+      var usbHsmKey = _getCapabilityWidgetKey(true, 'YubiHSM Auth');
+      var hsmChip = await _getCapabilityWidget(usbHsmKey);
+      if (hsmChip != null) {
+        // we expect OTP to be enabled on the Key for this test
+        expect(hsmChip.selected, equals(true));
+        await tester.tap(find.byKey(usbHsmKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.shortWait();
+      }
+      await tester.openManagementScreen();
+      if (hsmChip != null) {
+        await tester.tap(find.byKey(usbHsmKey));
+        await tester.shortWait();
+        await tester.tap(find.byKey(management_keys.saveButtonKey));
+        // long wait
+        await tester.ultraLongWait();
+
+        // no management screen visible now
+        expect(find.byKey(management_keys.screenKey), findsNothing);
+        await tester.longWait();
+      }
+    });
+  });
+  appTest('Toggle FIDO U2F', (WidgetTester tester) async {
+    await tester.openManagementScreen();
+
+    // find USB OTP capability
+    var usbU2fKey = _getCapabilityWidgetKey(true, 'FIDO U2F');
+    var u2fChip = await _getCapabilityWidget(usbU2fKey);
+    if (u2fChip != null) {
+      // we expect OTP to be enabled on the Key for this test
+      expect(u2fChip.selected, equals(true));
+      await tester.tap(find.byKey(usbU2fKey));
+      await tester.shortWait();
+      await tester.tap(find.byKey(management_keys.saveButtonKey));
+      // long wait
+      await tester.ultraLongWait();
+      expect(find.byKey(management_keys.screenKey), findsNothing);
+      await tester.shortWait();
+    }
+    await tester.openManagementScreen();
+    if (u2fChip != null) {
+      await tester.tap(find.byKey(usbU2fKey));
+      await tester.shortWait();
+      await tester.tap(find.byKey(management_keys.saveButtonKey));
+      // long wait
+      await tester.ultraLongWait();
+
+      // no management screen visible now
+      expect(find.byKey(management_keys.screenKey), findsNothing);
+      await tester.longWait();
+    }
+  });
+  appTest('Toggle FIDO2', (WidgetTester tester) async {
+    await tester.openManagementScreen();
+
+    // find USB OTP capability
+    var usbFido2Key = _getCapabilityWidgetKey(true, 'FIDO2');
+    var fido2Chip = await _getCapabilityWidget(usbFido2Key);
+    if (fido2Chip != null) {
+      // we expect OTP to be enabled on the Key for this test
+      expect(fido2Chip.selected, equals(true));
+      await tester.tap(find.byKey(usbFido2Key));
+      await tester.shortWait();
+      await tester.tap(find.byKey(management_keys.saveButtonKey));
+      // long wait
+      await tester.ultraLongWait();
+      expect(find.byKey(management_keys.screenKey), findsNothing);
+      await tester.shortWait();
+    }
+    await tester.openManagementScreen();
+    if (fido2Chip != null) {
+      await tester.tap(find.byKey(usbFido2Key));
+      await tester.shortWait();
+      await tester.tap(find.byKey(management_keys.saveButtonKey));
+      // long wait
+      await tester.ultraLongWait();
+
+      // no management screen visible now
+      expect(find.byKey(management_keys.screenKey), findsNothing);
+      await tester.longWait();
+    }
   });
 }
