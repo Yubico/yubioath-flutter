@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
 import 'models.dart';
+
+final yubiOtpOutputProvider =
+    StateNotifierProvider<YubiOtpOutputNotifier, File?>(
+        (ref) => YubiOtpOutputNotifier());
+
+class YubiOtpOutputNotifier extends StateNotifier<File?> {
+  YubiOtpOutputNotifier() : super(null);
+
+  void setOutput(File? file) {
+    state = file;
+  }
+}
 
 final otpStateProvider = AsyncNotifierProvider.autoDispose
     .family<OtpStateNotifier, OtpState, DevicePath>(

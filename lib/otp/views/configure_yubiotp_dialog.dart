@@ -71,7 +71,6 @@ class _ConfigureYubiOtpDialogState
   final publicIdLength = 12;
   final privateIdLength = 12;
   OutputActions _action = OutputActions.selectFile;
-  File? _outputFile = File('~/secrets.csv');
   bool _appendEnter = true;
 
   @override
@@ -100,7 +99,9 @@ class _ConfigureYubiOtpDialogState
     final isValid =
         secretLengthValid && privateIdLengthValid && publicIdLengthValid;
 
-    Future<File?> selectFile() async {
+    final outputFile = ref.read(yubiOtpOutputProvider);
+
+    Future<bool> selectFile() async {
       final filePath = await FilePicker.platform.saveFile(
           dialogTitle: 'Export configuration to file',
           allowedExtensions: ['csv'],
@@ -108,10 +109,11 @@ class _ConfigureYubiOtpDialogState
           lockParentWindow: true);
 
       if (filePath == null) {
-        return null;
+        return false;
       }
 
-      return File(filePath);
+      ref.read(yubiOtpOutputProvider.notifier).setOutput(File(filePath));
+      return true;
     }
 
     return ResponsiveDialog(
@@ -135,11 +137,11 @@ class _ConfigureYubiOtpDialogState
                             key: secret,
                             options: SlotConfigurationOptions(
                                 appendCr: _appendEnter)));
-                    if (_outputFile != null) {
+                    if (outputFile != null) {
                       final csv = await otpNotifier.formatYubiOtpCsv(
                           info!.serial!, publicId, privateId, secret);
 
-                      await _outputFile!.writeAsString(
+                      await outputFile.writeAsString(
                           '$csv${Platform.lineTerminator}',
                           mode: FileMode.append);
                     }
@@ -147,11 +149,11 @@ class _ConfigureYubiOtpDialogState
                       Navigator.of(context).pop();
                       showMessage(
                           context,
-                          _outputFile != null
+                          outputFile != null
                               ? l10n
                                   .l_slot_configuration_programmed_and_exported(
                                       l10n.s_yubiotp,
-                                      _outputFile!.uri.pathSegments.last)
+                                      outputFile.uri.pathSegments.last)
                               : l10n.l_slot_configuration_programmed(
                                   l10n.s_yubiotp));
                     });
@@ -305,9 +307,9 @@ class _ConfigureYubiOtpDialogState
                   },
                 ),
                 ChoiceFilterChip<OutputActions>(
-                  tooltip: _outputFile?.path ?? 'No export',
-                  selected: _outputFile != null,
-                  avatar: _outputFile != null
+                  tooltip: outputFile?.path ?? 'No export',
+                  selected: outputFile != null,
+                  avatar: outputFile != null
                       ? Icon(Icons.check,
                           color: Theme.of(context).colorScheme.secondary)
                       : null,
@@ -315,7 +317,7 @@ class _ConfigureYubiOtpDialogState
                   items: OutputActions.values,
                   itemBuilder: (value) => Text(value.getDisplayName(l10n)),
                   labelBuilder: (_) {
-                    String? fileName = _outputFile?.uri.pathSegments.last;
+                    String? fileName = outputFile?.uri.pathSegments.last;
                     return Container(
                       constraints: const BoxConstraints(maxWidth: 140),
                       child: Text(
@@ -326,16 +328,14 @@ class _ConfigureYubiOtpDialogState
                   },
                   onChanged: (value) async {
                     if (value == OutputActions.noOutput) {
+                      ref.read(yubiOtpOutputProvider.notifier).setOutput(null);
                       setState(() {
                         _action = value;
-                        _outputFile = null;
                       });
                     } else if (value == OutputActions.selectFile) {
-                      final file = await selectFile();
-                      if (file != null) {
+                      if (await selectFile()) {
                         setState(() {
                           _action = value;
-                          _outputFile = file;
                         });
                       }
                     }
