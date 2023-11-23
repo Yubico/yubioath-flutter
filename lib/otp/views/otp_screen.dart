@@ -97,11 +97,10 @@ class _SlotListItem extends ConsumerWidget {
           leading: CircleAvatar(
               foregroundColor: colorScheme.onSecondary,
               backgroundColor: colorScheme.secondary,
-              child: const Icon(Icons.password_outlined)),
+              child: Text(slot.numberId.toString())),
           title: slot.getDisplayName(l10n),
-          subtitle: isConfigured
-              ? l10n.l_otp_slot_programmed
-              : l10n.l_otp_slot_not_programmed,
+          subtitle:
+              isConfigured ? l10n.l_otp_slot_configured : l10n.l_otp_slot_empty,
           trailing: OutlinedButton(
             onPressed: Actions.handler(context, const OpenIntent()),
             child: const Icon(Icons.more_horiz),

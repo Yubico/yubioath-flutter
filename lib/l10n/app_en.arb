@@ -61,9 +61,9 @@
     "s_manage": "Manage",
     "s_setup": "Setup",
     "s_settings": "Settings",
-    "s_piv": "PIV",
+    "s_piv": "Certificates",
     "s_webauthn": "WebAuthn",
-    "s_otp": "OTP",
+    "s_otp": "Slots",
     "s_help_and_about": "Help and about",
     "s_help_and_feedback": "Help and feedback",
     "s_send_feedback": "Send us feedback",
@@ -80,6 +80,13 @@
     "s_private_key": "Private key",
     "s_invalid_length": "Invalid length",
     "s_invalid_format": "Invalid format",
+    "l_invalid_format_allowed_chars": "Invalid format, allowed characters: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {}
+        }
+    },
+    "l_invalid_keyboard_character": "Invalid characters for selected keyboard",
     "s_require_touch": "Require touch",
     "q_have_account_info": "Have account info?",
     "s_run_diagnostics": "Run diagnostics",
@@ -508,27 +515,20 @@
 
     "@_otp_slots": {},
     "s_otp_slots": "Slots",
-    "s_otp_slot_display_name": "{name} (Slot {id})",
-    "@s_otp_slot_display_name" : {
-        "placeholders": {
-            "name": {},
-            "id": {}
-        }
-    },
     "s_otp_slot_one": "Short touch",
     "s_otp_slot_two": "Long touch",
-    "l_otp_slot_not_programmed": "Slot is empty",
-    "l_otp_slot_programmed": "Slot is programmed",
+    "l_otp_slot_empty": "Slot is empty",
+    "l_otp_slot_configured": "Slot is configured",
 
     "@_otp_slot_configurations": {},
     "s_yubiotp": "Yubico OTP",
-    "l_yubiotp_desc": "YubiCloud verified OTP's",
+    "l_yubiotp_desc": "Program a Yubico OTP credential",
     "s_challenge_response": "Challenge-response",
-    "l_challenge_response_desc": "Show me yours and I'll show you mine",
+    "l_challenge_response_desc": "Program a challenge-response credential",
     "s_static_password": "Static password",
-    "l_static_password_desc": "Use complex passwords with a touch",
+    "l_static_password_desc": "Configure a static password",
     "s_hotp": "OATH-HOTP",
-    "l_hotp_desc": "HMAC based OTP's",
+    "l_hotp_desc": "Program a HMAC-SHA1 based credential",
     "s_public_id": "Public ID",
     "s_private_id": "Private ID",
     "s_allow_any_character": "Allow any character",
@@ -538,34 +538,34 @@
     "s_generate_passowrd": "Generate password",
 
     "@_otp_slot_actions": {},
-    "s_delete_slot": "Delete slot",
-    "l_delete_slot_desc": "Delete configuration in slot",
-    "p_warning_delete_slot_configuration": "Warning! This action will delete the configuration in OTP slot {slot}.",
+    "s_delete_slot": "Delete credential",
+    "l_delete_slot_desc": "Remove credential in slot",
+    "p_warning_delete_slot_configuration": "Warning! This action will permanently remove the credential from slot {slot_id}.",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
-            "slot": {}
+            "slot_id": {}
         }
     },
-    "l_slot_deleted": "Slot configuration deleted",
+    "l_slot_deleted": "Credential deleted",
     "s_swap": "Swap",
     "s_swap_slots": "Swap slots",
     "l_swap_slots_desc": "Swap short/long touch",
     "p_swap_slots_desc": "This will swap the configuration of the two slots.",
     "l_slots_swapped": "Slot configurations swapped",
-    "l_slot_configuration_programmed": "Configured {type} credential",
-    "@l_slot_configuration_programmed": {
+    "l_slot_credential_configured": "Configured {type} credential",
+    "@l_slot_credential_configured": {
         "placeholders": {
             "type": {}
         }
     },
-    "l_slot_configuration_programmed_and_exported": "Configured {type} credential and exported to {file}",
-    "@l_slot_configuration_programmed_and_exported": {
+    "l_slot_credential_configured_and_exported": "Configured {type} credential and exported to {file}",
+    "@l_slot_credential_configured_and_exported": {
         "placeholders": {
             "type": {},
             "file": {}
         }
     },
-    "s_append_enter": "Append enter",
+    "s_append_enter": "Append ⏎",
     "l_append_enter_desc": "Append an Enter keystroke after emitting the OTP",
 
     "@_otp_errors": {},
@@ -575,6 +575,7 @@
             "slot": {}
         }
     },
+
 
     "@_permissions": {},
     "s_enable_nfc": "Enable NFC",

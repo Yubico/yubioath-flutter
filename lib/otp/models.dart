@@ -29,10 +29,9 @@ enum SlotId {
   const SlotId(this.id, this.numberId);
 
   String getDisplayName(AppLocalizations l10n) {
-    String nameFor(String name) => l10n.s_otp_slot_display_name(name, numberId);
     return switch (this) {
-      SlotId.one => nameFor(l10n.s_otp_slot_one),
-      SlotId.two => nameFor(l10n.s_otp_slot_two)
+      SlotId.one => l10n.s_otp_slot_one,
+      SlotId.two => l10n.s_otp_slot_two
     };
   }
 

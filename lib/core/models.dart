@@ -155,3 +155,18 @@ class Version with _$Version implements Comparable<Version> {
 }
 
 final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
+
+enum Format {
+  base32('a-z2-7'),
+  hex('abcdef0123456789'),
+  modhex('cbdefghijklnrtuv');
+
+  final String allowedCharacters;
+
+  const Format(this.allowedCharacters);
+
+  bool isValid(String input) {
+    return RegExp('^[$allowedCharacters]+\$', caseSensitive: false)
+        .hasMatch(input);
+  }
+}

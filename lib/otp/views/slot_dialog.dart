@@ -72,13 +72,17 @@ class SlotDialog extends ConsumerWidget {
                           const Icon(
                             Icons.touch_app,
                             size: 100.0,
-                          )
+                          ),
+                          const SizedBox(height: 8),
+                          Text(otpSlot.isConfigured
+                              ? l10n.l_otp_slot_configured
+                              : l10n.l_otp_slot_empty)
                         ],
                       ),
                     ),
                     ActionListSection.fromMenuActions(
                       context,
-                      l10n.s_actions,
+                      l10n.s_setup,
                       actions: buildSlotActions(otpSlot.isConfigured, l10n),
                     )
                   ],

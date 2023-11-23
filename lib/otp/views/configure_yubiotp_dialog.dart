@@ -19,10 +19,10 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/widgets/choice_filter_chip.dart';
@@ -38,8 +38,6 @@ import 'overwrite_confirm_dialog.dart';
 
 final _log = Logger('otp.view.configure_yubiotp_dialog');
 
-final _modhexPattern = RegExp('[cbdefghijklnrtuv]', caseSensitive: false);
-
 enum OutputActions {
   selectFile,
   noOutput;
@@ -48,7 +46,7 @@ enum OutputActions {
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
         OutputActions.selectFile => 'Select file',
-        OutputActions.noOutput => 'No output'
+        OutputActions.noOutput => 'No export file'
       };
 }
 
@@ -67,11 +65,14 @@ class _ConfigureYubiOtpDialogState
   final _secretController = TextEditingController();
   final _publicIdController = TextEditingController();
   final _privateIdController = TextEditingController();
+  OutputActions _action = OutputActions.noOutput;
+  bool _appendEnter = true;
+  bool _validateSecretFormat = false;
+  bool _validatePublicIdFormat = false;
+  bool _validatePrivateIdFormat = false;
   final secretLength = 32;
   final publicIdLength = 12;
   final privateIdLength = 12;
-  OutputActions _action = OutputActions.selectFile;
-  bool _appendEnter = true;
 
   @override
   void dispose() {
@@ -87,16 +88,19 @@ class _ConfigureYubiOtpDialogState
 
     final info = ref.watch(currentDeviceDataProvider).valueOrNull?.info;
 
-    final secret = _secretController.text.replaceAll(' ', '');
+    final secret = _secretController.text;
     final secretLengthValid = secret.length == secretLength;
+    final secretFormatValid = Format.hex.isValid(secret);
 
     final privateId = _privateIdController.text;
     final privateIdLengthValid = privateId.length == privateIdLength;
+    final privatedIdFormatValid = Format.hex.isValid(privateId);
 
     final publicId = _publicIdController.text;
     final publicIdLengthValid = publicId.length == publicIdLength;
+    final publicIdFormatValid = Format.modhex.isValid(publicId);
 
-    final isValid =
+    final lengthsValid =
         secretLengthValid && privateIdLengthValid && publicIdLengthValid;
 
     final outputFile = ref.read(yubiOtpOutputProvider);
@@ -121,8 +125,19 @@ class _ConfigureYubiOtpDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: isValid
+          onPressed: lengthsValid
               ? () async {
+                  if (!secretFormatValid ||
+                      !publicIdFormatValid ||
+                      !privatedIdFormatValid) {
+                    setState(() {
+                      _validateSecretFormat = !secretFormatValid;
+                      _validatePublicIdFormat = !publicIdFormatValid;
+                      _validatePrivateIdFormat = !privatedIdFormatValid;
+                    });
+                    return;
+                  }
+
                   if (!await confirmOverwrite(context, widget.otpSlot)) {
                     return;
                   }
@@ -150,11 +165,10 @@ class _ConfigureYubiOtpDialogState
                       showMessage(
                           context,
                           outputFile != null
-                              ? l10n
-                                  .l_slot_configuration_programmed_and_exported(
-                                      l10n.s_yubiotp,
-                                      outputFile.uri.pathSegments.last)
-                              : l10n.l_slot_configuration_programmed(
+                              ? l10n.l_slot_credential_configured_and_exported(
+                                  l10n.s_yubiotp,
+                                  outputFile.uri.pathSegments.last)
+                              : l10n.l_slot_credential_configured(
                                   l10n.s_yubiotp));
                     });
                   } catch (e) {
@@ -191,31 +205,43 @@ class _ConfigureYubiOtpDialogState
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: publicIdLength,
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    tooltip: l10n.s_use_serial,
-                    icon: const Icon(Icons.auto_awesome_outlined),
-                    onPressed: (info?.serial != null)
-                        ? () async {
-                            final publicId = await ref
-                                .read(otpStateProvider(widget.devicePath)
-                                    .notifier)
-                                .modhexEncodeSerial(info!.serial!);
-                            setState(() {
-                              _publicIdController.text = publicId;
-                            });
-                          }
-                        : null,
+                  suffixIcon: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                        tooltip: l10n.s_use_serial,
+                        icon: const Icon(Icons.auto_awesome_outlined),
+                        onPressed: (info?.serial != null)
+                            ? () async {
+                                final publicId = await ref
+                                    .read(otpStateProvider(widget.devicePath)
+                                        .notifier)
+                                    .modhexEncodeSerial(info!.serial!);
+                                setState(() {
+                                  _publicIdController.text = publicId;
+                                });
+                              }
+                            : null,
+                      ),
+                      if (_validatePublicIdFormat) ...[
+                        const Icon(Icons.error_outlined),
+                        const SizedBox(
+                          width: 8.0,
+                        )
+                      ]
+                    ],
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.public_outlined),
+                  errorText: _validatePublicIdFormat && !publicIdFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.modhex.allowedCharacters)
+                      : null,
                   labelText: l10n.s_public_id),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(_modhexPattern)
-              ],
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  // Update lengths
+                  _validatePublicIdFormat = false;
                 });
               },
             ),
@@ -225,33 +251,44 @@ class _ConfigureYubiOtpDialogState
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: privateIdLength,
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    tooltip: l10n.s_generate_private_id,
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      final random = Random.secure();
-                      final key = List.generate(
-                          6,
-                          (_) => random
-                              .nextInt(256)
-                              .toRadixString(16)
-                              .padLeft(2, '0')).join();
-                      setState(() {
-                        _privateIdController.text = key;
-                      });
-                    },
+                  suffixIcon: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                        tooltip: l10n.s_generate_private_id,
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () {
+                          final random = Random.secure();
+                          final key = List.generate(
+                              6,
+                              (_) => random
+                                  .nextInt(256)
+                                  .toRadixString(16)
+                                  .padLeft(2, '0')).join();
+                          setState(() {
+                            _privateIdController.text = key;
+                          });
+                        },
+                      ),
+                      if (_validatePrivateIdFormat) ...[
+                        const Icon(Icons.error_outlined),
+                        const SizedBox(
+                          width: 8.0,
+                        )
+                      ]
+                    ],
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
+                  errorText: _validatePrivateIdFormat && !privatedIdFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.hex.allowedCharacters)
+                      : null,
                   labelText: l10n.s_private_id),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  // Update lengths
+                  _validatePrivateIdFormat = false;
                 });
               },
             ),
@@ -261,33 +298,44 @@ class _ConfigureYubiOtpDialogState
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretLength,
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    tooltip: l10n.s_generate_secret_key,
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      final random = Random.secure();
-                      final key = List.generate(
-                          16,
-                          (_) => random
-                              .nextInt(256)
-                              .toRadixString(16)
-                              .padLeft(2, '0')).join();
-                      setState(() {
-                        _secretController.text = key;
-                      });
-                    },
+                  suffixIcon: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                        tooltip: l10n.s_generate_secret_key,
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () {
+                          final random = Random.secure();
+                          final key = List.generate(
+                              16,
+                              (_) => random
+                                  .nextInt(256)
+                                  .toRadixString(16)
+                                  .padLeft(2, '0')).join();
+                          setState(() {
+                            _secretController.text = key;
+                          });
+                        },
+                      ),
+                      if (_validateSecretFormat) ...[
+                        const Icon(Icons.error_outlined),
+                        const SizedBox(
+                          width: 8.0,
+                        )
+                      ]
+                    ],
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
+                  errorText: _validateSecretFormat && !secretFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.hex.allowedCharacters)
+                      : null,
                   labelText: l10n.s_secret_key),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  // Update lengths
+                  _validateSecretFormat = false;
                 });
               },
             ),
@@ -321,7 +369,9 @@ class _ConfigureYubiOtpDialogState
                     return Container(
                       constraints: const BoxConstraints(maxWidth: 140),
                       child: Text(
-                        'Output ${fileName ?? 'No output'}',
+                        fileName != null
+                            ? 'Export $fileName'
+                            : _action.getDisplayName(l10n),
                         overflow: TextOverflow.ellipsis,
                       ),
                     );

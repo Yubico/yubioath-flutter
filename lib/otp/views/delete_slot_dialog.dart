@@ -35,7 +35,7 @@ class DeleteSlotDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
-      title: Text(l10n.l_delete_certificate),
+      title: Text(l10n.s_delete_slot),
       actions: [
         TextButton(
           key: keys.deleteButton,
@@ -68,8 +68,8 @@ class DeleteSlotDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_warning_delete_slot_configuration(
-                otpSlot.slot.getDisplayName(l10n))),
+            Text(l10n
+                .p_warning_delete_slot_configuration(otpSlot.slot.numberId)),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/logging.dart';
@@ -69,13 +68,13 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
     super.dispose();
   }
 
-  String generateFormatterPattern(String layout) {
+  RegExp generateFormatterPattern(String layout) {
     final allowedCharacters = widget.keyboardLayouts[layout] ?? [];
 
     final pattern =
         allowedCharacters.map((char) => RegExp.escape(char)).join('');
 
-    return '[$pattern]';
+    return RegExp('^[$pattern]+\$', caseSensitive: false);
   }
 
   @override
@@ -85,10 +84,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
     final password = _passwordController.text.replaceAll(' ', '');
     final passwordLengthValid =
         password.isNotEmpty && password.length <= passwordMaxLength;
-
-    final layoutPattern = generateFormatterPattern(_keyboardLayout);
-    final regex = RegExp('^$layoutPattern', caseSensitive: false);
-    final passwordFormatValid = regex.hasMatch(password);
+    final passwordFormatValid =
+        generateFormatterPattern(_keyboardLayout).hasMatch(password);
 
     return ResponsiveDialog(
       title: Text(l10n.s_static_password),
@@ -121,7 +118,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       Navigator.of(context).pop();
                       showMessage(
                           context,
-                          l10n.l_slot_configuration_programmed(
+                          l10n.l_slot_credential_configured(
                               l10n.s_static_password));
                     });
                   } catch (e) {
@@ -152,18 +149,31 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: passwordMaxLength,
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    tooltip: l10n.s_generate_passowrd,
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () async {
-                      final password = await ref
-                          .read(otpStateProvider(widget.devicePath).notifier)
-                          .generateStaticPassword(
-                              passwordMaxLength, _keyboardLayout);
-                      setState(() {
-                        _passwordController.text = password;
-                      });
-                    },
+                  suffixIcon: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                        tooltip: l10n.s_generate_passowrd,
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () async {
+                          final password = await ref
+                              .read(
+                                  otpStateProvider(widget.devicePath).notifier)
+                              .generateStaticPassword(
+                                  passwordMaxLength, _keyboardLayout);
+                          setState(() {
+                            _validatePassword = false;
+                            _passwordController.text = password;
+                          });
+                        },
+                      ),
+                      if (_validatePassword) ...[
+                        const Icon(Icons.error_outlined),
+                        const SizedBox(
+                          width: 8.0,
+                        )
+                      ]
+                    ],
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
@@ -175,13 +185,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       : _validatePassword &&
                               passwordLengthValid &&
                               !passwordFormatValid
-                          ? l10n.s_invalid_format
+                          ? l10n.l_invalid_keyboard_character
                           : null),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(
-                    generateFormatterPattern(_keyboardLayout),
-                    caseSensitive: false))
-              ],
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
@@ -194,17 +199,6 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
               spacing: 4.0,
               runSpacing: 8.0,
               children: [
-                ChoiceFilterChip(
-                    items: widget.keyboardLayouts.keys.toList(),
-                    value: _keyboardLayout,
-                    selected: _keyboardLayout != _defaultKeyboardLayout,
-                    itemBuilder: (value) => Text(value),
-                    onChanged: (layout) {
-                      setState(() {
-                        _keyboardLayout = layout;
-                        _validatePassword = false;
-                      });
-                    }),
                 FilterChip(
                   label: Text(l10n.s_append_enter),
                   tooltip: l10n.l_append_enter_desc,
@@ -214,7 +208,19 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       _appendEnter = value;
                     });
                   },
-                )
+                ),
+                ChoiceFilterChip(
+                    items: widget.keyboardLayouts.keys.toList(),
+                    value: _keyboardLayout,
+                    selected: _keyboardLayout != _defaultKeyboardLayout,
+                    labelBuilder: (value) => Text('Keyboard $value'),
+                    itemBuilder: (value) => Text(value),
+                    onChanged: (layout) {
+                      setState(() {
+                        _keyboardLayout = layout;
+                        _validatePassword = false;
+                      });
+                    }),
               ],
             )
           ]

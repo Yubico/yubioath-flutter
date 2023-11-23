@@ -17,10 +17,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:logging/logging.dart';
 
@@ -49,6 +49,7 @@ class _ConfigureChalrespDialogState
     extends ConsumerState<ConfigureChalrespDialog> {
   final _secretController = TextEditingController();
   bool _validateSecretLength = false;
+  bool _validateSecretFormat = false;
   bool _requireTouch = false;
   final int secretMaxLength = 40;
 
@@ -62,9 +63,11 @@ class _ConfigureChalrespDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final secret = _secretController.text.replaceAll(' ', '');
-    final secretLengthValid =
-        secret.isNotEmpty && secret.length <= secretMaxLength;
+    final secret = _secretController.text;
+    final secretLengthValid = secret.isNotEmpty &&
+        secret.length % 2 == 0 &&
+        secret.length <= secretMaxLength;
+    final secretFormatValid = Format.hex.isValid(secret);
 
     return ResponsiveDialog(
       title: Text(l10n.s_challenge_response),
@@ -76,6 +79,12 @@ class _ConfigureChalrespDialogState
                   if (!secretLengthValid) {
                     setState(() {
                       _validateSecretLength = true;
+                    });
+                    return;
+                  }
+                  if (!secretFormatValid) {
+                    setState(() {
+                      _validateSecretFormat = true;
                     });
                     return;
                   }
@@ -94,8 +103,10 @@ class _ConfigureChalrespDialogState
                                 requireTouch: _requireTouch)));
                     await ref.read(withContextProvider)((context) async {
                       Navigator.of(context).pop();
-                      showMessage(context,
-                          l10n.l_slot_configuration_programmed(l10n.s_hotp));
+                      showMessage(
+                          context,
+                          l10n.l_slot_credential_configured(
+                              l10n.s_challenge_response));
                     });
                   } catch (e) {
                     _log.error('Failed to program credential', e);
@@ -125,36 +136,48 @@ class _ConfigureChalrespDialogState
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretMaxLength,
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    tooltip: l10n.s_generate_secret_key,
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      final random = Random.secure();
-                      final key = List.generate(
-                          20,
-                          (_) => random
-                              .nextInt(256)
-                              .toRadixString(16)
-                              .padLeft(2, '0')).join();
-                      setState(() {
-                        _secretController.text = key;
-                      });
-                    },
+                  suffixIcon: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () {
+                          setState(() {
+                            final random = Random.secure();
+                            final key = List.generate(
+                                20,
+                                (_) => random
+                                    .nextInt(256)
+                                    .toRadixString(16)
+                                    .padLeft(2, '0')).join();
+                            setState(() {
+                              _secretController.text = key;
+                            });
+                          });
+                        },
+                      ),
+                      if (_validateSecretLength || _validateSecretFormat) ...[
+                        const Icon(Icons.error_outlined),
+                        const SizedBox(
+                          width: 8.0,
+                        )
+                      ]
+                    ],
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
                   labelText: l10n.s_secret_key,
                   errorText: _validateSecretLength && !secretLengthValid
                       ? l10n.s_invalid_length
-                      : null),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
+                      : _validateSecretFormat && !secretFormatValid
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.hex.allowedCharacters)
+                          : null),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _validateSecretLength = false;
+                  _validateSecretFormat = false;
                 });
               },
             ),

@@ -89,7 +89,7 @@ extension on Application {
   IconData get _icon => switch (this) {
         Application.oath => Icons.supervisor_account_outlined,
         Application.fido => Icons.security_outlined,
-        Application.otp => Icons.password_outlined,
+        Application.otp => Icons.touch_app_outlined,
         Application.piv => Icons.approval_outlined,
         Application.management => Icons.construction_outlined,
         Application.openpgp => Icons.key_outlined,
@@ -99,7 +99,7 @@ extension on Application {
   IconData get _filledIcon => switch (this) {
         Application.oath => Icons.supervisor_account,
         Application.fido => Icons.security,
-        Application.otp => Icons.password,
+        Application.otp => Icons.touch_app,
         Application.piv => Icons.approval,
         Application.management => Icons.construction,
         Application.openpgp => Icons.key,

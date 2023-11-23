@@ -15,10 +15,10 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/models.dart';
 import 'package:logging/logging.dart';
@@ -48,6 +48,7 @@ class ConfigureHotpDialog extends ConsumerStatefulWidget {
 class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   final _secretController = TextEditingController();
   bool _validateSecretLength = false;
+  bool _validateSecretFormat = false;
   int _digits = defaultDigits;
   final List<int> _digitsValues = [6, 8];
   bool _appendEnter = true;
@@ -65,6 +66,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.isNotEmpty && secret.length * 5 % 8 < 5;
+    final secretFormatValid = Format.base32.isValid(secret);
 
     return ResponsiveDialog(
       title: Text(l10n.s_hotp),
@@ -76,6 +78,12 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                   if (!secretLengthValid) {
                     setState(() {
                       _validateSecretLength = true;
+                    });
+                    return;
+                  }
+                  if (!secretFormatValid) {
+                    setState(() {
+                      _validateSecretFormat = true;
                     });
                     return;
                   }
@@ -96,7 +104,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                     await ref.read(withContextProvider)((context) async {
                       Navigator.of(context).pop();
                       showMessage(context,
-                          l10n.l_slot_configuration_programmed(l10n.s_hotp));
+                          l10n.l_slot_credential_configured(l10n.s_hotp));
                     });
                   } catch (e) {
                     _log.error('Failed to program credential', e);
@@ -124,42 +132,66 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
               controller: _secretController,
               obscureText: _isObscure,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(
-                    '[abcdefghijklmnopqrstuvwxyz234567 ]',
-                    caseSensitive: false))
-              ],
               decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off,
-                      color: IconTheme.of(context).color,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
+                  suffixIcon: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                            _isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: !(_validateSecretLength ||
+                                    _validateSecretFormat)
+                                ? IconTheme.of(context).color
+                                : null),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        },
+                      ),
+                      if (_validateSecretLength || _validateSecretFormat) ...[
+                        const Icon(Icons.error_outlined),
+                        const SizedBox(
+                          width: 8.0,
+                        )
+                      ]
+                    ],
                   ),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key_outlined),
                   labelText: l10n.s_secret_key,
+                  helperText: '', // Prevents resizing when errorText shown
                   errorText: _validateSecretLength && !secretLengthValid
                       ? l10n.s_invalid_length
-                      : null),
+                      : _validateSecretFormat && !secretFormatValid
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.base32.allowedCharacters)
+                          : null),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _validateSecretLength = false;
+                  _validateSecretFormat = false;
                 });
               },
             ),
-            const SizedBox(height: 8),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,
               runSpacing: 8.0,
               children: [
+                FilterChip(
+                  label: Text(l10n.s_append_enter),
+                  tooltip: l10n.l_append_enter_desc,
+                  selected: _appendEnter,
+                  onSelected: (value) {
+                    setState(() {
+                      _appendEnter = value;
+                    });
+                  },
+                ),
                 ChoiceFilterChip<int>(
                     items: _digitsValues,
                     value: _digits,
@@ -170,16 +202,6 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                         _digits = digits;
                       });
                     }),
-                FilterChip(
-                  label: Text(l10n.s_append_enter),
-                  tooltip: l10n.l_append_enter_desc,
-                  selected: _appendEnter,
-                  onSelected: (value) {
-                    setState(() {
-                      _appendEnter = value;
-                    });
-                  },
-                )
               ],
             )
           ]
