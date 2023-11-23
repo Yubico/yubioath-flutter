@@ -150,12 +150,14 @@ UserInteractionController _dialogUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
+  var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(
     title: title,
     description: description,
     icon: icon,
     onClosed: () {
+      completed = true;
       if (!wasPopped) {
         Navigator.of(context).pop();
       }
@@ -165,20 +167,19 @@ UserInteractionController _dialogUserInteraction(
       context: context,
       routeSettings: const RouteSettings(name: 'user_interaction_prompt'),
       builder: (context) {
-        return WillPopScope(
-          onWillPop: () async {
-            if (onCancel != null) {
-              onCancel();
-              wasPopped = true;
-              return true;
-            } else {
-              return false;
-            }
-          },
-          child: _UserInteractionDialog(
-            controller: controller,
-          ),
-        );
+        return PopScope(
+            canPop: onCancel != null,
+            onPopInvoked: (didPop) {
+              if (didPop) {
+                wasPopped = true;
+                if (!completed && onCancel != null) {
+                  onCancel();
+                }
+              }
+            },
+            child: _UserInteractionDialog(
+              controller: controller,
+            ));
       });
 
   return controller;
