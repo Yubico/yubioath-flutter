@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_provider.dart';
 
 import 'qr_scanner_scan_status.dart';
+import 'qr_scanner_widgets.dart';
 
 class QRScannerPermissionsUI extends StatelessWidget {
   final ScanStatus status;
@@ -56,11 +57,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          Text(
-                            l10n.q_want_to_scan,
-                            textScaleFactor: 0.7,
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          SmallWhiteText(l10n.q_want_to_scan),
                           OutlinedButton(
                               onPressed: () {
                                 onPermissionRequest();
@@ -78,11 +75,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Column(children: [
-                        Text(
-                          l10n.q_have_account_info,
-                          textScaleFactor: 0.7,
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        SmallWhiteText(l10n.q_have_account_info),
                       ])
                     ]),
                 Row(
