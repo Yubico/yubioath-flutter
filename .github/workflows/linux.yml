@@ -12,7 +12,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         sparse-checkout: .github/workflows/env
 
@@ -43,7 +43,7 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Check app versions
       run: |
