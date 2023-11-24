@@ -122,7 +122,7 @@ void appTestKeyless(
   bool? skip,
   Map startUpParams = const {},
 }) {
-  testWidgets(description, (WidgetTester tester) async {
+  testWidgets(description, skip: skip, (WidgetTester tester) async {
     await tester.startUp(startUpParams);
     await callback(tester);
   });

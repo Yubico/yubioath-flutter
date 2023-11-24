@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
@@ -27,25 +24,6 @@ import 'package:yubico_authenticator/oath/views/account_list.dart';
 
 import 'utils/oath_test_util.dart';
 import 'utils/test_util.dart';
-
-String randomPadded() {
-  return randomNum(999).toString().padLeft(3, '0');
-}
-
-randomNum(int i) {}
-
-String generateRandomIssuer() {
-  return 'i${randomPadded()}';
-}
-
-String generateRandomName() {
-  return 'n${randomPadded()}';
-}
-
-String generateRandomSecret() {
-  final random = Random.secure();
-  return base64Encode(List.generate(10, (_) => random.nextInt(256)));
-}
 
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -67,16 +45,12 @@ void main() {
   group('Account creation', () {
     appTest('Initial reset OATH', (WidgetTester tester) async {
       /// reset OATH application
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
       await tester.resetOATH();
       await tester.longWait();
     });
     appTest('Create 32 Accounts', (WidgetTester tester) async {
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
 
       /// TODO change back to 32 after flakiness eval
       for (var i = 0; i < 32; i += 1) {
@@ -138,9 +112,7 @@ void main() {
       //   await tester.addAccount(testAccount);
       // });
       appTest('TOTP: sha-1', (WidgetTester tester) async {
-        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-        await tester.tap(oathDrawerButton);
-        await tester.longWait();
+        await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
             issuer: 'i_totp_sha1',
             name: 'n__totp_sha1',
@@ -158,9 +130,7 @@ void main() {
         await tester.shortWait();
       });
       appTest('TOTP: sha-256', (WidgetTester tester) async {
-        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-        await tester.tap(oathDrawerButton);
-        await tester.longWait();
+        await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
             issuer: 'i_totp_sha256',
             name: 'n__totp_sha256',
@@ -178,9 +148,7 @@ void main() {
         await tester.shortWait();
       });
       appTest('TOTP: sha-512', (WidgetTester tester) async {
-        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-        await tester.tap(oathDrawerButton);
-        await tester.longWait();
+        await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
             issuer: 'i_totp_sha512',
             name: 'n__totp_sha512',
@@ -206,9 +174,7 @@ void main() {
       // appTest('TOTP: digits-8',
       //     (WidgetTester tester) async {});
       appTest('TOTP: touch', (WidgetTester tester) async {
-        var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-        await tester.tap(oathDrawerButton);
-        await tester.longWait();
+        await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
             issuer: 'i_totp_touch',
             name: 'n_totp_touch',
@@ -227,9 +193,7 @@ void main() {
     });
     // group('HOTP account tests', () {
     appTest('HOTP: sha-1', (WidgetTester tester) async {
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
           issuer: 'i_hotp_sha1',
           name: 'n__hotp_sha1',
@@ -247,9 +211,7 @@ void main() {
       await tester.shortWait();
     });
     appTest('HOTP: sha-256', (WidgetTester tester) async {
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
           issuer: 'i_hotp_sha256',
           name: 'n__hotp_sha256',
@@ -267,9 +229,7 @@ void main() {
       await tester.shortWait();
     });
     appTest('HOTP: sha-512', (WidgetTester tester) async {
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
           issuer: 'i_hotp_sha512',
           name: 'n__hotp_sha512',
@@ -289,9 +249,7 @@ void main() {
     // appTest('TOTP: digits-8',
     //     (WidgetTester tester) async {});
     appTest('HOTP: touch', (WidgetTester tester) async {
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
           issuer: 'i_hotp_touch',
           name: 'n_hotp_touch',
@@ -310,9 +268,7 @@ void main() {
     // group('QR Code scanning', () {});
     appTest('Final reset OATH', (WidgetTester tester) async {
       /// reset OATH application
-      var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      await tester.tap(oathDrawerButton);
-      await tester.longWait();
+      await tester.tapAppDrawerButton(oathAppDrawer);
       await tester.resetOATH();
       await tester.longWait();
     });
@@ -326,8 +282,9 @@ void main() {
       await tester.deleteAccount(testAccount);
       await tester.deleteAccount(
           const Account(issuer: 'RenamedIssuer', name: 'RenamedName'));
-
+      await tester.longWait();
       await tester.addAccount(testAccount);
+      await tester.longWait();
       await tester.renameAccount(testAccount, 'RenamedIssuer', 'RenamedName');
     });
   });

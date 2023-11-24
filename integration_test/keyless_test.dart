@@ -18,9 +18,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
-import 'utils/test_util.dart';
 import 'utils/keyless_util.dart';
+import 'utils/test_util.dart';
 
 /// TODO: These need to be able to run keyless to run in CI.
 void main() {
@@ -88,7 +89,8 @@ void main() {
       });
     });
     group('Troubleshooting', () {
-      appTestKeyless('Diagnostics Button', (WidgetTester tester) async {
+      appTestKeyless('Diagnostics Button', skip: isAndroid,
+          (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(diagnosticsChip).hitTestable());
