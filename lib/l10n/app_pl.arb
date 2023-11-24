@@ -16,8 +16,8 @@
     },
 
     "@_lint_rules": {
-        "p_ending_chars": null,
-        "q_ending_chars": null,
+        "p_ending_chars": ".!",
+        "q_ending_chars": "?",
         "s_max_words": 5,
         "s_max_length": 32
     },
@@ -93,7 +93,7 @@
     "@_language": {},
     "s_language": "Język",
     "l_enable_community_translations": "Tłumaczenia społecznościowe",
-    "p_community_translations_desc": "Tłumaczenia te są dostarczane i utrzymywane przez społeczność. Mogą zawierać błędy lub być niekompletne.",
+    "p_community_translations_desc": "Są dostarczane i utrzymywane przez społeczność. Mogą zawierać błędy lub być niekompletne.",
 
     "@_theme": {},
     "s_app_theme": "Motyw aplikacji",
@@ -136,6 +136,7 @@
 
     "@_app_configuration": {},
     "s_toggle_applications": "Przełączanie funkcji",
+    "s_toggle_interfaces": "Przełącz interfejsy",
     "l_min_one_interface": "Przynajmniej jeden interfejs musi być włączony",
     "s_reconfiguring_yk": "Rekonfigurowanie YubiKey\u2026",
     "s_config_updated": "Zaktualizowano konfigurację",
@@ -601,12 +602,12 @@
     "l_bypass_touch_requirement": "Obejdź wymóg dotknięcia",
     "l_bypass_touch_requirement_on": "Konta, które wymagają dotknięcia, są automatycznie wyświetlane przez NFC",
     "l_bypass_touch_requirement_off": "Konta, które wymagają dotknięcia, potrzebują dodatkowego przyłożenia do NFC",
-    "s_silence_nfc_sounds": "Wycisz dźwięki NFC",
-    "l_silence_nfc_sounds_on": "Dźwięki nie będą odtwarzane po przyłożeniu do NFC",
-    "l_silence_nfc_sounds_off": "Dźwięki będą odtwarzane po przyłożeniu do NFC",
+    "s_silence_nfc_sounds": "Dźwięk NFC",
+    "l_silence_nfc_sounds_on": "Nie będzie odtwarzany",
+    "l_silence_nfc_sounds_off": "Będzie odtwarzany",
     "s_usb_options": "Opcje USB",
     "l_launch_app_on_usb": "Uruchom po podłączeniu YubiKey",
-    "l_launch_app_on_usb_on": "Uniemożliwia to innym aplikacjom korzystanie z YubiKey przez USB",
+    "l_launch_app_on_usb_on": "Inne aplikacje nie mogą korzystać z YubiKey przez USB",
     "l_launch_app_on_usb_off": "Inne aplikacje mogą korzystać z YubiKey przez USB",
     "s_allow_screenshots": "Zezwalaj na zrzuty ekranu",
 

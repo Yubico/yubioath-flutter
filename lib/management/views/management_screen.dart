@@ -76,19 +76,27 @@ class _ModeForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      ...UsbInterface.values.map(
-        (iface) => CheckboxListTile(
-          title: Text(iface.name.toUpperCase()),
-          value: iface.value & interfaces != 0,
-          onChanged: (_) {
-            onChanged(interfaces ^ iface.value);
-          },
-        ),
+    final l10n = AppLocalizations.of(context)!;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      ListTile(
+        leading: const Icon(Icons.usb),
+        title: Text(l10n.s_usb),
+        contentPadding: const EdgeInsets.only(bottom: 8),
       ),
-      Text(interfaces == 0
-          ? AppLocalizations.of(context)!.l_min_one_interface
-          : ''),
+      Align(
+          alignment: Alignment.topLeft,
+          child: Wrap(
+              spacing: 8,
+              runSpacing: 16,
+              children: UsbInterface.values
+                  .map((iface) => FilterChip(
+                        label: Text(iface.name.toUpperCase()),
+                        selected: iface.value & interfaces != 0,
+                        onSelected: (_) {
+                          onChanged(interfaces ^ iface.value);
+                        },
+                      ))
+                  .toList())),
     ]);
   }
 }
@@ -265,6 +273,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     var canSave = false;
+    bool hasConfig = false;
     final child = ref
         .watch(managementStateProvider(widget.deviceData.node.path))
         .when(
@@ -286,7 +295,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
             ),
           ),
           data: (info) {
-            bool hasConfig = info.version.major > 4;
+            hasConfig = info.version.major > 4;
             int usbEnabled = _enabled[Transport.usb] ?? 0;
             if (hasConfig) {
               // Ignore the _usbCcid bit:
@@ -309,14 +318,19 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 18.0),
                         child: _buildCapabilitiesForm(context, ref, info),
                       )
-                    : _buildModeForm(context, ref, info),
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: _buildModeForm(context, ref, info),
+                      )
               ],
             );
           },
         );
 
     return ResponsiveDialog(
-      title: Text(l10n.s_toggle_applications),
+      title: hasConfig
+          ? Text(l10n.s_toggle_applications)
+          : Text(l10n.s_toggle_interfaces),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,

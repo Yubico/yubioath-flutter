@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.3'
+        classpath 'com.android.tools.build:gradle:8.1.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath 'com.google.android.gms:oss-licenses-plugin:0.10.6'
@@ -24,7 +24,7 @@ allprojects {
         targetSdkVersion = 34
         compileSdkVersion = 34
 
-        yubiKitVersion = "2.4.0-beta01"
+        yubiKitVersion = "2.4.0"
         junitVersion = "4.13.2"
         mockitoVersion = "5.7.0"
     }
