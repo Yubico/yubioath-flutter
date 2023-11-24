@@ -109,19 +109,21 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
               decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: widget.target == ManageTarget.pin
-                      ? l10n.s_current_pin
-                      : l10n.s_current_puk,
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  errorText: _currentIsWrong
-                      ? (widget.target == ManageTarget.pin
-                          ? l10n.l_wrong_pin_attempts_remaining(
-                              _attemptsRemaining)
-                          : l10n.l_wrong_puk_attempts_remaining(
-                              _attemptsRemaining))
-                      : null,
-                  errorMaxLines: 3),
+                border: const OutlineInputBorder(),
+                labelText: widget.target == ManageTarget.pin
+                    ? l10n.s_current_pin
+                    : l10n.s_current_puk,
+                errorText: _currentIsWrong
+                    ? (widget.target == ManageTarget.pin
+                        ? l10n
+                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                        : l10n
+                            .l_wrong_puk_attempts_remaining(_attemptsRemaining))
+                    : null,
+                errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: _currentIsWrong ? const Icon(Icons.error) : null,
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {

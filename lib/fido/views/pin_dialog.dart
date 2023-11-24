@@ -84,6 +84,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
+                  suffixIcon: _currentIsWrong ? const Icon(Icons.error) : null,
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -107,6 +108,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
+                suffixIcon: _newIsWrong ? const Icon(Icons.error) : null,
               ),
               onChanged: (value) {
                 setState(() {

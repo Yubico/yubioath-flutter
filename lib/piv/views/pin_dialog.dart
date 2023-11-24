@@ -96,22 +96,34 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
-                prefixIcon: const Icon(Icons.pin_outlined),
                 errorText: _pinIsWrong
                     ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                     : null,
                 errorMaxLines: 3,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isObscure ? Icons.visibility : Icons.visibility_off,
-                    color: IconTheme.of(context).color,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isObscure = !_isObscure;
-                    });
-                  },
-                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
+                prefixIcon: const Icon(Icons.pin_outlined),
+                suffixIcon: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off,
+                          color: !_pinIsWrong
+                              ? IconTheme.of(context).color
+                              : null),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
+                    ),
+                    if (_pinIsWrong) ...[
+                      const Icon(Icons.error_outlined),
+                      const SizedBox(
+                        width: 8.0,
+                      )
+                    ]
+                  ],
                 ),
               ),
               textInputAction: TextInputAction.next,

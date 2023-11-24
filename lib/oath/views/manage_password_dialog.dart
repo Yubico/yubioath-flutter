@@ -89,11 +89,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 autofillHints: const [AutofillHints.password],
                 key: keys.currentPasswordField,
                 decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_current_password,
-                    prefixIcon: const Icon(Icons.password_outlined),
-                    errorText: _currentIsWrong ? l10n.s_wrong_password : null,
-                    errorMaxLines: 3),
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_current_password,
+                  errorText: _currentIsWrong ? l10n.s_wrong_password : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.password_outlined),
+                  suffixIcon: _currentIsWrong ? const Icon(Icons.error) : null,
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {

@@ -129,11 +129,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                 autofillHints: const [AutofillHints.password],
                 key: keys.managementKeyField,
                 decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_password,
-                    prefixIcon: const Icon(Icons.password_outlined),
-                    errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
-                    errorMaxLines: 3),
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_password,
+                  errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.password_outlined),
+                  suffixIcon: _passwordIsWrong ? const Icon(Icons.error) : null,
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {

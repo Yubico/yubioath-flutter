@@ -48,8 +48,7 @@ class ConfigureChalrespDialog extends ConsumerStatefulWidget {
 class _ConfigureChalrespDialogState
     extends ConsumerState<ConfigureChalrespDialog> {
   final _secretController = TextEditingController();
-  bool _validateSecretLength = false;
-  bool _validateSecretFormat = false;
+  bool _validateSecret = false;
   bool _requireTouch = false;
   final int secretMaxLength = 40;
 
@@ -74,17 +73,11 @@ class _ConfigureChalrespDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecretLength
+          onPressed: !_validateSecret
               ? () async {
-                  if (!secretLengthValid) {
+                  if (!secretLengthValid || !secretFormatValid) {
                     setState(() {
-                      _validateSecretLength = true;
-                    });
-                    return;
-                  }
-                  if (!secretFormatValid) {
-                    setState(() {
-                      _validateSecretFormat = true;
+                      _validateSecret = true;
                     });
                     return;
                   }
@@ -136,48 +129,49 @@ class _ConfigureChalrespDialogState
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretMaxLength,
               decoration: InputDecoration(
-                  suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: () {
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_secret_key,
+                errorText: _validateSecret && !secretLengthValid
+                    ? l10n.s_invalid_length
+                    : _validateSecret && !secretFormatValid
+                        ? l10n.l_invalid_format_allowed_chars(
+                            Format.hex.allowedCharacters)
+                        : null,
+                prefixIcon: const Icon(Icons.key_outlined),
+                suffixIcon: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () {
+                        setState(() {
+                          final random = Random.secure();
+                          final key = List.generate(
+                              20,
+                              (_) => random
+                                  .nextInt(256)
+                                  .toRadixString(16)
+                                  .padLeft(2, '0')).join();
                           setState(() {
-                            final random = Random.secure();
-                            final key = List.generate(
-                                20,
-                                (_) => random
-                                    .nextInt(256)
-                                    .toRadixString(16)
-                                    .padLeft(2, '0')).join();
-                            setState(() {
-                              _secretController.text = key;
-                            });
+                            _secretController.text = key;
                           });
-                        },
-                      ),
-                      if (_validateSecretLength || _validateSecretFormat) ...[
-                        const Icon(Icons.error_outlined),
-                        const SizedBox(
-                          width: 8.0,
-                        )
-                      ]
-                    ],
-                  ),
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  labelText: l10n.s_secret_key,
-                  errorText: _validateSecretLength && !secretLengthValid
-                      ? l10n.s_invalid_length
-                      : _validateSecretFormat && !secretFormatValid
-                          ? l10n.l_invalid_format_allowed_chars(
-                              Format.hex.allowedCharacters)
-                          : null),
+                        });
+                      },
+                      tooltip: l10n.s_generate_random,
+                    ),
+                    if (_validateSecret) ...[
+                      const Icon(Icons.error_outlined),
+                      const SizedBox(
+                        width: 8.0,
+                      )
+                    ]
+                  ],
+                ),
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _validateSecretLength = false;
-                  _validateSecretFormat = false;
+                  _validateSecret = false;
                 });
               },
             ),

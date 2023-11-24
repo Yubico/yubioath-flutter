@@ -149,44 +149,40 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: passwordMaxLength,
               decoration: InputDecoration(
-                  suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        tooltip: l10n.s_generate_passowrd,
-                        icon: const Icon(Icons.refresh),
-                        onPressed: () async {
-                          final password = await ref
-                              .read(
-                                  otpStateProvider(widget.devicePath).notifier)
-                              .generateStaticPassword(
-                                  passwordMaxLength, _keyboardLayout);
-                          setState(() {
-                            _validatePassword = false;
-                            _passwordController.text = password;
-                          });
-                        },
-                      ),
-                      if (_validatePassword) ...[
-                        const Icon(Icons.error_outlined),
-                        const SizedBox(
-                          width: 8.0,
-                        )
-                      ]
-                    ],
-                  ),
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  labelText: l10n.s_password,
-                  errorText: _validatePassword &&
-                          !passwordLengthValid &&
-                          passwordFormatValid
-                      ? l10n.s_invalid_length
-                      : _validatePassword &&
-                              passwordLengthValid &&
-                              !passwordFormatValid
-                          ? l10n.l_invalid_keyboard_character
-                          : null),
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_password,
+                errorText: _validatePassword && !passwordLengthValid
+                    ? l10n.s_invalid_length
+                    : _validatePassword && !passwordFormatValid
+                        ? l10n.l_invalid_keyboard_character
+                        : null,
+                prefixIcon: const Icon(Icons.key_outlined),
+                suffixIcon: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    IconButton(
+                      tooltip: l10n.s_generate_passowrd,
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async {
+                        final password = await ref
+                            .read(otpStateProvider(widget.devicePath).notifier)
+                            .generateStaticPassword(
+                                passwordMaxLength, _keyboardLayout);
+                        setState(() {
+                          _validatePassword = false;
+                          _passwordController.text = password;
+                        });
+                      },
+                    ),
+                    if (_validatePassword) ...[
+                      const Icon(Icons.error_outlined),
+                      const SizedBox(
+                        width: 8.0,
+                      )
+                    ]
+                  ],
+                ),
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {

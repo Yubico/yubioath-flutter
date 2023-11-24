@@ -17,9 +17,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yubico_authenticator/core/models.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -49,6 +49,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   late bool _usesStoredKey;
   late bool _storeKey;
   bool _currentIsWrong = false;
+  bool _currentInvalidFormat = false;
+  bool _newInvalidFormat = false;
   int _attemptsRemaining = -1;
   ManagementKeyType _keyType = ManagementKeyType.tdes;
   final _currentController = TextEditingController();
@@ -76,6 +78,16 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   }
 
   _submit() async {
+    final currentInvalidFormat = Format.hex.isValid(_currentController.text);
+    final newInvalidFormat = Format.hex.isValid(_keyController.text);
+    if (!currentInvalidFormat || !newInvalidFormat) {
+      setState(() {
+        _currentInvalidFormat = !currentInvalidFormat;
+        _newInvalidFormat = !newInvalidFormat;
+      });
+      return;
+    }
+
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     if (_usesStoredKey) {
       final status = (await notifier.verifyPin(_currentController.text)).when(
@@ -161,18 +173,25 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 maxLength: 8,
                 controller: _currentController,
                 decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_pin,
-                    prefixIcon: const Icon(Icons.pin_outlined),
-                    errorText: _currentIsWrong
-                        ? l10n
-                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                        : null,
-                    errorMaxLines: 3),
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_pin,
+                  errorText: _currentIsWrong
+                      ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                      : _currentInvalidFormat
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.hex.allowedCharacters)
+                          : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.pin_outlined),
+                  suffixIcon: _currentIsWrong || _currentInvalidFormat
+                      ? const Icon(Icons.error)
+                      : null,
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
+                    _currentInvalidFormat = false;
                   });
                 },
               ),
@@ -187,33 +206,52 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_management_key,
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  errorText: _currentIsWrong ? l10n.l_wrong_key : null,
-                  errorMaxLines: 3,
                   helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
-                  suffixIcon: _hasMetadata
+                  errorText: _currentIsWrong
+                      ? l10n.l_wrong_key
+                      : _currentInvalidFormat
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.hex.allowedCharacters)
+                          : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.key_outlined),
+                  suffixIcon: (_hasMetadata &&
+                          !_currentIsWrong &&
+                          !_currentInvalidFormat)
                       ? null
-                      : IconButton(
-                          icon: Icon(_defaultKeyUsed
-                              ? Icons.auto_awesome
-                              : Icons.auto_awesome_outlined),
-                          tooltip: l10n.s_use_default,
-                          onPressed: () {
-                            setState(() {
-                              _defaultKeyUsed = !_defaultKeyUsed;
-                              if (_defaultKeyUsed) {
-                                _currentController.text = defaultManagementKey;
-                              } else {
-                                _currentController.clear();
-                              }
-                            });
-                          },
-                        ),
+                      : (_hasMetadata && _currentIsWrong ||
+                              _currentInvalidFormat)
+                          ? const Icon(Icons.error)
+                          : Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(_defaultKeyUsed
+                                      ? Icons.auto_awesome
+                                      : Icons.auto_awesome_outlined),
+                                  tooltip: l10n.s_use_default,
+                                  onPressed: () {
+                                    setState(() {
+                                      _defaultKeyUsed = !_defaultKeyUsed;
+                                      if (_defaultKeyUsed) {
+                                        _currentController.text =
+                                            defaultManagementKey;
+                                      } else {
+                                        _currentController.clear();
+                                      }
+                                    });
+                                  },
+                                ),
+                                if (_currentIsWrong ||
+                                    _currentInvalidFormat) ...[
+                                  const Icon(Icons.error_outlined),
+                                  const SizedBox(
+                                    width: 8.0,
+                                  )
+                                ]
+                              ],
+                            ),
                 ),
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(
-                      RegExp('[a-f0-9]', caseSensitive: false))
-                ],
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
@@ -227,33 +265,44 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               autofillHints: const [AutofillHints.newPassword],
               maxLength: hexLength,
               controller: _keyController,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_management_key,
-                prefixIcon: const Icon(Icons.key_outlined),
+                errorText: _newInvalidFormat
+                    ? l10n.l_invalid_format_allowed_chars(
+                        Format.hex.allowedCharacters)
+                    : null,
                 enabled: currentLenOk,
-                suffixIcon: IconButton(
-                  key: keys.managementKeyRefresh,
-                  icon: const Icon(Icons.refresh),
-                  tooltip: l10n.s_generate_random,
-                  onPressed: currentLenOk
-                      ? () {
-                          final random = Random.secure();
-                          final key = List.generate(
-                              _keyType.keyLength,
-                              (_) => random
-                                  .nextInt(256)
-                                  .toRadixString(16)
-                                  .padLeft(2, '0')).join();
-                          setState(() {
-                            _keyController.text = key;
-                          });
-                        }
-                      : null,
+                prefixIcon: const Icon(Icons.key_outlined),
+                suffixIcon: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      tooltip: l10n.s_generate_random,
+                      onPressed: currentLenOk
+                          ? () {
+                              final random = Random.secure();
+                              final key = List.generate(
+                                  _keyType.keyLength,
+                                  (_) => random
+                                      .nextInt(256)
+                                      .toRadixString(16)
+                                      .padLeft(2, '0')).join();
+                              setState(() {
+                                _keyController.text = key;
+                                _newInvalidFormat = false;
+                              });
+                            }
+                          : null,
+                    ),
+                    if (_newInvalidFormat) ...[
+                      const Icon(Icons.error_outlined),
+                      const SizedBox(
+                        width: 8.0,
+                      )
+                    ]
+                  ],
                 ),
               ),
               textInputAction: TextInputAction.next,

@@ -162,11 +162,15 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
               autofocus: true,
               key: keys.subjectField,
               decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_subject,
-                  errorText: _subject.isNotEmpty && _invalidSubject
-                      ? l10n.l_rfc4514_invalid
-                      : null),
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_subject,
+                errorText: _subject.isNotEmpty && _invalidSubject
+                    ? l10n.l_rfc4514_invalid
+                    : null,
+                suffixIcon: _subject.isNotEmpty && _invalidSubject
+                    ? const Icon(Icons.error)
+                    : null,
+              ),
               textInputAction: TextInputAction.next,
               enabled: !_generating,
               onChanged: (value) {

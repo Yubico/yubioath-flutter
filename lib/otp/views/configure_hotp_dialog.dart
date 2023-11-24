@@ -47,8 +47,7 @@ class ConfigureHotpDialog extends ConsumerStatefulWidget {
 
 class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   final _secretController = TextEditingController();
-  bool _validateSecretLength = false;
-  bool _validateSecretFormat = false;
+  bool _validateSecret = false;
   int _digits = defaultDigits;
   final List<int> _digitsValues = [6, 8];
   bool _appendEnter = true;
@@ -73,17 +72,11 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecretLength
+          onPressed: !_validateSecret
               ? () async {
-                  if (!secretLengthValid) {
+                  if (!secretLengthValid || !secretFormatValid) {
                     setState(() {
-                      _validateSecretLength = true;
-                    });
-                    return;
-                  }
-                  if (!secretFormatValid) {
-                    setState(() {
-                      _validateSecretFormat = true;
+                      _validateSecret = true;
                     });
                     return;
                   }
@@ -133,47 +126,47 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
               obscureText: _isObscure,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               decoration: InputDecoration(
-                  suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                            _isObscure
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: !(_validateSecretLength ||
-                                    _validateSecretFormat)
-                                ? IconTheme.of(context).color
-                                : null),
-                        onPressed: () {
-                          setState(() {
-                            _isObscure = !_isObscure;
-                          });
-                        },
-                      ),
-                      if (_validateSecretLength || _validateSecretFormat) ...[
-                        const Icon(Icons.error_outlined),
-                        const SizedBox(
-                          width: 8.0,
-                        )
-                      ]
-                    ],
-                  ),
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  labelText: l10n.s_secret_key,
-                  helperText: '', // Prevents resizing when errorText shown
-                  errorText: _validateSecretLength && !secretLengthValid
-                      ? l10n.s_invalid_length
-                      : _validateSecretFormat && !secretFormatValid
-                          ? l10n.l_invalid_format_allowed_chars(
-                              Format.base32.allowedCharacters)
-                          : null),
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_secret_key,
+                helperText: '', // Prevents resizing when errorText shown
+                errorText: _validateSecret && !secretLengthValid
+                    ? l10n.s_invalid_length
+                    : _validateSecret && !secretFormatValid
+                        ? l10n.l_invalid_format_allowed_chars(
+                            Format.base32.allowedCharacters)
+                        : null,
+                prefixIcon: const Icon(Icons.key_outlined),
+                suffixIcon: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off,
+                          color: !_validateSecret
+                              ? IconTheme.of(context).color
+                              : null),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure
+                          ? l10n.s_show_secret_key
+                          : l10n.s_hide_secret_key,
+                    ),
+                    if (_validateSecret) ...[
+                      const Icon(Icons.error_outlined),
+                      const SizedBox(
+                        width: 8.0,
+                      )
+                    ]
+                  ],
+                ),
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _validateSecretLength = false;
-                  _validateSecretFormat = false;
+                  _validateSecret = false;
                 });
               },
             ),
