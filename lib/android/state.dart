@@ -73,12 +73,42 @@ class NfcStateNotifier extends StateNotifier<bool> {
   }
 }
 
+enum NfcActivity {
+  notActive,
+  ready,
+  processingStarted,
+  processingFinished,
+  processingInterrupted,
+}
+
+class NfcActivityNotifier extends StateNotifier<NfcActivity> {
+  NfcActivityNotifier() : super(NfcActivity.notActive);
+
+  void setActivityState(int stateValue) {
+
+    var newState = switch (stateValue) {
+      0 => NfcActivity.notActive,
+      1 => NfcActivity.ready,
+      2 => NfcActivity.processingStarted,
+      3 => NfcActivity.processingFinished,
+      4 => NfcActivity.processingInterrupted,
+      _ => NfcActivity.notActive
+    };
+
+    state = newState;
+  }
+}
+
 final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
 
 final androidNfcStateProvider =
     StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());
+
+final androidNfcActivityProvider = StateNotifierProvider<NfcActivityNotifier, NfcActivity>((ref) =>
+  NfcActivityNotifier()
+);
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
