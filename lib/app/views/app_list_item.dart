@@ -114,6 +114,7 @@ class _AppListItemState extends ConsumerState<AppListItem> {
           children: [
             const SizedBox(height: 64),
             ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               leading: widget.leading,
               title: Text(
                 widget.title,

@@ -35,6 +35,10 @@ class SearchNotifier extends StateNotifier<String> {
   void setFilter(String value) {
     state = value;
   }
+
+  String getFilter() {
+    return state;
+  }
 }
 
 final oathStateProvider = AsyncNotifierProvider.autoDispose
