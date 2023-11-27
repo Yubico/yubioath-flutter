@@ -1,0 +1,14 @@
+name: lint
+description: Custom lint rules for Yubico Authenticator
+
+publish_to: none
+
+version: 1.0.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  analyzer:
+  analyzer_plugin:
+  custom_lint_builder:
