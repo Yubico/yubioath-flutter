@@ -26,6 +26,9 @@ linter:
     prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
     unawaited_futures: true  # Explicitly mark futures which are not being awaited
     use_super_parameters: true
+    prefer_relative_imports: true
+    avoid_relative_lib_imports: true
+    directives_ordering: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

@@ -20,11 +20,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:yubico_authenticator/app/message.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
-import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
+
+import '../../app/message.dart';
+import '../../app/state.dart';
+import '../../widgets/responsive_dialog.dart';
+import 'icon_pack.dart';
+import 'icon_pack_manager.dart';
 
 class IconPackDialog extends ConsumerWidget {
   const IconPackDialog({super.key});

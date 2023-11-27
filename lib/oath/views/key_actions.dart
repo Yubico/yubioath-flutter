@@ -15,21 +15,21 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
-import 'package:yubico_authenticator/oath/views/add_account_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/fs_dialog.dart';
 import '../../core/state.dart';
-import '../models.dart';
 import '../features.dart' as features;
+import '../icon_provider/icon_pack_dialog.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
+import 'add_account_dialog.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
 
@@ -59,7 +59,6 @@ Widget oathBuildActions(
               icon: const Icon(Icons.person_add_alt_1_outlined),
               onTap: used != null && (capacity == null || capacity > used)
                   ? (context) async {
-
                       Navigator.of(context).pop();
                       if (isAndroid) {
                         final withContext = ref.read(withContextProvider);

@@ -17,10 +17,10 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../management/models.dart';
 import '../../management/state.dart';
 
 final androidManagementState = AsyncNotifierProvider.autoDispose

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:base32/base32.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../core/models.dart';
 

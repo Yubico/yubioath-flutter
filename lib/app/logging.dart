@@ -20,8 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-import '../core/state.dart';
 import '../android/state.dart';
+import '../core/state.dart';
 
 String _pad(int value, int zeroes) => value.toString().padLeft(zeroes, '0');
 

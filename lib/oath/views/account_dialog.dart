@@ -17,14 +17,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/fs_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../features.dart' as features;

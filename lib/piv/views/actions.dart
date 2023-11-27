@@ -18,18 +18,18 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
+import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../app/models.dart';
 import '../../core/state.dart';
+import '../features.dart' as features;
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
-import '../features.dart' as features;
 import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';

@@ -16,8 +16,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_provider.dart';
 
+import 'qr_scanner_provider.dart';
 import 'qr_scanner_scan_status.dart';
 import 'qr_scanner_widgets.dart';
 
