@@ -55,6 +55,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   ManagementKeyType _keyType = ManagementKeyType.tdes;
   final _currentController = TextEditingController();
   final _keyController = TextEditingController();
+  bool _isObscure = true;
 
   @override
   void initState() {
@@ -167,7 +168,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
             if (protected)
               AppTextField(
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
                 key: keys.pinPukField,
                 maxLength: 8,
@@ -183,9 +184,27 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                           : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
-                  suffixIcon: _currentIsWrong || _currentInvalidFormat
-                      ? const Icon(Icons.error)
-                      : null,
+                  suffixIcon: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        IconButton(
+                            icon: Icon(_isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                            tooltip:
+                                _isObscure ? l10n.s_show_pin : l10n.s_hide_pin),
+                        if (_currentIsWrong || _currentInvalidFormat) ...[
+                          const Icon(Icons.error_outlined),
+                          const SizedBox(
+                            width: 8.0,
+                          )
+                        ]
+                      ]),
                 ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {

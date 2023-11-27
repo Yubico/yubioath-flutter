@@ -51,6 +51,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   String _password = '';
   bool _passwordIsWrong = false;
   bool _importing = false;
+  bool _isObscure = true;
 
   @override
   void initState() {
@@ -125,7 +126,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
               Text(l10n.p_password_protected_file),
               AppTextField(
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
                 key: keys.managementKeyField,
                 decoration: InputDecoration(
@@ -134,7 +135,28 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.password_outlined),
-                  suffixIcon: _passwordIsWrong ? const Icon(Icons.error) : null,
+                  suffixIcon: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        IconButton(
+                            icon: Icon(_isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                            tooltip: _isObscure
+                                ? l10n.s_show_password
+                                : l10n.s_hide_password),
+                        if (_passwordIsWrong) ...[
+                          const Icon(Icons.error_outlined),
+                          const SizedBox(
+                            width: 8.0,
+                          )
+                        ]
+                      ]),
                 ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
