@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,13 @@ import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
 
 import '../../app/message.dart';
+import '../../app/models.dart';
 import '../../desktop/models.dart';
+import '../../fido/models.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../state.dart';
-import '../../fido/models.dart';
-import '../../app/models.dart';
 
 final _log = Logger('fido.views.add_fingerprint_dialog');
 
@@ -199,7 +200,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               ],
             ),
             Text(l10n.l_fp_step_2_name),
-            TextFormField(
+            AppTextFormField(
               focusNode: _nameFocus,
               maxLength: 15,
               inputFormatters: [limitBytesLength(15)],

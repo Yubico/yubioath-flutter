@@ -22,9 +22,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/app_text_field.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 
 class AuthenticationDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -93,7 +94,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.p_unlock_piv_management_desc),
-            TextField(
+            AppTextField(
               key: keys.managementKeyField,
               autofocus: true,
               autofillHints: const [AutofillHints.password],

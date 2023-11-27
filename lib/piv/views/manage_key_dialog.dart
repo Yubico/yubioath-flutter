@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../widgets/app_text_field.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'pin_dialog.dart';
 
 class ManageKeyDialog extends ConsumerStatefulWidget {
@@ -151,7 +153,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
           children: [
             Text(l10n.p_change_management_key_desc),
             if (protected)
-              TextField(
+              AppTextField(
                 autofocus: true,
                 obscureText: true,
                 autofillHints: const [AutofillHints.password],
@@ -175,7 +177,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 },
               ),
             if (!protected)
-              TextFormField(
+              AppTextFormField(
                 key: keys.managementKeyField,
                 autofocus: !_defaultKeyUsed,
                 autofillHints: const [AutofillHints.password],
@@ -219,7 +221,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   });
                 },
               ),
-            TextField(
+            AppTextField(
               key: keys.newPinPukField,
               autofocus: _defaultKeyUsed,
               autofillHints: const [AutofillHints.newPassword],

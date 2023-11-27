@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -72,7 +73,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           children: [
             if (hasPin) ...[
               Text(l10n.p_enter_current_pin_or_reset_no_puk),
-              TextFormField(
+              AppTextFormField(
                 initialValue: _currentPin,
                 autofocus: true,
                 obscureText: true,
@@ -94,7 +95,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             ],
             Text(l10n.p_enter_new_fido2_pin(minPinLength)),
             // TODO: Set max characters based on UTF-8 bytes
-            TextFormField(
+            AppTextFormField(
               initialValue: _newPin,
               autofocus: !hasPin,
               obscureText: true,
@@ -114,7 +115,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 });
               },
             ),
-            TextFormField(
+            AppTextFormField(
               initialValue: _confirmPin,
               obscureText: true,
               autofillHints: const [AutofillHints.password],
