@@ -84,6 +84,9 @@ dev_dependencies:
   build_runner: ^2.4.6
   freezed: ^2.4.5
   json_serializable: ^6.7.0
+  analyzer:
+  analyzer_plugin:
+  custom_lint_builder:
   custom_lint:
   lint:
     path: lint

@@ -10,7 +10,7 @@ packages:
     source: hosted
     version: "64.0.0"
   analyzer:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: analyzer
       sha256: "69f54f967773f6c26c7dcb13e93d7ccee8b17a641689da39e878d5cf13b06893"
@@ -18,7 +18,7 @@ packages:
     source: hosted
     version: "6.2.0"
   analyzer_plugin:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: analyzer_plugin
       sha256: "9661b30b13a685efaee9f02e5d01ed9f2b423bd889d28a304d02d704aee69161"
@@ -218,7 +218,7 @@ packages:
     source: hosted
     version: "0.5.7"
   custom_lint_builder:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: custom_lint_builder
       sha256: dfcfa987d2bd9d0ba751ef4bdef0f6c1aa0062f2a67fe716fd5f3f8b709d6418
