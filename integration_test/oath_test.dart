@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@Tags(['android', 'desktop', 'oath'])
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
@@ -74,7 +76,7 @@ void main() {
       // TODO: verify one more addAccount() is not possible
       await tester.resetOATH();
       await tester.shortWait();
-    });
+    }, tags: ['slow']);
     // appTest('Create weird character-accounts and check byte count',
     //     (WidgetTester tester) async {});
     group('TOTP account tests', () {
