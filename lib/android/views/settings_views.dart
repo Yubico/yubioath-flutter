@@ -18,9 +18,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../state.dart';
-import '../models.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
+import '../state.dart';
 
 class NfcTapActionView extends ConsumerWidget {
   const NfcTapActionView({super.key});

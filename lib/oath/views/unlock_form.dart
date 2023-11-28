@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../models.dart';
+import '../../widgets/app_text_field.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
 import '../state.dart';
 
 class UnlockForm extends ConsumerStatefulWidget {
@@ -72,7 +73,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 l10n.l_enter_oath_pw,
               ),
               const SizedBox(height: 16.0),
-              TextField(
+              AppTextField(
                 key: keys.passwordField,
                 controller: _passwordController,
                 autofocus: true,

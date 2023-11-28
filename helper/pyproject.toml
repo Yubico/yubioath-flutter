@@ -13,7 +13,7 @@ python = "^3.8"
 yubikey-manager = "5.2.0"
 mss = "^9.0.1"
 zxing-cpp = [
-  {git = "https://github.com/zxing-cpp/zxing-cpp.git", rev="18a722a", subdirectory = "wrappers/python", markers = "sys_platform != 'win32'"},
+  {git = "https://github.com/zxing-cpp/zxing-cpp.git", rev="7a0de5b0ee8942f7c45410c91996cbab2397938b", subdirectory = "wrappers/python", markers = "sys_platform != 'win32'"},
   {path = "zxing_cpp-2.1.0-cp312-cp312-win_amd64.whl", markers = "sys_platform == 'win32'"}
 ]
 Pillow = "^10.0.0"

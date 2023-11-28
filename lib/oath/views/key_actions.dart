@@ -15,22 +15,21 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_dialog.dart';
-import 'package:yubico_authenticator/oath/views/add_account_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/fs_dialog.dart';
 import '../../core/state.dart';
-import '../keys.dart';
-import '../models.dart';
 import '../features.dart' as features;
+import '../icon_provider/icon_pack_dialog.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
+import 'add_account_dialog.dart';
 import 'manage_password_dialog.dart';
 import 'reset_dialog.dart';
 
@@ -50,7 +49,7 @@ Widget oathBuildActions(
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
               feature: features.actionsAdd,
-              key: addAccountAction,
+              key: keys.addAccountAction,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first

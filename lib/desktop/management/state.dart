@@ -18,12 +18,12 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
+import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../management/models.dart';
 import '../../management/state.dart';
 import '../rpc.dart';
 import '../state.dart';

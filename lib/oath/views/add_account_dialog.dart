@@ -15,15 +15,16 @@
  */
 
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/message.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/file_drop_target.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';

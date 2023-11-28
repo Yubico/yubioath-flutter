@@ -19,8 +19,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
-import '../keys.dart' as keys;
 import '../features.dart' as features;
+import '../keys.dart' as keys;
 
 List<ActionItem> buildFingerprintActions(AppLocalizations l10n) {
   return [

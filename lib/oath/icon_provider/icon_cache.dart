@@ -21,7 +21,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:yubico_authenticator/app/logging.dart';
+
+import '../../app/logging.dart';
 
 final _log = Logger('icon_cache');
 

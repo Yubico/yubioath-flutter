@@ -16,10 +16,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/android/qr_scanner/qr_scanner_provider.dart';
 
 import '../keys.dart' as keys;
+import 'qr_scanner_provider.dart';
 import 'qr_scanner_scan_status.dart';
+import 'qr_scanner_widgets.dart';
 
 class QRScannerUI extends StatelessWidget {
   final ScanStatus status;
@@ -69,11 +70,7 @@ class QRScannerUI extends StatelessWidget {
               const SizedBox(height: 16),
               Column(
                 children: [
-                  Text(
-                    l10n.q_no_qr,
-                    textScaleFactor: 0.7,
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                  SmallWhiteText(l10n.q_no_qr),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     OutlinedButton(
                         onPressed: () {

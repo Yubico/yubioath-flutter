@@ -27,9 +27,10 @@ import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
+import '../features.dart' as features;
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
-import '../features.dart' as features;
 import 'actions.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
@@ -93,6 +94,7 @@ class PivScreen extends ConsumerWidget {
 
 class _CertificateListItem extends ConsumerWidget {
   final PivSlot pivSlot;
+
   const _CertificateListItem(this.pivSlot);
 
   @override
@@ -106,7 +108,7 @@ class _CertificateListItem extends ConsumerWidget {
     return Semantics(
         label: slot.getDisplayName(l10n),
         child: AppListItem(
-          key: slot.getAppListItemKey(),
+          key: _getAppListItemKey(slot),
           leading: CircleAvatar(
             foregroundColor: colorScheme.onSecondary,
             backgroundColor: colorScheme.secondary,
@@ -120,7 +122,7 @@ class _CertificateListItem extends ConsumerWidget {
                   ? l10n.l_key_no_certificate
                   : l10n.l_no_certificate,
           trailing: OutlinedButton(
-            key: slot.getMeatballKey(),
+            key: _getMeatballKey(slot),
             onPressed: Actions.handler(context, const OpenIntent()),
             child: const Icon(Icons.more_horiz),
           ),
@@ -129,4 +131,18 @@ class _CertificateListItem extends ConsumerWidget {
               : null,
         ));
   }
+
+  Key _getMeatballKey(SlotId slotId) => switch (slotId) {
+        SlotId.authentication => meatballButton9a,
+        SlotId.signature => meatballButton9c,
+        SlotId.keyManagement => meatballButton9d,
+        SlotId.cardAuth => meatballButton9e,
+      };
+
+  Key _getAppListItemKey(SlotId slotId) => switch (slotId) {
+        SlotId.authentication => appListItem9a,
+        SlotId.signature => appListItem9c,
+        SlotId.keyManagement => appListItem9d,
+        SlotId.cardAuth => appListItem9e
+      };
 }

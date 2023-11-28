@@ -20,11 +20,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
@@ -43,7 +44,6 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   bool _currentIsWrong = false;
 
   _submit() async {
-
     FocusUtils.unfocus(context);
 
     final result = await ref
@@ -83,7 +83,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           children: [
             if (widget.state.hasKey) ...[
               Text(l10n.p_enter_current_password_or_reset),
-              TextField(
+              AppTextField(
                 autofocus: true,
                 obscureText: true,
                 autofillHints: const [AutofillHints.password],
@@ -142,7 +142,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               ),
             ],
             Text(l10n.p_enter_new_password),
-            TextField(
+            AppTextField(
               key: keys.newPasswordField,
               autofocus: !widget.state.hasKey,
               obscureText: true,
@@ -165,7 +165,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 }
               },
             ),
-            TextField(
+            AppTextField(
               key: keys.confirmPasswordField,
               obscureText: true,
               autofillHints: const [AutofillHints.newPassword],

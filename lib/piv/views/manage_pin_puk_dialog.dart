@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../state.dart';
 import '../keys.dart' as keys;
+import '../state.dart';
 
 enum ManageTarget { pin, puk, unblock }
 
@@ -101,7 +102,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             Text(widget.target == ManageTarget.pin
                 ? l10n.p_enter_current_pin_or_reset
                 : l10n.p_enter_current_puk_or_reset),
-            TextField(
+            AppTextField(
               autofocus: true,
               obscureText: true,
               maxLength: 8,
@@ -131,7 +132,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             ),
             Text(l10n.p_enter_new_piv_pin_puk(
                 widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
-            TextField(
+            AppTextField(
               key: keys.newPinPukField,
               obscureText: true,
               maxLength: 8,
@@ -157,7 +158,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 }
               },
             ),
-            TextField(
+            AppTextField(
               key: keys.confirmPinPukField,
               obscureText: true,
               maxLength: 8,

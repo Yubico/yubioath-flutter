@@ -16,7 +16,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
+import '../app/logging.dart';
 
 final _log = Logger('android.logger');
 

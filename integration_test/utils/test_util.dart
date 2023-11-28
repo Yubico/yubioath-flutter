@@ -63,7 +63,8 @@ extension AppWidgetTester on WidgetTester {
     }
 
     if (evaluated.isEmpty) {
-      testLog(false, 'Failed to find ${f.description} in $timeOutSec seconds.');
+      testLog(false,
+          'Found 0 ${f.describeMatch(Plurality.zero)} in $timeOutSec seconds.');
     }
 
     return f;
