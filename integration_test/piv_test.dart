@@ -20,6 +20,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
+
 // import 'package:yubico_authenticator/widgets/tooltip_if_truncated.dart';
 
 import 'utils/piv_test_util.dart';
@@ -32,8 +33,7 @@ void main() {
   group('PIV Settings', skip: isAndroid, () {
     const factoryPin = '123456';
     const factoryPuk = '12345678';
-    const factoryManagemenKey =
-        '010203040506070801020304050607080102030405060708';
+    // TODO const factoryManagemenKey = '010203040506070801020304050607080102030405060708';
     appTest('Reset PIV (settings-init)', (WidgetTester tester) async {
       await tester.resetPiv();
       await tester.shortWait();
