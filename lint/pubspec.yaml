@@ -12,3 +12,4 @@ dependencies:
   analyzer:
   analyzer_plugin:
   custom_lint_builder:
+  path: ^1.8.3
