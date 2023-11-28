@@ -11,5 +11,6 @@ environment:
 dependencies:
   analyzer:
   analyzer_plugin:
+  collection: ^1.18.0
   custom_lint_builder:
   path: ^1.8.3

@@ -101,18 +101,13 @@ class _UseRecommendedFix extends DartFix {
         return;
       }
 
-      print(
-          'Added addInstanceCreationExpression for ${node.constructorName} @ ${node.sourceRange}');
-
       final changeBuilder = reporter.createChangeBuilder(
         message: 'Change to $recommended.',
         priority: 0,
       );
 
       changeBuilder.addDartFileEdit((builder) async {
-        print(
-            'Executed dartFileEdit for ${node.constructorName} @ ${node.sourceRange}');
-        Uri? importUri = null;
+        Uri? importUri;
         final projectRoot = await _findProjectRoot(resolver.path);
         if (projectRoot != null) {
           final absoluteImportPath = p.join(projectRoot, import);
@@ -131,8 +126,6 @@ class _UseRecommendedFix extends DartFix {
         );
 
         if (importUri != null && !builder.importsLibrary(importUri)) {
-          print('$importUri is not yet imported');
-          print('Required imports: ${builder.requiredImports}');
           builder.importLibraryElement(importUri);
         }
       });
