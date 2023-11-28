@@ -24,8 +24,8 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
-import '../../widgets/responsive_dialog.dart';
 import '../../widgets/app_text_form_field.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 

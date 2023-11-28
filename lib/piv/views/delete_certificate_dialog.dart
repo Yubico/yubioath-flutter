@@ -23,9 +23,9 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 
 class DeleteCertificateDialog extends ConsumerWidget {
   final DevicePath devicePath;

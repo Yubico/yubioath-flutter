@@ -17,9 +17,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
-import 'package:yubico_authenticator/android/app_methods.dart';
 
 import '../../oath/models.dart';
+import '../app_methods.dart';
 import 'qr_scanner_overlay_view.dart';
 import 'qr_scanner_permissions_view.dart';
 import 'qr_scanner_scan_status.dart';

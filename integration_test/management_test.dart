@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/management/views/keys.dart'

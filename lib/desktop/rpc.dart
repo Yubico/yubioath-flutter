@@ -19,10 +19,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:logging/logging.dart';
 import 'package:async/async.dart';
-import 'package:yubico_authenticator/app/logging.dart';
+import 'package:logging/logging.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import 'models.dart';
 

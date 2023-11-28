@@ -15,10 +15,10 @@
  */
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
+import 'models.dart';
 
 final managementStateProvider = AsyncNotifierProvider.autoDispose
     .family<ManagementStateNotifier, DeviceInfo, DevicePath>(

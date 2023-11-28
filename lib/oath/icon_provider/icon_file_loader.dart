@@ -24,8 +24,8 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 import 'package:vector_graphics_compiler/vector_graphics_compiler.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../../app/logging.dart';
 import 'icon_cache.dart';
 
 final _log = Logger('icon_file_loader');

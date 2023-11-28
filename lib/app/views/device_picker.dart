@@ -15,9 +15,9 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../android/state.dart';
 import '../../core/state.dart';
@@ -151,8 +151,7 @@ class DevicePickerContent extends ConsumerWidget {
           selected: currentNode == null,
           extended: extended,
         ),
-      if (androidNoKeyWidget != null)
-        androidNoKeyWidget,
+      if (androidNoKeyWidget != null) androidNoKeyWidget,
       ...devices.map(
         (e) => e.path == currentNode?.path
             ? _buildCurrentDeviceRow(

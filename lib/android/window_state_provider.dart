@@ -17,11 +17,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import 'app_methods.dart';
+import 'state.dart';
 
 final _log = Logger('android.window_state_provider');
 
@@ -35,8 +35,8 @@ final androidWindowStateProvider = Provider<WindowState>(
 
 class _WindowStateNotifier extends StateNotifier<WindowState>
     with WidgetsBindingObserver {
-    final StateNotifierProviderRef<_WindowStateNotifier, WindowState> _ref;
-    _WindowStateNotifier(this._ref)
+  final StateNotifierProviderRef<_WindowStateNotifier, WindowState> _ref;
+  _WindowStateNotifier(this._ref)
       : super(WindowState(focused: true, visible: true, active: true)) {
     _init();
   }
