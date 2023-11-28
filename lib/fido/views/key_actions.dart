@@ -19,11 +19,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
-import '../models.dart';
-import '../keys.dart' as keys;
+import '../../app/views/fs_dialog.dart';
 import '../features.dart' as features;
+import '../keys.dart' as keys;
+import '../models.dart';
 import 'add_fingerprint_dialog.dart';
 import 'pin_dialog.dart';
 import 'reset_dialog.dart';

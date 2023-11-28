@@ -15,10 +15,10 @@
  */
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/desktop/state.dart';
 
+import '../app/state.dart';
 import 'rpc.dart';
+import 'state.dart';
 
 class RpcQrScanner implements QrScanner {
   final RpcSession _rpc;

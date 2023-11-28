@@ -18,7 +18,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/state.dart';
+import 'state.dart';
 
 const appMethodsChannel = MethodChannel('app.methods');
 

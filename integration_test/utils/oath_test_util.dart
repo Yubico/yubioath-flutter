@@ -19,15 +19,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/models.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 
-import 'android/util.dart';
 import '../utils/test_util.dart';
+import 'android/util.dart';
 
 /// THESE SHOULD PROBABLY BE REMOVOVED:
 ///

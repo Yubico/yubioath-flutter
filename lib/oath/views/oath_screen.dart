@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -153,7 +154,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           },
           child: Builder(builder: (context) {
             final textTheme = Theme.of(context).textTheme;
-            return TextFormField(
+            return AppTextFormField(
               key: keys.searchAccountsField,
               controller: searchController,
               focusNode: searchFocus,

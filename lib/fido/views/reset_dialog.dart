@@ -20,15 +20,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
+import '../../app/models.dart';
 import '../../core/models.dart';
 import '../../desktop/models.dart';
+import '../../fido/models.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../state.dart';
-import '../../fido/models.dart';
-import '../../app/models.dart';
 
 final _log = Logger('fido.views.reset_dialog');
 

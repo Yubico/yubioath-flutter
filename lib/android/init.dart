@@ -23,12 +23,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yubico_authenticator/android/logger.dart';
-import 'package:yubico_authenticator/android/oath/otp_auth_link_handler.dart';
-import 'package:yubico_authenticator/android/window_state_provider.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
 import '../app/app.dart';
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
@@ -36,11 +33,14 @@ import '../core/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import 'app_methods.dart';
+import 'logger.dart';
 import 'management/state.dart';
+import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'tap_request_dialog.dart';
+import 'window_state_provider.dart';
 
 Future<Widget> initialize() async {
   _initSystemUi();

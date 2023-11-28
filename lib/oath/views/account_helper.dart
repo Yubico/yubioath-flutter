@@ -28,9 +28,9 @@ import '../../core/state.dart';
 import '../../widgets/circle_timer.dart';
 import '../../widgets/custom_icons.dart';
 import '../features.dart' as features;
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'actions.dart';
 
 /// Support class for presenting an OATH account.

@@ -15,8 +15,8 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../management/views/management_screen.dart';
 import '../message.dart';
@@ -146,7 +146,7 @@ class NavigationContent extends ConsumerWidget {
                 if (data != null) ...[
                   // Normal YubiKey Applications
                   ...availableApps.map((app) => NavigationItem(
-                        key: app.getAppDrawerKey(),
+                        key: _getAppDrawerKey(app),
                         title: app.getDisplayName(l10n),
                         leading: app == currentApp
                             ? Icon(app._filledIcon)
@@ -215,4 +215,14 @@ class NavigationContent extends ConsumerWidget {
       ),
     );
   }
+
+  Key _getAppDrawerKey(Application app) => switch (app) {
+        Application.oath => oathAppDrawer,
+        Application.fido => fidoAppDrawer,
+        Application.otp => otpAppDrawer,
+        Application.piv => pivAppDrawer,
+        Application.hsmauth => hsmauthAppDrawer,
+        Application.management => managementAppDrawer,
+        Application.openpgp => openpgpAppDrawer,
+      };
 }

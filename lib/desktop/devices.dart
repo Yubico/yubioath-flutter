@@ -19,8 +19,8 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/models.dart';

@@ -19,15 +19,15 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
-import 'models.dart';
 import 'features.dart' as features;
+import 'logging.dart';
+import 'models.dart';
 
 final _log = Logger('app.state');
 

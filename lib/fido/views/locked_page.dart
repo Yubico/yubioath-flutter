@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,10 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../widgets/app_text_field.dart';
+import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
-import '../features.dart' as features;
 import 'key_actions.dart';
 
 class FidoLockedPage extends ConsumerWidget {
@@ -160,7 +161,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
           Text(l10n.l_enter_fido2_pin),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-            child: TextField(
+            child: AppTextField(
               autofocus: true,
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],

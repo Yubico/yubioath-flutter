@@ -20,14 +20,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrscanner_zxing/qrscanner_zxing_method_channel.dart';
-import 'package:yubico_authenticator/android/app_methods.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/exception/cancellation_exception.dart';
-import 'package:yubico_authenticator/theme.dart';
 
 import '../../app/message.dart';
+import '../../app/state.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/utils.dart';
+import '../../theme.dart';
+import '../app_methods.dart';
 import 'qr_scanner_view.dart';
 
 class AndroidQrScanner implements QrScanner {
