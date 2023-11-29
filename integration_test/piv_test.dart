@@ -33,8 +33,8 @@ void main() {
     const factoryPin = '123456';
     const factoryPuk = '12345678';
     // TODO: use or remove factoryManagementKey
-    const factoryManagemenKey =
-        '010203040506070801020304050607080102030405060708';
+    // const factoryManagemenKey =
+    //    '010203040506070801020304050607080102030405060708';
     appTest('Reset PIV (settings-init)', (WidgetTester tester) async {
       await tester.resetPiv();
       await tester.shortWait();
