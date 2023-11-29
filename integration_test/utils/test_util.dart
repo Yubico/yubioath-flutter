@@ -239,6 +239,13 @@ extension AppWidgetTester on WidgetTester {
     }
     collectedYubiKeyInformation = true;
   }
+
+  bool isTextButtonEnabled(Key buttonKey) {
+    var finder = find.byKey(buttonKey).hitTestable();
+    expect(finder.evaluate().isNotEmpty, true);
+    TextButton button = finder.evaluate().single.widget as TextButton;
+    return button.enabled;
+  }
 }
 
 @isTest

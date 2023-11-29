@@ -22,10 +22,9 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 
-import 'utils/keyless_util.dart';
+import 'utils/keyless_test_util.dart';
 import 'utils/test_util.dart';
 
-/// TODO: These need to be able to run keyless to run in CI.
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;

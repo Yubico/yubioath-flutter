@@ -29,7 +29,6 @@ String? yubiKeyFirmware;
 String? yubiKeySerialNumber;
 bool collectedYubiKeyInformation = false;
 
-/// TODO: clean up this monster of appTestKeyLess
 extension AppWidgetTester on WidgetTester {
   /// waits up to [timeOutSec] seconds evaluating whether [Finder] f is
   /// visible
