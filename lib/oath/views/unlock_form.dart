@@ -129,17 +129,24 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 dense: true,
                 minLeadingWidth: 0,
               )
-            : CheckboxListTile(
-                title: Text(l10n.s_remember_password),
-                dense: true,
-                controlAffinity: ListTileControlAffinity.leading,
-                value: _remember,
-                onChanged: (value) {
-                  setState(() {
-                    _remember = value ?? false;
-                  });
-                },
-              ),
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: FilterChip(
+                            label: Text(l10n.s_remember_password),
+                            selected: _remember,
+                            onSelected: (value) {
+                              setState(() {
+                                _remember = value;
+                              });
+                            },
+                          )),
+                      const SizedBox(height: 16.0),
+                    ])),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Align(
