@@ -4,9 +4,7 @@ repos:
   rev: "4afcaa82fc368d40d486256bf4edba329bf667bb"
   hooks:
     - id: flutter-analyze
-      args: [lib/*]
     - id: dart-format
-      args: [lib/*]
 
 # Python
 - repo: https://github.com/PyCQA/flake8

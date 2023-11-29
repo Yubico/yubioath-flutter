@@ -18,6 +18,11 @@ jobs:
         python3 set-version.py
         git diff --exit-code
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYVER }}
+
     - name: Cache helper
       id: cache-helper
       uses: actions/cache@v3
@@ -26,12 +31,6 @@ jobs:
           build/macos/helper
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
-
-    - name: Set up Python
-      if: steps.cache-helper.outputs.cache-hit != 'true'
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYVER }}
 
     - name: Install dependencies
       if: steps.cache-helper.outputs.cache-hit != 'true'
@@ -53,10 +52,11 @@ jobs:
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
-    - name: Run tests
+    - name: Run lints/tests
       run: |
+        python -m pip install pre-commit
+        python -m pre_commit run --all-files
         flutter test
-        flutter analyze
 
     - name: Build the app
       run: |
