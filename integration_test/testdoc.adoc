@@ -1,8 +1,10 @@
 == Testing Yubico Authenticator
 
-We have set up testing of the Yubico Authenticator flutter as a part of one of the following groups.
+Verifying the quality of Yubico Authenticator is made through multiple levels of tests, loosely
+defined in the following groups.
 
 * Automatic tests in CI pipeline
+* Unit tests
 * Automatic tests requiring a Yubikey
 * Manual tests
 
@@ -12,7 +14,7 @@ as they depend on other technology which are a bit to expensive to automate (cam
 the flutter test framework.
 
 To run the tests you need to specify the serial number of a Yubikey which the tests are able to run
-on (OBS this key will be reset and by running the tests).
+on (OBS this key will be reset by running the tests, so don't use one of your personal keys).
 
 === Desktop
 Running the tests for the CI environment:
@@ -21,9 +23,18 @@ Running the tests for the CI environment:
 
 Running all the tests for desktop (requires a Yubikey):
 
-    $ flutter test integration_test
+    $ ./testrunner.sh
 
-We will have this handled through a shell interface, more info to come.
+Running all the tests for desktop (requires a Yubikey):
+
+    $ flutter test
+
+The testrunner interface is work in progress, but it deals with a problem of the flutter
+integration_test framework, i.e. that it fails to initiate multiple UI-tests.
+
+Manual test scripts will be moved here so all quality related information is in the same place.
 
 === Android
-TBD
+
+Testing of GUI of the Android client is also a work in progress as tests work differently on the
+mobile platform.

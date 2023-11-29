@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
@@ -29,38 +26,6 @@ import 'package:yubico_authenticator/oath/views/account_view.dart';
 import '../utils/test_util.dart';
 import 'android/util.dart';
 
-/// THESE SHOULD PROBABLY BE REMOVOVED:
-///
-String randomPadded() {
-  return randomNum(999).toString().padLeft(3, '0');
-}
-
-randomNum(int i) {}
-
-String generateRandomIssuer() {
-  final random = Random.secure();
-  return 'issuer_${base64Encode(List.generate(4, (_) => random.nextInt(256)))}';
-  // return 'i${randomPadded()}';
-}
-
-String generateRandomName() {
-  final random = Random.secure();
-  return 'name_${base64Encode(List.generate(4, (_) => random.nextInt(256)))}';
-  //return 'n${randomPadded()}';
-}
-
-String generateRandomSecret() {
-  final random = Random.secure();
-  return base64Encode(List.generate(8, (_) => random.nextInt(256)));
-}
-
-String staticSecret() {
-  return 'abba';
-}
-
-///
-/// THESE SHOULD PROBABLY BE REMOVOVED
-
 class Account {
   final String? issuer;
   final String name;
@@ -68,6 +33,7 @@ class Account {
   final bool? touch;
   final OathType? oathType;
   final HashAlgorithm? hashAlgorithm;
+
   // final PeriodValues? periodValues;
   // final bool? digits;
 
@@ -110,23 +76,16 @@ extension OathFunctions on WidgetTester {
       await grantCameraPermissions(this);
     }
 
-    /// TODO: reset so this takes input and not overrides with random
-    /// This comes from trying to remove flakiness in the tests.
-    ///
     var issuerText = find.byKey(keys.issuerField).hitTestable();
     await tap(issuerText);
-    // await enterText(issuerText, generateRandomIssuer());
     await enterText(issuerText, a.issuer ?? '');
     await shortWait();
     var nameText = find.byKey(keys.nameField).hitTestable();
     await tap(nameText);
-    // await enterText(nameText, generateRandomName());
     await enterText(nameText, a.name);
     await shortWait();
     var secretText = find.byKey(keys.secretField).hitTestable();
     await tap(secretText);
-    // await generateRandomSecret();
-    // await enterText(issuerText, generateRandomSecret());
     await enterText(secretText, a.secret);
     await shortWait();
     if (a.touch != null && a.touch == true) {
@@ -170,15 +129,10 @@ extension OathFunctions on WidgetTester {
     await shortWait();
     await tap(find.byKey(keys.saveButton));
 
-    /// TODO:
     /// the following pump is because of NEO keys
     await pump(const Duration(seconds: 1));
 
-    /// TODO:
-    /// this verification fails and should be redone:
-    /// "The test failed because the expected value was null, but the actual value was not null"
     accountView = await findAccount(a);
-    //expect(accountView, isNotNull);
     if (accountView != null) {
       testLog(quiet, 'Added account $a');
     }
@@ -263,8 +217,6 @@ extension OathFunctions on WidgetTester {
     await tap(deleteIconButton);
     await longWait();
 
-    /// TODO check dialog shows correct information about account
-
     /// click the delete Button in the delete dialog
     var deleteButton = find.byKey(keys.deleteButton).hitTestable();
     expect(deleteButton, findsOneWidget);
@@ -296,7 +248,6 @@ extension OathFunctions on WidgetTester {
     var renameIconButton = find.byIcon(Icons.edit_outlined).hitTestable();
 
     /// only newer FW supports renaming
-    /// TODO verify this is correct for the FW of the YubiKey
     if (renameIconButton.evaluate().isEmpty) {
       /// close the dialog and return
       testLog(false, 'This YubiKey does not support account renaming');
@@ -322,9 +273,6 @@ extension OathFunctions on WidgetTester {
     expect(saveButton, findsOneWidget);
     await tap(saveButton);
     await longWait();
-
-    /// now the account dialog is shown
-    /// TODO verify it shows correct issuer and name
 
     /// close the account dialog by tapping the close button
     var closeButton = find.byKey(app_keys.closeButton).hitTestable();
@@ -379,7 +327,6 @@ extension OathFunctions on WidgetTester {
 
     await tap(find.byKey(keys.savePasswordButton));
 
-    /// TODO:
     /// the following pause is because of NEO keys
     await pump(const Duration(seconds: 1));
 
@@ -420,7 +367,6 @@ extension OathFunctions on WidgetTester {
     var unlockButton = find.byKey(keys.unlockButton);
     await tap(unlockButton);
 
-    /// TODO:
     /// the following pump is because of NEO keys
     await pump(const Duration(seconds: 1));
 
@@ -438,7 +384,6 @@ extension OathFunctions on WidgetTester {
     await shortWait();
     await tap(find.byKey(keys.removePasswordButton));
 
-    /// TODO:
     /// the following pump is because of NEO keys
     await pump(const Duration(seconds: 1));
 

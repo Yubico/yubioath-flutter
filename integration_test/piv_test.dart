@@ -20,7 +20,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
-// import 'package:yubico_authenticator/widgets/tooltip_if_truncated.dart';
 
 import 'utils/piv_test_util.dart';
 import 'utils/test_util.dart';
@@ -32,9 +31,6 @@ void main() {
   group('PIV Settings', skip: isAndroid, () {
     const factoryPin = '123456';
     const factoryPuk = '12345678';
-    // TODO: use or remove factoryManagementKey
-    // const factoryManagemenKey =
-    //    '010203040506070801020304050607080102030405060708';
     appTest('Reset PIV (settings-init)', (WidgetTester tester) async {
       await tester.resetPiv();
       await tester.shortWait();
@@ -48,7 +44,7 @@ void main() {
       await tester.shortWait();
       await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
 
-      /// TODO: This expect needs to verify that Pin underline is 'Blocked'
+      /// TODO: This expect needs to verify that Pin subtitle is 'Blocked'
       /// expect(find.byKey(managePinAction), find.byTooltip('Blocked'));
       await tester.shortWait();
       await tester.tap(find.byKey(managePinAction).hitTestable());
@@ -177,9 +173,7 @@ void main() {
         await tester.enterText(
             find.byKey(newPinPukField).hitTestable(), shortmanagementkey);
         await tester.longWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-        // TODO: verify state
+        expect(tester.isTextButtonEnabled(saveButton), false);
       });
       appTest('Change managementkey key', (WidgetTester tester) async {
         await tester.configurePiv();
@@ -260,7 +254,6 @@ void main() {
         await tester.resetPiv();
       });
 
-      /// TODO: The rest of management key settings, when input fields are fixed
       appTest('Reset PIV (settings-exit)', (WidgetTester tester) async {
         await tester.resetPiv();
         await tester.shortWait();
@@ -367,16 +360,16 @@ void main() {
       await tester.longWait();
       // 9 Verify Subject, verify Date
       //      TODO: this seems not to work!
-/*      expect(find.byWidgetPredicate((widget) {
-        if (widget is TooltipIfTruncated) {
-          final TooltipIfTruncated textWidget = widget;
-          if (textWidget.key == certInfoSubjectKey &&
-              textWidget.text == 'CN=foobar') {
-            return true;
-          }
-        }
-        return false;
-      }), findsOneWidget);*/
+      // expect(find.byWidgetPredicate((widget) {
+      //   if (widget is TooltipIfTruncated) {
+      //     final TooltipIfTruncated textWidget = widget;
+      //     if (textWidget.key == certInfoSubjectKey &&
+      //         textWidget.text == 'CN=Generate9c') {
+      //       return true;
+      //     }
+      //   }
+      //   return false;
+      // }), findsOneWidget);
 
       await tester.longWait();
       // 10. Delete Certificate
@@ -491,58 +484,14 @@ void main() {
       await tester.tap(find.byKey(deleteButton).hitTestable());
       await tester.longWait();
     });
-    // appTest('Import outdated Key+Certificate from file',
-    //     (WidgetTester tester) async {
-    //   /// TODO fileload needs to be handled
-    //   // 1. open PIV view
-    //   var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-    //   await tester.tap(pivDrawerButton);
-    //   await tester.longWait();
-    //   // 2. click meatball menu for 9c
-    //   await tester.tap(find.byKey(meatballButton9c).hitTestable());
-    //   await tester.longWait();
-    //   // 3. click import
-    //   await tester.tap(find.byKey(importAction).hitTestable());
-    //   await tester.longWait();
-    //   // 4. pick key: outdated_key.pem and "Choose"
-    //   // 5. TODO: tap close
-    //   // 6. Verify slot 9c "Key without certificate loaded"
-    //   // 7. click meatball menu for 9c
-    //   await tester.tap(find.byKey(meatballButton9c).hitTestable());
-    //   await tester.longWait();
-    //   // 8. click import
-    //   await tester.tap(find.byKey(importAction).hitTestable());
-    //   await tester.longWait();
-    //   // 9. pick key: outdated_cert.pem and "Choose"
-    //   // 10. Tap "Import" on 'Import File Dialogue'
-    //   // Verify Certificate
-    // });
-    // appTest('Import neverexpire Key+Certificate from file',
-    //     (WidgetTester tester) async {
-    //   /// TODO fileload needs to be handled
-    //   // // 1. open PIV view
-    //   // var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-    //   // await tester.tap(pivDrawerButton);
-    //   // await tester.longWait();
-    //   // // 2. click meatball menu for 9d
-    //   // await tester.tap(find.byKey(meatballButton9d).hitTestable());
-    //   // await tester.longWait();
-    //   // // 3. click import
-    //   // await tester.tap(find.byKey(importAction).hitTestable());
-    //   // await tester.longWait();
-    //   // // 4. pick key: neverexpire_key.pem and "Choose"
-    //   // // 5. TODO: tap close
-    //   // // 6. Verify slot 9c "Key without certificate loaded"
-    //   // // 7. click meatball menu for 9d
-    //   // await tester.tap(find.byKey(meatballButton9d).hitTestable());
-    //   // await tester.longWait();
-    //   // // 8. click import
-    //   // await tester.tap(find.byKey(importAction).hitTestable());
-    //   // await tester.longWait();
-    //   // // 9. pick key: neverexpire_cert.pem and "Choose"
-    //   // // 10. Tap "Import" on 'Import File Dialogue'
-    //   // // Verify Certificate
-    // });
+    appTest('Import outdated Key+Certificate from file',
+        (WidgetTester tester) async {});
+
+    /// TODO fileload needs to be handled
+    appTest('Import neverexpire Key+Certificate from file',
+        (WidgetTester tester) async {
+      /// TODO fileload needs to be handled
+    });
     appTest('Generate a CSR', (WidgetTester tester) async {
       // 1. open PIV view
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();

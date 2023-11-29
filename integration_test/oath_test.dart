@@ -78,7 +78,6 @@ void main() {
       await tester.tap(oathDrawerButton);
       await tester.longWait();
 
-      /// TODO change back to 32 after flakiness eval
       for (var i = 0; i < 32; i += 1) {
         // just now merely 32 accounts
         var testAccount = Account(
@@ -104,39 +103,6 @@ void main() {
     // appTest('Create weird character-accounts and check byte count',
     //     (WidgetTester tester) async {});
     group('TOTP account tests', () {
-      // appTest('Create regular TOTP account', (WidgetTester tester) async {
-      //   // account with issuer field
-      //   // var issuer = generateRandomIssuer();
-      //   // var name = generateRandomName();
-      //   // var secret = 'abcdabcd';
-      //   var testAccount = const Account(
-      //     issuer: 'IssuerForTests',
-      //     name: 'NameForTests',
-      //     secret: 'abcdabcd',
-      //   );
-      //   var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
-      //   await tester.tap(oathDrawerButton);
-      //   await tester.longWait();
-      //
-      //   await tester.addAccount(testAccount);
-      //   await tester.longWait();
-      //
-      //   // TODO: Verify account exists
-      //   // TODO: Change testAccount
-      //   await tester.deleteAccount(testAccount);
-      // });
-      //
-      // appTest('Create issuer-less TOTP account', (WidgetTester tester) async {
-      //   // account without issuer field
-      //   var testAccount = const Account(
-      //     name: 'NoIssuerName',
-      //     secret: 'bbbbbbbbbbbbbbbb',
-      //   );
-      //   await tester.deleteAccount(testAccount);
-      //
-      //   /// TODO: change issuer functionality in oath_test_util
-      //   await tester.addAccount(testAccount);
-      // });
       appTest('TOTP: sha-1', (WidgetTester tester) async {
         var oathDrawerButton = find.byKey(oathAppDrawer).hitTestable();
         await tester.tap(oathDrawerButton);
