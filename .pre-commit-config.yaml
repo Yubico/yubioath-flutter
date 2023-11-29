@@ -1,0 +1,26 @@
+repos:
+# Flutter
+- repo: https://github.com/dluksza/flutter-analyze-pre-commit
+  rev: "4afcaa82fc368d40d486256bf4edba329bf667bb"
+  hooks:
+    - id: flutter-analyze
+      args: [lib/*]
+    - id: dart-format
+      args: [lib/*]
+
+# Python
+- repo: https://github.com/PyCQA/flake8
+  rev: 6.1.0
+  hooks:
+    - id: flake8
+      files: helper/
+- repo: https://github.com/psf/black
+  rev: 23.11.0
+  hooks:
+    - id: black
+      files: helper/
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.7.5
+  hooks:
+    - id: bandit
+      files: helper/  # keep in sync with .bandit file

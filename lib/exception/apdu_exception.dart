@@ -26,4 +26,3 @@ class ApduException implements Exception {
     return 'ApduException[$message; dec: $sw]';
   }
 }
-

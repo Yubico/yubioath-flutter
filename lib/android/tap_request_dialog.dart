@@ -160,7 +160,8 @@ class _DialogProvider {
       _DDesc.oathDeleteAccount => l10n.s_nfc_dialog_oath_delete_account,
       _DDesc.oathCalculateCode => l10n.s_nfc_dialog_oath_calculate_code,
       _DDesc.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
-      _DDesc.oathAddMultipleAccounts => l10n.s_nfc_dialog_oath_add_multiple_accounts,
+      _DDesc.oathAddMultipleAccounts =>
+        l10n.s_nfc_dialog_oath_add_multiple_accounts,
       _ => ''
     };
   }
