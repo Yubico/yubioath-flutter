@@ -131,6 +131,10 @@ extension OathFunctions on WidgetTester {
     // await enterText(issuerText, generateRandomSecret());
     await enterText(secretText, a.secret);
     await shortWait();
+    if (isAndroid) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      await shortWait();
+    }
     if (a.touch != null && a.touch == true) {
       var requireTouchFilterChip =
           find.byKey(keys.requireTouchFilterChip).hitTestable();
