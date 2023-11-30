@@ -660,6 +660,17 @@ files = [
 ]
 
 [[package]]
+name = "types-pillow"
+version = "10.1.0.2"
+description = "Typing stubs for Pillow"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "types-Pillow-10.1.0.2.tar.gz", hash = "sha256:525c1c5ee67b0ac1721c40d2bc618226ef2123c347e527e14e05b920721a13b9"},
+    {file = "types_Pillow-10.1.0.2-py3-none-any.whl", hash = "sha256:131078ffa547bf9a201d39ffcdc65633e108148085f4f1b07d4647fcfec6e923"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.8.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -737,4 +748,4 @@ subdirectory = "wrappers/python"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "10b4e5ccc4857ea83ad330dc0be559048745b25dc385d70a9393425a226a4ca7"
+content-hash = "536b00ea0443a4fb0b7e1293758b14021f9ee68699acf7e621d094339417624c"

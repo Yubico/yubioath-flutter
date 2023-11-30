@@ -166,6 +166,7 @@ class PivNode(RpcNode):
         key = None
 
         if self._pivman_data.has_derived_key:
+            assert self._pivman_data.salt  # nosec
             key = derive_management_key(pin, self._pivman_data.salt)
         elif self._pivman_data.has_stored_key:
             pivman_prot = get_pivman_protected_data(self.session)
@@ -452,13 +453,14 @@ class SlotNode(RpcNode):
             signal("touch")
 
         if generate_type == GENERATE_TYPE.CSR:
-            result = generate_csr(self.session, self.slot, public_key, subject)
+            csr = generate_csr(self.session, self.slot, public_key, subject)
+            result = csr.public_bytes(encoding=Encoding.PEM).decode()
         elif generate_type == GENERATE_TYPE.CERTIFICATE:
             now = datetime.datetime.utcnow()
             then = now + datetime.timedelta(days=365)
             valid_from = params.pop("valid_from", now.strftime(_date_format))
             valid_to = params.pop("valid_to", then.strftime(_date_format))
-            result = generate_self_signed_certificate(
+            cert = generate_self_signed_certificate(
                 self.session,
                 self.slot,
                 public_key,
@@ -466,7 +468,8 @@ class SlotNode(RpcNode):
                 datetime.datetime.strptime(valid_from, _date_format),
                 datetime.datetime.strptime(valid_to, _date_format),
             )
-            self.session.put_certificate(self.slot, result)
+            result = cert.public_bytes(encoding=Encoding.PEM).decode()
+            self.session.put_certificate(self.slot, cert)
             self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
         else:
             raise ValueError("Unsupported GENERATE_TYPE")
@@ -477,5 +480,5 @@ class SlotNode(RpcNode):
             public_key=public_key.public_bytes(
                 encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
             ).decode(),
-            result=result.public_bytes(encoding=Encoding.PEM).decode(),
+            result=result,
         )

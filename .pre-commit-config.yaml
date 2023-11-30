@@ -10,6 +10,14 @@ repos:
       require_serial: true
 
 # Python
+- repo: local
+  hooks:
+    - id: mypy
+      name: mypy
+      files: helper/
+      language: script
+      entry: run-mypy.sh
+      require_serial: true
 - repo: https://github.com/PyCQA/flake8
   rev: 6.1.0
   hooks:

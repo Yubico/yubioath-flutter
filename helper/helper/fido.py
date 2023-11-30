@@ -25,6 +25,7 @@ from fido2.ctap2 import Ctap2, ClientPin
 from fido2.ctap2.credman import CredentialManagement
 from fido2.ctap2.bio import BioEnrollment, FPBioEnrollment, CaptureError
 from fido2.pcsc import CtapPcscDevice
+from fido2.hid import CtapHidDevice
 from yubikit.core.fido import FidoConnection
 from ykman.hid import list_ctap_devices as list_ctap
 from ykman.pcsc import list_devices as list_ccid
@@ -94,8 +95,10 @@ class Ctap2Node(RpcNode):
                 data.update(uv_retries=uv_retries)
         return data
 
-    def _prepare_reset_nfc(self, event, signal):
-        reader_name = self.ctap.device._name
+    @staticmethod
+    def _prepare_reset_nfc(device, event, signal):
+        # TODO: Don't use private member _name.
+        reader_name = device._name
         devices = list_ccid(reader_name)
         if not devices or devices[0].reader.name != reader_name:
             raise ValueError("Unable to isolate NFC reader")
@@ -119,8 +122,9 @@ class Ctap2Node(RpcNode):
 
         raise TimeoutException()
 
-    def _prepare_reset_usb(self, event, signal):
-        dev_path = self.ctap.device.descriptor.path
+    @staticmethod
+    def _prepare_reset_usb(device, event, signal):
+        dev_path = device.descriptor.path
         logger.debug(f"Reset over USB: {dev_path}")
 
         signal("reset", dict(state="remove"))
@@ -148,10 +152,13 @@ class Ctap2Node(RpcNode):
     @action
     def reset(self, params, event, signal):
         target = _ctap_id(self.ctap)
-        if isinstance(self.ctap.device, CtapPcscDevice):
-            connection = self._prepare_reset_nfc(event, signal)
+        device = self.ctap.device
+        if isinstance(device, CtapPcscDevice):
+            connection = self._prepare_reset_nfc(device, event, signal)
+        elif isinstance(device, CtapHidDevice):
+            connection = self._prepare_reset_usb(device, event, signal)
         else:
-            connection = self._prepare_reset_usb(event, signal)
+            raise TypeError("Unsupported connection type")
 
         logger.debug("Performing reset...")
         self.ctap = Ctap2(connection)
@@ -166,7 +173,7 @@ class Ctap2Node(RpcNode):
     @action(condition=lambda self: self._info.options["clientPin"])
     def unlock(self, params, event, signal):
         pin = params.pop("pin")
-        permissions = 0
+        permissions = ClientPin.PERMISSION(0)
         if CredentialManagement.is_supported(self._info):
             permissions |= ClientPin.PERMISSION.CREDENTIAL_MGMT
         if BioEnrollment.is_supported(self._info):
