@@ -36,8 +36,6 @@ jobs:
         echo "Installed python version: $PYVERINST"
         python -m ensurepip --user
         python -m pip install -U pip pipx
-        # pipx ensurepath
-        echo "export PATH=$PATH:$HOME/.local/bin" >> ~/.bashrc
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
@@ -87,6 +85,8 @@ jobs:
         flutter --version
 
     - name: Run lints/tests
+      env:
+        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
         export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
         pipx install pre-commit

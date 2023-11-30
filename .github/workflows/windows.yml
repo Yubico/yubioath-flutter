@@ -50,6 +50,8 @@ jobs:
       - run: flutter --version
 
       - name: Run lints/tests
+        env:
+          SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
         run: |
           pip install pre-commit
           pre-commit run --all-files
