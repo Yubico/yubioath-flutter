@@ -86,6 +86,14 @@ class CompatUtil(private val sdkVersion: Int) {
         `when`({ sdkVersion < version }, block)
 
     /**
+     * Execute [block] only on devices running lower sdk version than [version]
+     *
+     * @return wrapped value
+     */
+    suspend fun <T> until(version: Int, block: suspend () -> T): CompatValue<T> =
+        `when`({ sdkVersion < version }, block)
+
+    /**
      * Execute [block] only on devices running higher or equal sdk version than [version]
      *
      * @return wrapped value
@@ -102,6 +110,12 @@ class CompatUtil(private val sdkVersion: Int) {
         p() -> CompatValue.of(block())
         else -> CompatValue.empty()
     }
+
+    private suspend fun <T> `when`(p: () -> Boolean, block: suspend () -> T): CompatValue<T> =
+        when {
+            p() -> CompatValue.of(block())
+            else -> CompatValue.empty()
+        }
 }
 
 val compatUtil = CompatUtil(Build.VERSION.SDK_INT)

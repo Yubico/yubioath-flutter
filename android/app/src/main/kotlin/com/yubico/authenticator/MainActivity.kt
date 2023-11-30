@@ -20,24 +20,21 @@ import android.annotation.SuppressLint
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
 import android.nfc.NfcAdapter.STATE_ON
 import android.nfc.NfcAdapter.STATE_TURNING_OFF
 import android.nfc.Tag
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.yubico.authenticator.app.AppMethodChannel
+import com.yubico.authenticator.app.allowScreenshots
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
@@ -50,10 +47,7 @@ import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.util.concurrent.Executors
@@ -68,7 +62,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private lateinit var yubikit: YubiKitManager
 
-    private var preserveConnectionOnPause: Boolean = false
+    var preserveConnectionOnPause: Boolean = false
 
     // receives broadcasts when QR Scanner camera is closed
     private val qrScannerCameraClosedBR = QRScannerCameraClosedBR()
@@ -290,7 +284,7 @@ class MainActivity : FlutterFragmentActivity() {
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
-        appMethodChannel = AppMethodChannel(messenger)
+        appMethodChannel = AppMethodChannel(this, messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
         flutterStreams = listOf(
@@ -310,6 +304,7 @@ class MainActivity : FlutterFragmentActivity() {
                     dialogManager,
                     appPreferences
                 )
+
                 else -> null
             }
             viewModel.connectedYubiKey.value?.let(::processYubiKey)
@@ -345,7 +340,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private val sharedPreferencesListener = OnSharedPreferenceChangeListener { _, key ->
-        if ( AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
+        if (AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
             stopNfcDiscovery()
             startNfcDiscovery()
         }
@@ -369,91 +364,6 @@ class MainActivity : FlutterFragmentActivity() {
             }
 
         }
-    }
-
-    inner class AppMethodChannel(messenger: BinaryMessenger) {
-
-        private val methodChannel = MethodChannel(messenger, "app.methods")
-
-        init {
-            methodChannel.setMethodCallHandler { methodCall, result ->
-                when (methodCall.method) {
-                    "allowScreenshots" -> result.success(
-                        allowScreenshots(
-                            methodCall.arguments as Boolean,
-                        )
-                    )
-                    "getAndroidSdkVersion" -> result.success(
-                        Build.VERSION.SDK_INT
-                    )
-
-                    "preserveConnectionOnPause" -> {
-                        preserveConnectionOnPause = true
-                        result.success(
-                            true
-                        )
-                    }
-
-                    "setPrimaryClip" -> {
-                        val toClipboard = methodCall.argument<String>("toClipboard")
-                        val isSensitive = methodCall.argument<Boolean>("isSensitive")
-                        if (toClipboard != null && isSensitive != null) {
-                            ClipboardUtil.setPrimaryClip(
-                                this@MainActivity,
-                                toClipboard,
-                                isSensitive
-                            )
-                        }
-                        result.success(true)
-                    }
-                    "hasCamera" -> {
-                        val cameraService =
-                            getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                        result.success(
-                            cameraService.cameraIdList.any {
-                                cameraService.getCameraCharacteristics(it)
-                                    .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
-                            }
-                        )
-                    }
-                    "hasNfc" -> result.success(
-                        packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
-                    )
-                    "isNfcEnabled" -> {
-                        val nfcAdapter = NfcAdapter.getDefaultAdapter(this@MainActivity)
-
-                        result.success(
-                            nfcAdapter != null && nfcAdapter.isEnabled
-                        )
-                    }
-                    "openNfcSettings" -> {
-                        startActivity(Intent(ACTION_NFC_SETTINGS))
-                        result.success(true)
-                    }
-                    else -> logger.warn("Unknown app method: {}", methodCall.method)
-                }
-            }
-        }
-
-        fun nfcAdapterStateChanged(value: Boolean) {
-            methodChannel.invokeMethod(
-                "nfcAdapterStateChanged",
-                JSONObject(mapOf("nfcEnabled" to value)).toString()
-            )
-        }
-    }
-
-    private fun allowScreenshots(value: Boolean): Boolean {
-        // Note that FLAG_SECURE is the inverse of allowScreenshots
-        if (value) {
-            logger.debug("Clearing FLAG_SECURE (allow screenshots)")
-            window.clearFlags(FLAG_SECURE)
-        } else {
-            logger.debug("Setting FLAG_SECURE (disallow screenshots)")
-            window.setFlags(FLAG_SECURE, FLAG_SECURE)
-        }
-
-        return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

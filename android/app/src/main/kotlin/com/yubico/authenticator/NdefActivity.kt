@@ -16,7 +16,8 @@
 
 package com.yubico.authenticator
 
-import android.app.Activity
+
+import android.content.Context
 import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
@@ -24,31 +25,39 @@ import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-
+import com.yubico.authenticator.app.AppMethodChannel
+import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.ndef.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
-
+import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.engine.FlutterEngine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
-
 import java.nio.charset.StandardCharsets
 
-typealias ResourceId = Int
+class NdefActivity : FlutterFragmentActivity() {
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-class NdefActivity : Activity() {
     private lateinit var appPreferences: AppPreferences
+    private lateinit var appMethodChannel: AppMethodChannel
+    private lateinit var flutterLog: FlutterLog
 
     private val logger = LoggerFactory.getLogger(NdefActivity::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appPreferences = AppPreferences(this)
-        handleIntent(intent)
+
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleIntent(intent)
+        coroutineScope.launch {
+            handleIntent(intent)
+        }
     }
 
     override fun onPause() {
@@ -56,37 +65,42 @@ class NdefActivity : Activity() {
         overridePendingTransition(0, 0)
     }
 
-    private fun handleIntent(intent: Intent) {
+    private suspend fun handleIntent(intent: Intent) {
         intent.data?.let {
             if (appPreferences.copyOtpOnNfcTap) {
                 try {
                     val otpSlotContent = parseOtpFromIntent()
                     ClipboardUtil.setPrimaryClip(this, otpSlotContent.content, true)
 
-                    compatUtil.until(Build.VERSION_CODES.TIRAMISU) {
+                    compatUtil.until(Build.VERSION_CODES.TIRAMISU, block = suspend {
                         showToast(
+                            this,
                             when (otpSlotContent.type) {
-                                OtpType.Otp -> R.string.otp_success_set_otp_to_clipboard
-                                OtpType.Password -> R.string.otp_success_set_password_to_clipboard
+                                OtpType.Otp -> "s_ndef_set_otp"
+                                OtpType.Password -> "s_ndef_set_password"
                             }, Toast.LENGTH_SHORT
                         )
                     }
+                    )
 
                 } catch (illegalArgumentException: IllegalArgumentException) {
                     logger.error(
                         illegalArgumentException.message ?: "Failure when handling YubiKey OTP",
                         illegalArgumentException
                     )
-                    showToast(R.string.otp_parse_failure, Toast.LENGTH_LONG)
+                    showToast(this, "s_ndef_parse_failure", Toast.LENGTH_LONG)
                 } catch (_: UnsupportedOperationException) {
-                    showToast(R.string.otp_set_clip_failure, Toast.LENGTH_LONG)
+                    showToast(this, "s_ndef_set_clip_failure", Toast.LENGTH_LONG)
                 }
             }
 
             if (appPreferences.openAppOnNfcTap) {
                 val mainAppIntent = Intent(this, MainActivity::class.java).apply {
                     // Pass the NFC Tag to the main Activity.
-                    putExtra(NfcAdapter.EXTRA_TAG, intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG))
+                    putExtra(
+                        NfcAdapter.EXTRA_TAG,
+                        intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+                    )
                 }
                 startActivity(mainAppIntent)
             }
@@ -95,8 +109,9 @@ class NdefActivity : Activity() {
         }
     }
 
-    private fun showToast(value: ResourceId, length: Int) {
-        Toast.makeText(this, value, length).show()
+
+    private suspend fun showToast(context: Context, arbKey: String, length: Int) {
+        Toast.makeText(context, appMethodChannel.getString(arbKey), length).show()
     }
 
     private fun parseOtpFromIntent(): OtpSlotValue {
@@ -120,4 +135,17 @@ class NdefActivity : Activity() {
     }
 
     data class OtpSlotValue(val type: OtpType, val content: String)
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+
+        appMethodChannel = AppMethodChannel(this, messenger)
+        flutterLog = FlutterLog(messenger)
+
+        coroutineScope.launch {
+            handleIntent(intent)
+        }
+    }
 }

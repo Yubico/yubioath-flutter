@@ -18,6 +18,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../app/state.dart';
 import 'state.dart';
 
 const appMethodsChannel = MethodChannel('app.methods');
@@ -66,6 +68,19 @@ void setupAppMethodsChannel(WidgetRef ref) {
           var nfcEnabled = args['nfcEnabled'];
           ref.read(androidNfcStateProvider.notifier).setNfcEnabled(nfcEnabled);
           break;
+        }
+      case 'getString':
+        {
+          var arbKey = args['arbKey'] as String;
+
+          var l10n = ref.read(l10nProvider);
+          return switch (arbKey) {
+            's_ndef_set_otp' => l10n.s_ndef_set_otp,
+            's_ndef_set_password' => l10n.s_ndef_set_password,
+            's_ndef_parse_failure' => l10n.s_ndef_parse_failure,
+            's_ndef_set_clip_failure' => l10n.s_ndef_set_clip_failure,
+            _ => arbKey
+          };
         }
       default:
         throw PlatformException(
