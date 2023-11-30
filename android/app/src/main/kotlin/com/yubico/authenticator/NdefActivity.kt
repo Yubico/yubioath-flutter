@@ -76,8 +76,8 @@ class NdefActivity : FlutterFragmentActivity() {
                         showToast(
                             this,
                             when (otpSlotContent.type) {
-                                OtpType.Otp -> "s_ndef_set_otp"
-                                OtpType.Password -> "s_ndef_set_password"
+                                OtpType.Otp -> "p_ndef_set_otp"
+                                OtpType.Password -> "p_ndef_set_password"
                             }, Toast.LENGTH_SHORT
                         )
                     }
@@ -88,9 +88,9 @@ class NdefActivity : FlutterFragmentActivity() {
                         illegalArgumentException.message ?: "Failure when handling YubiKey OTP",
                         illegalArgumentException
                     )
-                    showToast(this, "s_ndef_parse_failure", Toast.LENGTH_LONG)
+                    showToast(this, "p_ndef_parse_failure", Toast.LENGTH_LONG)
                 } catch (_: UnsupportedOperationException) {
-                    showToast(this, "s_ndef_set_clip_failure", Toast.LENGTH_LONG)
+                    showToast(this, "p_ndef_set_clip_failure", Toast.LENGTH_LONG)
                 }
             }
 

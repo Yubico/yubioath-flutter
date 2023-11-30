@@ -75,10 +75,10 @@ void setupAppMethodsChannel(WidgetRef ref) {
 
           var l10n = ref.read(l10nProvider);
           return switch (arbKey) {
-            's_ndef_set_otp' => l10n.s_ndef_set_otp,
-            's_ndef_set_password' => l10n.s_ndef_set_password,
-            's_ndef_parse_failure' => l10n.s_ndef_parse_failure,
-            's_ndef_set_clip_failure' => l10n.s_ndef_set_clip_failure,
+            'p_ndef_set_otp' => l10n.p_ndef_set_otp,
+            'p_ndef_set_password' => l10n.p_ndef_set_password,
+            'p_ndef_parse_failure' => l10n.p_ndef_parse_failure,
+            'p_ndef_set_clip_failure' => l10n.p_ndef_set_clip_failure,
             _ => arbKey
           };
         }

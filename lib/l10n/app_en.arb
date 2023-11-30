@@ -627,10 +627,10 @@
     "s_nfc_dialog_oath_add_multiple_accounts": "Action: add multiple accounts",
 
     "@_ndef": {},
-    "s_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",
-    "s_ndef_set_password": "Successfully copied password from YubiKey to clipboard.",
-    "s_ndef_parse_failure": "Failed to parse OTP code from YubiKey.",
-    "s_ndef_set_clip_failure": "Failed to access clipboard when trying to copy OTP code from YubiKey.",
+    "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",
+    "p_ndef_set_password": "Successfully copied password from YubiKey to clipboard.",
+    "p_ndef_parse_failure": "Failed to parse OTP code from YubiKey.",
+    "p_ndef_set_clip_failure": "Failed to access clipboard when trying to copy OTP code from YubiKey.",
 
     "@_eof": {}
 }
