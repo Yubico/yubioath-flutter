@@ -106,7 +106,7 @@ if len(sys.argv) != 2:
 
 
 target = sys.argv[1]
-with open(target, encoding='utf-8') as f:
+with open(target, encoding="utf-8") as f:
     values = json.load(f, object_pairs_hook=check_duplicate_keys)
 
 strings = {k: v for k, v in values.items() if not k.startswith("@")}
@@ -115,7 +115,7 @@ print(target, f"- checking {len(strings)} strings")
 lint_strings(strings, values.get("@_lint_rules", {}))
 check_duplicate_values(strings)
 
-with open(os.path.join(os.path.dirname(target), 'app_en.arb'), encoding='utf-8') as f:
+with open(os.path.join(os.path.dirname(target), "app_en.arb"), encoding="utf-8") as f:
     reference_values = json.load(f)
 errors.extend(check_keys_exist_in_reference(reference_values, values))
 

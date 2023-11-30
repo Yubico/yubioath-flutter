@@ -8,6 +8,14 @@ repos:
       require_serial: true
     - id: flutter-analyze
       require_serial: true
+- repo: local
+  hooks:
+    - id: arb-reformatter
+      name: reformat-strings
+      files: \.arb$
+      language: script
+      entry: arb_reformatter.py
+      require_serial: true
 
 # Python
 - repo: local
@@ -22,12 +30,10 @@ repos:
   rev: 6.1.0
   hooks:
     - id: flake8
-      files: helper/
 - repo: https://github.com/psf/black
   rev: 23.11.0
   hooks:
     - id: black
-      files: helper/
 - repo: https://github.com/PyCQA/bandit
   rev: 1.7.5
   hooks:

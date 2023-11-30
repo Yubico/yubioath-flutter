@@ -136,6 +136,7 @@
 
     "@_app_configuration": {},
     "s_toggle_applications": "Anwendungen umschalten",
+    "s_toggle_interfaces": null,
     "l_min_one_interface": "Mindestens ein Interface muss aktiviert sein",
     "s_reconfiguring_yk": "YubiKey wird neu konfiguriert\u2026",
     "s_config_updated": "Konfiguration aktualisiert",
