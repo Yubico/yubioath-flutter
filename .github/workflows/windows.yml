@@ -49,16 +49,16 @@ jobs:
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
 
-      - name: Build the app
-        run: |
-          $version = python set-version.py | select-object -first 1
-          flutter build windows --build-name=$version
-
       - name: Run lints/tests
         run: |
           pip install pre-commit
           pre-commit run --all-files
           flutter test
+
+      - name: Build the app
+        run: |
+          $version = python set-version.py | select-object -first 1
+          flutter build windows --build-name=$version
 
       - name: Check generated files
         run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code

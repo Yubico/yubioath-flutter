@@ -86,18 +86,18 @@ jobs:
         flutter config --enable-linux-desktop
         flutter --version
 
-    - name: Build the app
-      run: flutter build linux
-
-    - name: Check generated files
-      run: git diff --exit-code
-
     - name: Run lints/tests
       run: |
         export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
         pipx install pre-commit
         pre-commit run --all-files
         flutter test
+
+    - name: Build the app
+      run: flutter build linux
+
+    - name: Check generated files
+      run: git diff --exit-code
 
     - name: Embedd appindicator
       run: |

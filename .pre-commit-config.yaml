@@ -3,8 +3,11 @@ repos:
 - repo: https://github.com/dluksza/flutter-analyze-pre-commit
   rev: "4afcaa82fc368d40d486256bf4edba329bf667bb"
   hooks:
-    - id: flutter-analyze
     - id: dart-format
+      files: \.dart$
+      require_serial: true
+    - id: flutter-analyze
+      require_serial: true
 
 # Python
 - repo: https://github.com/PyCQA/flake8
