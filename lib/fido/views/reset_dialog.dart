@@ -43,6 +43,8 @@ class ResetDialog extends ConsumerStatefulWidget {
 class _ResetDialogState extends ConsumerState<ResetDialog> {
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
+  int _currentStep = 0;
+  final _totalSteps = 4;
 
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
@@ -60,6 +62,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    double progress = _currentStep == 0 ? 0.0 : _currentStep / (_totalSteps);
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
       onCancel: () {
@@ -74,9 +77,13 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       .reset()
                       .listen((event) {
                     setState(() {
+                      _currentStep++;
                       _interaction = event;
                     });
                   }, onDone: () {
+                    setState(() {
+                      _currentStep++;
+                    });
                     _subscription = null;
                     Navigator.of(context).pop();
                     showMessage(context, l10n.l_fido_app_reset);
@@ -113,10 +120,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             Text(
               l10n.p_warning_disable_accounts,
             ),
-            Center(
-              child: Text(_getMessage(),
-                  style: Theme.of(context).textTheme.titleLarge),
-            ),
+            Text('Status: ${_getMessage()}'),
+            LinearProgressIndicator(value: progress),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
