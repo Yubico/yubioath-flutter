@@ -1,0 +1,41 @@
+repos:
+# Flutter
+- repo: https://github.com/dluksza/flutter-analyze-pre-commit
+  rev: "4afcaa82fc368d40d486256bf4edba329bf667bb"
+  hooks:
+    - id: dart-format
+      files: \.dart$
+      require_serial: true
+    - id: flutter-analyze
+      require_serial: true
+- repo: local
+  hooks:
+    - id: arb-reformatter
+      name: reformat-strings
+      files: \.arb$
+      language: script
+      entry: arb_reformatter.py
+      require_serial: true
+
+# Python
+- repo: local
+  hooks:
+    - id: mypy
+      name: mypy
+      files: helper/
+      language: script
+      entry: run-mypy.sh
+      require_serial: true
+- repo: https://github.com/PyCQA/flake8
+  rev: 6.1.0
+  hooks:
+    - id: flake8
+- repo: https://github.com/psf/black
+  rev: 23.11.0
+  hooks:
+    - id: black
+- repo: https://github.com/PyCQA/bandit
+  rev: 1.7.5
+  hooks:
+    - id: bandit
+      files: helper/  # keep in sync with .bandit file

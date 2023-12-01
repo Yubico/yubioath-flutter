@@ -136,6 +136,7 @@
 
     "@_app_configuration": {},
     "s_toggle_applications": "アプリケーションの切替え",
+    "s_toggle_interfaces": null,
     "l_min_one_interface": "少なくとも 1 つのインターフェイスを有効にする必要があります",
     "s_reconfiguring_yk": "YubiKeyを再構成しています\u2026",
     "s_config_updated": "構成が更新されました",
