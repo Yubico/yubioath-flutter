@@ -14,7 +14,15 @@ as they depend on other technology which are a bit to expensive to automate (cam
 the flutter test framework.
 
 To run the tests you need to specify the serial number of a Yubikey which the tests are able to run
-on (OBS this key will be reset by running the tests, so don't use one of your personal keys).
+on (OBS this key will be reset by running the tests, so don't use one of your personal keys). This
+either be defined as an anvironment variable on execution, or in a CSV-file with serial numbers:
+
+    $ /yubioath-flutter/integration_test/test_res/resources/approved_serial_numbers.csv
+
+This file is part of .gitignore, and should never be committed. If you do not wish to add serial
+numbers to a file like above, you can also initiate the test runs by expressing a dart-define:
+
+    $ flutter --dart-define=YA_TEST_APPROVED_KEY_SN=SN1,SN2,...,SNn test integration_test
 
 === Desktop
 Running the tests for the CI environment:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ void main() {
       var usbPivKey = _getCapabilityWidgetKey(true, 'PIV');
       var pivChip = await _getCapabilityWidget(usbPivKey);
 
-      // find USB OTP capability
+      // find USB PIV capability
       if (pivChip != null) {
         expect(pivChip.selected, equals(true));
         await tester.tap(find.byKey(usbPivKey));
@@ -91,7 +91,7 @@ void main() {
       }
       await tester.openManagementScreen();
       if (pivChip != null) {
-        // we expect OTP to be enabled on the Key for this test
+        // we expect PIV to be enabled on the Key for this test
         await tester.tap(find.byKey(usbPivKey));
         await tester.shortWait();
         await tester.tap(find.byKey(management_keys.saveButtonKey));
@@ -107,11 +107,11 @@ void main() {
     appTest('Toggle OATH', (WidgetTester tester) async {
       await tester.openManagementScreen();
 
-      // find USB OTP capability
+      // find USB OATH capability
       var usbOathKey = _getCapabilityWidgetKey(true, 'OATH');
       var oathChip = await _getCapabilityWidget(usbOathKey);
       if (oathChip != null) {
-        // we expect OTP to be enabled on the Key for this test
+        // we expect OATH to be enabled on the Key for this test
         expect(oathChip.selected, equals(true));
         await tester.tap(find.byKey(usbOathKey));
         await tester.shortWait();
@@ -137,11 +137,11 @@ void main() {
     appTest('Toggle OpenPGP', (WidgetTester tester) async {
       await tester.openManagementScreen();
 
-      // find USB OTP capability
+      // find USB OPENPGP capability
       var usbPgpKey = _getCapabilityWidgetKey(true, 'OpenPGP');
       var pgpChip = await _getCapabilityWidget(usbPgpKey);
       if (pgpChip != null) {
-        // we expect OTP to be enabled on the Key for this test
+        // we expect OPENPGP to be enabled on the Key for this test
         expect(pgpChip.selected, equals(true));
         await tester.tap(find.byKey(usbPgpKey));
         await tester.shortWait();
@@ -167,11 +167,11 @@ void main() {
     appTest('Toggle YubiHSM Auth', (WidgetTester tester) async {
       await tester.openManagementScreen();
 
-      // find USB OTP capability
+      // find USB YubiHSM Auth capability
       var usbHsmKey = _getCapabilityWidgetKey(true, 'YubiHSM Auth');
       var hsmChip = await _getCapabilityWidget(usbHsmKey);
       if (hsmChip != null) {
-        // we expect OTP to be enabled on the Key for this test
+        // we expect YubiHSM Auth to be enabled on the Key for this test
         expect(hsmChip.selected, equals(true));
         await tester.tap(find.byKey(usbHsmKey));
         await tester.shortWait();
@@ -198,11 +198,11 @@ void main() {
   appTest('Toggle FIDO U2F', (WidgetTester tester) async {
     await tester.openManagementScreen();
 
-    // find USB OTP capability
+    // find USB FIDO U2F capability
     var usbU2fKey = _getCapabilityWidgetKey(true, 'FIDO U2F');
     var u2fChip = await _getCapabilityWidget(usbU2fKey);
     if (u2fChip != null) {
-      // we expect OTP to be enabled on the Key for this test
+      // we expect FIDO U2F to be enabled on the Key for this test
       expect(u2fChip.selected, equals(true));
       await tester.tap(find.byKey(usbU2fKey));
       await tester.shortWait();
@@ -228,11 +228,11 @@ void main() {
   appTest('Toggle FIDO2', (WidgetTester tester) async {
     await tester.openManagementScreen();
 
-    // find USB OTP capability
+    // find USB FIDO2 capability
     var usbFido2Key = _getCapabilityWidgetKey(true, 'FIDO2');
     var fido2Chip = await _getCapabilityWidget(usbFido2Key);
     if (fido2Chip != null) {
-      // we expect OTP to be enabled on the Key for this test
+      // we expect FIDO2 to be enabled on the Key for this test
       expect(fido2Chip.selected, equals(true));
       await tester.tap(find.byKey(usbFido2Key));
       await tester.shortWait();

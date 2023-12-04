@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,6 @@ import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
 
 import 'test_util.dart';
-
-class Account {
-  final String? issuer;
-  final String name;
-  final String secret;
-
-  const Account({
-    this.issuer,
-    this.name = '',
-    this.secret = 'abcdefghabcdefgh',
-  });
-
-  @override
-  String toString() => '$issuer/$name';
-}
 
 extension PIVFunctions on WidgetTester {
   /// Open the PIV Configuration

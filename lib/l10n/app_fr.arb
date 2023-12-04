@@ -136,6 +136,7 @@
 
     "@_app_configuration": {},
     "s_toggle_applications": "Changer les applications",
+    "s_toggle_interfaces": null,
     "l_min_one_interface": "Au moins une interface doit être activée",
     "s_reconfiguring_yk": "Reconfiguration de la YubiKey\u2026",
     "s_config_updated": "Configuration mise à jour",
