@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,6 @@ String generateRandomIssuer() {
 
 String generateRandomName() {
   return 'n${randomPadded()}';
-}
-
-String generateRandomSecret() {
-  final random = Random.secure();
-  return base64Encode(List.generate(10, (_) => random.nextInt(256)));
 }
 
 void main() {
@@ -305,8 +300,8 @@ void main() {
       var firstPassword = 'firstPassword';
       var secondPassword = 'secondPassword';
       var thirdPassword = 'thirdPassword';
-      appTest('Set first OATH password', (WidgetTester tester) async {
-        // await tester.resetOath();
+      appTest('Reset OATH', (WidgetTester tester) async {
+        await tester.resetOATH();
       });
       appTest('Set first OATH password', (WidgetTester tester) async {
         // Sets a password for OATH

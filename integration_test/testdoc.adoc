@@ -19,7 +19,10 @@ either be defined as an anvironment variable on execution, or in a CSV-file with
 
     $ /yubioath-flutter/integration_test/test_res/resources/approved_serial_numbers.csv
 
-This file is part of .gitignore, and should never be committed.
+This file is part of .gitignore, and should never be committed. If you do not wish to add serial
+numbers to a file like above, you can also initiate the test runs by expressing a dart-define:
+
+    $ flutter --dart-define=YA_TEST_APPROVED_KEY_SN=SN1,SN2,...,SNn test integration_test
 
 === Desktop
 Running the tests for the CI environment:
