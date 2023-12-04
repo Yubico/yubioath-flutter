@@ -57,6 +57,7 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
   final OathState? state;
   final List<OathCredential>? credentials;
   final CredentialData? credentialData;
+
   const OathAddAccountPage(
     this.devicePath,
     this.state, {
@@ -367,8 +368,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '',
+                        // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.business_outlined),
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
@@ -396,8 +397,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.person_outline),
                         labelText: l10n.s_account_name,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '',
+                        // Prevents dialog resizing when disabled
                         errorText: (byteLength(nameText) > nameMaxLength)
                             ? '' // needs empty string to render as error
                             : isUnique
@@ -468,6 +469,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       children: [
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
+                            key: keys.requireTouchFilterChip,
                             label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {
@@ -477,11 +479,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             },
                           ),
                         ChoiceFilterChip<OathType>(
+                          key: keys.oathTypeFilterChip,
                           items: OathType.values,
                           value: _oathType,
                           selected: _oathType != defaultOathType,
-                          itemBuilder: (value) =>
-                              Text(value.getDisplayName(l10n)),
+                          itemBuilder: (value) => Text(
+                              value.getDisplayName(l10n),
+                              key: value == OathType.totp
+                                  ? keys.oathTypeTotpFilterValue
+                                  : keys.oathTypeHotpFilterValue),
                           onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
@@ -491,10 +497,16 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                               : null,
                         ),
                         ChoiceFilterChip<HashAlgorithm>(
+                          key: keys.hashAlgorithmFilterChip,
                           items: hashAlgorithms,
                           value: _hashAlgorithm,
                           selected: _hashAlgorithm != defaultHashAlgorithm,
-                          itemBuilder: (value) => Text(value.displayName),
+                          itemBuilder: (value) => Text(value.displayName,
+                              key: value == HashAlgorithm.sha1
+                                  ? keys.hashAlgorithmSha1FilterValue
+                                  : value == HashAlgorithm.sha256
+                                      ? keys.hashAlgorithmSha256FilterValue
+                                      : keys.hashAlgorithmSha512FilterValue),
                           onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
@@ -505,6 +517,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         ),
                         if (_oathType == OathType.totp)
                           ChoiceFilterChip<int>(
+                            key: keys.periodFilterChip,
                             items: _periodValues,
                             value: int.tryParse(_periodController.text) ??
                                 defaultPeriod,
@@ -521,11 +534,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 : null,
                           ),
                         ChoiceFilterChip<int>(
+                          key: keys.digitsFilterChip,
                           items: _digitsValues,
                           value: _digits,
                           selected: _digits != defaultDigits,
                           itemBuilder: (value) =>
                               Text(l10n.s_num_digits(value)),
+                          // TODO: need to figure out how to add values for
+                          //    digits6FilterValue
+                          //    digits8FilterValue
                           onChanged: !_dataLoaded
                               ? (digits) {
                                   setState(() {

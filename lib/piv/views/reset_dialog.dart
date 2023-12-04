@@ -22,6 +22,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart';
 import '../state.dart';
 
 class ResetDialog extends ConsumerWidget {
@@ -35,6 +36,7 @@ class ResetDialog extends ConsumerWidget {
       title: Text(l10n.s_factory_reset),
       actions: [
         TextButton(
+          key: resetButton,
           onPressed: () async {
             await ref.read(pivStateProvider(devicePath).notifier).reset();
             await ref.read(withContextProvider)((context) async {

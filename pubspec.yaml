@@ -73,6 +73,8 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  test_res:
+    path: integration_test/test_res
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

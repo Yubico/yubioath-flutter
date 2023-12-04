@@ -22,6 +22,7 @@ import 'package:intl/intl.dart';
 import '../../app/message.dart';
 import '../../app/state.dart';
 import '../../widgets/tooltip_if_truncated.dart';
+import '../keys.dart';
 import '../models.dart';
 
 class CertInfoTable extends ConsumerWidget {
@@ -47,7 +48,7 @@ class CertInfoTable extends ConsumerWidget {
           textAlign: TextAlign.right,
         );
 
-    Widget body(String title, String value) => GestureDetector(
+    Widget body(String title, String value, Key key) => GestureDetector(
           onDoubleTap: () async {
             await clipboard.setText(value);
             if (!clipboard.platformGivesFeedback()) {
@@ -57,13 +58,13 @@ class CertInfoTable extends ConsumerWidget {
             }
           },
           child: TooltipIfTruncated(
+            key: key,
             text: value,
             style: subtitleStyle,
             tooltip: value.replaceAllMapped(
                 RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
           ),
         );
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,14 +85,19 @@ class CertInfoTable extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              body(l10n.s_subject, certInfo.subject),
-              body(l10n.s_issuer, certInfo.issuer),
-              body(l10n.s_serial, certInfo.serial),
-              body(l10n.s_certificate_fingerprint, certInfo.fingerprint),
-              body(l10n.s_valid_from,
-                  dateFormat.format(DateTime.parse(certInfo.notValidBefore))),
-              body(l10n.s_valid_to,
-                  dateFormat.format(DateTime.parse(certInfo.notValidAfter))),
+              body(l10n.s_subject, certInfo.subject, certInfoSubjectKey),
+              body(l10n.s_issuer, certInfo.issuer, certInfoIssuerKey),
+              body(l10n.s_serial, certInfo.serial, certInfoSerialKey),
+              body(l10n.s_certificate_fingerprint, certInfo.fingerprint,
+                  certInfoFingerprintKey),
+              body(
+                  l10n.s_valid_from,
+                  dateFormat.format(DateTime.parse(certInfo.notValidBefore)),
+                  certInfoValidFromKey),
+              body(
+                  l10n.s_valid_to,
+                  dateFormat.format(DateTime.parse(certInfo.notValidAfter)),
+                  certInfoValidToKey),
             ],
           ),
         ),

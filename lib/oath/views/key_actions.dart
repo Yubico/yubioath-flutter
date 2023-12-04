@@ -49,6 +49,7 @@ Widget oathBuildActions(
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
               feature: features.actionsAdd,
+              key: keys.addAccountAction,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first
