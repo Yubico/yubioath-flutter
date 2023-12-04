@@ -626,5 +626,11 @@
     "s_nfc_dialog_oath_failure": "OATH操作は失敗しました",
     "s_nfc_dialog_oath_add_multiple_accounts": "操作：複数アカウントの追加",
 
+    "@_ndef": {},
+    "p_ndef_set_otp": null,
+    "p_ndef_set_password": null,
+    "p_ndef_parse_failure": null,
+    "p_ndef_set_clip_failure": null,
+
     "@_eof": {}
 }

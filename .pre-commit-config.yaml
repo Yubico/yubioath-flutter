@@ -16,6 +16,12 @@ repos:
       language: script
       entry: arb_reformatter.py
       require_serial: true
+    - id: update-android-strings
+      name: update-android-strings
+      files: \.arb$
+      language: script
+      entry: update_android_strings.py
+      require_serial: true
 
 # Python
 - repo: local
