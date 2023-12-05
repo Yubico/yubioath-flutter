@@ -108,6 +108,18 @@ extension AppWidgetTester on WidgetTester {
   bool isDrawerOpened() =>
       hasDrawer() == false || scaffoldGlobalKey.currentState!.isDrawerOpen;
 
+  /// Tap a app button in the drawer
+  /// If the drawer is closed, it is opened first
+  Future<void> tapAppDrawerButton(Key appKey) async {
+    if (hasDrawer() && !isDrawerOpened()) {
+      await openDrawer();
+    }
+
+    var appButtonFinder = find.byKey(appKey).hitTestable();
+    await tap(appButtonFinder);
+    await longWait();
+  }
+
   /// Management screen
   Future<void> openManagementScreen() async {
     if (!isDrawerOpened()) {
@@ -242,9 +254,10 @@ void appTest(
   WidgetTesterCallback callback, {
   bool? skip,
   Map startUpParams = const {},
+  dynamic tags,
 }) {
-  testWidgets(description, (WidgetTester tester) async {
+  testWidgets(description, skip: skip, (WidgetTester tester) async {
     await tester.startUp(startUpParams);
     await callback(tester);
-  });
+  }, tags: tags);
 }

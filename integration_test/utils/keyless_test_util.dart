@@ -44,7 +44,8 @@ extension AppWidgetTester on WidgetTester {
     }
 
     if (evaluated.isEmpty) {
-      testLog(false, 'Failed to find ${f.evaluate} in $timeOutSec seconds.');
+      testLog(false,
+          'Found 0 ${f.describeMatch(Plurality.zero)} in $timeOutSec seconds.');
     }
 
     return f;
@@ -120,9 +121,10 @@ void appTestKeyless(
   WidgetTesterCallback callback, {
   bool? skip,
   Map startUpParams = const {},
+  dynamic tags,
 }) {
-  testWidgets(description, (WidgetTester tester) async {
+  testWidgets(description, skip: skip, (WidgetTester tester) async {
     await tester.startUp(startUpParams);
     await callback(tester);
-  });
+  }, tags: tags);
 }

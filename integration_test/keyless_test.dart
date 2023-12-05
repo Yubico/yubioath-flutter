@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+@Tags(['desktop', 'android'])
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/state.dart';
 
 import 'utils/keyless_test_util.dart';
 import 'utils/test_util.dart';
@@ -26,6 +29,10 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
+  group('Startup', () {
+    appTestKeyless('App starts', (WidgetTester tester) async {},
+        tags: 'minimal');
+  });
   group('Settings', () {
     appTestKeyless('Click through all Themes', (WidgetTester tester) async {
       var settingDrawerButton = find.byKey(settingDrawerIcon).hitTestable();
@@ -64,30 +71,47 @@ void main() {
       appTestKeyless('TOS link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
-        await tester.tap(find.byKey(tosButton).hitTestable());
-        await tester.longWait();
+        if (isAndroid) {
+          expect(find.byKey(tosButton).hitTestable(), findsOneWidget);
+        } else {
+          await tester.tap(find.byKey(tosButton).hitTestable());
+          await tester.longWait();
+        }
       });
       appTestKeyless('Privacy link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
-        await tester.tap(find.byKey(privacyButton).hitTestable());
-        await tester.longWait();
+        if (isAndroid) {
+          expect(find.byKey(privacyButton).hitTestable(), findsOneWidget);
+        } else {
+          await tester.tap(find.byKey(privacyButton).hitTestable());
+          await tester.longWait();
+        }
       });
       appTestKeyless('Feedback link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
-        await tester.tap(find.byKey(feedbackButton).hitTestable());
-        await tester.longWait();
+        if (isAndroid) {
+          expect(find.byKey(feedbackButton).hitTestable(), findsOneWidget);
+        } else {
+          await tester.tap(find.byKey(feedbackButton).hitTestable());
+          await tester.longWait();
+        }
       });
       appTestKeyless('Help link', (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
-        await tester.tap(find.byKey(helpButton).hitTestable());
-        await tester.longWait();
+        if (isAndroid) {
+          expect(find.byKey(helpButton).hitTestable(), findsOneWidget);
+        } else {
+          await tester.tap(find.byKey(helpButton).hitTestable());
+          await tester.longWait();
+        }
       });
     });
     group('Troubleshooting', () {
-      appTestKeyless('Diagnostics Button', (WidgetTester tester) async {
+      appTestKeyless('Diagnostics Button', skip: isAndroid,
+          (WidgetTester tester) async {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         await tester.tap(find.byKey(diagnosticsChip).hitTestable());

@@ -59,8 +59,10 @@ extension OathFunctions on WidgetTester {
     await longWait();
     await tap(find.byKey(keys.addAccountAction).hitTestable());
     await longWait();
-    await tap(find.byKey(keys.addAccountManuallyButton).hitTestable());
-    await longWait();
+    if (isDesktop) {
+      await tap(find.byKey(keys.addAccountManuallyButton).hitTestable());
+      await longWait();
+    }
   }
 
   Future<void> addAccount(Account a, {bool quiet = true}) async {
@@ -88,6 +90,10 @@ extension OathFunctions on WidgetTester {
     await tap(secretText);
     await enterText(secretText, a.secret);
     await shortWait();
+    if (isAndroid) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      await shortWait();
+    }
     if (a.touch != null && a.touch == true) {
       var requireTouchFilterChip =
           find.byKey(keys.requireTouchFilterChip).hitTestable();
