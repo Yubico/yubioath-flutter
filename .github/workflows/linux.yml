@@ -30,6 +30,7 @@ jobs:
         apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         ln -s `which python$PYVER_MINOR` /usr/local/bin/python
+        ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
         PYVER_TEMP=`/usr/local/bin/python --version`
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
