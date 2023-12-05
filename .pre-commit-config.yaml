@@ -19,7 +19,8 @@ repos:
     - id: update-android-strings
       name: update-android-strings
       files: \.arb$
-      language: script
+      language: python
+      language_version: python3.12
       entry: update_android_strings.py
       require_serial: true
 
