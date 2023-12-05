@@ -45,21 +45,21 @@ class OtpScreen extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(devicePath)).when(
         loading: () => MessagePage(
-              title: Text(l10n.s_otp),
+              title: Text(l10n.s_slots),
               graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) =>
-            AppFailurePage(title: Text(l10n.s_otp), cause: error),
+            AppFailurePage(title: Text(l10n.s_slots), cause: error),
         data: (otpState) {
           return AppPage(
-            title: Text(l10n.s_otp),
+            title: Text(l10n.s_slots),
             keyActionsBuilder: hasFeature(features.actions)
                 ? (context) =>
                     otpBuildActions(context, devicePath, otpState, ref)
                 : null,
             child: Column(children: [
-              ListTitle(l10n.s_otp_slots),
+              ListTitle(l10n.s_slots),
               ...otpState.slots.map((e) => registerOtpActions(devicePath, e,
                   ref: ref,
                   actions: {

@@ -54,8 +54,8 @@ enum Application {
   String getDisplayName(AppLocalizations l10n) => switch (this) {
         Application.oath => l10n.s_authenticator,
         Application.fido => l10n.s_webauthn,
-        Application.piv => l10n.s_piv,
-        Application.otp => l10n.s_otp,
+        Application.piv => l10n.s_certificates,
+        Application.otp => l10n.s_slots,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
       };
 

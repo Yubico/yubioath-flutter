@@ -46,18 +46,18 @@ class PivScreen extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(pivStateProvider(devicePath)).when(
           loading: () => MessagePage(
-            title: Text(l10n.s_piv),
+            title: Text(l10n.s_certificates),
             graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_piv),
+            title: Text(l10n.s_certificates),
             cause: error,
           ),
           data: (pivState) {
             final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
             return AppPage(
-              title: Text(l10n.s_piv),
+              title: Text(l10n.s_certificates),
               keyActionsBuilder: hasFeature(features.actions)
                   ? (context) =>
                       pivBuildActions(context, devicePath, pivState, ref)
