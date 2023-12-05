@@ -18,7 +18,7 @@
 
 import json
 import os
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 from os import path as p
 
 
