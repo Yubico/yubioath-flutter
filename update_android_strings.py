@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+"""Rebuild Android String resources from ARB files."""
+
 import json
 import os
 import xml.etree.cElementTree as ET
