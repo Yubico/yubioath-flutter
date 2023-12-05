@@ -10,6 +10,13 @@ repos:
       require_serial: true
 - repo: local
   hooks:
+    - id: show-env
+      name: show-env
+      language: script
+      always_run: true
+      entry: show_env.sh
+      require_serial: true
+      verbose: true
     - id: arb-reformatter
       name: reformat-strings
       files: \.arb$
@@ -20,7 +27,7 @@ repos:
       name: update-android-strings
       files: \.arb$
       language: script
-      entry: python3 --version && python3.12 --version && update_android_strings.py
+      entry: update_android_strings.py
       require_serial: true
 
 # Python
