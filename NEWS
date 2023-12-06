@@ -1,4 +1,4 @@
-* Version 6.3.1 (unreleased)
+* Version 6.3.1
  ** Add command line flags: --hide/--show, --log-file.
  ** Disable autocorrect in text fields.
  ** Improve UI for toggling USB interfaces on YubiKey <= 4.
