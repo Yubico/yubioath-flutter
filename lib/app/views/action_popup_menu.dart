@@ -58,10 +58,7 @@ PopupMenuItem _buildMenuItem(BuildContext context, ActionItem actionItem) {
       trailing: shortcut != null
           ? Opacity(
               opacity: 0.5,
-              child: Text(
-                shortcut,
-                textScaler: const TextScaler.linear(0.7),
-              ),
+              child: Text(shortcut),
             )
           : null,
     ),
