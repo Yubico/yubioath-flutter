@@ -68,6 +68,10 @@ Widget oathBuildActions(
                           final qrData = await qrScanner.scanQr();
                           await AndroidQrScanner.handleScannedData(
                               qrData, withContext, qrScanner, l10n);
+                        } else {
+                          // no QR scanner - enter data manually
+                          await AndroidQrScanner.showAccountManualEntryDialog(
+                              withContext, l10n);
                         }
                       } else {
                         await showBlurDialog(
