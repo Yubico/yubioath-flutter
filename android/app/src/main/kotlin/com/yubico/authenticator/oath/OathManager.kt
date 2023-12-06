@@ -396,7 +396,7 @@ class OathManager(
         logger.trace("Adding following accounts: {}", uris)
 
         addToAny = true
-        return useOathSessionNfc(OathActionDescription.AddMultipleAccounts) { session ->
+        return useOathSession(OathActionDescription.AddMultipleAccounts) { session ->
             var successCount = 0
             for (index in uris.indices) {
 
