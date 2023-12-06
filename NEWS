@@ -1,3 +1,15 @@
+* Version 6.3.1 (unreleased)
+ ** Add command line flags: --hide/--show, --log-file.
+ ** Disable autocorrect in text fields.
+ ** Improve UI for toggling USB interfaces on YubiKey <= 4.
+ ** OATH: Fix displaying of credentials with empty (but not null) issuer.
+ ** PIV: Fix "Save" button not updating when changing Management Key.
+ ** FIDO: Improved handling of forcePinChange.
+ ** Add keyboard shortcut to calcualte new code (Ctrl/Cmd + R).
+ ** Android: Support loading QR code from file.
+ ** Android: Add a "Do nothing" option to NFC tap.
+ ** Android: Improve handing of USB device removal.
+
 * Version 6.3.0 (released 2023-09-04)
  ** Add support for importing accounts through QR codes from Google Authenticator.
  ** Add community translations for French, Japanese, German and Polish languages.
