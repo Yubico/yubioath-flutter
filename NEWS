@@ -1,5 +1,5 @@
 * Version 6.3.1
- ** Add command line flags: --hide/--show, --log-file.
+ ** Add command line options: --hidden/--shown, --log-file FILE.
  ** Disable autocorrect in text fields.
  ** Improve UI for toggling USB interfaces on YubiKey <= 4.
  ** OATH: Fix displaying of credentials with empty (but not null) issuer.
