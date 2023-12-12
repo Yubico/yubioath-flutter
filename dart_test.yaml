@@ -1,0 +1,17 @@
+# define available tags
+tags:
+    # Tests which we want to run on desktop
+    desktop:
+
+    # Tests which we want to run on Android
+    android:
+
+    # Tests consuming quiet a lot of time
+    slow:
+
+    # Minimal tests
+    # quick verification that the framework is working
+    minimal:
+
+    # OATH tests
+    oath:

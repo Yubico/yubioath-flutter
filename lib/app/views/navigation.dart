@@ -146,6 +146,7 @@ class NavigationContent extends ConsumerWidget {
                 if (data != null) ...[
                   // Normal YubiKey Applications
                   ...availableApps.map((app) => NavigationItem(
+                        key: _getAppDrawerKey(app),
                         title: app.getDisplayName(l10n),
                         leading: app == currentApp
                             ? Icon(app._filledIcon)
@@ -188,6 +189,7 @@ class NavigationContent extends ConsumerWidget {
           // Non-YubiKey pages
           NavigationItem(
             leading: const Icon(Icons.settings_outlined),
+            key: settingDrawerIcon,
             title: l10n.s_settings,
             collapsed: !extended,
             onTap: () {
@@ -199,6 +201,7 @@ class NavigationContent extends ConsumerWidget {
           ),
           NavigationItem(
             leading: const Icon(Icons.help_outline),
+            key: helpDrawerIcon,
             title: l10n.s_help_and_about,
             collapsed: !extended,
             onTap: () {
@@ -212,4 +215,14 @@ class NavigationContent extends ConsumerWidget {
       ),
     );
   }
+
+  Key _getAppDrawerKey(Application app) => switch (app) {
+        Application.oath => oathAppDrawer,
+        Application.fido => fidoAppDrawer,
+        Application.otp => otpAppDrawer,
+        Application.piv => pivAppDrawer,
+        Application.hsmauth => hsmauthAppDrawer,
+        Application.management => managementAppDrawer,
+        Application.openpgp => openpgpAppDrawer,
+      };
 }

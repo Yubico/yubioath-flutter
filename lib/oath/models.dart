@@ -71,8 +71,14 @@ class OathCredential with _$OathCredential {
       int period,
       bool touchRequired) = _OathCredential;
 
-  factory OathCredential.fromJson(Map<String, dynamic> json) =>
-      _$OathCredentialFromJson(json);
+  factory OathCredential.fromJson(Map<String, dynamic> json) {
+    final value = _$OathCredentialFromJson(json);
+    // Replace empty issuer string with null
+    return switch (value.issuer) {
+      (String issuer) when issuer.isEmpty => value.copyWith(issuer: null),
+      _ => value,
+    };
+  }
 }
 
 @freezed

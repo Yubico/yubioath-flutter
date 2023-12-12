@@ -19,9 +19,14 @@ jobs:
         git diff --exit-code
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYVER }}
+
+    - name: Set up CocoaPods
+      uses: maxim-lobanov/setup-cocoapods@v1
+      with:
+        podfile-path: macos/Podfile.lock
 
     - name: Cache helper
       id: cache-helper

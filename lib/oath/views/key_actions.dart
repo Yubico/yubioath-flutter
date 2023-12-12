@@ -49,6 +49,7 @@ Widget oathBuildActions(
         ActionListSection(l10n.s_setup, children: [
           ActionListItem(
               feature: features.actionsAdd,
+              key: keys.addAccountAction,
               title: l10n.s_add_account,
               subtitle: used == null
                   ? l10n.l_unlock_first
@@ -67,6 +68,10 @@ Widget oathBuildActions(
                           final qrData = await qrScanner.scanQr();
                           await AndroidQrScanner.handleScannedData(
                               qrData, withContext, qrScanner, l10n);
+                        } else {
+                          // no QR scanner - enter data manually
+                          await AndroidQrScanner.showAccountManualEntryDialog(
+                              withContext, l10n);
                         }
                       } else {
                         await showBlurDialog(
