@@ -204,7 +204,8 @@ extension AppWidgetTester on WidgetTester {
 
     await openDrawer();
 
-    var deviceInfo = find.byKey(app_keys.deviceInfoListTile);
+    var deviceInfo =
+        await waitForFinder(find.byKey(app_keys.deviceInfoListTile));
     if (deviceInfo.evaluate().isNotEmpty) {
       ListTile lt = find
           .descendant(of: deviceInfo, matching: find.byType(ListTile))

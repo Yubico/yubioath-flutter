@@ -109,6 +109,10 @@ class MainPage extends ConsumerWidget {
                   // ignored - user cancelled
                   return;
                 }
+              } else {
+                // no QR scanner - enter data manually
+                await AndroidQrScanner.showAccountManualEntryDialog(
+                    withContext, l10n);
               }
             },
           ),
