@@ -626,5 +626,11 @@
     "s_nfc_dialog_oath_failure": "Échec de l'opération OATH",
     "s_nfc_dialog_oath_add_multiple_accounts": "Action: ajouter plusieurs comptes",
 
+    "@_ndef": {},
+    "p_ndef_set_otp": null,
+    "p_ndef_set_password": null,
+    "p_ndef_parse_failure": null,
+    "p_ndef_set_clip_failure": null,
+
     "@_eof": {}
 }

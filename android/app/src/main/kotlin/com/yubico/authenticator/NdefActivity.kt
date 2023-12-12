@@ -24,13 +24,12 @@ import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-
 import com.yubico.authenticator.ndef.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
-
 import org.slf4j.LoggerFactory
-
 import java.nio.charset.StandardCharsets
+import java.util.Locale
+
 
 typealias ResourceId = Int
 
@@ -66,8 +65,8 @@ class NdefActivity : Activity() {
                     compatUtil.until(Build.VERSION_CODES.TIRAMISU) {
                         showToast(
                             when (otpSlotContent.type) {
-                                OtpType.Otp -> R.string.otp_success_set_otp_to_clipboard
-                                OtpType.Password -> R.string.otp_success_set_password_to_clipboard
+                                OtpType.Otp -> R.string.p_ndef_set_otp
+                                OtpType.Password -> R.string.p_ndef_set_password
                             }, Toast.LENGTH_SHORT
                         )
                     }
@@ -77,16 +76,19 @@ class NdefActivity : Activity() {
                         illegalArgumentException.message ?: "Failure when handling YubiKey OTP",
                         illegalArgumentException
                     )
-                    showToast(R.string.otp_parse_failure, Toast.LENGTH_LONG)
+                    showToast(R.string.p_ndef_parse_failure, Toast.LENGTH_LONG)
                 } catch (_: UnsupportedOperationException) {
-                    showToast(R.string.otp_set_clip_failure, Toast.LENGTH_LONG)
+                    showToast(R.string.p_ndef_set_clip_failure, Toast.LENGTH_LONG)
                 }
             }
 
             if (appPreferences.openAppOnNfcTap) {
                 val mainAppIntent = Intent(this, MainActivity::class.java).apply {
                     // Pass the NFC Tag to the main Activity.
-                    putExtra(NfcAdapter.EXTRA_TAG, intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG))
+                    putExtra(
+                        NfcAdapter.EXTRA_TAG,
+                        intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+                    )
                 }
                 startActivity(mainAppIntent)
             }
@@ -96,7 +98,15 @@ class NdefActivity : Activity() {
     }
 
     private fun showToast(value: ResourceId, length: Int) {
-        Toast.makeText(this, value, length).show()
+        val context = if (appPreferences.communityTranslationsEnabled)
+            this
+        else {
+            // always use 'us' locale
+            val configuration = resources.configuration
+            configuration.setLocale(Locale.US)
+            createConfigurationContext(configuration)
+        }
+        Toast.makeText(context, value, length).show()
     }
 
     private fun parseOtpFromIntent(): OtpSlotValue {

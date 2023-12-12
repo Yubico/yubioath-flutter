@@ -626,5 +626,11 @@
     "s_nfc_dialog_oath_failure": "Operacja OATH nie powiodła się",
     "s_nfc_dialog_oath_add_multiple_accounts": "Działanie: dodawanie wielu kont",
 
+    "@_ndef": {},
+    "p_ndef_set_otp": "OTP zostało skopiowane do schowka.",
+    "p_ndef_set_password": "Hasło statyczne zostało skopiowane do schowka.",
+    "p_ndef_parse_failure": "Błąd czytania OTP z YubiKey.",
+    "p_ndef_set_clip_failure": "Błąd kopiowania OTP do schowka.",
+
     "@_eof": {}
 }

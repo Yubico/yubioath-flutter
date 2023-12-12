@@ -33,6 +33,9 @@ class AppPreferences(context: Context) {
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
+
+        const val PREF_ENABLE_COMMUNITY_TRANSLATIONS =
+            "flutter.APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS"
     }
 
     private val logger = LoggerFactory.getLogger(AppPreferences::class.java)
@@ -65,6 +68,9 @@ class AppPreferences(context: Context) {
 
     val openAppOnUsb: Boolean
         get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
+
+    val communityTranslationsEnabled: Boolean
+        get() = prefs.getBoolean(PREF_ENABLE_COMMUNITY_TRANSLATIONS, false)
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
         logger.debug("registering change listener")
