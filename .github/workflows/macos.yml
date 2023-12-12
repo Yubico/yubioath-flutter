@@ -23,6 +23,11 @@ jobs:
       with:
         python-version: ${{ env.PYVER }}
 
+    - name: Set up CocoaPods
+      uses: maxim-lobanov/setup-cocoapods@v1
+      with:
+        podfile-path: macos/Podfile.lock
+
     - name: Cache helper
       id: cache-helper
       uses: actions/cache@v3
