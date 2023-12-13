@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import 'dart:math';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/app/logging.dart';
-import 'package:yubico_authenticator/core/models.dart';
-import 'package:yubico_authenticator/core/state.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/widgets/choice_filter_chip.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
+import '../../core/state.dart';
+import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'overwrite_confirm_dialog.dart';
 
 final _log = Logger('otp.view.configure_yubiotp_dialog');

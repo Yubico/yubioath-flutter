@@ -67,21 +67,22 @@ class _$OtpStateCopyWithImpl<$Res, $Val extends OtpState>
 }
 
 /// @nodoc
-abstract class _$$_OtpStateCopyWith<$Res> implements $OtpStateCopyWith<$Res> {
-  factory _$$_OtpStateCopyWith(
-          _$_OtpState value, $Res Function(_$_OtpState) then) =
-      __$$_OtpStateCopyWithImpl<$Res>;
+abstract class _$$OtpStateImplCopyWith<$Res>
+    implements $OtpStateCopyWith<$Res> {
+  factory _$$OtpStateImplCopyWith(
+          _$OtpStateImpl value, $Res Function(_$OtpStateImpl) then) =
+      __$$OtpStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({bool slot1Configured, bool slot2Configured});
 }
 
 /// @nodoc
-class __$$_OtpStateCopyWithImpl<$Res>
-    extends _$OtpStateCopyWithImpl<$Res, _$_OtpState>
-    implements _$$_OtpStateCopyWith<$Res> {
-  __$$_OtpStateCopyWithImpl(
-      _$_OtpState _value, $Res Function(_$_OtpState) _then)
+class __$$OtpStateImplCopyWithImpl<$Res>
+    extends _$OtpStateCopyWithImpl<$Res, _$OtpStateImpl>
+    implements _$$OtpStateImplCopyWith<$Res> {
+  __$$OtpStateImplCopyWithImpl(
+      _$OtpStateImpl _value, $Res Function(_$OtpStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -90,7 +91,7 @@ class __$$_OtpStateCopyWithImpl<$Res>
     Object? slot1Configured = null,
     Object? slot2Configured = null,
   }) {
-    return _then(_$_OtpState(
+    return _then(_$OtpStateImpl(
       slot1Configured: null == slot1Configured
           ? _value.slot1Configured
           : slot1Configured // ignore: cast_nullable_to_non_nullable
@@ -105,12 +106,12 @@ class __$$_OtpStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_OtpState extends _OtpState {
-  _$_OtpState({required this.slot1Configured, required this.slot2Configured})
+class _$OtpStateImpl extends _OtpState {
+  _$OtpStateImpl({required this.slot1Configured, required this.slot2Configured})
       : super._();
 
-  factory _$_OtpState.fromJson(Map<String, dynamic> json) =>
-      _$$_OtpStateFromJson(json);
+  factory _$OtpStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OtpStateImplFromJson(json);
 
   @override
   final bool slot1Configured;
@@ -126,7 +127,7 @@ class _$_OtpState extends _OtpState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_OtpState &&
+            other is _$OtpStateImpl &&
             (identical(other.slot1Configured, slot1Configured) ||
                 other.slot1Configured == slot1Configured) &&
             (identical(other.slot2Configured, slot2Configured) ||
@@ -141,12 +142,12 @@ class _$_OtpState extends _OtpState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_OtpStateCopyWith<_$_OtpState> get copyWith =>
-      __$$_OtpStateCopyWithImpl<_$_OtpState>(this, _$identity);
+  _$$OtpStateImplCopyWith<_$OtpStateImpl> get copyWith =>
+      __$$OtpStateImplCopyWithImpl<_$OtpStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_OtpStateToJson(
+    return _$$OtpStateImplToJson(
       this,
     );
   }
@@ -155,10 +156,11 @@ class _$_OtpState extends _OtpState {
 abstract class _OtpState extends OtpState {
   factory _OtpState(
       {required final bool slot1Configured,
-      required final bool slot2Configured}) = _$_OtpState;
+      required final bool slot2Configured}) = _$OtpStateImpl;
   _OtpState._() : super._();
 
-  factory _OtpState.fromJson(Map<String, dynamic> json) = _$_OtpState.fromJson;
+  factory _OtpState.fromJson(Map<String, dynamic> json) =
+      _$OtpStateImpl.fromJson;
 
   @override
   bool get slot1Configured;
@@ -166,7 +168,7 @@ abstract class _OtpState extends OtpState {
   bool get slot2Configured;
   @override
   @JsonKey(ignore: true)
-  _$$_OtpStateCopyWith<_$_OtpState> get copyWith =>
+  _$$OtpStateImplCopyWith<_$OtpStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -217,20 +219,21 @@ class _$OtpSlotCopyWithImpl<$Res, $Val extends OtpSlot>
 }
 
 /// @nodoc
-abstract class _$$_OtpSlotCopyWith<$Res> implements $OtpSlotCopyWith<$Res> {
-  factory _$$_OtpSlotCopyWith(
-          _$_OtpSlot value, $Res Function(_$_OtpSlot) then) =
-      __$$_OtpSlotCopyWithImpl<$Res>;
+abstract class _$$OtpSlotImplCopyWith<$Res> implements $OtpSlotCopyWith<$Res> {
+  factory _$$OtpSlotImplCopyWith(
+          _$OtpSlotImpl value, $Res Function(_$OtpSlotImpl) then) =
+      __$$OtpSlotImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({SlotId slot, bool isConfigured});
 }
 
 /// @nodoc
-class __$$_OtpSlotCopyWithImpl<$Res>
-    extends _$OtpSlotCopyWithImpl<$Res, _$_OtpSlot>
-    implements _$$_OtpSlotCopyWith<$Res> {
-  __$$_OtpSlotCopyWithImpl(_$_OtpSlot _value, $Res Function(_$_OtpSlot) _then)
+class __$$OtpSlotImplCopyWithImpl<$Res>
+    extends _$OtpSlotCopyWithImpl<$Res, _$OtpSlotImpl>
+    implements _$$OtpSlotImplCopyWith<$Res> {
+  __$$OtpSlotImplCopyWithImpl(
+      _$OtpSlotImpl _value, $Res Function(_$OtpSlotImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -239,7 +242,7 @@ class __$$_OtpSlotCopyWithImpl<$Res>
     Object? slot = null,
     Object? isConfigured = null,
   }) {
-    return _then(_$_OtpSlot(
+    return _then(_$OtpSlotImpl(
       slot: null == slot
           ? _value.slot
           : slot // ignore: cast_nullable_to_non_nullable
@@ -254,8 +257,8 @@ class __$$_OtpSlotCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_OtpSlot implements _OtpSlot {
-  _$_OtpSlot({required this.slot, required this.isConfigured});
+class _$OtpSlotImpl implements _OtpSlot {
+  _$OtpSlotImpl({required this.slot, required this.isConfigured});
 
   @override
   final SlotId slot;
@@ -271,7 +274,7 @@ class _$_OtpSlot implements _OtpSlot {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_OtpSlot &&
+            other is _$OtpSlotImpl &&
             (identical(other.slot, slot) || other.slot == slot) &&
             (identical(other.isConfigured, isConfigured) ||
                 other.isConfigured == isConfigured));
@@ -283,14 +286,14 @@ class _$_OtpSlot implements _OtpSlot {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_OtpSlotCopyWith<_$_OtpSlot> get copyWith =>
-      __$$_OtpSlotCopyWithImpl<_$_OtpSlot>(this, _$identity);
+  _$$OtpSlotImplCopyWith<_$OtpSlotImpl> get copyWith =>
+      __$$OtpSlotImplCopyWithImpl<_$OtpSlotImpl>(this, _$identity);
 }
 
 abstract class _OtpSlot implements OtpSlot {
   factory _OtpSlot(
       {required final SlotId slot,
-      required final bool isConfigured}) = _$_OtpSlot;
+      required final bool isConfigured}) = _$OtpSlotImpl;
 
   @override
   SlotId get slot;
@@ -298,7 +301,7 @@ abstract class _OtpSlot implements OtpSlot {
   bool get isConfigured;
   @override
   @JsonKey(ignore: true)
-  _$$_OtpSlotCopyWith<_$_OtpSlot> get copyWith =>
+  _$$OtpSlotImplCopyWith<_$OtpSlotImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -364,24 +367,25 @@ class _$SlotConfigurationOptionsCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_SlotConfigurationOptionsCopyWith<$Res>
+abstract class _$$SlotConfigurationOptionsImplCopyWith<$Res>
     implements $SlotConfigurationOptionsCopyWith<$Res> {
-  factory _$$_SlotConfigurationOptionsCopyWith(
-          _$_SlotConfigurationOptions value,
-          $Res Function(_$_SlotConfigurationOptions) then) =
-      __$$_SlotConfigurationOptionsCopyWithImpl<$Res>;
+  factory _$$SlotConfigurationOptionsImplCopyWith(
+          _$SlotConfigurationOptionsImpl value,
+          $Res Function(_$SlotConfigurationOptionsImpl) then) =
+      __$$SlotConfigurationOptionsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({bool? digits8, bool? requireTouch, bool? appendCr});
 }
 
 /// @nodoc
-class __$$_SlotConfigurationOptionsCopyWithImpl<$Res>
+class __$$SlotConfigurationOptionsImplCopyWithImpl<$Res>
     extends _$SlotConfigurationOptionsCopyWithImpl<$Res,
-        _$_SlotConfigurationOptions>
-    implements _$$_SlotConfigurationOptionsCopyWith<$Res> {
-  __$$_SlotConfigurationOptionsCopyWithImpl(_$_SlotConfigurationOptions _value,
-      $Res Function(_$_SlotConfigurationOptions) _then)
+        _$SlotConfigurationOptionsImpl>
+    implements _$$SlotConfigurationOptionsImplCopyWith<$Res> {
+  __$$SlotConfigurationOptionsImplCopyWithImpl(
+      _$SlotConfigurationOptionsImpl _value,
+      $Res Function(_$SlotConfigurationOptionsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -391,7 +395,7 @@ class __$$_SlotConfigurationOptionsCopyWithImpl<$Res>
     Object? requireTouch = freezed,
     Object? appendCr = freezed,
   }) {
-    return _then(_$_SlotConfigurationOptions(
+    return _then(_$SlotConfigurationOptionsImpl(
       digits8: freezed == digits8
           ? _value.digits8
           : digits8 // ignore: cast_nullable_to_non_nullable
@@ -411,11 +415,12 @@ class __$$_SlotConfigurationOptionsCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_SlotConfigurationOptions implements _SlotConfigurationOptions {
-  _$_SlotConfigurationOptions({this.digits8, this.requireTouch, this.appendCr});
+class _$SlotConfigurationOptionsImpl implements _SlotConfigurationOptions {
+  _$SlotConfigurationOptionsImpl(
+      {this.digits8, this.requireTouch, this.appendCr});
 
-  factory _$_SlotConfigurationOptions.fromJson(Map<String, dynamic> json) =>
-      _$$_SlotConfigurationOptionsFromJson(json);
+  factory _$SlotConfigurationOptionsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SlotConfigurationOptionsImplFromJson(json);
 
   @override
   final bool? digits8;
@@ -433,7 +438,7 @@ class _$_SlotConfigurationOptions implements _SlotConfigurationOptions {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SlotConfigurationOptions &&
+            other is _$SlotConfigurationOptionsImpl &&
             (identical(other.digits8, digits8) || other.digits8 == digits8) &&
             (identical(other.requireTouch, requireTouch) ||
                 other.requireTouch == requireTouch) &&
@@ -448,13 +453,13 @@ class _$_SlotConfigurationOptions implements _SlotConfigurationOptions {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SlotConfigurationOptionsCopyWith<_$_SlotConfigurationOptions>
-      get copyWith => __$$_SlotConfigurationOptionsCopyWithImpl<
-          _$_SlotConfigurationOptions>(this, _$identity);
+  _$$SlotConfigurationOptionsImplCopyWith<_$SlotConfigurationOptionsImpl>
+      get copyWith => __$$SlotConfigurationOptionsImplCopyWithImpl<
+          _$SlotConfigurationOptionsImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SlotConfigurationOptionsToJson(
+    return _$$SlotConfigurationOptionsImplToJson(
       this,
     );
   }
@@ -464,10 +469,10 @@ abstract class _SlotConfigurationOptions implements SlotConfigurationOptions {
   factory _SlotConfigurationOptions(
       {final bool? digits8,
       final bool? requireTouch,
-      final bool? appendCr}) = _$_SlotConfigurationOptions;
+      final bool? appendCr}) = _$SlotConfigurationOptionsImpl;
 
   factory _SlotConfigurationOptions.fromJson(Map<String, dynamic> json) =
-      _$_SlotConfigurationOptions.fromJson;
+      _$SlotConfigurationOptionsImpl.fromJson;
 
   @override
   bool? get digits8;
@@ -477,7 +482,7 @@ abstract class _SlotConfigurationOptions implements SlotConfigurationOptions {
   bool? get appendCr;
   @override
   @JsonKey(ignore: true)
-  _$$_SlotConfigurationOptionsCopyWith<_$_SlotConfigurationOptions>
+  _$$SlotConfigurationOptionsImplCopyWith<_$SlotConfigurationOptionsImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -619,11 +624,12 @@ class _$SlotConfigurationCopyWithImpl<$Res, $Val extends SlotConfiguration>
 }
 
 /// @nodoc
-abstract class _$$_SlotConfigurationHotpCopyWith<$Res>
+abstract class _$$SlotConfigurationHotpImplCopyWith<$Res>
     implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$_SlotConfigurationHotpCopyWith(_$_SlotConfigurationHotp value,
-          $Res Function(_$_SlotConfigurationHotp) then) =
-      __$$_SlotConfigurationHotpCopyWithImpl<$Res>;
+  factory _$$SlotConfigurationHotpImplCopyWith(
+          _$SlotConfigurationHotpImpl value,
+          $Res Function(_$SlotConfigurationHotpImpl) then) =
+      __$$SlotConfigurationHotpImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String key, SlotConfigurationOptions? options});
@@ -633,11 +639,11 @@ abstract class _$$_SlotConfigurationHotpCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SlotConfigurationHotpCopyWithImpl<$Res>
-    extends _$SlotConfigurationCopyWithImpl<$Res, _$_SlotConfigurationHotp>
-    implements _$$_SlotConfigurationHotpCopyWith<$Res> {
-  __$$_SlotConfigurationHotpCopyWithImpl(_$_SlotConfigurationHotp _value,
-      $Res Function(_$_SlotConfigurationHotp) _then)
+class __$$SlotConfigurationHotpImplCopyWithImpl<$Res>
+    extends _$SlotConfigurationCopyWithImpl<$Res, _$SlotConfigurationHotpImpl>
+    implements _$$SlotConfigurationHotpImplCopyWith<$Res> {
+  __$$SlotConfigurationHotpImplCopyWithImpl(_$SlotConfigurationHotpImpl _value,
+      $Res Function(_$SlotConfigurationHotpImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -646,7 +652,7 @@ class __$$_SlotConfigurationHotpCopyWithImpl<$Res>
     Object? key = null,
     Object? options = freezed,
   }) {
-    return _then(_$_SlotConfigurationHotp(
+    return _then(_$SlotConfigurationHotpImpl(
       key: null == key
           ? _value.key
           : key // ignore: cast_nullable_to_non_nullable
@@ -662,14 +668,14 @@ class __$$_SlotConfigurationHotpCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$_SlotConfigurationHotp extends _SlotConfigurationHotp {
-  const _$_SlotConfigurationHotp(
+class _$SlotConfigurationHotpImpl extends _SlotConfigurationHotp {
+  const _$SlotConfigurationHotpImpl(
       {required this.key, this.options, final String? $type})
       : $type = $type ?? 'hotp',
         super._();
 
-  factory _$_SlotConfigurationHotp.fromJson(Map<String, dynamic> json) =>
-      _$$_SlotConfigurationHotpFromJson(json);
+  factory _$SlotConfigurationHotpImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SlotConfigurationHotpImplFromJson(json);
 
   @override
   final String key;
@@ -688,7 +694,7 @@ class _$_SlotConfigurationHotp extends _SlotConfigurationHotp {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SlotConfigurationHotp &&
+            other is _$SlotConfigurationHotpImpl &&
             (identical(other.key, key) || other.key == key) &&
             (identical(other.options, options) || other.options == options));
   }
@@ -700,9 +706,9 @@ class _$_SlotConfigurationHotp extends _SlotConfigurationHotp {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SlotConfigurationHotpCopyWith<_$_SlotConfigurationHotp> get copyWith =>
-      __$$_SlotConfigurationHotpCopyWithImpl<_$_SlotConfigurationHotp>(
-          this, _$identity);
+  _$$SlotConfigurationHotpImplCopyWith<_$SlotConfigurationHotpImpl>
+      get copyWith => __$$SlotConfigurationHotpImplCopyWithImpl<
+          _$SlotConfigurationHotpImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -794,7 +800,7 @@ class _$_SlotConfigurationHotp extends _SlotConfigurationHotp {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SlotConfigurationHotpToJson(
+    return _$$SlotConfigurationHotpImplToJson(
       this,
     );
   }
@@ -803,28 +809,28 @@ class _$_SlotConfigurationHotp extends _SlotConfigurationHotp {
 abstract class _SlotConfigurationHotp extends SlotConfiguration {
   const factory _SlotConfigurationHotp(
       {required final String key,
-      final SlotConfigurationOptions? options}) = _$_SlotConfigurationHotp;
+      final SlotConfigurationOptions? options}) = _$SlotConfigurationHotpImpl;
   const _SlotConfigurationHotp._() : super._();
 
   factory _SlotConfigurationHotp.fromJson(Map<String, dynamic> json) =
-      _$_SlotConfigurationHotp.fromJson;
+      _$SlotConfigurationHotpImpl.fromJson;
 
   String get key;
   @override
   SlotConfigurationOptions? get options;
   @override
   @JsonKey(ignore: true)
-  _$$_SlotConfigurationHotpCopyWith<_$_SlotConfigurationHotp> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$SlotConfigurationHotpImplCopyWith<_$SlotConfigurationHotpImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$_SlotConfigurationHmacSha1CopyWith<$Res>
+abstract class _$$SlotConfigurationHmacSha1ImplCopyWith<$Res>
     implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$_SlotConfigurationHmacSha1CopyWith(
-          _$_SlotConfigurationHmacSha1 value,
-          $Res Function(_$_SlotConfigurationHmacSha1) then) =
-      __$$_SlotConfigurationHmacSha1CopyWithImpl<$Res>;
+  factory _$$SlotConfigurationHmacSha1ImplCopyWith(
+          _$SlotConfigurationHmacSha1Impl value,
+          $Res Function(_$SlotConfigurationHmacSha1Impl) then) =
+      __$$SlotConfigurationHmacSha1ImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String key, SlotConfigurationOptions? options});
@@ -834,12 +840,13 @@ abstract class _$$_SlotConfigurationHmacSha1CopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SlotConfigurationHmacSha1CopyWithImpl<$Res>
-    extends _$SlotConfigurationCopyWithImpl<$Res, _$_SlotConfigurationHmacSha1>
-    implements _$$_SlotConfigurationHmacSha1CopyWith<$Res> {
-  __$$_SlotConfigurationHmacSha1CopyWithImpl(
-      _$_SlotConfigurationHmacSha1 _value,
-      $Res Function(_$_SlotConfigurationHmacSha1) _then)
+class __$$SlotConfigurationHmacSha1ImplCopyWithImpl<$Res>
+    extends _$SlotConfigurationCopyWithImpl<$Res,
+        _$SlotConfigurationHmacSha1Impl>
+    implements _$$SlotConfigurationHmacSha1ImplCopyWith<$Res> {
+  __$$SlotConfigurationHmacSha1ImplCopyWithImpl(
+      _$SlotConfigurationHmacSha1Impl _value,
+      $Res Function(_$SlotConfigurationHmacSha1Impl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -848,7 +855,7 @@ class __$$_SlotConfigurationHmacSha1CopyWithImpl<$Res>
     Object? key = null,
     Object? options = freezed,
   }) {
-    return _then(_$_SlotConfigurationHmacSha1(
+    return _then(_$SlotConfigurationHmacSha1Impl(
       key: null == key
           ? _value.key
           : key // ignore: cast_nullable_to_non_nullable
@@ -864,14 +871,14 @@ class __$$_SlotConfigurationHmacSha1CopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$_SlotConfigurationHmacSha1 extends _SlotConfigurationHmacSha1 {
-  const _$_SlotConfigurationHmacSha1(
+class _$SlotConfigurationHmacSha1Impl extends _SlotConfigurationHmacSha1 {
+  const _$SlotConfigurationHmacSha1Impl(
       {required this.key, this.options, final String? $type})
       : $type = $type ?? 'hmac_sha1',
         super._();
 
-  factory _$_SlotConfigurationHmacSha1.fromJson(Map<String, dynamic> json) =>
-      _$$_SlotConfigurationHmacSha1FromJson(json);
+  factory _$SlotConfigurationHmacSha1Impl.fromJson(Map<String, dynamic> json) =>
+      _$$SlotConfigurationHmacSha1ImplFromJson(json);
 
   @override
   final String key;
@@ -890,7 +897,7 @@ class _$_SlotConfigurationHmacSha1 extends _SlotConfigurationHmacSha1 {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SlotConfigurationHmacSha1 &&
+            other is _$SlotConfigurationHmacSha1Impl &&
             (identical(other.key, key) || other.key == key) &&
             (identical(other.options, options) || other.options == options));
   }
@@ -902,9 +909,9 @@ class _$_SlotConfigurationHmacSha1 extends _SlotConfigurationHmacSha1 {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SlotConfigurationHmacSha1CopyWith<_$_SlotConfigurationHmacSha1>
-      get copyWith => __$$_SlotConfigurationHmacSha1CopyWithImpl<
-          _$_SlotConfigurationHmacSha1>(this, _$identity);
+  _$$SlotConfigurationHmacSha1ImplCopyWith<_$SlotConfigurationHmacSha1Impl>
+      get copyWith => __$$SlotConfigurationHmacSha1ImplCopyWithImpl<
+          _$SlotConfigurationHmacSha1Impl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -996,7 +1003,7 @@ class _$_SlotConfigurationHmacSha1 extends _SlotConfigurationHmacSha1 {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SlotConfigurationHmacSha1ToJson(
+    return _$$SlotConfigurationHmacSha1ImplToJson(
       this,
     );
   }
@@ -1004,29 +1011,30 @@ class _$_SlotConfigurationHmacSha1 extends _SlotConfigurationHmacSha1 {
 
 abstract class _SlotConfigurationHmacSha1 extends SlotConfiguration {
   const factory _SlotConfigurationHmacSha1(
-      {required final String key,
-      final SlotConfigurationOptions? options}) = _$_SlotConfigurationHmacSha1;
+          {required final String key,
+          final SlotConfigurationOptions? options}) =
+      _$SlotConfigurationHmacSha1Impl;
   const _SlotConfigurationHmacSha1._() : super._();
 
   factory _SlotConfigurationHmacSha1.fromJson(Map<String, dynamic> json) =
-      _$_SlotConfigurationHmacSha1.fromJson;
+      _$SlotConfigurationHmacSha1Impl.fromJson;
 
   String get key;
   @override
   SlotConfigurationOptions? get options;
   @override
   @JsonKey(ignore: true)
-  _$$_SlotConfigurationHmacSha1CopyWith<_$_SlotConfigurationHmacSha1>
+  _$$SlotConfigurationHmacSha1ImplCopyWith<_$SlotConfigurationHmacSha1Impl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$_SlotConfigurationStaticPasswordCopyWith<$Res>
+abstract class _$$SlotConfigurationStaticPasswordImplCopyWith<$Res>
     implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$_SlotConfigurationStaticPasswordCopyWith(
-          _$_SlotConfigurationStaticPassword value,
-          $Res Function(_$_SlotConfigurationStaticPassword) then) =
-      __$$_SlotConfigurationStaticPasswordCopyWithImpl<$Res>;
+  factory _$$SlotConfigurationStaticPasswordImplCopyWith(
+          _$SlotConfigurationStaticPasswordImpl value,
+          $Res Function(_$SlotConfigurationStaticPasswordImpl) then) =
+      __$$SlotConfigurationStaticPasswordImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1039,13 +1047,13 @@ abstract class _$$_SlotConfigurationStaticPasswordCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SlotConfigurationStaticPasswordCopyWithImpl<$Res>
+class __$$SlotConfigurationStaticPasswordImplCopyWithImpl<$Res>
     extends _$SlotConfigurationCopyWithImpl<$Res,
-        _$_SlotConfigurationStaticPassword>
-    implements _$$_SlotConfigurationStaticPasswordCopyWith<$Res> {
-  __$$_SlotConfigurationStaticPasswordCopyWithImpl(
-      _$_SlotConfigurationStaticPassword _value,
-      $Res Function(_$_SlotConfigurationStaticPassword) _then)
+        _$SlotConfigurationStaticPasswordImpl>
+    implements _$$SlotConfigurationStaticPasswordImplCopyWith<$Res> {
+  __$$SlotConfigurationStaticPasswordImplCopyWithImpl(
+      _$SlotConfigurationStaticPasswordImpl _value,
+      $Res Function(_$SlotConfigurationStaticPasswordImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1055,7 +1063,7 @@ class __$$_SlotConfigurationStaticPasswordCopyWithImpl<$Res>
     Object? keyboardLayout = null,
     Object? options = freezed,
   }) {
-    return _then(_$_SlotConfigurationStaticPassword(
+    return _then(_$SlotConfigurationStaticPasswordImpl(
       password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
@@ -1075,9 +1083,9 @@ class __$$_SlotConfigurationStaticPasswordCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$_SlotConfigurationStaticPassword
+class _$SlotConfigurationStaticPasswordImpl
     extends _SlotConfigurationStaticPassword {
-  const _$_SlotConfigurationStaticPassword(
+  const _$SlotConfigurationStaticPasswordImpl(
       {required this.password,
       required this.keyboardLayout,
       this.options,
@@ -1085,9 +1093,9 @@ class _$_SlotConfigurationStaticPassword
       : $type = $type ?? 'static_password',
         super._();
 
-  factory _$_SlotConfigurationStaticPassword.fromJson(
+  factory _$SlotConfigurationStaticPasswordImpl.fromJson(
           Map<String, dynamic> json) =>
-      _$$_SlotConfigurationStaticPasswordFromJson(json);
+      _$$SlotConfigurationStaticPasswordImplFromJson(json);
 
   @override
   final String password;
@@ -1108,7 +1116,7 @@ class _$_SlotConfigurationStaticPassword
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SlotConfigurationStaticPassword &&
+            other is _$SlotConfigurationStaticPasswordImpl &&
             (identical(other.password, password) ||
                 other.password == password) &&
             (identical(other.keyboardLayout, keyboardLayout) ||
@@ -1124,10 +1132,10 @@ class _$_SlotConfigurationStaticPassword
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SlotConfigurationStaticPasswordCopyWith<
-          _$_SlotConfigurationStaticPassword>
-      get copyWith => __$$_SlotConfigurationStaticPasswordCopyWithImpl<
-          _$_SlotConfigurationStaticPassword>(this, _$identity);
+  _$$SlotConfigurationStaticPasswordImplCopyWith<
+          _$SlotConfigurationStaticPasswordImpl>
+      get copyWith => __$$SlotConfigurationStaticPasswordImplCopyWithImpl<
+          _$SlotConfigurationStaticPasswordImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1219,7 +1227,7 @@ class _$_SlotConfigurationStaticPassword
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SlotConfigurationStaticPasswordToJson(
+    return _$$SlotConfigurationStaticPasswordImplToJson(
       this,
     );
   }
@@ -1230,11 +1238,11 @@ abstract class _SlotConfigurationStaticPassword extends SlotConfiguration {
           {required final String password,
           required final String keyboardLayout,
           final SlotConfigurationOptions? options}) =
-      _$_SlotConfigurationStaticPassword;
+      _$SlotConfigurationStaticPasswordImpl;
   const _SlotConfigurationStaticPassword._() : super._();
 
   factory _SlotConfigurationStaticPassword.fromJson(Map<String, dynamic> json) =
-      _$_SlotConfigurationStaticPassword.fromJson;
+      _$SlotConfigurationStaticPasswordImpl.fromJson;
 
   String get password;
   String get keyboardLayout;
@@ -1242,18 +1250,18 @@ abstract class _SlotConfigurationStaticPassword extends SlotConfiguration {
   SlotConfigurationOptions? get options;
   @override
   @JsonKey(ignore: true)
-  _$$_SlotConfigurationStaticPasswordCopyWith<
-          _$_SlotConfigurationStaticPassword>
+  _$$SlotConfigurationStaticPasswordImplCopyWith<
+          _$SlotConfigurationStaticPasswordImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$_SlotConfigurationYubiOtpCopyWith<$Res>
+abstract class _$$SlotConfigurationYubiOtpImplCopyWith<$Res>
     implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$_SlotConfigurationYubiOtpCopyWith(
-          _$_SlotConfigurationYubiOtp value,
-          $Res Function(_$_SlotConfigurationYubiOtp) then) =
-      __$$_SlotConfigurationYubiOtpCopyWithImpl<$Res>;
+  factory _$$SlotConfigurationYubiOtpImplCopyWith(
+          _$SlotConfigurationYubiOtpImpl value,
+          $Res Function(_$SlotConfigurationYubiOtpImpl) then) =
+      __$$SlotConfigurationYubiOtpImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1267,11 +1275,13 @@ abstract class _$$_SlotConfigurationYubiOtpCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SlotConfigurationYubiOtpCopyWithImpl<$Res>
-    extends _$SlotConfigurationCopyWithImpl<$Res, _$_SlotConfigurationYubiOtp>
-    implements _$$_SlotConfigurationYubiOtpCopyWith<$Res> {
-  __$$_SlotConfigurationYubiOtpCopyWithImpl(_$_SlotConfigurationYubiOtp _value,
-      $Res Function(_$_SlotConfigurationYubiOtp) _then)
+class __$$SlotConfigurationYubiOtpImplCopyWithImpl<$Res>
+    extends _$SlotConfigurationCopyWithImpl<$Res,
+        _$SlotConfigurationYubiOtpImpl>
+    implements _$$SlotConfigurationYubiOtpImplCopyWith<$Res> {
+  __$$SlotConfigurationYubiOtpImplCopyWithImpl(
+      _$SlotConfigurationYubiOtpImpl _value,
+      $Res Function(_$SlotConfigurationYubiOtpImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1282,7 +1292,7 @@ class __$$_SlotConfigurationYubiOtpCopyWithImpl<$Res>
     Object? key = null,
     Object? options = freezed,
   }) {
-    return _then(_$_SlotConfigurationYubiOtp(
+    return _then(_$SlotConfigurationYubiOtpImpl(
       publicId: null == publicId
           ? _value.publicId
           : publicId // ignore: cast_nullable_to_non_nullable
@@ -1306,8 +1316,8 @@ class __$$_SlotConfigurationYubiOtpCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$_SlotConfigurationYubiOtp extends _SlotConfigurationYubiOtp {
-  const _$_SlotConfigurationYubiOtp(
+class _$SlotConfigurationYubiOtpImpl extends _SlotConfigurationYubiOtp {
+  const _$SlotConfigurationYubiOtpImpl(
       {required this.publicId,
       required this.privateId,
       required this.key,
@@ -1316,8 +1326,8 @@ class _$_SlotConfigurationYubiOtp extends _SlotConfigurationYubiOtp {
       : $type = $type ?? 'yubiotp',
         super._();
 
-  factory _$_SlotConfigurationYubiOtp.fromJson(Map<String, dynamic> json) =>
-      _$$_SlotConfigurationYubiOtpFromJson(json);
+  factory _$SlotConfigurationYubiOtpImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SlotConfigurationYubiOtpImplFromJson(json);
 
   @override
   final String publicId;
@@ -1340,7 +1350,7 @@ class _$_SlotConfigurationYubiOtp extends _SlotConfigurationYubiOtp {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SlotConfigurationYubiOtp &&
+            other is _$SlotConfigurationYubiOtpImpl &&
             (identical(other.publicId, publicId) ||
                 other.publicId == publicId) &&
             (identical(other.privateId, privateId) ||
@@ -1357,9 +1367,9 @@ class _$_SlotConfigurationYubiOtp extends _SlotConfigurationYubiOtp {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SlotConfigurationYubiOtpCopyWith<_$_SlotConfigurationYubiOtp>
-      get copyWith => __$$_SlotConfigurationYubiOtpCopyWithImpl<
-          _$_SlotConfigurationYubiOtp>(this, _$identity);
+  _$$SlotConfigurationYubiOtpImplCopyWith<_$SlotConfigurationYubiOtpImpl>
+      get copyWith => __$$SlotConfigurationYubiOtpImplCopyWithImpl<
+          _$SlotConfigurationYubiOtpImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1451,7 +1461,7 @@ class _$_SlotConfigurationYubiOtp extends _SlotConfigurationYubiOtp {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SlotConfigurationYubiOtpToJson(
+    return _$$SlotConfigurationYubiOtpImplToJson(
       this,
     );
   }
@@ -1459,14 +1469,15 @@ class _$_SlotConfigurationYubiOtp extends _SlotConfigurationYubiOtp {
 
 abstract class _SlotConfigurationYubiOtp extends SlotConfiguration {
   const factory _SlotConfigurationYubiOtp(
-      {required final String publicId,
-      required final String privateId,
-      required final String key,
-      final SlotConfigurationOptions? options}) = _$_SlotConfigurationYubiOtp;
+          {required final String publicId,
+          required final String privateId,
+          required final String key,
+          final SlotConfigurationOptions? options}) =
+      _$SlotConfigurationYubiOtpImpl;
   const _SlotConfigurationYubiOtp._() : super._();
 
   factory _SlotConfigurationYubiOtp.fromJson(Map<String, dynamic> json) =
-      _$_SlotConfigurationYubiOtp.fromJson;
+      _$SlotConfigurationYubiOtpImpl.fromJson;
 
   String get publicId;
   String get privateId;
@@ -1475,6 +1486,6 @@ abstract class _SlotConfigurationYubiOtp extends SlotConfiguration {
   SlotConfigurationOptions? get options;
   @override
   @JsonKey(ignore: true)
-  _$$_SlotConfigurationYubiOtpCopyWith<_$_SlotConfigurationYubiOtp>
+  _$$SlotConfigurationYubiOtpImplCopyWith<_$SlotConfigurationYubiOtpImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

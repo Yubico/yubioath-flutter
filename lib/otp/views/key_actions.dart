@@ -15,16 +15,16 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
-import '../models.dart';
-import '../keys.dart' as keys;
+import '../../app/views/fs_dialog.dart';
 import '../features.dart' as features;
+import '../keys.dart' as keys;
+import '../models.dart';
 import 'swap_slots_dialog.dart';
 
 Widget otpBuildActions(BuildContext context, DevicePath devicePath,

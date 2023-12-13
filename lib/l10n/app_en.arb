@@ -614,7 +614,6 @@
     "l_oath_application_reset": "OATH application reset",
     "s_reset_fido": "Reset FIDO",
     "l_fido_app_reset": "FIDO application reset",
-    "l_press_reset_to_begin": "Press reset to begin\u2026",
     "l_reset_failed": "Error performing reset: {message}",
     "@l_reset_failed": {
         "placeholders": {

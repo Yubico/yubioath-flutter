@@ -19,11 +19,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/core/models.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';

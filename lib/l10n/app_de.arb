@@ -61,8 +61,9 @@
     "s_manage": "Verwalten",
     "s_setup": "Einrichten",
     "s_settings": "Einstellungen",
-    "s_piv": null,
+    "s_certificates": null,
     "s_webauthn": "WebAuthn",
+    "s_slots": null,
     "s_help_and_about": "Hilfe und Über",
     "s_help_and_feedback": "Hilfe und Feedback",
     "s_send_feedback": "Senden Sie uns Feedback",
@@ -78,6 +79,14 @@
     "s_hide_secret_key": null,
     "s_private_key": null,
     "s_invalid_length": "Ungültige Länge",
+    "s_invalid_format": null,
+    "l_invalid_format_allowed_chars": null,
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {}
+        }
+    },
+    "l_invalid_keyboard_character": null,
     "s_require_touch": "Berührung ist erforderlich",
     "q_have_account_info": "Haben Sie Konto-Informationen?",
     "s_run_diagnostics": "Diagnose ausführen",
@@ -189,6 +198,8 @@
     "s_change_puk": null,
     "s_show_pin": null,
     "s_hide_pin": null,
+    "s_show_puk": null,
+    "s_hide_puk": null,
     "s_current_pin": "Derzeitige PIN",
     "s_current_puk": null,
     "s_new_pin": "Neue PIN",
@@ -286,6 +297,8 @@
     "s_management_key": null,
     "s_current_management_key": null,
     "s_new_management_key": null,
+    "s_show_management_key": null,
+    "s_hide_management_key": null,
     "l_change_management_key": null,
     "p_change_management_key_desc": null,
     "l_management_key_changed": null,
@@ -429,7 +442,6 @@
 
     "@_certificates": {},
     "s_certificate": null,
-    "s_certificates": null,
     "s_csr": null,
     "s_subject": null,
     "l_export_csr_file": null,
@@ -504,6 +516,69 @@
     "s_slot_9d": null,
     "s_slot_9e": null,
 
+    "@_otp_slots": {},
+    "s_otp_slot_one": null,
+    "s_otp_slot_two": null,
+    "l_otp_slot_empty": null,
+    "l_otp_slot_configured": null,
+
+    "@_otp_slot_configurations": {},
+    "s_yubiotp": null,
+    "l_yubiotp_desc": null,
+    "s_challenge_response": null,
+    "l_challenge_response_desc": null,
+    "s_static_password": null,
+    "l_static_password_desc": null,
+    "s_hotp": null,
+    "l_hotp_desc": null,
+    "s_public_id": null,
+    "s_private_id": null,
+    "s_allow_any_character": null,
+    "s_use_serial": null,
+    "s_generate_private_id": null,
+    "s_generate_secret_key": null,
+    "s_generate_passowrd": null,
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": null,
+    "l_delete_slot_desc": null,
+    "p_warning_delete_slot_configuration": null,
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {}
+        }
+    },
+    "l_slot_deleted": null,
+    "s_swap": null,
+    "s_swap_slots": null,
+    "l_swap_slots_desc": null,
+    "p_swap_slots_desc": null,
+    "l_slots_swapped": null,
+    "l_slot_credential_configured": null,
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {}
+        }
+    },
+    "l_slot_credential_configured_and_exported": null,
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {},
+            "file": {}
+        }
+    },
+    "s_append_enter": null,
+    "l_append_enter_desc": null,
+
+    "@_otp_errors": {},
+    "p_otp_slot_configuration_error": null,
+    "@p_otp_slot_configuration_error": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+
+
     "@_permissions": {},
     "s_enable_nfc": "NFC aktivieren",
     "s_permission_denied": "Zugriff verweigert",
@@ -539,7 +614,6 @@
     "l_oath_application_reset": "OATH Anwendung zurücksetzen",
     "s_reset_fido": "FIDO zurücksetzen",
     "l_fido_app_reset": "FIDO Anwendung zurückgesetzt",
-    "l_press_reset_to_begin": "Drücken Sie Zurücksetzen um zu beginnen\u2026",
     "l_reset_failed": "Fehler beim Zurücksetzen: {message}",
     "@l_reset_failed": {
         "placeholders": {

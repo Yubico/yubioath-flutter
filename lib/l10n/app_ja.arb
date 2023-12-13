@@ -61,8 +61,9 @@
     "s_manage": "管理",
     "s_setup": "セットアップ",
     "s_settings": "設定",
-    "s_piv": "PIV",
+    "s_certificates": "証明書",
     "s_webauthn": "WebAuthn",
+    "s_slots": null,
     "s_help_and_about": "ヘルプと概要",
     "s_help_and_feedback": "ヘルプとフィードバック",
     "s_send_feedback": "フィードバックの送信",
@@ -78,6 +79,14 @@
     "s_hide_secret_key": null,
     "s_private_key": "秘密鍵",
     "s_invalid_length": "無効な長さです",
+    "s_invalid_format": null,
+    "l_invalid_format_allowed_chars": null,
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {}
+        }
+    },
+    "l_invalid_keyboard_character": null,
     "s_require_touch": "タッチが必要",
     "q_have_account_info": "アカウント情報をお持ちですか?",
     "s_run_diagnostics": "診断を実行する",
@@ -189,6 +198,8 @@
     "s_change_puk": "PUKを変更する",
     "s_show_pin": null,
     "s_hide_pin": null,
+    "s_show_puk": null,
+    "s_hide_puk": null,
     "s_current_pin": "現在のPIN",
     "s_current_puk": "現在のPUK",
     "s_new_pin": "新しいPIN",
@@ -286,6 +297,8 @@
     "s_management_key": "Management key",
     "s_current_management_key": "現在のManagement key",
     "s_new_management_key": "新しいManagement key",
+    "s_show_management_key": null,
+    "s_hide_management_key": null,
     "l_change_management_key": "Management keyの変更",
     "p_change_management_key_desc": "Management keyを変更してください。Management keyの代わりにPINを使用することも可能です",
     "l_management_key_changed": "Management keyは変更されました",
@@ -429,7 +442,6 @@
 
     "@_certificates": {},
     "s_certificate": "証明書",
-    "s_certificates": "証明書",
     "s_csr": "CSR",
     "s_subject": "サブジェクト",
     "l_export_csr_file": "CSRをファイルに保存",
@@ -504,6 +516,69 @@
     "s_slot_9d": "鍵の管理",
     "s_slot_9e": "カード認証",
 
+    "@_otp_slots": {},
+    "s_otp_slot_one": null,
+    "s_otp_slot_two": null,
+    "l_otp_slot_empty": null,
+    "l_otp_slot_configured": null,
+
+    "@_otp_slot_configurations": {},
+    "s_yubiotp": null,
+    "l_yubiotp_desc": null,
+    "s_challenge_response": null,
+    "l_challenge_response_desc": null,
+    "s_static_password": null,
+    "l_static_password_desc": null,
+    "s_hotp": null,
+    "l_hotp_desc": null,
+    "s_public_id": null,
+    "s_private_id": null,
+    "s_allow_any_character": null,
+    "s_use_serial": null,
+    "s_generate_private_id": null,
+    "s_generate_secret_key": null,
+    "s_generate_passowrd": null,
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": null,
+    "l_delete_slot_desc": null,
+    "p_warning_delete_slot_configuration": null,
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {}
+        }
+    },
+    "l_slot_deleted": null,
+    "s_swap": null,
+    "s_swap_slots": null,
+    "l_swap_slots_desc": null,
+    "p_swap_slots_desc": null,
+    "l_slots_swapped": null,
+    "l_slot_credential_configured": null,
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {}
+        }
+    },
+    "l_slot_credential_configured_and_exported": null,
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {},
+            "file": {}
+        }
+    },
+    "s_append_enter": null,
+    "l_append_enter_desc": null,
+
+    "@_otp_errors": {},
+    "p_otp_slot_configuration_error": null,
+    "@p_otp_slot_configuration_error": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+
+
     "@_permissions": {},
     "s_enable_nfc": "NFCを有効にする",
     "s_permission_denied": "権限がありません",
@@ -539,7 +614,6 @@
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "s_reset_fido": "FIDOのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
-    "l_press_reset_to_begin": "リセットを押して開始してください\u2026",
     "l_reset_failed": "リセット実行中のエラー:{message}",
     "@l_reset_failed": {
         "placeholders": {

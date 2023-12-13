@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/core/models.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/logging.dart';
@@ -30,6 +29,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';

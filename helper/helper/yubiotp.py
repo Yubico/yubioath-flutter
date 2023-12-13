@@ -38,6 +38,7 @@ _FAIL_MSG = (
     "have restricted access"
 )
 
+
 class YubiOtpNode(RpcNode):
     def __init__(self, connection):
         super().__init__()
@@ -78,20 +79,16 @@ class YubiOtpNode(RpcNode):
     @action(closes_child=False)
     def serial_modhex(self, params, event, signal):
         serial = params["serial"]
-        return dict(
-            encoded=modhex_encode(b"\xff\x00" + struct.pack(b">I", serial))
-        )
+        return dict(encoded=modhex_encode(b"\xff\x00" + struct.pack(b">I", serial)))
 
     @action(closes_child=False)
     def generate_static(self, params, event, signal):
         layout, length = params["layout"], int(params["length"])
-        return dict(
-            password=generate_static_pw(length, KEYBOARD_LAYOUT[layout])
-        )
+        return dict(password=generate_static_pw(length, KEYBOARD_LAYOUT[layout]))
 
     @action(closes_child=False)
     def keyboard_layouts(self, params, event, signal):
-        return {layout.name:[sc for sc in layout.value] for layout in KEYBOARD_LAYOUT}
+        return {layout.name: [sc for sc in layout.value] for layout in KEYBOARD_LAYOUT}
 
     @action(closes_child=False)
     def format_yubiotp_csv(self, params, even, signal):
@@ -110,6 +107,7 @@ _CONFIG_TYPES = dict(
     yubiotp=YubiOtpSlotConfiguration,
     static_ticket=StaticTicketSlotConfiguration,
 )
+
 
 class SlotNode(RpcNode):
     def __init__(self, session, slot):
@@ -197,22 +195,20 @@ class SlotNode(RpcNode):
 
         if type in _CONFIG_TYPES:
             if type == "hmac_sha1":
-                config = _CONFIG_TYPES[type](
-                    bytes.fromhex(kwargs["key"])
-                )
+                config = _CONFIG_TYPES[type](bytes.fromhex(kwargs["key"]))
             elif type == "hotp":
-                config = _CONFIG_TYPES[type](
-                    parse_b32_key(kwargs["key"])
-                )
+                config = _CONFIG_TYPES[type](parse_b32_key(kwargs["key"]))
             elif type == "static_password":
                 config = _CONFIG_TYPES[type](
-                    encode(kwargs["password"], KEYBOARD_LAYOUT[kwargs["keyboard_layout"]])
+                    encode(
+                        kwargs["password"], KEYBOARD_LAYOUT[kwargs["keyboard_layout"]]
+                    )
                 )
             elif type == "yubiotp":
                 config = _CONFIG_TYPES[type](
                     fixed=modhex_decode(kwargs["public_id"]),
                     uid=bytes.fromhex(kwargs["private_id"]),
-                    key=bytes.fromhex(kwargs["key"])
+                    key=bytes.fromhex(kwargs["key"]),
                 )
             else:
                 raise ValueError("No supported configuration type provided.")
@@ -251,4 +247,3 @@ class SlotNode(RpcNode):
             params.pop("cur_acc_code", None),
         )
         return dict()
-
