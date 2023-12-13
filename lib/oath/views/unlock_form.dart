@@ -119,44 +119,48 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 }), // Update state on change
                 onSubmitted: (_) => _submit(),
               ),
-            ],
-          ),
-        ),
-        keystoreFailed
-            ? ListTile(
-                leading: const Icon(Icons.warning_amber_rounded),
-                title: Text(l10n.l_keystore_unavailable),
-                dense: true,
-                minLeadingWidth: 0,
-              )
-            : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 8.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
                     children: [
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: FilterChip(
-                            label: Text(l10n.s_remember_password),
-                            selected: _remember,
-                            onSelected: (value) {
-                              setState(() {
-                                _remember = value;
-                              });
-                            },
-                          )),
-                      const SizedBox(height: 16.0),
-                    ])),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              key: keys.unlockButton,
-              label: Text(l10n.s_unlock),
-              icon: const Icon(Icons.lock_open),
-              onPressed: _passwordController.text.isNotEmpty ? _submit : null,
-            ),
+                      keystoreFailed
+                          ? Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 4.0,
+                              runSpacing: 8.0,
+                              children: [
+                                const Icon(Icons.warning_amber_rounded),
+                                Text(l10n.l_keystore_unavailable)
+                              ],
+                            )
+                          : FilterChip(
+                              label: Text(l10n.s_remember_password),
+                              selected: _remember,
+                              onSelected: (value) {
+                                setState(() {
+                                  _remember = value;
+                                });
+                              },
+                            ),
+                      ElevatedButton.icon(
+                        key: keys.unlockButton,
+                        label: Text(l10n.s_unlock),
+                        icon: const Icon(Icons.lock_open),
+                        onPressed: _passwordController.text.isNotEmpty
+                            ? _submit
+                            : null,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
