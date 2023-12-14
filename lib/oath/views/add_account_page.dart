@@ -363,7 +363,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         limitBytesLength(issuerRemaining),
                       ],
                       buildCounter: buildByteCounterFor(issuerText),
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
                         helperText:
@@ -395,7 +395,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       maxLength: nameMaxLength,
                       buildCounter: buildByteCounterFor(nameText),
                       inputFormatters: [limitBytesLength(nameRemaining)],
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_account_name,
                         helperText: '',
@@ -429,45 +429,33 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       // would hint to use saved passwords for this field
                       autofillHints:
                           isAndroid ? [] : const [AutofillHints.password],
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: l10n.s_secret_key,
-                        errorText: _validateSecret && !secretLengthValid
-                            ? l10n.s_invalid_length
-                            : _validateSecret && !secretFormatValid
-                                ? l10n.l_invalid_format_allowed_chars(
-                                    Format.base32.allowedCharacters)
-                                : null,
-                        prefixIcon: const Icon(Icons.key_outlined),
-                        suffixIcon: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                  _isObscure
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: !_validateSecret
-                                      ? IconTheme.of(context).color
-                                      : null),
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              tooltip: _isObscure
-                                  ? l10n.s_show_secret_key
-                                  : l10n.s_hide_secret_key,
-                            ),
-                            if (_validateSecret) ...[
-                              const Icon(Icons.error_outlined),
-                              const SizedBox(
-                                width: 8.0,
-                              )
-                            ]
-                          ],
-                        ),
-                      ),
+                      decoration: AppInputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: l10n.s_secret_key,
+                          errorText: _validateSecret && !secretLengthValid
+                              ? l10n.s_invalid_length
+                              : _validateSecret && !secretFormatValid
+                                  ? l10n.l_invalid_format_allowed_chars(
+                                      Format.base32.allowedCharacters)
+                                  : null,
+                          prefixIcon: const Icon(Icons.key_outlined),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                                _isObscure
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: !_validateSecret
+                                    ? IconTheme.of(context).color
+                                    : null),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                            tooltip: _isObscure
+                                ? l10n.s_show_secret_key
+                                : l10n.s_hide_secret_key,
+                          )),
                       readOnly: _dataLoaded,
                       textInputAction: TextInputAction.done,
                       onChanged: (value) {

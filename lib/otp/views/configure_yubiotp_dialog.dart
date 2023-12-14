@@ -205,41 +205,29 @@ class _ConfigureYubiOtpDialogState
               controller: _publicIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: publicIdLength,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_public_id,
-                errorText: _validatePublicIdFormat && !publicIdFormatValid
-                    ? l10n.l_invalid_format_allowed_chars(
-                        Format.modhex.allowedCharacters)
-                    : null,
-                prefixIcon: const Icon(Icons.public_outlined),
-                suffixIcon: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    IconButton(
-                      tooltip: l10n.s_use_serial,
-                      icon: const Icon(Icons.auto_awesome_outlined),
-                      onPressed: (info?.serial != null)
-                          ? () async {
-                              final publicId = await ref
-                                  .read(otpStateProvider(widget.devicePath)
-                                      .notifier)
-                                  .modhexEncodeSerial(info!.serial!);
-                              setState(() {
-                                _publicIdController.text = publicId;
-                              });
-                            }
-                          : null,
-                    ),
-                    if (_validatePublicIdFormat) ...[
-                      const Icon(Icons.error_outlined),
-                      const SizedBox(
-                        width: 8.0,
-                      )
-                    ]
-                  ],
-                ),
-              ),
+              decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_public_id,
+                  errorText: _validatePublicIdFormat && !publicIdFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.modhex.allowedCharacters)
+                      : null,
+                  prefixIcon: const Icon(Icons.public_outlined),
+                  suffixIcon: IconButton(
+                    tooltip: l10n.s_use_serial,
+                    icon: const Icon(Icons.auto_awesome_outlined),
+                    onPressed: (info?.serial != null)
+                        ? () async {
+                            final publicId = await ref
+                                .read(otpStateProvider(widget.devicePath)
+                                    .notifier)
+                                .modhexEncodeSerial(info!.serial!);
+                            setState(() {
+                              _publicIdController.text = publicId;
+                            });
+                          }
+                        : null,
+                  )),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
@@ -252,42 +240,30 @@ class _ConfigureYubiOtpDialogState
               controller: _privateIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: privateIdLength,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_private_id,
-                errorText: _validatePrivateIdFormat && !privatedIdFormatValid
-                    ? l10n.l_invalid_format_allowed_chars(
-                        Format.hex.allowedCharacters)
-                    : null,
-                prefixIcon: const Icon(Icons.key_outlined),
-                suffixIcon: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    IconButton(
-                      tooltip: l10n.s_generate_random,
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {
-                        final random = Random.secure();
-                        final key = List.generate(
-                            6,
-                            (_) => random
-                                .nextInt(256)
-                                .toRadixString(16)
-                                .padLeft(2, '0')).join();
-                        setState(() {
-                          _privateIdController.text = key;
-                        });
-                      },
-                    ),
-                    if (_validatePrivateIdFormat) ...[
-                      const Icon(Icons.error_outlined),
-                      const SizedBox(
-                        width: 8.0,
-                      )
-                    ]
-                  ],
-                ),
-              ),
+              decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_private_id,
+                  errorText: _validatePrivateIdFormat && !privatedIdFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.hex.allowedCharacters)
+                      : null,
+                  prefixIcon: const Icon(Icons.key_outlined),
+                  suffixIcon: IconButton(
+                    tooltip: l10n.s_generate_random,
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () {
+                      final random = Random.secure();
+                      final key = List.generate(
+                          6,
+                          (_) => random
+                              .nextInt(256)
+                              .toRadixString(16)
+                              .padLeft(2, '0')).join();
+                      setState(() {
+                        _privateIdController.text = key;
+                      });
+                    },
+                  )),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
@@ -300,42 +276,30 @@ class _ConfigureYubiOtpDialogState
               controller: _secretController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretLength,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_secret_key,
-                errorText: _validateSecretFormat && !secretFormatValid
-                    ? l10n.l_invalid_format_allowed_chars(
-                        Format.hex.allowedCharacters)
-                    : null,
-                prefixIcon: const Icon(Icons.key_outlined),
-                suffixIcon: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    IconButton(
-                      tooltip: l10n.s_generate_random,
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {
-                        final random = Random.secure();
-                        final key = List.generate(
-                            16,
-                            (_) => random
-                                .nextInt(256)
-                                .toRadixString(16)
-                                .padLeft(2, '0')).join();
-                        setState(() {
-                          _secretController.text = key;
-                        });
-                      },
-                    ),
-                    if (_validateSecretFormat) ...[
-                      const Icon(Icons.error_outlined),
-                      const SizedBox(
-                        width: 8.0,
-                      )
-                    ]
-                  ],
-                ),
-              ),
+              decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_secret_key,
+                  errorText: _validateSecretFormat && !secretFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.hex.allowedCharacters)
+                      : null,
+                  prefixIcon: const Icon(Icons.key_outlined),
+                  suffixIcon: IconButton(
+                    tooltip: l10n.s_generate_random,
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () {
+                      final random = Random.secure();
+                      final key = List.generate(
+                          16,
+                          (_) => random
+                              .nextInt(256)
+                              .toRadixString(16)
+                              .padLeft(2, '0')).join();
+                      setState(() {
+                        _secretController.text = key;
+                      });
+                    },
+                  )),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {

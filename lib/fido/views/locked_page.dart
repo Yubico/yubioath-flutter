@@ -166,36 +166,23 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],
               controller: _pinController,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
                 helperText: '', // Prevents dialog resizing
                 errorText: _pinIsWrong ? _getErrorText() : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
-                suffixIcon: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off,
-                          color: !_pinIsWrong
-                              ? IconTheme.of(context).color
-                              : null),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
-                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
-                    ),
-                    if (_pinIsWrong) ...[
-                      const Icon(Icons.error_outlined),
-                      const SizedBox(
-                        width: 8.0,
-                      )
-                    ]
-                  ],
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
+                      color: !_pinIsWrong ? IconTheme.of(context).color : null),
+                  onPressed: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
               ),
               onChanged: (value) {

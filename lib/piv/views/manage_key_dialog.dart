@@ -173,7 +173,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 key: keys.pinPukField,
                 maxLength: 8,
                 controller: _currentController,
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_pin,
                   errorText: _currentIsWrong
@@ -184,27 +184,15 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                           : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
-                  suffixIcon: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        IconButton(
-                            icon: Icon(_isObscure
-                                ? Icons.visibility
-                                : Icons.visibility_off),
-                            onPressed: () {
-                              setState(() {
-                                _isObscure = !_isObscure;
-                              });
-                            },
-                            tooltip:
-                                _isObscure ? l10n.s_show_pin : l10n.s_hide_pin),
-                        if (_currentIsWrong || _currentInvalidFormat) ...[
-                          const Icon(Icons.error_outlined),
-                          const SizedBox(
-                            width: 8.0,
-                          )
-                        ]
-                      ]),
+                  suffixIcon: IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin),
                 ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
@@ -284,7 +272,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               autofillHints: const [AutofillHints.newPassword],
               maxLength: hexLength,
               controller: _keyController,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_management_key,
                 errorText: _newInvalidFormat
@@ -293,35 +281,24 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     : null,
                 enabled: currentLenOk,
                 prefixIcon: const Icon(Icons.key_outlined),
-                suffixIcon: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      tooltip: l10n.s_generate_random,
-                      onPressed: currentLenOk
-                          ? () {
-                              final random = Random.secure();
-                              final key = List.generate(
-                                  _keyType.keyLength,
-                                  (_) => random
-                                      .nextInt(256)
-                                      .toRadixString(16)
-                                      .padLeft(2, '0')).join();
-                              setState(() {
-                                _keyController.text = key;
-                                _newInvalidFormat = false;
-                              });
-                            }
-                          : null,
-                    ),
-                    if (_newInvalidFormat) ...[
-                      const Icon(Icons.error_outlined),
-                      const SizedBox(
-                        width: 8.0,
-                      )
-                    ]
-                  ],
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: l10n.s_generate_random,
+                  onPressed: currentLenOk
+                      ? () {
+                          final random = Random.secure();
+                          final key = List.generate(
+                              _keyType.keyLength,
+                              (_) => random
+                                  .nextInt(256)
+                                  .toRadixString(16)
+                                  .padLeft(2, '0')).join();
+                          setState(() {
+                            _keyController.text = key;
+                            _newInvalidFormat = false;
+                          });
+                        }
+                      : null,
                 ),
               ),
               textInputAction: TextInputAction.next,

@@ -111,48 +111,34 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               maxLength: 8,
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: widget.target == ManageTarget.pin
-                      ? l10n.s_current_pin
-                      : l10n.s_current_puk,
-                  errorText: _currentIsWrong
-                      ? (widget.target == ManageTarget.pin
-                          ? l10n.l_wrong_pin_attempts_remaining(
-                              _attemptsRemaining)
-                          : l10n.l_wrong_puk_attempts_remaining(
-                              _attemptsRemaining))
-                      : null,
-                  errorMaxLines: 3,
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(_isObscureCurrent
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(() {
-                            _isObscureCurrent = !_isObscureCurrent;
-                          });
-                        },
-                        tooltip: widget.target == ManageTarget.pin
-                            ? (_isObscureCurrent
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin)
-                            : (_isObscureCurrent
-                                ? l10n.s_show_puk
-                                : l10n.s_hide_puk),
-                      ),
-                      if (_currentIsWrong) ...[
-                        const Icon(Icons.error_outlined),
-                        const SizedBox(
-                          width: 8.0,
-                        )
-                      ]
-                    ],
-                  )),
+              decoration: AppInputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: widget.target == ManageTarget.pin
+                    ? l10n.s_current_pin
+                    : l10n.s_current_puk,
+                errorText: _currentIsWrong
+                    ? (widget.target == ManageTarget.pin
+                        ? l10n
+                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                        : l10n
+                            .l_wrong_puk_attempts_remaining(_attemptsRemaining))
+                    : null,
+                errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureCurrent
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureCurrent = !_isObscureCurrent;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureCurrent ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
@@ -168,33 +154,24 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               obscureText: _isObscureNew,
               maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
-                suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(_isObscureNew
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(() {
-                            _isObscureNew = !_isObscureNew;
-                          });
-                        },
-                        tooltip: widget.target == ManageTarget.pin
-                            ? (_isObscureNew
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin)
-                            : (_isObscureNew
-                                ? l10n.s_show_puk
-                                : l10n.s_hide_puk),
-                      ),
-                    ]),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureNew = !_isObscureNew;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
                 // Old YubiKeys allowed a 4 digit PIN
                 enabled: _currentPin.length >= 4,
               ),
@@ -215,33 +192,25 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               obscureText: _isObscureConfirm,
               maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_confirm_puk
                     : l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
-                suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(_isObscureConfirm
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(() {
-                            _isObscureConfirm = !_isObscureConfirm;
-                          });
-                        },
-                        tooltip: widget.target == ManageTarget.pin
-                            ? (_isObscureConfirm
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin)
-                            : (_isObscureConfirm
-                                ? l10n.s_show_puk
-                                : l10n.s_hide_puk),
-                      )
-                    ]),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureConfirm
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureConfirm = !_isObscureConfirm;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
                 enabled: _currentPin.length >= 4 && _newPin.length >= 6,
               ),
               textInputAction: TextInputAction.done,

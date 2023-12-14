@@ -79,39 +79,26 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 autofocus: true,
                 obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_password,
                   errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                   helperText: '', // Prevents resizing when errorText shown
                   prefixIcon: const Icon(Icons.password_outlined),
-                  suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                            _isObscure
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: !_passwordIsWrong
-                                ? IconTheme.of(context).color
-                                : null),
-                        onPressed: () {
-                          setState(() {
-                            _isObscure = !_isObscure;
-                          });
-                        },
-                        tooltip: _isObscure
-                            ? l10n.s_show_password
-                            : l10n.s_hide_password,
-                      ),
-                      if (_passwordIsWrong) ...[
-                        const Icon(Icons.error_outlined),
-                        const SizedBox(
-                          width: 8.0,
-                        )
-                      ]
-                    ],
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                        _isObscure ? Icons.visibility : Icons.visibility_off,
+                        color: !_passwordIsWrong
+                            ? IconTheme.of(context).color
+                            : null),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
+                    tooltip: _isObscure
+                        ? l10n.s_show_password
+                        : l10n.s_hide_password,
                   ),
                 ),
                 onChanged: (_) => setState(() {

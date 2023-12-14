@@ -109,7 +109,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
               controller: _keyController,
               readOnly: _defaultKeyUsed,
               maxLength: !_defaultKeyUsed ? keyLen : null,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_management_key,
                 helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
@@ -125,34 +125,22 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                     ? null
                     : hasMetadata && (_keyIsWrong || _keyFormatInvalid)
                         ? const Icon(Icons.error)
-                        : Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: Icon(_defaultKeyUsed
-                                    ? Icons.auto_awesome
-                                    : Icons.auto_awesome_outlined),
-                                tooltip: l10n.s_use_default,
-                                onPressed: () {
-                                  setState(() {
-                                    _keyFormatInvalid = false;
-                                    _defaultKeyUsed = !_defaultKeyUsed;
-                                    if (_defaultKeyUsed) {
-                                      _keyController.text =
-                                          defaultManagementKey;
-                                    } else {
-                                      _keyController.clear();
-                                    }
-                                  });
-                                },
-                              ),
-                              if (_keyIsWrong || _keyFormatInvalid) ...[
-                                const Icon(Icons.error_outlined),
-                                const SizedBox(
-                                  width: 8.0,
-                                )
-                              ]
-                            ],
+                        : IconButton(
+                            icon: Icon(_defaultKeyUsed
+                                ? Icons.auto_awesome
+                                : Icons.auto_awesome_outlined),
+                            tooltip: l10n.s_use_default,
+                            onPressed: () {
+                              setState(() {
+                                _keyFormatInvalid = false;
+                                _defaultKeyUsed = !_defaultKeyUsed;
+                                if (_defaultKeyUsed) {
+                                  _keyController.text = defaultManagementKey;
+                                } else {
+                                  _keyController.clear();
+                                }
+                              });
+                            },
                           ),
               ),
               textInputAction: TextInputAction.next,

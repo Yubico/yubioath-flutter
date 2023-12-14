@@ -161,7 +161,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
             AppTextField(
               autofocus: true,
               key: keys.subjectField,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_subject,
                 errorText: _subject.isNotEmpty && _invalidSubject
