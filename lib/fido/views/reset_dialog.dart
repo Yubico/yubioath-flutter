@@ -126,7 +126,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
               l10n.p_warning_disable_accounts,
             ),
             if (_currentStep > -1) ...[
-              Text('Status: ${_getMessage()}'),
+              Text('${l10n.s_status}: ${_getMessage()}'),
               LinearProgressIndicator(value: progress)
             ],
           ]

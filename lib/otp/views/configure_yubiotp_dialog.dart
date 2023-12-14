@@ -46,8 +46,8 @@ enum OutputActions {
   const OutputActions();
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        OutputActions.selectFile => 'Select file',
-        OutputActions.noOutput => 'No export file'
+        OutputActions.selectFile => l10n.l_select_file,
+        OutputActions.noOutput => l10n.l_no_export_file
       };
 }
 
@@ -108,7 +108,7 @@ class _ConfigureYubiOtpDialogState
 
     Future<bool> selectFile() async {
       final filePath = await FilePicker.platform.saveFile(
-          dialogTitle: 'Export configuration to file',
+          dialogTitle: l10n.l_export_configuration_file,
           allowedExtensions: ['csv'],
           type: FileType.custom,
           lockParentWindow: true);
@@ -323,7 +323,7 @@ class _ConfigureYubiOtpDialogState
                   },
                 ),
                 ChoiceFilterChip<OutputActions>(
-                  tooltip: outputFile?.path ?? 'No export',
+                  tooltip: outputFile?.path ?? l10n.s_no_export,
                   selected: outputFile != null,
                   avatar: outputFile != null
                       ? Icon(Icons.check,
@@ -338,7 +338,7 @@ class _ConfigureYubiOtpDialogState
                       constraints: const BoxConstraints(maxWidth: 140),
                       child: Text(
                         fileName != null
-                            ? 'Export $fileName'
+                            ? '${l10n.s_export} $fileName'
                             : _action.getDisplayName(l10n),
                         overflow: TextOverflow.ellipsis,
                       ),
