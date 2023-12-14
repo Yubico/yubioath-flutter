@@ -32,7 +32,7 @@ import '../models.dart';
 import '../state.dart';
 import 'overwrite_confirm_dialog.dart';
 
-final _log = Logger('otp.view.configure_Chalresp_dialog');
+final _log = Logger('otp.view.configure_static_dialog');
 
 class ConfigureStaticDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
