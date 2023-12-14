@@ -28,6 +28,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../desktop/models.dart';
 import '../../fido/models.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
@@ -206,7 +207,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
               inputFormatters: [limitBytesLength(15)],
               buildCounter: buildByteCounterFor(_label),
               autofocus: true,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 enabled: _fingerprint != null,
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_name,

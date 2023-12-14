@@ -210,7 +210,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 controller: _currentController,
                 readOnly: _defaultKeyUsed,
                 maxLength: !_defaultKeyUsed ? currentType.keyLength * 2 : null,
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_management_key,
                   helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
@@ -229,34 +229,22 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       : (_hasMetadata && _currentIsWrong ||
                               _currentInvalidFormat)
                           ? const Icon(Icons.error)
-                          : Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                IconButton(
-                                  icon: Icon(_defaultKeyUsed
-                                      ? Icons.auto_awesome
-                                      : Icons.auto_awesome_outlined),
-                                  tooltip: l10n.s_use_default,
-                                  onPressed: () {
-                                    setState(() {
-                                      _defaultKeyUsed = !_defaultKeyUsed;
-                                      if (_defaultKeyUsed) {
-                                        _currentController.text =
-                                            defaultManagementKey;
-                                      } else {
-                                        _currentController.clear();
-                                      }
-                                    });
-                                  },
-                                ),
-                                if (_currentIsWrong ||
-                                    _currentInvalidFormat) ...[
-                                  const Icon(Icons.error_outlined),
-                                  const SizedBox(
-                                    width: 8.0,
-                                  )
-                                ]
-                              ],
+                          : IconButton(
+                              icon: Icon(_defaultKeyUsed
+                                  ? Icons.auto_awesome
+                                  : Icons.auto_awesome_outlined),
+                              tooltip: l10n.s_use_default,
+                              onPressed: () {
+                                setState(() {
+                                  _defaultKeyUsed = !_defaultKeyUsed;
+                                  if (_defaultKeyUsed) {
+                                    _currentController.text =
+                                        defaultManagementKey;
+                                  } else {
+                                    _currentController.clear();
+                                  }
+                                });
+                              },
                             ),
                 ),
                 textInputAction: TextInputAction.next,

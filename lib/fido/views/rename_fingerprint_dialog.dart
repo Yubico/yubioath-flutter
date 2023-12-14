@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../desktop/models.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
@@ -95,7 +96,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               maxLength: 15,
               inputFormatters: [limitBytesLength(15)],
               buildCounter: buildByteCounterFor(_label),
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_label,
                 prefixIcon: const Icon(Icons.fingerprint_outlined),

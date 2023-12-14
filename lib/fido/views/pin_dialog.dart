@@ -24,6 +24,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -81,36 +82,25 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 autofocus: true,
                 obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_current_pin,
-                    errorText: _currentIsWrong ? _currentPinError : null,
-                    errorMaxLines: 3,
-                    prefixIcon: const Icon(Icons.pin_outlined),
-                    suffixIcon: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(_isObscureCurrent
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: () {
-                            setState(() {
-                              _isObscureCurrent = !_isObscureCurrent;
-                            });
-                          },
-                          tooltip: _isObscureCurrent
-                              ? l10n.s_show_pin
-                              : l10n.s_hide_pin,
-                        ),
-                        if (_currentIsWrong) ...[
-                          const Icon(Icons.error_outlined),
-                          const SizedBox(
-                            width: 8.0,
-                          )
-                        ]
-                      ],
-                    )),
+                decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_current_pin,
+                  errorText: _currentIsWrong ? _currentPinError : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.pin_outlined),
+                  suffixIcon: IconButton(
+                    icon: Icon(_isObscureCurrent
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureCurrent = !_isObscureCurrent;
+                      });
+                    },
+                    tooltip:
+                        _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
+                  ),
+                ),
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
@@ -126,35 +116,23 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               autofocus: !hasPin,
               obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.password],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
                 enabled: !hasPin || _currentPin.isNotEmpty,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
-                suffixIcon: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(_isObscureNew
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(() {
-                            _isObscureNew = !_isObscureNew;
-                          });
-                        },
-                        tooltip:
-                            _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
-                      ),
-                      if (_newIsWrong) ...[
-                        const Icon(Icons.error_outlined),
-                        const SizedBox(
-                          width: 8.0,
-                        )
-                      ]
-                    ]),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureNew = !_isObscureNew;
+                    });
+                  },
+                  tooltip: _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
+                ),
               ),
               onChanged: (value) {
                 setState(() {
@@ -167,26 +145,21 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               initialValue: _confirmPin,
               obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.password],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.pin_outlined),
-                suffixIcon: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(_isObscureConfirm
-                          ? Icons.visibility
-                          : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscureConfirm = !_isObscureConfirm;
-                        });
-                      },
-                      tooltip:
-                          _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
-                    )
-                  ],
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureConfirm
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureConfirm = !_isObscureConfirm;
+                    });
+                  },
+                  tooltip:
+                      _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
                 enabled:
                     (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
