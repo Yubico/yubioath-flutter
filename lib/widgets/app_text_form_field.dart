@@ -16,7 +16,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'app_text_field.dart';
+import 'app_input_decoration.dart';
 
 /// TextFormField without autocorrect and suggestions
 class AppTextFormField extends TextFormField {

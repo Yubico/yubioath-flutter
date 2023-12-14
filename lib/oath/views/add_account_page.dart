@@ -35,6 +35,7 @@ import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';

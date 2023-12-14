@@ -26,7 +26,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
-import '../../widgets/app_text_field.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
