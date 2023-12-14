@@ -26,6 +26,7 @@ import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../oath/models.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -120,7 +121,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
+            AppTextField(
               key: keys.secretField,
               controller: _secretController,
               obscureText: _isObscure,

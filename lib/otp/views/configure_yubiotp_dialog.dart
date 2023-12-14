@@ -29,6 +29,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -198,7 +199,7 @@ class _ConfigureYubiOtpDialogState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
+            AppTextField(
               key: keys.publicIdField,
               autofocus: true,
               controller: _publicIdController,
@@ -246,7 +247,7 @@ class _ConfigureYubiOtpDialogState
                 });
               },
             ),
-            TextField(
+            AppTextField(
               key: keys.privateIdField,
               controller: _privateIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
@@ -294,7 +295,7 @@ class _ConfigureYubiOtpDialogState
                 });
               },
             ),
-            TextField(
+            AppTextField(
               key: keys.secretField,
               controller: _secretController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
