@@ -22,6 +22,7 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
+import '../../core/models.dart';
 import '../../otp/models.dart';
 import '../../otp/state.dart';
 import '../rpc.dart';
@@ -31,8 +32,8 @@ final _log = Logger('desktop.otp.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) => RpcNodeSession(
-      ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'yubiotp']),
+  (ref, devicePath) =>
+      RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
 );
 
 final desktopOtpState = AsyncNotifierProvider.autoDispose
@@ -41,6 +42,7 @@ final desktopOtpState = AsyncNotifierProvider.autoDispose
 
 class _DesktopOtpStateNotifier extends OtpStateNotifier {
   late RpcNodeSession _session;
+  List<String> _subpath = [];
 
   @override
   FutureOr<OtpState> build(DevicePath devicePath) async {
@@ -53,33 +55,49 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
     });
 
     final result = await _session.command('get');
-    _log.debug('application status', jsonEncode(result));
-    return OtpState.fromJson(result['data']);
+    final interfaces = (result['children'] as Map).keys.toSet();
+
+    // Will try to connect over ccid first
+    for (final iface in [UsbInterface.otp, UsbInterface.ccid]) {
+      if (interfaces.contains(iface.name)) {
+        final path = [iface.name, 'yubiotp'];
+        try {
+          final otpStateResult = await _session.command('get', target: path);
+          _subpath = path;
+          _log.debug('Using transport $iface for yubiotp');
+          _log.debug('application status', jsonEncode(result));
+          return OtpState.fromJson(otpStateResult['data']);
+        } catch (e) {
+          _log.warning('Failed connecting to yubiotp via $iface');
+        }
+      }
+    }
+    throw 'Failed connecting over ${UsbInterface.ccid.name} and ${UsbInterface.otp.name}';
   }
 
   @override
   Future<void> swapSlots() async {
-    await _session.command('swap');
+    await _session.command('swap', target: _subpath);
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
   @override
   Future<String> generateStaticPassword(int length, String layout) async {
     final result = await _session.command('generate_static',
-        params: {'length': length, 'layout': layout});
+        target: _subpath, params: {'length': length, 'layout': layout});
     return result['password'];
   }
 
   @override
   Future<String> modhexEncodeSerial(int serial) async {
-    final result =
-        await _session.command('serial_modhex', params: {'serial': serial});
+    final result = await _session
+        .command('serial_modhex', target: _subpath, params: {'serial': serial});
     return result['encoded'];
   }
 
   @override
   Future<Map<String, List<String>>> getKeyboardLayouts() async {
-    final result = await _session.command('keyboard_layouts');
+    final result = await _session.command('keyboard_layouts', target: _subpath);
     return Map<String, List<String>>.from(result.map((key, value) =>
         MapEntry(key, (value as List<dynamic>).cast<String>().toList())));
   }
@@ -87,18 +105,20 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
   @override
   Future<String> formatYubiOtpCsv(
       int serial, String publicId, String privateId, String key) async {
-    final result = await _session.command('format_yubiotp_csv', params: {
-      'serial': serial,
-      'public_id': publicId,
-      'private_id': privateId,
-      'key': key
-    });
+    final result = await _session.command('format_yubiotp_csv',
+        target: _subpath,
+        params: {
+          'serial': serial,
+          'public_id': publicId,
+          'private_id': privateId,
+          'key': key
+        });
     return result['csv'];
   }
 
   @override
   Future<void> deleteSlot(SlotId slot) async {
-    await _session.command('delete', target: [slot.id]);
+    await _session.command('delete', target: [..._subpath, slot.id]);
     ref.invalidateSelf();
   }
 
@@ -106,7 +126,7 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
   Future<void> configureSlot(SlotId slot,
       {required SlotConfiguration configuration}) async {
     await _session.command('put',
-        target: [slot.id], params: configuration.toJson());
+        target: [..._subpath, slot.id], params: configuration.toJson());
     ref.invalidateSelf();
   }
 }
