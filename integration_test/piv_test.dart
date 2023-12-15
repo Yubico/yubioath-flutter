@@ -158,7 +158,7 @@ void main() {
       const shortmanagementkey =
           'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbccc';
 
-      appTest('Bad managementkey key', (WidgetTester tester) async {
+      appTest('Out of bounds managementkey key', (WidgetTester tester) async {
         await tester.configurePiv();
         await tester.shortWait();
         await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
@@ -169,12 +169,22 @@ void main() {
         await tester.longWait();
         await tester.tap(find.byKey(saveButton).hitTestable());
         await tester.longWait();
+        expect(tester.isTextButtonEnabled(saveButton), true);
+        // TODO assert that errorText and errorIcon are shown
+      });
+
+      appTest('Short managementkey key', (WidgetTester tester) async {
+        await tester.configurePiv();
+        await tester.shortWait();
+        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+        await tester.longWait();
         // testing too short management key does not work
         await tester.enterText(
             find.byKey(newPinPukField).hitTestable(), shortmanagementkey);
         await tester.longWait();
         expect(tester.isTextButtonEnabled(saveButton), false);
       });
+
       appTest('Change managementkey key', (WidgetTester tester) async {
         await tester.configurePiv();
         await tester.shortWait();
