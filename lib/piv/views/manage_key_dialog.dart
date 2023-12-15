@@ -223,30 +223,24 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                           : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.key_outlined),
-                  suffixIcon: (_hasMetadata &&
-                          !_currentIsWrong &&
-                          !_currentInvalidFormat)
+                  suffixIcon: _hasMetadata
                       ? null
-                      : (_hasMetadata && _currentIsWrong ||
-                              _currentInvalidFormat)
-                          ? const Icon(Icons.error)
-                          : IconButton(
-                              icon: Icon(_defaultKeyUsed
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined),
-                              tooltip: l10n.s_use_default,
-                              onPressed: () {
-                                setState(() {
-                                  _defaultKeyUsed = !_defaultKeyUsed;
-                                  if (_defaultKeyUsed) {
-                                    _currentController.text =
-                                        defaultManagementKey;
-                                  } else {
-                                    _currentController.clear();
-                                  }
-                                });
-                              },
-                            ),
+                      : IconButton(
+                          icon: Icon(_defaultKeyUsed
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined),
+                          tooltip: l10n.s_use_default,
+                          onPressed: () {
+                            setState(() {
+                              _defaultKeyUsed = !_defaultKeyUsed;
+                              if (_defaultKeyUsed) {
+                                _currentController.text = defaultManagementKey;
+                              } else {
+                                _currentController.clear();
+                              }
+                            });
+                          },
+                        ),
                 ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {

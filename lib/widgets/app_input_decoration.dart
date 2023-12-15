@@ -71,8 +71,13 @@ class AppInputDecoration extends InputDecoration {
 
       final existingSuffixIcon = super.suffixIcon;
 
+      if (errorIcon != null &&
+          (existingSuffixIcon == null && suffixIcons == null)) {
+        return errorIcon;
+      }
       return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
+        runAlignment: WrapAlignment.center,
         children: [
           if (suffixIcons != null) ...suffixIcons!,
           if (existingSuffixIcon != null) existingSuffixIcon,

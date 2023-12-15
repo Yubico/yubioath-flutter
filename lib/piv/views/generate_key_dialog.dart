@@ -168,9 +168,6 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                 errorText: _subject.isNotEmpty && _invalidSubject
                     ? l10n.l_rfc4514_invalid
                     : null,
-                suffixIcon: _subject.isNotEmpty && _invalidSubject
-                    ? const Icon(Icons.error)
-                    : null,
               ),
               textInputAction: TextInputAction.next,
               enabled: !_generating,

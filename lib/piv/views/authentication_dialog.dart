@@ -122,27 +122,25 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                         : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.key_outlined),
-                suffixIcon: hasMetadata && (!_keyIsWrong && !_keyFormatInvalid)
+                suffixIcon: hasMetadata
                     ? null
-                    : hasMetadata && (_keyIsWrong || _keyFormatInvalid)
-                        ? const Icon(Icons.error)
-                        : IconButton(
-                            icon: Icon(_defaultKeyUsed
-                                ? Icons.auto_awesome
-                                : Icons.auto_awesome_outlined),
-                            tooltip: l10n.s_use_default,
-                            onPressed: () {
-                              setState(() {
-                                _keyFormatInvalid = false;
-                                _defaultKeyUsed = !_defaultKeyUsed;
-                                if (_defaultKeyUsed) {
-                                  _keyController.text = defaultManagementKey;
-                                } else {
-                                  _keyController.clear();
-                                }
-                              });
-                            },
-                          ),
+                    : IconButton(
+                        icon: Icon(_defaultKeyUsed
+                            ? Icons.auto_awesome
+                            : Icons.auto_awesome_outlined),
+                        tooltip: l10n.s_use_default,
+                        onPressed: () {
+                          setState(() {
+                            _keyFormatInvalid = false;
+                            _defaultKeyUsed = !_defaultKeyUsed;
+                            if (_defaultKeyUsed) {
+                              _keyController.text = defaultManagementKey;
+                            } else {
+                              _keyController.clear();
+                            }
+                          });
+                        },
+                      ),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {

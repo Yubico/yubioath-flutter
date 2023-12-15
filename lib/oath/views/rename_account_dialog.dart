@@ -209,8 +209,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                         ? l10n.l_name_already_exists
                         : null,
                 prefixIcon: const Icon(Icons.people_alt_outlined),
-                suffixIcon:
-                    !nameNotEmpty || !isUnique ? const Icon(Icons.error) : null,
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

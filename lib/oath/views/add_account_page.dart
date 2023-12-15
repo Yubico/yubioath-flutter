@@ -375,10 +375,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 ? null
                                 : l10n.l_invalid_character_issuer,
                         prefixIcon: const Icon(Icons.business_outlined),
-                        suffixIcon: (!issuerNoColon ||
-                                byteLength(issuerText) > issuerMaxLength)
-                            ? const Icon(Icons.error)
-                            : null,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
