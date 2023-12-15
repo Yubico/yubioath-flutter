@@ -24,6 +24,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -48,6 +49,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   String? _newPinError;
   bool _currentIsWrong = false;
   bool _newIsWrong = false;
+  bool _isObscureCurrent = true;
+  bool _isObscureNew = true;
+  bool _isObscureConfirm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -76,14 +80,26 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               AppTextFormField(
                 initialValue: _currentPin,
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_pin,
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
+                  suffixIcon: IconButton(
+                    icon: Icon(_isObscureCurrent
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureCurrent = !_isObscureCurrent;
+                      });
+                    },
+                    tooltip:
+                        _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
+                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -98,15 +114,25 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             AppTextFormField(
               initialValue: _newPin,
               autofocus: !hasPin,
-              obscureText: true,
+              obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.password],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
                 enabled: !hasPin || _currentPin.isNotEmpty,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureNew = !_isObscureNew;
+                    });
+                  },
+                  tooltip: _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
+                ),
               ),
               onChanged: (value) {
                 setState(() {
@@ -117,12 +143,24 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             ),
             AppTextFormField(
               initialValue: _confirmPin,
-              obscureText: true,
+              obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.password],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.pin_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureConfirm
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureConfirm = !_isObscureConfirm;
+                    });
+                  },
+                  tooltip:
+                      _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
+                ),
                 enabled:
                     (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
               ),

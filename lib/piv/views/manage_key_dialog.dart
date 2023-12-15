@@ -17,13 +17,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -49,10 +50,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   late bool _usesStoredKey;
   late bool _storeKey;
   bool _currentIsWrong = false;
+  bool _currentInvalidFormat = false;
+  bool _newInvalidFormat = false;
   int _attemptsRemaining = -1;
   ManagementKeyType _keyType = ManagementKeyType.tdes;
   final _currentController = TextEditingController();
   final _keyController = TextEditingController();
+  bool _isObscure = true;
 
   @override
   void initState() {
@@ -76,6 +80,16 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   }
 
   _submit() async {
+    final currentInvalidFormat = Format.hex.isValid(_currentController.text);
+    final newInvalidFormat = Format.hex.isValid(_keyController.text);
+    if (!currentInvalidFormat || !newInvalidFormat) {
+      setState(() {
+        _currentInvalidFormat = !currentInvalidFormat;
+        _newInvalidFormat = !newInvalidFormat;
+      });
+      return;
+    }
+
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     if (_usesStoredKey) {
       final status = (await notifier.verifyPin(_currentController.text)).when(
@@ -155,24 +169,37 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
             if (protected)
               AppTextField(
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
                 key: keys.pinPukField,
                 maxLength: 8,
                 controller: _currentController,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_pin,
-                    prefixIcon: const Icon(Icons.pin_outlined),
-                    errorText: _currentIsWrong
-                        ? l10n
-                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                        : null,
-                    errorMaxLines: 3),
+                decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_pin,
+                  errorText: _currentIsWrong
+                      ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                      : _currentInvalidFormat
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.hex.allowedCharacters)
+                          : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.pin_outlined),
+                  suffixIcon: IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin),
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
+                    _currentInvalidFormat = false;
                   });
                 },
               ),
@@ -184,13 +211,18 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 controller: _currentController,
                 readOnly: _defaultKeyUsed,
                 maxLength: !_defaultKeyUsed ? currentType.keyLength * 2 : null,
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_management_key,
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  errorText: _currentIsWrong ? l10n.l_wrong_key : null,
-                  errorMaxLines: 3,
                   helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
+                  errorText: _currentIsWrong
+                      ? l10n.l_wrong_key
+                      : _currentInvalidFormat
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.hex.allowedCharacters)
+                          : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: _hasMetadata
                       ? null
                       : IconButton(
@@ -210,10 +242,6 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                           },
                         ),
                 ),
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(
-                      RegExp('[a-f0-9]', caseSensitive: false))
-                ],
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
@@ -227,15 +255,15 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               autofillHints: const [AutofillHints.newPassword],
               maxLength: hexLength,
               controller: _keyController,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_management_key,
-                prefixIcon: const Icon(Icons.key_outlined),
+                errorText: _newInvalidFormat
+                    ? l10n.l_invalid_format_allowed_chars(
+                        Format.hex.allowedCharacters)
+                    : null,
                 enabled: currentLenOk,
+                prefixIcon: const Icon(Icons.key_outlined),
                 suffixIcon: IconButton(
                   key: keys.managementKeyRefresh,
                   icon: const Icon(Icons.refresh),
@@ -251,6 +279,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                   .padLeft(2, '0')).join();
                           setState(() {
                             _keyController.text = key;
+                            _newInvalidFormat = false;
                           });
                         }
                       : null,

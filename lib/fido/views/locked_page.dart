@@ -23,6 +23,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../features.dart' as features;
 import '../models.dart';
@@ -166,7 +167,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],
               controller: _pinController,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
                 helperText: '', // Prevents dialog resizing
@@ -175,9 +176,8 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isObscure ? Icons.visibility : Icons.visibility_off,
-                    color: IconTheme.of(context).color,
-                  ),
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
+                      color: !_pinIsWrong ? IconTheme.of(context).color : null),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;

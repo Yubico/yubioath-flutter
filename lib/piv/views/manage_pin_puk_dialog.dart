@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -44,6 +45,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   String _confirmPin = '';
   bool _currentIsWrong = false;
   int _attemptsRemaining = -1;
+  bool _isObscureCurrent = true;
+  bool _isObscureNew = true;
+  bool _isObscureConfirm = true;
 
   _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
@@ -104,24 +108,38 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 : l10n.p_enter_current_puk_or_reset),
             AppTextField(
               autofocus: true,
-              obscureText: true,
+              obscureText: _isObscureCurrent,
               maxLength: 8,
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: widget.target == ManageTarget.pin
-                      ? l10n.s_current_pin
-                      : l10n.s_current_puk,
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  errorText: _currentIsWrong
-                      ? (widget.target == ManageTarget.pin
-                          ? l10n.l_wrong_pin_attempts_remaining(
-                              _attemptsRemaining)
-                          : l10n.l_wrong_puk_attempts_remaining(
-                              _attemptsRemaining))
-                      : null,
-                  errorMaxLines: 3),
+              decoration: AppInputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: widget.target == ManageTarget.pin
+                    ? l10n.s_current_pin
+                    : l10n.s_current_puk,
+                errorText: _currentIsWrong
+                    ? (widget.target == ManageTarget.pin
+                        ? l10n
+                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                        : l10n
+                            .l_wrong_puk_attempts_remaining(_attemptsRemaining))
+                    : null,
+                errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureCurrent
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureCurrent = !_isObscureCurrent;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureCurrent ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
+              ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
@@ -134,15 +152,27 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
             AppTextField(
               key: keys.newPinPukField,
-              obscureText: true,
+              obscureText: _isObscureNew,
               maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureNew = !_isObscureNew;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
                 // Old YubiKeys allowed a 4 digit PIN
                 enabled: _currentPin.length >= 4,
               ),
@@ -160,15 +190,28 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             ),
             AppTextField(
               key: keys.confirmPinPukField,
-              obscureText: true,
+              obscureText: _isObscureConfirm,
               maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_confirm_puk
                     : l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureConfirm
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureConfirm = !_isObscureConfirm;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
                 enabled: _currentPin.length >= 4 && _newPin.length >= 6,
               ),
               textInputAction: TextInputAction.done,

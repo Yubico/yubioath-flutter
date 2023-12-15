@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -42,6 +43,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   String _newPassword = '';
   String _confirmPassword = '';
   bool _currentIsWrong = false;
+  bool _isObscureCurrent = true;
+  bool _isObscureNew = true;
+  bool _isObscureConfirm = true;
 
   _submit() async {
     FocusUtils.unfocus(context);
@@ -85,15 +89,28 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               Text(l10n.p_enter_current_password_or_reset),
               AppTextField(
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
                 key: keys.currentPasswordField,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_current_password,
-                    prefixIcon: const Icon(Icons.password_outlined),
-                    errorText: _currentIsWrong ? l10n.s_wrong_password : null,
-                    errorMaxLines: 3),
+                decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_current_password,
+                  errorText: _currentIsWrong ? l10n.s_wrong_password : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.password_outlined),
+                  suffixIcon: IconButton(
+                      icon: Icon(_isObscureCurrent
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscureCurrent = !_isObscureCurrent;
+                        });
+                      },
+                      tooltip: _isObscureCurrent
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password),
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
@@ -145,12 +162,24 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             AppTextField(
               key: keys.newPasswordField,
               autofocus: !widget.state.hasKey,
-              obscureText: true,
+              obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_password,
                 prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: IconButton(
+                    icon: Icon(_isObscureNew
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureNew = !_isObscureNew;
+                      });
+                    },
+                    tooltip: _isObscureNew
+                        ? l10n.s_show_password
+                        : l10n.s_hide_password),
                 enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
               ),
               textInputAction: TextInputAction.next,
@@ -167,12 +196,24 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
             ),
             AppTextField(
               key: keys.confirmPasswordField,
-              obscureText: true,
+              obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_password,
                 prefixIcon: const Icon(Icons.password_outlined),
+                suffixIcon: IconButton(
+                    icon: Icon(_isObscureConfirm
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureConfirm = !_isObscureConfirm;
+                      });
+                    },
+                    tooltip: _isObscureConfirm
+                        ? l10n.s_show_password
+                        : l10n.s_hide_password),
                 enabled:
                     (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
                         _newPassword.isNotEmpty,

@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -79,7 +80,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 autofocus: true,
                 obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_password,
                   errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
@@ -87,9 +88,10 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off,
-                      color: IconTheme.of(context).color,
-                    ),
+                        _isObscure ? Icons.visibility : Icons.visibility_off,
+                        color: !_passwordIsWrong
+                            ? IconTheme.of(context).color
+                            : null),
                     onPressed: () {
                       setState(() {
                         _isObscure = !_isObscure;
@@ -105,37 +107,48 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 }), // Update state on change
                 onSubmitted: (_) => _submit(),
               ),
-            ],
-          ),
-        ),
-        keystoreFailed
-            ? ListTile(
-                leading: const Icon(Icons.warning_amber_rounded),
-                title: Text(l10n.l_keystore_unavailable),
-                dense: true,
-                minLeadingWidth: 0,
-              )
-            : CheckboxListTile(
-                title: Text(l10n.s_remember_password),
-                dense: true,
-                controlAffinity: ListTileControlAffinity.leading,
-                value: _remember,
-                onChanged: (value) {
-                  setState(() {
-                    _remember = value ?? false;
-                  });
-                },
+              const SizedBox(height: 8.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    children: [
+                      keystoreFailed
+                          ? Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 4.0,
+                              runSpacing: 8.0,
+                              children: [
+                                const Icon(Icons.warning_amber_rounded),
+                                Text(l10n.l_keystore_unavailable)
+                              ],
+                            )
+                          : FilterChip(
+                              label: Text(l10n.s_remember_password),
+                              selected: _remember,
+                              onSelected: (value) {
+                                setState(() {
+                                  _remember = value;
+                                });
+                              },
+                            ),
+                      ElevatedButton.icon(
+                        key: keys.unlockButton,
+                        label: Text(l10n.s_unlock),
+                        icon: const Icon(Icons.lock_open),
+                        onPressed: _passwordController.text.isNotEmpty
+                            ? _submit
+                            : null,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              key: keys.unlockButton,
-              label: Text(l10n.s_unlock),
-              icon: const Icon(Icons.lock_open),
-              onPressed: _passwordController.text.isNotEmpty ? _submit : null,
-            ),
+            ],
           ),
         ),
       ],

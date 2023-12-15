@@ -15,12 +15,13 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
+import '../../core/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -40,6 +41,7 @@ class AuthenticationDialog extends ConsumerStatefulWidget {
 class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   bool _defaultKeyUsed = false;
   bool _keyIsWrong = false;
+  bool _keyFormatInvalid = false;
   final _keyController = TextEditingController();
 
   @override
@@ -56,6 +58,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                 ManagementKeyType.tdes)
             .keyLength *
         2;
+    final keyFormatInvalid = !Format.hex.isValid(_keyController.text);
     return ResponsiveDialog(
       title: Text(l10n.l_unlock_piv_management),
       actions: [
@@ -63,6 +66,12 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
           key: keys.unlockButton,
           onPressed: _keyController.text.length == keyLen
               ? () async {
+                  if (keyFormatInvalid) {
+                    setState(() {
+                      _keyFormatInvalid = true;
+                    });
+                    return;
+                  }
                   final navigator = Navigator.of(context);
                   try {
                     final status = await ref
@@ -99,19 +108,20 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
               autofocus: true,
               autofillHints: const [AutofillHints.password],
               controller: _keyController,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
               readOnly: _defaultKeyUsed,
               maxLength: !_defaultKeyUsed ? keyLen : null,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_management_key,
-                prefixIcon: const Icon(Icons.key_outlined),
-                errorText: _keyIsWrong ? l10n.l_wrong_key : null,
-                errorMaxLines: 3,
                 helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
+                errorText: _keyIsWrong
+                    ? l10n.l_wrong_key
+                    : _keyFormatInvalid
+                        ? l10n.l_invalid_format_allowed_chars(
+                            Format.hex.allowedCharacters)
+                        : null,
+                errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.key_outlined),
                 suffixIcon: hasMetadata
                     ? null
                     : IconButton(
@@ -121,6 +131,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                         tooltip: l10n.s_use_default,
                         onPressed: () {
                           setState(() {
+                            _keyFormatInvalid = false;
                             _defaultKeyUsed = !_defaultKeyUsed;
                             if (_defaultKeyUsed) {
                               _keyController.text = defaultManagementKey;
@@ -135,6 +146,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
               onChanged: (value) {
                 setState(() {
                   _keyIsWrong = false;
+                  _keyFormatInvalid = false;
                 });
               },
             ),

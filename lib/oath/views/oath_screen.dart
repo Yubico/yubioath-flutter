@@ -26,6 +26,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
@@ -161,7 +162,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               // Use the default style, but with a smaller font size:
               style: textTheme.titleMedium
                   ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 hintText: l10n.s_search_accounts,
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(32)),

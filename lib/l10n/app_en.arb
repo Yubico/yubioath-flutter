@@ -29,6 +29,7 @@
     "s_close": "Close",
     "s_delete": "Delete",
     "s_quit": "Quit",
+    "s_status": "Status",
     "s_unlock": "Unlock",
     "s_calculate": "Calculate",
     "s_import": "Import",
@@ -61,8 +62,9 @@
     "s_manage": "Manage",
     "s_setup": "Setup",
     "s_settings": "Settings",
-    "s_piv": "PIV",
+    "s_certificates": "Certificates",
     "s_webauthn": "WebAuthn",
+    "s_slots": "Slots",
     "s_help_and_about": "Help and about",
     "s_help_and_feedback": "Help and feedback",
     "s_send_feedback": "Send us feedback",
@@ -78,6 +80,14 @@
     "s_hide_secret_key": "Hide secret key",
     "s_private_key": "Private key",
     "s_invalid_length": "Invalid length",
+    "s_invalid_format": "Invalid format",
+    "l_invalid_format_allowed_chars": "Invalid format, allowed characters: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {}
+        }
+    },
+    "l_invalid_keyboard_character": "Invalid characters for selected keyboard",
     "s_require_touch": "Require touch",
     "q_have_account_info": "Have account info?",
     "s_run_diagnostics": "Run diagnostics",
@@ -189,6 +199,8 @@
     "s_change_puk": "Change PUK",
     "s_show_pin": "Show PIN",
     "s_hide_pin": "Hide PIN",
+    "s_show_puk": "Show PUK",
+    "s_hide_puk": "Hide PUK",
     "s_current_pin": "Current PIN",
     "s_current_puk": "Current PUK",
     "s_new_pin": "New PIN",
@@ -286,6 +298,8 @@
     "s_management_key": "Management key",
     "s_current_management_key": "Current management key",
     "s_new_management_key": "New management key",
+    "s_show_management_key": "Show management key",
+    "s_hide_management_key": "Hide management key",
     "l_change_management_key": "Change management key",
     "p_change_management_key_desc": "Change your management key. You can optionally choose to allow the PIN to be used instead of the management key.",
     "l_management_key_changed": "Management key changed",
@@ -429,7 +443,6 @@
 
     "@_certificates": {},
     "s_certificate": "Certificate",
-    "s_certificates": "Certificates",
     "s_csr": "CSR",
     "s_subject": "Subject",
     "l_export_csr_file": "Save CSR to file",
@@ -504,6 +517,74 @@
     "s_slot_9d": "Key Management",
     "s_slot_9e": "Card Authentication",
 
+    "@_otp_slots": {},
+    "s_otp_slot_one": "Short touch",
+    "s_otp_slot_two": "Long touch",
+    "l_otp_slot_empty": "Slot is empty",
+    "l_otp_slot_configured": "Slot is configured",
+
+    "@_otp_slot_configurations": {},
+    "s_yubiotp": "Yubico OTP",
+    "l_yubiotp_desc": "Program a Yubico OTP credential",
+    "s_challenge_response": "Challenge-response",
+    "l_challenge_response_desc": "Program a challenge-response credential",
+    "s_static_password": "Static password",
+    "l_static_password_desc": "Configure a static password",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "Program a HMAC-SHA1 based credential",
+    "s_public_id": "Public ID",
+    "s_private_id": "Private ID",
+    "s_allow_any_character": "Allow any character",
+    "s_use_serial": "Use serial",
+    "s_generate_private_id": "Generate private ID",
+    "s_generate_secret_key": "Generate secret key",
+    "s_generate_passowrd": "Generate password",
+    "l_select_file": "Select file",
+    "l_no_export_file": "No export file",
+    "s_no_export": "No export",
+    "s_export": "Export",
+    "l_export_configuration_file": "Export configuration to file",
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": "Delete credential",
+    "l_delete_slot_desc": "Remove credential in slot",
+    "p_warning_delete_slot_configuration": "Warning! This action will permanently remove the credential from slot {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {}
+        }
+    },
+    "l_slot_deleted": "Credential deleted",
+    "s_swap": "Swap",
+    "s_swap_slots": "Swap slots",
+    "l_swap_slots_desc": "Swap short/long touch",
+    "p_swap_slots_desc": "This will swap the configuration of the two slots.",
+    "l_slots_swapped": "Slot configurations swapped",
+    "l_slot_credential_configured": "Configured {type} credential",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {}
+        }
+    },
+    "l_slot_credential_configured_and_exported": "Configured {type} credential and exported to {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {},
+            "file": {}
+        }
+    },
+    "s_append_enter": "Append ⏎",
+    "l_append_enter_desc": "Append an Enter keystroke after emitting the OTP",
+
+    "@_otp_errors": {},
+    "p_otp_slot_configuration_error": "Failed to modify {slot}! Make sure the YubiKey does not have restrictive access.",
+    "@p_otp_slot_configuration_error": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+
+
     "@_permissions": {},
     "s_enable_nfc": "Enable NFC",
     "s_permission_denied": "Permission denied",
@@ -539,7 +620,6 @@
     "l_oath_application_reset": "OATH application reset",
     "s_reset_fido": "Reset FIDO",
     "l_fido_app_reset": "FIDO application reset",
-    "l_press_reset_to_begin": "Press reset to begin\u2026",
     "l_reset_failed": "Error performing reset: {message}",
     "@l_reset_failed": {
         "placeholders": {

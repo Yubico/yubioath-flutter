@@ -22,6 +22,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -161,12 +162,13 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
             AppTextField(
               autofocus: true,
               key: keys.subjectField,
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_subject,
-                  errorText: _subject.isNotEmpty && _invalidSubject
-                      ? l10n.l_rfc4514_invalid
-                      : null),
+              decoration: AppInputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_subject,
+                errorText: _subject.isNotEmpty && _invalidSubject
+                    ? l10n.l_rfc4514_invalid
+                    : null,
+              ),
               textInputAction: TextInputAction.next,
               enabled: !_generating,
               onChanged: (value) {

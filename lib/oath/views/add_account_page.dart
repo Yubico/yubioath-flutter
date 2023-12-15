@@ -19,7 +19,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -30,11 +29,13 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_target.dart';
@@ -48,9 +49,6 @@ import 'unlock_form.dart';
 import 'utils.dart';
 
 final _log = Logger('oath.view.add_account_page');
-
-final _secretFormatterPattern =
-    RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
 
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath? devicePath;
@@ -83,7 +81,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _digits = defaultDigits;
   int _counter = defaultCounter;
-  bool _validateSecretLength = false;
+  bool _validateSecret = false;
   bool _dataLoaded = false;
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
@@ -235,6 +233,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
+    final secretFormatValid = Format.base32.isValid(secret);
 
     // is this credentials name/issuer pair different from all other?
     final isUnique = _credentials
@@ -271,7 +270,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     void submit() async {
-      if (secretLengthValid) {
+      if (secretLengthValid && secretFormatValid) {
         final cred = CredentialData(
           issuer: issuerText.isEmpty ? null : issuerText,
           name: nameText,
@@ -304,7 +303,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         }
       } else {
         setState(() {
-          _validateSecretLength = true;
+          _validateSecret = true;
         });
       }
     }
@@ -365,17 +364,17 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         limitBytesLength(issuerRemaining),
                       ],
                       buildCounter: buildByteCounterFor(issuerText),
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
-                        helperText: '',
-                        // Prevents dialog resizing when disabled
-                        prefixIcon: const Icon(Icons.business_outlined),
+                        helperText:
+                            '', // Prevents dialog resizing when disabled
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
                             : issuerNoColon
                                 ? null
                                 : l10n.l_invalid_character_issuer,
+                        prefixIcon: const Icon(Icons.business_outlined),
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -393,9 +392,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       maxLength: nameMaxLength,
                       buildCounter: buildByteCounterFor(nameText),
                       inputFormatters: [limitBytesLength(nameRemaining)],
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
-                        prefixIcon: const Icon(Icons.person_outline),
                         labelText: l10n.s_account_name,
                         helperText: '',
                         // Prevents dialog resizing when disabled
@@ -404,6 +402,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             : isUnique
                                 ? null
                                 : l10n.l_name_already_exists,
+                        prefixIcon: const Icon(Icons.person_outline),
+                        suffixIcon:
+                            (!isUnique || byteLength(nameText) > nameMaxLength)
+                                ? const Icon(Icons.error)
+                                : null,
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -423,18 +426,24 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       // would hint to use saved passwords for this field
                       autofillHints:
                           isAndroid ? [] : const [AutofillHints.password],
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(
-                            _secretFormatterPattern)
-                      ],
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: l10n.s_secret_key,
+                          errorText: _validateSecret && !secretLengthValid
+                              ? l10n.s_invalid_length
+                              : _validateSecret && !secretFormatValid
+                                  ? l10n.l_invalid_format_allowed_chars(
+                                      Format.base32.allowedCharacters)
+                                  : null,
+                          prefixIcon: const Icon(Icons.key_outlined),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isObscure
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: IconTheme.of(context).color,
-                            ),
+                                _isObscure
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: !_validateSecret
+                                    ? IconTheme.of(context).color
+                                    : null),
                             onPressed: () {
                               setState(() {
                                 _isObscure = !_isObscure;
@@ -443,18 +452,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             tooltip: _isObscure
                                 ? l10n.s_show_secret_key
                                 : l10n.s_hide_secret_key,
-                          ),
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.key_outlined),
-                          labelText: l10n.s_secret_key,
-                          errorText: _validateSecretLength && !secretLengthValid
-                              ? l10n.s_invalid_length
-                              : null),
+                          )),
                       readOnly: _dataLoaded,
                       textInputAction: TextInputAction.done,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecretLength = false;
+                          _validateSecret = false;
                         });
                       },
                       onSubmitted: (_) {

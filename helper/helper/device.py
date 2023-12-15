@@ -413,7 +413,9 @@ class ConnectionNode(RpcNode):
             or (  # SmartCardConnection can be used over NFC, or on 5.3 and later.
                 isinstance(self._connection, SmartCardConnection)
                 and (
-                    self._transport == TRANSPORT.NFC or self._info.version >= (5, 3, 0)
+                    self._transport == TRANSPORT.NFC
+                    or self._info.version >= (5, 3, 0)
+                    or self._info.version[0] == 3
                 )
             )
         )

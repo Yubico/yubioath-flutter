@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'app_input_decoration.dart';
+
 /// TextField without autocorrect and suggestions
 class AppTextField extends TextField {
   const AppTextField({
@@ -28,7 +30,7 @@ class AppTextField extends TextField {
     super.controller,
     super.focusNode,
     super.undoController,
-    super.decoration,
+    AppInputDecoration? decoration,
     super.textInputAction,
     super.textCapitalization,
     super.style,
@@ -83,5 +85,5 @@ class AppTextField extends TextField {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  });
+  }) : super(decoration: decoration);
 }

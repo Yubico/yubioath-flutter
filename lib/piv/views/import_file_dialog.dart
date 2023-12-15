@@ -23,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -51,6 +52,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   String _password = '';
   bool _passwordIsWrong = false;
   bool _importing = false;
+  bool _isObscure = true;
 
   @override
   void initState() {
@@ -125,15 +127,27 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
               Text(l10n.p_password_protected_file),
               AppTextField(
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
                 key: keys.managementKeyField,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_password,
-                    prefixIcon: const Icon(Icons.password_outlined),
-                    errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
-                    errorMaxLines: 3),
+                decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_password,
+                  errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Icons.password_outlined),
+                  suffixIcon: IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password),
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {

@@ -29,6 +29,7 @@
     "s_close": "Fermer",
     "s_delete": "Supprimer",
     "s_quit": "Quitter",
+    "s_status": null,
     "s_unlock": "Déverrouiller",
     "s_calculate": "Calculer",
     "s_import": "Importer",
@@ -61,8 +62,9 @@
     "s_manage": "Gérer",
     "s_setup": "Configuration",
     "s_settings": "Paramètres",
-    "s_piv": "PIV",
+    "s_certificates": "Certificats",
     "s_webauthn": "WebAuthn",
+    "s_slots": null,
     "s_help_and_about": "Aide et à propos",
     "s_help_and_feedback": "Aide et retours",
     "s_send_feedback": "Envoyer nous un retour",
@@ -78,6 +80,14 @@
     "s_hide_secret_key": null,
     "s_private_key": "Clé privée",
     "s_invalid_length": "Longueur invalide",
+    "s_invalid_format": null,
+    "l_invalid_format_allowed_chars": null,
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {}
+        }
+    },
+    "l_invalid_keyboard_character": null,
     "s_require_touch": "Touché requis",
     "q_have_account_info": "Avez-vous des informations de compte?",
     "s_run_diagnostics": "Exécuter un diagnostique",
@@ -189,6 +199,8 @@
     "s_change_puk": "Changez PUK",
     "s_show_pin": null,
     "s_hide_pin": null,
+    "s_show_puk": null,
+    "s_hide_puk": null,
     "s_current_pin": "PIN actuel",
     "s_current_puk": "PUK actuel",
     "s_new_pin": "Nouveau PIN",
@@ -286,6 +298,8 @@
     "s_management_key": "Gestion des clés",
     "s_current_management_key": "Clé actuelle de gestion",
     "s_new_management_key": "Nouvelle clé de gestion",
+    "s_show_management_key": null,
+    "s_hide_management_key": null,
     "l_change_management_key": "Changer la clé de gestion",
     "p_change_management_key_desc": "Changer votre clé de gestion. Vous pouvez optionnellement autoriser le PIN à être utilisé à la place de la clé de gestion.",
     "l_management_key_changed": "Ché de gestion changée",
@@ -429,7 +443,6 @@
 
     "@_certificates": {},
     "s_certificate": "Certificat",
-    "s_certificates": "Certificats",
     "s_csr": "CSR",
     "s_subject": "Sujet",
     "l_export_csr_file": "Sauvegarder le CSR vers un fichier",
@@ -504,6 +517,74 @@
     "s_slot_9d": "Gestion des clés",
     "s_slot_9e": "Authentification par carte",
 
+    "@_otp_slots": {},
+    "s_otp_slot_one": null,
+    "s_otp_slot_two": null,
+    "l_otp_slot_empty": null,
+    "l_otp_slot_configured": null,
+
+    "@_otp_slot_configurations": {},
+    "s_yubiotp": null,
+    "l_yubiotp_desc": null,
+    "s_challenge_response": null,
+    "l_challenge_response_desc": null,
+    "s_static_password": null,
+    "l_static_password_desc": null,
+    "s_hotp": null,
+    "l_hotp_desc": null,
+    "s_public_id": null,
+    "s_private_id": null,
+    "s_allow_any_character": null,
+    "s_use_serial": null,
+    "s_generate_private_id": null,
+    "s_generate_secret_key": null,
+    "s_generate_passowrd": null,
+    "l_select_file": null,
+    "l_no_export_file": null,
+    "s_no_export": null,
+    "s_export": null,
+    "l_export_configuration_file": null,
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": null,
+    "l_delete_slot_desc": null,
+    "p_warning_delete_slot_configuration": null,
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {}
+        }
+    },
+    "l_slot_deleted": null,
+    "s_swap": null,
+    "s_swap_slots": null,
+    "l_swap_slots_desc": null,
+    "p_swap_slots_desc": null,
+    "l_slots_swapped": null,
+    "l_slot_credential_configured": null,
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {}
+        }
+    },
+    "l_slot_credential_configured_and_exported": null,
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {},
+            "file": {}
+        }
+    },
+    "s_append_enter": null,
+    "l_append_enter_desc": null,
+
+    "@_otp_errors": {},
+    "p_otp_slot_configuration_error": null,
+    "@p_otp_slot_configuration_error": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+
+
     "@_permissions": {},
     "s_enable_nfc": "Activer le NFC",
     "s_permission_denied": "Permission refusée",
@@ -539,7 +620,6 @@
     "l_oath_application_reset": "L'application OATH à été réinitialisée",
     "s_reset_fido": "Réinitialiser le FIDO",
     "l_fido_app_reset": "L'application FIDO à été réinitialisée",
-    "l_press_reset_to_begin": "Appuyez sur réinitialiser pour commencer\u2026",
     "l_reset_failed": "Erreur pendant la réinitialisation: {message}",
     "@l_reset_failed": {
         "placeholders": {

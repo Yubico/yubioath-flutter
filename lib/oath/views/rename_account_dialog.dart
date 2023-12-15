@@ -25,6 +25,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -179,7 +180,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               buildCounter: buildByteCounterFor(_issuer),
               inputFormatters: [limitBytesLength(issuerRemaining)],
               key: keys.issuerField,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
@@ -198,7 +199,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               inputFormatters: [limitBytesLength(nameRemaining)],
               buildCounter: buildByteCounterFor(_name),
               key: keys.nameField,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_account_name,
                 helperText: '', // Prevents dialog resizing when disabled

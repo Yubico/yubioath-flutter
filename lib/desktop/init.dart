@@ -42,12 +42,14 @@ import '../core/state.dart';
 import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import '../otp/state.dart';
 import '../piv/state.dart';
 import '../version.dart';
 import 'devices.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
+import 'otp/state.dart';
 import 'piv/state.dart';
 import 'qr_scanner.dart';
 import 'rpc.dart';
@@ -189,6 +191,7 @@ Future<Widget> initialize(List<String> argv) async {
         Application.fido,
         Application.piv,
         Application.management,
+        Application.otp
       ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
@@ -226,6 +229,8 @@ Future<Widget> initialize(List<String> argv) async {
       // PIV
       pivStateProvider.overrideWithProvider(desktopPivState.call),
       pivSlotsProvider.overrideWithProvider(desktopPivSlots.call),
+      // OTP
+      otpStateProvider.overrideWithProvider(desktopOtpState.call)
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(

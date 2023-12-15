@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -93,19 +94,18 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
               controller: _pinController,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
-                prefixIcon: const Icon(Icons.pin_outlined),
                 errorText: _pinIsWrong
                     ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                     : null,
                 errorMaxLines: 3,
+                prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isObscure ? Icons.visibility : Icons.visibility_off,
-                    color: IconTheme.of(context).color,
-                  ),
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
+                      color: !_pinIsWrong ? IconTheme.of(context).color : null),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;
