@@ -39,8 +39,6 @@ enum SlotId {
       SlotId.values.firstWhere((e) => e.id == value);
 }
 
-enum SlotConfigurationType { yubiotp, static, hotp, chalresp }
-
 @freezed
 class OtpState with _$OtpState {
   const OtpState._();

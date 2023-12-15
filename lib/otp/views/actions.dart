@@ -33,10 +33,20 @@ import 'configure_static_dialog.dart';
 import 'configure_yubiotp_dialog.dart';
 import 'delete_slot_dialog.dart';
 
-class ConfigureIntent extends Intent {
-  const ConfigureIntent({required this.configurationType});
+class ConfigureChalRespIntent extends Intent {
+  const ConfigureChalRespIntent();
+}
 
-  final SlotConfigurationType configurationType;
+class ConfigureHotpIntent extends Intent {
+  const ConfigureHotpIntent();
+}
+
+class ConfigureStaticIntent extends Intent {
+  const ConfigureStaticIntent();
+}
+
+class ConfigureYubiOtpIntent extends Intent {
+  const ConfigureYubiOtpIntent();
 }
 
 Widget registerOtpActions(
@@ -49,48 +59,58 @@ Widget registerOtpActions(
   final hasFeature = ref.watch(featureProvider);
   return Actions(
     actions: {
-      if (hasFeature(features.slotsConfigure))
-        ConfigureIntent:
-            CallbackAction<ConfigureIntent>(onInvoke: (intent) async {
+      if (hasFeature(features.slotsConfigureChalResp))
+        ConfigureChalRespIntent:
+            CallbackAction<ConfigureChalRespIntent>(onInvoke: (intent) async {
           final withContext = ref.read(withContextProvider);
-          final configurationType = intent.configurationType;
 
-          switch (configurationType) {
-            case SlotConfigurationType.chalresp:
-              await withContext((context) async {
-                await showBlurDialog(
-                    context: context,
-                    builder: (context) =>
-                        ConfigureChalrespDialog(devicePath, otpSlot));
-              });
-            case SlotConfigurationType.hotp:
-              await withContext((context) async {
-                await showBlurDialog(
-                    context: context,
-                    builder: (context) =>
-                        ConfigureHotpDialog(devicePath, otpSlot));
-              });
-            case SlotConfigurationType.static:
-              final keyboardLayouts = await ref
-                  .read(otpStateProvider(devicePath).notifier)
-                  .getKeyboardLayouts();
-              await withContext((context) async {
-                await showBlurDialog(
-                    context: context,
-                    builder: (context) => ConfigureStaticDialog(
-                        devicePath, otpSlot, keyboardLayouts));
-              });
-            case SlotConfigurationType.yubiotp:
-              await withContext((context) async {
-                await showBlurDialog(
-                    context: context,
-                    builder: (context) =>
-                        ConfigureYubiOtpDialog(devicePath, otpSlot));
-              });
-            default:
-              break;
-          }
+          await withContext((context) async {
+            await showBlurDialog(
+                context: context,
+                builder: (context) =>
+                    ConfigureChalrespDialog(devicePath, otpSlot));
+          });
+          return null;
+        }),
+      if (hasFeature(features.slotsConfigureHotp))
+        ConfigureHotpIntent:
+            CallbackAction<ConfigureHotpIntent>(onInvoke: (intent) async {
+          final withContext = ref.read(withContextProvider);
 
+          await withContext((context) async {
+            await showBlurDialog(
+                context: context,
+                builder: (context) => ConfigureHotpDialog(devicePath, otpSlot));
+          });
+          return null;
+        }),
+      if (hasFeature(features.slotsConfigureStatic))
+        ConfigureStaticIntent:
+            CallbackAction<ConfigureStaticIntent>(onInvoke: (intent) async {
+          final withContext = ref.read(withContextProvider);
+
+          final keyboardLayouts = await ref
+              .read(otpStateProvider(devicePath).notifier)
+              .getKeyboardLayouts();
+          await withContext((context) async {
+            await showBlurDialog(
+                context: context,
+                builder: (context) => ConfigureStaticDialog(
+                    devicePath, otpSlot, keyboardLayouts));
+          });
+          return null;
+        }),
+      if (hasFeature(features.slotsConfigureYubiOtp))
+        ConfigureYubiOtpIntent:
+            CallbackAction<ConfigureYubiOtpIntent>(onInvoke: (intent) async {
+          final withContext = ref.read(withContextProvider);
+
+          await withContext((context) async {
+            await showBlurDialog(
+                context: context,
+                builder: (context) =>
+                    ConfigureYubiOtpDialog(devicePath, otpSlot));
+          });
           return null;
         }),
       if (hasFeature(features.slotsDelete))
@@ -114,37 +134,34 @@ Widget registerOtpActions(
 List<ActionItem> buildSlotActions(bool isConfigured, AppLocalizations l10n) {
   return [
     ActionItem(
-        key: keys.configureYubiOtp,
-        feature: features.slotsConfigure,
-        icon: const Icon(Icons.shuffle_outlined),
-        title: l10n.s_yubiotp,
-        subtitle: l10n.l_yubiotp_desc,
-        intent: const ConfigureIntent(
-            configurationType: SlotConfigurationType.yubiotp)),
+      key: keys.configureYubiOtp,
+      feature: features.slotsConfigureYubiOtp,
+      icon: const Icon(Icons.shuffle_outlined),
+      title: l10n.s_yubiotp,
+      subtitle: l10n.l_yubiotp_desc,
+      intent: const ConfigureYubiOtpIntent(),
+    ),
     ActionItem(
         key: keys.configureChalResp,
-        feature: features.slotsConfigure,
+        feature: features.slotsConfigureChalResp,
         icon: const Icon(Icons.key_outlined),
         title: l10n.s_challenge_response,
         subtitle: l10n.l_challenge_response_desc,
-        intent: const ConfigureIntent(
-            configurationType: SlotConfigurationType.chalresp)),
+        intent: const ConfigureChalRespIntent()),
     ActionItem(
         key: keys.configureStatic,
-        feature: features.slotsConfigure,
+        feature: features.slotsConfigureStatic,
         icon: const Icon(Icons.password_outlined),
         title: l10n.s_static_password,
         subtitle: l10n.l_static_password_desc,
-        intent: const ConfigureIntent(
-            configurationType: SlotConfigurationType.static)),
+        intent: const ConfigureStaticIntent()),
     ActionItem(
         key: keys.configureHotp,
-        feature: features.slotsConfigure,
+        feature: features.slotsConfigureHotp,
         icon: const Icon(Icons.tag_outlined),
         title: l10n.s_hotp,
         subtitle: l10n.l_hotp_desc,
-        intent: const ConfigureIntent(
-            configurationType: SlotConfigurationType.hotp)),
+        intent: const ConfigureHotpIntent()),
     ActionItem(
       key: keys.deleteAction,
       feature: features.slotsDelete,

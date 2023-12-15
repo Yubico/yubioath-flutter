@@ -22,5 +22,9 @@ final actionsSwap = actions.feature('swap');
 
 final slots = otp.feature('slots');
 
-final slotsConfigure = slots.feature('configure');
+final slotsConfigureChalResp = slots.feature('configureChalResp');
+final slotsConfigureHotp = slots.feature('configureHotp');
+final slotsConfigureStatic = slots.feature('configureSlots');
+final slotsConfigureYubiOtp = slots.feature('configureYubiOtp');
+
 final slotsDelete = slots.feature('delete');
