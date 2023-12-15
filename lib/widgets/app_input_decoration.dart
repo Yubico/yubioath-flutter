@@ -64,28 +64,38 @@ class AppInputDecoration extends InputDecoration {
 
   @override
   Widget? get suffixIcon {
-    final hasError = errorText != null;
+    final icons = [
+      if (super.suffixIcon != null) super.suffixIcon!,
+      if (suffixIcons != null) ...suffixIcons!,
+      if (errorText != null) const Icon(Icons.error_outlined),
+    ];
 
-    if (hasError || suffixIcons != null) {
-      final errorIcon = hasError ? const Icon(Icons.error_outlined) : null;
-
-      final existingSuffixIcon = super.suffixIcon;
-
-      if (errorIcon != null &&
-          (existingSuffixIcon == null && suffixIcons == null)) {
-        return errorIcon;
-      }
-      return Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runAlignment: WrapAlignment.center,
-        children: [
-          if (suffixIcons != null) ...suffixIcons!,
-          if (existingSuffixIcon != null) existingSuffixIcon,
-          if (errorIcon != null) ...[errorIcon, const SizedBox(width: 8.0)],
-        ],
-      );
-    }
-
-    return super.suffixIcon;
+    return switch (icons.length) {
+      0 => null,
+      1 => icons.single,
+      _ => Builder(
+          builder: (context) {
+            // Apply the constraints to *each* icon.
+            final constraints = suffixIconConstraints ??
+                Theme.of(context).visualDensity.effectiveConstraints(
+                      const BoxConstraints(
+                        minWidth: kMinInteractiveDimension,
+                        minHeight: kMinInteractiveDimension,
+                      ),
+                    );
+            return Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              runAlignment: WrapAlignment.center,
+              children: [
+                for (Widget icon in icons)
+                  ConstrainedBox(
+                    constraints: constraints,
+                    child: icon,
+                  )
+              ],
+            );
+          },
+        ),
+    };
   }
 }
