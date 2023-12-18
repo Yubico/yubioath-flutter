@@ -121,7 +121,7 @@ jobs:
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: yubioath-desktop-linux
         path: deploy

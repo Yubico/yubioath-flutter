@@ -63,7 +63,7 @@ jobs:
         run: android/scripts/collect-artifacts.sh ${GITHUB_REF}
         working-directory: ./app
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: yubico-authenticator-android
           path: app/artifacts/*
