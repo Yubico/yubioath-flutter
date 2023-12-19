@@ -76,6 +76,7 @@ const userGuideButton = Key('$_prefix.user_guide_button');
 const helpButton = Key('$_prefix.help_button');
 const diagnosticsChip = Key('$_prefix.diagnostics_chip');
 const logChip = Key('$_prefix.log_chip');
+const logLevelsChip = Key('$_prefix.log_levels_chip');
 const screenshotChip = Key('$_prefix.screenshot_chip');
 
 // misc buttons
