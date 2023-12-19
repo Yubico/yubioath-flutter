@@ -444,6 +444,7 @@
     },
     "p_press_fingerprint_begin": "Drücken Sie Ihren Finger gegen den YubiKey um zu beginnen.",
     "p_will_change_label_fp": "Das ändert die Beschriftung des Fingerabdrucks.",
+    "l_name_fingerprint": null,
 
     "@_fido_errors": {},
     "l_user_action_timeout_error": null,
