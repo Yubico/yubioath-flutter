@@ -406,6 +406,10 @@
     "s_fingerprints": "Fingerprints",
     "l_fingerprint_captured": "Fingerprint captured successfully!",
     "s_fingerprint_added": "Fingerprint added",
+    "l_adding_fingerprint_failed": "Error adding fingerprint: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {}
+    },
     "l_setting_name_failed": "Error setting name: {message}",
     "@l_setting_name_failed": {
         "placeholders": {
@@ -440,6 +444,11 @@
     },
     "p_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "p_will_change_label_fp": "This will change the label of the fingerprint.",
+
+    "@_fido_errors": {},
+    "l_user_action_timeout_error": "Failed due to user inactivity",
+    "l_wrong_inserted_yk_error": "Re-inserted YubiKey does not match initial device",
+    "l_failed_connecting_to_fido": "Failed connecting to FIDO interface",
 
     "@_certificates": {},
     "s_certificate": "Certificate",

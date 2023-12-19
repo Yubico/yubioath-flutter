@@ -47,6 +47,14 @@ class PinValidationException(RpcException):
         )
 
 
+class InactivityException(RpcException):
+    def __init__(self):
+        super().__init__(
+            "user-action-timeout",
+            "Failed to add fingerprint due to user inactivity.",
+        )
+
+
 def _ctap_id(ctap):
     return (ctap.info.aaguid, ctap.info.firmware_version)
 
@@ -164,7 +172,11 @@ class Ctap2Node(RpcNode):
         self.ctap = Ctap2(connection)
         if target != _ctap_id(self.ctap):
             raise ValueError("Re-inserted YubiKey does not match initial device")
-        self.ctap.reset(event=event)
+        try:
+            self.ctap.reset(event=event)
+        except CtapError as e:
+            if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
+                raise InactivityException()
         self._info = self.ctap.get_info()
         self._auth_blocked = False
         self._token = None
@@ -340,6 +352,9 @@ class FingerprintsNode(RpcNode):
                 signal("capture", dict(remaining=enroller.remaining))
             except CaptureError as e:
                 signal("capture-error", dict(code=e.code))
+            except CtapError as e:
+                if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
+                    raise InactivityException()
         if name:
             self.bio.set_name(template_id, name)
         self._templates[template_id] = name

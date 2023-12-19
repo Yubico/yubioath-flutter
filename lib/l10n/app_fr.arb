@@ -406,6 +406,10 @@
     "s_fingerprints": "Empreintes",
     "l_fingerprint_captured": "Empreinte capturée avec succès!",
     "s_fingerprint_added": "Empreinte ajoutée",
+    "l_adding_fingerprint_failed": null,
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {}
+    },
     "l_setting_name_failed": "Erreur lors de l'ajout du nom: {message}",
     "@l_setting_name_failed": {
         "placeholders": {
@@ -440,6 +444,11 @@
     },
     "p_press_fingerprint_begin": "Posez votre doigt sur votre YubiKey pour commencer.",
     "p_will_change_label_fp": "Cette action changera la description de votre empreinte.",
+
+    "@_fido_errors": {},
+    "l_user_action_timeout_error": null,
+    "l_wrong_inserted_yk_error": null,
+    "l_failed_connecting_to_fido": null,
 
     "@_certificates": {},
     "s_certificate": "Certificat",

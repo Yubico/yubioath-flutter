@@ -113,16 +113,23 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     }, onError: (error, stacktrace) {
       _log.error('Error adding fingerprint', error, stacktrace);
       Navigator.of(context).pop();
+      final l10n = AppLocalizations.of(context)!;
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
       if (error is RpcError) {
-        errorMessage = error.message;
+        if (error.status == 'user-action-timeout') {
+          errorMessage = l10n.l_user_action_timeout_error;
+        } else if (error.status == 'connection-error') {
+          errorMessage = l10n.l_failed_connecting_to_fido;
+        } else {
+          errorMessage = error.message;
+        }
       } else {
         errorMessage = error.toString();
       }
       showMessage(
         context,
-        'Error adding fingerprint: $errorMessage',
+        l10n.l_adding_fingerprint_failed(errorMessage),
         duration: const Duration(seconds: 4),
       );
     });

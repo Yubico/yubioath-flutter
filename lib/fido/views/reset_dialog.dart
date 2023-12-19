@@ -97,7 +97,15 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                           final String errorMessage;
                           // TODO: Make this cleaner than importing desktop specific RpcError.
                           if (e is RpcError) {
-                            errorMessage = e.message;
+                            if (e.status == 'connection-error') {
+                              errorMessage = l10n.l_failed_connecting_to_fido;
+                            } else if (e.status == 'invalid-command') {
+                              errorMessage = l10n.l_wrong_inserted_yk_error;
+                            } else if (e.status == 'user-action-timeout') {
+                              errorMessage = l10n.l_user_action_timeout_error;
+                            } else {
+                              errorMessage = e.message;
+                            }
                           } else {
                             errorMessage = e.toString();
                           }
