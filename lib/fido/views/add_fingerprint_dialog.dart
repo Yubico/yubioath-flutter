@@ -106,9 +106,14 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           }, reverse: remaining > 0);
         }, complete: (fingerprint) {
           _remaining = 0;
-          _fingerprint = fingerprint;
-          // This needs a short delay to ensure the field is enabled first
-          Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
+          // Add delay to show that progressbar is filled
+          Timer(const Duration(milliseconds: 200), () {
+            setState(() {
+              _fingerprint = fingerprint;
+            });
+            // This needs a short delay to ensure the field is enabled first
+            Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
+          });
         }, error: (code) {
           _log.debug('Fingerprint capture error (code: $code)');
           _color = _animateColor(false);
@@ -183,7 +188,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
       child: Padding(
-        padding: const EdgeInsets.only(top: 38, bottom: 0, right: 18, left: 18),
+        padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -199,7 +204,9 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(28),
+                  padding: _fingerprint == null
+                      ? const EdgeInsets.all(34)
+                      : const EdgeInsets.only(top: 4, bottom: 12),
                   child: AnimatedBuilder(
                     animation: _color,
                     builder: (context, _) {
@@ -218,42 +225,40 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                       value: progress,
                     ),
                   )
+                ],
+                if (_fingerprint != null) ...[
+                  Text(
+                    l10n.l_name_fingerprint,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: AppTextFormField(
+                      focusNode: _nameFocus,
+                      maxLength: 15,
+                      inputFormatters: [limitBytesLength(15)],
+                      buildCounter: buildByteCounterFor(_label),
+                      autofocus: true,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_name,
+                        prefixIcon: const Icon(Icons.fingerprint_outlined),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _label = value.trim();
+                        });
+                      },
+                      onFieldSubmitted: (_) {
+                        _submit();
+                      },
+                    ),
+                  )
                 ]
               ],
             ),
-            if (_fingerprint != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  l10n.l_name_fingerprint,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.normal),
-                ),
-              ),
-              Container(
-                constraints: const BoxConstraints(maxWidth: 360),
-                child: AppTextFormField(
-                  focusNode: _nameFocus,
-                  maxLength: 15,
-                  inputFormatters: [limitBytesLength(15)],
-                  buildCounter: buildByteCounterFor(_label),
-                  autofocus: true,
-                  decoration: AppInputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_name,
-                    prefixIcon: const Icon(Icons.fingerprint_outlined),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _label = value.trim();
-                    });
-                  },
-                  onFieldSubmitted: (_) {
-                    _submit();
-                  },
-                ),
-              )
-            ],
           ]
               .map((e) => Padding(
                     child: e,
