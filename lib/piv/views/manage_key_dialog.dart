@@ -316,6 +316,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     ),
                   FilterChip(
                     key: keys.pinLockManagementKeyChip,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceVariant,
                     label: Text(l10n.s_protect_key),
                     selected: _storeKey,
                     onSelected: (value) {

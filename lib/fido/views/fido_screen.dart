@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
-import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../management/models.dart';
 import '../state.dart';
@@ -49,7 +48,8 @@ class FidoScreen extends ConsumerWidget {
           if (Capability.fido2.value & supported == 0) {
             return MessagePage(
               title: Text(l10n.s_webauthn),
-              graphic: manageAccounts,
+              graphic: Icon(Icons.security,
+                  size: 96, color: Theme.of(context).colorScheme.primary),
               header: l10n.l_ready_to_use,
               message: l10n.l_register_sk_on_websites,
             );

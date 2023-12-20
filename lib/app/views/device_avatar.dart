@@ -97,7 +97,7 @@ class DeviceAvatar extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: radius,
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: Colors.transparent,
           child: IconTheme(
             data: IconTheme.of(context).copyWith(
               size: radius,
@@ -108,7 +108,7 @@ class DeviceAvatar extends StatelessWidget {
         if (badge != null)
           CircleAvatar(
             radius: radius / 3,
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: Colors.transparent,
             child: IconTheme(
               data: IconTheme.of(context).copyWith(
                 color: Theme.of(context).colorScheme.onPrimary,

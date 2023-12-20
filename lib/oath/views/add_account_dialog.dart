@@ -84,6 +84,8 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                     children: [
                       ActionChip(
                         avatar: const Icon(Icons.qr_code_scanner_outlined),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceVariant,
                         label: Text(l10n.s_qr_scan),
                         onPressed: () async {
                           if (qrScanner != null) {
@@ -105,6 +107,8 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                       ActionChip(
                           key: addAccountManuallyButton,
                           avatar: const Icon(Icons.edit_outlined),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceVariant,
                           label: Text(l10n.s_add_manually),
                           onPressed: () async {
                             Navigator.of(context).pop();
