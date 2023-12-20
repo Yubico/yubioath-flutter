@@ -99,7 +99,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                           if (e is RpcError) {
                             if (e.status == 'connection-error') {
                               errorMessage = l10n.l_failed_connecting_to_fido;
-                            } else if (e.status == 'invalid-command') {
+                            } else if (e.status == 'key-mismatch') {
                               errorMessage = l10n.l_wrong_inserted_yk_error;
                             } else if (e.status == 'user-action-timeout') {
                               errorMessage = l10n.l_user_action_timeout_error;

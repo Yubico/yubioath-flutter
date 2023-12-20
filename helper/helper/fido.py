@@ -55,6 +55,13 @@ class InactivityException(RpcException):
         )
 
 
+class KeyMismatchException(RpcException):
+    def __init__(self):
+        super().__init__(
+            "key-mismatch", "Re-inserted YubiKey does not match initial device"
+        )
+
+
 def _ctap_id(ctap):
     return (ctap.info.aaguid, ctap.info.firmware_version)
 
@@ -171,7 +178,7 @@ class Ctap2Node(RpcNode):
         logger.debug("Performing reset...")
         self.ctap = Ctap2(connection)
         if target != _ctap_id(self.ctap):
-            raise ValueError("Re-inserted YubiKey does not match initial device")
+            raise KeyMismatchException()
         try:
             self.ctap.reset(event=event)
         except CtapError as e:
