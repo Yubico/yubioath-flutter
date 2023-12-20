@@ -36,73 +36,78 @@ Widget fidoBuildActions(
   final l10n = AppLocalizations.of(context)!;
 
   return FsDialog(
-    child: Column(
-      children: [
-        if (state.bioEnroll != null)
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+      child: Column(
+        children: [
+          if (state.bioEnroll != null)
+            ActionListSection(
+              l10n.s_setup,
+              children: [
+                ActionListItem(
+                  key: keys.addFingerprintAction,
+                  actionStyle: ActionStyle.primary,
+                  icon: const Icon(Icons.fingerprint_outlined),
+                  title: l10n.s_add_fingerprint,
+                  subtitle: state.unlocked
+                      ? l10n.l_fingerprints_used(fingerprints)
+                      : state.hasPin
+                          ? l10n.l_unlock_pin_first
+                          : l10n.l_set_pin_first,
+                  trailing: fingerprints == 0
+                      ? const Icon(Icons.warning_amber)
+                      : null,
+                  onTap: state.unlocked && fingerprints < 5
+                      ? (context) {
+                          Navigator.of(context).pop();
+                          showBlurDialog(
+                            context: context,
+                            builder: (context) =>
+                                AddFingerprintDialog(node.path),
+                          );
+                        }
+                      : null,
+                ),
+              ],
+            ),
           ActionListSection(
-            l10n.s_setup,
+            l10n.s_manage,
             children: [
               ActionListItem(
-                key: keys.addFingerprintAction,
-                actionStyle: ActionStyle.primary,
-                icon: const Icon(Icons.fingerprint_outlined),
-                title: l10n.s_add_fingerprint,
-                subtitle: state.unlocked
-                    ? l10n.l_fingerprints_used(fingerprints)
-                    : state.hasPin
-                        ? l10n.l_unlock_pin_first
-                        : l10n.l_set_pin_first,
-                trailing:
-                    fingerprints == 0 ? const Icon(Icons.warning_amber) : null,
-                onTap: state.unlocked && fingerprints < 5
-                    ? (context) {
-                        Navigator.of(context).pop();
-                        showBlurDialog(
-                          context: context,
-                          builder: (context) => AddFingerprintDialog(node.path),
-                        );
-                      }
-                    : null,
-              ),
-            ],
-          ),
-        ActionListSection(
-          l10n.s_manage,
-          children: [
-            ActionListItem(
-                key: keys.managePinAction,
-                icon: const Icon(Icons.pin_outlined),
-                title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
-                subtitle: state.hasPin
-                    ? l10n.s_fido_pin_protection
-                    : l10n.l_fido_pin_protection_optional,
-                trailing: state.alwaysUv && !state.hasPin
-                    ? const Icon(Icons.warning_amber)
-                    : null,
+                  key: keys.managePinAction,
+                  icon: const Icon(Icons.pin_outlined),
+                  title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
+                  subtitle: state.hasPin
+                      ? l10n.s_fido_pin_protection
+                      : l10n.l_fido_pin_protection_optional,
+                  trailing: state.alwaysUv && !state.hasPin
+                      ? const Icon(Icons.warning_amber)
+                      : null,
+                  onTap: (context) {
+                    Navigator.of(context).pop();
+                    showBlurDialog(
+                      context: context,
+                      builder: (context) => FidoPinDialog(node.path, state),
+                    );
+                  }),
+              ActionListItem(
+                key: keys.resetAction,
+                actionStyle: ActionStyle.error,
+                icon: const Icon(Icons.delete_outline),
+                title: l10n.s_reset_fido,
+                subtitle: l10n.l_factory_reset_this_app,
                 onTap: (context) {
                   Navigator.of(context).pop();
                   showBlurDialog(
                     context: context,
-                    builder: (context) => FidoPinDialog(node.path, state),
+                    builder: (context) => ResetDialog(node),
                   );
-                }),
-            ActionListItem(
-              key: keys.resetAction,
-              actionStyle: ActionStyle.error,
-              icon: const Icon(Icons.delete_outline),
-              title: l10n.s_reset_fido,
-              subtitle: l10n.l_factory_reset_this_app,
-              onTap: (context) {
-                Navigator.of(context).pop();
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => ResetDialog(node),
-                );
-              },
-            ),
-          ],
-        )
-      ],
+                },
+              ),
+            ],
+          )
+        ],
+      ),
     ),
   );
 }

@@ -26,7 +26,6 @@ import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-import 'graphics.dart';
 import 'message_page.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
@@ -40,7 +39,8 @@ class DeviceErrorScreen extends ConsumerWidget {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
-          graphic: noPermission,
+          graphic: Icon(Icons.stop,
+              size: 96, color: Theme.of(context).colorScheme.primary),
           message: l10n.p_elevated_permissions_required,
           actions: [
             ElevatedButton.icon(

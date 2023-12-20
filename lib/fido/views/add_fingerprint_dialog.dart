@@ -23,6 +23,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:yubico_authenticator/app/logging.dart';
+import 'package:yubico_authenticator/theme.dart';
 
 import '../../app/message.dart';
 import '../../desktop/models.dart';
@@ -66,7 +67,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   Animation<Color?> _animateColor(Color color,
       {Function? atPeak, bool reverse = true}) {
     final animation =
-        ColorTween(begin: Colors.black, end: color).animate(_animator);
+        ColorTween(begin: Colors.white, end: color).animate(_animator);
     _animator.forward().then((_) {
       if (reverse) {
         atPeak?.call();
@@ -84,7 +85,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     _animator = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
     _color =
-        ColorTween(begin: Colors.black, end: Colors.black).animate(_animator);
+        ColorTween(begin: Colors.white, end: Colors.white).animate(_animator);
 
     _subscription = ref
         .read(fingerprintProvider(widget.devicePath).notifier)
@@ -92,7 +93,8 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         .listen((event) {
       setState(() {
         event.when(capture: (remaining) {
-          _color = _animateColor(Colors.lightGreenAccent, atPeak: () {
+          _color =
+              _animateColor(AppTheme.darkTheme.colorScheme.primary, atPeak: () {
             setState(() {
               _samples += 1;
               _remaining = remaining;
@@ -105,7 +107,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
         }, error: (code) {
           _log.debug('Fingerprint capture error (code: $code)');
-          _color = _animateColor(Colors.redAccent);
+          _color = _animateColor(AppTheme.darkTheme.colorScheme.error);
         });
       });
     }, onError: (error, stacktrace) {

@@ -166,6 +166,7 @@ class _ImportActionChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionChip(
+        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
         onPressed: () async {
           _importAction(context, ref);
         },

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,7 +25,6 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
-import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -99,6 +100,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     super.initState();
     searchFocus = FocusNode();
     searchController = TextEditingController(text: ref.read(searchProvider));
+    searchFocus.addListener(_onFocusChange);
   }
 
   @override
@@ -106,6 +108,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     searchFocus.dispose();
     searchController.dispose();
     super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {});
   }
 
   @override
@@ -118,7 +124,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       return MessagePage(
         title: Text(l10n.s_authenticator),
         key: keys.noAccountsView,
-        graphic: noAccounts,
+        graphic: Icon(Icons.people,
+            size: 96, color: Theme.of(context).colorScheme.primary),
         header: l10n.s_no_accounts,
         keyActionsBuilder: (context) => oathBuildActions(
             context, widget.devicePath, widget.oathState, ref,
@@ -154,28 +161,39 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               style: textTheme.titleMedium
                   ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
               decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(32),
+                  borderSide: BorderSide(
+                    width: 0,
+                    style: searchFocus.hasFocus
+                        ? BorderStyle.solid
+                        : BorderStyle.none,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.all(16),
+                fillColor: Theme.of(context).hoverColor,
+                filled: true,
                 hintText: l10n.s_search_accounts,
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                contentPadding: EdgeInsets.zero,
                 isDense: true,
-                prefixIcon: const Icon(Icons.search_outlined),
-                prefixIconConstraints:
-                    const BoxConstraints(minHeight: 30, minWidth: 30),
-                /*
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.highlight_off),
-                  iconSize: 16,
-                  color: Colors.white54,
-                  onPressed: searchController.clear,
+                prefixIcon: const Padding(
+                  padding: EdgeInsetsDirectional.only(start: 8.0),
+                  child: Icon(Icons.search_outlined),
                 ),
-                suffixIconConstraints:
-                    const BoxConstraints(minHeight: 30, minWidth: 30),
-                    */
+                suffixIcon: searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        iconSize: 16,
+                        onPressed: () {
+                          searchController.clear();
+                          ref.read(searchProvider.notifier).setFilter('');
+                          setState(() {});
+                        },
+                      )
+                    : null,
               ),
               onChanged: (value) {
                 ref.read(searchProvider.notifier).setFilter(value);
+                setState(() {});
               },
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (value) {

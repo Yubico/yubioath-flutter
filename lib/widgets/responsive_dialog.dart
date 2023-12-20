@@ -77,9 +77,10 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       title: widget.title,
       titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
       scrollable: true,
+      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
       contentPadding: const EdgeInsets.symmetric(vertical: 8),
       content: SizedBox(
-        width: 550,
+        width: 600,
         child: Container(key: _childKey, child: widget.child),
       ),
       actions: [

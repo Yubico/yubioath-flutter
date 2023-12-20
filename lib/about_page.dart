@@ -151,6 +151,7 @@ class AboutPage extends ConsumerWidget {
               const SizedBox(height: 12.0),
               ActionChip(
                 avatar: const Icon(Icons.bug_report_outlined),
+                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
@@ -181,6 +182,7 @@ class AboutPage extends ConsumerWidget {
               const SizedBox(height: 12.0),
               FilterChip(
                 label: Text(l10n.s_allow_screenshots),
+                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {
                   ref
@@ -227,6 +229,7 @@ class LoggingPanel extends ConsumerWidget {
         ),
         ActionChip(
           avatar: const Icon(Icons.copy),
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           label: Text(l10n.s_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');

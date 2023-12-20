@@ -431,7 +431,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                               _isObscure
                                   ? Icons.visibility
                                   : Icons.visibility_off,
-                              color: IconTheme.of(context).color,
                             ),
                             onPressed: () {
                               setState(() {
@@ -464,6 +463,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       children: [
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surfaceVariant,
                             label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {

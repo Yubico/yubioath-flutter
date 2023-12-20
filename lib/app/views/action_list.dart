@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:yubico_authenticator/theme.dart';
 
 import '../../widgets/list_title.dart';
 import '../models.dart';
@@ -39,14 +40,14 @@ class ActionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+    // final theme =
+    //     ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
-    final (foreground, background) = switch (actionStyle) {
-      ActionStyle.normal => (theme.onSecondary, theme.secondary),
-      ActionStyle.primary => (theme.onPrimary, theme.primary),
-      ActionStyle.error => (theme.onError, theme.error),
-    };
+    // final (foreground, background) = switch (actionStyle) {
+    //   ActionStyle.normal => (theme.onSecondary, theme.secondary),
+    //   ActionStyle.primary => (theme.onPrimary, theme.primary),
+    //   ActionStyle.error => (theme.onError, theme.error),
+    // };
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -55,8 +56,8 @@ class ActionListItem extends StatelessWidget {
       leading: Opacity(
         opacity: onTap != null ? 1.0 : 0.4,
         child: CircleAvatar(
-          foregroundColor: foreground,
-          backgroundColor: background,
+          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+          backgroundColor: Colors.transparent,
           child: icon,
         ),
       ),
@@ -96,14 +97,18 @@ class ActionListSection extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        width: 360,
-        child: Column(children: [
-          ListTitle(
-            title,
-            textStyle: Theme.of(context).textTheme.bodyLarge,
-          ),
-          ...children,
-        ]),
-      );
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      width: 360,
+      child: Column(children: [
+        ListTitle(
+          title,
+          textStyle: theme.textTheme.bodyLarge!
+              .copyWith(color: theme.colorScheme.primary),
+        ),
+        ...children,
+      ]),
+    );
+  }
 }

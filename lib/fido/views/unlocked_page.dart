@@ -23,7 +23,6 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
-import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../../widgets/list_title.dart';
 import '../models.dart';
@@ -131,7 +130,8 @@ class FidoUnlockedPage extends ConsumerWidget {
     if (state.bioEnroll != null) {
       return MessagePage(
         title: Text(l10n.s_webauthn),
-        graphic: noFingerprints,
+        graphic: Icon(Icons.fingerprint,
+            size: 96, color: Theme.of(context).colorScheme.primary),
         header: l10n.s_no_fingerprints,
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: (context) =>
@@ -142,7 +142,8 @@ class FidoUnlockedPage extends ConsumerWidget {
 
     return MessagePage(
       title: Text(l10n.s_webauthn),
-      graphic: manageAccounts,
+      graphic: Icon(Icons.security,
+          size: 96, color: Theme.of(context).colorScheme.primary),
       header: l10n.l_no_discoverable_accounts,
       message: l10n.l_register_sk_on_websites,
       keyActionsBuilder: (context) => fidoBuildActions(context, node, state, 0),

@@ -333,6 +333,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
             label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');

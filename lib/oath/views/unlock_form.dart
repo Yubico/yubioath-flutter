@@ -64,7 +64,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+          padding: const EdgeInsets.only(left: 18.0, right: 18, top: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -87,7 +87,6 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isObscure ? Icons.visibility : Icons.visibility_off,
-                      color: IconTheme.of(context).color,
                     ),
                     onPressed: () {
                       setState(() {

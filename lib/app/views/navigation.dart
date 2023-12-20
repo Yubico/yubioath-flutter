@@ -80,6 +80,7 @@ class NavigationItem extends StatelessWidget {
         tileColor: selected ? colorScheme.secondaryContainer : null,
         textColor: selected ? colorScheme.onSecondaryContainer : null,
         iconColor: selected ? colorScheme.onSecondaryContainer : null,
+        contentPadding: const EdgeInsets.only(left: 16.0),
       );
     }
   }

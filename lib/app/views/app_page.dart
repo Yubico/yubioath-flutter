@@ -238,9 +238,9 @@ class AppPage extends StatelessWidget {
                 },
                 icon: keyActionsBadge
                     ? const Badge(
-                        child: Icon(Icons.tune),
+                        child: Icon(Icons.more_vert_outlined),
                       )
-                    : const Icon(Icons.tune),
+                    : const Icon(Icons.more_vert_outlined),
                 iconSize: 24,
                 tooltip: AppLocalizations.of(context)!.s_configure_yk,
                 padding: const EdgeInsets.all(12),

@@ -20,7 +20,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
-import '../../app/views/graphics.dart';
 import '../../app/views/message_page.dart';
 import '../models.dart';
 import '../state.dart';
@@ -39,7 +38,8 @@ class FidoLockedPage extends ConsumerWidget {
       if (state.bioEnroll != null) {
         return MessagePage(
           title: Text(l10n.s_webauthn),
-          graphic: noFingerprints,
+          graphic: Icon(Icons.fingerprint,
+              size: 96, color: Theme.of(context).colorScheme.primary),
           header: l10n.s_no_fingerprints,
           message: l10n.l_set_pin_fingerprints,
           keyActionsBuilder: _buildActions,
@@ -48,7 +48,8 @@ class FidoLockedPage extends ConsumerWidget {
       } else {
         return MessagePage(
           title: Text(l10n.s_webauthn),
-          graphic: manageAccounts,
+          graphic: Icon(Icons.security,
+              size: 96, color: Theme.of(context).colorScheme.primary),
           header: state.credMgmt
               ? l10n.l_no_discoverable_accounts
               : l10n.l_ready_to_use,
@@ -62,7 +63,8 @@ class FidoLockedPage extends ConsumerWidget {
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
         title: Text(l10n.s_webauthn),
-        graphic: manageAccounts,
+        graphic: Icon(Icons.security,
+            size: 96, color: Theme.of(context).colorScheme.primary),
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: _buildActions,
@@ -159,7 +161,6 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isObscure ? Icons.visibility : Icons.visibility_off,
-                    color: IconTheme.of(context).color,
                   ),
                   onPressed: () {
                     setState(() {
