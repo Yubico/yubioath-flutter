@@ -81,3 +81,4 @@ const screenshotChip = Key('$_prefix.screenshot_chip');
 
 // misc buttons
 const closeButton = Key('$_prefix.close_button');
+const cancelButton = Key('$_prefix.cancel_button');

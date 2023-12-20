@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../app/views/keys.dart';
 import '../core/state.dart';
 import '../generated/l10n/app_localizations.dart';
 
@@ -104,6 +105,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         actions: [
           if (widget.showDialogCloseButton)
             TextButton(
+              key: cancelButton,
               onPressed:
                   widget.allowCancel
                       ? () {
