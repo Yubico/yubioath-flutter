@@ -69,11 +69,8 @@ class MainPage extends ConsumerWidget {
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final noKeyImage = Image.asset(
-      isDarkTheme
-          ? 'assets/graphics/no-key_dark.png'
-          : 'assets/graphics/no-key.png',
+      'assets/graphics/no-key.png',
       filterQuality: FilterQuality.medium,
       scale: 2,
       color: Theme.of(context).colorScheme.primary,
