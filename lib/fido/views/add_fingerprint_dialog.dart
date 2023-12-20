@@ -65,10 +65,15 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     super.dispose();
   }
 
-  Animation<Color?> _animateColor(Color color,
+  Animation<Color?> _animateColor(bool success,
       {Function? atPeak, bool reverse = true}) {
+    final theme = Theme.of(context);
+    final darkMode = theme.brightness == Brightness.dark;
+    final beginColor = darkMode ? Colors.white : Colors.black;
+    final endColor =
+        success ? theme.colorScheme.primary : theme.colorScheme.error;
     final animation =
-        ColorTween(begin: Colors.black, end: color).animate(_animator);
+        ColorTween(begin: beginColor, end: endColor).animate(_animator);
     _animator.forward().then((_) {
       if (reverse) {
         atPeak?.call();
@@ -85,8 +90,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     _nameFocus = FocusNode();
     _animator = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 250));
-    _color =
-        ColorTween(begin: Colors.black, end: Colors.black).animate(_animator);
+    _color = ColorTween().animate(_animator);
 
     _subscription = ref
         .read(fingerprintProvider(widget.devicePath).notifier)
@@ -94,7 +98,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         .listen((event) {
       setState(() {
         event.when(capture: (remaining) {
-          _color = _animateColor(Colors.lightGreenAccent, atPeak: () {
+          _color = _animateColor(true, atPeak: () {
             setState(() {
               _samples += 1;
               _remaining = remaining;
@@ -102,12 +106,17 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           }, reverse: remaining > 0);
         }, complete: (fingerprint) {
           _remaining = 0;
-          _fingerprint = fingerprint;
-          // This needs a short delay to ensure the field is enabled first
-          Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
+          // Add delay to show that progressbar is filled
+          Timer(const Duration(milliseconds: 200), () {
+            setState(() {
+              _fingerprint = fingerprint;
+            });
+            // This needs a short delay to ensure the field is enabled first
+            Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
+          });
         }, error: (code) {
           _log.debug('Fingerprint capture error (code: $code)');
-          _color = _animateColor(Colors.redAccent);
+          _color = _animateColor(false);
         });
       });
     }, onError: (error, stacktrace) {
@@ -176,19 +185,28 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
-
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(l10n.l_fp_step_1_capture),
             Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(36.0),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _getMessage(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                  ),
+                ),
+                Padding(
+                  padding: _fingerprint == null
+                      ? const EdgeInsets.all(34)
+                      : const EdgeInsets.only(top: 4, bottom: 12),
                   child: AnimatedBuilder(
                     animation: _color,
                     builder: (context, _) {
@@ -200,34 +218,45 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                     },
                   ),
                 ),
-                LinearProgressIndicator(value: progress),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(_getMessage()),
-                ),
+                if (_fingerprint == null)
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                    ),
+                  ),
+                if (_fingerprint != null) ...[
+                  Text(
+                    l10n.l_name_fingerprint,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.normal),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: AppTextFormField(
+                      focusNode: _nameFocus,
+                      maxLength: 15,
+                      inputFormatters: [limitBytesLength(15)],
+                      buildCounter: buildByteCounterFor(_label),
+                      autofocus: true,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_name,
+                        prefixIcon: const Icon(Icons.fingerprint_outlined),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _label = value.trim();
+                        });
+                      },
+                      onFieldSubmitted: (_) {
+                        _submit();
+                      },
+                    ),
+                  )
+                ]
               ],
-            ),
-            Text(l10n.l_fp_step_2_name),
-            AppTextFormField(
-              focusNode: _nameFocus,
-              maxLength: 15,
-              inputFormatters: [limitBytesLength(15)],
-              buildCounter: buildByteCounterFor(_label),
-              autofocus: true,
-              decoration: AppInputDecoration(
-                enabled: _fingerprint != null,
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_name,
-                prefixIcon: const Icon(Icons.fingerprint_outlined),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _label = value.trim();
-                });
-              },
-              onFieldSubmitted: (_) {
-                _submit();
-              },
             ),
           ]
               .map((e) => Padding(
@@ -241,10 +270,11 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         _subscription.cancel();
       },
       actions: [
-        TextButton(
-          onPressed: _fingerprint != null && _label.isNotEmpty ? _submit : null,
-          child: Text(l10n.s_save),
-        ),
+        if (_fingerprint != null)
+          TextButton(
+            onPressed: _label.isNotEmpty ? _submit : null,
+            child: Text(l10n.s_save),
+          )
       ],
     );
   }

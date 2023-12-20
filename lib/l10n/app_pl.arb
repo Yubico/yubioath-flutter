@@ -444,6 +444,7 @@
     },
     "p_press_fingerprint_begin": "Przytrzymaj palec na kluczu YubiKey, aby rozpocząć.",
     "p_will_change_label_fp": "Spowoduje to zmianę etykiety odcisku palca.",
+    "l_name_fingerprint": null,
 
     "@_fido_errors": {},
     "l_user_action_timeout_error": null,

@@ -444,6 +444,7 @@
     },
     "p_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
     "p_will_change_label_fp": "This will change the label of the fingerprint.",
+    "l_name_fingerprint": "Name this fingerprint",
 
     "@_fido_errors": {},
     "l_user_action_timeout_error": "Failed due to user inactivity",
