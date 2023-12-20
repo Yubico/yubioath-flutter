@@ -218,14 +218,13 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                     },
                   ),
                 ),
-                if (_fingerprint == null) ...[
+                if (_fingerprint == null)
                   Container(
                     constraints: const BoxConstraints(maxWidth: 360),
                     child: LinearProgressIndicator(
                       value: progress,
                     ),
-                  )
-                ],
+                  ),
                 if (_fingerprint != null) ...[
                   Text(
                     l10n.l_name_fingerprint,
@@ -271,12 +270,11 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         _subscription.cancel();
       },
       actions: [
-        if (_fingerprint != null) ...[
+        if (_fingerprint != null)
           TextButton(
             onPressed: _label.isNotEmpty ? _submit : null,
             child: Text(l10n.s_save),
-          ),
-        ]
+          )
       ],
     );
   }
