@@ -406,6 +406,10 @@
     "s_fingerprints": "指紋",
     "l_fingerprint_captured": "指紋の取得に成功しました！",
     "s_fingerprint_added": "指紋が追加されました",
+    "l_adding_fingerprint_failed": null,
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {}
+    },
     "l_setting_name_failed": "名前設定時名エラー:{message}",
     "@l_setting_name_failed": {
         "placeholders": {
@@ -440,6 +444,11 @@
     },
     "p_press_fingerprint_begin": "YubiKeyに指を押し当てて開始します",
     "p_will_change_label_fp": "これにより指紋のラベルが変更されます",
+
+    "@_fido_errors": {},
+    "l_user_action_timeout_error": null,
+    "l_wrong_inserted_yk_error": null,
+    "l_failed_connecting_to_fido": null,
 
     "@_certificates": {},
     "s_certificate": "証明書",

@@ -406,6 +406,10 @@
     "s_fingerprints": "Odciski palców",
     "l_fingerprint_captured": "Odcisk palca zarejestrowany pomyślnie!",
     "s_fingerprint_added": "Dodano odcisk palca",
+    "l_adding_fingerprint_failed": null,
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {}
+    },
     "l_setting_name_failed": "Błąd ustawienia nazwy: {message}",
     "@l_setting_name_failed": {
         "placeholders": {
@@ -440,6 +444,11 @@
     },
     "p_press_fingerprint_begin": "Przytrzymaj palec na kluczu YubiKey, aby rozpocząć.",
     "p_will_change_label_fp": "Spowoduje to zmianę etykiety odcisku palca.",
+
+    "@_fido_errors": {},
+    "l_user_action_timeout_error": null,
+    "l_wrong_inserted_yk_error": null,
+    "l_failed_connecting_to_fido": null,
 
     "@_certificates": {},
     "s_certificate": "Certyfikat",
