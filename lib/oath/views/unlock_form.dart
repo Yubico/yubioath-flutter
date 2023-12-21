@@ -88,10 +88,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
                     icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off,
-                        color: !_passwordIsWrong
-                            ? IconTheme.of(context).color
-                            : null),
+                        _isObscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscure = !_isObscure;

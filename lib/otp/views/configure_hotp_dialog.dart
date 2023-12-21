@@ -140,10 +140,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
                     icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off,
-                        color: !_validateSecret
-                            ? IconTheme.of(context).color
-                            : null),
+                        _isObscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscure = !_isObscure;
