@@ -144,12 +144,7 @@ class DevicePickerContent extends ConsumerWidget {
                 ],
               );
             },
-      child: IconTheme(
-          data: IconTheme.of(context)
-              .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-          child: Column(
-            children: children,
-          )),
+      child: Column(children: children),
     );
   }
 }
@@ -208,8 +203,8 @@ class _DeviceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tooltip = '$title\n$subtitle';
+    final colorScheme = Theme.of(context).colorScheme;
     if (extended) {
-      final colorScheme = Theme.of(context).colorScheme;
       return Tooltip(
         message: tooltip,
         child: ListTile(
@@ -218,17 +213,14 @@ class _DeviceRow extends StatelessWidget {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
           horizontalTitleGap: 8,
-          leading: IconTheme(
-            // Force the standard icon theme
-            data: IconTheme.of(context),
-            child: leading,
-          ),
+          leading: leading,
           title: Text(title, overflow: TextOverflow.fade, softWrap: false),
           subtitle:
               Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
           dense: true,
           tileColor: selected ? colorScheme.primary : null,
           textColor: selected ? colorScheme.onPrimary : null,
+          iconColor: selected ? colorScheme.onPrimary : null,
           onTap: onTap,
         ),
       );
@@ -238,23 +230,16 @@ class _DeviceRow extends StatelessWidget {
         child: selected
             ? IconButton.filled(
                 tooltip: tooltip,
-                icon: IconTheme(
-                  // Force the standard icon theme
-                  data: IconTheme.of(context),
-                  child: leading,
-                ),
+                icon: leading,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 onPressed: onTap,
               )
             : IconButton(
                 tooltip: tooltip,
-                icon: IconTheme(
-                  // Force the standard icon theme
-                  data: IconTheme.of(context),
-                  child: leading,
-                ),
+                icon: leading,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 onPressed: onTap,
+                color: colorScheme.secondary,
               ),
       );
     }
@@ -277,11 +262,7 @@ _DeviceRow _buildDeviceRow(
   );
   return _DeviceRow(
     key: ValueKey(node.path.key),
-    leading: IconTheme(
-      // Force the standard icon theme
-      data: IconTheme.of(context),
-      child: DeviceAvatar.deviceNode(node),
-    ),
+    leading: DeviceAvatar.deviceNode(node),
     title: node.name,
     subtitle: subtitle,
     extended: extended,
