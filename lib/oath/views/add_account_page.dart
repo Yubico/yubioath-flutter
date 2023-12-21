@@ -437,13 +437,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                   : null,
                           prefixIcon: const Icon(Icons.key_outlined),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                                _isObscure
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: !_validateSecret
-                                    ? IconTheme.of(context).color
-                                    : null),
+                            icon: Icon(_isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off),
                             onPressed: () {
                               setState(() {
                                 _isObscure = !_isObscure;

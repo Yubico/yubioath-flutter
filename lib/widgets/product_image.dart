@@ -59,13 +59,16 @@ class ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var image = _imagesForName[name];
-    image ??= isNfc
-        ? _imagesForFormFactorNfc[formFactor]
-        : _imagesForFormFactor[formFactor];
-    image ??= Theme.of(context).brightness == Brightness.dark
-        ? 'generic_dark'
-        : 'generic';
+    final image = _imagesForName[name] ??
+        (isNfc ? _imagesForFormFactorNfc : _imagesForFormFactor)[formFactor];
+
+    if (image == null) {
+      return Image.asset(
+        'assets/product-images/generic.png',
+        filterQuality: FilterQuality.medium,
+        color: IconTheme.of(context).color,
+      );
+    }
 
     return Image.asset(
       'assets/product-images/$image.png',
