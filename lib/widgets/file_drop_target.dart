@@ -50,29 +50,35 @@ class _FileDropTargetState extends State<FileDropTarget> {
       );
 
   @override
-  Widget build(BuildContext context) => DropTarget(
-        onDragEntered: (_) {
+  Widget build(BuildContext context) {
+    return DropTarget(
+      onDragEntered: (_) {
+        if (ModalRoute.of(context)!.isCurrent) {
           setState(() {
             _hovering = true;
           });
-        },
-        onDragExited: (_) {
-          setState(() {
-            _hovering = false;
-          });
-        },
-        onDragDone: (details) async {
+        }
+      },
+      onDragExited: (_) {
+        setState(() {
+          _hovering = false;
+        });
+      },
+      onDragDone: (details) async {
+        if (ModalRoute.of(context)!.isCurrent) {
           for (final file in details.files) {
             widget.onFileDropped(await file.readAsBytes());
           }
-        },
-        enable: !isAndroid,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            widget.child,
-            if (_hovering) widget.overlay ?? _buildDefaultOverlay(),
-          ],
-        ),
-      );
+        }
+      },
+      enable: !isAndroid,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          widget.child,
+          if (_hovering) widget.overlay ?? _buildDefaultOverlay(),
+        ],
+      ),
+    );
+  }
 }

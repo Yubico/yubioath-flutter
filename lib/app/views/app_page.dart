@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/state.dart';
 import '../../widgets/delayed_visibility.dart';
+import '../../widgets/file_drop_target.dart';
 import '../message.dart';
 import 'keys.dart';
 import 'navigation.dart';
@@ -36,6 +37,7 @@ class AppPage extends StatelessWidget {
   final bool centered;
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final Function(List<int> filedata)? onFileDropped;
   const AppPage({
     super.key,
     this.title,
@@ -44,6 +46,7 @@ class AppPage extends StatelessWidget {
     this.centered = false,
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
   });
@@ -181,7 +184,7 @@ class AppPage extends StatelessWidget {
     );
   }
 
-  Scaffold _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
+  Widget _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
     var body =
         centered ? Center(child: _buildMainContent()) : _buildMainContent();
     if (hasRail) {
@@ -202,7 +205,7 @@ class AppPage extends StatelessWidget {
         ],
       );
     }
-    return Scaffold(
+    final scaffold = Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
         title: title,
@@ -256,5 +259,8 @@ class AppPage extends StatelessWidget {
       drawer: hasDrawer ? _buildDrawer(context) : null,
       body: body,
     );
+    return onFileDropped != null
+        ? FileDropTarget(onFileDropped: onFileDropped!, child: scaffold)
+        : scaffold;
   }
 }

@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
@@ -34,6 +38,7 @@ import '../state.dart';
 import 'account_list.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
+import 'utils.dart';
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
@@ -43,37 +48,64 @@ class OathScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+
+    final qrScanner = ref.watch(qrScannerProvider);
+    final withContext = ref.read(withContextProvider);
+    final credentials = ref.read(credentialsProvider);
+
     return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => MessagePage(
-            title: Text(l10n.s_authenticator),
-            graphic: const CircularProgressIndicator(),
-            delayedContent: true,
-          ),
-          error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_authenticator),
-            cause: error,
-          ),
-          data: (oathState) => oathState.locked
-              ? _LockedView(devicePath, oathState)
-              : _UnlockedView(devicePath, oathState),
-        );
+        loading: () => MessagePage(
+              title: Text(l10n.s_authenticator),
+              graphic: const CircularProgressIndicator(),
+              delayedContent: true,
+            ),
+        error: (error, _) => AppFailurePage(
+              title: Text(l10n.s_authenticator),
+              cause: error,
+            ),
+        data: (oathState) {
+          Future<void> onFileDropped(List<int> fileData) async {
+            if (qrScanner != null) {
+              final b64Image = base64Encode(fileData);
+              final qrData = await qrScanner.scanQr(b64Image);
+              await withContext(
+                (context) async {
+                  if (qrData != null) {
+                    await handleUri(context, credentials, qrData, devicePath,
+                        oathState, l10n);
+                  } else {
+                    showMessage(context, l10n.l_qr_not_found);
+                  }
+                },
+              );
+            }
+          }
+
+          if (oathState.locked) {
+            return _LockedView(devicePath, oathState, onFileDropped);
+          }
+          return _UnlockedView(devicePath, oathState, onFileDropped);
+        });
   }
 }
 
 class _LockedView extends ConsumerWidget {
   final DevicePath devicePath;
   final OathState oathState;
+  final Function(List<int> filedata) onFileDropped;
 
-  const _LockedView(this.devicePath, this.oathState);
+  const _LockedView(this.devicePath, this.oathState, this.onFileDropped);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasActions = ref.watch(featureProvider)(features.actions);
+
     return AppPage(
       title: Text(AppLocalizations.of(context)!.s_authenticator),
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
           : null,
+      onFileDropped: onFileDropped,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: UnlockForm(
@@ -88,8 +120,9 @@ class _LockedView extends ConsumerWidget {
 class _UnlockedView extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState oathState;
+  final Function(List<int> filedata) onFileDropped;
 
-  const _UnlockedView(this.devicePath, this.oathState);
+  const _UnlockedView(this.devicePath, this.oathState, this.onFileDropped);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UnlockedViewState();
@@ -137,6 +170,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 context, widget.devicePath, widget.oathState, ref,
                 used: 0)
             : null,
+        onFileDropped: widget.onFileDropped,
       );
     }
     return Actions(
@@ -218,6 +252,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   used: numCreds ?? 0,
                 )
             : null,
+        onFileDropped: widget.onFileDropped,
         centered: numCreds == null,
         delayedContent: numCreds == null,
         child: numCreds != null
