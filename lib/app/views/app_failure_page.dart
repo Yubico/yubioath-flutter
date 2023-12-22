@@ -24,7 +24,6 @@ import '../../desktop/models.dart';
 import '../../desktop/state.dart';
 import '../message.dart';
 import '../state.dart';
-import 'graphics.dart';
 import 'message_page.dart';
 
 class AppFailurePage extends ConsumerWidget {
@@ -37,7 +36,8 @@ class AppFailurePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final reason = cause;
 
-    Widget? graphic = const Icon(Icons.error);
+    Widget? graphic =
+        Icon(Icons.error, size: 96, color: Theme.of(context).colorScheme.error);
     String? header = l10n.l_error_occured;
     String? message = reason.toString();
     List<Widget> actions = [];
@@ -58,7 +58,8 @@ class AppFailurePage extends ConsumerWidget {
           case 'fido':
             if (Platform.isWindows &&
                 !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-              graphic = noPermission;
+              graphic = Icon(Icons.stop,
+                  size: 96, color: Theme.of(context).colorScheme.primary);
               header = null;
               message = l10n.p_webauthn_elevated_permissions_required;
               actions = [

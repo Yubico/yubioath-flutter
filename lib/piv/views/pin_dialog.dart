@@ -104,8 +104,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                 prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
                   icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off,
-                      color: !_pinIsWrong ? IconTheme.of(context).color : null),
+                      _isObscure ? Icons.visibility : Icons.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;

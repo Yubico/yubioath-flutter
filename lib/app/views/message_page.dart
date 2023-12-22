@@ -52,16 +52,17 @@ class MessagePage extends StatelessWidget {
         actionButtonBuilder: actionButtonBuilder,
         delayedContent: delayedContent,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(
+              left: 8.0, top: 0.0, right: 8.0, bottom: 96.0),
           child: Column(
             children: [
-              if (graphic != null) graphic!,
+              if (graphic != null) ...[graphic!, const SizedBox(height: 16.0)],
               if (header != null)
                 Text(header!,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 12.0),
+                    style: Theme.of(context).textTheme.titleLarge),
               if (message != null) ...[
+                const SizedBox(height: 12.0),
                 Text(message!, textAlign: TextAlign.center),
               ],
             ],

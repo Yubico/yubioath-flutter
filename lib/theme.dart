@@ -15,249 +15,77 @@
  */
 
 import 'package:flutter/material.dart';
-
-const primaryGreen = Color(0xffaed581);
-const accentGreen = Color(0xff9aca3c);
+/*
+const primaryGreen = Color(0xffE58B32);
+const accentGreen = Color(0xffEDAE70);
 const primaryBlue = Color(0xff325f74);
 const primaryRed = Color(0xffea4335);
 const darkRed = Color(0xffda4d41);
 const amber = Color(0xffffca28);
 
+// Theme colors
+const themeBlue = Color(0xFF4276F9);
+const themePurple = Color(0xFF9955A5);
+const themePink = Color(0xFFE2609D);
+const themeRed = Color(0xFFE9645C);
+const themeOrange = Color(0xFFE58B32);
+const themeYellow = Color(0xFFF3C938);
+const themeGreen = Color(0xFF78B850);
+const themeGrey = Color(0xFF8C8B8C);
+*/
+
+//const primaryColor = Colors.blueAccent;
+//const primaryColor = Colors.green;
+const primaryColor = Colors.deepPurple;
+
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryColor,
           brightness: Brightness.light,
-          seedColor: const Color(0xff2196f3),
-          //seedColor: primaryBlue,
-        ).copyWith(
-          primary: primaryBlue,
-          //secondary: accentGreen,
-          secondary: Colors.grey.shade400,
-          onSecondary: Colors.grey.shade800,
-          tertiary: amber.withOpacity(0.7),
-          error: darkRed,
-          onError: Colors.white.withOpacity(0.9),
+          background: const Color(0xfffefdf4),
+          surface: const Color(0xfffefdf4),
         ),
-        textTheme: TextTheme(
-          bodySmall: TextStyle(color: Colors.grey.shade600),
+        listTileTheme: const ListTileThemeData(
+          // For alignment under menu button
+          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+          visualDensity: VisualDensity.compact,
         ),
-        dialogTheme: const DialogTheme(
-          surfaceTintColor: Colors.white70,
-        ),
+        fontFamily: 'Roboto',
         tooltipTheme: const TooltipThemeData(
-          waitDuration: Duration(seconds: 1),
+          waitDuration: Duration(milliseconds: 500),
+          textStyle: TextStyle(color: Color(0xff3c3c3c)),
+          decoration: BoxDecoration(
+            color: Color(0xffe2e2e6),
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
         ),
       );
 
   static ThemeData get darkTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryColor,
           brightness: Brightness.dark,
-          seedColor: const Color(0xff2196f3),
-          //seedColor: const Color(0xff3f51b5),
-        ).copyWith(
-          primary: primaryGreen,
-          //onPrimary: Colors.grey.shade900,
-          secondary: Colors.grey.shade400,
-          //onSecondary: Colors.grey.shade900,
-          //primaryContainer: Colors.grey.shade800,
-          //onPrimaryContainer: Colors.grey.shade100,
-          error: darkRed,
-          onError: Colors.white.withOpacity(0.9),
-          tertiary: amber.withOpacity(0.7),
+          background: const Color(0xff282828),
+          surface: const Color(0xff282828),
         ),
-        textTheme: TextTheme(
-          bodySmall: TextStyle(color: Colors.grey.shade500),
+        listTileTheme: const ListTileThemeData(
+          // For alignment under menu button
+          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+          visualDensity: VisualDensity.compact,
         ),
-        dialogTheme: DialogTheme(
-          surfaceTintColor: Colors.grey.shade700,
-        ),
+        fontFamily: 'Roboto',
         tooltipTheme: const TooltipThemeData(
-          waitDuration: Duration(seconds: 1),
-        ),
-      );
-
-  /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
-  static ThemeData get lightTheme => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorScheme:
-            ColorScheme.fromSwatch(brightness: Brightness.light).copyWith(
-          primary: primaryBlue,
-          secondary: accentGreen,
-          background: Colors.grey.shade200,
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.grey.shade400,
-          size: 18.0,
-        ),
-        //backgroundColor: Colors.white,
-        toggleableActiveColor: accentGreen,
-        appBarTheme: AppBarTheme(
-            elevation: 0,
-            toolbarHeight: 48,
-            //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.grey.shade800,
-            systemOverlayStyle: const SystemUiOverlayStyle(
-                statusBarColor: Colors.transparent,
-                statusBarIconBrightness: Brightness.dark,
-                systemNavigationBarIconBrightness: Brightness.dark)),
-        // Mainly used for the OATH dialog view at the moment
-        buttonTheme: ButtonThemeData(
-          colorScheme: ColorScheme.light(
-            secondary: Colors.grey.shade300,
-            onSecondary: Colors.grey.shade900,
-            primary: primaryGreen,
-            onPrimary: Colors.grey.shade900,
-            error: primaryRed,
-            onError: Colors.grey.shade100,
+          waitDuration: Duration(milliseconds: 500),
+          textStyle: TextStyle(color: Color(0xffE2E2E6)),
+          decoration: BoxDecoration(
+            color: Color(0xff3c3c3c),
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
         ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: primaryBlue,
-        )),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-          side: BorderSide(width: 1, color: Colors.grey.shade400),
-        )),
-        cardTheme: CardTheme(
-          color: Colors.grey.shade300,
-        ),
-        chipTheme: ChipThemeData(
-          selectedColor: const Color(0xffd2dbdf),
-          side: _chipBorder(Colors.grey.shade400),
-          checkmarkColor: Colors.black,
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: primaryBlue,
-        ),
-        listTileTheme: const ListTileThemeData(
-          // For alignment under menu button
-          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-          visualDensity: VisualDensity.compact,
-        ),
-        fontFamily: 'Roboto',
-        textTheme: const TextTheme(
-          //bodySmall: TextStyle(color: Colors.grey.shade500),
-          //bodyLarge: const TextStyle(color: Colors.white70),
-          //bodyMedium: TextStyle(color: Colors.grey.shade200),
-          //labelSmall: TextStyle(color: Colors.grey.shade500),
-          //labelMedium: TextStyle(color: Colors.cyan.shade200),
-          //labelLarge: TextStyle(color: Colors.cyan.shade500),
-          //titleSmall: TextStyle(color: Colors.grey.shade600),
-          //titleMedium: const TextStyle(),
-          titleMedium: TextStyle(fontWeight: FontWeight.w300, fontSize: 16),
-          titleLarge: TextStyle(
-              //color: Colors.grey.shade500,
-              fontWeight: FontWeight.w400,
-              fontSize: 18),
-          headlineSmall: TextStyle(
-              //color: Colors.grey.shade200,
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
-        ),
       );
-  */
-
-  /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
-  static ThemeData get darkTheme => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme:
-            ColorScheme.fromSwatch(brightness: Brightness.dark).copyWith(
-          primary: primaryGreen,
-          onPrimary: Colors.black,
-          secondary: const Color(0xff5d7d90),
-        ),
-        // Default for CircleAvatar background if foreground is light
-        primaryColorDark: Colors.white38,
-        errorColor: darkRed,
-        iconTheme: const IconThemeData(
-          color: Colors.white70,
-          size: 18.0,
-        ),
-        toggleableActiveColor: primaryGreen,
-        appBarTheme: AppBarTheme(
-            elevation: 0,
-            toolbarHeight: 48,
-            //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.grey.shade400,
-            systemOverlayStyle: const SystemUiOverlayStyle(
-                statusBarColor: Colors.transparent,
-                statusBarIconBrightness: Brightness.light,
-                systemNavigationBarIconBrightness: Brightness.light)),
-        // Mainly used for the OATH dialog view at the moment
-        buttonTheme: ButtonThemeData(
-          colorScheme: ColorScheme.dark(
-            secondary: Colors.grey.shade800,
-            onSecondary: Colors.white,
-            primary: primaryGreen,
-            onPrimary: Colors.grey.shade900,
-            error: darkRed,
-            onError: Colors.grey.shade100,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.black,
-          backgroundColor: primaryGreen,
-        )),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-          side: BorderSide(width: 1, color: Colors.grey.shade400),
-        )),
-        cardTheme: CardTheme(
-          color: Colors.grey.shade800,
-        ),
-        chipTheme: ChipThemeData(
-          selectedColor: Colors.white12,
-          side: _chipBorder(Colors.white12),
-          labelStyle: TextStyle(
-            color: Colors.grey.shade200,
-          ),
-          checkmarkColor: Colors.grey.shade200,
-        ),
-        dialogTheme: const DialogTheme(
-          backgroundColor: Color(0xff323232),
-        ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          foregroundColor: Colors.grey.shade900,
-          backgroundColor: primaryGreen,
-        ),
-        listTileTheme: const ListTileThemeData(
-          // For alignment under menu button
-          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-          visualDensity: VisualDensity.compact,
-        ),
-        fontFamily: 'Roboto',
-        textTheme: TextTheme(
-          bodySmall: TextStyle(color: Colors.grey.shade500),
-          bodyLarge: const TextStyle(color: Colors.white70),
-          bodyMedium: TextStyle(color: Colors.grey.shade200),
-          labelSmall: TextStyle(color: Colors.grey.shade500),
-          labelMedium: TextStyle(color: Colors.cyan.shade200),
-          labelLarge: TextStyle(color: Colors.grey.shade400),
-          titleSmall: TextStyle(color: Colors.grey.shade600),
-          titleMedium: TextStyle(
-              color: Colors.grey.shade200,
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
-          titleLarge: TextStyle(
-              color: Colors.grey.shade500,
-              fontWeight: FontWeight.w400,
-              fontSize: 18),
-          headlineSmall: TextStyle(
-              color: Colors.grey.shade200,
-              fontWeight: FontWeight.w300,
-              fontSize: 16),
-        ),
-      );
-      */
 }
 
 /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.

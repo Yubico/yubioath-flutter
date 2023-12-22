@@ -32,26 +32,29 @@ Widget otpBuildActions(BuildContext context, DevicePath devicePath,
   final l10n = AppLocalizations.of(context)!;
 
   return FsDialog(
-    child: Column(
-      children: [
-        ActionListSection(l10n.s_manage, children: [
-          ActionListItem(
-            key: keys.swapSlots,
-            feature: features.actionsSwap,
-            title: l10n.s_swap_slots,
-            subtitle: l10n.l_swap_slots_desc,
-            icon: const Icon(Icons.swap_vert_outlined),
-            onTap: (otpState.slot1Configured || otpState.slot2Configured)
-                ? (context) {
-                    Navigator.of(context).pop();
-                    showBlurDialog(
-                        context: context,
-                        builder: (context) => SwapSlotsDialog(devicePath));
-                  }
-                : null,
-          )
-        ])
-      ],
+    child: Padding(
+      padding: const EdgeInsets.only(top: 32),
+      child: Column(
+        children: [
+          ActionListSection(l10n.s_manage, children: [
+            ActionListItem(
+              key: keys.swapSlots,
+              feature: features.actionsSwap,
+              title: l10n.s_swap_slots,
+              subtitle: l10n.l_swap_slots_desc,
+              icon: const Icon(Icons.swap_vert_outlined),
+              onTap: (otpState.slot1Configured || otpState.slot2Configured)
+                  ? (context) {
+                      Navigator.of(context).pop();
+                      showBlurDialog(
+                          context: context,
+                          builder: (context) => SwapSlotsDialog(devicePath));
+                    }
+                  : null,
+            )
+          ])
+        ],
+      ),
     ),
   );
 }

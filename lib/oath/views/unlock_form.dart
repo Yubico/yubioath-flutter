@@ -66,7 +66,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+          padding: const EdgeInsets.only(left: 18.0, right: 18, top: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -88,10 +88,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
                     icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off,
-                        color: !_passwordIsWrong
-                            ? IconTheme.of(context).color
-                            : null),
+                        _isObscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscure = !_isObscure;

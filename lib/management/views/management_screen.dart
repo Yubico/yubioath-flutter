@@ -58,6 +58,7 @@ class _CapabilityForm extends StatelessWidget {
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
                 label: Text(c.name),
+                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 key: Key('$keyPrefix.${c.name}'),
                 selected: enabled & c.value != 0,
                 onSelected: (_) {
@@ -139,8 +140,7 @@ class _CapabilitiesForm extends StatelessWidget {
         if (nfcCapabilities != 0) ...[
           if (usbCapabilities != 0)
             const Padding(
-              padding: EdgeInsets.only(top: 24, bottom: 12),
-              child: Divider(),
+              padding: EdgeInsets.only(top: 12, bottom: 12),
             ),
           ListTile(
             leading: nfcIcon,

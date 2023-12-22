@@ -47,62 +47,6 @@ class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
   }
 }
 
-List<(Widget, bool)> buildDeviceList(
-    BuildContext context, WidgetRef ref, bool extended) {
-  final l10n = AppLocalizations.of(context)!;
-  final hidden = ref.watch(_hiddenDevicesProvider);
-  final devices = ref
-      .watch(attachedDevicesProvider)
-      .where((e) => !hidden.contains(e.path.key))
-      .toList();
-  final currentNode = ref.watch(currentDeviceProvider);
-
-  final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
-
-  return [
-    if (showUsb)
-      (
-        _DeviceRow(
-          leading: const DeviceAvatar(child: Icon(Icons.usb)),
-          title: l10n.s_usb,
-          subtitle: l10n.l_no_yk_present,
-          onTap: () {
-            ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
-          },
-          selected: currentNode == null,
-          extended: extended,
-        ),
-        currentNode == null
-      ),
-    ...devices.map(
-      (e) => e.path == currentNode?.path
-          ? (
-              _buildCurrentDeviceRow(
-                context,
-                ref,
-                e,
-                ref.watch(currentDeviceDataProvider),
-                extended,
-              ),
-              true
-            )
-          : (
-              e.map(
-                usbYubiKey: (node) => _buildDeviceRow(
-                  context,
-                  ref,
-                  node,
-                  node.info,
-                  extended,
-                ),
-                nfcReader: (node) => _NfcDeviceRow(node, extended: extended),
-              ),
-              false
-            ),
-    ),
-  ];
-}
-
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
   const DevicePickerContent({super.key, this.extended = true});
@@ -200,9 +144,7 @@ class DevicePickerContent extends ConsumerWidget {
                 ],
               );
             },
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 }
@@ -261,8 +203,8 @@ class _DeviceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tooltip = '$title\n$subtitle';
+    final colorScheme = Theme.of(context).colorScheme;
     if (extended) {
-      final colorScheme = Theme.of(context).colorScheme;
       return Tooltip(
         message: tooltip,
         child: ListTile(
@@ -271,17 +213,14 @@ class _DeviceRow extends StatelessWidget {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
           horizontalTitleGap: 8,
-          leading: IconTheme(
-            // Force the standard icon theme
-            data: IconTheme.of(context),
-            child: leading,
-          ),
+          leading: leading,
           title: Text(title, overflow: TextOverflow.fade, softWrap: false),
           subtitle:
               Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
           dense: true,
           tileColor: selected ? colorScheme.primary : null,
           textColor: selected ? colorScheme.onPrimary : null,
+          iconColor: selected ? colorScheme.onPrimary : null,
           onTap: onTap,
         ),
       );
@@ -291,23 +230,16 @@ class _DeviceRow extends StatelessWidget {
         child: selected
             ? IconButton.filled(
                 tooltip: tooltip,
-                icon: IconTheme(
-                  // Force the standard icon theme
-                  data: IconTheme.of(context),
-                  child: leading,
-                ),
+                icon: leading,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 onPressed: onTap,
               )
             : IconButton(
                 tooltip: tooltip,
-                icon: IconTheme(
-                  // Force the standard icon theme
-                  data: IconTheme.of(context),
-                  child: leading,
-                ),
+                icon: leading,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 onPressed: onTap,
+                color: colorScheme.secondary,
               ),
       );
     }
@@ -330,11 +262,7 @@ _DeviceRow _buildDeviceRow(
   );
   return _DeviceRow(
     key: ValueKey(node.path.key),
-    leading: IconTheme(
-      // Force the standard icon theme
-      data: IconTheme.of(context),
-      child: DeviceAvatar.deviceNode(node),
-    ),
+    leading: DeviceAvatar.deviceNode(node),
     title: node.name,
     subtitle: subtitle,
     extended: extended,

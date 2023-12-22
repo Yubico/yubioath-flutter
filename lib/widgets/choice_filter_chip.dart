@@ -82,6 +82,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
     return FilterChip(
       tooltip: widget.tooltip,
       avatar: widget.avatar,
+      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
       labelPadding: const EdgeInsets.only(left: 4),
       label: Row(
         mainAxisSize: MainAxisSize.min,
