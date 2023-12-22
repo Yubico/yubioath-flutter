@@ -60,21 +60,17 @@ class _RpcStateNotifier extends StateNotifier<RpcState> {
 
 final desktopWindowStateProvider =
     StateNotifierProvider<DesktopWindowStateNotifier, WindowState>(
-        (ref) => DesktopWindowStateNotifier(ref.watch(prefProvider)));
+        (ref) => DesktopWindowStateNotifier());
 
 const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
 
 class DesktopWindowStateNotifier extends StateNotifier<WindowState>
     with WindowListener {
-  final SharedPreferences _prefs;
   Timer? _idleTimer;
 
-  DesktopWindowStateNotifier(this._prefs)
+  DesktopWindowStateNotifier()
       : super(WindowState(
-            focused: true,
-            visible: true,
-            active: true,
-            hidden: _prefs.getBool(windowHidden) ?? false)) {
+            focused: true, visible: true, active: true, hidden: false)) {
     _init();
   }
 
@@ -98,7 +94,6 @@ class DesktopWindowStateNotifier extends StateNotifier<WindowState>
       await windowManager.show();
     }
     await windowManager.setSkipTaskbar(hidden);
-    await _prefs.setBool(windowHidden, hidden);
     state = state.copyWith(hidden: hidden);
   }
 

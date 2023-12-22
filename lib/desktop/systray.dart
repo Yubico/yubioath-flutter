@@ -205,15 +205,17 @@ class _Systray extends TrayListener {
               label: _l10n.s_no_pinned_accounts,
               disabled: true,
             ),
-          MenuItem.separator(),
-          MenuItem(
-            label: _isHidden ? _l10n.s_show_window : _l10n.s_hide_window,
-            onClick: (_) {
-              _ref
-                  .read(desktopWindowStateProvider.notifier)
-                  .setWindowHidden(!_isHidden);
-            },
-          ),
+          if (!Platform.isMacOS) ...{
+            MenuItem.separator(),
+            MenuItem(
+              label: _isHidden ? _l10n.s_show_window : _l10n.s_hide_window,
+              onClick: (_) {
+                _ref
+                    .read(desktopWindowStateProvider.notifier)
+                    .setWindowHidden(!_isHidden);
+              },
+            ),
+          },
           MenuItem.separator(),
           MenuItem(
               label: _l10n.s_quit,
