@@ -81,8 +81,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final darkMode = theme.brightness == Brightness.dark;
     final hasFeature = ref.watch(featureProvider);
 
     return registerOathActions(
@@ -129,8 +127,8 @@ class _AccountViewState extends ConsumerState<AccountView> {
           final showAvatar = constraints.maxWidth >= 315;
           final subtitle = helper.subtitle;
           final circleAvatar = CircleAvatar(
-            foregroundColor: darkMode ? Colors.black : Colors.white,
-            backgroundColor: _iconColor(darkMode ? 400 : 400),
+            foregroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: _iconColor(400),
             child: Text(
               (credential.issuer ?? credential.name)
                   .characters
