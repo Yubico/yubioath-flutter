@@ -39,8 +39,11 @@ class DeviceErrorScreen extends ConsumerWidget {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
-          graphic: Icon(Icons.stop,
-              size: 96, color: Theme.of(context).colorScheme.primary),
+          graphic: Icon(
+            Icons.do_not_disturb_on_outlined,
+            size: 96,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           message: l10n.p_elevated_permissions_required,
           actions: [
             ElevatedButton.icon(
@@ -77,12 +80,24 @@ class DeviceErrorScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return node.map(
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
-      nfcReader: (node) {
-        final message = switch (error) {
-          'unknown-device' => l10n.s_unknown_device,
-          _ => l10n.l_place_on_nfc_reader,
-        };
-        return MessagePage(message: message);
+      nfcReader: (node) => switch (error) {
+        'unknown-device' => MessagePage(
+            graphic: Icon(
+              Icons.help_outline,
+              size: 96,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            message: l10n.s_unknown_device,
+          ),
+        _ => MessagePage(
+            graphic: Image.asset(
+              'assets/graphics/no-key.png',
+              filterQuality: FilterQuality.medium,
+              scale: 2,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            message: l10n.l_place_on_nfc_reader,
+          ),
       },
     );
   }
