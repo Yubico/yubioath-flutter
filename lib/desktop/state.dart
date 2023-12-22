@@ -93,7 +93,9 @@ class DesktopWindowStateNotifier extends StateNotifier<WindowState>
     } else {
       await windowManager.show();
     }
-    await windowManager.setSkipTaskbar(hidden);
+    if (!Platform.isMacOS) {
+      await windowManager.setSkipTaskbar(hidden);
+    }
     state = state.copyWith(hidden: hidden);
   }
 
