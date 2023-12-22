@@ -24,11 +24,13 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../theme.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_icon.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -186,8 +188,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
                   suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      icon: VisibilityIcon(_isObscure),
                       onPressed: () {
                         setState(() {
                           _isObscure = !_isObscure;
@@ -316,8 +317,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     ),
                   FilterChip(
                     key: keys.pinLockManagementKeyChip,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceVariant,
+                    backgroundColor: surfaceVariantOf(context),
                     label: Text(l10n.s_protect_key),
                     selected: _storeKey,
                     onSelected: (value) {

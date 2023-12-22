@@ -23,6 +23,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/message.dart';
 import '../../app/state.dart';
+import '../../theme.dart';
 import '../../widgets/responsive_dialog.dart';
 import 'icon_pack.dart';
 import 'icon_pack_manager.dart';
@@ -165,7 +166,7 @@ class _ImportActionChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionChip(
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        backgroundColor: surfaceVariantOf(context),
         onPressed: () async {
           _importAction(context, ref);
         },

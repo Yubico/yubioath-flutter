@@ -18,6 +18,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../theme.dart';
+
 class ChoiceFilterChip<T> extends StatefulWidget {
   final T value;
   final List<T> items;
@@ -82,7 +84,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
     return FilterChip(
       tooltip: widget.tooltip,
       avatar: widget.avatar,
-      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+      backgroundColor: surfaceVariantOf(context),
       labelPadding: const EdgeInsets.only(left: 4),
       label: Row(
         mainAxisSize: MainAxisSize.min,

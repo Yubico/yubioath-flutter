@@ -24,6 +24,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_icon.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -99,9 +100,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
-                      icon: Icon(_isObscureCurrent
-                          ? Icons.visibility
-                          : Icons.visibility_off),
+                      icon: VisibilityIcon(_isObscureCurrent),
                       onPressed: () {
                         setState(() {
                           _isObscureCurrent = !_isObscureCurrent;
@@ -169,9 +168,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 labelText: l10n.s_new_password,
                 prefixIcon: const Icon(Icons.password_outlined),
                 suffixIcon: IconButton(
-                    icon: Icon(_isObscureNew
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                    icon: VisibilityIcon(_isObscureNew),
                     onPressed: () {
                       setState(() {
                         _isObscureNew = !_isObscureNew;
@@ -203,9 +200,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 labelText: l10n.s_confirm_password,
                 prefixIcon: const Icon(Icons.password_outlined),
                 suffixIcon: IconButton(
-                    icon: Icon(_isObscureConfirm
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                    icon: VisibilityIcon(_isObscureConfirm),
                     onPressed: () {
                       setState(() {
                         _isObscureConfirm = !_isObscureConfirm;

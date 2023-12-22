@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../core/models.dart';
+import '../../theme.dart';
 import '../../widgets/custom_icons.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -58,7 +59,7 @@ class _CapabilityForm extends StatelessWidget {
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
                 label: Text(c.name),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                backgroundColor: surfaceVariantOf(context),
                 key: Key('$keyPrefix.${c.name}'),
                 selected: enabled & c.value != 0,
                 onSelected: (_) {

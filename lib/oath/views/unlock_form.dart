@@ -22,6 +22,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/visibility_icon.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -87,8 +88,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   helperText: '', // Prevents resizing when errorText shown
                   prefixIcon: const Icon(Icons.password_outlined),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off),
+                    icon: VisibilityIcon(_isObscure),
                     onPressed: () {
                       setState(() {
                         _isObscure = !_isObscure;

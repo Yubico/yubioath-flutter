@@ -23,6 +23,7 @@ import '../../app/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_icon.dart';
 import '../keys.dart' as keys;
 import '../state.dart';
 
@@ -127,9 +128,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.password_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(_isObscureCurrent
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscureCurrent),
                   onPressed: () {
                     setState(() {
                       _isObscureCurrent = !_isObscureCurrent;
@@ -162,8 +161,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     : l10n.s_new_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscureNew),
                   onPressed: () {
                     setState(() {
                       _isObscureNew = !_isObscureNew;
@@ -200,9 +198,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     : l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.password_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(_isObscureConfirm
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscureConfirm),
                   onPressed: () {
                     setState(() {
                       _isObscureConfirm = !_isObscureConfirm;

@@ -35,6 +35,7 @@ import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
+import '../../theme.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -42,6 +43,7 @@ import '../../widgets/file_drop_target.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_icon.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -437,9 +439,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                   : null,
                           prefixIcon: const Icon(Icons.key_outlined),
                           suffixIcon: IconButton(
-                            icon: Icon(_isObscure
-                                ? Icons.visibility
-                                : Icons.visibility_off),
+                            icon: VisibilityIcon(_isObscure),
                             onPressed: () {
                               setState(() {
                                 _isObscure = !_isObscure;
@@ -469,8 +469,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
                             key: keys.requireTouchFilterChip,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceVariant,
+                            backgroundColor: surfaceVariantOf(context),
                             label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {

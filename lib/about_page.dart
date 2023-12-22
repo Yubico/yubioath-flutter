@@ -30,6 +30,7 @@ import 'app/state.dart';
 import 'app/views/keys.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'theme.dart';
 import 'version.dart';
 import 'widgets/choice_filter_chip.dart';
 import 'widgets/responsive_dialog.dart';
@@ -158,7 +159,7 @@ class AboutPage extends ConsumerWidget {
               ActionChip(
                 key: diagnosticsChip,
                 avatar: const Icon(Icons.bug_report_outlined),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                backgroundColor: surfaceVariantOf(context),
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
@@ -191,7 +192,7 @@ class AboutPage extends ConsumerWidget {
               FilterChip(
                 key: screenshotChip,
                 label: Text(l10n.s_allow_screenshots),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                backgroundColor: surfaceVariantOf(context),
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {
                   ref
@@ -239,7 +240,7 @@ class LoggingPanel extends ConsumerWidget {
         ActionChip(
           key: logChip,
           avatar: const Icon(Icons.copy),
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: surfaceVariantOf(context),
           label: Text(l10n.s_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');

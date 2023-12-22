@@ -23,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../theme.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart';
@@ -84,8 +85,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                     children: [
                       ActionChip(
                         avatar: const Icon(Icons.qr_code_scanner_outlined),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceVariant,
+                        backgroundColor: surfaceVariantOf(context),
                         label: Text(l10n.s_qr_scan),
                         onPressed: () async {
                           if (qrScanner != null) {
@@ -107,8 +107,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                       ActionChip(
                           key: addAccountManuallyButton,
                           avatar: const Icon(Icons.edit_outlined),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceVariant,
+                          backgroundColor: surfaceVariantOf(context),
                           label: Text(l10n.s_add_manually),
                           onPressed: () async {
                             Navigator.of(context).pop();

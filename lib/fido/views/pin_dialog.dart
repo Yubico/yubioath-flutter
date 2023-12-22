@@ -27,6 +27,7 @@ import '../../desktop/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_icon.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -89,9 +90,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Icons.pin_outlined),
                   suffixIcon: IconButton(
-                    icon: Icon(_isObscureCurrent
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                    icon: VisibilityIcon(_isObscureCurrent),
                     onPressed: () {
                       setState(() {
                         _isObscureCurrent = !_isObscureCurrent;
@@ -124,8 +123,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscureNew),
                   onPressed: () {
                     setState(() {
                       _isObscureNew = !_isObscureNew;
@@ -150,9 +148,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(_isObscureConfirm
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscureConfirm),
                   onPressed: () {
                     setState(() {
                       _isObscureConfirm = !_isObscureConfirm;

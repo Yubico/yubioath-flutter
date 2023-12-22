@@ -24,6 +24,7 @@ import '../../app/views/message_page.dart';
 import '../../core/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/visibility_icon.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
@@ -107,6 +108,7 @@ class FidoLockedPage extends ConsumerWidget {
 class _PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
   final DeviceNode _deviceNode;
+
   const _PinEntryForm(this._state, this._deviceNode);
 
   @override
@@ -177,8 +179,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscure),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;

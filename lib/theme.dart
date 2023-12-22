@@ -88,6 +88,9 @@ class AppTheme {
       );
 }
 
+Color surfaceVariantOf(BuildContext context) =>
+    Theme.of(context).colorScheme.surfaceVariant;
+
 /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
 /// This fixes the issue with FilterChip resizing vertically on toggle.
 BorderSide? _chipBorder(Color color) =>

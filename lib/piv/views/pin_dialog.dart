@@ -23,6 +23,7 @@ import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_icon.dart';
 import '../keys.dart' as keys;
 import '../state.dart';
 
@@ -103,8 +104,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Icons.pin_outlined),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                  icon: VisibilityIcon(_isObscure),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;

@@ -22,6 +22,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../theme.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -220,8 +221,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                   ),
                   if (_generateType == GenerateType.certificate)
                     FilterChip(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceVariant,
+                      backgroundColor: surfaceVariantOf(context),
                       label: Text(dateFormatter.format(_validTo)),
                       onSelected: _generating
                           ? null

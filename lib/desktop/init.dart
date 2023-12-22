@@ -44,6 +44,7 @@ import '../management/state.dart';
 import '../oath/state.dart';
 import '../otp/state.dart';
 import '../piv/state.dart';
+import '../theme.dart';
 import '../version.dart';
 import 'devices.dart';
 import 'fido/state.dart';
@@ -389,7 +390,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         actions: [
           ActionChip(
             avatar: const Icon(Icons.copy),
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            backgroundColor: surfaceVariantOf(context),
             label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
