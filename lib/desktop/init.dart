@@ -143,13 +143,15 @@ Future<Widget> initialize(List<String> argv) async {
   unawaited(windowManager
       .waitUntilReadyToShow(WindowOptions(
     minimumSize: WindowDefaults.minSize,
-    skipTaskbar: isHidden,
+    skipTaskbar: !Platform.isMacOS ? isHidden : false,
   ))
       .then((_) async {
     await windowManagerHelper.setBounds(bounds);
 
     if (isHidden) {
-      await windowManager.setSkipTaskbar(true);
+      if (!Platform.isMacOS) {
+        await windowManager.setSkipTaskbar(true);
+      }
     } else {
       await windowManager.show();
     }
