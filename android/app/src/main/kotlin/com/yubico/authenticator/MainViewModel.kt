@@ -23,26 +23,33 @@ import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 
 enum class OperationContext(val value: Int) {
-    Oath(0), Yubikey(1), Invalid(-1);
+    Oath(0),
+    Fido(1),
+    YubiOtp(2),
+    Piv(3),
+    OpenPgp(4),
+    HsmAuth(5),
+    Management(6),
+    Invalid(-1);
 
     companion object {
-        fun getByValue(value: Int) = values().firstOrNull { it.value == value } ?: Invalid
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Invalid
     }
 }
 
 class MainViewModel : ViewModel() {
-    private var _appContext = MutableLiveData(OperationContext.Oath)
+    private var _appContext = MutableLiveData(OperationContext.Fido)
     val appContext: LiveData<OperationContext> = _appContext
     fun setAppContext(appContext: OperationContext) {
         // Don't reset the context unless it actually changes
-        if(appContext != _appContext.value) {
+        if (appContext != _appContext.value) {
             _appContext.postValue(appContext)
         }
     }
 
     private val _connectedYubiKey = MutableLiveData<UsbYubiKeyDevice?>()
     val connectedYubiKey: LiveData<UsbYubiKeyDevice?> = _connectedYubiKey
-    fun setConnectedYubiKey(device: UsbYubiKeyDevice, onDisconnect: () -> Unit ) {
+    fun setConnectedYubiKey(device: UsbYubiKeyDevice, onDisconnect: () -> Unit) {
         _connectedYubiKey.postValue(device)
         device.setOnClosed {
             _connectedYubiKey.postValue(null)

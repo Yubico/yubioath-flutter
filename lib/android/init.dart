@@ -30,9 +30,11 @@ import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
+import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import 'app_methods.dart';
+import 'fido/state.dart';
 import 'logger.dart';
 import 'management/state.dart';
 import 'oath/otp_auth_link_handler.dart';
@@ -55,6 +57,7 @@ Future<Widget> initialize() async {
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
         Application.accounts,
+        Application.webauthn,
       ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
@@ -86,6 +89,11 @@ Future<Widget> initialize() async {
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
       defaultColorProvider.overrideWithValue(await getPrimaryColor()),
+
+      // FIDO
+      fidoStateProvider.overrideWithProvider(androidFidoStateProvider.call),
+      fingerprintProvider.overrideWithProvider(androidFingerprintProvider.call),
+      credentialProvider.overrideWithProvider(androidCredentialProvider.call),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(

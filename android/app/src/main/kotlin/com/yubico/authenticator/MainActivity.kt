@@ -39,6 +39,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
+import com.yubico.authenticator.fido.FidoManager
+import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
@@ -62,6 +64,7 @@ import java.util.concurrent.Executors
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
+    private val fidoViewModel: FidoViewModel by viewModels()
 
     private val nfcConfiguration = NfcConfiguration()
 
@@ -298,6 +301,7 @@ class MainActivity : FlutterFragmentActivity() {
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
             oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
+            fidoViewModel.sessionState.streamTo(this, messenger, "android.fido.sessionState"),
         )
 
         viewModel.appContext.observe(this) {
@@ -308,6 +312,14 @@ class MainActivity : FlutterFragmentActivity() {
                     messenger,
                     viewModel,
                     oathViewModel,
+                    dialogManager,
+                    appPreferences
+                )
+                OperationContext.Fido -> FidoManager(
+                    this,
+                    messenger,
+                    viewModel,
+                    fidoViewModel,
                     dialogManager,
                     appPreferences
                 )

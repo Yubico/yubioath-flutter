@@ -73,22 +73,33 @@ enum _DDesc {
   oathCalculateCode,
   oathActionFailure,
   oathAddMultipleAccounts,
+  // FIDO descriptions
+  fidoResetApplet,
+  fidoUnlockSession,
+  fidoSetPin,
+  fidoActionFailure,
+  // Others
   invalid;
 
   static const int dialogDescriptionOathIndex = 100;
+  static const int dialogDescriptionFidoIndex = 200;
 
   static _DDesc fromId(int? id) =>
       const {
-        dialogDescriptionOathIndex + 0: _DDesc.oathResetApplet,
-        dialogDescriptionOathIndex + 1: _DDesc.oathUnlockSession,
-        dialogDescriptionOathIndex + 2: _DDesc.oathSetPassword,
-        dialogDescriptionOathIndex + 3: _DDesc.oathUnsetPassword,
-        dialogDescriptionOathIndex + 4: _DDesc.oathAddAccount,
-        dialogDescriptionOathIndex + 5: _DDesc.oathRenameAccount,
-        dialogDescriptionOathIndex + 6: _DDesc.oathDeleteAccount,
-        dialogDescriptionOathIndex + 7: _DDesc.oathCalculateCode,
-        dialogDescriptionOathIndex + 8: _DDesc.oathActionFailure,
-        dialogDescriptionOathIndex + 9: _DDesc.oathAddMultipleAccounts
+        dialogDescriptionOathIndex + 0: oathResetApplet,
+        dialogDescriptionOathIndex + 1: oathUnlockSession,
+        dialogDescriptionOathIndex + 2: oathSetPassword,
+        dialogDescriptionOathIndex + 3: oathUnsetPassword,
+        dialogDescriptionOathIndex + 4: oathAddAccount,
+        dialogDescriptionOathIndex + 5: oathRenameAccount,
+        dialogDescriptionOathIndex + 6: oathDeleteAccount,
+        dialogDescriptionOathIndex + 7: oathCalculateCode,
+        dialogDescriptionOathIndex + 8: oathActionFailure,
+        dialogDescriptionOathIndex + 9: oathAddMultipleAccounts,
+        dialogDescriptionFidoIndex + 0: fidoResetApplet,
+        dialogDescriptionFidoIndex + 1: fidoUnlockSession,
+        dialogDescriptionFidoIndex + 2: fidoSetPin,
+        dialogDescriptionFidoIndex + 3: fidoActionFailure,
       }[id] ??
       _DDesc.invalid;
 }
@@ -162,6 +173,10 @@ class _DialogProvider {
       _DDesc.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
       _DDesc.oathAddMultipleAccounts =>
         l10n.s_nfc_dialog_oath_add_multiple_accounts,
+      _DDesc.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
+      _DDesc.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
+      _DDesc.fidoSetPin => l10n.s_nfc_dialog_fido_set_pin,
+      _DDesc.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
       _ => ''
     };
   }

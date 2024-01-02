@@ -50,6 +50,7 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.smartcard.ApduException
+import com.yubico.yubikit.core.smartcard.AppId
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
@@ -79,7 +80,6 @@ class OathManager(
 ) : AppContextManager {
     companion object {
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
-        val OTP_AID = byteArrayOf(0xa0.toByte(), 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01)
     }
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -302,7 +302,7 @@ class OathManager(
                     if (session.version.isLessThan(4, 0, 0) && connection.transport == Transport.NFC) {
                         // NEO over NFC, select OTP applet before reading info
                         try {
-                            SmartCardProtocol(connection).select(OTP_AID)
+                            SmartCardProtocol(connection).select(AppId.OTP)
                         } catch (e: Exception) {
                             logger.error("Failed to recognize this OATH device.")
                             // we know this is NFC device and it supports OATH
