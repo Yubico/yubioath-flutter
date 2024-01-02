@@ -319,28 +319,30 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       child: FileDropTarget(
         onFileDropped: (fileData) async {
           final qrScanner = ref.read(qrScannerProvider);
+          final withContext = ref.read(withContextProvider);
           if (qrScanner != null) {
             final b64Image = base64Encode(fileData);
-            final otpauth = await qrScanner.scanQr(b64Image);
-            if (otpauth == null) {
-              if (!mounted) return;
-              showMessage(context, l10n.l_qr_not_found);
-            } else {
-              try {
-                final data = CredentialData.fromOtpauth(Uri.parse(otpauth));
-                _loadCredentialData(data);
-              } catch (e) {
-                final String errorMessage;
-                // TODO: Make this cleaner than importing desktop specific RpcError.
-                if (e is RpcError) {
-                  errorMessage = e.message;
-                } else {
-                  errorMessage = e.toString();
+            final qrData = await qrScanner.scanQr(b64Image);
+            await withContext((context) async {
+              if (qrData != null) {
+                List<CredentialData> creds;
+                try {
+                  creds = CredentialData.fromUri(Uri.parse(qrData));
+                } catch (_) {
+                  showMessage(context, l10n.l_invalid_qr);
+                  return;
                 }
-                if (!mounted) return;
-                showMessage(context, errorMessage);
+                if (creds.length == 1) {
+                  _loadCredentialData(creds[0]);
+                } else {
+                  Navigator.of(context).pop();
+                  await handleUri(context, widget.credentials, qrData,
+                      widget.devicePath, widget.state, l10n);
+                }
+              } else {
+                showMessage(context, l10n.l_qr_not_found);
               }
-            }
+            });
           }
         },
         child: isLocked
