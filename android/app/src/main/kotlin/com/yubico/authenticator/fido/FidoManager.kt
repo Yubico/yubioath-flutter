@@ -20,9 +20,11 @@ import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
+import com.yubico.yubikit.core.YubiKeyConnection
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.fido.CtapException
+import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.fido.ctap.ClientPin
@@ -158,60 +160,20 @@ class FidoManager(
     private fun noop(): String = ""
 
     override suspend fun processYubiKey(device: YubiKeyDevice) {
+
         try {
-            device.withConnection<SmartCardConnection, Unit> { connection ->
-                val session = YubiKitFidoSession(connection)
-
-                val previousAaguid = fidoViewModel.sessionState.value?.info?.aaguid?.asString()
-                val sessionAaguid = session.cachedInfo.aaguid.asString()
-
-                logger.debug(
-                    "Previous aaguid: {}, current aaguid: {}",
-                    previousAaguid,
-                    sessionAaguid
-                )
-
-                if (sessionAaguid == previousAaguid && device is NfcYubiKeyDevice) {
-                    // Run any pending action
-                    pendingAction?.let { action ->
-                        action.invoke(Result.success(session))
-                        pendingAction = null
-                    }
-                } else {
-
-                    if (sessionAaguid != previousAaguid) {
-                        // different key
-                        logger.debug("This is a different key than previous, invalidating the PIN token")
-                        if (token != null) {
-                            Arrays.fill(token!!, 0.toByte())
-                            token = null
-                        }
-                    }
-
-                    fidoViewModel.setSessionState(
-                        Session(
-                            session,
-                            token != null
-                        )
-                    )
-
-                    // Update deviceInfo since the deviceId has changed
-                    val pid = (device as? UsbYubiKeyDevice)?.pid
-                    val deviceInfo = DeviceUtil.readInfo(connection, pid)
-                    appViewModel.setDeviceInfo(
-                        Info(
-                            name = DeviceUtil.getName(deviceInfo, pid?.type),
-                            isNfc = device.transport == Transport.NFC,
-                            usbPid = pid?.value,
-                            deviceInfo = deviceInfo
-                        )
-                    )
+            if (device.supportsConnection(FidoConnection::class.java)) {
+                device.withConnection<FidoConnection, Unit> { connection ->
+                    processYubiKey(connection, device)
                 }
-
+            } else {
+                device.withConnection<SmartCardConnection, Unit> { connection ->
+                    processYubiKey(connection, device)
+                }
             }
         } catch (e: Exception) {
-            // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
-            logger.error("Failed to connect to CCID", e)
+            // something went wrong, try to get DeviceInfo from any available connection type
+            logger.error("Failure when processing YubiKey", e)
             if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
                 val deviceInfo = try {
                     getDeviceInfo(device)
@@ -227,10 +189,64 @@ class FidoManager(
                 appViewModel.setDeviceInfo(deviceInfo)
             }
 
-            // Clear any cached OATH state
+            // Clear any cached FIDO state
             fidoViewModel.setSessionState(null)
-        } finally {
+        }
 
+    }
+
+    private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice) {
+        val session =
+            if (connection is FidoConnection) {
+                YubiKitFidoSession(connection)
+            } else {
+                YubiKitFidoSession(connection as SmartCardConnection)
+            }
+
+        val previousAaguid = fidoViewModel.sessionState.value?.info?.aaguid?.asString()
+        val sessionAaguid = session.cachedInfo.aaguid.asString()
+
+        logger.debug(
+            "Previous aaguid: {}, current aaguid: {}",
+            previousAaguid,
+            sessionAaguid
+        )
+
+        if (sessionAaguid == previousAaguid && device is NfcYubiKeyDevice) {
+            // Run any pending action
+            pendingAction?.let { action ->
+                action.invoke(Result.success(session))
+                pendingAction = null
+            }
+        } else {
+
+            if (sessionAaguid != previousAaguid) {
+                // different key
+                logger.debug("This is a different key than previous, invalidating the PIN token")
+                if (token != null) {
+                    Arrays.fill(token!!, 0.toByte())
+                    token = null
+                }
+            }
+
+            fidoViewModel.setSessionState(
+                Session(
+                    session,
+                    token != null
+                )
+            )
+
+            // Update deviceInfo since the deviceId has changed
+            val pid = (device as? UsbYubiKeyDevice)?.pid
+            val deviceInfo = DeviceUtil.readInfo(connection, pid)
+            appViewModel.setDeviceInfo(
+                Info(
+                    name = DeviceUtil.getName(deviceInfo, pid?.type),
+                    isNfc = device.transport == Transport.NFC,
+                    usbPid = pid?.value,
+                    deviceInfo = deviceInfo
+                )
+            )
         }
     }
 
@@ -342,7 +358,7 @@ class FidoManager(
     private suspend fun <T> useSessionUsb(
         device: UsbYubiKeyDevice,
         block: (YubiKitFidoSession) -> T
-    ): T = device.withConnection<SmartCardConnection, T> {
+    ): T = device.withConnection<FidoConnection, T> {
         block(YubiKitFidoSession(it))
     }
 
