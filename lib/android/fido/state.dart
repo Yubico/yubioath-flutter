@@ -23,6 +23,8 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
+import '../../exception/cancellation_exception.dart';
+import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 
@@ -79,8 +81,15 @@ class _FidoStateNotifier extends FidoStateNotifier {
       _log.debug('FIDO pin set/change failed');
       return PinResult.failed(
           setPinResponse['pinRetries'], setPinResponse['authBlocked']);
-    } catch (e) {
-      rethrow;
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled Set/Change FIDO PIN operation');
+      } else {
+        _log.error('Set/Change FIDO PIN operation failed.', pe);
+      }
+
+      throw decodedException;
     }
   }
 
@@ -98,8 +107,15 @@ class _FidoStateNotifier extends FidoStateNotifier {
       _log.debug('FIDO applet unlock failed');
       return PinResult.failed(
           unlockResponse['pinRetries'], unlockResponse['authBlocked']);
-    } catch (e) {
-      rethrow;
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled unlock FIDO operation');
+      } else {
+        _log.error('Unlock FIDO operation failed.', pe);
+      }
+
+      throw decodedException;
     }
   }
 }

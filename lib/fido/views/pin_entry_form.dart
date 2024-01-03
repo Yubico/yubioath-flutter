@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../models.dart';
@@ -45,17 +46,21 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
       _pinIsWrong = false;
       _isObscure = true;
     });
-    final result = await ref
-        .read(fidoStateProvider(widget._deviceNode.path).notifier)
-        .unlock(_pinController.text);
-    result.whenOrNull(failed: (retries, authBlocked) {
-      setState(() {
-        _pinController.clear();
-        _pinIsWrong = true;
-        _retries = retries;
-        _blocked = authBlocked;
+    try {
+      final result = await ref
+          .read(fidoStateProvider(widget._deviceNode.path).notifier)
+          .unlock(_pinController.text);
+      result.whenOrNull(failed: (retries, authBlocked) {
+        setState(() {
+          _pinController.clear();
+          _pinIsWrong = true;
+          _retries = retries;
+          _blocked = authBlocked;
+        });
       });
-    });
+    } on CancellationException catch (_) {
+      // ignored
+    }
   }
 
   String? _getErrorText() {

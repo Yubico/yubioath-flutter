@@ -24,6 +24,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -215,6 +216,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           }
         });
       });
+    }  on CancellationException catch (_) {
+      // ignored
     } catch (e) {
       _log.error('Failed to set PIN', e);
       final String errorMessage;
