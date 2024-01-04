@@ -38,7 +38,7 @@ enum class OperationContext(val value: Int) {
 }
 
 class MainViewModel : ViewModel() {
-    private var _appContext = MutableLiveData(OperationContext.Fido)
+    private var _appContext = MutableLiveData(OperationContext.Oath)
     val appContext: LiveData<OperationContext> = _appContext
     fun setAppContext(appContext: OperationContext) {
         // Don't reset the context unless it actually changes

@@ -152,9 +152,37 @@ final androidCredentialProvider = AsyncNotifierProvider.autoDispose
         _FidoCredentialsNotifier.new);
 
 class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
+  final _events = const EventChannel('android.fido.credentials');
+  late StreamSubscription _sub;
+
   @override
   FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
-    return [];
+    _sub = _events.receiveBroadcastStream().listen((event) {
+      final json = jsonDecode(event);
+      if (json == null) {
+        state = const AsyncValue.loading();
+      } else {
+        // final fidoState = FidoState.fromJson(json);
+        _log.debug('Received event: $event');
+        List<FidoCredential> newState = List.from(
+            (json as List).map((e) => FidoCredential.fromJson(e)).toList());
+        state = AsyncValue.data(newState);
+      }
+    }, onError: (err, stackTrace) {
+      state = AsyncValue.error(err, stackTrace);
+    });
+
+    ref.onDispose(_sub.cancel);
+
+    // final fidoState = ref.watch(fidoStateProvider(devicePath));
+    // // fidoState.whenData((value) async {
+    // //   if (value.unlocked) {
+    // //     final unlockResponse =
+    // //         jsonDecode(await _methods.invokeMethod('credentials'));
+    // //   }
+    // // });
+
+    return Completer<List<FidoCredential>>().future;
   }
 
   @override

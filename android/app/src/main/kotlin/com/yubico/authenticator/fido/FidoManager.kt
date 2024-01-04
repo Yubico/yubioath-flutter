@@ -12,6 +12,7 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
+import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
@@ -29,7 +30,6 @@ import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.fido.ctap.ClientPin
 import com.yubico.yubikit.fido.ctap.CredentialManagement
-import com.yubico.yubikit.fido.ctap.Ctap2Session
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
 import com.yubico.yubikit.fido.ctap.PinUvAuthDummyProtocol
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocol
@@ -57,7 +57,6 @@ class FidoManager(
     private val appViewModel: MainViewModel,
     private val fidoViewModel: FidoViewModel,
     private val dialogManager: DialogManager,
-    private val appPreferences: AppPreferences,
 ) : AppContextManager {
 
     companion object {
@@ -88,6 +87,7 @@ class FidoManager(
     private val logger = LoggerFactory.getLogger(FidoManager::class.java)
     private var pendingAction: FidoAction? = null
     private var token: ByteArray? = null
+    private var clientPin: ClientPin? = null
 
     private val lifecycleObserver = object : DefaultLifecycleObserver {
 
@@ -140,6 +140,11 @@ class FidoManager(
                 "set_pin" -> setPin(
                     (args["pin"] as String?)?.toCharArray(),
                     (args["new_pin"] as String).toCharArray(),
+                )
+
+                "delete_credential" -> deleteCredential(
+                    args["rpId"] as String,
+                    args["credentialId"] as String
                 )
 
                 else -> throw NotImplementedError()
@@ -196,7 +201,7 @@ class FidoManager(
     }
 
     private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice) {
-        val session =
+        val fidoSession =
             if (connection is FidoConnection) {
                 YubiKitFidoSession(connection)
             } else {
@@ -204,7 +209,7 @@ class FidoManager(
             }
 
         val previousAaguid = fidoViewModel.sessionState.value?.info?.aaguid?.asString()
-        val sessionAaguid = session.cachedInfo.aaguid.asString()
+        val sessionAaguid = fidoSession.cachedInfo.aaguid.asString()
 
         logger.debug(
             "Previous aaguid: {}, current aaguid: {}",
@@ -215,9 +220,18 @@ class FidoManager(
         if (sessionAaguid == previousAaguid && device is NfcYubiKeyDevice) {
             // Run any pending action
             pendingAction?.let { action ->
-                action.invoke(Result.success(session))
+                action.invoke(Result.success(fidoSession))
                 pendingAction = null
             }
+
+            // not possible to reuse token in new session
+            //    token?.let {
+            //        // read creds
+            //
+            //        val credentials = getCredentials(fidoSession, clientPin!!, it)
+            //        logger.debug("Creds: {}", credentials)
+            //        fidoViewModel.updateCredentials(credentials)
+            //    }
         } else {
 
             if (sessionAaguid != previousAaguid) {
@@ -226,12 +240,13 @@ class FidoManager(
                 if (token != null) {
                     Arrays.fill(token!!, 0.toByte())
                     token = null
+                    clientPin = null
                 }
             }
 
             fidoViewModel.setSessionState(
                 Session(
-                    session,
+                    fidoSession,
                     token != null
                 )
             )
@@ -251,33 +266,39 @@ class FidoManager(
     }
 
     private fun unlockSession(
-        ctap2Session: Ctap2Session,
-        clientPin: ClientPin,
+        fidoSession: YubiKitFidoSession,
         pin: CharArray
     ): String {
         val permissions =
-            if (CredentialManagement.isSupported(ctap2Session.cachedInfo))
+            if (CredentialManagement.isSupported(fidoSession.cachedInfo))
                 ClientPin.PIN_PERMISSION_CM
             else
                 0
         // TODO: Add bio Enrollment permissions if supported
 
+        clientPin =
+            ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
         if (permissions != 0) {
-            token = clientPin.getPinToken(pin, permissions, "")
+            token = clientPin!!.getPinToken(pin, permissions, "")
+
+            val credentials = getCredentials(fidoSession, clientPin!!, token!!)
+            logger.debug("Creds: {}", credentials)
+            fidoViewModel.updateCredentials(credentials)
+
         } else {
-            clientPin.getPinToken(pin, permissions, "yubico-authenticator.example.com")
+            clientPin!!.getPinToken(pin, permissions, "yubico-authenticator.example.com")
         }
 
         fidoViewModel.setSessionState(
             Session(
-                ctap2Session,
+                fidoSession,
                 token != null
             )
         )
         return JSONObject(mapOf("success" to true)).toString()
     }
 
-    private fun catchPinErrors(clientPin: ClientPin, block: () -> String): String =
+    private fun catchPinErrors(block: () -> String): String =
         try {
             block()
         } catch (ctapException: CtapException) {
@@ -286,7 +307,8 @@ class FidoManager(
                 ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED
             ) {
                 token = null
-                val pinRetriesResult = clientPin.pinRetries
+                fidoViewModel.updateCredentials(emptyList())
+                val pinRetriesResult = clientPin!!.pinRetries
                 JSONObject(
                     mapOf(
                         "success" to false,
@@ -300,12 +322,11 @@ class FidoManager(
         }
 
     private suspend fun unlock(pin: CharArray): String =
-        useSession(FidoActionDescription.Unlock) { ctap2Session ->
-            val clientPin =
-                ClientPin(ctap2Session, getPreferredPinUvAuthProtocol(ctap2Session.cachedInfo))
+        useSession(FidoActionDescription.Unlock) { fidoSession ->
+
             try {
-                catchPinErrors(clientPin) {
-                    unlockSession(ctap2Session, clientPin, pin)
+                catchPinErrors {
+                    unlockSession(fidoSession, pin)
                 }
 
             } finally {
@@ -314,29 +335,26 @@ class FidoManager(
         }
 
     private fun setOrChangePin(
-        ctap2Session: Ctap2Session,
-        clientPin: ClientPin,
+        fidoSession: YubiKitFidoSession,
         pin: CharArray?,
         newPin: CharArray
     ) {
-        val infoData = ctap2Session.cachedInfo
+        val infoData = fidoSession.cachedInfo
         val hasPin = infoData.options["clientPin"] == true
 
         if (hasPin) {
-            clientPin.changePin(pin!!, newPin)
+            clientPin!!.changePin(pin!!, newPin)
         } else {
-            clientPin.setPin(newPin)
+            clientPin!!.setPin(newPin)
         }
     }
 
     private suspend fun setPin(pin: CharArray?, newPin: CharArray): String =
-        useSession(FidoActionDescription.SetPin) { ctap2Session ->
-            val clientPin =
-                ClientPin(ctap2Session, getPreferredPinUvAuthProtocol(ctap2Session.cachedInfo))
+        useSession(FidoActionDescription.SetPin) { fidoSession ->
             try {
-                catchPinErrors(clientPin) {
-                    setOrChangePin(ctap2Session, clientPin, pin, newPin)
-                    unlockSession(ctap2Session, clientPin, newPin)
+                catchPinErrors {
+                    setOrChangePin(fidoSession, pin, newPin)
+                    unlockSession(fidoSession, newPin)
                 }
             } finally {
                 Arrays.fill(newPin, 0.toChar())
@@ -344,6 +362,38 @@ class FidoManager(
                     Arrays.fill(it, 0.toChar())
                 }
             }
+        }
+
+    private fun getCredentials(
+        fidoSession: YubiKitFidoSession,
+        clientPin: ClientPin,
+        pinUvAuthToken: ByteArray
+    ): List<FidoCredential> =
+        try {
+            val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, pinUvAuthToken)
+            val rpIds = credMan.enumerateRps()
+
+            val credentials = rpIds.map { rpData ->
+                credMan.enumerateCredentials(rpData.rpIdHash).map { credential ->
+                    FidoCredential(
+                        rpData.rp["id"] as String,
+                        (credential.credentialId["id"] as ByteArray).asString(),
+                        (credential.user["id"] as ByteArray).asString(),
+                        credential.user["name"] as String
+                    )
+                }
+            }.reduceOrNull { credentials, credentialList ->
+                credentials + credentialList
+            }
+
+            credentials ?: emptyList()
+        } finally {
+
+        }
+
+    private suspend fun deleteCredential(rpId: String, credentialId: String): String =
+        useSession(FidoActionDescription.SetPin) { _ ->
+            ""
         }
 
     private suspend fun <T> useSession(

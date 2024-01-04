@@ -302,6 +302,7 @@ class MainActivity : FlutterFragmentActivity() {
             oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
             fidoViewModel.sessionState.streamTo(this, messenger, "android.fido.sessionState"),
+            fidoViewModel.credentials.streamTo(this, messenger, "android.fido.credentials"),
         )
 
         viewModel.appContext.observe(this) {
@@ -320,8 +321,7 @@ class MainActivity : FlutterFragmentActivity() {
                     messenger,
                     viewModel,
                     fidoViewModel,
-                    dialogManager,
-                    appPreferences
+                    dialogManager
                 )
                 else -> null
             }
