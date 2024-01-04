@@ -36,7 +36,6 @@ final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(_FidoStateNotifier.new);
 
 class _FidoStateNotifier extends FidoStateNotifier {
-  late StateController<String?> _pinController;
   final _events = const EventChannel('android.fido.sessionState');
   late StreamSubscription _sub;
 
