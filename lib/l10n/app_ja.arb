@@ -722,6 +722,11 @@
     "s_nfc_dialog_oath_failure": "OATH操作は失敗しました",
     "s_nfc_dialog_oath_add_multiple_accounts": "操作：複数アカウントの追加",
 
+    "s_nfc_dialog_fido_reset": null,
+    "s_nfc_dialog_fido_unlock": null,
+    "l_nfc_dialog_fido_set_pin": null,
+    "s_nfc_dialog_fido_failure": null,
+
     "@_ndef": {},
     "p_ndef_set_otp": null,
     "p_ndef_set_password": null,

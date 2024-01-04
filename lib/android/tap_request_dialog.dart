@@ -175,7 +175,7 @@ class _DialogProvider {
         l10n.s_nfc_dialog_oath_add_multiple_accounts,
       _DDesc.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
       _DDesc.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
-      _DDesc.fidoSetPin => l10n.s_nfc_dialog_fido_set_pin,
+      _DDesc.fidoSetPin => l10n.l_nfc_dialog_fido_set_pin,
       _DDesc.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
       _ => ''
     };
