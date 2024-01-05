@@ -37,6 +37,7 @@ class AppPage extends StatelessWidget {
   final bool centered;
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final Widget? fileDropOverlay;
   final Function(List<int> filedata)? onFileDropped;
   const AppPage({
     super.key,
@@ -46,6 +47,7 @@ class AppPage extends StatelessWidget {
     this.centered = false,
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.fileDropOverlay,
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
@@ -184,12 +186,14 @@ class AppPage extends StatelessWidget {
     );
   }
 
-  Widget _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
+  Scaffold _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
     var body =
         centered ? Center(child: _buildMainContent()) : _buildMainContent();
     if (hasRail) {
       body = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: onFileDropped != null
+            ? CrossAxisAlignment.stretch
+            : CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 72,
@@ -201,11 +205,19 @@ class AppPage extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: body),
+          Expanded(
+            child: onFileDropped != null
+                ? FileDropTarget(
+                    onFileDropped: onFileDropped!,
+                    overlay: fileDropOverlay,
+                    child: body,
+                  )
+                : body,
+          ),
         ],
       );
     }
-    final scaffold = Scaffold(
+    return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
         title: title,
@@ -257,10 +269,20 @@ class AppPage extends StatelessWidget {
         ],
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
-      body: body,
+      body: onFileDropped != null && !hasRail
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: FileDropTarget(
+                    onFileDropped: onFileDropped!,
+                    overlay: fileDropOverlay,
+                    child: body,
+                  ),
+                )
+              ],
+            )
+          : body,
     );
-    return onFileDropped != null
-        ? FileDropTarget(onFileDropped: onFileDropped!, child: scaffold)
-        : scaffold;
   }
 }

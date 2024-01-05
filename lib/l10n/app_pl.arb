@@ -325,6 +325,7 @@
     "s_add_account": "Dodaj konto",
     "s_add_accounts": "Dodaj konto(-a)",
     "p_add_description": "W celu zeskanowania kodu QR, upewnij się, że pełny kod jest widoczny na ekranie a następnie naciśnij poniższy przycisk. Jeśli posiadasz dane uwierzytelniające do konta w tekstowej formie, skorzystaj z opcji ręcznego wprowadzania danych.",
+    "l_drop_qr_description": null,
     "s_add_manually": "Dodaj ręcznie",
     "s_account_added": "Konto zostało dodane",
     "l_account_add_failed": "Nie udało się dodać konta: {message}",

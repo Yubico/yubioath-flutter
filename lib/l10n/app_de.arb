@@ -325,6 +325,7 @@
     "s_add_account": "Konto hinzufügen",
     "s_add_accounts": null,
     "p_add_description": null,
+    "l_drop_qr_description": null,
     "s_add_manually": null,
     "s_account_added": "Konto hinzugefügt",
     "l_account_add_failed": "Fehler beim Hinzufügen des Kontos: {message}",

@@ -53,6 +53,8 @@ class _FileDropTargetState extends State<FileDropTarget> {
   Widget build(BuildContext context) {
     return DropTarget(
       onDragEntered: (_) {
+        // Multiple FileDropTarget widgets can be in the tree at the same
+        // time. We only want to use the top-most.
         if (ModalRoute.of(context)!.isCurrent) {
           setState(() {
             _hovering = true;
@@ -73,7 +75,6 @@ class _FileDropTargetState extends State<FileDropTarget> {
       },
       enable: !isAndroid,
       child: Stack(
-        alignment: Alignment.center,
         children: [
           widget.child,
           if (_hovering) widget.overlay ?? _buildDefaultOverlay(),

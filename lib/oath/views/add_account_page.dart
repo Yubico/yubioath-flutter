@@ -45,6 +45,7 @@ import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'add_account_overlay.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
 
@@ -308,43 +309,44 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       }
     }
 
-    return ResponsiveDialog(
-      title: Text(l10n.s_add_account),
-      actions: [
-        TextButton(
-          onPressed: isValid ? submit : null,
-          child: Text(l10n.s_save, key: keys.saveButton),
-        ),
-      ],
-      child: FileDropTarget(
-        onFileDropped: (fileData) async {
-          final qrScanner = ref.read(qrScannerProvider);
-          final withContext = ref.read(withContextProvider);
-          if (qrScanner != null) {
-            final b64Image = base64Encode(fileData);
-            final qrData = await qrScanner.scanQr(b64Image);
-            await withContext((context) async {
-              if (qrData != null) {
-                List<CredentialData> creds;
-                try {
-                  creds = CredentialData.fromUri(Uri.parse(qrData));
-                } catch (_) {
-                  showMessage(context, l10n.l_invalid_qr);
-                  return;
-                }
-                if (creds.length == 1) {
-                  _loadCredentialData(creds[0]);
-                } else {
-                  Navigator.of(context).pop();
-                  await handleUri(context, widget.credentials, qrData,
-                      widget.devicePath, widget.state, l10n);
-                }
-              } else {
-                showMessage(context, l10n.l_qr_not_found);
+    return FileDropTarget(
+      onFileDropped: (fileData) async {
+        final qrScanner = ref.read(qrScannerProvider);
+        final withContext = ref.read(withContextProvider);
+        if (qrScanner != null) {
+          final b64Image = base64Encode(fileData);
+          final qrData = await qrScanner.scanQr(b64Image);
+          await withContext((context) async {
+            if (qrData != null) {
+              List<CredentialData> creds;
+              try {
+                creds = CredentialData.fromUri(Uri.parse(qrData));
+              } catch (_) {
+                showMessage(context, l10n.l_invalid_qr);
+                return;
               }
-            });
-          }
-        },
+              if (creds.length == 1) {
+                _loadCredentialData(creds[0]);
+              } else {
+                Navigator.of(context).pop();
+                await handleUri(context, widget.credentials, qrData,
+                    widget.devicePath, widget.state, l10n);
+              }
+            } else {
+              showMessage(context, l10n.l_qr_not_found);
+            }
+          });
+        }
+      },
+      overlay: const AddAccountOverlay(),
+      child: ResponsiveDialog(
+        title: Text(l10n.s_add_account),
+        actions: [
+          TextButton(
+            onPressed: isValid ? submit : null,
+            child: Text(l10n.s_save, key: keys.saveButton),
+          ),
+        ],
         child: isLocked
             ? Padding(
                 padding: const EdgeInsets.symmetric(vertical: 18),
