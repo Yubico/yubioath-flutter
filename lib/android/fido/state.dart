@@ -161,8 +161,6 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
       if (json == null) {
         state = const AsyncValue.loading();
       } else {
-        // final fidoState = FidoState.fromJson(json);
-        _log.debug('Received event: $event');
         List<FidoCredential> newState = List.from(
             (json as List).map((e) => FidoCredential.fromJson(e)).toList());
         state = AsyncValue.data(newState);
@@ -172,18 +170,34 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
     });
 
     ref.onDispose(_sub.cancel);
-
-    // final fidoState = ref.watch(fidoStateProvider(devicePath));
-    // // fidoState.whenData((value) async {
-    // //   if (value.unlocked) {
-    // //     final unlockResponse =
-    // //         jsonDecode(await _methods.invokeMethod('credentials'));
-    // //   }
-    // // });
-
     return Completer<List<FidoCredential>>().future;
   }
 
   @override
-  Future<void> deleteCredential(FidoCredential credential) async {}
+  Future<void> deleteCredential(FidoCredential credential) async {
+    try {
+      final deleteCredentialResponse = jsonDecode(await _methods.invokeMethod(
+        'delete_credential',
+        {
+          'rp_id': credential.rpId,
+          'credential_id': credential.credentialId,
+        },
+      ));
+
+      if (deleteCredentialResponse['success'] == true) {
+        _log.debug('FIDO delete credential succeeded');
+      } else {
+        _log.debug('FIDO delete credential failed');
+      }
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled delete credential FIDO operation');
+      } else {
+        _log.error('Delete credential FIDO operation failed.', pe);
+      }
+
+      throw decodedException;
+    }
+  }
 }

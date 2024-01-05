@@ -37,4 +37,10 @@ class FidoViewModel : ViewModel() {
     fun updateCredentials(credentials: List<FidoCredential>) {
         _credentials.postValue(credentials)
     }
+
+    fun removeCredential(rpId: String, credentialId: String) {
+        _credentials.postValue(_credentials.value?.filter {
+            it.credentialId != credentialId || it.rpId != rpId
+        })
+    }
 }

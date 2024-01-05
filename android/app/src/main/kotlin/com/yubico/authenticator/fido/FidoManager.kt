@@ -20,7 +20,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.AppPreferences
 import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
@@ -159,8 +158,8 @@ class FidoManager(
                 )
 
                 "delete_credential" -> deleteCredential(
-                    args["rpId"] as String,
-                    args["credentialId"] as String
+                    args["rp_id"] as String,
+                    args["credential_id"] as String
                 )
 
                 else -> throw NotImplementedError()
@@ -390,12 +389,13 @@ class FidoManager(
             val rpIds = credMan.enumerateRps()
 
             val credentials = rpIds.map { rpData ->
-                credMan.enumerateCredentials(rpData.rpIdHash).map { credential ->
+                credMan.enumerateCredentials(rpData.rpIdHash).map { credentialData ->
                     FidoCredential(
                         rpData.rp["id"] as String,
-                        (credential.credentialId["id"] as ByteArray).asString(),
-                        (credential.user["id"] as ByteArray).asString(),
-                        credential.user["name"] as String
+                        (credentialData.credentialId["id"] as ByteArray).asString(),
+                        (credentialData.user["id"] as ByteArray).asString(),
+                        credentialData.user["name"] as String,
+                        publicKeyCredentialDescriptor = credentialData.credentialId
                     )
                 }
             }.reduceOrNull { credentials, credentialList ->
@@ -408,8 +408,30 @@ class FidoManager(
         }
 
     private suspend fun deleteCredential(rpId: String, credentialId: String): String =
-        useSession(FidoActionDescription.SetPin) { _ ->
-            ""
+        useSession(FidoActionDescription.DeleteCredential) { fidoSession ->
+            val credMan = CredentialManagement(fidoSession, clientPin!!.pinUvAuth, token!!)
+
+            val credentialDescriptor =
+                fidoViewModel.credentials.value?.firstOrNull {
+                    it.credentialId == credentialId && it.rpId == rpId
+                }?.publicKeyCredentialDescriptor
+
+            credentialDescriptor?.let {
+                credMan.deleteCredential(credentialDescriptor)
+                fidoViewModel.removeCredential(rpId, credentialId)
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to true,
+                    )
+                ).toString()
+            }
+
+            // could not find the credential to delete
+            JSONObject(
+                mapOf(
+                    "success" to false,
+                )
+            ).toString()
         }
 
     private suspend fun <T> useSession(

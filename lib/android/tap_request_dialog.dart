@@ -77,6 +77,7 @@ enum _DDesc {
   fidoResetApplet,
   fidoUnlockSession,
   fidoSetPin,
+  fidoDeleteCredential,
   fidoActionFailure,
   // Others
   invalid;
@@ -99,7 +100,8 @@ enum _DDesc {
         dialogDescriptionFidoIndex + 0: fidoResetApplet,
         dialogDescriptionFidoIndex + 1: fidoUnlockSession,
         dialogDescriptionFidoIndex + 2: fidoSetPin,
-        dialogDescriptionFidoIndex + 3: fidoActionFailure,
+        dialogDescriptionFidoIndex + 3: fidoDeleteCredential,
+        dialogDescriptionFidoIndex + 4: fidoActionFailure,
       }[id] ??
       _DDesc.invalid;
 }
@@ -176,6 +178,7 @@ class _DialogProvider {
       _DDesc.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
       _DDesc.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
       _DDesc.fidoSetPin => l10n.l_nfc_dialog_fido_set_pin,
+      _DDesc.fidoDeleteCredential => l10n.s_nfc_dialog_fido_delete_credential,
       _DDesc.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
       _ => ''
     };

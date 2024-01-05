@@ -18,6 +18,7 @@ package com.yubico.authenticator.fido.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class FidoCredential(
@@ -28,5 +29,7 @@ data class FidoCredential(
     @SerialName("user_id")
     val userId: String,
     @SerialName("user_name")
-    val userName: String
+    val userName: String,
+    @Transient
+    val publicKeyCredentialDescriptor: Map<String, Any?> = emptyMap()
 )
