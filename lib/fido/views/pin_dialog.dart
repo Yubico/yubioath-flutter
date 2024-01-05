@@ -36,6 +36,7 @@ final _log = Logger('fido.views.pin_dialog');
 class FidoPinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final FidoState state;
+
   const FidoPinDialog(this.devicePath, this.state, {super.key});
 
   @override
@@ -216,7 +217,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           }
         });
       });
-    }  on CancellationException catch (_) {
+    } on CancellationException catch (_) {
       // ignored
     } catch (e) {
       _log.error('Failed to set PIN', e);
