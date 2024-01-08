@@ -9,15 +9,15 @@ class FileDropOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final darkMode = theme.brightness == Brightness.dark;
-
     return Positioned.fill(
         child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Color(darkMode ? 0xFF151515 : 0xFFE6E6E6).withOpacity(0.95),
+            color: Theme.of(context)
+                .colorScheme
+                .secondaryContainer
+                .withOpacity(0.95),
             border: Border.all(color: Theme.of(context).colorScheme.primary),
             borderRadius: const BorderRadius.all(Radius.circular(20.0))),
         child: Column(
