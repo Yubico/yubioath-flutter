@@ -66,7 +66,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
       _log.debug('Received event: \'$event\'');
       if (event is String && event.isNotEmpty) {
         controller.sink.add(InteractionEvent.values
-            .firstWhere((e) => '"${e.name}"'== event)); // TODO fix event form
+            .firstWhere((e) => '"${e.name}"' == event)); // TODO fix event form
       }
     });
 
