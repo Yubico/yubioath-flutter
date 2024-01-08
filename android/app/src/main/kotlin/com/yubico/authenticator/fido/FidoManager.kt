@@ -24,10 +24,12 @@ import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
+import com.yubico.authenticator.fido.data.FidoResetState
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
@@ -57,6 +59,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.util.Arrays
@@ -161,7 +164,7 @@ class FidoManager(
         // FIDO methods callable from Flutter:
         fidoChannel.setHandler(coroutineScope) { method, args ->
             when (method) {
-                "reset" -> noop()
+                "reset" -> reset()
 
                 "unlock" -> unlock(
                     (args["pin"] as String).toCharArray()
@@ -191,7 +194,42 @@ class FidoManager(
         coroutineScope.cancel()
     }
 
-    private fun noop(): String = ""
+
+    private suspend fun prepareReset() {
+
+        if (appViewModel.connectedYubiKey.value != null) {
+            // USB connection
+            fidoViewModel.updateResetState(FidoResetState.Remove)
+            delay(1000)
+            fidoViewModel.updateResetState(FidoResetState.Insert)
+            delay(1000)
+            fidoViewModel.updateResetState(FidoResetState.Touch)
+            delay(1000)
+        } else {
+            // NFC connection
+            fidoViewModel.updateResetState(FidoResetState.Insert)
+        }
+
+    }
+
+    private suspend fun reset(): String {
+
+        prepareReset();
+
+        return useSession(FidoActionDescription.Reset) { fidoSession ->
+            try {
+                // TODO: verify that the session is started with the original key
+                fidoSession.reset(null)
+                // there was no exception, reset UI state
+                pinStore.setPin(null)
+                fidoViewModel.setSessionState(Session(fidoSession.info, true))
+                fidoViewModel.updateCredentials(emptyList())
+                NULL
+            } finally {
+
+            }
+        }
+    }
 
     override suspend fun processYubiKey(device: YubiKeyDevice) {
 
@@ -271,7 +309,7 @@ class FidoManager(
 
             fidoViewModel.setSessionState(
                 Session(
-                    fidoSession,
+                    fidoSession.cachedInfo,
                     pinStore.hasPin()
                 )
             )
@@ -323,7 +361,7 @@ class FidoManager(
 
         fidoViewModel.setSessionState(
             Session(
-                fidoSession,
+                fidoSession.cachedInfo,
                 pinStore.hasPin()
             )
         )

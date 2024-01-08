@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.FidoCredential
+import com.yubico.authenticator.fido.data.FidoResetState
 
 class FidoViewModel : ViewModel() {
     private val _sessionState = MutableLiveData<Session?>()
@@ -42,5 +43,12 @@ class FidoViewModel : ViewModel() {
         _credentials.postValue(_credentials.value?.filter {
             it.credentialId != credentialId || it.rpId != rpId
         })
+    }
+
+    private val _resetState = MutableLiveData<String>()
+    val resetState: LiveData<String> = _resetState
+
+    fun updateResetState(resetState: FidoResetState) {
+        _resetState.postValue(resetState.value)
     }
 }

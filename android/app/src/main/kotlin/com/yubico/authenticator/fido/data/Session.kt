@@ -90,7 +90,7 @@ data class Session(
     @SerialName("unlocked")
     val unlocked: Boolean
 ) {
-    constructor(fidoSession: YubiKitFidoSession, unlocked: Boolean) : this(
-        SessionInfo(fidoSession.cachedInfo), unlocked
+    constructor(infoData: InfoData, unlocked: Boolean) : this(
+        SessionInfo(infoData), unlocked
     )
 }

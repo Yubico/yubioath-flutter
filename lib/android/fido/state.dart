@@ -61,6 +61,30 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Stream<InteractionEvent> reset() {
     final controller = StreamController<InteractionEvent>();
+    const resetEvents = EventChannel('android.fido.reset');
+    final resetSub = resetEvents.receiveBroadcastStream().listen((event) {
+      _log.debug('Received event: \'$event\'');
+      if (event is String && event.isNotEmpty) {
+        controller.sink.add(InteractionEvent.values
+            .firstWhere((e) => '"${e.name}"'== event)); // TODO fix event form
+      }
+    });
+
+    controller.onCancel = () {
+      if (!controller.isClosed) {
+        resetSub.cancel();
+      }
+    };
+
+    controller.onListen = () async {
+      try {
+        await _methods.invokeMethod('reset');
+        await controller.sink.close();
+        ref.invalidateSelf();
+      } catch (e) {
+        controller.sink.addError(e);
+      }
+    };
 
     return controller.stream;
   }
