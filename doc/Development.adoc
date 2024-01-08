@@ -45,7 +45,7 @@ Make sure the http://www.swig.org/[swig] executable is in your PATH.
 
     $ sudo apt install swig libu2f-udev pcscd libpcsclite-dev
 
-==== Linux (RPM-based distributons)
+==== Linux (RPM-based distributions)
 
     # Tested on Fedora 34
     $ sudo dnf install pcsc-lite-devel python3-devel swig

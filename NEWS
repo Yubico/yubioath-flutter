@@ -78,7 +78,7 @@
  ** Bugfix: Show firmware version for YubiKey NEO correctly
  ** Windows: Show correct version number in .msi installers
  ** macOS: Fix issue with window positioning
- ** macOS: Fix occacional crashes on startup
+ ** macOS: Fix occasional crashes on startup
  ** Linux: Fix the app icon and desktop entry for the Snap package.
 
 * Version 5.0.3 (released 2020-04-14)
@@ -113,7 +113,7 @@ to uninstall the older version before using the .msi
  ** Feature: Select favorite credentials, available from the System Tray/Menu Bar
  ** Show some information about the connected YubiKey, such as firmware version and serial number
  ** Add experimental support for external smart card readers, enabling the use of a YubiKey over NFC
- ** Add initial accessability support
+ ** Add initial accessibility support
 
 * Version 4.3.6b (released 2019-06-11)
  ** Fixes problem where YubiKey was not being detected on macOS.
@@ -238,7 +238,7 @@ to uninstall the older version before using the .msi
 
 * Version 4.0.1 (released 2017-03-27)
  ** Bugfix: Follow color schemes better.
- ** Removed some spacing thath caused the layout to be slightly off.
+ ** Removed some spacing that caused the layout to be slightly off.
  ** Improved focus switching between search bar and credentials.
  ** Added keyboard shortcut (Ctrl/Cmd + F) for focus on the search bar.
  ** Select the top credential during search.
