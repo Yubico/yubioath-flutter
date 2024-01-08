@@ -131,11 +131,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
     final hasActions = ref.watch(featureProvider)(features.actions);
-    final qrScanner = ref.watch(qrScannerProvider);
-    final withContext = ref.read(withContextProvider);
-    final credentials = ref.read(credentialsProvider);
 
     Future<void> onFileDropped(List<int> fileData) async {
+      final qrScanner = ref.watch(qrScannerProvider);
+      final withContext = ref.read(withContextProvider);
+      final credentials = ref.read(credentialsProvider);
       if (qrScanner != null) {
         final b64Image = base64Encode(fileData);
         final qrData = await qrScanner.scanQr(b64Image);
