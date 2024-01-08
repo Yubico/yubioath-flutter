@@ -38,7 +38,7 @@ class AppFailurePage extends ConsumerWidget {
 
     Widget? graphic =
         Icon(Icons.error, size: 96, color: Theme.of(context).colorScheme.error);
-    String? header = l10n.l_error_occured;
+    String? header = l10n.l_error_occurred;
     String? message = reason.toString();
     List<Widget> actions = [];
 

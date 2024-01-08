@@ -3,7 +3,7 @@
 
     "@_readme": {
         "notes": [
-            "All strings start with a Captial letter.",
+            "All strings start with a Capital letter.",
             "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
             "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
         ],
@@ -184,7 +184,7 @@
     "s_yk_not_recognized": "デバイスが認識されない",
 
     "@_general_errors": {},
-    "l_error_occured": "エラーが発生しました",
+    "l_error_occurred": "エラーが発生しました",
     "s_application_error": "アプリケーションエラー",
     "l_import_error": "インポートエラー",
     "l_file_not_found": "ファイルが見つかりません",

@@ -184,7 +184,7 @@
     "s_yk_not_recognized": "Appareil non reconnu",
 
     "@_general_errors": {},
-    "l_error_occured": "Une erreur est survenue",
+    "l_error_occurred": "Une erreur est survenue",
     "s_application_error": "Erreur d'application",
     "l_import_error": "Erreur d'importation",
     "l_file_not_found": "Fichier non trouvé",
