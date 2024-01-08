@@ -23,12 +23,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
-import 'add_account_overlay.dart';
 import 'add_account_page.dart';
 import 'utils.dart';
 
@@ -69,7 +69,10 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
           );
         }
       },
-      overlay: const AddAccountOverlay(),
+      overlay: FileDropOverlay(
+        title: l10n.s_add_account,
+        subTitle: l10n.l_drop_qr_description,
+      ),
       child: ResponsiveDialog(
         title: Text(l10n.s_add_account),
         child: Padding(

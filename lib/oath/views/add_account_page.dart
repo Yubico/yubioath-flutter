@@ -38,6 +38,7 @@ import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
+import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -45,7 +46,6 @@ import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import 'add_account_overlay.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
 
@@ -338,7 +338,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
           });
         }
       },
-      overlay: const AddAccountOverlay(),
+      overlay: FileDropOverlay(
+        title: l10n.s_add_account,
+        subTitle: l10n.l_drop_qr_description,
+      ),
       child: ResponsiveDialog(
         title: Text(l10n.s_add_account),
         actions: [

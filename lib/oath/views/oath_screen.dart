@@ -31,12 +31,12 @@ import '../../app/views/message_page.dart';
 import '../../core/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
+import '../../widgets/file_drop_overlay.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'account_list.dart';
-import 'add_account_overlay.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
@@ -165,7 +165,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 used: 0)
             : null,
         onFileDropped: onFileDropped,
-        fileDropOverlay: const AddAccountOverlay(),
+        fileDropOverlay: FileDropOverlay(
+          title: l10n.s_add_account,
+          subTitle: l10n.l_drop_qr_description,
+        ),
       );
     }
     return Actions(
@@ -248,7 +251,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 )
             : null,
         onFileDropped: onFileDropped,
-        fileDropOverlay: const AddAccountOverlay(),
+        fileDropOverlay: FileDropOverlay(
+          title: l10n.s_add_account,
+          subTitle: l10n.l_drop_qr_description,
+        ),
         centered: numCreds == null,
         delayedContent: numCreds == null,
         child: numCreds != null
