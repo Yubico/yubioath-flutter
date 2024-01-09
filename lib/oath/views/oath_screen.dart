@@ -133,15 +133,15 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final hasActions = ref.watch(featureProvider)(features.actions);
 
     Future<void> onFileDropped(List<int> fileData) async {
-      final qrScanner = ref.watch(qrScannerProvider);
-      final withContext = ref.read(withContextProvider);
-      final credentials = ref.read(credentialsProvider);
+      final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
         final b64Image = base64Encode(fileData);
         final qrData = await qrScanner.scanQr(b64Image);
+        final withContext = ref.read(withContextProvider);
         await withContext(
           (context) async {
             if (qrData != null) {
+              final credentials = ref.read(credentialsProvider);
               await handleUri(context, credentials, qrData, widget.devicePath,
                   widget.oathState, l10n);
             } else {
@@ -167,7 +167,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         onFileDropped: onFileDropped,
         fileDropOverlay: FileDropOverlay(
           title: l10n.s_add_account,
-          subTitle: l10n.l_drop_qr_description,
+          subtitle: l10n.l_drop_qr_description,
         ),
       );
     }
@@ -253,7 +253,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         onFileDropped: onFileDropped,
         fileDropOverlay: FileDropOverlay(
           title: l10n.s_add_account,
-          subTitle: l10n.l_drop_qr_description,
+          subtitle: l10n.l_drop_qr_description,
         ),
         centered: numCreds == null,
         delayedContent: numCreds == null,

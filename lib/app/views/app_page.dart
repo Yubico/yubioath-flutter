@@ -51,7 +51,8 @@ class AppPage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
-  });
+  }) : assert(!(onFileDropped != null && fileDropOverlay == null),
+            'Declaring onFileDropped requires declaring a fileDropOverlay');
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -209,7 +210,7 @@ class AppPage extends StatelessWidget {
             child: onFileDropped != null
                 ? FileDropTarget(
                     onFileDropped: onFileDropped!,
-                    overlay: fileDropOverlay,
+                    overlay: fileDropOverlay!,
                     child: body,
                   )
                 : body,
@@ -276,7 +277,7 @@ class AppPage extends StatelessWidget {
                 Expanded(
                   child: FileDropTarget(
                     onFileDropped: onFileDropped!,
-                    overlay: fileDropOverlay,
+                    overlay: fileDropOverlay!,
                     child: body,
                   ),
                 )

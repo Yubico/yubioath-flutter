@@ -22,13 +22,13 @@ import '../core/state.dart';
 class FileDropTarget extends StatefulWidget {
   final Widget child;
   final Function(List<int> filedata) onFileDropped;
-  final Widget? overlay;
+  final Widget overlay;
 
   const FileDropTarget({
     super.key,
     required this.child,
     required this.onFileDropped,
-    this.overlay,
+    required this.overlay,
   });
 
   @override
@@ -37,17 +37,6 @@ class FileDropTarget extends StatefulWidget {
 
 class _FileDropTargetState extends State<FileDropTarget> {
   bool _hovering = false;
-
-  Widget _buildDefaultOverlay() => Positioned.fill(
-        child: Container(
-          color: Colors.blue.withOpacity(0.4),
-          child: Icon(
-            Icons.upload_file,
-            size: 200,
-            color: Colors.black.withOpacity(0.6),
-          ),
-        ),
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +66,13 @@ class _FileDropTargetState extends State<FileDropTarget> {
       child: Stack(
         children: [
           widget.child,
-          if (_hovering) widget.overlay ?? _buildDefaultOverlay(),
+          if (_hovering)
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: widget.overlay,
+              ),
+            )
         ],
       ),
     );

@@ -340,7 +340,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       },
       overlay: FileDropOverlay(
         title: l10n.s_add_account,
-        subTitle: l10n.l_drop_qr_description,
+        subtitle: l10n.l_drop_qr_description,
       ),
       child: ResponsiveDialog(
         title: Text(l10n.s_add_account),
