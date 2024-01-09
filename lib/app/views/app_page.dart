@@ -19,10 +19,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../core/state.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
+import '../shortcuts.dart';
+import 'fs_dialog.dart';
 import 'keys.dart';
 import 'navigation.dart';
 
@@ -59,20 +60,15 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          final bool singleColumn;
-          final bool hasRail;
-          if (isAndroid) {
-            final isPortrait = constraints.maxWidth < constraints.maxHeight;
-            singleColumn = isPortrait || constraints.maxWidth < 600;
-            hasRail = constraints.maxWidth > 600;
-          } else {
-            singleColumn = constraints.maxWidth < 600;
-            hasRail = constraints.maxWidth > 400;
+          final width = constraints.maxWidth;
+          if (width < 400) {
+            return _buildScaffold(context, true, false, false);
           }
-
-          if (singleColumn) {
-            // Single column layout, maybe with rail
-            return _buildScaffold(context, true, hasRail);
+          if (width < 800) {
+            return _buildScaffold(context, true, true, false);
+          }
+          if (width < 1000) {
+            return _buildScaffold(context, true, true, true);
           } else {
             // Fully expanded layout, close existing drawer if open
             final scaffoldState = scaffoldGlobalKey.currentState;
@@ -99,7 +95,7 @@ class AppPage extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: _buildScaffold(context, false, false),
+                    child: _buildScaffold(context, false, false, true),
                   ),
                 ],
               ),
@@ -189,34 +185,48 @@ class AppPage extends StatelessWidget {
     );
   }
 
-  Scaffold _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
+  Scaffold _buildScaffold(
+      BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
     var body =
         centered ? Center(child: _buildMainContent()) : _buildMainContent();
-    if (hasRail) {
+    if (onFileDropped != null) {
+      body = FileDropTarget(
+        onFileDropped: onFileDropped!,
+        overlay: fileDropOverlay!,
+        child: body,
+      );
+    }
+    if (hasRail || hasManage) {
       body = Row(
-        crossAxisAlignment: onFileDropped != null
-            ? CrossAxisAlignment.stretch
-            : CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
-            width: 72,
-            child: SingleChildScrollView(
-              child: NavigationContent(
-                key: _navKey,
-                shouldPop: false,
-                extended: false,
+          if (hasRail)
+            SizedBox(
+              width: 72,
+              child: SingleChildScrollView(
+                child: NavigationContent(
+                  key: _navKey,
+                  shouldPop: false,
+                  extended: false,
+                ),
               ),
             ),
-          ),
           Expanded(
-            child: onFileDropped != null
-                ? FileDropTarget(
-                    onFileDropped: onFileDropped!,
-                    overlay: fileDropOverlay!,
-                    child: body,
-                  )
-                : body,
+            child: GestureDetector(
+              behavior: HitTestBehavior.deferToChild,
+              onTap: () {
+                Actions.invoke(context, const EscapeIntent());
+              },
+              child: body,
+            ),
           ),
+          if (hasManage)
+            SingleChildScrollView(
+              child: SizedBox(
+                width: 320,
+                child: keyActionsBuilder?.call(context),
+              ),
+            ),
         ],
       );
     }
@@ -242,7 +252,8 @@ class AppPage extends StatelessWidget {
               )
             : null,
         actions: [
-          if (actionButtonBuilder == null && keyActionsBuilder != null)
+          if (actionButtonBuilder == null &&
+              (keyActionsBuilder != null && !hasManage))
             Padding(
               padding: const EdgeInsets.only(left: 4),
               child: IconButton(
@@ -251,7 +262,12 @@ class AppPage extends StatelessWidget {
                   showBlurDialog(
                     context: context,
                     barrierColor: Colors.transparent,
-                    builder: keyActionsBuilder!,
+                    builder: (context) => FsDialog(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 32),
+                        child: keyActionsBuilder!(context),
+                      ),
+                    ),
                   );
                 },
                 icon: keyActionsBadge

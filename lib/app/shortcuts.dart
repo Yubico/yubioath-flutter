@@ -75,6 +75,10 @@ class RefreshIntent extends Intent {
   const RefreshIntent();
 }
 
+class EscapeIntent extends Intent {
+  const EscapeIntent();
+}
+
 /// Use cmd on macOS, use ctrl on the other platforms
 SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
     SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
@@ -149,6 +153,12 @@ Widget registerGlobalShortcuts(
           });
           return null;
         }),
+        EscapeIntent: CallbackAction<EscapeIntent>(
+          onInvoke: (_) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            return null;
+          },
+        ),
       },
       child: Shortcuts(
         shortcuts: {
@@ -156,6 +166,8 @@ Widget registerGlobalShortcuts(
           const SingleActivator(LogicalKeyboardKey.copy): const CopyIntent(),
           ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
           ctrlOrCmd(LogicalKeyboardKey.keyR): const RefreshIntent(),
+          const SingleActivator(LogicalKeyboardKey.escape):
+              const EscapeIntent(),
           if (isDesktop) ...{
             const SingleActivator(LogicalKeyboardKey.tab, control: true):
                 const NextDeviceIntent(),

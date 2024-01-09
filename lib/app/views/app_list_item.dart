@@ -30,6 +30,7 @@ class AppListItem extends ConsumerStatefulWidget {
   final Widget? trailing;
   final List<ActionItem> Function(BuildContext context)? buildPopupActions;
   final Intent? activationIntent;
+  final bool selected;
 
   const AppListItem({
     super.key,
@@ -39,6 +40,7 @@ class AppListItem extends ConsumerStatefulWidget {
     this.trailing,
     this.buildPopupActions,
     this.activationIntent,
+    this.selected = false,
   });
 
   @override
@@ -114,6 +116,7 @@ class _AppListItemState extends ConsumerState<AppListItem> {
           children: [
             const SizedBox(height: 64),
             ListTile(
+              selected: widget.selected,
               leading: widget.leading,
               title: Text(
                 widget.title,

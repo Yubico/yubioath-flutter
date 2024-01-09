@@ -20,7 +20,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/action_list.dart';
-import '../../app/views/fs_dialog.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -40,85 +39,78 @@ Widget fidoBuildActions(
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
 
-  return FsDialog(
-    child: Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Column(
-        children: [
-          if (state.bioEnroll != null)
-            ActionListSection(
-              l10n.s_setup,
-              children: [
-                ActionListItem(
-                  key: keys.addFingerprintAction,
-                  feature: features.actionsAddFingerprint,
-                  actionStyle: ActionStyle.primary,
-                  icon: const Icon(Icons.fingerprint_outlined),
-                  title: l10n.s_add_fingerprint,
-                  subtitle: state.unlocked
-                      ? l10n.l_fingerprints_used(fingerprints)
-                      : state.hasPin
-                          ? l10n.l_unlock_pin_first
-                          : l10n.l_set_pin_first,
-                  trailing: fingerprints == 0
-                      ? Icon(Icons.warning_amber, color: colors.tertiary)
-                      : null,
-                  onTap: state.unlocked && fingerprints < 5
-                      ? (context) {
-                          Navigator.of(context).pop();
-                          showBlurDialog(
-                            context: context,
-                            builder: (context) =>
-                                AddFingerprintDialog(node.path),
-                          );
-                        }
-                      : null,
-                ),
-              ],
+  return Column(
+    children: [
+      if (state.bioEnroll != null)
+        ActionListSection(
+          l10n.s_setup,
+          children: [
+            ActionListItem(
+              key: keys.addFingerprintAction,
+              feature: features.actionsAddFingerprint,
+              actionStyle: ActionStyle.primary,
+              icon: const Icon(Icons.fingerprint_outlined),
+              title: l10n.s_add_fingerprint,
+              subtitle: state.unlocked
+                  ? l10n.l_fingerprints_used(fingerprints)
+                  : state.hasPin
+                      ? l10n.l_unlock_pin_first
+                      : l10n.l_set_pin_first,
+              trailing: fingerprints == 0
+                  ? Icon(Icons.warning_amber, color: colors.tertiary)
+                  : null,
+              onTap: state.unlocked && fingerprints < 5
+                  ? (context) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      showBlurDialog(
+                        context: context,
+                        builder: (context) => AddFingerprintDialog(node.path),
+                      );
+                    }
+                  : null,
             ),
-          ActionListSection(
-            l10n.s_manage,
-            children: [
-              ActionListItem(
-                  key: keys.managePinAction,
-                  feature: features.actionsPin,
-                  icon: const Icon(Icons.pin_outlined),
-                  title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
-                  subtitle: state.hasPin
-                      ? (state.forcePinChange
-                          ? l10n.s_pin_change_required
-                          : l10n.s_fido_pin_protection)
-                      : l10n.l_fido_pin_protection_optional,
-                  trailing:
-                      state.alwaysUv && !state.hasPin || state.forcePinChange
-                          ? Icon(Icons.warning_amber, color: colors.tertiary)
-                          : null,
-                  onTap: (context) {
-                    Navigator.of(context).pop();
-                    showBlurDialog(
-                      context: context,
-                      builder: (context) => FidoPinDialog(node.path, state),
-                    );
-                  }),
-              ActionListItem(
-                key: keys.resetAction,
-                feature: features.actionsReset,
-                actionStyle: ActionStyle.error,
-                icon: const Icon(Icons.delete_outline),
-                title: l10n.s_reset_fido,
-                subtitle: l10n.l_factory_reset_this_app,
-                onTap: (context) {
-                  Navigator.of(context).pop();
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ResetDialog(node),
-                  );
-                },
-              ),
-            ],
-          )
+          ],
+        ),
+      ActionListSection(
+        l10n.s_manage,
+        children: [
+          ActionListItem(
+              key: keys.managePinAction,
+              feature: features.actionsPin,
+              icon: const Icon(Icons.pin_outlined),
+              title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
+              subtitle: state.hasPin
+                  ? (state.forcePinChange
+                      ? l10n.s_pin_change_required
+                      : l10n.s_fido_pin_protection)
+                  : l10n.l_fido_pin_protection_optional,
+              trailing: state.alwaysUv && !state.hasPin || state.forcePinChange
+                  ? Icon(Icons.warning_amber, color: colors.tertiary)
+                  : null,
+              onTap: (context) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                showBlurDialog(
+                  context: context,
+                  builder: (context) => FidoPinDialog(node.path, state),
+                );
+              }),
+          ActionListItem(
+            key: keys.resetAction,
+            feature: features.actionsReset,
+            actionStyle: ActionStyle.error,
+            icon: const Icon(Icons.delete_outline),
+            title: l10n.s_reset_fido,
+            subtitle: l10n.l_factory_reset_this_app,
+            onTap: (context) {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              showBlurDialog(
+                context: context,
+                builder: (context) => ResetDialog(node),
+              );
+            },
+          ),
         ],
-      ),
-    ),
+      )
+    ],
   );
 }

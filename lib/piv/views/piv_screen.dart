@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
@@ -32,8 +33,13 @@ import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
+import 'cert_info_view.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
+
+final selectedSlot = StateProvider<PivSlot?>(
+  (ref) => null,
+);
 
 class PivScreen extends ConsumerWidget {
   final DevicePath devicePath;
@@ -56,35 +62,99 @@ class PivScreen extends ConsumerWidget {
           ),
           data: (pivState) {
             final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
-            return AppPage(
-              title: Text(l10n.s_certificates),
-              keyActionsBuilder: hasFeature(features.actions)
-                  ? (context) =>
-                      pivBuildActions(context, devicePath, pivState, ref)
-                  : null,
-              child: Column(
-                children: [
-                  ListTitle(l10n.s_certificates),
-                  if (pivSlots?.hasValue == true)
-                    ...pivSlots!.value.map((e) => registerPivActions(
+            final selected = ref.watch(selectedSlot);
+            final theme = Theme.of(context);
+            final textTheme = theme.textTheme;
+            // This is what ListTile uses for subtitle
+            final subtitleStyle = textTheme.bodyMedium!.copyWith(
+              color: textTheme.bodySmall!.color,
+            );
+            return Actions(
+              actions: {
+                EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
+                  if (selected != null) {
+                    ref.read(selectedSlot.notifier).state = null;
+                  } else {
+                    Actions.invoke(context, intent);
+                  }
+                  return false;
+                }),
+              },
+              child: AppPage(
+                title: Text(l10n.s_certificates),
+                keyActionsBuilder: hasFeature(features.actions)
+                    ? (context) {
+                        if (selected == null) {
+                          return pivBuildActions(
+                              context, devicePath, pivState, ref);
+                        }
+                        return registerPivActions(
                           devicePath,
                           pivState,
-                          e,
+                          selected,
                           ref: ref,
-                          actions: {
-                            OpenIntent:
-                                CallbackAction<OpenIntent>(onInvoke: (_) async {
-                              await showBlurDialog(
-                                context: context,
-                                barrierColor: Colors.transparent,
-                                builder: (context) => SlotDialog(e.slot),
-                              );
-                              return null;
-                            }),
-                          },
-                          builder: (context) => _CertificateListItem(e),
-                        )),
-                ],
+                          builder: (context) => Column(
+                            children: [
+                              ListTitle(selected.slot.getDisplayName(l10n)),
+                              if (selected.certInfo != null) ...[
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: CertInfoTable(selected.certInfo!),
+                                ),
+                              ] else ...[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Text(
+                                    l10n.l_no_certificate,
+                                    softWrap: true,
+                                    textAlign: TextAlign.center,
+                                    style: subtitleStyle,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                              ActionListSection.fromMenuActions(
+                                context,
+                                l10n.s_actions,
+                                actions: buildSlotActions(
+                                    selected.certInfo != null, l10n),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    : null,
+                child: Column(
+                  children: [
+                    ListTitle(l10n.s_certificates),
+                    if (pivSlots?.hasValue == true)
+                      ...pivSlots!.value.map((e) => registerPivActions(
+                            devicePath,
+                            pivState,
+                            e,
+                            ref: ref,
+                            actions: {
+                              OpenIntent: CallbackAction<OpenIntent>(
+                                  onInvoke: (_) async {
+                                // TODO: Fix
+                                var expanded = 1 + 1 == 2;
+                                if (expanded) {
+                                  ref.read(selectedSlot.notifier).state = e;
+                                } else {
+                                  await showBlurDialog(
+                                    context: context,
+                                    barrierColor: Colors.transparent,
+                                    builder: (context) => SlotDialog(e.slot),
+                                  );
+                                }
+                                return null;
+                              }),
+                            },
+                            builder: (context) => _CertificateListItem(e),
+                          )),
+                  ],
+                ),
               ),
             );
           },
@@ -104,10 +174,12 @@ class _CertificateListItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final hasFeature = ref.watch(featureProvider);
+    final selected = ref.watch(selectedSlot) == pivSlot;
 
     return Semantics(
         label: slot.getDisplayName(l10n),
         child: AppListItem(
+          selected: selected,
           key: _getAppListItemKey(slot),
           leading: CircleAvatar(
             foregroundColor: colorScheme.onSecondary,
