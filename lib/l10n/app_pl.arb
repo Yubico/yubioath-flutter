@@ -3,7 +3,7 @@
 
     "@_readme": {
         "notes": [
-            "All strings start with a Captial letter.",
+            "All strings start with a Capital letter.",
             "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
             "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
         ],
@@ -184,7 +184,7 @@
     "s_yk_not_recognized": "Urządzenie nie rozpoznane",
 
     "@_general_errors": {},
-    "l_error_occured": "Wystąpił błąd",
+    "l_error_occurred": "Wystąpił błąd",
     "s_application_error": "Błąd funkcji",
     "l_import_error": "Błąd importowania",
     "l_file_not_found": "Nie odnaleziono pliku",

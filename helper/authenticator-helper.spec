@@ -24,7 +24,7 @@ a = Analysis(
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 target_arch = None
-# MacOS: If the running Python process is "universal", build a univeral2 binary.
+# MacOS: If the running Python process is "universal", build a universal2 binary.
 if sys.platform == "darwin":
     r = subprocess.run(['lipo', '-archs', sys.executable], capture_output=True).stdout
     if b"x86_64" in r and b"arm64" in r:

@@ -184,7 +184,7 @@
     "s_yk_not_recognized": "Geräte nicht erkannt",
 
     "@_general_errors": {},
-    "l_error_occured": "Es ist ein Fehler aufgetreten",
+    "l_error_occurred": "Es ist ein Fehler aufgetreten",
     "s_application_error": "Anwendungs-Fehler",
     "l_import_error": "Import-Fehler",
     "l_file_not_found": "Datei nicht gefunden",

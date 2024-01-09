@@ -3,7 +3,7 @@
 
     "@_readme": {
         "notes": [
-            "All strings start with a Captial letter.",
+            "All strings start with a Capital letter.",
             "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
             "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
         ],
@@ -184,7 +184,7 @@
     "s_yk_not_recognized": "Device not recognized",
 
     "@_general_errors": {},
-    "l_error_occured": "An error has occured",
+    "l_error_occurred": "An error has occurred",
     "s_application_error": "Application error",
     "l_import_error": "Import error",
     "l_file_not_found": "File not found",
@@ -486,7 +486,7 @@
     "l_generating_private_key": "Generating private key\u2026",
     "s_private_key_generated": "Private key generated",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
-    "q_delete_certificate_confirm": "Delete the certficate in PIV slot {slot}?",
+    "q_delete_certificate_confirm": "Delete the certificate in PIV slot {slot}?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
