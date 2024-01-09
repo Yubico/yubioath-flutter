@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/state.dart';
 import '../../widgets/delayed_visibility.dart';
+import '../../widgets/file_drop_target.dart';
 import '../message.dart';
 import 'keys.dart';
 import 'navigation.dart';
@@ -36,6 +37,8 @@ class AppPage extends StatelessWidget {
   final bool centered;
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final Widget? fileDropOverlay;
+  final Function(List<int> filedata)? onFileDropped;
   const AppPage({
     super.key,
     this.title,
@@ -44,9 +47,12 @@ class AppPage extends StatelessWidget {
     this.centered = false,
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.fileDropOverlay,
+    this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
-  });
+  }) : assert(!(onFileDropped != null && fileDropOverlay == null),
+            'Declaring onFileDropped requires declaring a fileDropOverlay');
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -186,7 +192,9 @@ class AppPage extends StatelessWidget {
         centered ? Center(child: _buildMainContent()) : _buildMainContent();
     if (hasRail) {
       body = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: onFileDropped != null
+            ? CrossAxisAlignment.stretch
+            : CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 72,
@@ -198,7 +206,15 @@ class AppPage extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: body),
+          Expanded(
+            child: onFileDropped != null
+                ? FileDropTarget(
+                    onFileDropped: onFileDropped!,
+                    overlay: fileDropOverlay!,
+                    child: body,
+                  )
+                : body,
+          ),
         ],
       );
     }
@@ -254,7 +270,20 @@ class AppPage extends StatelessWidget {
         ],
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
-      body: body,
+      body: onFileDropped != null && !hasRail
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: FileDropTarget(
+                    onFileDropped: onFileDropped!,
+                    overlay: fileDropOverlay!,
+                    child: body,
+                  ),
+                )
+              ],
+            )
+          : body,
     );
   }
 }

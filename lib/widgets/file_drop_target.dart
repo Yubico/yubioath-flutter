@@ -22,13 +22,13 @@ import '../core/state.dart';
 class FileDropTarget extends StatefulWidget {
   final Widget child;
   final Function(List<int> filedata) onFileDropped;
-  final Widget? overlay;
+  final Widget overlay;
 
   const FileDropTarget({
     super.key,
     required this.child,
     required this.onFileDropped,
-    this.overlay,
+    required this.overlay,
   });
 
   @override
@@ -38,41 +38,43 @@ class FileDropTarget extends StatefulWidget {
 class _FileDropTargetState extends State<FileDropTarget> {
   bool _hovering = false;
 
-  Widget _buildDefaultOverlay() => Positioned.fill(
-        child: Container(
-          color: Colors.blue.withOpacity(0.4),
-          child: Icon(
-            Icons.upload_file,
-            size: 200,
-            color: Colors.black.withOpacity(0.6),
-          ),
-        ),
-      );
-
   @override
-  Widget build(BuildContext context) => DropTarget(
-        onDragEntered: (_) {
+  Widget build(BuildContext context) {
+    return DropTarget(
+      onDragEntered: (_) {
+        // Multiple FileDropTarget widgets can be in the tree at the same
+        // time. We only want to use the top-most.
+        if (ModalRoute.of(context)!.isCurrent) {
           setState(() {
             _hovering = true;
           });
-        },
-        onDragExited: (_) {
-          setState(() {
-            _hovering = false;
-          });
-        },
-        onDragDone: (details) async {
+        }
+      },
+      onDragExited: (_) {
+        setState(() {
+          _hovering = false;
+        });
+      },
+      onDragDone: (details) async {
+        if (ModalRoute.of(context)!.isCurrent) {
           for (final file in details.files) {
             widget.onFileDropped(await file.readAsBytes());
           }
-        },
-        enable: !isAndroid,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            widget.child,
-            if (_hovering) widget.overlay ?? _buildDefaultOverlay(),
-          ],
-        ),
-      );
+        }
+      },
+      enable: !isAndroid,
+      child: Stack(
+        children: [
+          widget.child,
+          if (_hovering)
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: widget.overlay,
+              ),
+            )
+        ],
+      ),
+    );
+  }
 }

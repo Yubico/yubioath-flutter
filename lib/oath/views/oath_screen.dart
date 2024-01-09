@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
+import '../../widgets/file_drop_overlay.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -34,6 +39,7 @@ import '../state.dart';
 import 'account_list.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
+import 'utils.dart';
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
@@ -125,6 +131,27 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
     final hasActions = ref.watch(featureProvider)(features.actions);
+
+    Future<void> onFileDropped(List<int> fileData) async {
+      final qrScanner = ref.read(qrScannerProvider);
+      if (qrScanner != null) {
+        final b64Image = base64Encode(fileData);
+        final qrData = await qrScanner.scanQr(b64Image);
+        final withContext = ref.read(withContextProvider);
+        await withContext(
+          (context) async {
+            if (qrData != null) {
+              final credentials = ref.read(credentialsProvider);
+              await handleUri(context, credentials, qrData, widget.devicePath,
+                  widget.oathState, l10n);
+            } else {
+              showMessage(context, l10n.l_qr_not_found);
+            }
+          },
+        );
+      }
+    }
+
     if (numCreds == 0) {
       return MessagePage(
         title: Text(l10n.s_authenticator),
@@ -137,6 +164,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 context, widget.devicePath, widget.oathState, ref,
                 used: 0)
             : null,
+        onFileDropped: onFileDropped,
+        fileDropOverlay: FileDropOverlay(
+          title: l10n.s_add_account,
+          subtitle: l10n.l_drop_qr_description,
+        ),
       );
     }
     return Actions(
@@ -218,6 +250,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   used: numCreds ?? 0,
                 )
             : null,
+        onFileDropped: onFileDropped,
+        fileDropOverlay: FileDropOverlay(
+          title: l10n.s_add_account,
+          subtitle: l10n.l_drop_qr_description,
+        ),
         centered: numCreds == null,
         delayedContent: numCreds == null,
         child: numCreds != null

@@ -27,6 +27,8 @@ class MessagePage extends StatelessWidget {
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final Widget? fileDropOverlay;
+  final Function(List<int> filedata)? onFileDropped;
   final bool keyActionsBadge;
 
   const MessagePage({
@@ -38,6 +40,8 @@ class MessagePage extends StatelessWidget {
     this.actions = const [],
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.fileDropOverlay,
+    this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
   });
@@ -49,6 +53,8 @@ class MessagePage extends StatelessWidget {
         actions: actions,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
+        fileDropOverlay: fileDropOverlay,
+        onFileDropped: onFileDropped,
         actionButtonBuilder: actionButtonBuilder,
         delayedContent: delayedContent,
         child: Padding(

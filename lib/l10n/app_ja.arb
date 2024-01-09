@@ -325,6 +325,7 @@
     "s_add_account": "アカウントの追加",
     "s_add_accounts": "アカウントの追加",
     "p_add_description": "QR コードをスキャンするには、コード全体が画面に表示されていることを確認し、下のボタンを押してください。保存した画像をこのダイアログにドラッグすることもできます。アカウントクレデンシャル情報を書面で持っている場合は、代わりに手動で入力をしてください。",
+    "l_drop_qr_description": null,
     "s_add_manually": "手動で追加",
     "s_account_added": "アカウントが追加されました",
     "l_account_add_failed": "アカウントの追加に失敗しました:{message}",

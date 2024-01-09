@@ -325,6 +325,7 @@
     "s_add_account": "Ajouter un compte",
     "s_add_accounts": "Ajouter un/des compte(s)",
     "p_add_description": "Pour scanner un code QR, assurez-vous que le code complet est visible à l'écran et appuyez sur le bouton ci-dessous. Vous pouvez également faire glisser une image enregistrée dans un dossier vers cette boîte de dialogue. Si vous disposez des informations d'identification du compte par écrit, utilisez plutôt la saisie manuelle.",
+    "l_drop_qr_description": null,
     "s_add_manually": "Ajouter manuellement",
     "s_account_added": "Compte ajouté",
     "l_account_add_failed": "Échec d'ajout d'un compte: {message}",
