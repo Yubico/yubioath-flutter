@@ -33,7 +33,8 @@ final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
   final Widget? title;
-  final Widget child;
+  final Widget? child;
+  final Widget Function(BuildContext context, bool expanded)? builder;
   final List<Widget> actions;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool keyActionsBadge;
@@ -45,7 +46,8 @@ class AppPage extends StatelessWidget {
   const AppPage({
     super.key,
     this.title,
-    required this.child,
+    this.child,
+    this.builder,
     this.actions = const [],
     this.centered = false,
     this.keyActionsBuilder,
@@ -54,8 +56,12 @@ class AppPage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
-  }) : assert(!(onFileDropped != null && fileDropOverlay == null),
-            'Declaring onFileDropped requires declaring a fileDropOverlay');
+  })  : assert(!(onFileDropped != null && fileDropOverlay == null),
+            'Declaring onFileDropped requires declaring a fileDropOverlay'),
+        assert(
+            ((child == null && builder != null) ||
+                (child != null && builder == null)),
+            'Exactly one of child and builder must be declared');
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -148,10 +154,10 @@ class AppPage extends StatelessWidget {
     ));
   }
 
-  Widget _buildMainContent() {
+  Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
       children: [
-        child,
+        child ?? builder!(context, expanded),
         if (actions.isNotEmpty)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
@@ -187,8 +193,10 @@ class AppPage extends StatelessWidget {
 
   Scaffold _buildScaffold(
       BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
-    var body =
-        centered ? Center(child: _buildMainContent()) : _buildMainContent();
+    var body = _buildMainContent(context, hasManage);
+    if (centered) {
+      body = Center(child: body);
+    }
     if (onFileDropped != null) {
       body = FileDropTarget(
         onFileDropped: onFileDropped!,
@@ -212,19 +220,23 @@ class AppPage extends StatelessWidget {
               ),
             ),
           Expanded(
-            child: GestureDetector(
-              behavior: HitTestBehavior.deferToChild,
-              onTap: () {
-                Actions.invoke(context, const EscapeIntent());
-              },
-              child: body,
-            ),
-          ),
-          if (hasManage)
+              child: GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onTap: () {
+              Actions.invoke(context, const EscapeIntent());
+            },
+            child: Stack(children: [
+              Container(
+                color: Colors.transparent,
+              ),
+              body
+            ]),
+          )),
+          if (hasManage && keyActionsBuilder != null)
             SingleChildScrollView(
               child: SizedBox(
                 width: 320,
-                child: keyActionsBuilder?.call(context),
+                child: keyActionsBuilder!(context),
               ),
             ),
         ],

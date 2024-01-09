@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,36 +127,43 @@ class PivScreen extends ConsumerWidget {
                         );
                       }
                     : null,
-                child: Column(
-                  children: [
-                    ListTitle(l10n.s_certificates),
-                    if (pivSlots?.hasValue == true)
-                      ...pivSlots!.value.map((e) => registerPivActions(
-                            devicePath,
-                            pivState,
-                            e,
-                            ref: ref,
-                            actions: {
-                              OpenIntent: CallbackAction<OpenIntent>(
-                                  onInvoke: (_) async {
-                                // TODO: Fix
-                                var expanded = 1 + 1 == 2;
-                                if (expanded) {
-                                  ref.read(selectedSlot.notifier).state = e;
-                                } else {
-                                  await showBlurDialog(
-                                    context: context,
-                                    barrierColor: Colors.transparent,
-                                    builder: (context) => SlotDialog(e.slot),
-                                  );
-                                }
-                                return null;
-                              }),
-                            },
-                            builder: (context) => _CertificateListItem(e),
-                          )),
-                  ],
-                ),
+                builder: (context, expanded) {
+                  // De-select if window is resized to be non-expanded.
+                  if (!expanded) {
+                    Timer.run(() {
+                      ref.read(selectedSlot.notifier).state = null;
+                    });
+                  }
+                  return Column(
+                    children: [
+                      ListTitle(l10n.s_certificates),
+                      if (pivSlots?.hasValue == true)
+                        ...pivSlots!.value.map((e) => registerPivActions(
+                              devicePath,
+                              pivState,
+                              e,
+                              ref: ref,
+                              actions: {
+                                OpenIntent: CallbackAction<OpenIntent>(
+                                    onInvoke: (_) async {
+                                  if (expanded) {
+                                    ref.read(selectedSlot.notifier).state = e;
+                                  } else {
+                                    await showBlurDialog(
+                                      context: context,
+                                      barrierColor: Colors.transparent,
+                                      builder: (context) => SlotDialog(e.slot),
+                                    );
+                                  }
+                                  return null;
+                                }),
+                              },
+                              builder: (context) =>
+                                  _CertificateListItem(e, expanded),
+                            )),
+                    ],
+                  );
+                },
               ),
             );
           },
@@ -164,8 +173,9 @@ class PivScreen extends ConsumerWidget {
 
 class _CertificateListItem extends ConsumerWidget {
   final PivSlot pivSlot;
+  final bool expanded;
 
-  const _CertificateListItem(this.pivSlot);
+  const _CertificateListItem(this.pivSlot, this.expanded);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -176,32 +186,33 @@ class _CertificateListItem extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
     final selected = ref.watch(selectedSlot) == pivSlot;
 
-    return Semantics(
-        label: slot.getDisplayName(l10n),
-        child: AppListItem(
-          selected: selected,
-          key: _getAppListItemKey(slot),
-          leading: CircleAvatar(
-            foregroundColor: colorScheme.onSecondary,
-            backgroundColor: colorScheme.secondary,
-            child: const Icon(Icons.approval),
-          ),
-          title: slot.getDisplayName(l10n),
-          subtitle: certInfo != null
-              // Simplify subtitle by stripping "CN=", etc.
-              ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
-              : pivSlot.hasKey == true
-                  ? l10n.l_key_no_certificate
-                  : l10n.l_no_certificate,
-          trailing: OutlinedButton(
-            key: _getMeatballKey(slot),
-            onPressed: Actions.handler(context, const OpenIntent()),
-            child: const Icon(Icons.more_horiz),
-          ),
-          buildPopupActions: hasFeature(features.slots)
-              ? (context) => buildSlotActions(certInfo != null, l10n)
-              : null,
-        ));
+    return AppListItem(
+      selected: selected,
+      key: _getAppListItemKey(slot),
+      leading: CircleAvatar(
+        foregroundColor: colorScheme.onSecondary,
+        backgroundColor: colorScheme.secondary,
+        child: const Icon(Icons.approval),
+      ),
+      title: slot.getDisplayName(l10n),
+      subtitle: certInfo != null
+          // Simplify subtitle by stripping "CN=", etc.
+          ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
+          : pivSlot.hasKey == true
+              ? l10n.l_key_no_certificate
+              : l10n.l_no_certificate,
+      trailing: expanded
+          ? null
+          : OutlinedButton(
+              key: _getMeatballKey(slot),
+              onPressed: Actions.handler(context, const OpenIntent()),
+              child: const Icon(Icons.more_horiz),
+            ),
+      openOnSingleTap: expanded,
+      buildPopupActions: hasFeature(features.slots)
+          ? (context) => buildSlotActions(certInfo != null, l10n)
+          : null,
+    );
   }
 
   Key _getMeatballKey(SlotId slotId) => switch (slotId) {

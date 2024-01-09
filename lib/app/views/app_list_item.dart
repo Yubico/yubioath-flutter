@@ -27,20 +27,24 @@ class AppListItem extends ConsumerStatefulWidget {
   final Widget? leading;
   final String title;
   final String? subtitle;
+  final String? semanticTitle;
   final Widget? trailing;
   final List<ActionItem> Function(BuildContext context)? buildPopupActions;
   final Intent? activationIntent;
   final bool selected;
+  final bool openOnSingleTap;
 
   const AppListItem({
     super.key,
     this.leading,
     required this.title,
+    this.semanticTitle,
     this.subtitle,
     this.trailing,
     this.buildPopupActions,
     this.activationIntent,
     this.selected = false,
+    this.openOnSingleTap = false,
   });
 
   @override
@@ -65,82 +69,85 @@ class _AppListItemState extends ConsumerState<AppListItem> {
     final trailing = widget.trailing;
     final hasFeature = ref.watch(featureProvider);
 
-    return Shortcuts(
-      shortcuts: {
-        LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
-        LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
-      },
-      child: InkWell(
-        focusNode: _focusNode,
-        borderRadius: BorderRadius.circular(30),
-        onSecondaryTapDown: buildPopupActions == null
-            ? null
-            : (details) {
-                final menuItems = buildPopupActions(context)
-                    .where((action) =>
-                        action.feature == null || hasFeature(action.feature!))
-                    .toList();
-                if (menuItems.isNotEmpty) {
-                  showPopupMenu(
-                    context,
-                    details.globalPosition,
-                    menuItems,
-                  );
-                }
-              },
-        onTap: () {
-          if (isDesktop) {
-            final now = DateTime.now().millisecondsSinceEpoch;
-            if (now - _lastTap < 500) {
-              setState(() {
-                _lastTap = 0;
-              });
-              Actions.invoke(context, activationIntent ?? const OpenIntent());
-            } else {
-              _focusNode.requestFocus();
-              setState(() {
-                _lastTap = now;
-              });
-            }
-          } else {
-            Actions.invoke<OpenIntent>(context, const OpenIntent());
-          }
+    return Semantics(
+      label: widget.semanticTitle ?? widget.title,
+      child: Shortcuts(
+        shortcuts: {
+          LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
+          LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
         },
-        onLongPress: activationIntent == null
-            ? null
-            : () {
-                Actions.invoke(context, activationIntent);
-              },
-        child: Stack(
-          alignment: AlignmentDirectional.center,
-          children: [
-            const SizedBox(height: 64),
-            ListTile(
-              selected: widget.selected,
-              leading: widget.leading,
-              title: Text(
-                widget.title,
-                overflow: TextOverflow.fade,
-                maxLines: 1,
-                softWrap: false,
+        child: InkWell(
+          focusNode: _focusNode,
+          borderRadius: BorderRadius.circular(30),
+          onSecondaryTapDown: buildPopupActions == null
+              ? null
+              : (details) {
+                  final menuItems = buildPopupActions(context)
+                      .where((action) =>
+                          action.feature == null || hasFeature(action.feature!))
+                      .toList();
+                  if (menuItems.isNotEmpty) {
+                    showPopupMenu(
+                      context,
+                      details.globalPosition,
+                      menuItems,
+                    );
+                  }
+                },
+          onTap: () {
+            if (isDesktop && !widget.openOnSingleTap) {
+              final now = DateTime.now().millisecondsSinceEpoch;
+              if (now - _lastTap < 500) {
+                setState(() {
+                  _lastTap = 0;
+                });
+                Actions.invoke(context, activationIntent ?? const OpenIntent());
+              } else {
+                _focusNode.requestFocus();
+                setState(() {
+                  _lastTap = now;
+                });
+              }
+            } else {
+              Actions.invoke<OpenIntent>(context, const OpenIntent());
+            }
+          },
+          onLongPress: activationIntent == null
+              ? null
+              : () {
+                  Actions.invoke(context, activationIntent);
+                },
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              const SizedBox(height: 64),
+              ListTile(
+                selected: widget.selected,
+                leading: widget.leading,
+                title: Text(
+                  widget.title,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                subtitle: subtitle != null
+                    ? Text(
+                        subtitle,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                      )
+                    : null,
+                trailing: trailing == null
+                    ? null
+                    : Focus(
+                        skipTraversal: true,
+                        descendantsAreTraversable: false,
+                        child: trailing,
+                      ),
               ),
-              subtitle: subtitle != null
-                  ? Text(
-                      subtitle,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false,
-                    )
-                  : null,
-              trailing: trailing == null
-                  ? null
-                  : Focus(
-                      skipTraversal: true,
-                      descendantsAreTraversable: false,
-                      child: trailing,
-                    ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

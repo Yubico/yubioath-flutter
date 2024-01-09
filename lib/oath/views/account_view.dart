@@ -143,33 +143,28 @@ class _AccountViewState extends ConsumerState<AccountView> {
                 LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
                 LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
               },
-              child: Semantics(
-                label: _a11yCredentialLabel(
+              child: AppListItem(
+                leading: showAvatar
+                    ? AccountIcon(
+                        issuer: credential.issuer, defaultWidget: circleAvatar)
+                    : null,
+                title: helper.title,
+                subtitle: subtitle,
+                semanticTitle: _a11yCredentialLabel(
                     credential.issuer, credential.name, helper.code?.value),
-                child: AppListItem(
-                  leading: showAvatar
-                      ? AccountIcon(
-                          issuer: credential.issuer,
-                          defaultWidget: circleAvatar)
-                      : null,
-                  title: helper.title,
-                  subtitle: subtitle,
-                  trailing: helper.code != null
-                      ? FilledButton.tonalIcon(
-                          icon: helper.buildCodeIcon(),
-                          label: helper.buildCodeLabel(),
-                          onPressed:
-                              Actions.handler(context, const OpenIntent()),
-                        )
-                      : FilledButton.tonal(
-                          onPressed:
-                              Actions.handler(context, const OpenIntent()),
-                          child: helper.buildCodeIcon()),
-                  activationIntent: hasFeature(features.accountsClipboard)
-                      ? const CopyIntent()
-                      : const OpenIntent(),
-                  buildPopupActions: (_) => helper.buildActions(),
-                ),
+                trailing: helper.code != null
+                    ? FilledButton.tonalIcon(
+                        icon: helper.buildCodeIcon(),
+                        label: helper.buildCodeLabel(),
+                        onPressed: Actions.handler(context, const OpenIntent()),
+                      )
+                    : FilledButton.tonal(
+                        onPressed: Actions.handler(context, const OpenIntent()),
+                        child: helper.buildCodeIcon()),
+                activationIntent: hasFeature(features.accountsClipboard)
+                    ? const CopyIntent()
+                    : const OpenIntent(),
+                buildPopupActions: (_) => helper.buildActions(),
               ));
         });
       },

@@ -91,23 +91,21 @@ class _SlotListItem extends ConsumerWidget {
     final isConfigured = otpSlot.isConfigured;
     final hasFeature = ref.watch(featureProvider);
 
-    return Semantics(
-        label: slot.getDisplayName(l10n),
-        child: AppListItem(
-          leading: CircleAvatar(
-              foregroundColor: colorScheme.onSecondary,
-              backgroundColor: colorScheme.secondary,
-              child: Text(slot.numberId.toString())),
-          title: slot.getDisplayName(l10n),
-          subtitle:
-              isConfigured ? l10n.l_otp_slot_configured : l10n.l_otp_slot_empty,
-          trailing: OutlinedButton(
-            onPressed: Actions.handler(context, const OpenIntent()),
-            child: const Icon(Icons.more_horiz),
-          ),
-          buildPopupActions: hasFeature(features.slots)
-              ? (context) => buildSlotActions(isConfigured, l10n)
-              : null,
-        ));
+    return AppListItem(
+      leading: CircleAvatar(
+          foregroundColor: colorScheme.onSecondary,
+          backgroundColor: colorScheme.secondary,
+          child: Text(slot.numberId.toString())),
+      title: slot.getDisplayName(l10n),
+      subtitle:
+          isConfigured ? l10n.l_otp_slot_configured : l10n.l_otp_slot_empty,
+      trailing: OutlinedButton(
+        onPressed: Actions.handler(context, const OpenIntent()),
+        child: const Icon(Icons.more_horiz),
+      ),
+      buildPopupActions: hasFeature(features.slots)
+          ? (context) => buildSlotActions(isConfigured, l10n)
+          : null,
+    );
   }
 }
