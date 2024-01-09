@@ -122,6 +122,8 @@ class _AppListItemState extends ConsumerState<AppListItem> {
             children: [
               const SizedBox(height: 64),
               ListTile(
+                mouseCursor:
+                    widget.openOnSingleTap ? SystemMouseCursors.click : null,
                 selected: widget.selected,
                 leading: widget.leading,
                 title: Text(
