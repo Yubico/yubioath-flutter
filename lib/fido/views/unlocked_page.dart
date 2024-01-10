@@ -235,7 +235,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
         },
         child: AppPage(
           title: Text(l10n.s_webauthn),
-          keyActionsBuilder: switch (selected) {
+          detailViewBuilder: switch (selected) {
             FidoCredential credential => (context) =>
                 _registerCredentialActions(credential,
                     ref: ref,
@@ -319,11 +319,12 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
                     ],
                   ),
                 ),
-            _ => hasActions
-                ? (context) => fidoBuildActions(
-                    context, widget.node, widget.state, nFingerprints)
-                : null
+            _ => null
           },
+          keyActionsBuilder: hasActions
+              ? (context) => fidoBuildActions(
+                  context, widget.node, widget.state, nFingerprints)
+              : null,
           keyActionsBadge: fidoShowActionsNotifier(widget.state),
           builder: (context, expanded) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -80,7 +80,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             },
             child: AppPage(
               title: Text(l10n.s_slots),
-              keyActionsBuilder: selected != null
+              detailViewBuilder: selected != null
                   ? (context) => registerOtpActions(
                         widget.devicePath,
                         selected,
@@ -125,10 +125,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           ],
                         ),
                       )
-                  : (hasFeature(features.actions)
-                      ? (context) => otpBuildActions(
-                          context, widget.devicePath, otpState, ref)
-                      : null),
+                  : null,
+              keyActionsBuilder: hasFeature(features.actions)
+                  ? (context) =>
+                      otpBuildActions(context, widget.devicePath, otpState, ref)
+                  : null,
               builder: (context, expanded) {
                 // De-select if window is resized to be non-expanded.
                 if (!expanded) {

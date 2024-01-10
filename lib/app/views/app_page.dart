@@ -35,6 +35,7 @@ class AppPage extends StatelessWidget {
   final Widget? title;
   final Widget? child;
   final Widget Function(BuildContext context, bool expanded)? builder;
+  final Widget Function(BuildContext context)? detailViewBuilder;
   final List<Widget> actions;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool keyActionsBadge;
@@ -51,6 +52,7 @@ class AppPage extends StatelessWidget {
     this.actions = const [],
     this.centered = false,
     this.keyActionsBuilder,
+    this.detailViewBuilder,
     this.actionButtonBuilder,
     this.fileDropOverlay,
     this.onFileDropped,
@@ -228,13 +230,21 @@ class AppPage extends StatelessWidget {
               body
             ]),
           )),
-          if (hasManage && keyActionsBuilder != null)
+          if (hasManage &&
+              (detailViewBuilder != null || keyActionsBuilder != null))
             SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
                   width: 320,
-                  child: keyActionsBuilder!(context),
+                  child: Column(
+                    children: [
+                      if (detailViewBuilder != null)
+                        detailViewBuilder!(context),
+                      if (keyActionsBuilder != null)
+                        keyActionsBuilder!(context),
+                    ],
+                  ),
                 ),
               ),
             ),

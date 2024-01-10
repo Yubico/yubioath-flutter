@@ -92,8 +92,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
               },
               child: AppPage(
                 title: Text(l10n.s_certificates),
-                keyActionsBuilder: selected != null
-                    // TODO: Reuse slot dialog
+                detailViewBuilder: selected != null
                     ? (context) => registerPivActions(
                           widget.devicePath,
                           pivState,
@@ -133,17 +132,14 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                 actions: buildSlotActions(
                                     selected.certInfo != null, l10n),
                               ),
-                              if (hasFeature(features.actions)) ...[
-                                pivBuildActions(
-                                    context, widget.devicePath, pivState, ref),
-                              ],
                             ],
                           ),
                         )
-                    : (hasFeature(features.actions)
-                        ? (context) => pivBuildActions(
-                            context, widget.devicePath, pivState, ref)
-                        : null),
+                    : null,
+                keyActionsBuilder: hasFeature(features.actions)
+                    ? (context) => pivBuildActions(
+                        context, widget.devicePath, pivState, ref)
+                    : null,
                 builder: (context, expanded) {
                   // De-select if window is resized to be non-expanded.
                   if (!expanded) {
