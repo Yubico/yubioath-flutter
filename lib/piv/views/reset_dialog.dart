@@ -50,6 +50,7 @@ class ResetDialog extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.p_warning_piv_reset,
