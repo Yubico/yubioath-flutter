@@ -56,6 +56,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: FileDropTarget(
             onFileDropped: (fileData) async {
+              debugPrint('onFileDropped');
               Navigator.of(context).pop();
               if (qrScanner != null) {
                 final b64Image = base64Encode(fileData);
@@ -70,6 +71,8 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                     }
                   },
                 );
+              } else {
+                debugPrint('no QR scanner');
               }
             },
             child: Column(
@@ -133,5 +136,17 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
             ),
           ),
         ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    debugPrint('disposed :(');
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    debugPrint('deactivated :(');
   }
 }

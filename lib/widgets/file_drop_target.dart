@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
-import '../core/state.dart';
+import '../android/app_methods.dart';
 
 class FileDropTarget extends StatefulWidget {
   final Widget child;
@@ -50,23 +50,58 @@ class _FileDropTargetState extends State<FileDropTarget> {
       );
 
   @override
-  Widget build(BuildContext context) => DropTarget(
-        onDragEntered: (_) {
+  Widget build(BuildContext context) => DropRegion(
+        formats: Formats.standardFormats,
+        //hitTestBehavior: HitTestBehavior.opaque,
+        onDropEnter: (_) async {
           setState(() {
             _hovering = true;
           });
         },
-        onDragExited: (_) {
+        onDropLeave: (_) {
           setState(() {
             _hovering = false;
           });
         },
-        onDragDone: (details) async {
-          for (final file in details.files) {
-            widget.onFileDropped(await file.readAsBytes());
-          }
+        onDropEnded: (event) async {
+          setState(() {
+            _hovering = false;
+          });
+          await preserveConnectedDeviceWhenPaused();
         },
-        enable: !isAndroid,
+        onDropOver: (event) async {
+          debugPrint('onDropOver');
+          return event.session.allowedOperations.firstOrNull ??
+              DropOperation.none;
+        },
+        onPerformDrop: (PerformDropEvent event) async {
+
+          debugPrint('onPerform');
+          final reader =  event.session.items.firstOrNull?.dataReader;
+          if (reader != null) {
+            if (reader.canProvide(Formats.jpeg)) {
+              debugPrint('received jpeg');
+              reader.getFile(Formats.jpeg, (file) async {
+                widget.onFileDropped(await file.readAll());
+              });
+            }
+
+            if (reader.canProvide(Formats.png)) {
+              debugPrint('received png');
+              reader.getFile(Formats.png, (file) async {
+                debugPrint('reading png data');
+                final data = await file.readAll();
+                debugPrint('have the png data: ${data.length}');
+                widget.onFileDropped(data);
+                debugPrint('leaving function');
+              }, onError: (err) {
+                debugPrint('error getting png file');
+              });
+            }
+          }
+          debugPrint('leaving onPerform');
+        },
+
         child: Stack(
           alignment: Alignment.center,
           children: [

@@ -37,6 +37,11 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
+import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.oath.AppLinkMethodChannel
@@ -48,6 +53,7 @@ import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.core.YubiKeyDevice
+import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
@@ -58,9 +64,20 @@ import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.util.concurrent.Executors
 
-class MainActivity : FlutterFragmentActivity() {
-    private val viewModel: MainViewModel by viewModels()
-    private val oathViewModel: OathViewModel by viewModels()
+class MainActivity : FlutterActivity(), ViewModelStoreOwner {
+
+    private val activityViewModelStore: ViewModelStore by lazy {
+        ViewModelStore()
+    }
+
+    override public val viewModelStore: ViewModelStore = activityViewModelStore
+
+    private val viewModel: MainViewModel   by lazy {
+            ViewModelProvider(this).get(MainViewModel::class.java)
+    }
+    private val oathViewModel: OathViewModel by lazy {
+        ViewModelProvider(this).get(OathViewModel::class.java)
+    }
 
     private val nfcConfiguration = NfcConfiguration()
 

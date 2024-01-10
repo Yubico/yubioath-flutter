@@ -110,6 +110,13 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <provider
+            android:name="com.superlist.super_native_extensions.DataProvider"
+            android:authorities="com.yubico.yubioath.SuperClipboardDataProvider"
+            android:exported="true"
+            android:grantUriPermissions="true" >
+        </provider>
     </application>
 
 </manifest>
