@@ -15,6 +15,7 @@
  */
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -132,9 +133,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         .select((value) => value?.length));
     final hasActions = ref.watch(featureProvider)(features.actions);
 
-    Future<void> onFileDropped(List<int> fileData) async {
+    Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
+        final fileData = await file.readAsBytes();
         final b64Image = base64Encode(fileData);
         final qrData = await qrScanner.scanQr(b64Image);
         final withContext = ref.read(withContextProvider);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -38,7 +40,7 @@ class AppPage extends StatelessWidget {
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
-  final Function(List<int> filedata)? onFileDropped;
+  final Function(File file)? onFileDropped;
   const AppPage({
     super.key,
     this.title,

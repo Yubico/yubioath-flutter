@@ -23,6 +23,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/message.dart';
 import '../../app/state.dart';
+import '../../widgets/file_drop_overlay.dart';
+import '../../widgets/file_drop_target.dart';
 import '../../widgets/responsive_dialog.dart';
 import 'icon_pack.dart';
 import 'icon_pack_manager.dart';
@@ -34,26 +36,52 @@ class IconPackDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final iconPack = ref.watch(iconPackProvider);
-    return ResponsiveDialog(
-      title: Text(l10n.s_custom_icons),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _DialogDescription(),
-            const SizedBox(height: 4),
-            _action(iconPack, l10n),
-            _loadedIconPackRow(iconPack),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
+    return FileDropTarget(
+        onFileDropped: (file) async {
+          final importStatus = await ref
+              .read(iconPackProvider.notifier)
+              .importPack(l10n, file.path);
+          await ref.read(withContextProvider)((context) async {
+            if (importStatus) {
+              showMessage(context, l10n.l_icon_pack_imported);
+            } else {
+              showMessage(
+                  context,
+                  l10n.l_import_icon_pack_failed(
+                      ref.read(iconPackProvider.notifier).lastError ??
+                          l10n.l_import_error));
+            }
+          });
+        },
+        overlay: FileDropOverlay(
+          title: iconPack.when(
+              data: (IconPack? data) => data != null
+                  ? l10n.s_replace_icon_pack
+                  : l10n.s_load_icon_pack,
+              error: (Object error, StackTrace stackTrace) =>
+                  l10n.s_load_icon_pack,
+              loading: () => null),
         ),
-      ),
-    );
+        child: ResponsiveDialog(
+          title: Text(l10n.s_custom_icons),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _DialogDescription(),
+                const SizedBox(height: 4),
+                _action(iconPack, l10n),
+                _loadedIconPackRow(iconPack),
+              ]
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: e,
+                      ))
+                  .toList(),
+            ),
+          ),
+        ));
   }
 
   Widget? _loadedIconPackRow(AsyncValue<IconPack?> iconPack) {

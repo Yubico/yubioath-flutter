@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +23,7 @@ import '../core/state.dart';
 
 class FileDropTarget extends StatefulWidget {
   final Widget child;
-  final Function(List<int> filedata) onFileDropped;
+  final Function(File file) onFileDropped;
   final Widget overlay;
 
   const FileDropTarget({
@@ -58,7 +60,7 @@ class _FileDropTargetState extends State<FileDropTarget> {
       onDragDone: (details) async {
         if (ModalRoute.of(context)!.isCurrent) {
           for (final file in details.files) {
-            widget.onFileDropped(await file.readAsBytes());
+            widget.onFileDropped(File(file.path));
           }
         }
       },
