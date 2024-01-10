@@ -39,7 +39,7 @@ import 'cert_info_view.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
 
-final selectedSlot = StateProvider<PivSlot?>(
+final _selectedSlot = StateProvider<PivSlot?>(
   (ref) => null,
 );
 
@@ -64,7 +64,7 @@ class PivScreen extends ConsumerWidget {
           ),
           data: (pivState) {
             final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
-            final selected = ref.watch(selectedSlot);
+            final selected = ref.watch(_selectedSlot);
             final theme = Theme.of(context);
             final textTheme = theme.textTheme;
             // This is what ListTile uses for subtitle
@@ -75,7 +75,7 @@ class PivScreen extends ConsumerWidget {
               actions: {
                 EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
                   if (selected != null) {
-                    ref.read(selectedSlot.notifier).state = null;
+                    ref.read(_selectedSlot.notifier).state = null;
                   } else {
                     Actions.invoke(context, intent);
                   }
@@ -84,13 +84,9 @@ class PivScreen extends ConsumerWidget {
               },
               child: AppPage(
                 title: Text(l10n.s_certificates),
-                keyActionsBuilder: hasFeature(features.actions)
-                    ? (context) {
-                        if (selected == null) {
-                          return pivBuildActions(
-                              context, devicePath, pivState, ref);
-                        }
-                        return registerPivActions(
+                keyActionsBuilder: selected != null
+                    // TODO: Reuse slot dialog
+                    ? (context) => registerPivActions(
                           devicePath,
                           pivState,
                           selected,
@@ -124,14 +120,16 @@ class PivScreen extends ConsumerWidget {
                               ),
                             ],
                           ),
-                        );
-                      }
-                    : null,
+                        )
+                    : (hasFeature(features.actions)
+                        ? (context) =>
+                            pivBuildActions(context, devicePath, pivState, ref)
+                        : null),
                 builder: (context, expanded) {
                   // De-select if window is resized to be non-expanded.
                   if (!expanded) {
                     Timer.run(() {
-                      ref.read(selectedSlot.notifier).state = null;
+                      ref.read(_selectedSlot.notifier).state = null;
                     });
                   }
                   return Column(
@@ -147,7 +145,7 @@ class PivScreen extends ConsumerWidget {
                                 OpenIntent: CallbackAction<OpenIntent>(
                                     onInvoke: (_) async {
                                   if (expanded) {
-                                    ref.read(selectedSlot.notifier).state = e;
+                                    ref.read(_selectedSlot.notifier).state = e;
                                   } else {
                                     await showBlurDialog(
                                       context: context,
@@ -184,7 +182,7 @@ class _CertificateListItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final hasFeature = ref.watch(featureProvider);
-    final selected = ref.watch(selectedSlot) == pivSlot;
+    final selected = ref.watch(_selectedSlot) == pivSlot;
 
     return AppListItem(
       selected: selected,
