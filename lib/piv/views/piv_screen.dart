@@ -39,20 +39,23 @@ import 'cert_info_view.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
 
-final _selectedSlot = StateProvider<PivSlot?>(
-  (ref) => null,
-);
-
-class PivScreen extends ConsumerWidget {
+class PivScreen extends ConsumerStatefulWidget {
   final DevicePath devicePath;
 
-  const PivScreen(this.devicePath, {super.key});
+  PivScreen(this.devicePath) : super(key: ObjectKey(devicePath));
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _PivScreenState();
+}
+
+class _PivScreenState extends ConsumerState<PivScreen> {
+  SlotId? _selected;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
-    return ref.watch(pivStateProvider(devicePath)).when(
+    return ref.watch(pivStateProvider(widget.devicePath)).when(
           loading: () => MessagePage(
             title: Text(l10n.s_certificates),
             graphic: const CircularProgressIndicator(),
@@ -63,8 +66,11 @@ class PivScreen extends ConsumerWidget {
             cause: error,
           ),
           data: (pivState) {
-            final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
-            final selected = ref.watch(_selectedSlot);
+            final pivSlots =
+                ref.watch(pivSlotsProvider(widget.devicePath)).asData;
+            final selected = _selected != null
+                ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
+                : null;
             final theme = Theme.of(context);
             final textTheme = theme.textTheme;
             // This is what ListTile uses for subtitle
@@ -75,7 +81,9 @@ class PivScreen extends ConsumerWidget {
               actions: {
                 EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
                   if (selected != null) {
-                    ref.read(_selectedSlot.notifier).state = null;
+                    setState(() {
+                      _selected = null;
+                    });
                   } else {
                     Actions.invoke(context, intent);
                   }
@@ -87,7 +95,7 @@ class PivScreen extends ConsumerWidget {
                 keyActionsBuilder: selected != null
                     // TODO: Reuse slot dialog
                     ? (context) => registerPivActions(
-                          devicePath,
+                          widget.devicePath,
                           pivState,
                           selected,
                           ref: ref,
@@ -127,20 +135,22 @@ class PivScreen extends ConsumerWidget {
                               ),
                               if (hasFeature(features.actions)) ...[
                                 pivBuildActions(
-                                    context, devicePath, pivState, ref),
+                                    context, widget.devicePath, pivState, ref),
                               ],
                             ],
                           ),
                         )
                     : (hasFeature(features.actions)
-                        ? (context) =>
-                            pivBuildActions(context, devicePath, pivState, ref)
+                        ? (context) => pivBuildActions(
+                            context, widget.devicePath, pivState, ref)
                         : null),
                 builder: (context, expanded) {
                   // De-select if window is resized to be non-expanded.
                   if (!expanded) {
                     Timer.run(() {
-                      ref.read(_selectedSlot.notifier).state = null;
+                      setState(() {
+                        _selected = null;
+                      });
                     });
                   }
                   return Column(
@@ -148,7 +158,7 @@ class PivScreen extends ConsumerWidget {
                       ListTitle(l10n.s_certificates),
                       if (pivSlots?.hasValue == true)
                         ...pivSlots!.value.map((e) => registerPivActions(
-                              devicePath,
+                              widget.devicePath,
                               pivState,
                               e,
                               ref: ref,
@@ -156,7 +166,9 @@ class PivScreen extends ConsumerWidget {
                                 OpenIntent: CallbackAction<OpenIntent>(
                                     onInvoke: (_) async {
                                   if (expanded) {
-                                    ref.read(_selectedSlot.notifier).state = e;
+                                    setState(() {
+                                      _selected = e.slot;
+                                    });
                                   } else {
                                     await showBlurDialog(
                                       context: context,
@@ -167,8 +179,11 @@ class PivScreen extends ConsumerWidget {
                                   return null;
                                 }),
                               },
-                              builder: (context) =>
-                                  _CertificateListItem(e, expanded),
+                              builder: (context) => _CertificateListItem(
+                                e,
+                                expanded: expanded,
+                                selected: e == selected,
+                              ),
                             )),
                     ],
                   );
@@ -183,8 +198,10 @@ class PivScreen extends ConsumerWidget {
 class _CertificateListItem extends ConsumerWidget {
   final PivSlot pivSlot;
   final bool expanded;
+  final bool selected;
 
-  const _CertificateListItem(this.pivSlot, this.expanded);
+  const _CertificateListItem(this.pivSlot,
+      {required this.expanded, required this.selected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -193,7 +210,6 @@ class _CertificateListItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final hasFeature = ref.watch(featureProvider);
-    final selected = ref.watch(_selectedSlot) == pivSlot;
 
     return AppListItem(
       selected: selected,

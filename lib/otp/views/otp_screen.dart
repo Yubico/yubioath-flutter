@@ -37,20 +37,23 @@ import 'actions.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
 
-final _selectedSlot = StateProvider<OtpSlot?>(
-  (ref) => null,
-);
-
-class OtpScreen extends ConsumerWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   final DevicePath devicePath;
 
-  const OtpScreen(this.devicePath, {super.key});
+  OtpScreen(this.devicePath) : super(key: ObjectKey(devicePath));
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends ConsumerState<OtpScreen> {
+  SlotId? _selected;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
-    return ref.watch(otpStateProvider(devicePath)).when(
+    return ref.watch(otpStateProvider(widget.devicePath)).when(
         loading: () => MessagePage(
               title: Text(l10n.s_slots),
               graphic: const CircularProgressIndicator(),
@@ -59,12 +62,16 @@ class OtpScreen extends ConsumerWidget {
         error: (error, _) =>
             AppFailurePage(title: Text(l10n.s_slots), cause: error),
         data: (otpState) {
-          final selected = ref.watch(_selectedSlot);
+          final selected = _selected != null
+              ? otpState.slots.firstWhere((e) => e.slot == _selected)
+              : null;
           return Actions(
             actions: {
               EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
                 if (selected != null) {
-                  ref.read(_selectedSlot.notifier).state = null;
+                  setState(() {
+                    _selected = null;
+                  });
                 } else {
                   Actions.invoke(context, intent);
                 }
@@ -75,7 +82,7 @@ class OtpScreen extends ConsumerWidget {
               title: Text(l10n.s_slots),
               keyActionsBuilder: selected != null
                   ? (context) => registerOtpActions(
-                        devicePath,
+                        widget.devicePath,
                         selected,
                         ref: ref,
                         builder: (context) => Column(
@@ -119,36 +126,45 @@ class OtpScreen extends ConsumerWidget {
                         ),
                       )
                   : (hasFeature(features.actions)
-                      ? (context) =>
-                          otpBuildActions(context, devicePath, otpState, ref)
+                      ? (context) => otpBuildActions(
+                          context, widget.devicePath, otpState, ref)
                       : null),
               builder: (context, expanded) {
                 // De-select if window is resized to be non-expanded.
                 if (!expanded) {
                   Timer.run(() {
-                    ref.read(_selectedSlot.notifier).state = null;
+                    setState(() {
+                      _selected = null;
+                    });
                   });
                 }
                 return Column(children: [
                   ListTitle(l10n.s_slots),
-                  ...otpState.slots.map((e) => registerOtpActions(devicePath, e,
-                      ref: ref,
-                      actions: {
-                        OpenIntent:
-                            CallbackAction<OpenIntent>(onInvoke: (_) async {
-                          if (expanded) {
-                            ref.read(_selectedSlot.notifier).state = e;
-                          } else {
-                            await showBlurDialog(
-                              context: context,
-                              barrierColor: Colors.transparent,
-                              builder: (context) => SlotDialog(e.slot),
-                            );
-                          }
-                          return null;
-                        }),
-                      },
-                      builder: (context) => _SlotListItem(e, expanded)))
+                  ...otpState.slots
+                      .map((e) => registerOtpActions(widget.devicePath, e,
+                          ref: ref,
+                          actions: {
+                            OpenIntent:
+                                CallbackAction<OpenIntent>(onInvoke: (_) async {
+                              if (expanded) {
+                                setState(() {
+                                  _selected = e.slot;
+                                });
+                              } else {
+                                await showBlurDialog(
+                                  context: context,
+                                  barrierColor: Colors.transparent,
+                                  builder: (context) => SlotDialog(e.slot),
+                                );
+                              }
+                              return null;
+                            }),
+                          },
+                          builder: (context) => _SlotListItem(
+                                e,
+                                expanded: expanded,
+                                selected: e == selected,
+                              )))
                 ]);
               },
             ),
@@ -160,8 +176,10 @@ class OtpScreen extends ConsumerWidget {
 class _SlotListItem extends ConsumerWidget {
   final OtpSlot otpSlot;
   final bool expanded;
+  final bool selected;
 
-  const _SlotListItem(this.otpSlot, this.expanded);
+  const _SlotListItem(this.otpSlot,
+      {required this.expanded, required this.selected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -170,7 +188,6 @@ class _SlotListItem extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final isConfigured = otpSlot.isConfigured;
     final hasFeature = ref.watch(featureProvider);
-    final selected = ref.watch(_selectedSlot) == otpSlot;
 
     return AppListItem(
       selected: selected,
