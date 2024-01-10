@@ -188,22 +188,30 @@ class CredentialData with _$CredentialData {
 
     // Convert parsed credential values into CredentialData objects
     return splitCreds(base64.decode(uri.queryParameters['data']!))
-        .map((values) => CredentialData(
-              secret: base32.encode(values[1]),
-              name: utf8.decode(values[2], allowMalformed: true),
-              issuer: values[3] != null
-                  ? utf8.decode(values[3], allowMalformed: true)
-                  : null,
-              hashAlgorithm: switch (values[4]) {
-                2 => HashAlgorithm.sha256,
-                3 => HashAlgorithm.sha512,
-                _ => HashAlgorithm.sha1,
-              },
-              digits: values[5] == 2 ? 8 : defaultDigits,
-              oathType: values[6] == 1 ? OathType.hotp : OathType.totp,
-              counter: values[7] ?? defaultCounter,
-            ))
-        .toList();
+        .map((values) {
+      String? issuer;
+      String name = utf8.decode(values[2], allowMalformed: true);
+      final nameIndex = name.indexOf(':');
+      if (nameIndex >= 0) {
+        issuer = name.substring(0, nameIndex);
+        name = name.substring(nameIndex + 1);
+      }
+      return CredentialData(
+        secret: base32.encode(values[1]),
+        name: name,
+        issuer: values[3] != null
+            ? utf8.decode(values[3], allowMalformed: true)
+            : issuer,
+        hashAlgorithm: switch (values[4]) {
+          2 => HashAlgorithm.sha256,
+          3 => HashAlgorithm.sha512,
+          _ => HashAlgorithm.sha1,
+        },
+        digits: values[5] == 2 ? 8 : defaultDigits,
+        oathType: values[6] == 1 ? OathType.hotp : OathType.totp,
+        counter: values[7] ?? defaultCounter,
+      );
+    }).toList();
   }
 
   factory CredentialData.fromOtpauth(Uri uri) {
