@@ -39,6 +39,7 @@
     "s_usb": "USB",
     "s_nfc": "NFC",
     "s_options": "オプション",
+    "s_details": null,
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを表示しない",
     "q_rename_target": "{label}の名前を変更しますか?",

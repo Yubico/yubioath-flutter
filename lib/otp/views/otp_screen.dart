@@ -79,22 +79,34 @@ class OtpScreen extends ConsumerWidget {
                         selected,
                         ref: ref,
                         builder: (context) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            ListTitle(selected.slot.getDisplayName(l10n)),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 8),
-                                  const Icon(
-                                    Icons.touch_app,
-                                    size: 100.0,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(selected.isConfigured
-                                      ? l10n.l_otp_slot_configured
-                                      : l10n.l_otp_slot_empty)
-                                ],
+                            ListTitle(l10n.s_details),
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                // TODO: Reuse from fingerprint_dialog
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      selected.slot.getDisplayName(l10n),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                      softWrap: true,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Icon(
+                                      Icons.touch_app,
+                                      size: 100.0,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(selected.isConfigured
+                                        ? l10n.l_otp_slot_configured
+                                        : l10n.l_otp_slot_empty)
+                                  ],
+                                ),
                               ),
                             ),
                             ActionListSection.fromMenuActions(

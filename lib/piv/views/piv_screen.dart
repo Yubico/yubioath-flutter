@@ -92,32 +92,43 @@ class PivScreen extends ConsumerWidget {
                           selected,
                           ref: ref,
                           builder: (context) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              ListTitle(selected.slot.getDisplayName(l10n)),
-                              if (selected.certInfo != null) ...[
-                                Padding(
+                              ListTitle(l10n.s_details),
+                              Card(
+                                child: Padding(
                                   padding: const EdgeInsets.all(16),
-                                  child: CertInfoTable(selected.certInfo!),
-                                ),
-                              ] else ...[
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Text(
-                                    l10n.l_no_certificate,
-                                    softWrap: true,
-                                    textAlign: TextAlign.center,
-                                    style: subtitleStyle,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        selected.slot.getDisplayName(l10n),
+                                        style: textTheme.headlineSmall,
+                                        softWrap: true,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      selected.certInfo != null
+                                          ? CertInfoTable(selected.certInfo!)
+                                          : Text(
+                                              l10n.l_no_certificate,
+                                              softWrap: true,
+                                              textAlign: TextAlign.center,
+                                              style: subtitleStyle,
+                                            ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 16),
-                              ],
+                              ),
                               ActionListSection.fromMenuActions(
                                 context,
                                 l10n.s_actions,
                                 actions: buildSlotActions(
                                     selected.certInfo != null, l10n),
                               ),
+                              if (hasFeature(features.actions)) ...[
+                                pivBuildActions(
+                                    context, devicePath, pivState, ref),
+                              ],
                             ],
                           ),
                         )

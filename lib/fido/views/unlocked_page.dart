@@ -228,30 +228,42 @@ class FidoUnlockedPage extends ConsumerWidget {
                 _registerCredentialActions(node.path, credential,
                     ref: ref,
                     builder: (context) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            ListTitle(credential.userName),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    credential.rpId,
-                                    softWrap: true,
-                                    textAlign: TextAlign.center,
-                                    // This is what ListTile uses for subtitle
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Icon(Icons.person, size: 72),
-                                ],
+                            ListTitle(l10n.s_details),
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                // TODO: Reuse from credential_dialog
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      credential.userName,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                      softWrap: true,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Text(
+                                      credential.rpId,
+                                      softWrap: true,
+                                      textAlign: TextAlign.center,
+                                      // This is what ListTile uses for subtitle
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall!
+                                                .color,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Icon(Icons.person, size: 72),
+                                  ],
+                                ),
                               ),
                             ),
                             ActionListSection.fromMenuActions(
@@ -266,15 +278,26 @@ class FidoUnlockedPage extends ConsumerWidget {
                   fingerprint,
                   ref: ref,
                   builder: (context) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ListTitle(fingerprint.label),
-                      const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 16),
-                            Icon(Icons.fingerprint, size: 72),
-                          ],
+                      ListTitle(l10n.s_details),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          // TODO: Reuse from fingerprint_dialog
+                          child: Column(
+                            children: [
+                              Text(
+                                fingerprint.label,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              const Icon(Icons.fingerprint, size: 72),
+                            ],
+                          ),
                         ),
                       ),
                       ActionListSection.fromMenuActions(

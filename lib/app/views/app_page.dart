@@ -214,6 +214,7 @@ class AppPage extends StatelessWidget {
                 ),
               ),
             ),
+          const SizedBox(width: 8),
           Expanded(
               child: GestureDetector(
             behavior: HitTestBehavior.deferToChild,
@@ -229,9 +230,12 @@ class AppPage extends StatelessWidget {
           )),
           if (hasManage && keyActionsBuilder != null)
             SingleChildScrollView(
-              child: SizedBox(
-                width: 320,
-                child: keyActionsBuilder!(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  width: 320,
+                  child: keyActionsBuilder!(context),
+                ),
               ),
             ),
         ],
