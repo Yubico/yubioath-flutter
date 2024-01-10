@@ -295,20 +295,7 @@ class AppPage extends StatelessWidget {
         ],
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
-      body: onFileDropped != null && !hasRail
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: FileDropTarget(
-                    onFileDropped: onFileDropped!,
-                    overlay: fileDropOverlay!,
-                    child: body,
-                  ),
-                )
-              ],
-            )
-          : body,
+      body: body,
     );
   }
 }
