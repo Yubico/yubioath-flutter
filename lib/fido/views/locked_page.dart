@@ -92,7 +92,7 @@ class FidoLockedPage extends ConsumerWidget {
     return AppPage(
       title: Text(l10n.s_webauthn),
       keyActionsBuilder: hasActions ? _buildActions : null,
-      child: Column(
+      builder: (context, _) => Column(
         children: [
           _PinEntryForm(state, node),
         ],

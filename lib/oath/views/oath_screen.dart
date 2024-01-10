@@ -81,7 +81,7 @@ class _LockedView extends ConsumerWidget {
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
           : null,
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: UnlockForm(
           devicePath,
@@ -259,7 +259,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         ),
         centered: numCreds == null,
         delayedContent: numCreds == null,
-        child: numCreds != null
+        builder: (context, expanded) => numCreds != null
             ? Consumer(
                 builder: (context, ref, _) {
                   return AccountList(

@@ -39,7 +39,7 @@ class FidoScreen extends ConsumerWidget {
               title: Text(l10n.s_webauthn),
               centered: true,
               delayedContent: true,
-              child: const CircularProgressIndicator(),
+              builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
           final supported = deviceData

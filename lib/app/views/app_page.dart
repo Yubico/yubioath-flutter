@@ -33,8 +33,7 @@ final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
   final Widget? title;
-  final Widget? child;
-  final Widget Function(BuildContext context, bool expanded)? builder;
+  final Widget Function(BuildContext context, bool expanded) builder;
   final Widget Function(BuildContext context)? detailViewBuilder;
   final List<Widget> actions;
   final Widget Function(BuildContext context)? keyActionsBuilder;
@@ -47,8 +46,7 @@ class AppPage extends StatelessWidget {
   const AppPage({
     super.key,
     this.title,
-    this.child,
-    this.builder,
+    required this.builder,
     this.actions = const [],
     this.centered = false,
     this.keyActionsBuilder,
@@ -58,12 +56,8 @@ class AppPage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
-  })  : assert(!(onFileDropped != null && fileDropOverlay == null),
-            'Declaring onFileDropped requires declaring a fileDropOverlay'),
-        assert(
-            ((child == null && builder != null) ||
-                (child != null && builder == null)),
-            'Exactly one of child and builder must be declared');
+  }) : assert(!(onFileDropped != null && fileDropOverlay == null),
+            'Declaring onFileDropped requires declaring a fileDropOverlay');
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -159,7 +153,7 @@ class AppPage extends StatelessWidget {
   Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
       children: [
-        child ?? builder!(context, expanded),
+        builder(context, expanded),
         if (actions.isNotEmpty)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,

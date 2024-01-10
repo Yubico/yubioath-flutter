@@ -365,7 +365,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
         title: Text(AppLocalizations.of(context)!.s_webauthn),
         centered: true,
         delayedContent: true,
-        child: const CircularProgressIndicator(),
+        builder: (context, _) => const CircularProgressIndicator(),
       );
 }
 
