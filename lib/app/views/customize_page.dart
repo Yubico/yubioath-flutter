@@ -42,6 +42,7 @@ class CustomizePage extends ConsumerStatefulWidget {
 class _CustomizePageState extends ConsumerState<CustomizePage> {
   String? _displayName;
   String? _displayColor;
+  Color? _previewColor;
 
   @override
   void initState() {
@@ -58,10 +59,8 @@ class _CustomizePageState extends ConsumerState<CustomizePage> {
   void updateColor(String? colorString) {
     setState(() {
       _displayColor = colorString;
-      Color? color =
+      _previewColor =
           colorString != null ? Color(int.parse(colorString, radix: 16)) : null;
-      ref.watch(darkThemeProvider.notifier).setPrimaryColor(color);
-      ref.watch(lightThemeProvider.notifier).setPrimaryColor(color);
     });
   }
 
@@ -70,42 +69,44 @@ class _CustomizePageState extends ConsumerState<CustomizePage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return ResponsiveDialog(
-      title: const Text('Customize key appearance'),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            KeyCustomization newValue = KeyCustomization(
-                widget.initialCustomization!.serialNumber, <String, dynamic>{
-              'display_color': _displayColor,
-              'display_name': _displayName
-            });
+    return Theme(
+      // show the selected color directly in this dialog
+      data: theme.copyWith(
+        colorScheme: ColorScheme.fromSeed(
+            brightness: theme.brightness,
+            seedColor: _previewColor ?? theme.colorScheme.primary),
+      ),
+      child: ResponsiveDialog(
+        title: const Text('Customize key appearance'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              KeyCustomization newValue = KeyCustomization(
+                  widget.initialCustomization!.serialNumber, <String, dynamic>{
+                'display_color': _displayColor,
+                'display_name': _displayName
+              });
 
-            _log.debug('Saving customization for '
-                '${widget.initialCustomization!.serialNumber}: '
-                '$_displayName/$_displayColor');
+              _log.debug('Saving customization for '
+                  '${widget.initialCustomization!.serialNumber}: '
+                  '$_displayName/$_displayColor');
 
-            final manager = ref.read(keyCustomizationManagerProvider);
-            manager.set(newValue);
-            await manager.write();
+              final manager = ref.read(keyCustomizationManagerProvider);
+              manager.set(newValue);
+              await manager.write();
 
-            await ref.read(withContextProvider)((context) async {
-              FocusUtils.unfocus(context);
-              final nav = Navigator.of(context);
-              nav.pop();
-            });
-          },
-          child: Text(l10n.s_save),
-        ),
-      ],
-      child: Theme(
-        // Make the headers use the primary color to pop a bit.
-        // Once M3 is implemented this will probably not be needed.
-        data: theme.copyWith(
-          textTheme: theme.textTheme.copyWith(
-              labelLarge: theme.textTheme.labelLarge
-                  ?.copyWith(color: theme.colorScheme.primary)),
-        ),
+              ref.invalidate(lightThemeProvider);
+              ref.invalidate(darkThemeProvider);
+
+              await ref.read(withContextProvider)((context) async {
+                FocusUtils.unfocus(context);
+                final nav = Navigator.of(context);
+                nav.pop();
+              });
+            },
+            child: Text(l10n.s_save),
+          ),
+        ],
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
