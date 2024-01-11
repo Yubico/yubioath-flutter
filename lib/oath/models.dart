@@ -189,19 +189,19 @@ class CredentialData with _$CredentialData {
     // Convert parsed credential values into CredentialData objects
     return splitCreds(base64.decode(uri.queryParameters['data']!))
         .map((values) {
-      String? issuer;
+      String? issuer = values[3] != null
+          ? utf8.decode(values[3], allowMalformed: true)
+          : null;
       String name = utf8.decode(values[2], allowMalformed: true);
       final nameIndex = name.indexOf(':');
-      if (nameIndex >= 0) {
+      if (nameIndex >= 0 && issuer == null) {
         issuer = name.substring(0, nameIndex);
         name = name.substring(nameIndex + 1);
       }
       return CredentialData(
         secret: base32.encode(values[1]),
         name: name,
-        issuer: values[3] != null
-            ? utf8.decode(values[3], allowMalformed: true)
-            : issuer,
+        issuer: issuer,
         hashAlgorithm: switch (values[4]) {
           2 => HashAlgorithm.sha256,
           3 => HashAlgorithm.sha512,
