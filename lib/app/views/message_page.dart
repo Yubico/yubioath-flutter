@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'app_page.dart';
@@ -28,7 +30,7 @@ class MessagePage extends StatelessWidget {
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
-  final Function(List<int> filedata)? onFileDropped;
+  final Function(File file)? onFileDropped;
   final bool keyActionsBadge;
 
   const MessagePage({

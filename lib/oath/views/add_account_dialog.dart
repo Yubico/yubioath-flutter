@@ -52,9 +52,10 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
 
     final qrScanner = ref.watch(qrScannerProvider);
     return FileDropTarget(
-      onFileDropped: (fileData) async {
+      onFileDropped: (file) async {
         Navigator.of(context).pop();
         if (qrScanner != null) {
+          final fileData = await file.readAsBytes();
           final b64Image = base64Encode(fileData);
           final qrData = await qrScanner.scanQr(b64Image);
           await withContext(

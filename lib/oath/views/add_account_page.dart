@@ -310,10 +310,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     return FileDropTarget(
-      onFileDropped: (fileData) async {
+      onFileDropped: (file) async {
         final qrScanner = ref.read(qrScannerProvider);
         final withContext = ref.read(withContextProvider);
         if (qrScanner != null) {
+          final fileData = await file.readAsBytes();
           final b64Image = base64Encode(fileData);
           final qrData = await qrScanner.scanQr(b64Image);
           await withContext((context) async {
