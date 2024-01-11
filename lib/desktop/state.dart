@@ -25,7 +25,6 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../app/key_customization.dart';
 import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
@@ -216,18 +215,5 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   setCurrentDevice(DeviceNode? device) {
     state = device;
     ref.read(prefProvider).setString(_lastDevice, device?.path.key ?? '');
-    if (device != null &&
-        device is UsbYubiKeyNode &&
-        device.info?.serial != null) {
-      final manager = ref.read(keyCustomizationManagerProvider);
-      final customization = manager.get(device.info?.serial!.toString());
-      String? displayColorCustomization =
-          customization?.properties['display_color'];
-      Color? displayColor;
-      if (displayColorCustomization != null) {
-        displayColor = Color(int.parse(displayColorCustomization, radix: 16));
-      }
-      ref.watch(darkThemeProvider.notifier).setPrimaryColor(displayColor);
-    }
   }
 }

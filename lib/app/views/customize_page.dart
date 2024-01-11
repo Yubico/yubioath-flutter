@@ -19,6 +19,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../key_customization.dart';
@@ -110,11 +112,11 @@ class _CustomizePageState extends ConsumerState<CustomizePage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
+              AppTextFormField(
                 //controller: displayNameController,
                 initialValue: _displayName,
                 maxLength: 20,
-                decoration: const InputDecoration(
+                decoration: const AppInputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Nick name',
                   helperText: '', // Prevents dialog resizing when disabled

@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/state.dart';
 import '../theme.dart';
 import 'features.dart' as features;
+import 'key_customization.dart';
 import 'logging.dart';
 import 'models.dart';
 
@@ -118,8 +119,12 @@ final l10nProvider = Provider<AppLocalizations>(
 );
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
-  (ref) => ThemeModeNotifier(
-      ref.watch(prefProvider), ref.read(supportedThemesProvider)),
+  (ref) {
+    // initialize the keyCustomizationManager
+    ref.read(keyCustomizationManagerProvider);
+    return ThemeModeNotifier(
+        ref.watch(prefProvider), ref.read(supportedThemesProvider));
+  },
 );
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
@@ -142,37 +147,60 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 final primaryColorProvider = Provider<Color?>((ref) => null);
 
-final darkThemeProvider = StateNotifierProvider<ThemeNotifier, ThemeData>(
-  (ref) => ThemeNotifier(ref.watch(primaryColorProvider), ThemeMode.dark),
+final darkThemeProvider = NotifierProvider<ThemeNotifier, ThemeData>(
+  () => ThemeNotifier(ThemeMode.dark),
 );
 
-final lightThemeProvider = StateNotifierProvider<ThemeNotifier, ThemeData>(
-  (ref) => ThemeNotifier(ref.watch(primaryColorProvider), ThemeMode.light),
+final lightThemeProvider = NotifierProvider<ThemeNotifier, ThemeData>(
+  () => ThemeNotifier(ThemeMode.light),
 );
 
-class ThemeNotifier extends StateNotifier<ThemeData> {
+class ThemeNotifier extends Notifier<ThemeData> {
   final ThemeMode _themeMode;
 
-  ThemeNotifier(Color? systemPrimaryColor, this._themeMode)
-      : super(_get(systemPrimaryColor, _themeMode));
+  ThemeNotifier(this._themeMode);
+
+  @override
+  ThemeData build() {
+    return _get(
+      _themeMode,
+      yubiKeyData: ref.watch(currentDeviceDataProvider).valueOrNull,
+    );
+  }
 
   static ThemeData _getDefault(ThemeMode themeMode) =>
       themeMode == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
 
-  static ThemeData _get(Color? primaryColor, ThemeMode themeMode) =>
-      (primaryColor != null)
-          ? _getDefault(themeMode).copyWith(
-              colorScheme: ColorScheme.fromSeed(
-                      brightness: themeMode == ThemeMode.dark
-                          ? Brightness.dark
-                          : Brightness.light,
-                      seedColor: primaryColor)
-                  .copyWith(primary: primaryColor))
-          : _getDefault(themeMode);
+  ThemeData _get(ThemeMode themeMode, {YubiKeyData? yubiKeyData}) {
+    Color? primaryColor;
+    if (yubiKeyData != null) {
+      final manager = ref.read(keyCustomizationManagerProvider);
+
+      final customization = manager.get(yubiKeyData.info.serial?.toString());
+      String? displayColorCustomization =
+          customization?.properties['display_color'];
+
+      if (displayColorCustomization != null) {
+        primaryColor = Color(int.parse(displayColorCustomization, radix: 16));
+      }
+    }
+
+    primaryColor ??= ref.read(primaryColorProvider);
+
+    return (primaryColor != null)
+        ? _getDefault(themeMode).copyWith(
+            colorScheme: ColorScheme.fromSeed(
+                    brightness: themeMode == ThemeMode.dark
+                        ? Brightness.dark
+                        : Brightness.light,
+                    seedColor: primaryColor)
+                .copyWith(primary: primaryColor))
+        : _getDefault(themeMode);
+  }
 
   void setPrimaryColor(Color? primaryColor) {
     _log.debug('Set primary color to $primaryColor');
-    state = _get(primaryColor, _themeMode);
+    state = _get(_themeMode);
   }
 }
 
