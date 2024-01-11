@@ -89,7 +89,11 @@ class IconPackDialog extends ConsumerWidget {
         data: (IconPack? data) =>
             (data != null) ? _IconPackDescription(data) : null,
         error: (Object error, StackTrace stackTrace) => null,
-        loading: () => null);
+        loading: () => const Padding(
+              // Add extra padding to have same size as _IconPackDescription
+              padding: EdgeInsets.symmetric(vertical: 18.0),
+              child: LinearProgressIndicator(),
+            ));
   }
 
   Widget? _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
@@ -100,7 +104,7 @@ class IconPackDialog extends ConsumerWidget {
               _ImportActionChip(l10n.s_load_icon_pack),
           loading: () => _ImportActionChip(
                 l10n.l_loading_icon_pack,
-                avatar: const CircularProgressIndicator(),
+                disabled: true,
               ));
 }
 
@@ -185,19 +189,20 @@ class _IconPackDescription extends ConsumerWidget {
 
 class _ImportActionChip extends ConsumerWidget {
   final String _label;
-  final Widget avatar;
+  final bool disabled;
 
-  const _ImportActionChip(this._label,
-      {this.avatar = const Icon(Icons.download_outlined)});
+  const _ImportActionChip(this._label, {this.disabled = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionChip(
         backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-        onPressed: () async {
-          _importAction(context, ref);
-        },
-        avatar: avatar,
+        onPressed: !disabled
+            ? () async {
+                _importAction(context, ref);
+              }
+            : null,
+        avatar: const Icon(Icons.download_outlined),
         label: Text(_label));
   }
 
