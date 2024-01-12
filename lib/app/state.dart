@@ -171,7 +171,8 @@ class ThemeNotifier extends Notifier<ThemeData> {
   static ThemeData _getDefault(ThemeMode themeMode) =>
       themeMode == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
 
-  ThemeData _get(ThemeMode themeMode, {Color? color, YubiKeyData? yubiKeyData}) {
+  ThemeData _get(ThemeMode themeMode,
+      {Color? color, YubiKeyData? yubiKeyData}) {
     Color? primaryColor = color;
     if (yubiKeyData != null) {
       final manager = ref.read(keyCustomizationManagerProvider);
