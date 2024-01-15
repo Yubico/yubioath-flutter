@@ -44,7 +44,6 @@ class FidoLockedPage extends ConsumerWidget {
     if (!state.hasPin) {
       if (state.bioEnroll != null) {
         return MessagePage(
-          title: Text(l10n.s_webauthn),
           graphic: Icon(Icons.fingerprint,
               size: 96, color: Theme.of(context).colorScheme.primary),
           header: l10n.s_no_fingerprints,
@@ -54,7 +53,6 @@ class FidoLockedPage extends ConsumerWidget {
         );
       } else {
         return MessagePage(
-          title: Text(l10n.s_webauthn),
           graphic: Icon(Icons.security,
               size: 96, color: Theme.of(context).colorScheme.primary),
           header: state.credMgmt
@@ -69,7 +67,6 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
-        title: Text(l10n.s_webauthn),
         graphic: Icon(Icons.security,
             size: 96, color: Theme.of(context).colorScheme.primary),
         header: l10n.l_ready_to_use,
@@ -81,7 +78,6 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (state.forcePinChange) {
       return MessagePage(
-        title: Text(l10n.s_webauthn),
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -90,7 +86,7 @@ class FidoLockedPage extends ConsumerWidget {
     }
 
     return AppPage(
-      title: Text(l10n.s_webauthn),
+      title: l10n.s_webauthn,
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
@@ -157,7 +153,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
     final l10n = AppLocalizations.of(context)!;
     final noFingerprints = widget._state.bioEnroll == false;
     return Padding(
-      padding: const EdgeInsets.only(left: 18.0, right: 18, top: 32),
+      padding: const EdgeInsets.only(left: 18.0, right: 18, top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
