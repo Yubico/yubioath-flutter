@@ -362,6 +362,7 @@ class FingerprintsNode(RpcNode):
             except CtapError as e:
                 if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
                     raise InactivityException()
+                raise
         if name:
             self.bio.set_name(template_id, name)
         self._templates[template_id] = name
