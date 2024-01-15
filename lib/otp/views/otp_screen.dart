@@ -54,13 +54,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
-        loading: () => MessagePage(
-              title: Text(l10n.s_slots),
-              graphic: const CircularProgressIndicator(),
+        loading: () => const MessagePage(
+              graphic: CircularProgressIndicator(),
               delayedContent: true,
             ),
-        error: (error, _) =>
-            AppFailurePage(title: Text(l10n.s_slots), cause: error),
+        error: (error, _) => AppFailurePage(cause: error),
         data: (otpState) {
           final selected = _selected != null
               ? otpState.slots.firstWhere((e) => e.slot == _selected)
@@ -92,7 +90,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       }),
                     },
                     child: AppPage(
-                      title: Text(l10n.s_slots),
+                      title: l10n.s_slots,
                       detailViewBuilder: selected != null
                           ? (context) => Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,

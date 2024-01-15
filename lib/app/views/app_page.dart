@@ -32,7 +32,7 @@ final _navKey = GlobalKey();
 final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
-  final Widget? title;
+  final String? title;
   final Widget Function(BuildContext context, bool expanded) builder;
   final Widget Function(BuildContext context)? detailViewBuilder;
   final List<Widget> actions;
@@ -150,9 +150,29 @@ class AppPage extends StatelessWidget {
     ));
   }
 
+  List<Widget> _buildTitle(BuildContext context) {
+    return title != null
+        ? [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Text(title!,
+                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.primary)),
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            )
+          ]
+        : [];
+  }
+
   Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
       children: [
+        ..._buildTitle(context),
         builder(context, expanded),
         if (actions.isNotEmpty)
           Align(
@@ -248,10 +268,7 @@ class AppPage extends StatelessWidget {
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
-        title: title,
-        titleSpacing: hasDrawer ? 2 : 8,
-        centerTitle: true,
-        titleTextStyle: Theme.of(context).textTheme.titleLarge,
+        scrolledUnderElevation: 0.0,
         leadingWidth: hasRail ? 84 : null,
         leading: hasRail
             ? const Row(

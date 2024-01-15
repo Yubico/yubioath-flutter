@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_view.dart';
@@ -50,7 +49,6 @@ class AccountList extends ConsumerWidget {
       policy: WidgetOrderTraversalPolicy(),
       child: Column(
         children: [
-          if (pinnedCreds.isNotEmpty) ListTitle(l10n.s_pinned),
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
@@ -58,7 +56,11 @@ class AccountList extends ConsumerWidget {
               selected: entry.credential == selected,
             ),
           ),
-          if (creds.isNotEmpty) ListTitle(l10n.s_accounts),
+          if (pinnedCreds.isNotEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider(),
+            ),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,

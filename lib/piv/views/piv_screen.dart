@@ -56,13 +56,11 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(pivStateProvider(widget.devicePath)).when(
-          loading: () => MessagePage(
-            title: Text(l10n.s_certificates),
-            graphic: const CircularProgressIndicator(),
+          loading: () => const MessagePage(
+            graphic: CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_certificates),
             cause: error,
           ),
           data: (pivState) {
@@ -105,7 +103,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                   ),
                 },
                 child: AppPage(
-                  title: Text(l10n.s_certificates),
+                  title: l10n.s_certificates,
                   detailViewBuilder: selected != null
                       ? (context) => Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -27,9 +27,8 @@ import '../state.dart';
 import 'message_page.dart';
 
 class AppFailurePage extends ConsumerWidget {
-  final Widget? title;
   final Object cause;
-  const AppFailurePage({this.title, required this.cause, super.key}) : super();
+  const AppFailurePage({required this.cause, super.key}) : super();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -99,7 +98,6 @@ class AppFailurePage extends ConsumerWidget {
     }
 
     return MessagePage(
-      title: title,
       graphic: graphic,
       header: header,
       message: message,

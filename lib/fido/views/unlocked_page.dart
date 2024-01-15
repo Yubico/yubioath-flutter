@@ -167,7 +167,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
             }),
         },
         builder: (context) => AppPage(
-          title: Text(l10n.s_webauthn),
+          title: l10n.s_webauthn,
           detailViewBuilder: switch (_selected) {
             FidoCredential credential => (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -290,7 +290,6 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
 
     if (widget.state.bioEnroll != null) {
       return MessagePage(
-        title: Text(l10n.s_webauthn),
         graphic: Icon(Icons.fingerprint,
             size: 96, color: Theme.of(context).colorScheme.primary),
         header: l10n.s_no_fingerprints,
@@ -304,7 +303,6 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
     }
 
     return MessagePage(
-      title: Text(l10n.s_webauthn),
       graphic: Icon(Icons.security,
           size: 96, color: Theme.of(context).colorScheme.primary),
       header: l10n.l_no_discoverable_accounts,
@@ -317,7 +315,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
-        title: Text(AppLocalizations.of(context)!.s_webauthn),
+        title: AppLocalizations.of(context)!.s_webauthn,
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
