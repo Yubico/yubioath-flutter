@@ -75,26 +75,32 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
     final cancelText = widget.onCancel == null && widget.actions.isEmpty
         ? l10n.s_close
         : l10n.s_cancel;
-    return AlertDialog(
-      title: widget.title,
-      titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
-      scrollable: true,
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-      contentPadding: const EdgeInsets.symmetric(vertical: 8),
-      content: SizedBox(
-        width: 600,
-        child: Container(key: _childKey, child: widget.child),
-      ),
-      actions: [
-        TextButton(
-          child: Text(cancelText),
-          onPressed: () {
-            widget.onCancel?.call();
-            Navigator.of(context).pop();
-          },
+    return PopScope(
+      child: AlertDialog(
+        title: widget.title,
+        titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
+        scrollable: true,
+        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+        content: SizedBox(
+          width: 600,
+          child: Container(key: _childKey, child: widget.child),
         ),
-        ...widget.actions
-      ],
+        actions: [
+          TextButton(
+            child: Text(cancelText),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          ...widget.actions
+        ],
+      ),
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          widget.onCancel?.call();
+        }
+      },
     );
   }
 
