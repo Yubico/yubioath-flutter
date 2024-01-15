@@ -55,7 +55,7 @@ dependencies:
   screen_retriever: ^0.1.6
   desktop_drop: ^0.4.4
   url_launcher: ^6.2.1
-  path_provider: ^2.1.1
+  path_provider: ^2.1.2
   vector_graphics: ^1.1.9+1
   vector_graphics_compiler: ^1.1.9+1
   path: ^1.8.2
