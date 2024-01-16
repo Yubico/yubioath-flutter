@@ -80,6 +80,7 @@ class DeviceAvatar extends ConsumerWidget {
         },
         nfcReader: (_) => DeviceAvatar(
           radius: radius,
+          backgroundColor: Colors.transparent,
           child: nfcIcon,
         ),
       );
