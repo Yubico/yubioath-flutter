@@ -208,33 +208,49 @@ class _DeviceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tooltip = '$title\n$subtitle';
-    final colorScheme = Theme.of(context).colorScheme;
+    final themeData = Theme.of(context);
+    final seedColor = !selected || background == null
+        ? themeData.colorScheme.primary
+        : background!;
+    final colorScheme = ColorScheme.fromSeed(
+        seedColor: seedColor, brightness: themeData.brightness);
+    final localThemeData = selected
+        ? themeData.copyWith(
+            colorScheme: colorScheme,
+            listTileTheme: themeData.listTileTheme.copyWith(
+              tileColor: background != null
+                  ? background! //colorScheme.primary
+                  : themeData.colorScheme.primary,
+              textColor: selected ? colorScheme.onPrimary : null,
+              iconColor: selected ? colorScheme.onPrimary : null,
+            ),
+          )
+        : themeData;
     if (extended) {
       return Tooltip(
         message: tooltip,
-        child: ListTile(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-          horizontalTitleGap: 8,
-          leading: leading,
-          title: Text(
-            title,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+        child: Theme(
+          data: localThemeData,
+          child: ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            horizontalTitleGap: 8,
+            leading: leading,
+            title: Text(
+              title,
+              overflow: TextOverflow.fade,
+              softWrap: false,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            subtitle:
+                Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
+            dense: true,
+            onTap: onTap,
           ),
-          subtitle:
-              Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
-          dense: true,
-          tileColor:
-              selected ? colorScheme.primary : background?.withOpacity(0.3),
-          textColor: selected ? colorScheme.onPrimary : null,
-          iconColor: selected ? colorScheme.onPrimary : null,
-          onTap: onTap,
         ),
       );
     } else {
