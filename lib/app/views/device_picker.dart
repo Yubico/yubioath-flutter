@@ -219,7 +219,14 @@ class _DeviceRow extends StatelessWidget {
               const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
           horizontalTitleGap: 8,
           leading: leading,
-          title: Text(title, overflow: TextOverflow.fade, softWrap: false),
+          title: Text(
+            title,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           subtitle:
               Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
           dense: true,
@@ -274,14 +281,14 @@ _DeviceRow _buildDeviceRow(
         .read(keyCustomizationManagerProvider)
         .get(info?.serial?.toString())
         ?.properties;
-    var customizedName = properties?['display_name'];
-    if (customizedName != null && customizedName != '') {
-      displayName = customizedName + ' (${node.name})';
+    var customName = properties?['display_name'];
+    if (customName != null && customName != '') {
+      displayName = customName;
     }
     // don't use customization color on non-active devices
-    // var displayColorCustomization = properties?['display_color'];
-    // if (displayColorCustomization != null) {
-    //   displayColor = Color(int.parse(displayColorCustomization, radix: 16));
+    // var customColor = properties?['display_color'];
+    // if (customColor != null) {
+    //   displayColor = Color(int.parse(customColor, radix: 16));
     // }
   }
 
@@ -326,13 +333,13 @@ _DeviceRow _buildCurrentDeviceRow(
           .read(keyCustomizationManagerProvider)
           .get(node.info?.serial.toString())
           ?.properties;
-      var customizedName = properties?['display_name'];
-      if (customizedName != null && customizedName != '') {
-        displayName = customizedName + ' (${node.name})';
+      var customName = properties?['display_name'];
+      if (customName != null && customName != '') {
+        displayName = customName;
       }
-      var displayColorCustomization = properties?['display_color'];
-      if (displayColorCustomization != null) {
-        displayColor = Color(int.parse(displayColorCustomization, radix: 16));
+      var customColor = properties?['display_color'];
+      if (customColor != null) {
+        displayColor = Color(int.parse(customColor, radix: 16));
       }
     }
   }
