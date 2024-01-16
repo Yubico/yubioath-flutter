@@ -170,9 +170,9 @@ class _CodeLabel extends StatelessWidget {
         child: Text(
           _formatCode(code),
           style: const TextStyle(
-            fontFeatures: [FontFeature.tabularFigures()],
-            //fontWeight: FontWeight.w400,
-          ),
+              fontFeatures: [FontFeature.tabularFigures()],
+              fontWeight: FontWeight.w400,
+              fontSize: 16),
           textHeightBehavior: TextHeightBehavior(
             // This helps with vertical centering on desktop
             applyHeightToFirstAscent: !isDesktop,

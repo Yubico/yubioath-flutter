@@ -46,7 +46,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           ),
           message: l10n.p_elevated_permissions_required,
           actions: [
-            ElevatedButton.icon(
+            FilledButton.icon(
               label: Text(l10n.s_unlock),
               icon: const Icon(Icons.lock_open),
               onPressed: () async {
@@ -96,7 +96,7 @@ class DeviceErrorScreen extends ConsumerWidget {
               scale: 2,
               color: Theme.of(context).colorScheme.primary,
             ),
-            message: l10n.l_place_on_nfc_reader,
+            header: l10n.l_place_on_nfc_reader,
           ),
       },
     );

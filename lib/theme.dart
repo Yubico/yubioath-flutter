@@ -34,25 +34,45 @@ const themeGreen = Color(0xFF78B850);
 const themeGrey = Color(0xFF8C8B8C);
 */
 
-//const primaryColor = Colors.blueAccent;
+const primaryColor = Colors.blueAccent;
 //const primaryColor = Colors.green;
-const primaryColor = Colors.deepPurple;
+//const primaryColor = Colors.deepPurple;
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
           brightness: Brightness.light,
+          seedColor: primaryColor,
+        ).copyWith(
           background: const Color(0xfffefdf4),
-          surface: const Color(0xfffefdf4),
+        ),
+        fontFamily: 'Roboto',
+        appBarTheme: const AppBarTheme(
+          color: Colors.transparent,
         ),
         listTileTheme: const ListTileThemeData(
           // For alignment under menu button
           contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
           visualDensity: VisualDensity.compact,
+          // All TextStyle properties are needed to keep default style
+          titleTextStyle: TextStyle(
+              color: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              height: 1.50,
+              letterSpacing: 0.5,
+              textBaseline: TextBaseline.alphabetic,
+              leadingDistribution: TextLeadingDistribution.even),
+          subtitleTextStyle: TextStyle(
+              color: Colors.black54,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 1.43,
+              letterSpacing: 0.25,
+              textBaseline: TextBaseline.alphabetic,
+              leadingDistribution: TextLeadingDistribution.even),
         ),
-        fontFamily: 'Roboto',
         tooltipTheme: const TooltipThemeData(
           waitDuration: Duration(milliseconds: 500),
           textStyle: TextStyle(color: Color(0xff3c3c3c)),
@@ -66,17 +86,37 @@ class AppTheme {
   static ThemeData get darkTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
           brightness: Brightness.dark,
+          seedColor: primaryColor,
+        ).copyWith(
           background: const Color(0xff282828),
-          surface: const Color(0xff282828),
+        ),
+        fontFamily: 'Roboto',
+        appBarTheme: const AppBarTheme(
+          color: Colors.transparent,
         ),
         listTileTheme: const ListTileThemeData(
           // For alignment under menu button
           contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
           visualDensity: VisualDensity.compact,
+          // All TextStyle properties are needed to keep default style
+          titleTextStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              height: 1.50,
+              letterSpacing: 0.5,
+              textBaseline: TextBaseline.alphabetic,
+              leadingDistribution: TextLeadingDistribution.even),
+          subtitleTextStyle: TextStyle(
+              color: Colors.white54,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 1.43,
+              letterSpacing: 0.25,
+              textBaseline: TextBaseline.alphabetic,
+              leadingDistribution: TextLeadingDistribution.even),
         ),
-        fontFamily: 'Roboto',
         tooltipTheme: const TooltipThemeData(
           waitDuration: Duration(milliseconds: 500),
           textStyle: TextStyle(color: Color(0xffE2E2E6)),

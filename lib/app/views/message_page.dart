@@ -61,19 +61,30 @@ class MessagePage extends StatelessWidget {
         delayedContent: delayedContent,
         builder: (context, _) => Padding(
           padding: const EdgeInsets.only(
-              left: 8.0, top: 0.0, right: 8.0, bottom: 96.0),
-          child: Column(
-            children: [
-              if (graphic != null) ...[graphic!, const SizedBox(height: 16.0)],
-              if (header != null)
-                Text(header!,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge),
-              if (message != null) ...[
-                const SizedBox(height: 12.0),
-                Text(message!, textAlign: TextAlign.center),
+              left: 32.0, top: 0.0, right: 32.0, bottom: 96.0),
+          child: SizedBox(
+            width: 350,
+            child: Column(
+              children: [
+                if (graphic != null) ...[
+                  graphic!,
+                  const SizedBox(height: 16.0)
+                ],
+                if (header != null)
+                  Text(header!,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge),
+                if (message != null) ...[
+                  const SizedBox(height: 12.0),
+                  Text(message!,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.apply(color: Colors.grey)),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );

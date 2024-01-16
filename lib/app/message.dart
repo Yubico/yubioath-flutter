@@ -32,7 +32,7 @@ Future<T?> showBlurDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext) builder,
   RouteSettings? routeSettings,
-  Color barrierColor = const Color(0x80000000),
+  Color barrierColor = const Color(0x00cccccc),
 }) async =>
     await showGeneralDialog<T>(
       context: context,

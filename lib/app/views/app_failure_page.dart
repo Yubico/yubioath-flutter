@@ -63,7 +63,7 @@ class AppFailurePage extends ConsumerWidget {
               header = null;
               message = l10n.p_webauthn_elevated_permissions_required;
               actions = [
-                ElevatedButton.icon(
+                FilledButton.icon(
                   label: Text(l10n.s_unlock),
                   icon: const Icon(Icons.lock_open),
                   onPressed: () async {

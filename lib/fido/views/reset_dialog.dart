@@ -128,7 +128,10 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           children: [
             Text(
               l10n.p_warning_deletes_accounts,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
             ),
             Text(
               l10n.p_warning_disable_accounts,

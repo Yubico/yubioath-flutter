@@ -92,6 +92,8 @@ class _AccountViewState extends ConsumerState<AccountView> {
       );
 
       final openIntent = OpenIntent<OathCredential>(widget.credential);
+      final buttonStyle = FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).hoverColor, elevation: 0);
       return AppListItem<OathCredential>(
         credential,
         selected: widget.selected,
@@ -107,9 +109,11 @@ class _AccountViewState extends ConsumerState<AccountView> {
             ? FilledButton.tonalIcon(
                 icon: helper.buildCodeIcon(),
                 label: helper.buildCodeLabel(),
+                style: buttonStyle,
                 onPressed: Actions.handler(context, openIntent),
               )
             : FilledButton.tonal(
+                style: buttonStyle,
                 onPressed: Actions.handler(context, openIntent),
                 child: helper.buildCodeIcon()),
         tapIntent: isDesktop && !widget.expanded ? null : openIntent,
