@@ -278,10 +278,11 @@ _DeviceRow _buildDeviceRow(
     if (customizedName != null && customizedName != '') {
       displayName = customizedName + ' (${node.name})';
     }
-    var displayColorCustomization = properties?['display_color'];
-    if (displayColorCustomization != null) {
-      displayColor = Color(int.parse(displayColorCustomization, radix: 16));
-    }
+    // don't use customization color on non-active devices
+    // var displayColorCustomization = properties?['display_color'];
+    // if (displayColorCustomization != null) {
+    //   displayColor = Color(int.parse(displayColorCustomization, radix: 16));
+    // }
   }
 
   return _DeviceRow(
@@ -311,7 +312,7 @@ _DeviceRow _buildCurrentDeviceRow(
 ) {
   final messages = _getDeviceStrings(context, node, data);
   if (messages.length > 2) {
-    // Don't show readername
+    // Don't show reader name
     messages.removeLast();
   }
   final title = messages.removeAt(0);
