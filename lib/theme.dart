@@ -38,7 +38,7 @@ const primaryColor = Colors.blueAccent;
 //const primaryColor = Colors.green;
 //const primaryColor = Colors.deepPurple;
 
-const defaultTextTheme = Typography.tall2021;
+const defaultTextTheme = Typography.englishLike2021;
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
