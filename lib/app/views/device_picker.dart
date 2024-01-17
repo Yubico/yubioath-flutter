@@ -52,8 +52,7 @@ class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
-
-  const DevicePickerContent({required this.extended, super.key});
+  const DevicePickerContent({super.key, this.extended = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -295,7 +294,6 @@ _DeviceRow _buildDeviceRow(
   );
 
   String displayName = node.name;
-  Color? displayColor;
   if (info?.serial != null) {
     final properties = ref
         .read(keyCustomizationManagerProvider)
@@ -305,24 +303,14 @@ _DeviceRow _buildDeviceRow(
     if (customName != null && customName != '') {
       displayName = customName;
     }
-    // don't use customization color on non-active devices
-    // var customColor = properties?['display_color'];
-    // if (customColor != null) {
-    //   displayColor = Color(int.parse(customColor, radix: 16));
-    // }
   }
 
   return _DeviceRow(
     key: ValueKey(node.path.key),
-    leading: IconTheme(
-      // Force the standard icon theme
-      data: IconTheme.of(context),
-      child: DeviceAvatar.deviceNode(node, ref),
-    ),
+    leading: DeviceAvatar.deviceNode(node),
     title: displayName,
     subtitle: subtitle,
     extended: extended,
-    background: displayColor,
     selected: false,
     onTap: () {
       ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
@@ -392,9 +380,8 @@ _DeviceRow _buildCurrentDeviceRow(
     key: keys.deviceInfoListTile,
     leading: data.maybeWhen(
       data: (data) =>
-          DeviceAvatar.yubiKeyData(data, ref, radius: extended ? null : 16),
-      orElse: () =>
-          DeviceAvatar.deviceNode(node, ref, radius: extended ? null : 16),
+          DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),
+      orElse: () => DeviceAvatar.deviceNode(node, radius: extended ? null : 16),
     ),
     title: displayName,
     subtitle: subtitle,

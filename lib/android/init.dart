@@ -51,8 +51,9 @@ Future<Widget> initialize() async {
 
   _initLicenses();
 
-  final primaryColor = await getPrimaryColor();
-  final primaryColorInt = primaryColor != null ? Color(primaryColor) : null;
+  final primaryColorArgb = await getPrimaryColor();
+  final primaryColor =
+      primaryColorArgb != null ? Color(primaryColorArgb) : null;
 
   return ProviderScope(
     overrides: [
@@ -88,7 +89,7 @@ Future<Widget> initialize() async {
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
-      primaryColorProvider.overrideWithValue(primaryColorInt),
+      primaryColorProvider.overrideWithValue(primaryColor),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(

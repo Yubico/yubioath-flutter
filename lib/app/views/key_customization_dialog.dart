@@ -295,8 +295,8 @@ class _CurrentDeviceAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hero = data.maybeWhen(
-      data: (data) => DeviceAvatar.yubiKeyData(data, ref, radius: 64),
-      orElse: () => DeviceAvatar.deviceNode(node, ref, radius: 64),
+      data: (data) => DeviceAvatar.yubiKeyData(data, radius: 64),
+      orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
     );
     final messages = _getDeviceStrings(context, node, data);
 

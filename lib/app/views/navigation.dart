@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2024 Yubico.
+ * Copyright (C) 2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,6 @@ extension on Application {
 class NavigationContent extends ConsumerWidget {
   final bool shouldPop;
   final bool extended;
-
   const NavigationContent(
       {super.key, this.shouldPop = true, this.extended = false});
 

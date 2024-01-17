@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,46 +26,30 @@ import '../models.dart';
 import '../state.dart';
 import 'keys.dart';
 
-class DeviceAvatar extends ConsumerWidget {
+class DeviceAvatar extends StatelessWidget {
   final Widget child;
-  final Widget? decoration;
-  final Color? backgroundColor;
   final Widget? badge;
   final double? radius;
 
-  const DeviceAvatar(
-      {super.key,
-      required this.child,
-      this.decoration,
-      this.backgroundColor,
-      this.badge,
-      this.radius});
+  const DeviceAvatar({super.key, required this.child, this.badge, this.radius});
 
-  factory DeviceAvatar.yubiKeyData(YubiKeyData data, WidgetRef ref,
-      {double? radius}) {
-    return DeviceAvatar(
-      backgroundColor: Colors.transparent,
-      badge: isDesktop && data.node is NfcReaderNode ? nfcIcon : null,
-      radius: radius,
-      child: Padding(
-        padding: const EdgeInsets.all(2.0),
+  factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
+      DeviceAvatar(
+        badge: isDesktop && data.node is NfcReaderNode ? nfcIcon : null,
+        radius: radius,
         child: ProductImage(
             name: data.name,
             formFactor: data.info.formFactor,
             isNfc: data.info.supportedCapabilities.containsKey(Transport.nfc)),
-      ),
-    );
-  }
+      );
 
-  factory DeviceAvatar.deviceNode(DeviceNode node, WidgetRef ref,
-          {double? radius}) =>
+  factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>
       node.map(
         usbYubiKey: (node) {
           final info = node.info;
           if (info != null) {
             return DeviceAvatar.yubiKeyData(
               YubiKeyData(node, node.name, info),
-              ref,
               radius: radius,
             );
           }
@@ -80,7 +64,6 @@ class DeviceAvatar extends ConsumerWidget {
         },
         nfcReader: (_) => DeviceAvatar(
           radius: radius,
-          backgroundColor: Colors.transparent,
           child: nfcIcon,
         ),
       );
@@ -91,12 +74,10 @@ class DeviceAvatar extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).maybeWhen(
             data: (data) => DeviceAvatar.yubiKeyData(
               data,
-              ref,
               radius: radius,
             ),
             orElse: () => DeviceAvatar.deviceNode(
               deviceNode,
-              ref,
               radius: radius,
             ),
           );
@@ -110,15 +91,14 @@ class DeviceAvatar extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final radius = this.radius ?? 20;
     return Stack(
       alignment: AlignmentDirectional.bottomEnd,
       children: [
         CircleAvatar(
           radius: radius,
-          backgroundColor:
-              backgroundColor ?? Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: Colors.transparent,
           child: IconTheme(
             data: IconTheme.of(context).copyWith(
               size: radius,
@@ -126,7 +106,6 @@ class DeviceAvatar extends ConsumerWidget {
             child: child,
           ),
         ),
-        if (decoration != null) decoration!,
         if (badge != null)
           CircleAvatar(
             radius: radius / 3,
