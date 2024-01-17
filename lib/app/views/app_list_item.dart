@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
@@ -23,18 +22,20 @@ import '../models.dart';
 import '../shortcuts.dart';
 import 'action_popup_menu.dart';
 
-class AppListItem extends ConsumerStatefulWidget {
+class AppListItem<T> extends ConsumerStatefulWidget {
+  final T item;
   final Widget? leading;
   final String title;
   final String? subtitle;
   final String? semanticTitle;
   final Widget? trailing;
   final List<ActionItem> Function(BuildContext context)? buildPopupActions;
-  final Intent? activationIntent;
+  final Intent? tapIntent;
+  final Intent? doubleTapIntent;
   final bool selected;
-  final bool openOnSingleTap;
 
-  const AppListItem({
+  const AppListItem(
+    this.item, {
     super.key,
     this.leading,
     required this.title,
@@ -42,16 +43,16 @@ class AppListItem extends ConsumerStatefulWidget {
     this.subtitle,
     this.trailing,
     this.buildPopupActions,
-    this.activationIntent,
+    this.tapIntent,
+    this.doubleTapIntent,
     this.selected = false,
-    this.openOnSingleTap = false,
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AppListItemState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AppListItemState<T>();
 }
 
-class _AppListItemState extends ConsumerState<AppListItem> {
+class _AppListItemState<T> extends ConsumerState<AppListItem> {
   final FocusNode _focusNode = FocusNode();
   int _lastTap = 0;
 
@@ -65,17 +66,15 @@ class _AppListItemState extends ConsumerState<AppListItem> {
   Widget build(BuildContext context) {
     final subtitle = widget.subtitle;
     final buildPopupActions = widget.buildPopupActions;
-    final activationIntent = widget.activationIntent;
+    final tapIntent = widget.tapIntent;
+    final doubleTapIntent = widget.doubleTapIntent;
     final trailing = widget.trailing;
     final hasFeature = ref.watch(featureProvider);
 
     return Semantics(
       label: widget.semanticTitle ?? widget.title,
       child: Shortcuts(
-        shortcuts: {
-          LogicalKeySet(LogicalKeyboardKey.enter): const OpenIntent(),
-          LogicalKeySet(LogicalKeyboardKey.space): const OpenIntent(),
-        },
+        shortcuts: itemShortcuts<T>(widget.item),
         child: InkWell(
           focusNode: _focusNode,
           borderRadius: BorderRadius.circular(30),
@@ -95,27 +94,28 @@ class _AppListItemState extends ConsumerState<AppListItem> {
                   }
                 },
           onTap: () {
-            if (isDesktop && !widget.openOnSingleTap) {
+            if (tapIntent != null) {
+              Actions.invoke(context, tapIntent);
+            }
+            if (isDesktop && doubleTapIntent != null) {
               final now = DateTime.now().millisecondsSinceEpoch;
               if (now - _lastTap < 500) {
                 setState(() {
                   _lastTap = 0;
                 });
-                Actions.invoke(context, activationIntent ?? const OpenIntent());
+                Actions.invoke(context, doubleTapIntent);
               } else {
                 _focusNode.requestFocus();
                 setState(() {
                   _lastTap = now;
                 });
               }
-            } else {
-              Actions.invoke<OpenIntent>(context, const OpenIntent());
             }
           },
-          onLongPress: activationIntent == null
+          onLongPress: doubleTapIntent == null
               ? null
               : () {
-                  Actions.invoke(context, activationIntent);
+                  Actions.invoke(context, doubleTapIntent);
                 },
           child: Stack(
             alignment: AlignmentDirectional.center,
@@ -123,7 +123,7 @@ class _AppListItemState extends ConsumerState<AppListItem> {
               const SizedBox(height: 64),
               ListTile(
                 mouseCursor:
-                    widget.openOnSingleTap ? SystemMouseCursors.click : null,
+                    widget.tapIntent != null ? SystemMouseCursors.click : null,
                 selected: widget.selected,
                 leading: widget.leading,
                 title: Text(

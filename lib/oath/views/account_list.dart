@@ -25,7 +25,10 @@ import 'account_view.dart';
 
 class AccountList extends ConsumerWidget {
   final List<OathPair> accounts;
-  const AccountList(this.accounts, {super.key});
+  final bool expanded;
+  final OathCredential? selected;
+  const AccountList(this.accounts,
+      {super.key, required this.expanded, this.selected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,12 +54,16 @@ class AccountList extends ConsumerWidget {
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
+              expanded: expanded,
+              selected: entry.credential == selected,
             ),
           ),
           if (creds.isNotEmpty) ListTitle(l10n.s_accounts),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,
+              expanded: expanded,
+              selected: entry.credential == selected,
             ),
           ),
         ],

@@ -31,14 +31,6 @@ import 'state.dart';
 import 'views/keys.dart';
 import 'views/settings_page.dart';
 
-class OpenIntent extends Intent {
-  const OpenIntent();
-}
-
-class CopyIntent extends Intent {
-  const CopyIntent();
-}
-
 class CloseIntent extends Intent {
   const CloseIntent();
 }
@@ -49,6 +41,10 @@ class HideIntent extends Intent {
 
 class SearchIntent extends Intent {
   const SearchIntent();
+}
+
+class EscapeIntent extends Intent {
+  const EscapeIntent();
 }
 
 class NextDeviceIntent extends Intent {
@@ -63,25 +59,44 @@ class AboutIntent extends Intent {
   const AboutIntent();
 }
 
-class EditIntent extends Intent {
-  const EditIntent();
+class OpenIntent<T> extends Intent {
+  final T target;
+  const OpenIntent(this.target);
 }
 
-class DeleteIntent extends Intent {
-  const DeleteIntent();
+class CopyIntent<T> extends Intent {
+  final T target;
+  const CopyIntent(this.target);
 }
 
-class RefreshIntent extends Intent {
-  const RefreshIntent();
+class EditIntent<T> extends Intent {
+  final T target;
+  const EditIntent(this.target);
 }
 
-class EscapeIntent extends Intent {
-  const EscapeIntent();
+class DeleteIntent<T> extends Intent {
+  final T target;
+  const DeleteIntent(this.target);
+}
+
+class RefreshIntent<T> extends Intent {
+  final T target;
+  const RefreshIntent(this.target);
 }
 
 /// Use cmd on macOS, use ctrl on the other platforms
 SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
     SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
+
+/// Common shortcuts for items
+Map<ShortcutActivator, Intent> itemShortcuts<T>(T item) => {
+      ctrlOrCmd(LogicalKeyboardKey.keyR): RefreshIntent<T>(item),
+      ctrlOrCmd(LogicalKeyboardKey.keyC): CopyIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.copy): CopyIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.delete): DeleteIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.enter): OpenIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.space): OpenIntent<T>(item),
+    };
 
 Widget registerGlobalShortcuts(
         {required WidgetRef ref, required Widget child}) =>
@@ -162,10 +177,7 @@ Widget registerGlobalShortcuts(
       },
       child: Shortcuts(
         shortcuts: {
-          ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
-          const SingleActivator(LogicalKeyboardKey.copy): const CopyIntent(),
           ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
-          ctrlOrCmd(LogicalKeyboardKey.keyR): const RefreshIntent(),
           const SingleActivator(LogicalKeyboardKey.escape):
               const EscapeIntent(),
           if (isDesktop) ...{

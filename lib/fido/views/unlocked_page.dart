@@ -53,88 +53,6 @@ class FidoUnlockedPage extends ConsumerStatefulWidget {
 class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
   Object? _selected;
 
-  Widget _registerFingerprintActions(
-    Fingerprint fingerprint, {
-    required WidgetRef ref,
-    required Widget Function(BuildContext context) builder,
-    Map<Type, Action<Intent>> actions = const {},
-  }) {
-    final hasFeature = ref.watch(featureProvider);
-    return Actions(
-      actions: {
-        if (hasFeature(features.fingerprintsEdit))
-          EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
-            final renamed = await ref.read(withContextProvider)(
-                (context) => showBlurDialog<Fingerprint>(
-                      context: context,
-                      builder: (context) => RenameFingerprintDialog(
-                        widget.node.path,
-                        fingerprint,
-                      ),
-                    ));
-            if (_selected == fingerprint && renamed != null) {
-              setState(() {
-                _selected = renamed;
-              });
-            }
-            return renamed;
-          }),
-        if (hasFeature(features.fingerprintsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-            final deleted = await ref.read(withContextProvider)(
-                (context) => showBlurDialog<bool?>(
-                      context: context,
-                      builder: (context) => DeleteFingerprintDialog(
-                        widget.node.path,
-                        fingerprint,
-                      ),
-                    ));
-            if (_selected == fingerprint && deleted == true) {
-              setState(() {
-                _selected = null;
-              });
-            }
-            return deleted;
-          }),
-        ...actions,
-      },
-      child: Builder(builder: builder),
-    );
-  }
-
-  Widget _registerCredentialActions(
-    FidoCredential credential, {
-    required WidgetRef ref,
-    required Widget Function(BuildContext context) builder,
-    Map<Type, Action<Intent>> actions = const {},
-  }) {
-    final hasFeature = ref.watch(featureProvider);
-    return Actions(
-      actions: {
-        if (hasFeature(features.credentialsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-            final deleted = await ref.read(withContextProvider)(
-              (context) => showBlurDialog<bool?>(
-                context: context,
-                builder: (context) => DeleteCredentialDialog(
-                  widget.node.path,
-                  credential,
-                ),
-              ),
-            );
-            if (_selected == credential && deleted == true) {
-              setState(() {
-                _selected = null;
-              });
-            }
-            return deleted;
-          }),
-        ...actions,
-      },
-      child: Builder(builder: builder),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -149,32 +67,13 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
       final creds = data.value;
       if (creds.isNotEmpty) {
         children.add((_) => ListTitle(l10n.s_passkeys));
-        children.addAll(
-            creds.map((cred) => (expanded) => _registerCredentialActions(
-                  cred,
-                  ref: ref,
-                  actions: {
-                    OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) {
-                      if (expanded) {
-                        setState(() {
-                          _selected = cred;
-                        });
-                        return null;
-                      } else {
-                        return showBlurDialog(
-                          context: context,
-                          barrierColor: Colors.transparent,
-                          builder: (context) => CredentialDialog(cred),
-                        );
-                      }
-                    }),
-                  },
-                  builder: (context) => _CredentialListItem(
-                    cred,
-                    expanded: expanded,
-                    selected: selected == cred,
-                  ),
-                )));
+        children.addAll(creds.map(
+          (cred) => (expanded) => _CredentialListItem(
+                cred,
+                expanded: expanded,
+                selected: selected == cred,
+              ),
+        ));
       }
     }
 
@@ -188,36 +87,18 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
       if (fingerprints.isNotEmpty) {
         nFingerprints = fingerprints.length;
         children.add((_) => ListTitle(l10n.s_fingerprints));
-        children.addAll(
-            fingerprints.map((fp) => (expanded) => _registerFingerprintActions(
-                  fp,
-                  ref: ref,
-                  actions: {
-                    OpenIntent: CallbackAction<OpenIntent>(onInvoke: (_) {
-                      if (expanded) {
-                        setState(() {
-                          _selected = fp;
-                        });
-                        return null;
-                      } else {
-                        return showBlurDialog(
-                          context: context,
-                          barrierColor: Colors.transparent,
-                          builder: (context) => FingerprintDialog(fp),
-                        );
-                      }
-                    }),
-                  },
-                  builder: (context) => _FingerprintListItem(
-                    fp,
-                    expanded: expanded,
-                    selected: fp == selected,
-                  ),
-                )));
+        children.addAll(fingerprints.map(
+          (fp) => (expanded) => _FingerprintListItem(
+                fp,
+                expanded: expanded,
+                selected: fp == selected,
+              ),
+        ));
       }
     }
 
-    final hasActions = ref.watch(featureProvider)(features.actions);
+    final hasFeature = ref.watch(featureProvider);
+    final hasActions = hasFeature(features.actions);
 
     if (children.isNotEmpty) {
       return Actions(
@@ -232,92 +113,158 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
             }
             return false;
           }),
+          OpenIntent<FidoCredential>:
+              CallbackAction<OpenIntent<FidoCredential>>(onInvoke: (intent) {
+            return showBlurDialog(
+              context: context,
+              barrierColor: Colors.transparent,
+              builder: (context) => CredentialDialog(intent.target),
+            );
+          }),
+          if (hasFeature(features.credentialsDelete))
+            DeleteIntent<FidoCredential>:
+                CallbackAction<DeleteIntent<FidoCredential>>(
+                    onInvoke: (intent) async {
+              final credential = intent.target;
+              final deleted = await ref.read(withContextProvider)(
+                (context) => showBlurDialog<bool?>(
+                  context: context,
+                  builder: (context) => DeleteCredentialDialog(
+                    widget.node.path,
+                    credential,
+                  ),
+                ),
+              );
+              if (_selected == credential && deleted == true) {
+                setState(() {
+                  _selected = null;
+                });
+              }
+              return deleted;
+            }),
+          OpenIntent<Fingerprint>:
+              CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
+            return showBlurDialog(
+              context: context,
+              barrierColor: Colors.transparent,
+              builder: (context) => FingerprintDialog(intent.target),
+            );
+          }),
+          if (hasFeature(features.fingerprintsEdit))
+            EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
+                onInvoke: (intent) async {
+              final fingerprint = intent.target;
+              final renamed = await ref.read(withContextProvider)(
+                  (context) => showBlurDialog<Fingerprint>(
+                        context: context,
+                        builder: (context) => RenameFingerprintDialog(
+                          widget.node.path,
+                          fingerprint,
+                        ),
+                      ));
+              if (_selected == fingerprint && renamed != null) {
+                setState(() {
+                  _selected = renamed;
+                });
+              }
+              return renamed;
+            }),
+          if (hasFeature(features.fingerprintsDelete))
+            DeleteIntent<Fingerprint>:
+                CallbackAction<DeleteIntent<Fingerprint>>(
+                    onInvoke: (intent) async {
+              final fingerprint = intent.target;
+              final deleted = await ref.read(withContextProvider)(
+                  (context) => showBlurDialog<bool?>(
+                        context: context,
+                        builder: (context) => DeleteFingerprintDialog(
+                          widget.node.path,
+                          fingerprint,
+                        ),
+                      ));
+              if (_selected == fingerprint && deleted == true) {
+                setState(() {
+                  _selected = null;
+                });
+              }
+              return deleted;
+            }),
         },
         child: AppPage(
           title: Text(l10n.s_webauthn),
           detailViewBuilder: switch (selected) {
-            FidoCredential credential => (context) =>
-                _registerCredentialActions(credential,
-                    ref: ref,
-                    builder: (context) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+            FidoCredential credential => (context) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTitle(l10n.s_details),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        // TODO: Reuse from credential_dialog
+                        child: Column(
                           children: [
-                            ListTitle(l10n.s_details),
-                            Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                // TODO: Reuse from credential_dialog
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      credential.userName,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall,
-                                      softWrap: true,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    Text(
-                                      credential.rpId,
-                                      softWrap: true,
-                                      textAlign: TextAlign.center,
-                                      // This is what ListTile uses for subtitle
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .color,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const Icon(Icons.person, size: 72),
-                                  ],
-                                ),
-                              ),
+                            Text(
+                              credential.userName,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
                             ),
-                            ActionListSection.fromMenuActions(
-                              context,
-                              l10n.s_actions,
-                              actions: buildCredentialActions(l10n),
+                            Text(
+                              credential.rpId,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              // This is what ListTile uses for subtitle
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color,
+                                  ),
                             ),
+                            const SizedBox(height: 16),
+                            const Icon(Icons.person, size: 72),
                           ],
-                        )),
-            Fingerprint fingerprint => (context) => _registerFingerprintActions(
-                  fingerprint,
-                  ref: ref,
-                  builder: (context) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ListTitle(l10n.s_details),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          // TODO: Reuse from fingerprint_dialog
-                          child: Column(
-                            children: [
-                              Text(
-                                fingerprint.label,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 16),
-                              const Icon(Icons.fingerprint, size: 72),
-                            ],
-                          ),
                         ),
                       ),
-                      ActionListSection.fromMenuActions(
-                        context,
-                        l10n.s_actions,
-                        actions: buildFingerprintActions(l10n),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      l10n.s_actions,
+                      actions: buildCredentialActions(credential, l10n),
+                    ),
+                  ],
+                ),
+            Fingerprint fingerprint => (context) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTitle(l10n.s_details),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        // TODO: Reuse from fingerprint_dialog
+                        child: Column(
+                          children: [
+                            Text(
+                              fingerprint.label,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            const Icon(Icons.fingerprint, size: 72),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      l10n.s_actions,
+                      actions: buildFingerprintActions(fingerprint, l10n),
+                    ),
+                  ],
                 ),
             _ => null
           },
@@ -326,9 +273,30 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
                   context, widget.node, widget.state, nFingerprints)
               : null,
           keyActionsBadge: fidoShowActionsNotifier(widget.state),
-          builder: (context, expanded) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: children.map((f) => f(expanded)).toList()),
+          builder: (context, expanded) => Actions(
+            actions: {
+              if (expanded) ...{
+                OpenIntent<FidoCredential>:
+                    CallbackAction<OpenIntent<FidoCredential>>(
+                        onInvoke: (intent) {
+                  setState(() {
+                    _selected = intent.target;
+                  });
+                  return null;
+                }),
+                OpenIntent<Fingerprint>:
+                    CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
+                  setState(() {
+                    _selected = intent.target;
+                  });
+                  return null;
+                }),
+              }
+            },
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children.map((f) => f(expanded)).toList()),
+          ),
         ),
       );
     }
@@ -380,6 +348,7 @@ class _CredentialListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppListItem(
+      credential,
       selected: selected,
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -391,12 +360,13 @@ class _CredentialListItem extends StatelessWidget {
       trailing: expanded
           ? null
           : OutlinedButton(
-              onPressed: Actions.handler(context, const OpenIntent()),
+              onPressed: Actions.handler(context, OpenIntent(credential)),
               child: const Icon(Icons.more_horiz),
             ),
-      openOnSingleTap: expanded,
+      tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
+      doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,
       buildPopupActions: (context) =>
-          buildCredentialActions(AppLocalizations.of(context)!),
+          buildCredentialActions(credential, AppLocalizations.of(context)!),
     );
   }
 }
@@ -412,6 +382,7 @@ class _FingerprintListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppListItem(
+      fingerprint,
       selected: selected,
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -422,12 +393,13 @@ class _FingerprintListItem extends StatelessWidget {
       trailing: expanded
           ? null
           : OutlinedButton(
-              onPressed: Actions.handler(context, const OpenIntent()),
+              onPressed: Actions.handler(context, OpenIntent(fingerprint)),
               child: const Icon(Icons.more_horiz),
             ),
-      openOnSingleTap: expanded,
+      tapIntent: isDesktop && !expanded ? null : OpenIntent(fingerprint),
+      doubleTapIntent: isDesktop && !expanded ? OpenIntent(fingerprint) : null,
       buildPopupActions: (context) =>
-          buildFingerprintActions(AppLocalizations.of(context)!),
+          buildFingerprintActions(fingerprint, AppLocalizations.of(context)!),
     );
   }
 }

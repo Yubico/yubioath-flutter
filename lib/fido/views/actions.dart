@@ -21,8 +21,10 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
+import '../models.dart';
 
-List<ActionItem> buildFingerprintActions(AppLocalizations l10n) {
+List<ActionItem> buildFingerprintActions(
+    Fingerprint fingerprint, AppLocalizations l10n) {
   return [
     ActionItem(
       key: keys.editFingerintAction,
@@ -30,7 +32,7 @@ List<ActionItem> buildFingerprintActions(AppLocalizations l10n) {
       icon: const Icon(Icons.edit),
       title: l10n.s_rename_fp,
       subtitle: l10n.l_rename_fp_desc,
-      intent: const EditIntent(),
+      intent: EditIntent(fingerprint),
     ),
     ActionItem(
       key: keys.deleteFingerprintAction,
@@ -39,12 +41,13 @@ List<ActionItem> buildFingerprintActions(AppLocalizations l10n) {
       icon: const Icon(Icons.delete),
       title: l10n.s_delete_fingerprint,
       subtitle: l10n.l_delete_fingerprint_desc,
-      intent: const DeleteIntent(),
+      intent: DeleteIntent(fingerprint),
     ),
   ];
 }
 
-List<ActionItem> buildCredentialActions(AppLocalizations l10n) {
+List<ActionItem> buildCredentialActions(
+    FidoCredential credential, AppLocalizations l10n) {
   return [
     ActionItem(
       key: keys.deleteCredentialAction,
@@ -53,7 +56,7 @@ List<ActionItem> buildCredentialActions(AppLocalizations l10n) {
       icon: const Icon(Icons.delete),
       title: l10n.s_delete_passkey,
       subtitle: l10n.l_delete_account_desc,
-      intent: const DeleteIntent(),
+      intent: DeleteIntent(credential),
     ),
   ];
 }

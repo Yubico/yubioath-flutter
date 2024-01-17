@@ -32,8 +32,6 @@ import '../models.dart';
 import '../state.dart';
 import 'account_helper.dart';
 import 'actions.dart';
-import 'delete_account_dialog.dart';
-import 'rename_account_dialog.dart';
 
 class AccountDialog extends ConsumerWidget {
   final OathCredential credential;
@@ -55,129 +53,121 @@ class AccountDialog extends ConsumerWidget {
     final subtitle = helper.subtitle;
 
     return registerOathActions(
-      credential,
+      node.path,
       ref: ref,
-      actions: {
-        if (hasFeature(features.accountsRename))
-          EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
-            final credentials = ref.read(credentialsProvider);
-            final withContext = ref.read(withContextProvider);
-            final renamed =
-                await withContext((context) async => await showBlurDialog(
-                    context: context,
-                    builder: (context) => RenameAccountDialog.forOathCredential(
-                          ref,
-                          node,
-                          credential,
-                          credentials
-                                  ?.map((e) => (e.issuer, e.name))
-                                  .toList() ??
-                              [],
-                        )));
-            if (renamed != null) {
-              // Replace the dialog with the renamed credential
-              await withContext((context) async {
-                Navigator.of(context).pop();
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) {
-                    return AccountDialog(renamed);
-                  },
-                );
-              });
-            }
-            return renamed;
-          }),
-        if (hasFeature(features.accountsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-            final withContext = ref.read(withContextProvider);
-            final bool? deleted =
-                await ref.read(withContextProvider)((context) async =>
-                    await showBlurDialog(
-                      context: context,
-                      builder: (context) => DeleteAccountDialog(
-                        node,
-                        credential,
-                      ),
-                    ) ??
-                    false);
-
-            // Pop the account dialog if deleted
-            if (deleted == true) {
-              await withContext((context) async {
-                Navigator.of(context).pop();
-              });
-            }
-            return deleted;
-          }),
-      },
       builder: (context) {
         if (helper.code == null &&
             (isDesktop || node.transport == Transport.usb)) {
           Timer.run(() {
             // Only call if credential hasn't been deleted/renamed
             if (ref.read(credentialsProvider)?.contains(credential) == true) {
-              Actions.invoke(context, const RefreshIntent());
+              Actions.invoke(
+                  context, RefreshIntent<OathCredential>(credential));
             }
           });
         }
-        return FocusScope(
-          autofocus: true,
-          child: FsDialog(
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 32),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconTheme(
-                              data: IconTheme.of(context).copyWith(size: 24),
-                              child: helper.buildCodeIcon(),
+        return Actions(
+          actions: {
+            if (hasFeature(features.accountsRename))
+              EditIntent<OathCredential>:
+                  CallbackAction<EditIntent<OathCredential>>(
+                      onInvoke: (intent) async {
+                final renamed =
+                    await (Actions.invoke(context, intent) as Future<dynamic>?);
+                if (renamed is OathCredential) {
+                  // Replace the dialog with the renamed credential
+                  final withContext = ref.read(withContextProvider);
+                  await withContext((context) async {
+                    Navigator.of(context).pop();
+                    await showBlurDialog(
+                      context: context,
+                      builder: (context) {
+                        return AccountDialog(renamed);
+                      },
+                    );
+                  });
+                }
+                return renamed;
+              }),
+            if (hasFeature(features.accountsDelete))
+              DeleteIntent:
+                  CallbackAction<DeleteIntent>(onInvoke: (intent) async {
+                final deleted =
+                    await (Actions.invoke(context, intent) as Future<dynamic>?);
+                // Pop the account dialog if deleted
+                final withContext = ref.read(withContextProvider);
+                if (deleted == true) {
+                  await withContext((context) async {
+                    Navigator.of(context).pop();
+                  });
+                }
+                return deleted;
+              }),
+          },
+          child: Shortcuts(
+            shortcuts: itemShortcuts(credential),
+            child: FocusScope(
+              autofocus: true,
+              child: FsDialog(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 32),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                IconTheme(
+                                  data:
+                                      IconTheme.of(context).copyWith(size: 24),
+                                  child: helper.buildCodeIcon(),
+                                ),
+                                const SizedBox(width: 8.0),
+                                DefaultTextStyle.merge(
+                                  style: const TextStyle(fontSize: 28),
+                                  child: helper.buildCodeLabel(),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8.0),
-                            DefaultTextStyle.merge(
-                              style: const TextStyle(fontSize: 28),
-                              child: helper.buildCodeLabel(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        helper.title,
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                      ),
-                      if (subtitle != null)
-                        Text(
-                          subtitle,
-                          softWrap: true,
-                          textAlign: TextAlign.center,
-                          // This is what ListTile uses for subtitle
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          ),
+                          Text(
+                            helper.title,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                          ),
+                          if (subtitle != null)
+                            Text(
+                              subtitle,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              // This is what ListTile uses for subtitle
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
                                     color: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
                                         .color,
                                   ),
-                        ),
-                    ],
-                  ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      AppLocalizations.of(context)!.s_actions,
+                      actions: helper.buildActions(),
+                    ),
+                  ],
                 ),
-                ActionListSection.fromMenuActions(
-                  context,
-                  AppLocalizations.of(context)!.s_actions,
-                  actions: helper.buildActions(),
-                ),
-              ],
+              ),
             ),
           ),
         );

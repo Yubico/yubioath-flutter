@@ -33,7 +33,9 @@ class CredentialDialog extends ConsumerWidget {
     return Actions(
       actions: {
         if (hasFeature(features.credentialsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+          DeleteIntent<FidoCredential>:
+              CallbackAction<DeleteIntent<FidoCredential>>(
+                  onInvoke: (intent) async {
             final withContext = ref.read(withContextProvider);
             final bool? deleted =
                 await ref.read(withContextProvider)((context) async =>
@@ -41,7 +43,7 @@ class CredentialDialog extends ConsumerWidget {
                       context: context,
                       builder: (context) => DeleteCredentialDialog(
                         node.path,
-                        credential,
+                        intent.target,
                       ),
                     ) ??
                     false);
@@ -55,41 +57,45 @@ class CredentialDialog extends ConsumerWidget {
             return deleted;
           }),
       },
-      child: FocusScope(
-        autofocus: true,
-        child: FsDialog(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 48, bottom: 32),
-                child: Column(
-                  children: [
-                    Text(
-                      credential.userName,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      credential.rpId,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                      // This is what ListTile uses for subtitle
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
-                          ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Icon(Icons.person, size: 72),
-                  ],
+      child: Shortcuts(
+        shortcuts: itemShortcuts(credential),
+        child: FocusScope(
+          autofocus: true,
+          child: FsDialog(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 48, bottom: 32),
+                  child: Column(
+                    children: [
+                      Text(
+                        credential.userName,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        credential.rpId,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        // This is what ListTile uses for subtitle
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
+                            ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Icon(Icons.person, size: 72),
+                    ],
+                  ),
                 ),
-              ),
-              ActionListSection.fromMenuActions(
-                context,
-                l10n.s_actions,
-                actions: buildCredentialActions(l10n),
-              ),
-            ],
+                ActionListSection.fromMenuActions(
+                  context,
+                  l10n.s_actions,
+                  actions: buildCredentialActions(credential, l10n),
+                ),
+              ],
+            ),
           ),
         ),
       ),

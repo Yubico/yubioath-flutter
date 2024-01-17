@@ -77,28 +77,38 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final subtitleStyle = textTheme.bodyMedium!.copyWith(
               color: textTheme.bodySmall!.color,
             );
-            return Actions(
-              actions: {
-                EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
-                  if (selected != null) {
-                    setState(() {
-                      _selected = null;
-                    });
-                  } else {
-                    Actions.invoke(context, intent);
-                  }
-                  return false;
-                }),
-              },
-              child: AppPage(
-                title: Text(l10n.s_certificates),
-                detailViewBuilder: selected != null
-                    ? (context) => registerPivActions(
-                          widget.devicePath,
-                          pivState,
-                          selected,
-                          ref: ref,
-                          builder: (context) => Column(
+            return registerPivActions(
+              widget.devicePath,
+              pivState,
+              ref: ref,
+              builder: (context) => Actions(
+                actions: {
+                  EscapeIntent:
+                      CallbackAction<EscapeIntent>(onInvoke: (intent) {
+                    if (selected != null) {
+                      setState(() {
+                        _selected = null;
+                      });
+                    } else {
+                      Actions.invoke(context, intent);
+                    }
+                    return false;
+                  }),
+                  OpenIntent<PivSlot>: CallbackAction<OpenIntent<PivSlot>>(
+                    onInvoke: (intent) async {
+                      await showBlurDialog(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        builder: (context) => SlotDialog(intent.target.slot),
+                      );
+                      return null;
+                    },
+                  ),
+                },
+                child: AppPage(
+                  title: Text(l10n.s_certificates),
+                  detailViewBuilder: selected != null
+                      ? (context) => Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               ListTitle(l10n.s_details),
@@ -129,61 +139,51 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                               ActionListSection.fromMenuActions(
                                 context,
                                 l10n.s_actions,
-                                actions: buildSlotActions(
-                                    selected.certInfo != null, l10n),
+                                actions: buildSlotActions(selected, l10n),
                               ),
                             ],
-                          ),
-                        )
-                    : null,
-                keyActionsBuilder: hasFeature(features.actions)
-                    ? (context) => pivBuildActions(
-                        context, widget.devicePath, pivState, ref)
-                    : null,
-                builder: (context, expanded) {
-                  // De-select if window is resized to be non-expanded.
-                  if (!expanded) {
-                    Timer.run(() {
-                      setState(() {
-                        _selected = null;
+                          )
+                      : null,
+                  keyActionsBuilder: hasFeature(features.actions)
+                      ? (context) => pivBuildActions(
+                          context, widget.devicePath, pivState, ref)
+                      : null,
+                  builder: (context, expanded) {
+                    // De-select if window is resized to be non-expanded.
+                    if (!expanded) {
+                      Timer.run(() {
+                        setState(() {
+                          _selected = null;
+                        });
                       });
-                    });
-                  }
-                  return Column(
-                    children: [
-                      ListTitle(l10n.s_certificates),
-                      if (pivSlots?.hasValue == true)
-                        ...pivSlots!.value.map((e) => registerPivActions(
-                              widget.devicePath,
-                              pivState,
-                              e,
-                              ref: ref,
-                              actions: {
-                                OpenIntent: CallbackAction<OpenIntent>(
-                                    onInvoke: (_) async {
-                                  if (expanded) {
-                                    setState(() {
-                                      _selected = e.slot;
-                                    });
-                                  } else {
-                                    await showBlurDialog(
-                                      context: context,
-                                      barrierColor: Colors.transparent,
-                                      builder: (context) => SlotDialog(e.slot),
-                                    );
-                                  }
-                                  return null;
-                                }),
-                              },
-                              builder: (context) => _CertificateListItem(
+                    }
+                    return Actions(
+                      actions: {
+                        if (expanded)
+                          OpenIntent: CallbackAction<OpenIntent<PivSlot>>(
+                              onInvoke: (intent) async {
+                            setState(() {
+                              _selected = intent.target.slot;
+                            });
+                            return null;
+                          }),
+                      },
+                      child: Column(
+                        children: [
+                          ListTitle(l10n.s_certificates),
+                          if (pivSlots?.hasValue == true)
+                            ...pivSlots!.value.map(
+                              (e) => _CertificateListItem(
                                 e,
                                 expanded: expanded,
                                 selected: e == selected,
                               ),
-                            )),
-                    ],
-                  );
-                },
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             );
           },
@@ -208,6 +208,7 @@ class _CertificateListItem extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
 
     return AppListItem(
+      pivSlot,
       selected: selected,
       key: _getAppListItemKey(slot),
       leading: CircleAvatar(
@@ -226,12 +227,13 @@ class _CertificateListItem extends ConsumerWidget {
           ? null
           : OutlinedButton(
               key: _getMeatballKey(slot),
-              onPressed: Actions.handler(context, const OpenIntent()),
+              onPressed: Actions.handler(context, OpenIntent(pivSlot)),
               child: const Icon(Icons.more_horiz),
             ),
-      openOnSingleTap: expanded,
+      tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
+      doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
       buildPopupActions: hasFeature(features.slots)
-          ? (context) => buildSlotActions(certInfo != null, l10n)
+          ? (context) => buildSlotActions(pivSlot, l10n)
           : null,
     );
   }

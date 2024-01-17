@@ -38,7 +38,7 @@ import 'utils.dart';
 final _log = Logger('oath.view.rename_account_dialog');
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final String? issuer;
   final String name;
   final OathType oathType;
@@ -47,7 +47,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
   final Future<dynamic> Function(String? issuer, String name) rename;
 
   const RenameAccountDialog({
-    required this.device,
+    required this.devicePath,
     required this.issuer,
     required this.name,
     required this.oathType,
@@ -63,11 +63,11 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 
   factory RenameAccountDialog.forOathCredential(
       WidgetRef ref,
-      DeviceNode device,
+      DevicePath devicePath,
       OathCredential credential,
       List<(String? issuer, String name)> existing) {
     return RenameAccountDialog(
-      device: device,
+      devicePath: devicePath,
       issuer: credential.issuer,
       name: credential.name,
       oathType: credential.oathType,
@@ -78,7 +78,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
         try {
           // Rename credentials
           final renamed = await ref
-              .read(credentialListProvider(device.path).notifier)
+              .read(credentialListProvider(devicePath).notifier)
               .renameAccount(credential, issuer, name);
 
           // Update favorite

@@ -34,24 +34,27 @@ import 'configure_yubiotp_dialog.dart';
 import 'delete_slot_dialog.dart';
 
 class ConfigureChalRespIntent extends Intent {
-  const ConfigureChalRespIntent();
+  final OtpSlot slot;
+  const ConfigureChalRespIntent(this.slot);
 }
 
 class ConfigureHotpIntent extends Intent {
-  const ConfigureHotpIntent();
+  final OtpSlot slot;
+  const ConfigureHotpIntent(this.slot);
 }
 
 class ConfigureStaticIntent extends Intent {
-  const ConfigureStaticIntent();
+  final OtpSlot slot;
+  const ConfigureStaticIntent(this.slot);
 }
 
 class ConfigureYubiOtpIntent extends Intent {
-  const ConfigureYubiOtpIntent();
+  final OtpSlot slot;
+  const ConfigureYubiOtpIntent(this.slot);
 }
 
 Widget registerOtpActions(
-  DevicePath devicePath,
-  OtpSlot otpSlot, {
+  DevicePath devicePath, {
   required WidgetRef ref,
   required Widget Function(BuildContext context) builder,
   Map<Type, Action<Intent>> actions = const {},
@@ -68,7 +71,7 @@ Widget registerOtpActions(
             await showBlurDialog(
                 context: context,
                 builder: (context) =>
-                    ConfigureChalrespDialog(devicePath, otpSlot));
+                    ConfigureChalrespDialog(devicePath, intent.slot));
           });
           return null;
         }),
@@ -80,7 +83,8 @@ Widget registerOtpActions(
           await withContext((context) async {
             await showBlurDialog(
                 context: context,
-                builder: (context) => ConfigureHotpDialog(devicePath, otpSlot));
+                builder: (context) =>
+                    ConfigureHotpDialog(devicePath, intent.slot));
           });
           return null;
         }),
@@ -96,7 +100,7 @@ Widget registerOtpActions(
             await showBlurDialog(
                 context: context,
                 builder: (context) => ConfigureStaticDialog(
-                    devicePath, otpSlot, keyboardLayouts));
+                    devicePath, intent.slot, keyboardLayouts));
           });
           return null;
         }),
@@ -109,19 +113,23 @@ Widget registerOtpActions(
             await showBlurDialog(
                 context: context,
                 builder: (context) =>
-                    ConfigureYubiOtpDialog(devicePath, otpSlot));
+                    ConfigureYubiOtpDialog(devicePath, intent.slot));
           });
           return null;
         }),
       if (hasFeature(features.slotsDelete))
-        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-          final withContext = ref.read(withContextProvider);
+        DeleteIntent<OtpSlot>:
+            CallbackAction<DeleteIntent<OtpSlot>>(onInvoke: (intent) async {
+          final slot = intent.target;
+          if (!slot.isConfigured) {
+            return false;
+          }
 
+          final withContext = ref.read(withContextProvider);
           final bool? deleted = await withContext((context) async =>
               await showBlurDialog(
                   context: context,
-                  builder: (context) =>
-                      DeleteSlotDialog(devicePath, otpSlot)) ??
+                  builder: (context) => DeleteSlotDialog(devicePath, slot)) ??
               false);
           return deleted;
         }),
@@ -131,7 +139,7 @@ Widget registerOtpActions(
   );
 }
 
-List<ActionItem> buildSlotActions(bool isConfigured, AppLocalizations l10n) {
+List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
   return [
     ActionItem(
       key: keys.configureYubiOtp,
@@ -139,7 +147,7 @@ List<ActionItem> buildSlotActions(bool isConfigured, AppLocalizations l10n) {
       icon: const Icon(Icons.shuffle_outlined),
       title: l10n.s_yubiotp,
       subtitle: l10n.l_yubiotp_desc,
-      intent: const ConfigureYubiOtpIntent(),
+      intent: ConfigureYubiOtpIntent(slot),
     ),
     ActionItem(
         key: keys.configureChalResp,
@@ -147,21 +155,21 @@ List<ActionItem> buildSlotActions(bool isConfigured, AppLocalizations l10n) {
         icon: const Icon(Icons.key_outlined),
         title: l10n.s_challenge_response,
         subtitle: l10n.l_challenge_response_desc,
-        intent: const ConfigureChalRespIntent()),
+        intent: ConfigureChalRespIntent(slot)),
     ActionItem(
         key: keys.configureStatic,
         feature: features.slotsConfigureStatic,
         icon: const Icon(Icons.password_outlined),
         title: l10n.s_static_password,
         subtitle: l10n.l_static_password_desc,
-        intent: const ConfigureStaticIntent()),
+        intent: ConfigureStaticIntent(slot)),
     ActionItem(
         key: keys.configureHotp,
         feature: features.slotsConfigureHotp,
         icon: const Icon(Icons.tag_outlined),
         title: l10n.s_hotp,
         subtitle: l10n.l_hotp_desc,
-        intent: const ConfigureHotpIntent()),
+        intent: ConfigureHotpIntent(slot)),
     ActionItem(
       key: keys.deleteAction,
       feature: features.slotsDelete,
@@ -169,7 +177,7 @@ List<ActionItem> buildSlotActions(bool isConfigured, AppLocalizations l10n) {
       icon: const Icon(Icons.delete_outline),
       title: l10n.s_delete_slot,
       subtitle: l10n.l_delete_slot_desc,
-      intent: isConfigured ? const DeleteIntent() : null,
+      intent: slot.isConfigured ? DeleteIntent(slot) : null,
     )
   ];
 }

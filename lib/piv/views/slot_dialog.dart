@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
@@ -61,49 +62,51 @@ class SlotDialog extends ConsumerWidget {
     return registerPivActions(
       node.path,
       pivState,
-      slotData,
       ref: ref,
-      builder: (context) => FocusScope(
-        autofocus: true,
-        child: FsDialog(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 48, bottom: 16),
-                child: Column(
-                  children: [
-                    Text(
-                      pivSlot.getDisplayName(l10n),
-                      style: textTheme.headlineSmall,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                    ),
-                    if (certInfo != null) ...[
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: CertInfoTable(certInfo),
+      builder: (context) => Shortcuts(
+        shortcuts: itemShortcuts(slotData),
+        child: FocusScope(
+          autofocus: true,
+          child: FsDialog(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 48, bottom: 16),
+                  child: Column(
+                    children: [
+                      Text(
+                        pivSlot.getDisplayName(l10n),
+                        style: textTheme.headlineSmall,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
                       ),
-                    ] else ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          l10n.l_no_certificate,
-                          softWrap: true,
-                          textAlign: TextAlign.center,
-                          style: subtitleStyle,
+                      if (certInfo != null) ...[
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: CertInfoTable(certInfo),
                         ),
-                      ),
-                      const SizedBox(height: 16),
+                      ] else ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text(
+                            l10n.l_no_certificate,
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                            style: subtitleStyle,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              ActionListSection.fromMenuActions(
-                context,
-                l10n.s_actions,
-                actions: buildSlotActions(certInfo != null, l10n),
-              ),
-            ],
+                ActionListSection.fromMenuActions(
+                  context,
+                  l10n.s_actions,
+                  actions: buildSlotActions(slotData, l10n),
+                ),
+              ],
+            ),
           ),
         ),
       ),

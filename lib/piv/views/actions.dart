@@ -37,15 +37,18 @@ import 'import_file_dialog.dart';
 import 'pin_dialog.dart';
 
 class GenerateIntent extends Intent {
-  const GenerateIntent();
+  final PivSlot slot;
+  const GenerateIntent(this.slot);
 }
 
 class ImportIntent extends Intent {
-  const ImportIntent();
+  final PivSlot slot;
+  const ImportIntent(this.slot);
 }
 
 class ExportIntent extends Intent {
-  const ExportIntent();
+  final PivSlot slot;
+  const ExportIntent(this.slot);
 }
 
 Future<bool> _authenticate(
@@ -72,8 +75,7 @@ Future<bool> _authIfNeeded(
 
 Widget registerPivActions(
   DevicePath devicePath,
-  PivState pivState,
-  PivSlot pivSlot, {
+  PivState pivState, {
   required WidgetRef ref,
   required Widget Function(BuildContext context) builder,
   Map<Type, Action<Intent>> actions = const {},
@@ -109,7 +111,7 @@ Widget registerPivActions(
               builder: (context) => GenerateKeyDialog(
                 devicePath,
                 pivState,
-                pivSlot,
+                intent.slot,
               ),
             );
 
@@ -163,7 +165,7 @@ Widget registerPivActions(
                 builder: (context) => ImportFileDialog(
                   devicePath,
                   pivState,
-                  pivSlot,
+                  intent.slot,
                   File(picked.paths.first!),
                 ),
               ) ??
@@ -173,7 +175,7 @@ Widget registerPivActions(
         ExportIntent: CallbackAction<ExportIntent>(onInvoke: (intent) async {
           final (_, cert) = await ref
               .read(pivSlotsProvider(devicePath).notifier)
-              .read(pivSlot.slot);
+              .read(intent.slot.slot);
 
           if (cert == null) {
             return false;
@@ -205,7 +207,8 @@ Widget registerPivActions(
           return true;
         }),
       if (hasFeature(features.slotsDelete))
-        DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
+        DeleteIntent<PivSlot>:
+            CallbackAction<DeleteIntent<PivSlot>>(onInvoke: (intent) async {
           final withContext = ref.read(withContextProvider);
           if (!await withContext(
               (context) => _authIfNeeded(context, devicePath, pivState))) {
@@ -217,7 +220,7 @@ Widget registerPivActions(
                 context: context,
                 builder: (context) => DeleteCertificateDialog(
                   devicePath,
-                  pivSlot,
+                  intent.target,
                 ),
               ) ??
               false);
@@ -229,7 +232,8 @@ Widget registerPivActions(
   );
 }
 
-List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
+List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
+  final hasCert = slot.certInfo != null;
   return [
     ActionItem(
       key: keys.generateAction,
@@ -238,7 +242,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
       actionStyle: ActionStyle.primary,
       title: l10n.s_generate_key,
       subtitle: l10n.l_generate_desc,
-      intent: const GenerateIntent(),
+      intent: GenerateIntent(slot),
     ),
     ActionItem(
       key: keys.importAction,
@@ -246,7 +250,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
       icon: const Icon(Icons.file_download_outlined),
       title: l10n.l_import_file,
       subtitle: l10n.l_import_desc,
-      intent: const ImportIntent(),
+      intent: ImportIntent(slot),
     ),
     if (hasCert) ...[
       ActionItem(
@@ -255,7 +259,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
         icon: const Icon(Icons.file_upload_outlined),
         title: l10n.l_export_certificate,
         subtitle: l10n.l_export_certificate_desc,
-        intent: const ExportIntent(),
+        intent: ExportIntent(slot),
       ),
       ActionItem(
         key: keys.deleteAction,
@@ -264,7 +268,7 @@ List<ActionItem> buildSlotActions(bool hasCert, AppLocalizations l10n) {
         icon: const Icon(Icons.delete_outline),
         title: l10n.l_delete_certificate,
         subtitle: l10n.l_delete_certificate_desc,
-        intent: const DeleteIntent(),
+        intent: DeleteIntent(slot),
       ),
     ],
   ];
