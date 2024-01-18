@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
@@ -11,7 +10,6 @@ import '../../core/state.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import 'actions.dart';
-import 'delete_credential_dialog.dart';
 
 class CredentialDialog extends ConsumerWidget {
   final FidoCredential credential;
@@ -30,35 +28,26 @@ class CredentialDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
 
-    return Actions(
-      actions: {
+    return FidoActions(
+      devicePath: node.path,
+      actions: (context) => {
         if (hasFeature(features.credentialsDelete))
           DeleteIntent<FidoCredential>:
               CallbackAction<DeleteIntent<FidoCredential>>(
                   onInvoke: (intent) async {
-            final withContext = ref.read(withContextProvider);
-            final bool? deleted =
-                await ref.read(withContextProvider)((context) async =>
-                    await showBlurDialog(
-                      context: context,
-                      builder: (context) => DeleteCredentialDialog(
-                        node.path,
-                        intent.target,
-                      ),
-                    ) ??
-                    false);
-
+            final deleted =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
             // Pop the account dialog if deleted
             if (deleted == true) {
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
               });
             }
             return deleted;
           }),
       },
-      child: Shortcuts(
-        shortcuts: itemShortcuts(credential),
+      builder: (context) => ItemShortcuts(
+        item: credential,
         child: FocusScope(
           autofocus: true,
           child: FsDialog(

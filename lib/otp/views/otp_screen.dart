@@ -65,8 +65,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           final selected = _selected != null
               ? otpState.slots.firstWhere((e) => e.slot == _selected)
               : null;
-          return registerOtpActions(widget.devicePath,
-              ref: ref,
+          return OtpActions(
+              devicePath: widget.devicePath,
               builder: (context) => Actions(
                     actions: {
                       EscapeIntent:

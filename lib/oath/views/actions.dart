@@ -47,82 +47,103 @@ Future<OathCode?> _calculateCode(
   }
 }
 
-Widget registerOathActions(
-  DevicePath devicePath, {
-  required WidgetRef ref,
-  required Widget Function(BuildContext context) builder,
-  Map<Type, Action<Intent>> actions = const {},
-}) {
-  final hasFeature = ref.read(featureProvider);
-  return Actions(
-    actions: {
-      RefreshIntent<OathCredential>:
-          CallbackAction<RefreshIntent<OathCredential>>(onInvoke: (intent) {
-        final credential = intent.target;
-        final code = ref.read(codeProvider(credential));
-        if (!(credential.oathType == OathType.totp &&
-            code != null &&
-            !ref.read(expiredProvider(code.validTo)))) {
-          return _calculateCode(credential, ref);
-        }
-        return code;
-      }),
-      if (hasFeature(features.accountsClipboard))
-        CopyIntent<OathCredential>: CallbackAction<CopyIntent<OathCredential>>(
-            onInvoke: (intent) async {
+class OathActions extends ConsumerWidget {
+  final DevicePath devicePath;
+  final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
+  final Widget Function(BuildContext context) builder;
+  const OathActions(
+      {super.key,
+      required this.devicePath,
+      this.actions,
+      required this.builder});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final withContext = ref.read(withContextProvider);
+    final hasFeature = ref.read(featureProvider);
+
+    return Actions(
+      actions: {
+        RefreshIntent<OathCredential>:
+            CallbackAction<RefreshIntent<OathCredential>>(onInvoke: (intent) {
           final credential = intent.target;
-          var code = ref.read(codeProvider(credential));
-          if (code == null ||
-              (credential.oathType == OathType.totp &&
-                  ref.read(expiredProvider(code.validTo)))) {
-            code = await _calculateCode(credential, ref);
-          }
-          if (code != null) {
-            final clipboard = ref.watch(clipboardProvider);
-            await clipboard.setText(code.value, isSensitive: true);
-            if (!clipboard.platformGivesFeedback()) {
-              await ref.read(withContextProvider)((context) async {
-                showMessage(context,
-                    AppLocalizations.of(context)!.l_code_copied_clipboard);
-              });
-            }
+          final code = ref.read(codeProvider(credential));
+          if (!(credential.oathType == OathType.totp &&
+              code != null &&
+              !ref.read(expiredProvider(code.validTo)))) {
+            return _calculateCode(credential, ref);
           }
           return code;
         }),
-      if (hasFeature(features.accountsPin))
-        TogglePinIntent: CallbackAction<TogglePinIntent>(onInvoke: (intent) {
-          ref.read(favoritesProvider.notifier).toggleFavorite(intent.target.id);
-          return null;
-        }),
-      if (hasFeature(features.accountsRename))
-        EditIntent<OathCredential>:
-            CallbackAction<EditIntent<OathCredential>>(onInvoke: (intent) {
-          final credentials = ref.read(credentialsProvider);
-          final withContext = ref.read(withContextProvider);
-          return withContext((context) => showBlurDialog(
-              context: context,
-              builder: (context) => RenameAccountDialog.forOathCredential(
-                    ref,
-                    devicePath,
-                    intent.target,
-                    credentials?.map((e) => (e.issuer, e.name)).toList() ?? [],
-                  )));
-        }),
-      if (hasFeature(features.accountsDelete))
-        DeleteIntent<OathCredential>:
-            CallbackAction<DeleteIntent<OathCredential>>(onInvoke: (intent) {
-          return ref.read(withContextProvider)((context) async =>
-              await showBlurDialog(
+        if (hasFeature(features.accountsClipboard))
+          CopyIntent<OathCredential>:
+              CallbackAction<CopyIntent<OathCredential>>(
+                  onInvoke: (intent) async {
+            final credential = intent.target;
+            var code = ref.read(codeProvider(credential));
+            if (code == null ||
+                (credential.oathType == OathType.totp &&
+                    ref.read(expiredProvider(code.validTo)))) {
+              code = await _calculateCode(credential, ref);
+            }
+            if (code != null) {
+              final clipboard = ref.watch(clipboardProvider);
+              await clipboard.setText(code.value, isSensitive: true);
+              if (!clipboard.platformGivesFeedback()) {
+                await withContext((context) async {
+                  showMessage(context,
+                      AppLocalizations.of(context)!.l_code_copied_clipboard);
+                });
+              }
+            }
+            return code;
+          }),
+        if (hasFeature(features.accountsPin))
+          TogglePinIntent: CallbackAction<TogglePinIntent>(onInvoke: (intent) {
+            ref
+                .read(favoritesProvider.notifier)
+                .toggleFavorite(intent.target.id);
+            return null;
+          }),
+        if (hasFeature(features.accountsRename))
+          EditIntent<OathCredential>:
+              CallbackAction<EditIntent<OathCredential>>(onInvoke: (intent) {
+            final credentials = ref.read(credentialsProvider);
+            return withContext((context) => showBlurDialog(
                 context: context,
-                builder: (context) => DeleteAccountDialog(
-                  devicePath,
-                  intent.target,
-                ),
-              ) ??
-              false);
-        }),
-      ...actions,
-    },
-    child: Builder(builder: builder),
-  );
+                builder: (context) => RenameAccountDialog.forOathCredential(
+                      ref,
+                      devicePath,
+                      intent.target,
+                      credentials?.map((e) => (e.issuer, e.name)).toList() ??
+                          [],
+                    )));
+          }),
+        if (hasFeature(features.accountsDelete))
+          DeleteIntent<OathCredential>:
+              CallbackAction<DeleteIntent<OathCredential>>(
+            onInvoke: (intent) {
+              return withContext((context) async =>
+                  await showBlurDialog(
+                    context: context,
+                    builder: (context) => DeleteAccountDialog(
+                      devicePath,
+                      intent.target,
+                    ),
+                  ) ??
+                  false);
+            },
+          ),
+      },
+      child: Builder(
+        // Builder to ensure new scope for actions, they can invoke parent actions
+        builder: (context) {
+          final child = Builder(builder: builder);
+          return actions != null
+              ? Actions(actions: actions!(context), child: child)
+              : child;
+        },
+      ),
+    );
+  }
 }

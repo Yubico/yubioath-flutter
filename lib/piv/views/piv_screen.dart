@@ -77,10 +77,9 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final subtitleStyle = textTheme.bodyMedium!.copyWith(
               color: textTheme.bodySmall!.color,
             );
-            return registerPivActions(
-              widget.devicePath,
-              pivState,
-              ref: ref,
+            return PivActions(
+              devicePath: widget.devicePath,
+              pivState: pivState,
               builder: (context) => Actions(
                 actions: {
                   EscapeIntent:
@@ -160,8 +159,9 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                     return Actions(
                       actions: {
                         if (expanded)
-                          OpenIntent: CallbackAction<OpenIntent<PivSlot>>(
-                              onInvoke: (intent) async {
+                          OpenIntent<PivSlot>:
+                              CallbackAction<OpenIntent<PivSlot>>(
+                                  onInvoke: (intent) async {
                             setState(() {
                               _selected = intent.target.slot;
                             });

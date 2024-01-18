@@ -59,12 +59,11 @@ class SlotDialog extends ConsumerWidget {
     }
 
     final certInfo = slotData.certInfo;
-    return registerPivActions(
-      node.path,
-      pivState,
-      ref: ref,
-      builder: (context) => Shortcuts(
-        shortcuts: itemShortcuts(slotData),
+    return PivActions(
+      devicePath: node.path,
+      pivState: pivState,
+      builder: (context) => ItemShortcuts(
+        item: slotData,
         child: FocusScope(
           autofocus: true,
           child: FsDialog(

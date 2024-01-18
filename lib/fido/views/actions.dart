@@ -16,12 +16,95 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
+import '../../core/state.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
+import 'delete_credential_dialog.dart';
+import 'delete_fingerprint_dialog.dart';
+import 'rename_fingerprint_dialog.dart';
+
+class FidoActions extends ConsumerWidget {
+  final DevicePath devicePath;
+  final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
+  final Widget Function(BuildContext context) builder;
+  const FidoActions(
+      {super.key,
+      required this.devicePath,
+      this.actions,
+      required this.builder});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final withContext = ref.read(withContextProvider);
+    final hasFeature = ref.read(featureProvider);
+
+    return Actions(
+      actions: {
+        if (hasFeature(features.credentialsDelete))
+          DeleteIntent<FidoCredential>:
+              CallbackAction<DeleteIntent<FidoCredential>>(
+                  onInvoke: (intent) async {
+            final credential = intent.target;
+            final deleted = await withContext(
+              (context) => showBlurDialog<bool?>(
+                context: context,
+                builder: (context) => DeleteCredentialDialog(
+                  devicePath,
+                  credential,
+                ),
+              ),
+            );
+            return deleted;
+          }),
+        if (hasFeature(features.fingerprintsEdit))
+          EditIntent<Fingerprint>:
+              CallbackAction<EditIntent<Fingerprint>>(onInvoke: (intent) async {
+            final fingerprint = intent.target;
+            final renamed = await ref.read(withContextProvider)(
+                (context) => showBlurDialog<Fingerprint>(
+                      context: context,
+                      builder: (context) => RenameFingerprintDialog(
+                        devicePath,
+                        fingerprint,
+                      ),
+                    ));
+            return renamed;
+          }),
+        if (hasFeature(features.fingerprintsDelete))
+          DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
+            onInvoke: (intent) async {
+              final fingerprint = intent.target;
+              final deleted = await ref.read(withContextProvider)(
+                  (context) => showBlurDialog<bool?>(
+                        context: context,
+                        builder: (context) => DeleteFingerprintDialog(
+                          devicePath,
+                          fingerprint,
+                        ),
+                      ));
+              return deleted;
+            },
+          ),
+      },
+      child: Builder(
+        // Builder to ensure new scope for actions, they can invoke parent actions
+        builder: (context) {
+          final child = Builder(builder: builder);
+          return actions != null
+              ? Actions(actions: actions!(context), child: child)
+              : child;
+        },
+      ),
+    );
+  }
+}
 
 List<ActionItem> buildFingerprintActions(
     Fingerprint fingerprint, AppLocalizations l10n) {

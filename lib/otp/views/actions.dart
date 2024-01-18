@@ -53,90 +53,97 @@ class ConfigureYubiOtpIntent extends Intent {
   const ConfigureYubiOtpIntent(this.slot);
 }
 
-Widget registerOtpActions(
-  DevicePath devicePath, {
-  required WidgetRef ref,
-  required Widget Function(BuildContext context) builder,
-  Map<Type, Action<Intent>> actions = const {},
-}) {
-  final hasFeature = ref.watch(featureProvider);
-  return Actions(
-    actions: {
-      if (hasFeature(features.slotsConfigureChalResp))
-        ConfigureChalRespIntent:
-            CallbackAction<ConfigureChalRespIntent>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
+class OtpActions extends ConsumerWidget {
+  final DevicePath devicePath;
+  final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
+  final Widget Function(BuildContext context) builder;
+  const OtpActions(
+      {super.key,
+      required this.devicePath,
+      this.actions,
+      required this.builder});
 
-          await withContext((context) async {
-            await showBlurDialog(
-                context: context,
-                builder: (context) =>
-                    ConfigureChalrespDialog(devicePath, intent.slot));
-          });
-          return null;
-        }),
-      if (hasFeature(features.slotsConfigureHotp))
-        ConfigureHotpIntent:
-            CallbackAction<ConfigureHotpIntent>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final withContext = ref.read(withContextProvider);
+    final hasFeature = ref.read(featureProvider);
 
-          await withContext((context) async {
-            await showBlurDialog(
-                context: context,
-                builder: (context) =>
-                    ConfigureHotpDialog(devicePath, intent.slot));
-          });
-          return null;
-        }),
-      if (hasFeature(features.slotsConfigureStatic))
-        ConfigureStaticIntent:
-            CallbackAction<ConfigureStaticIntent>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
-
-          final keyboardLayouts = await ref
-              .read(otpStateProvider(devicePath).notifier)
-              .getKeyboardLayouts();
-          await withContext((context) async {
-            await showBlurDialog(
-                context: context,
-                builder: (context) => ConfigureStaticDialog(
-                    devicePath, intent.slot, keyboardLayouts));
-          });
-          return null;
-        }),
-      if (hasFeature(features.slotsConfigureYubiOtp))
-        ConfigureYubiOtpIntent:
-            CallbackAction<ConfigureYubiOtpIntent>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
-
-          await withContext((context) async {
-            await showBlurDialog(
-                context: context,
-                builder: (context) =>
-                    ConfigureYubiOtpDialog(devicePath, intent.slot));
-          });
-          return null;
-        }),
-      if (hasFeature(features.slotsDelete))
-        DeleteIntent<OtpSlot>:
-            CallbackAction<DeleteIntent<OtpSlot>>(onInvoke: (intent) async {
-          final slot = intent.target;
-          if (!slot.isConfigured) {
-            return false;
-          }
-
-          final withContext = ref.read(withContextProvider);
-          final bool? deleted = await withContext((context) async =>
+    return Actions(
+      actions: {
+        if (hasFeature(features.slotsConfigureChalResp))
+          ConfigureChalRespIntent:
+              CallbackAction<ConfigureChalRespIntent>(onInvoke: (intent) async {
+            await withContext((context) async {
               await showBlurDialog(
                   context: context,
-                  builder: (context) => DeleteSlotDialog(devicePath, slot)) ??
-              false);
-          return deleted;
-        }),
-      ...actions,
-    },
-    child: Builder(builder: builder),
-  );
+                  builder: (context) =>
+                      ConfigureChalrespDialog(devicePath, intent.slot));
+            });
+            return null;
+          }),
+        if (hasFeature(features.slotsConfigureHotp))
+          ConfigureHotpIntent:
+              CallbackAction<ConfigureHotpIntent>(onInvoke: (intent) async {
+            await withContext((context) async {
+              await showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      ConfigureHotpDialog(devicePath, intent.slot));
+            });
+            return null;
+          }),
+        if (hasFeature(features.slotsConfigureStatic))
+          ConfigureStaticIntent:
+              CallbackAction<ConfigureStaticIntent>(onInvoke: (intent) async {
+            final keyboardLayouts = await ref
+                .read(otpStateProvider(devicePath).notifier)
+                .getKeyboardLayouts();
+            await withContext((context) async {
+              await showBlurDialog(
+                  context: context,
+                  builder: (context) => ConfigureStaticDialog(
+                      devicePath, intent.slot, keyboardLayouts));
+            });
+            return null;
+          }),
+        if (hasFeature(features.slotsConfigureYubiOtp))
+          ConfigureYubiOtpIntent:
+              CallbackAction<ConfigureYubiOtpIntent>(onInvoke: (intent) async {
+            await withContext((context) async {
+              await showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      ConfigureYubiOtpDialog(devicePath, intent.slot));
+            });
+            return null;
+          }),
+        if (hasFeature(features.slotsDelete))
+          DeleteIntent<OtpSlot>:
+              CallbackAction<DeleteIntent<OtpSlot>>(onInvoke: (intent) async {
+            final slot = intent.target;
+            if (!slot.isConfigured) {
+              return false;
+            }
+
+            final bool? deleted = await withContext((context) async =>
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => DeleteSlotDialog(devicePath, slot)) ??
+                false);
+            return deleted;
+          }),
+      },
+      child: Builder(
+        // Builder to ensure new scope for actions, they can invoke parent actions
+        builder: (context) {
+          final child = Builder(builder: builder);
+          return actions != null
+              ? Actions(actions: actions!(context), child: child)
+              : child;
+        },
+      ),
+    );
+  }
 }
 
 List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {

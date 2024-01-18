@@ -73,8 +73,8 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
 
     return Semantics(
       label: widget.semanticTitle ?? widget.title,
-      child: Shortcuts(
-        shortcuts: itemShortcuts<T>(widget.item),
+      child: ItemShortcuts<T>(
+        item: widget.item,
         child: InkWell(
           focusNode: _focusNode,
           borderRadius: BorderRadius.circular(30),

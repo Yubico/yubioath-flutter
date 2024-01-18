@@ -52,10 +52,10 @@ class SlotDialog extends ConsumerWidget {
       return const FsDialog(child: CircularProgressIndicator());
     }
 
-    return registerOtpActions(node.path,
-        ref: ref,
-        builder: (context) => Shortcuts(
-              shortcuts: itemShortcuts(otpSlot),
+    return OtpActions(
+        devicePath: node.path,
+        builder: (context) => ItemShortcuts(
+              item: otpSlot,
               child: FocusScope(
                 autofocus: true,
                 child: FsDialog(

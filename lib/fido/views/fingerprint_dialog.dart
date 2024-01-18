@@ -11,8 +11,6 @@ import '../../core/state.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import 'actions.dart';
-import 'delete_fingerprint_dialog.dart';
-import 'rename_fingerprint_dialog.dart';
 
 class FingerprintDialog extends ConsumerWidget {
   final Fingerprint fingerprint;
@@ -30,29 +28,21 @@ class FingerprintDialog extends ConsumerWidget {
 
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
-    return Actions(
-      actions: {
+    return FidoActions(
+      devicePath: node.path,
+      actions: (context) => {
         if (hasFeature(features.fingerprintsEdit))
           EditIntent<Fingerprint>:
               CallbackAction<EditIntent<Fingerprint>>(onInvoke: (intent) async {
-            final withContext = ref.read(withContextProvider);
-            final Fingerprint? renamed =
-                await withContext((context) async => await showBlurDialog(
-                      context: context,
-                      builder: (context) => RenameFingerprintDialog(
-                        node.path,
-                        intent.target,
-                      ),
-                    ));
-            if (renamed != null) {
+            final renamed =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (renamed is Fingerprint) {
               // Replace the dialog with the renamed credential
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
                 await showBlurDialog(
                   context: context,
-                  builder: (context) {
-                    return FingerprintDialog(renamed);
-                  },
+                  builder: (context) => FingerprintDialog(renamed),
                 );
               });
             }
@@ -61,29 +51,19 @@ class FingerprintDialog extends ConsumerWidget {
         if (hasFeature(features.fingerprintsDelete))
           DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
               onInvoke: (intent) async {
-            final withContext = ref.read(withContextProvider);
-            final bool? deleted =
-                await ref.read(withContextProvider)((context) async =>
-                    await showBlurDialog(
-                      context: context,
-                      builder: (context) => DeleteFingerprintDialog(
-                        node.path,
-                        intent.target,
-                      ),
-                    ) ??
-                    false);
-
-            // Pop the account dialog if deleted
+            final deleted =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            // Pop the fingerprint dialog if deleted
             if (deleted == true) {
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
               });
             }
             return deleted;
           }),
       },
-      child: Shortcuts(
-        shortcuts: itemShortcuts(fingerprint),
+      builder: (context) => ItemShortcuts(
+        item: fingerprint,
         child: FocusScope(
           autofocus: true,
           child: FsDialog(

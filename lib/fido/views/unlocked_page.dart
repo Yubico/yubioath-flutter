@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
-import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
@@ -33,11 +32,8 @@ import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
 import 'credential_dialog.dart';
-import 'delete_credential_dialog.dart';
-import 'delete_fingerprint_dialog.dart';
 import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
-import 'rename_fingerprint_dialog.dart';
 
 class FidoUnlockedPage extends ConsumerStatefulWidget {
   final DeviceNode node;
@@ -56,7 +52,6 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final selected = _selected;
     List<Widget Function(bool expanded)> children = [];
 
     if (widget.state.credMgmt) {
@@ -71,7 +66,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
           (cred) => (expanded) => _CredentialListItem(
                 cred,
                 expanded: expanded,
-                selected: selected == cred,
+                selected: _selected == cred,
               ),
         ));
       }
@@ -91,7 +86,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
           (fp) => (expanded) => _FingerprintListItem(
                 fp,
                 expanded: expanded,
-                selected: fp == selected,
+                selected: fp == _selected,
               ),
         ));
       }
@@ -101,10 +96,11 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
     final hasActions = hasFeature(features.actions);
 
     if (children.isNotEmpty) {
-      return Actions(
-        actions: {
+      return FidoActions(
+        devicePath: widget.node.path,
+        actions: (context) => {
           EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
-            if (selected != null) {
+            if (_selected != null) {
               setState(() {
                 _selected = null;
               });
@@ -121,27 +117,6 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
               builder: (context) => CredentialDialog(intent.target),
             );
           }),
-          if (hasFeature(features.credentialsDelete))
-            DeleteIntent<FidoCredential>:
-                CallbackAction<DeleteIntent<FidoCredential>>(
-                    onInvoke: (intent) async {
-              final credential = intent.target;
-              final deleted = await ref.read(withContextProvider)(
-                (context) => showBlurDialog<bool?>(
-                  context: context,
-                  builder: (context) => DeleteCredentialDialog(
-                    widget.node.path,
-                    credential,
-                  ),
-                ),
-              );
-              if (_selected == credential && deleted == true) {
-                setState(() {
-                  _selected = null;
-                });
-              }
-              return deleted;
-            }),
           OpenIntent<Fingerprint>:
               CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
             return showBlurDialog(
@@ -150,19 +125,25 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
               builder: (context) => FingerprintDialog(intent.target),
             );
           }),
+          if (hasFeature(features.credentialsDelete))
+            DeleteIntent<FidoCredential>:
+                CallbackAction<DeleteIntent<FidoCredential>>(
+                    onInvoke: (intent) async {
+              final deleted =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              if (deleted == true && _selected == intent.target) {
+                setState(() {
+                  _selected = null;
+                });
+              }
+              return deleted;
+            }),
           if (hasFeature(features.fingerprintsEdit))
             EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
                 onInvoke: (intent) async {
-              final fingerprint = intent.target;
-              final renamed = await ref.read(withContextProvider)(
-                  (context) => showBlurDialog<Fingerprint>(
-                        context: context,
-                        builder: (context) => RenameFingerprintDialog(
-                          widget.node.path,
-                          fingerprint,
-                        ),
-                      ));
-              if (_selected == fingerprint && renamed != null) {
+              final renamed =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              if (_selected == intent.target && renamed is Fingerprint) {
                 setState(() {
                   _selected = renamed;
                 });
@@ -173,16 +154,9 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
             DeleteIntent<Fingerprint>:
                 CallbackAction<DeleteIntent<Fingerprint>>(
                     onInvoke: (intent) async {
-              final fingerprint = intent.target;
-              final deleted = await ref.read(withContextProvider)(
-                  (context) => showBlurDialog<bool?>(
-                        context: context,
-                        builder: (context) => DeleteFingerprintDialog(
-                          widget.node.path,
-                          fingerprint,
-                        ),
-                      ));
-              if (_selected == fingerprint && deleted == true) {
+              final deleted =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              if (deleted == true && _selected == intent.target) {
                 setState(() {
                   _selected = null;
                 });
@@ -190,9 +164,9 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
               return deleted;
             }),
         },
-        child: AppPage(
+        builder: (context) => AppPage(
           title: Text(l10n.s_webauthn),
-          detailViewBuilder: switch (selected) {
+          detailViewBuilder: switch (_selected) {
             FidoCredential credential => (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
