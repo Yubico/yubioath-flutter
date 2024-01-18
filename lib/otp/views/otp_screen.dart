@@ -55,6 +55,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
         loading: () => const MessagePage(
+              centered: true,
               graphic: CircularProgressIndicator(),
               delayedContent: true,
             ),
@@ -157,7 +158,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                               }),
                           },
                           child: Column(children: [
-                            ListTitle(l10n.s_slots),
                             ...otpState.slots.map((e) => _SlotListItem(
                                   e,
                                   expanded: expanded,

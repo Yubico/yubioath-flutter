@@ -98,6 +98,7 @@ class AppFailurePage extends ConsumerWidget {
     }
 
     return MessagePage(
+      centered: true,
       graphic: graphic,
       header: header,
       message: message,

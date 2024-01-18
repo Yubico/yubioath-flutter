@@ -39,6 +39,7 @@ class DeviceErrorScreen extends ConsumerWidget {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         return MessagePage(
+          centered: true,
           graphic: Icon(
             Icons.do_not_disturb_on_outlined,
             size: 96,
@@ -70,6 +71,7 @@ class DeviceErrorScreen extends ConsumerWidget {
       }
     }
     return MessagePage(
+      centered: true,
       graphic: const DeviceAvatar(child: Icon(Icons.usb_off)),
       message: l10n.l_yk_no_access,
     );
@@ -82,6 +84,7 @@ class DeviceErrorScreen extends ConsumerWidget {
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
       nfcReader: (node) => switch (error) {
         'unknown-device' => MessagePage(
+            centered: true,
             graphic: Icon(
               Icons.help_outline,
               size: 96,
@@ -90,6 +93,7 @@ class DeviceErrorScreen extends ConsumerWidget {
             message: l10n.s_unknown_device,
           ),
         _ => MessagePage(
+            centered: true,
             graphic: Image.asset(
               'assets/graphics/no-key.png',
               filterQuality: FilterQuality.medium,

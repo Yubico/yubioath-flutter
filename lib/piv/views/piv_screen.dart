@@ -57,6 +57,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(pivStateProvider(widget.devicePath)).when(
           loading: () => const MessagePage(
+            centered: true,
             graphic: CircularProgressIndicator(),
             delayedContent: true,
           ),
@@ -168,7 +169,6 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       },
                       child: Column(
                         children: [
-                          ListTitle(l10n.s_certificates),
                           if (pivSlots?.hasValue == true)
                             ...pivSlots!.value.map(
                               (e) => _CertificateListItem(

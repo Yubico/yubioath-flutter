@@ -44,6 +44,7 @@ import 'account_dialog.dart';
 import 'account_helper.dart';
 import 'account_list.dart';
 import 'actions.dart';
+import 'add_account_dialog.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
@@ -57,6 +58,7 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(oathStateProvider(devicePath)).when(
           loading: () => const MessagePage(
+            centered: true,
             graphic: CircularProgressIndicator(),
             delayedContent: true,
           ),
@@ -161,10 +163,25 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
+        actions: [
+          ActionChip(
+            label: Text(l10n.s_add_account),
+            onPressed: () async {
+              await showBlurDialog(
+                context: context,
+                builder: (context) => AddAccountDialog(
+                  widget.devicePath,
+                  widget.oathState,
+                ),
+              );
+            },
+            avatar: const Icon(Icons.person_add_alt_1_outlined),
+          )
+        ],
+        title: l10n.s_accounts,
         key: keys.noAccountsView,
-        graphic: Icon(Icons.people,
-            size: 96, color: Theme.of(context).colorScheme.primary),
-        header: l10n.s_no_accounts,
+        header: l10n.l_authenticator_get_started,
+        message: l10n.p_no_accounts_desc,
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                 context, widget.devicePath, widget.oathState, ref,
