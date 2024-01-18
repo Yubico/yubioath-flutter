@@ -345,13 +345,12 @@ void _initLicenses() async {
 }
 
 bool _getIsHidden(ArgResults args, SharedPreferences prefs) {
+  bool isHidden = false;
   if (args[_hidden] || args[_shown]) {
-    final isHidden = args[_hidden] && !args[_shown];
-    prefs.setBool(windowHidden, isHidden);
-    return isHidden;
-  } else {
-    return prefs.getBool(windowHidden) ?? false;
+    isHidden = args[_hidden] && !args[_shown];
   }
+  prefs.setBool(windowHidden, isHidden);
+  return isHidden;
 }
 
 class _HelperWaiter extends ConsumerStatefulWidget {
