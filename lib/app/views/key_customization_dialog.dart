@@ -36,8 +36,10 @@ final _log = Logger('KeyCustomizationDialog');
 
 class KeyCustomizationDialog extends ConsumerStatefulWidget {
   final KeyCustomization? initialCustomization;
+  final DeviceNode? node;
 
-  const KeyCustomizationDialog({super.key, required this.initialCustomization});
+  const KeyCustomizationDialog(
+      {super.key, required this.node, required this.initialCustomization});
 
   @override
   ConsumerState<KeyCustomizationDialog> createState() =>
@@ -60,18 +62,21 @@ class _KeyCustomizationDialogState
     _displayName = widget.initialCustomization != null
         ? widget.initialCustomization?.properties['display_name']
         : null;
+
+    _previewColor = _displayColor != null
+        ? Color(int.parse(_displayColor!, radix: 16))
+        : null;
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final currentNode = ref.watch(currentDeviceProvider);
+    final currentNode = widget.node; //ref.watch(currentDeviceProvider);
     final theme = Theme.of(context);
 
     final Widget hero;
     if (currentNode != null) {
-      hero = _CurrentDeviceAvatar(currentNode,
-          ref.watch(currentDeviceDataProvider), _previewColor ?? Colors.white);
+      hero = _CurrentDeviceAvatar(currentNode, _previewColor ?? Colors.white);
     } else {
       hero = Column(
         children: [
@@ -226,22 +231,12 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   ].join(' ');
 }
 
-List<String> _getDeviceStrings(
-    BuildContext context, DeviceNode node, AsyncValue<YubiKeyData> data) {
-  final l10n = AppLocalizations.of(context)!;
-  final messages = data.whenOrNull(
-        data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
-        error: (error, _) {
-          switch (error) {
-            case 'device-inaccessible':
-              return [node.name, l10n.s_yk_inaccessible];
-            case 'unknown-device':
-              return [l10n.s_unknown_device];
-          }
-          return null;
-        },
-      ) ??
-      [l10n.l_no_yk_present];
+List<String> _getDeviceStrings(BuildContext context, DeviceNode node) {
+  final messages = (node is UsbYubiKeyNode)
+      ? node.info != null
+          ? [node.name, _getDeviceInfoString(context, node.info!)]
+          : <String>[]
+      : <String>[];
 
   // Add the NFC reader name, unless it's already included (as device name, like on Android)
   if (node is NfcReaderNode && !messages.contains(node.name)) {
@@ -287,18 +282,16 @@ class _HeroAvatar extends StatelessWidget {
 
 class _CurrentDeviceAvatar extends ConsumerWidget {
   final DeviceNode node;
-  final AsyncValue<YubiKeyData> data;
+
+  //final AsyncValue<YubiKeyData> data;
   final Color color;
 
-  const _CurrentDeviceAvatar(this.node, this.data, this.color);
+  const _CurrentDeviceAvatar(this.node, this.color);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hero = data.maybeWhen(
-      data: (data) => DeviceAvatar.yubiKeyData(data, radius: 64),
-      orElse: () => DeviceAvatar.deviceNode(node, radius: 64),
-    );
-    final messages = _getDeviceStrings(context, node, data);
+    final hero = DeviceAvatar.deviceNode(node, radius: 64);
+    final messages = _getDeviceStrings(context, node);
 
     return Column(
       children: [

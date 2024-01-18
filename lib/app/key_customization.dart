@@ -47,8 +47,9 @@ class KeyCustomizationManager {
 
     try {
       var customizationContent = await customizationFile.readAsString();
-      _customizations =
-          json.decode(String.fromCharCodes(base64Decode(customizationContent)));
+      final jsonString =
+          String.fromCharCodes(base64Decode(customizationContent));
+      _customizations = json.decode(utf8.decode(jsonString.codeUnits));
     } catch (e) {
       return;
     }

@@ -51,10 +51,6 @@ class NextDeviceIntent extends Intent {
   const NextDeviceIntent();
 }
 
-class KeyCustomizationIntent extends Intent {
-  const KeyCustomizationIntent();
-}
-
 class SettingsIntent extends Intent {
   const SettingsIntent();
 }

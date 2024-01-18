@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,10 +24,11 @@ import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../key_customization.dart';
+import '../message.dart';
 import '../models.dart';
-import '../shortcuts.dart';
 import '../state.dart';
 import 'device_avatar.dart';
+import 'key_customization_dialog.dart';
 import 'keys.dart' as keys;
 
 final _hiddenDevicesProvider =
@@ -52,6 +54,7 @@ class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
+
   const DevicePickerContent({super.key, this.extended = true});
 
   @override
@@ -121,34 +124,7 @@ class DevicePickerContent extends ConsumerWidget {
       ),
     ];
 
-    return GestureDetector(
-      onSecondaryTapDown: hidden.isEmpty
-          ? null
-          : (details) {
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  details.globalPosition.dx,
-                  details.globalPosition.dy,
-                  details.globalPosition.dx,
-                  0,
-                ),
-                items: [
-                  PopupMenuItem(
-                    onTap: () {
-                      ref.read(_hiddenDevicesProvider.notifier).showAll();
-                    },
-                    child: ListTile(
-                      title: Text(l10n.s_show_hidden_devices),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ],
-              );
-            },
-      child: Column(children: children),
-    );
+    return Column(children: children);
   }
 }
 
@@ -185,14 +161,112 @@ List<String> _getDeviceStrings(
   return messages;
 }
 
-class _DeviceRow extends StatelessWidget {
+class _DeviceMenuButton extends ConsumerWidget {
+  final DeviceNode? node;
+
+  final double opacity;
+
+  const _DeviceMenuButton({this.node, required this.opacity});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final manager = ref.read(keyCustomizationManagerProvider);
+    final hidden = ref.watch(_hiddenDevicesProvider);
+
+    final data = ref.watch(currentDeviceDataProvider);
+
+    final serial = node is UsbYubiKeyNode
+        ? (node as UsbYubiKeyNode).info?.serial?.toString()
+        : data.hasValue
+            ? data.value?.node.path == node?.path && node != null
+                ? data.value?.info.serial.toString()
+                : null
+            : null;
+
+    final menuItems = [
+      if (serial != null)
+        PopupMenuItem(
+          enabled: true,
+          value: 0,
+          onTap: () async {
+            await ref.read(withContextProvider)((context) async {
+              await _showKeyCustomizationDialog(manager, context, node, serial);
+            });
+          },
+          child: ListTile(
+              title: Text(l10n.s_customize_key_action),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              enabled: true),
+        ),
+      if (hidden.isNotEmpty)
+        PopupMenuItem(
+          enabled: hidden.isNotEmpty,
+          onTap: () {
+            ref.read(_hiddenDevicesProvider.notifier).showAll();
+          },
+          child: ListTile(
+            title: Text(l10n.s_show_hidden_devices),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            enabled: hidden.isNotEmpty,
+          ),
+        ),
+      if (node != null)
+        PopupMenuItem(
+          onTap: () {
+            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node!.path);
+          },
+          child: ListTile(
+            title: Text(l10n.s_hide_device),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        )
+    ];
+
+    return Theme(
+      data: Theme.of(Navigator.of(context).context), // use app theme
+      child: Opacity(
+        opacity: menuItems.isNotEmpty ? opacity : 0.0,
+        child: PopupMenuButton(
+          enabled: menuItems.isNotEmpty,
+          icon: const Icon(Icons.more_horiz_outlined),
+          tooltip: '',
+          iconColor: Theme.of(context).listTileTheme.textColor,
+          itemBuilder: (context) {
+            return menuItems;
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showKeyCustomizationDialog(KeyCustomizationManager manager,
+      BuildContext context, DeviceNode? node, String serial) async {
+    final keyCustomization =
+        manager.get(serial) ?? KeyCustomization(serial, {});
+
+    await showBlurDialog(
+      context: context,
+      builder: (context) => KeyCustomizationDialog(
+        node: node,
+        initialCustomization: keyCustomization,
+      ),
+      routeSettings: const RouteSettings(name: 'customize'),
+    );
+  }
+}
+
+class _DeviceRow extends StatefulWidget {
   final Widget leading;
   final String title;
   final String subtitle;
   final bool extended;
   final bool selected;
   final Color? background;
-  final Widget? trailing;
+  final DeviceNode? node;
   final void Function() onTap;
 
   const _DeviceRow({
@@ -203,74 +277,97 @@ class _DeviceRow extends StatelessWidget {
     required this.extended,
     required this.selected,
     this.background,
-    this.trailing,
+    this.node,
     required this.onTap,
   });
 
   @override
+  State<_DeviceRow> createState() => _DeviceRowState();
+}
+
+class _DeviceRowState extends State<_DeviceRow> {
+  bool _showContextMenu = false;
+
+  @override
   Widget build(BuildContext context) {
-    final tooltip = '$title\n$subtitle';
+    final tooltip = '${widget.title}\n${widget.subtitle}';
     final themeData = Theme.of(context);
-    final seedColor = !selected || background == null
+    final seedColor = !widget.selected || widget.background == null
         ? themeData.colorScheme.primary
-        : background!;
+        : widget.background!;
     final colorScheme = ColorScheme.fromSeed(
         seedColor: seedColor, brightness: themeData.brightness);
-    final localThemeData = selected
+    final localThemeData = widget.selected
         ? themeData.copyWith(
             colorScheme: colorScheme,
             listTileTheme: themeData.listTileTheme.copyWith(
-              tileColor: background != null
-                  ? background! //colorScheme.primary
+              tileColor: widget.background != null
+                  ? widget.background!
                   : themeData.colorScheme.primary,
-              textColor: selected ? colorScheme.onPrimary : null,
-              iconColor: selected ? colorScheme.onPrimary : null,
+              textColor: widget.selected ? colorScheme.onPrimary : null,
+              iconColor: widget.selected ? colorScheme.onPrimary : null,
             ),
           )
         : themeData;
-    if (extended) {
+    if (widget.extended) {
       return Tooltip(
-        message: tooltip,
+        message: '', // no tooltip for drawer
         child: Theme(
           data: localThemeData,
-          child: ListTile(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-            horizontalTitleGap: 8,
-            leading: leading,
-            trailing: trailing,
-            title: Text(
-              title,
-              overflow: TextOverflow.fade,
-              softWrap: false,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+          child: MouseRegion(
+            onEnter: (PointerEnterEvent event) {
+              setState(() {
+                _showContextMenu = true;
+              });
+            },
+            onExit: (PointerExitEvent event) {
+              setState(() {
+                _showContextMenu = false;
+              });
+            },
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(48)),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              horizontalTitleGap: 8,
+              leading: widget.leading,
+              trailing: _DeviceMenuButton(
+                node: widget.node,
+                opacity: widget.selected
+                    ? 1.0
+                    : _showContextMenu
+                        ? 0.3
+                        : 0.0,
               ),
+              title: Text(
+                widget.title,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
+              subtitle: Text(widget.subtitle,
+                  overflow: TextOverflow.fade, softWrap: false),
+              dense: true,
+              onTap: widget.onTap,
             ),
-            subtitle:
-                Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
-            dense: true,
-            onTap: onTap,
           ),
         ),
       );
     } else {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.5),
-        child: selected
+        child: widget.selected
             ? IconButton.filled(
                 tooltip: tooltip,
-                icon: leading,
+                icon: widget.leading,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                onPressed: onTap,
+                onPressed: widget.onTap,
               )
             : IconButton(
                 tooltip: tooltip,
-                icon: leading,
+                icon: widget.leading,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                onPressed: onTap,
+                onPressed: widget.onTap,
                 color: colorScheme.secondary,
               ),
       );
@@ -312,36 +409,10 @@ _DeviceRow _buildDeviceRow(
     subtitle: subtitle,
     extended: extended,
     selected: false,
+    node: node,
     onTap: () {
       ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
     },
-  );
-}
-
-Future<void> _showDeviceRowMenu(
-    BuildContext context, TapDownDetails details, String serialNumber) async {
-  final l10n = AppLocalizations.of(context)!;
-  await showMenu(
-    context: context,
-    position: RelativeRect.fromLTRB(
-      details.globalPosition.dx,
-      details.globalPosition.dy,
-      details.globalPosition.dx,
-      0,
-    ),
-    items: [
-      PopupMenuItem(
-        enabled: true,
-        onTap: () {
-          Actions.maybeInvoke(context, const KeyCustomizationIntent());
-        },
-        child: ListTile(
-            title: Text(l10n.s_customize_key_action),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            enabled: true),
-      ),
-    ],
   );
 }
 
@@ -359,11 +430,14 @@ _DeviceRow _buildCurrentDeviceRow(
   }
   final title = messages.removeAt(0);
   final subtitle = messages.join('\n');
-  final serialNumber = data.value?.info.serial?.toString();
 
   String displayName = title;
+
+  final serialNumber =
+      data.hasValue ? data.value?.info.serial?.toString() : null;
+
   Color? displayColor;
-  if (serialNumber != null && serialNumber.isNotEmpty) {
+  if (serialNumber != null) {
     final properties =
         ref.read(keyCustomizationManagerProvider).get(serialNumber)?.properties;
     var customName = properties?['display_name'];
@@ -388,21 +462,8 @@ _DeviceRow _buildCurrentDeviceRow(
     extended: extended,
     background: displayColor,
     selected: true,
+    node: node,
     onTap: () {},
-    trailing: (serialNumber != null && serialNumber.isNotEmpty)
-        ? GestureDetector(
-            onTapDown: (TapDownDetails details) async {
-              await _showDeviceRowMenu(context, details, serialNumber);
-            },
-            onSecondaryTapDown: (TapDownDetails details) async {
-              await _showDeviceRowMenu(context, details, serialNumber);
-            },
-            child: IconButton(
-              icon: const Icon(Icons.more_vert_outlined),
-              onPressed: () {},
-            ),
-          )
-        : null,
   );
 }
 
@@ -413,46 +474,6 @@ class _NfcDeviceRow extends ConsumerWidget {
   const _NfcDeviceRow(this.node, {required this.extended});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final hidden = ref.watch(_hiddenDevicesProvider);
-    return GestureDetector(
-      onSecondaryTapDown: (details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: [
-            PopupMenuItem(
-              enabled: hidden.isNotEmpty,
-              onTap: () {
-                ref.read(_hiddenDevicesProvider.notifier).showAll();
-              },
-              child: ListTile(
-                title: Text(l10n.s_show_hidden_devices),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                enabled: hidden.isNotEmpty,
-              ),
-            ),
-            PopupMenuItem(
-              onTap: () {
-                ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
-              },
-              child: ListTile(
-                title: Text(l10n.s_hide_device),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-            ),
-          ],
-        );
-      },
-      child: _buildDeviceRow(context, ref, node, null, extended),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _buildDeviceRow(context, ref, node, null, extended);
 }
