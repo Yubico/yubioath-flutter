@@ -163,7 +163,7 @@ class AppPage extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              height: 16,
+              height: 24,
             )
           ]
         : [];
@@ -171,6 +171,7 @@ class AppPage extends StatelessWidget {
 
   Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ..._buildTitle(context),
         builder(context, expanded),
@@ -180,7 +181,7 @@ class AppPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
               child: Wrap(
-                spacing: 4,
+                spacing: 8,
                 runSpacing: 4,
                 children: actions,
               ),

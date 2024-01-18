@@ -385,6 +385,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
     if (slow) {
       final l10n = AppLocalizations.of(context)!;
       return MessagePage(
+        centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
         actions: [
@@ -413,6 +414,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
       );
     } else {
       return const MessagePage(
+        centered: true,
         delayedContent: true,
         graphic: CircularProgressIndicator(),
       );

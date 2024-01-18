@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
@@ -28,6 +29,7 @@ import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
 import 'key_actions.dart';
+import 'pin_dialog.dart';
 
 class FidoLockedPage extends ConsumerWidget {
   final DeviceNode node;
@@ -44,21 +46,30 @@ class FidoLockedPage extends ConsumerWidget {
     if (!state.hasPin) {
       if (state.bioEnroll != null) {
         return MessagePage(
-          graphic: Icon(Icons.fingerprint,
-              size: 96, color: Theme.of(context).colorScheme.primary),
-          header: l10n.s_no_fingerprints,
-          message: l10n.l_set_pin_fingerprints,
+          actions: [
+            ActionChip(
+              label: Text(l10n.s_set_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => FidoPinDialog(node.path, state));
+              },
+              avatar: const Icon(Icons.pin_outlined),
+            )
+          ],
+          title: l10n.s_webauthn,
+          header: '${l10n.s_fingerprints_get_started} (1/2)',
+          message: l10n.p_set_fingerprints_desc,
           keyActionsBuilder: hasActions ? _buildActions : null,
           keyActionsBadge: fidoShowActionsNotifier(state),
         );
       } else {
         return MessagePage(
-          graphic: Icon(Icons.security,
-              size: 96, color: Theme.of(context).colorScheme.primary),
+          title: l10n.s_webauthn,
           header: state.credMgmt
               ? l10n.l_no_discoverable_accounts
               : l10n.l_ready_to_use,
-          message: l10n.l_optionally_set_a_pin,
+          message: l10n.p_optionally_set_a_pin,
           keyActionsBuilder: hasActions ? _buildActions : null,
           keyActionsBadge: fidoShowActionsNotifier(state),
         );
@@ -67,8 +78,7 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
-        graphic: Icon(Icons.security,
-            size: 96, color: Theme.of(context).colorScheme.primary),
+        title: l10n.s_webauthn,
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -78,6 +88,7 @@ class FidoLockedPage extends ConsumerWidget {
 
     if (state.forcePinChange) {
       return MessagePage(
+        title: l10n.s_webauthn,
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,

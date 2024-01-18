@@ -36,7 +36,6 @@ class FidoScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
-              title: l10n.s_webauthn,
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
@@ -47,8 +46,7 @@ class FidoScreen extends ConsumerWidget {
               0;
           if (Capability.fido2.value & supported == 0) {
             return MessagePage(
-              graphic: Icon(Icons.security,
-                  size: 96, color: Theme.of(context).colorScheme.primary),
+              title: l10n.s_webauthn,
               header: l10n.l_ready_to_use,
               message: l10n.l_register_sk_on_websites,
             );
@@ -58,6 +56,7 @@ class FidoScreen extends ConsumerWidget {
               0;
           if (Capability.fido2.value & enabled == 0) {
             return MessagePage(
+              title: l10n.s_webauthn,
               header: l10n.s_fido_disabled,
               message: l10n.l_webauthn_req_fido2,
             );

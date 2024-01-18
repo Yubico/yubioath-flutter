@@ -33,6 +33,7 @@ import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
+import 'add_fingerprint_dialog.dart';
 import 'credential_dialog.dart';
 import 'fingerprint_dialog.dart';
 import 'key_actions.dart';
@@ -290,9 +291,19 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
 
     if (widget.state.bioEnroll != null) {
       return MessagePage(
-        graphic: Icon(Icons.fingerprint,
-            size: 96, color: Theme.of(context).colorScheme.primary),
-        header: l10n.s_no_fingerprints,
+        actions: [
+          ActionChip(
+            label: Text(l10n.s_add_fingerprint),
+            onPressed: () async {
+              await showBlurDialog(
+                  context: context,
+                  builder: (context) => AddFingerprintDialog(widget.node.path));
+            },
+            avatar: const Icon(Icons.fingerprint_outlined),
+          )
+        ],
+        title: l10n.s_webauthn,
+        header: '${l10n.s_fingerprints_get_started} (2/2)',
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: hasActions
             ? (context) =>
@@ -303,8 +314,7 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
     }
 
     return MessagePage(
-      graphic: Icon(Icons.security,
-          size: 96, color: Theme.of(context).colorScheme.primary),
+      title: l10n.s_webauthn,
       header: l10n.l_no_discoverable_accounts,
       message: l10n.l_register_sk_on_websites,
       keyActionsBuilder: hasActions
@@ -315,7 +325,6 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
-        title: AppLocalizations.of(context)!.s_webauthn,
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),

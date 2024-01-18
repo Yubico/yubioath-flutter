@@ -80,6 +80,7 @@ class MainPage extends ConsumerWidget {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
+          centered: true,
           graphic: noKeyImage,
           message: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
@@ -118,6 +119,7 @@ class MainPage extends ConsumerWidget {
         );
       } else {
         return MessagePage(
+          centered: true,
           delayedContent: false,
           graphic: noKeyImage,
           header: l10n.l_insert_yk,

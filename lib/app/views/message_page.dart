@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
+  final String? title;
   final Widget? graphic;
   final String? header;
   final String? message;
@@ -31,9 +32,11 @@ class MessagePage extends StatelessWidget {
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
   final bool keyActionsBadge;
+  final bool? centered;
 
   const MessagePage({
     super.key,
+    this.title,
     this.graphic,
     this.header,
     this.message,
@@ -44,11 +47,13 @@ class MessagePage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
+    this.centered,
   });
 
   @override
   Widget build(BuildContext context) => AppPage(
-        centered: true,
+        title: title,
+        centered: centered ?? false,
         actions: actions,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
@@ -57,11 +62,17 @@ class MessagePage extends StatelessWidget {
         actionButtonBuilder: actionButtonBuilder,
         delayedContent: delayedContent,
         builder: (context, _) => Padding(
-          padding: const EdgeInsets.only(
-              left: 32.0, top: 0.0, right: 32.0, bottom: 96.0),
+          padding: EdgeInsets.only(
+              left: 16.0,
+              top: 0.0,
+              right: 16.0,
+              bottom: centered ?? false ? 96 : 0),
           child: SizedBox(
             width: 350,
             child: Column(
+              crossAxisAlignment: centered ?? false
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               children: [
                 if (graphic != null) ...[
                   graphic!,
@@ -69,16 +80,22 @@ class MessagePage extends StatelessWidget {
                 ],
                 if (header != null)
                   Text(header!,
-                      textAlign: TextAlign.center,
+                      textAlign:
+                          centered ?? false ? TextAlign.center : TextAlign.left,
                       style: Theme.of(context).textTheme.titleLarge),
                 if (message != null) ...[
                   const SizedBox(height: 12.0),
-                  Text(message!,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.apply(color: Colors.grey)),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: Text(message!,
+                        textAlign: centered ?? false
+                            ? TextAlign.center
+                            : TextAlign.left,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.apply(color: Colors.grey)),
+                  ),
                 ],
               ],
             ),
