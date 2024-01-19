@@ -94,6 +94,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                   }
                 },
           onTap: () {
+            _focusNode.requestFocus();
             if (tapIntent != null) {
               Actions.invoke(context, tapIntent);
             }
@@ -105,7 +106,6 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                 });
                 Actions.invoke(context, doubleTapIntent);
               } else {
-                _focusNode.requestFocus();
                 setState(() {
                   _lastTap = now;
                 });
