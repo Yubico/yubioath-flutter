@@ -56,8 +56,8 @@ if [ "$OS" = "macos" ]; then
 		poetry run pip download -r $HELPER/pillow.txt --platform macosx_10_10_x86_64 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip install delocate
-		poetry run delocate-fuse $HELPER/Pillow*.whl
-		WHL=$(ls $HELPER/Pillow*x86_64.whl)
+		poetry run delocate-fuse $HELPER/pillow*.whl
+		WHL=$(ls $HELPER/pillow*x86_64.whl)
 		UNIVERSAL_WHL=${WHL//x86_64/universal2}
 		mv $WHL $UNIVERSAL_WHL
 		poetry run pip install --upgrade $UNIVERSAL_WHL
