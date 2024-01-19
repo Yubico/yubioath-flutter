@@ -23,7 +23,6 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../core/state.dart';
 import '../features.dart' as features;
 import '../icon_provider/icon_pack_dialog.dart';
@@ -43,98 +42,91 @@ Widget oathBuildActions(
   final l10n = AppLocalizations.of(context)!;
   final capacity = oathState.version.isAtLeast(4) ? 32 : null;
 
-  return FsDialog(
-    child: Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Column(
-        children: [
-          ActionListSection(l10n.s_setup, children: [
-            ActionListItem(
-                feature: features.actionsAdd,
-                key: keys.addAccountAction,
-                title: l10n.s_add_account,
-                subtitle: used == null
-                    ? l10n.l_unlock_first
-                    : (capacity != null
-                        ? l10n.l_accounts_used(used, capacity)
-                        : ''),
-                actionStyle: ActionStyle.primary,
-                icon: const Icon(Icons.person_add_alt_1_outlined),
-                onTap: used != null && (capacity == null || capacity > used)
-                    ? (context) async {
-                        Navigator.of(context).pop();
-                        if (isAndroid) {
-                          final withContext = ref.read(withContextProvider);
-                          final qrScanner = ref.read(qrScannerProvider);
-                          if (qrScanner != null) {
-                            final qrData = await qrScanner.scanQr();
-                            await AndroidQrScanner.handleScannedData(
-                                qrData, withContext, qrScanner, l10n);
-                          } else {
-                            // no QR scanner - enter data manually
-                            await AndroidQrScanner.showAccountManualEntryDialog(
-                                withContext, l10n);
-                          }
-                        } else {
-                          await showBlurDialog(
-                            context: context,
-                            builder: (context) =>
-                                AddAccountDialog(devicePath, oathState),
-                          );
-                        }
+  return Column(
+    children: [
+      ActionListSection(l10n.s_setup, children: [
+        ActionListItem(
+            feature: features.actionsAdd,
+            key: keys.addAccountAction,
+            title: l10n.s_add_account,
+            subtitle: used == null
+                ? l10n.l_unlock_first
+                : (capacity != null
+                    ? l10n.l_accounts_used(used, capacity)
+                    : ''),
+            actionStyle: ActionStyle.primary,
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            onTap: used != null && (capacity == null || capacity > used)
+                ? (context) async {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    if (isAndroid) {
+                      final withContext = ref.read(withContextProvider);
+                      final qrScanner = ref.read(qrScannerProvider);
+                      if (qrScanner != null) {
+                        final qrData = await qrScanner.scanQr();
+                        await AndroidQrScanner.handleScannedData(
+                            qrData, withContext, qrScanner, l10n);
+                      } else {
+                        // no QR scanner - enter data manually
+                        await AndroidQrScanner.showAccountManualEntryDialog(
+                            withContext, l10n);
                       }
-                    : null),
-          ]),
-          ActionListSection(l10n.s_manage, children: [
-            ActionListItem(
-                key: keys.customIconsAction,
-                feature: features.actionsIcons,
-                title: l10n.s_custom_icons,
-                subtitle: l10n.l_set_icons_for_accounts,
-                icon: const Icon(Icons.image_outlined),
-                onTap: (context) async {
-                  Navigator.of(context).pop();
-                  await ref.read(withContextProvider)((context) =>
-                      showBlurDialog(
+                    } else {
+                      await showBlurDialog(
                         context: context,
-                        routeSettings:
-                            const RouteSettings(name: 'oath_icon_pack_dialog'),
-                        builder: (context) => const IconPackDialog(),
-                      ));
-                }),
-            ActionListItem(
-                key: keys.setOrManagePasswordAction,
-                feature: features.actionsPassword,
-                title: oathState.hasKey
-                    ? l10n.s_manage_password
-                    : l10n.s_set_password,
-                subtitle: l10n.l_optional_password_protection,
-                icon: const Icon(Icons.password_outlined),
-                onTap: (context) {
-                  Navigator.of(context).pop();
-                  showBlurDialog(
+                        builder: (context) =>
+                            AddAccountDialog(devicePath, oathState),
+                      );
+                    }
+                  }
+                : null),
+      ]),
+      ActionListSection(l10n.s_manage, children: [
+        ActionListItem(
+            key: keys.customIconsAction,
+            feature: features.actionsIcons,
+            title: l10n.s_custom_icons,
+            subtitle: l10n.l_set_icons_for_accounts,
+            icon: const Icon(Icons.image_outlined),
+            onTap: (context) async {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              await ref.read(withContextProvider)((context) => showBlurDialog(
                     context: context,
-                    builder: (context) =>
-                        ManagePasswordDialog(devicePath, oathState),
-                  );
-                }),
-            ActionListItem(
-                key: keys.resetAction,
-                feature: features.actionsReset,
-                icon: const Icon(Icons.delete_outline),
-                actionStyle: ActionStyle.error,
-                title: l10n.s_reset_oath,
-                subtitle: l10n.l_factory_reset_this_app,
-                onTap: (context) {
-                  Navigator.of(context).pop();
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ResetDialog(devicePath),
-                  );
-                }),
-          ]),
-        ],
-      ),
-    ),
+                    routeSettings:
+                        const RouteSettings(name: 'oath_icon_pack_dialog'),
+                    builder: (context) => const IconPackDialog(),
+                  ));
+            }),
+        ActionListItem(
+            key: keys.setOrManagePasswordAction,
+            feature: features.actionsPassword,
+            title:
+                oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password,
+            subtitle: l10n.l_optional_password_protection,
+            icon: const Icon(Icons.password_outlined),
+            onTap: (context) {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              showBlurDialog(
+                context: context,
+                builder: (context) =>
+                    ManagePasswordDialog(devicePath, oathState),
+              );
+            }),
+        ActionListItem(
+            key: keys.resetAction,
+            feature: features.actionsReset,
+            icon: const Icon(Icons.delete_outline),
+            actionStyle: ActionStyle.error,
+            title: l10n.s_reset_oath,
+            subtitle: l10n.l_factory_reset_this_app,
+            onTap: (context) {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              showBlurDialog(
+                context: context,
+                builder: (context) => ResetDialog(devicePath),
+              );
+            }),
+      ]),
+    ],
   );
 }

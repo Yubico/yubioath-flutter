@@ -26,7 +26,11 @@ class ListTitle extends StatelessWidget {
         dense: true,
         title: Text(
           title,
-          style: textStyle ?? Theme.of(context).textTheme.labelLarge,
+          style: textStyle ??
+              Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
         ),
       );
 }

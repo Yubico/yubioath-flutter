@@ -106,48 +106,37 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final enableTranslations = ref.watch(communityTranslationsProvider);
 
     return ResponsiveDialog(
       title: Text(l10n.s_settings),
-      child: Theme(
-        // Make the headers use the primary color to pop a bit.
-        // Once M3 is implemented this will probably not be needed.
-        data: theme.copyWith(
-          textTheme: theme.textTheme.copyWith(
-              labelLarge: theme.textTheme.labelLarge
-                  ?.copyWith(color: theme.colorScheme.primary)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // add nfc options only on devices with NFC capability
-            if (isAndroid && ref.watch(androidNfcSupportProvider)) ...[
-              ListTitle(l10n.s_nfc_options),
-              const NfcTapActionView(),
-              const NfcKbdLayoutView(),
-              const NfcBypassTouchView(),
-              const NfcSilenceSoundsView(),
-            ],
-            if (isAndroid) ...[
-              ListTitle(l10n.s_usb_options),
-              const UsbOpenAppView(),
-            ],
-            ListTitle(l10n.s_appearance),
-            const _ThemeModeView(),
-            if (enableTranslations ||
-                basicLocaleListResolution(
-                        PlatformDispatcher.instance.locales, officialLocales) !=
-                    basicLocaleListResolution(
-                        PlatformDispatcher.instance.locales,
-                        AppLocalizations.supportedLocales)) ...[
-              ListTitle(l10n.s_language),
-              const _CommunityTranslationsView(),
-            ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // add nfc options only on devices with NFC capability
+          if (isAndroid && ref.watch(androidNfcSupportProvider)) ...[
+            ListTitle(l10n.s_nfc_options),
+            const NfcTapActionView(),
+            const NfcKbdLayoutView(),
+            const NfcBypassTouchView(),
+            const NfcSilenceSoundsView(),
           ],
-        ),
+          if (isAndroid) ...[
+            ListTitle(l10n.s_usb_options),
+            const UsbOpenAppView(),
+          ],
+          ListTitle(l10n.s_appearance),
+          const _ThemeModeView(),
+          if (enableTranslations ||
+              basicLocaleListResolution(
+                      PlatformDispatcher.instance.locales, officialLocales) !=
+                  basicLocaleListResolution(PlatformDispatcher.instance.locales,
+                      AppLocalizations.supportedLocales)) ...[
+            ListTitle(l10n.s_language),
+            const _CommunityTranslationsView(),
+          ],
+        ],
       ),
     );
   }

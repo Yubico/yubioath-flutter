@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
@@ -51,41 +52,44 @@ class SlotDialog extends ConsumerWidget {
       return const FsDialog(child: CircularProgressIndicator());
     }
 
-    return registerOtpActions(node.path, otpSlot,
-        ref: ref,
-        builder: (context) => FocusScope(
-              autofocus: true,
-              child: FsDialog(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 48, bottom: 16),
-                      child: Column(
-                        children: [
-                          Text(
-                            otpSlot.slot.getDisplayName(l10n),
-                            style: textTheme.headlineSmall,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          const Icon(
-                            Icons.touch_app,
-                            size: 100.0,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(otpSlot.isConfigured
-                              ? l10n.l_otp_slot_configured
-                              : l10n.l_otp_slot_empty)
-                        ],
+    return OtpActions(
+        devicePath: node.path,
+        builder: (context) => ItemShortcuts(
+              item: otpSlot,
+              child: FocusScope(
+                autofocus: true,
+                child: FsDialog(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 48, bottom: 16),
+                        child: Column(
+                          children: [
+                            Text(
+                              otpSlot.slot.getDisplayName(l10n),
+                              style: textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            const Icon(
+                              Icons.touch_app,
+                              size: 100.0,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(otpSlot.isConfigured
+                                ? l10n.l_otp_slot_configured
+                                : l10n.l_otp_slot_empty)
+                          ],
+                        ),
                       ),
-                    ),
-                    ActionListSection.fromMenuActions(
-                      context,
-                      l10n.s_setup,
-                      actions: buildSlotActions(otpSlot.isConfigured, l10n),
-                    )
-                  ],
+                      ActionListSection.fromMenuActions(
+                        context,
+                        l10n.s_setup,
+                        actions: buildSlotActions(otpSlot, l10n),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ));

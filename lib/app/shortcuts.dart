@@ -31,14 +31,6 @@ import 'state.dart';
 import 'views/keys.dart';
 import 'views/settings_page.dart';
 
-class OpenIntent extends Intent {
-  const OpenIntent();
-}
-
-class CopyIntent extends Intent {
-  const CopyIntent();
-}
-
 class CloseIntent extends Intent {
   const CloseIntent();
 }
@@ -49,6 +41,10 @@ class HideIntent extends Intent {
 
 class SearchIntent extends Intent {
   const SearchIntent();
+}
+
+class EscapeIntent extends Intent {
+  const EscapeIntent();
 }
 
 class NextDeviceIntent extends Intent {
@@ -63,120 +59,166 @@ class AboutIntent extends Intent {
   const AboutIntent();
 }
 
-class EditIntent extends Intent {
-  const EditIntent();
+class OpenIntent<T> extends Intent {
+  final T target;
+  const OpenIntent(this.target);
 }
 
-class DeleteIntent extends Intent {
-  const DeleteIntent();
+class CopyIntent<T> extends Intent {
+  final T target;
+  const CopyIntent(this.target);
 }
 
-class RefreshIntent extends Intent {
-  const RefreshIntent();
+class EditIntent<T> extends Intent {
+  final T target;
+  const EditIntent(this.target);
+}
+
+class DeleteIntent<T> extends Intent {
+  final T target;
+  const DeleteIntent(this.target);
+}
+
+class RefreshIntent<T> extends Intent {
+  final T target;
+  const RefreshIntent(this.target);
 }
 
 /// Use cmd on macOS, use ctrl on the other platforms
 SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
     SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
 
-Widget registerGlobalShortcuts(
-        {required WidgetRef ref, required Widget child}) =>
-    Actions(
-      actions: {
-        CloseIntent: CallbackAction<CloseIntent>(onInvoke: (_) {
-          windowManager.close();
-          return null;
-        }),
-        HideIntent: CallbackAction<HideIntent>(onInvoke: (_) {
-          if (isDesktop) {
-            ref.read(desktopWindowStateProvider.notifier).setWindowHidden(true);
-          }
-          return null;
-        }),
-        SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
-          // If the OATH view doesn't have focus, but is shown, find and select the search bar.
-          final searchContext = searchAccountsField.currentContext;
-          if (searchContext != null) {
-            if (!Navigator.of(searchContext).canPop()) {
-              return Actions.maybeInvoke(searchContext, intent);
-            }
-          }
-          return null;
-        }),
-        NextDeviceIntent: CallbackAction<NextDeviceIntent>(onInvoke: (_) {
-          ref.read(withContextProvider)((context) async {
-            // Only allow switching keys if no other views are open,
-            // with the exception of the drawer.
-            if (!Navigator.of(context).canPop() ||
-                scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
-              final attached = ref
-                  .read(attachedDevicesProvider)
-                  .whereType<UsbYubiKeyNode>()
-                  .toList();
-              if (attached.length > 1) {
-                final current = ref.read(currentDeviceProvider);
-                if (current != null && current is UsbYubiKeyNode) {
-                  final index = attached.indexOf(current);
-                  ref.read(currentDeviceProvider.notifier).setCurrentDevice(
-                      attached[(index + 1) % attached.length]);
-                }
-              }
-            }
-          });
-          return null;
-        }),
-        SettingsIntent: CallbackAction<SettingsIntent>(onInvoke: (_) {
-          ref.read(withContextProvider)((context) async {
-            if (!Navigator.of(context).canPop()) {
-              await showBlurDialog(
-                context: context,
-                builder: (context) => const SettingsPage(),
-                routeSettings: const RouteSettings(name: 'settings'),
-              );
-            }
-          });
-          return null;
-        }),
-        AboutIntent: CallbackAction<AboutIntent>(onInvoke: (_) {
-          ref.read(withContextProvider)((context) async {
-            if (!Navigator.of(context).canPop()) {
-              await showBlurDialog(
-                context: context,
-                builder: (context) => const AboutPage(),
-                routeSettings: const RouteSettings(name: 'about'),
-              );
-            }
-          });
-          return null;
-        }),
-      },
-      child: Shortcuts(
+/// Common shortcuts for items
+class ItemShortcuts<T> extends StatelessWidget {
+  final T item;
+  final Widget child;
+  const ItemShortcuts({super.key, required this.item, required this.child});
+
+  @override
+  Widget build(BuildContext context) => Shortcuts(
         shortcuts: {
-          ctrlOrCmd(LogicalKeyboardKey.keyC): const CopyIntent(),
-          const SingleActivator(LogicalKeyboardKey.copy): const CopyIntent(),
-          ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
-          ctrlOrCmd(LogicalKeyboardKey.keyR): const RefreshIntent(),
-          if (isDesktop) ...{
-            const SingleActivator(LogicalKeyboardKey.tab, control: true):
-                const NextDeviceIntent(),
-          },
-          if (Platform.isMacOS) ...{
-            const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
-                const HideIntent(),
-            const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
-                const CloseIntent(),
-            const SingleActivator(LogicalKeyboardKey.comma, meta: true):
-                const SettingsIntent(),
-          },
-          if (Platform.isWindows) ...{
-            const SingleActivator(LogicalKeyboardKey.keyW, control: true):
-                const HideIntent(),
-          },
-          if (Platform.isLinux) ...{
-            const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
-                const CloseIntent(),
-          },
+          ctrlOrCmd(LogicalKeyboardKey.keyR): RefreshIntent<T>(item),
+          ctrlOrCmd(LogicalKeyboardKey.keyC): CopyIntent<T>(item),
+          const SingleActivator(LogicalKeyboardKey.copy): CopyIntent<T>(item),
+          const SingleActivator(LogicalKeyboardKey.delete):
+              DeleteIntent<T>(item),
+          const SingleActivator(LogicalKeyboardKey.enter): OpenIntent<T>(item),
+          const SingleActivator(LogicalKeyboardKey.space): OpenIntent<T>(item),
         },
         child: child,
-      ),
-    );
+      );
+}
+
+/// Global keyboard shortcuts
+class GlobalShortcuts extends ConsumerWidget {
+  final Widget child;
+  const GlobalShortcuts({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Actions(
+        actions: {
+          CloseIntent: CallbackAction<CloseIntent>(onInvoke: (_) {
+            windowManager.close();
+            return null;
+          }),
+          HideIntent: CallbackAction<HideIntent>(onInvoke: (_) {
+            if (isDesktop) {
+              ref
+                  .read(desktopWindowStateProvider.notifier)
+                  .setWindowHidden(true);
+            }
+            return null;
+          }),
+          SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
+            // If the OATH view doesn't have focus, but is shown, find and select the search bar.
+            final searchContext = searchAccountsField.currentContext;
+            if (searchContext != null) {
+              if (!Navigator.of(searchContext).canPop()) {
+                return Actions.maybeInvoke(searchContext, intent);
+              }
+            }
+            return null;
+          }),
+          NextDeviceIntent: CallbackAction<NextDeviceIntent>(onInvoke: (_) {
+            ref.read(withContextProvider)((context) async {
+              // Only allow switching keys if no other views are open,
+              // with the exception of the drawer.
+              if (!Navigator.of(context).canPop() ||
+                  scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
+                final attached = ref
+                    .read(attachedDevicesProvider)
+                    .whereType<UsbYubiKeyNode>()
+                    .toList();
+                if (attached.length > 1) {
+                  final current = ref.read(currentDeviceProvider);
+                  if (current != null && current is UsbYubiKeyNode) {
+                    final index = attached.indexOf(current);
+                    ref.read(currentDeviceProvider.notifier).setCurrentDevice(
+                        attached[(index + 1) % attached.length]);
+                  }
+                }
+              }
+            });
+            return null;
+          }),
+          SettingsIntent: CallbackAction<SettingsIntent>(onInvoke: (_) {
+            ref.read(withContextProvider)((context) async {
+              if (!Navigator.of(context).canPop()) {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => const SettingsPage(),
+                  routeSettings: const RouteSettings(name: 'settings'),
+                );
+              }
+            });
+            return null;
+          }),
+          AboutIntent: CallbackAction<AboutIntent>(onInvoke: (_) {
+            ref.read(withContextProvider)((context) async {
+              if (!Navigator.of(context).canPop()) {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => const AboutPage(),
+                  routeSettings: const RouteSettings(name: 'about'),
+                );
+              }
+            });
+            return null;
+          }),
+          EscapeIntent: CallbackAction<EscapeIntent>(
+            onInvoke: (_) {
+              FocusManager.instance.primaryFocus?.unfocus();
+              return null;
+            },
+          ),
+        },
+        child: Shortcuts(
+          shortcuts: {
+            ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
+            const SingleActivator(LogicalKeyboardKey.escape):
+                const EscapeIntent(),
+            if (isDesktop) ...{
+              const SingleActivator(LogicalKeyboardKey.tab, control: true):
+                  const NextDeviceIntent(),
+            },
+            if (Platform.isMacOS) ...{
+              const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
+                  const HideIntent(),
+              const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
+                  const CloseIntent(),
+              const SingleActivator(LogicalKeyboardKey.comma, meta: true):
+                  const SettingsIntent(),
+            },
+            if (Platform.isWindows) ...{
+              const SingleActivator(LogicalKeyboardKey.keyW, control: true):
+                  const HideIntent(),
+            },
+            if (Platform.isLinux) ...{
+              const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
+                  const CloseIntent(),
+            },
+          },
+          child: child,
+        ),
+      );
+}

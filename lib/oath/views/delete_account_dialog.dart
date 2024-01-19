@@ -29,9 +29,9 @@ import '../state.dart';
 import 'utils.dart';
 
 class DeleteAccountDialog extends ConsumerWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final OathCredential credential;
-  const DeleteAccountDialog(this.device, this.credential, {super.key});
+  const DeleteAccountDialog(this.devicePath, this.credential, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +44,7 @@ class DeleteAccountDialog extends ConsumerWidget {
           onPressed: () async {
             try {
               await ref
-                  .read(credentialListProvider(device.path).notifier)
+                  .read(credentialListProvider(devicePath).notifier)
                   .deleteAccount(credential);
               await ref.read(withContextProvider)(
                 (context) async {

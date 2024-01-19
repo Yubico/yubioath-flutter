@@ -75,7 +75,7 @@ class AccountHelper {
               subtitle: l10n.l_copy_code_desc,
               shortcut: Platform.isMacOS ? '\u2318 C' : 'Ctrl+C',
               actionStyle: canCopy ? ActionStyle.primary : null,
-              intent: canCopy ? const CopyIntent() : null,
+              intent: canCopy ? CopyIntent(credential) : null,
             ),
             if (manual)
               ActionItem(
@@ -85,7 +85,7 @@ class AccountHelper {
                 title: l10n.s_calculate,
                 subtitle: l10n.l_calculate_code_desc,
                 shortcut: Platform.isMacOS ? '\u2318 R' : 'Ctrl+R',
-                intent: ready ? const RefreshIntent() : null,
+                intent: ready ? RefreshIntent(credential) : null,
               ),
             ActionItem(
               key: keys.togglePinAction,
@@ -95,7 +95,7 @@ class AccountHelper {
                   : const Icon(Icons.push_pin_outlined),
               title: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               subtitle: l10n.l_pin_account_desc,
-              intent: const TogglePinIntent(),
+              intent: TogglePinIntent(credential),
             ),
             if (data.info.version.isAtLeast(5, 3))
               ActionItem(
@@ -104,7 +104,7 @@ class AccountHelper {
                 icon: const Icon(Icons.edit_outlined),
                 title: l10n.s_rename_account,
                 subtitle: l10n.l_rename_account_desc,
-                intent: const EditIntent(),
+                intent: EditIntent(credential),
               ),
             ActionItem(
               key: keys.deleteAction,
@@ -113,7 +113,7 @@ class AccountHelper {
               icon: const Icon(Icons.delete_outline),
               title: l10n.s_delete_account,
               subtitle: l10n.l_delete_account_desc,
-              intent: const DeleteIntent(),
+              intent: DeleteIntent(credential),
             ),
           ];
         },

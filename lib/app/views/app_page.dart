@@ -19,10 +19,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../core/state.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
+import '../shortcuts.dart';
+import 'fs_dialog.dart';
 import 'keys.dart';
 import 'navigation.dart';
 
@@ -32,7 +33,8 @@ final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
   final Widget? title;
-  final Widget child;
+  final Widget Function(BuildContext context, bool expanded) builder;
+  final Widget Function(BuildContext context)? detailViewBuilder;
   final List<Widget> actions;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool keyActionsBadge;
@@ -44,10 +46,11 @@ class AppPage extends StatelessWidget {
   const AppPage({
     super.key,
     this.title,
-    required this.child,
+    required this.builder,
     this.actions = const [],
     this.centered = false,
     this.keyActionsBuilder,
+    this.detailViewBuilder,
     this.actionButtonBuilder,
     this.fileDropOverlay,
     this.onFileDropped,
@@ -59,20 +62,15 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          final bool singleColumn;
-          final bool hasRail;
-          if (isAndroid) {
-            final isPortrait = constraints.maxWidth < constraints.maxHeight;
-            singleColumn = isPortrait || constraints.maxWidth < 600;
-            hasRail = constraints.maxWidth > 600;
-          } else {
-            singleColumn = constraints.maxWidth < 600;
-            hasRail = constraints.maxWidth > 400;
+          final width = constraints.maxWidth;
+          if (width < 400) {
+            return _buildScaffold(context, true, false, false);
           }
-
-          if (singleColumn) {
-            // Single column layout, maybe with rail
-            return _buildScaffold(context, true, hasRail);
+          if (width < 800) {
+            return _buildScaffold(context, true, true, false);
+          }
+          if (width < 1000) {
+            return _buildScaffold(context, true, true, true);
           } else {
             // Fully expanded layout, close existing drawer if open
             final scaffoldState = scaffoldGlobalKey.currentState;
@@ -99,7 +97,7 @@ class AppPage extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: _buildScaffold(context, false, false),
+                    child: _buildScaffold(context, false, false, true),
                   ),
                 ],
               ),
@@ -152,10 +150,10 @@ class AppPage extends StatelessWidget {
     ));
   }
 
-  Widget _buildMainContent() {
+  Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
       children: [
-        child,
+        builder(context, expanded),
         if (actions.isNotEmpty)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
@@ -173,50 +171,77 @@ class AppPage extends StatelessWidget {
     return SingleChildScrollView(
       primary: false,
       child: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 700,
-            child: delayedContent
-                ? DelayedVisibility(
-                    key: GlobalKey(), // Ensure we reset the delay on rebuild
-                    delay: const Duration(milliseconds: 400),
-                    child: content,
-                  )
-                : content,
-          ),
-        ),
+        child: delayedContent
+            ? DelayedVisibility(
+                key: GlobalKey(), // Ensure we reset the delay on rebuild
+                delay: const Duration(milliseconds: 400),
+                child: content,
+              )
+            : content,
       ),
     );
   }
 
-  Scaffold _buildScaffold(BuildContext context, bool hasDrawer, bool hasRail) {
-    var body =
-        centered ? Center(child: _buildMainContent()) : _buildMainContent();
-    if (hasRail) {
+  Scaffold _buildScaffold(
+      BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
+    var body = _buildMainContent(context, hasManage);
+    if (centered) {
+      body = Center(child: body);
+    }
+    if (onFileDropped != null) {
+      body = FileDropTarget(
+        onFileDropped: onFileDropped!,
+        overlay: fileDropOverlay!,
+        child: body,
+      );
+    }
+    if (hasRail || hasManage) {
       body = Row(
-        crossAxisAlignment: onFileDropped != null
-            ? CrossAxisAlignment.stretch
-            : CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
-            width: 72,
-            child: SingleChildScrollView(
-              child: NavigationContent(
-                key: _navKey,
-                shouldPop: false,
-                extended: false,
+          if (hasRail)
+            SizedBox(
+              width: 72,
+              child: SingleChildScrollView(
+                child: NavigationContent(
+                  key: _navKey,
+                  shouldPop: false,
+                  extended: false,
+                ),
               ),
             ),
-          ),
+          const SizedBox(width: 8),
           Expanded(
-            child: onFileDropped != null
-                ? FileDropTarget(
-                    onFileDropped: onFileDropped!,
-                    overlay: fileDropOverlay!,
-                    child: body,
-                  )
-                : body,
-          ),
+              child: GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onTap: () {
+              Actions.invoke(context, const EscapeIntent());
+            },
+            child: Stack(children: [
+              Container(
+                color: Colors.transparent,
+              ),
+              body
+            ]),
+          )),
+          if (hasManage &&
+              (detailViewBuilder != null || keyActionsBuilder != null))
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  width: 320,
+                  child: Column(
+                    children: [
+                      if (detailViewBuilder != null)
+                        detailViewBuilder!(context),
+                      if (keyActionsBuilder != null)
+                        keyActionsBuilder!(context),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       );
     }
@@ -242,7 +267,8 @@ class AppPage extends StatelessWidget {
               )
             : null,
         actions: [
-          if (actionButtonBuilder == null && keyActionsBuilder != null)
+          if (actionButtonBuilder == null &&
+              (keyActionsBuilder != null && !hasManage))
             Padding(
               padding: const EdgeInsets.only(left: 4),
               child: IconButton(
@@ -251,7 +277,12 @@ class AppPage extends StatelessWidget {
                   showBlurDialog(
                     context: context,
                     barrierColor: Colors.transparent,
-                    builder: keyActionsBuilder!,
+                    builder: (context) => FsDialog(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 32),
+                        child: keyActionsBuilder!(context),
+                      ),
+                    ),
                   );
                 },
                 icon: keyActionsBadge
@@ -272,20 +303,7 @@ class AppPage extends StatelessWidget {
         ],
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
-      body: onFileDropped != null && !hasRail
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: FileDropTarget(
-                    onFileDropped: onFileDropped!,
-                    overlay: fileDropOverlay!,
-                    child: body,
-                  ),
-                )
-              ],
-            )
-          : body,
+      body: body,
     );
   }
 }

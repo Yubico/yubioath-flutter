@@ -39,6 +39,7 @@
     "s_usb": "USB",
     "s_nfc": "NFC",
     "s_options": null,
+    "s_details": null,
     "s_show_window": "Fenster anzeigen",
     "s_hide_window": "Fenster verstecken",
     "q_rename_target": "{label} umbenennen?",

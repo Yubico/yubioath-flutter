@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -26,6 +27,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
@@ -33,11 +35,15 @@ import '../../core/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
+import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'account_dialog.dart';
+import 'account_helper.dart';
 import 'account_list.dart';
+import 'actions.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
@@ -81,7 +87,7 @@ class _LockedView extends ConsumerWidget {
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
           : null,
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: UnlockForm(
           devicePath,
@@ -105,6 +111,7 @@ class _UnlockedView extends ConsumerStatefulWidget {
 class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
+  OathCredential? _selected;
 
   @override
   void initState() {
@@ -131,7 +138,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     // ONLY rebuild if the number of credentials changes.
     final numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
-    final hasActions = ref.watch(featureProvider)(features.actions);
+    final hasFeature = ref.watch(featureProvider);
+    final hasActions = hasFeature(features.actions);
 
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
@@ -173,16 +181,63 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         ),
       );
     }
-    return Actions(
-      actions: {
+
+    return OathActions(
+      devicePath: widget.devicePath,
+      actions: (context) => {
         SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
           searchController.selection = TextSelection(
               baseOffset: 0, extentOffset: searchController.text.length);
           searchFocus.requestFocus();
           return null;
         }),
+        EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
+          if (_selected != null) {
+            setState(() {
+              _selected = null;
+            });
+          } else {
+            Actions.invoke(context, intent);
+          }
+          return false;
+        }),
+        OpenIntent<OathCredential>: CallbackAction<OpenIntent<OathCredential>>(
+            onInvoke: (intent) async {
+          await showBlurDialog(
+            context: context,
+            barrierColor: Colors.transparent,
+            builder: (context) => AccountDialog(intent.target),
+          );
+          return null;
+        }),
+        if (hasFeature(features.accountsRename))
+          EditIntent<OathCredential>:
+              CallbackAction<EditIntent<OathCredential>>(
+                  onInvoke: (intent) async {
+            final renamed =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (renamed is OathCredential && _selected == intent.target) {
+              setState(() {
+                _selected = renamed;
+              });
+            }
+            return renamed;
+          }),
+        if (hasFeature(features.accountsDelete))
+          DeleteIntent<OathCredential>:
+              CallbackAction<DeleteIntent<OathCredential>>(
+                  onInvoke: (intent) async {
+            final deleted =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (deleted == true && _selected == intent.target) {
+              setState(() {
+                _selected = null;
+              });
+            }
+            return deleted;
+          }),
       },
-      child: AppPage(
+      builder: (context) => AppPage(
         title: Focus(
           canRequestFocus: false,
           onKeyEvent: (node, event) {
@@ -259,15 +314,108 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         ),
         centered: numCreds == null,
         delayedContent: numCreds == null,
-        child: numCreds != null
-            ? Consumer(
-                builder: (context, ref, _) {
-                  return AccountList(
-                    ref.watch(credentialListProvider(widget.devicePath)) ?? [],
-                  );
-                },
-              )
-            : const CircularProgressIndicator(),
+        detailViewBuilder: _selected != null
+            ? (context) {
+                final helper = AccountHelper(context, ref, _selected!);
+                final subtitle = helper.subtitle;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTitle(l10n.s_details),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconTheme(
+                                    data: IconTheme.of(context)
+                                        .copyWith(size: 24),
+                                    child: helper.buildCodeIcon(),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  DefaultTextStyle.merge(
+                                    style: const TextStyle(fontSize: 28),
+                                    child: helper.buildCodeLabel(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              helper.title,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                            if (subtitle != null)
+                              Text(
+                                subtitle,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                // This is what ListTile uses for subtitle
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .color,
+                                    ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      AppLocalizations.of(context)!.s_actions,
+                      actions: helper.buildActions(),
+                    ),
+                  ],
+                );
+              }
+            : null,
+        builder: (context, expanded) {
+          // De-select if window is resized to be non-expanded.
+          if (!expanded) {
+            Timer.run(() {
+              setState(() {
+                _selected = null;
+              });
+            });
+          }
+          return numCreds != null
+              ? Actions(
+                  actions: {
+                    if (expanded)
+                      OpenIntent<OathCredential>:
+                          CallbackAction<OpenIntent<OathCredential>>(
+                              onInvoke: (OpenIntent<OathCredential> intent) {
+                        setState(() {
+                          _selected = intent.target;
+                        });
+                        return null;
+                      }),
+                  },
+                  child: Consumer(
+                    builder: (context, ref, _) {
+                      return AccountList(
+                        ref.watch(credentialListProvider(widget.devicePath)) ??
+                            [],
+                        expanded: expanded,
+                        selected: _selected,
+                      );
+                    },
+                  ),
+                )
+              : const CircularProgressIndicator();
+        },
       ),
     );
   }

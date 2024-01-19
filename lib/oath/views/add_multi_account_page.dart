@@ -119,7 +119,7 @@ class _OathAddMultiAccountPageState
                               (context) async => await showBlurDialog(
                                     context: context,
                                     builder: (context) => RenameAccountDialog(
-                                      device: node!,
+                                      devicePath: node!.path,
                                       issuer: cred.issuer,
                                       name: cred.name,
                                       oathType: cred.oathType,

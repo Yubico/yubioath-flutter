@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/action_list.dart';
-import '../../app/views/fs_dialog.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -31,30 +30,25 @@ Widget otpBuildActions(BuildContext context, DevicePath devicePath,
     OtpState otpState, WidgetRef ref) {
   final l10n = AppLocalizations.of(context)!;
 
-  return FsDialog(
-    child: Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Column(
-        children: [
-          ActionListSection(l10n.s_manage, children: [
-            ActionListItem(
-              key: keys.swapSlots,
-              feature: features.actionsSwap,
-              title: l10n.s_swap_slots,
-              subtitle: l10n.l_swap_slots_desc,
-              icon: const Icon(Icons.swap_vert_outlined),
-              onTap: (otpState.slot1Configured || otpState.slot2Configured)
-                  ? (context) {
-                      Navigator.of(context).pop();
-                      showBlurDialog(
-                          context: context,
-                          builder: (context) => SwapSlotsDialog(devicePath));
-                    }
-                  : null,
-            )
-          ])
-        ],
-      ),
-    ),
+  return Column(
+    children: [
+      ActionListSection(l10n.s_manage, children: [
+        ActionListItem(
+          key: keys.swapSlots,
+          feature: features.actionsSwap,
+          title: l10n.s_swap_slots,
+          subtitle: l10n.l_swap_slots_desc,
+          icon: const Icon(Icons.swap_vert_outlined),
+          onTap: (otpState.slot1Configured || otpState.slot2Configured)
+              ? (context) {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  showBlurDialog(
+                      context: context,
+                      builder: (context) => SwapSlotsDialog(devicePath));
+                }
+              : null,
+        )
+      ])
+    ],
   );
 }

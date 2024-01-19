@@ -108,14 +108,11 @@ class ActionListSection extends ConsumerWidget {
     if (enabledChildren.isEmpty) {
       return const SizedBox();
     }
-    final theme = Theme.of(context);
     return SizedBox(
       width: 360,
       child: Column(children: [
         ListTitle(
           title,
-          textStyle: theme.textTheme.bodyLarge!
-              .copyWith(color: theme.colorScheme.primary),
         ),
         ...enabledChildren,
       ]),
