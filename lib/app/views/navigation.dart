@@ -25,6 +25,7 @@ import '../shortcuts.dart';
 import '../state.dart';
 import 'device_picker.dart';
 import 'keys.dart';
+import 'reset_dialog.dart';
 
 class NavigationItem extends StatelessWidget {
   final Widget leading;
@@ -180,6 +181,7 @@ class NavigationContent extends ConsumerWidget {
                         },
                       )),
                   // Management app
+                  const SizedBox(height: 32),
                   if (hasManagement) ...[
                     NavigationItem(
                       key: managementAppDrawer,
@@ -197,6 +199,20 @@ class NavigationContent extends ConsumerWidget {
                       },
                     ),
                   ],
+                  // TODO: This doesn't belong here longterm
+                  NavigationItem(
+                    key: const Key('app.keys.drawer.reset'),
+                    leading: const Icon(Icons.delete_forever),
+                    title: l10n.s_factory_reset,
+                    collapsed: !extended,
+                    onTap: () {
+                      showBlurDialog(
+                        context: context,
+                        // data must be non-null when index == 0
+                        builder: (context) => ResetDialog(data),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 32),
                 ],
               ],
