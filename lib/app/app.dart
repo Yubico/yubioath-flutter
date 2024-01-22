@@ -25,7 +25,6 @@ import 'state.dart';
 
 class YubicoAuthenticatorApp extends StatelessWidget {
   final Widget page;
-
   const YubicoAuthenticatorApp({required this.page, super.key});
 
   @override

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,11 +109,9 @@ class DevicePath {
 @freezed
 class DeviceNode with _$DeviceNode {
   const DeviceNode._();
-
   factory DeviceNode.usbYubiKey(
           DevicePath path, String name, UsbPid pid, DeviceInfo? info) =
       UsbYubiKeyNode;
-
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 
   Transport get transport =>

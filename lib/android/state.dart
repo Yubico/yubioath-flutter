@@ -135,7 +135,6 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   static const _prefNfcOpenApp = 'prefNfcOpenApp';
   static const _prefNfcCopyOtp = 'prefNfcCopyOtp';
   final SharedPreferences _prefs;
-
   NfcTapActionNotifier._(this._prefs, super._state);
 
   factory NfcTapActionNotifier(SharedPreferences prefs) {
@@ -177,7 +176,6 @@ class NfcKbdLayoutNotifier extends StateNotifier<String> {
   static const String _defaultClipKbdLayout = 'US';
   static const _prefClipKbdLayout = 'prefClipKbdLayout';
   final SharedPreferences _prefs;
-
   NfcKbdLayoutNotifier(this._prefs)
       : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
 
@@ -196,7 +194,6 @@ final androidNfcBypassTouchProvider =
 class NfcBypassTouchNotifier extends StateNotifier<bool> {
   static const _prefNfcBypassTouch = 'prefNfcBypassTouch';
   final SharedPreferences _prefs;
-
   NfcBypassTouchNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
 
@@ -215,7 +212,6 @@ final androidNfcSilenceSoundsProvider =
 class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
   static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
   final SharedPreferences _prefs;
-
   NfcSilenceSoundsNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
 
@@ -234,7 +230,6 @@ final androidUsbLaunchAppProvider =
 class UsbLaunchAppNotifier extends StateNotifier<bool> {
   static const _prefUsbOpenApp = 'prefUsbOpenApp';
   final SharedPreferences _prefs;
-
   UsbLaunchAppNotifier(this._prefs)
       : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
 

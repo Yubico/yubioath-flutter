@@ -30,7 +30,6 @@ class DeviceAvatar extends StatelessWidget {
   final Widget child;
   final Widget? badge;
   final double? radius;
-
   const DeviceAvatar({super.key, required this.child, this.badge, this.radius});
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
