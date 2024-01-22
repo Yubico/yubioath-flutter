@@ -25,7 +25,6 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'add_fingerprint_dialog.dart';
 import 'pin_dialog.dart';
-import 'reset_dialog.dart';
 
 bool fidoShowActionsNotifier(FidoState state) {
   return (state.alwaysUv && !state.hasPin) ||
@@ -94,21 +93,6 @@ Widget fidoBuildActions(
                   builder: (context) => FidoPinDialog(node.path, state),
                 );
               }),
-          ActionListItem(
-            key: keys.resetAction,
-            feature: features.actionsReset,
-            actionStyle: ActionStyle.error,
-            icon: const Icon(Icons.delete_outline),
-            title: l10n.s_reset_fido,
-            subtitle: l10n.l_factory_reset_this_app,
-            onTap: (context) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              showBlurDialog(
-                context: context,
-                builder: (context) => ResetDialog(node),
-              );
-            },
-          ),
         ],
       )
     ],
