@@ -335,6 +335,12 @@
             "message": {}
         }
     },
+    "l_account_rename_failed": null,
+    "@l_account_rename_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_account_name_required": "アカウントには名前が必要です",
     "l_name_already_exists": "発行者名は既に使われています",
     "l_account_already_exists": "このアカウントはすでに YubiKey に存在します",

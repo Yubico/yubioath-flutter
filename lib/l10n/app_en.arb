@@ -335,6 +335,12 @@
             "message": {}
         }
     },
+    "l_account_rename_failed": "Failed renaming account: {message}",
+    "@l_account_rename_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the issuer",
     "l_account_already_exists": "This account already exists on the YubiKey",

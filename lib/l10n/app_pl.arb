@@ -335,6 +335,12 @@
             "message": {}
         }
     },
+    "l_account_rename_failed": null,
+    "@l_account_rename_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_account_name_required": "Twoje konto musi mieć nazwę",
     "l_name_already_exists": "Ta nazwa już istnieje dla tego wydawcy",
     "l_account_already_exists": "To konto już istnieje w YubiKey",
