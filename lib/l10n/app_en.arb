@@ -145,6 +145,15 @@
     "l_touch_button_now": "Touch the button on your YubiKey now",
     "l_keep_touching_yk": "Keep touching your YubiKey repeatedly\u2026",
 
+    "@_capabilities": {},
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM Auth",
+
     "@_app_configuration": {},
     "s_toggle_applications": "Toggle applications",
     "s_toggle_interfaces": "Toggle interfaces",
