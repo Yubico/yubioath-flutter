@@ -146,10 +146,12 @@ class MainPage extends ConsumerWidget {
               }
 
               return switch (app) {
-                Application.oath => OathScreen(data.node.path),
-                Application.fido => FidoScreen(data),
-                Application.piv => PivScreen(data.node.path),
-                Application.otp => OtpScreen(data.node.path),
+                Application.accounts => OathScreen(data.node.path),
+                Application.webauthn => FidoScreen(data),
+                Application.passkeys => FidoScreen(data),
+                Application.fingerprints => FidoScreen(data),
+                Application.certificates => PivScreen(data.node.path),
+                Application.slots => OtpScreen(data.node.path),
                 _ => MessagePage(
                     header: l10n.s_app_not_supported,
                     message: l10n.l_app_not_supported_desc,

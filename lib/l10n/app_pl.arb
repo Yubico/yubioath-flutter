@@ -145,6 +145,15 @@
     "l_touch_button_now": "Dotknij teraz przycisku na kluczu YubiKey",
     "l_keep_touching_yk": "Wielokrotnie dotykaj klucza YubiKey\u2026",
 
+    "@_capabilities": {},
+    "s_capability_otp": null,
+    "s_capability_u2f": null,
+    "s_capability_fido2": null,
+    "s_capability_oath": null,
+    "s_capability_piv": null,
+    "s_capability_openpgp": null,
+    "s_capability_hsmauth": null,
+
     "@_app_configuration": {},
     "s_toggle_applications": "Przełączanie funkcji",
     "s_toggle_interfaces": "Przełącz interfejsy",

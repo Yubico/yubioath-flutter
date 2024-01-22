@@ -187,11 +187,13 @@ Future<Widget> initialize(List<String> argv) async {
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
-        Application.oath,
-        Application.fido,
-        Application.piv,
+        Application.accounts,
+        Application.webauthn,
+        Application.passkeys,
+        Application.fingerprints,
+        Application.certificates,
         Application.management,
-        Application.otp
+        Application.slots
       ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),

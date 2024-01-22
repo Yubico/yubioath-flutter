@@ -48,6 +48,7 @@ class _CapabilityForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final keyPrefix = (type == _CapabilityType.usb)
         ? management_keys.usbCapabilityKeyPrefix
         : management_keys.nfcCapabilityKeyPrefix;
@@ -57,7 +58,7 @@ class _CapabilityForm extends StatelessWidget {
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
-                label: Text(c.name),
+                label: Text(c.getDisplayName(l10n)),
                 backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 key: Key('$keyPrefix.${c.name}'),
                 selected: enabled & c.value != 0,

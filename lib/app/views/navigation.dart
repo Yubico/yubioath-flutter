@@ -88,23 +88,39 @@ class NavigationItem extends StatelessWidget {
 
 extension on Application {
   IconData get _icon => switch (this) {
-        Application.oath => Icons.supervisor_account_outlined,
-        Application.fido => Icons.security_outlined,
-        Application.otp => Icons.touch_app_outlined,
-        Application.piv => Icons.approval_outlined,
+        Application.accounts => Icons.supervisor_account_outlined,
+        Application.webauthn => Icons.security_outlined,
+        Application.passkeys => Icons.security_outlined,
+        Application.fingerprints => Icons.fingerprint_outlined,
+        Application.slots => Icons.touch_app_outlined,
+        Application.certificates => Icons.approval_outlined,
         Application.management => Icons.construction_outlined,
         Application.openpgp => Icons.key_outlined,
         Application.hsmauth => Icons.key_outlined,
       };
 
   IconData get _filledIcon => switch (this) {
-        Application.oath => Icons.supervisor_account,
-        Application.fido => Icons.security,
-        Application.otp => Icons.touch_app,
-        Application.piv => Icons.approval,
+        Application.accounts => Icons.supervisor_account,
+        Application.webauthn => Icons.security,
+        Application.passkeys => Icons.security,
+        Application.fingerprints => Icons.fingerprint,
+        Application.slots => Icons.touch_app,
+        Application.certificates => Icons.approval,
         Application.management => Icons.construction,
         Application.openpgp => Icons.key,
         Application.hsmauth => Icons.key,
+      };
+
+  Key get _key => switch (this) {
+        Application.accounts => oathAppDrawer,
+        Application.webauthn => u2fAppDrawer,
+        Application.passkeys => fidoPasskeysAppDrawer,
+        Application.fingerprints => fidoFingerprintsAppDrawer,
+        Application.slots => otpAppDrawer,
+        Application.certificates => pivAppDrawer,
+        Application.hsmauth => hsmauthAppDrawer,
+        Application.management => managementAppDrawer,
+        Application.openpgp => openpgpAppDrawer,
       };
 }
 
@@ -147,7 +163,7 @@ class NavigationContent extends ConsumerWidget {
                 if (data != null) ...[
                   // Normal YubiKey Applications
                   ...availableApps.map((app) => NavigationItem(
-                        key: _getAppDrawerKey(app),
+                        key: app._key,
                         title: app.getDisplayName(l10n),
                         leading: app == currentApp
                             ? Icon(app._filledIcon)
@@ -216,14 +232,4 @@ class NavigationContent extends ConsumerWidget {
       ),
     );
   }
-
-  Key _getAppDrawerKey(Application app) => switch (app) {
-        Application.oath => oathAppDrawer,
-        Application.fido => fidoAppDrawer,
-        Application.otp => otpAppDrawer,
-        Application.piv => pivAppDrawer,
-        Application.hsmauth => hsmauthAppDrawer,
-        Application.management => managementAppDrawer,
-        Application.openpgp => openpgpAppDrawer,
-      };
 }

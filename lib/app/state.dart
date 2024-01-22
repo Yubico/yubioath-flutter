@@ -44,10 +44,12 @@ final supportedAppsProvider =
 
 extension on Application {
   Feature get _feature => switch (this) {
-        Application.oath => features.oath,
-        Application.fido => features.fido,
-        Application.otp => features.otp,
-        Application.piv => features.piv,
+        Application.accounts => features.oath,
+        Application.webauthn => features.fido,
+        Application.passkeys => features.fido,
+        Application.fingerprints => features.fido,
+        Application.slots => features.otp,
+        Application.certificates => features.piv,
         Application.management => features.management,
         Application.openpgp => features.openpgp,
         Application.hsmauth => features.oath,

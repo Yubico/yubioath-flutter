@@ -145,6 +145,15 @@
     "l_touch_button_now": "今すぐYubiKeyのボタンをタッチしてください",
     "l_keep_touching_yk": "YubiKeyを繰り返しタッチし続けてください\u2026",
 
+    "@_capabilities": {},
+    "s_capability_otp": null,
+    "s_capability_u2f": null,
+    "s_capability_fido2": null,
+    "s_capability_oath": null,
+    "s_capability_piv": null,
+    "s_capability_openpgp": null,
+    "s_capability_hsmauth": null,
+
     "@_app_configuration": {},
     "s_toggle_applications": "アプリケーションの切替え",
     "s_toggle_interfaces": null,

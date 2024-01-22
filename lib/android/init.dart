@@ -54,7 +54,7 @@ Future<Widget> initialize() async {
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
-        Application.oath,
+        Application.accounts,
       ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
