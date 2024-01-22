@@ -152,159 +152,167 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    List<Widget Function(bool expanded)> children = [];
-
-    if (widget.state.credMgmt) {
-      final data = ref.watch(credentialProvider(widget.node.path)).asData;
-      if (data == null) {
-        return _buildLoadingPage(context);
-      }
-      final creds = data.value;
-      if (creds.isNotEmpty) {
-        children.addAll(creds.map(
-          (cred) => (expanded) => _CredentialListItem(
-                cred,
-                expanded: expanded,
-                selected: _selected == cred,
-              ),
-        ));
-      }
-    }
-
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
-    final credential = _selected;
 
-    if (children.isNotEmpty) {
-      return FidoActions(
-        devicePath: widget.node.path,
-        actions: (context) => {
-          EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
-            if (_selected != null) {
-              setState(() {
-                _selected = null;
-              });
-            } else {
-              Actions.invoke(context, intent);
-            }
-            return false;
-          }),
-          OpenIntent<FidoCredential>:
-              CallbackAction<OpenIntent<FidoCredential>>(onInvoke: (intent) {
-            return showBlurDialog(
-              context: context,
-              barrierColor: Colors.transparent,
-              builder: (context) => CredentialDialog(intent.target),
-            );
-          }),
-          if (hasFeature(features.credentialsDelete))
-            DeleteIntent<FidoCredential>:
-                CallbackAction<DeleteIntent<FidoCredential>>(
-                    onInvoke: (intent) async {
-              final deleted =
-                  await (Actions.invoke(context, intent) as Future<dynamic>?);
-              if (deleted == true && _selected == intent.target) {
-                setState(() {
-                  _selected = null;
-                });
-              }
-              return deleted;
-            }),
-        },
-        builder: (context) => AppPage(
-          title: l10n.s_passkeys,
-          detailViewBuilder: credential != null
-              ? (context) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ListTitle(l10n.s_details),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          // TODO: Reuse from credential_dialog
-                          child: Column(
-                            children: [
-                              Text(
-                                credential.userName,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                credential.rpId,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                // This is what ListTile uses for subtitle
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
-                              ),
-                              const SizedBox(height: 16),
-                              const Icon(Icons.person, size: 72),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ActionListSection.fromMenuActions(
-                        context,
-                        l10n.s_actions,
-                        actions: buildCredentialActions(credential, l10n),
-                      ),
-                    ],
-                  )
-              : null,
-          keyActionsBuilder: hasActions
-              ? (context) =>
-                  passkeysBuildActions(context, widget.node, widget.state)
-              : null,
-          keyActionsBadge: fidoShowActionsNotifier(widget.state),
-          builder: (context, expanded) {
-            // De-select if window is resized to be non-expanded.
-            if (!expanded && _selected != null) {
-              Timer.run(() {
-                setState(() {
-                  _selected = null;
-                });
-              });
-            }
-            return Actions(
-              actions: {
-                if (expanded) ...{
-                  OpenIntent<FidoCredential>:
-                      CallbackAction<OpenIntent<FidoCredential>>(
-                          onInvoke: (intent) {
-                    setState(() {
-                      _selected = intent.target;
-                    });
-                    return null;
-                  }),
-                }
-              },
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: children.map((f) => f(expanded)).toList()),
-            );
-          },
-        ),
+    if (!widget.state.credMgmt) {
+      // TODO: Special handling for credMgmt not supported
+      return MessagePage(
+        title: l10n.s_passkeys,
+        header: l10n.l_no_discoverable_accounts,
+        message: l10n.l_register_sk_on_websites,
+        keyActionsBuilder: hasActions
+            ? (context) =>
+                passkeysBuildActions(context, widget.node, widget.state)
+            : null,
+        keyActionsBadge: fidoShowActionsNotifier(widget.state),
       );
     }
 
-    return MessagePage(
-      title: l10n.s_passkeys,
-      header: l10n.l_no_discoverable_accounts,
-      message: l10n.l_register_sk_on_websites,
-      keyActionsBuilder: hasActions
-          ? (context) =>
-              passkeysBuildActions(context, widget.node, widget.state)
-          : null,
-      keyActionsBadge: fidoShowActionsNotifier(widget.state),
+    final data = ref.watch(credentialProvider(widget.node.path)).asData;
+    if (data == null) {
+      return _buildLoadingPage(context);
+    }
+    final credentials = data.value;
+
+    if (credentials.isEmpty) {
+      return MessagePage(
+        title: l10n.s_passkeys,
+        header: l10n.l_no_discoverable_accounts,
+        message: l10n.l_register_sk_on_websites,
+        keyActionsBuilder: hasActions
+            ? (context) =>
+                passkeysBuildActions(context, widget.node, widget.state)
+            : null,
+        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+      );
+    }
+
+    final credential = _selected;
+    return FidoActions(
+      devicePath: widget.node.path,
+      actions: (context) => {
+        EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
+          if (_selected != null) {
+            setState(() {
+              _selected = null;
+            });
+          } else {
+            Actions.invoke(context, intent);
+          }
+          return false;
+        }),
+        OpenIntent<FidoCredential>:
+            CallbackAction<OpenIntent<FidoCredential>>(onInvoke: (intent) {
+          return showBlurDialog(
+            context: context,
+            barrierColor: Colors.transparent,
+            builder: (context) => CredentialDialog(intent.target),
+          );
+        }),
+        if (hasFeature(features.credentialsDelete))
+          DeleteIntent<FidoCredential>:
+              CallbackAction<DeleteIntent<FidoCredential>>(
+                  onInvoke: (intent) async {
+            final deleted =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (deleted == true && _selected == intent.target) {
+              setState(() {
+                _selected = null;
+              });
+            }
+            return deleted;
+          }),
+      },
+      builder: (context) => AppPage(
+        title: l10n.s_passkeys,
+        detailViewBuilder: credential != null
+            ? (context) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTitle(l10n.s_details),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        // TODO: Reuse from credential_dialog
+                        child: Column(
+                          children: [
+                            Text(
+                              credential.userName,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              credential.rpId,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              // This is what ListTile uses for subtitle
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color,
+                                  ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Icon(Icons.person, size: 72),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      l10n.s_actions,
+                      actions: buildCredentialActions(credential, l10n),
+                    ),
+                  ],
+                )
+            : null,
+        keyActionsBuilder: hasActions
+            ? (context) =>
+                passkeysBuildActions(context, widget.node, widget.state)
+            : null,
+        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        builder: (context, expanded) {
+          // De-select if window is resized to be non-expanded.
+          if (!expanded && _selected != null) {
+            Timer.run(() {
+              setState(() {
+                _selected = null;
+              });
+            });
+          }
+          return Actions(
+            actions: {
+              if (expanded) ...{
+                OpenIntent<FidoCredential>:
+                    CallbackAction<OpenIntent<FidoCredential>>(
+                        onInvoke: (intent) {
+                  setState(() {
+                    _selected = intent.target;
+                  });
+                  return null;
+                }),
+              }
+            },
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: credentials
+                    .map(
+                      (cred) => _CredentialListItem(
+                        cred,
+                        expanded: expanded,
+                        selected: _selected == cred,
+                      ),
+                    )
+                    .toList()),
+          );
+        },
+      ),
     );
   }
 

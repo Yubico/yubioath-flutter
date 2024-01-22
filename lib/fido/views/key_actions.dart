@@ -33,51 +33,22 @@ bool fidoShowActionsNotifier(FidoState state) {
 }
 
 Widget passkeysBuildActions(
-    BuildContext context, DeviceNode node, FidoState state) {
+        BuildContext context, DeviceNode node, FidoState state) =>
+    _fidoBuildActions(context, node, state);
+
+Widget fingerprintsBuildActions(BuildContext context, DeviceNode node,
+        FidoState state, int fingerprints) =>
+    _fidoBuildActions(context, node, state, fingerprints);
+
+Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
+    [int? fingerprints]) {
   final l10n = AppLocalizations.of(context)!;
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
 
   return Column(
     children: [
-      ActionListSection(
-        l10n.s_manage,
-        children: [
-          ActionListItem(
-              key: keys.managePinAction,
-              feature: features.actionsPin,
-              icon: const Icon(Icons.pin_outlined),
-              title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
-              subtitle: state.hasPin
-                  ? (state.forcePinChange
-                      ? l10n.s_pin_change_required
-                      : l10n.s_fido_pin_protection)
-                  : l10n.l_fido_pin_protection_optional,
-              trailing: state.alwaysUv && !state.hasPin || state.forcePinChange
-                  ? Icon(Icons.warning_amber, color: colors.tertiary)
-                  : null,
-              onTap: (context) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => FidoPinDialog(node.path, state),
-                );
-              }),
-        ],
-      )
-    ],
-  );
-}
-
-Widget fidoBuildActions(
-    BuildContext context, DeviceNode node, FidoState state, int fingerprints) {
-  final l10n = AppLocalizations.of(context)!;
-  final colors = Theme.of(context).buttonTheme.colorScheme ??
-      Theme.of(context).colorScheme;
-
-  return Column(
-    children: [
-      if (state.bioEnroll != null)
+      if (fingerprints != null)
         ActionListSection(
           l10n.s_setup,
           children: [

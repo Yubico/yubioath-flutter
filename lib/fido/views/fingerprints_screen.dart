@@ -133,7 +133,7 @@ class _FidoLockedPage extends ConsumerWidget {
   }
 
   Widget _buildActions(BuildContext context) =>
-      fidoBuildActions(context, node, state, -1);
+      fingerprintsBuildActions(context, node, state, -1);
 }
 
 class _FidoUnlockedPage extends ConsumerStatefulWidget {
@@ -153,168 +153,156 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    List<Widget Function(bool expanded)> children = [];
-
-    int nFingerprints = 0;
-    if (widget.state.bioEnroll != null) {
-      final data = ref.watch(fingerprintProvider(widget.node.path)).asData;
-      if (data == null) {
-        return _buildLoadingPage(context);
-      }
-      final fingerprints = data.value;
-      if (fingerprints.isNotEmpty) {
-        nFingerprints = fingerprints.length;
-        children.addAll(fingerprints.map(
-          (fp) => (expanded) => _FingerprintListItem(
-                fp,
-                expanded: expanded,
-                selected: fp == _selected,
-              ),
-        ));
-      }
-    }
-
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
-    final fingerprint = _selected;
 
-    if (children.isNotEmpty) {
-      return FidoActions(
-        devicePath: widget.node.path,
-        actions: (context) => {
-          EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
-            if (_selected != null) {
-              setState(() {
-                _selected = null;
-              });
-            } else {
-              Actions.invoke(context, intent);
-            }
-            return false;
-          }),
-          OpenIntent<Fingerprint>:
-              CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
-            return showBlurDialog(
-              context: context,
-              barrierColor: Colors.transparent,
-              builder: (context) => FingerprintDialog(intent.target),
-            );
-          }),
-          if (hasFeature(features.fingerprintsEdit))
-            EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
-                onInvoke: (intent) async {
-              final renamed =
-                  await (Actions.invoke(context, intent) as Future<dynamic>?);
-              if (_selected == intent.target && renamed is Fingerprint) {
-                setState(() {
-                  _selected = renamed;
-                });
-              }
-              return renamed;
-            }),
-          if (hasFeature(features.fingerprintsDelete))
-            DeleteIntent<Fingerprint>:
-                CallbackAction<DeleteIntent<Fingerprint>>(
-                    onInvoke: (intent) async {
-              final deleted =
-                  await (Actions.invoke(context, intent) as Future<dynamic>?);
-              if (deleted == true && _selected == intent.target) {
-                setState(() {
-                  _selected = null;
-                });
-              }
-              return deleted;
-            }),
-        },
-        builder: (context) => AppPage(
-          title: l10n.s_fingerprints,
-          detailViewBuilder: fingerprint != null
-              ? (context) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ListTitle(l10n.s_details),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          // TODO: Reuse from fingerprint_dialog
-                          child: Column(
-                            children: [
-                              Text(
-                                fingerprint.label,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 16),
-                              const Icon(Icons.fingerprint, size: 72),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ActionListSection.fromMenuActions(
-                        context,
-                        l10n.s_actions,
-                        actions: buildFingerprintActions(fingerprint, l10n),
-                      ),
-                    ],
-                  )
-              : null,
-          keyActionsBuilder: hasActions
-              ? (context) => fidoBuildActions(
-                  context, widget.node, widget.state, nFingerprints)
-              : null,
-          keyActionsBadge: fidoShowActionsNotifier(widget.state),
-          builder: (context, expanded) {
-            // De-select if window is resized to be non-expanded.
-            if (!expanded && _selected != null) {
-              Timer.run(() {
-                setState(() {
-                  _selected = null;
-                });
-              });
-            }
-            return Actions(
-              actions: {
-                if (expanded) ...{
-                  OpenIntent<Fingerprint>:
-                      CallbackAction<OpenIntent<Fingerprint>>(
-                          onInvoke: (intent) {
-                    setState(() {
-                      _selected = intent.target;
-                    });
-                    return null;
-                  }),
-                }
-              },
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: children.map((f) => f(expanded)).toList()),
-            );
-          },
-        ),
+    final data = ref.watch(fingerprintProvider(widget.node.path)).asData;
+    if (data == null) {
+      return _buildLoadingPage(context);
+    }
+    final fingerprints = data.value;
+    if (fingerprints.isEmpty) {
+      return MessagePage(
+        actions: [
+          ActionChip(
+            label: Text(l10n.s_add_fingerprint),
+            onPressed: () async {
+              await showBlurDialog(
+                  context: context,
+                  builder: (context) => AddFingerprintDialog(widget.node.path));
+            },
+            avatar: const Icon(Icons.fingerprint_outlined),
+          )
+        ],
+        title: l10n.s_fingerprints,
+        header: '${l10n.s_fingerprints_get_started} (2/2)',
+        message: l10n.l_add_one_or_more_fps,
+        keyActionsBuilder: hasActions
+            ? (context) =>
+                fingerprintsBuildActions(context, widget.node, widget.state, 0)
+            : null,
+        keyActionsBadge: fidoShowActionsNotifier(widget.state),
       );
     }
 
-    return MessagePage(
-      actions: [
-        ActionChip(
-          label: Text(l10n.s_add_fingerprint),
-          onPressed: () async {
-            await showBlurDialog(
-                context: context,
-                builder: (context) => AddFingerprintDialog(widget.node.path));
-          },
-          avatar: const Icon(Icons.fingerprint_outlined),
-        )
-      ],
-      title: l10n.s_webauthn,
-      header: '${l10n.s_fingerprints_get_started} (2/2)',
-      message: l10n.l_add_one_or_more_fps,
-      keyActionsBuilder: hasActions
-          ? (context) => fidoBuildActions(context, widget.node, widget.state, 0)
-          : null,
-      keyActionsBadge: fidoShowActionsNotifier(widget.state),
+    final fingerprint = _selected;
+    return FidoActions(
+      devicePath: widget.node.path,
+      actions: (context) => {
+        EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
+          if (_selected != null) {
+            setState(() {
+              _selected = null;
+            });
+          } else {
+            Actions.invoke(context, intent);
+          }
+          return false;
+        }),
+        OpenIntent<Fingerprint>:
+            CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
+          return showBlurDialog(
+            context: context,
+            barrierColor: Colors.transparent,
+            builder: (context) => FingerprintDialog(intent.target),
+          );
+        }),
+        if (hasFeature(features.fingerprintsEdit))
+          EditIntent<Fingerprint>:
+              CallbackAction<EditIntent<Fingerprint>>(onInvoke: (intent) async {
+            final renamed =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (_selected == intent.target && renamed is Fingerprint) {
+              setState(() {
+                _selected = renamed;
+              });
+            }
+            return renamed;
+          }),
+        if (hasFeature(features.fingerprintsDelete))
+          DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
+              onInvoke: (intent) async {
+            final deleted =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (deleted == true && _selected == intent.target) {
+              setState(() {
+                _selected = null;
+              });
+            }
+            return deleted;
+          }),
+      },
+      builder: (context) => AppPage(
+        title: l10n.s_fingerprints,
+        detailViewBuilder: fingerprint != null
+            ? (context) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTitle(l10n.s_details),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        // TODO: Reuse from fingerprint_dialog
+                        child: Column(
+                          children: [
+                            Text(
+                              fingerprint.label,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            const Icon(Icons.fingerprint, size: 72),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      l10n.s_actions,
+                      actions: buildFingerprintActions(fingerprint, l10n),
+                    ),
+                  ],
+                )
+            : null,
+        keyActionsBuilder: hasActions
+            ? (context) => fingerprintsBuildActions(
+                context, widget.node, widget.state, fingerprints.length)
+            : null,
+        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        builder: (context, expanded) {
+          // De-select if window is resized to be non-expanded.
+          if (!expanded && _selected != null) {
+            Timer.run(() {
+              setState(() {
+                _selected = null;
+              });
+            });
+          }
+          return Actions(
+            actions: {
+              if (expanded) ...{
+                OpenIntent<Fingerprint>:
+                    CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
+                  setState(() {
+                    _selected = intent.target;
+                  });
+                  return null;
+                }),
+              }
+            },
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: fingerprints
+                    .map((fp) => _FingerprintListItem(
+                          fp,
+                          expanded: expanded,
+                          selected: fp == _selected,
+                        ))
+                    .toList()),
+          );
+        },
+      ),
     );
   }
 
