@@ -34,25 +34,33 @@ const themeGreen = Color(0xFF78B850);
 const themeGrey = Color(0xFF8C8B8C);
 */
 
-//const primaryColor = Colors.blueAccent;
+const primaryColor = Colors.blueAccent;
 //const primaryColor = Colors.green;
-const primaryColor = Colors.deepPurple;
+//const primaryColor = Colors.deepPurple;
+
+const defaultTextTheme = Typography.englishLike2021;
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
           brightness: Brightness.light,
+          seedColor: primaryColor,
           background: const Color(0xfffefdf4),
-          surface: const Color(0xfffefdf4),
-        ),
-        listTileTheme: const ListTileThemeData(
-          // For alignment under menu button
-          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-          visualDensity: VisualDensity.compact,
         ),
         fontFamily: 'Roboto',
+        appBarTheme: const AppBarTheme(
+          color: Colors.transparent,
+        ),
+        listTileTheme: ListTileThemeData(
+          // For alignment under menu button
+          contentPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          visualDensity: VisualDensity.compact,
+          titleTextStyle: defaultTextTheme.bodyLarge!
+              .copyWith(color: Colors.black87, fontFamily: 'Roboto'),
+          subtitleTextStyle: defaultTextTheme.bodyMedium!
+              .copyWith(color: Colors.black54, fontFamily: 'Roboto'),
+        ),
         tooltipTheme: const TooltipThemeData(
           waitDuration: Duration(milliseconds: 500),
           textStyle: TextStyle(color: Color(0xff3c3c3c)),
@@ -66,17 +74,23 @@ class AppTheme {
   static ThemeData get darkTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
           brightness: Brightness.dark,
+          seedColor: primaryColor,
           background: const Color(0xff282828),
-          surface: const Color(0xff282828),
-        ),
-        listTileTheme: const ListTileThemeData(
-          // For alignment under menu button
-          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-          visualDensity: VisualDensity.compact,
         ),
         fontFamily: 'Roboto',
+        appBarTheme: const AppBarTheme(
+          color: Colors.transparent,
+        ),
+        listTileTheme: ListTileThemeData(
+          // For alignment under menu button
+          contentPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          visualDensity: VisualDensity.compact,
+          titleTextStyle: defaultTextTheme.bodyLarge!
+              .copyWith(color: Colors.white, fontFamily: 'Roboto'),
+          subtitleTextStyle: defaultTextTheme.bodyMedium!
+              .copyWith(color: Colors.white54, fontFamily: 'Roboto'),
+        ),
         tooltipTheme: const TooltipThemeData(
           waitDuration: Duration(milliseconds: 500),
           textStyle: TextStyle(color: Color(0xffE2E2E6)),

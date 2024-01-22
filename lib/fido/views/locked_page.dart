@@ -207,7 +207,7 @@ class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
             dense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 0),
             minLeadingWidth: 0,
-            trailing: ElevatedButton.icon(
+            trailing: FilledButton.icon(
               icon: const Icon(Icons.lock_open),
               label: Text(l10n.s_unlock),
               onPressed:

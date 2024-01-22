@@ -187,7 +187,7 @@ class _OathAddMultiAccountPageState
             )
           ]
               .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: e,
                   ))
               .toList(),

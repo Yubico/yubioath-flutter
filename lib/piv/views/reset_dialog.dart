@@ -51,10 +51,11 @@ class ResetDialog extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           children: [
-            Text(
-              l10n.p_warning_piv_reset,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(l10n.p_warning_piv_reset,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w700)),
             Text(l10n.p_warning_piv_reset_desc),
           ]
               .map((e) => Padding(

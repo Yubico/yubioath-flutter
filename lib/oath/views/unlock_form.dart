@@ -133,7 +133,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                                 });
                               },
                             ),
-                      ElevatedButton.icon(
+                      FilledButton.icon(
                         key: keys.unlockButton,
                         label: Text(l10n.s_unlock),
                         icon: const Icon(Icons.lock_open),
