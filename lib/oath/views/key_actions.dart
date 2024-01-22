@@ -30,7 +30,6 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'add_account_dialog.dart';
 import 'manage_password_dialog.dart';
-import 'reset_dialog.dart';
 
 Widget oathBuildActions(
   BuildContext context,
@@ -110,20 +109,6 @@ Widget oathBuildActions(
                 context: context,
                 builder: (context) =>
                     ManagePasswordDialog(devicePath, oathState),
-              );
-            }),
-        ActionListItem(
-            key: keys.resetAction,
-            feature: features.actionsReset,
-            icon: const Icon(Icons.delete_outline),
-            actionStyle: ActionStyle.error,
-            title: l10n.s_reset_oath,
-            subtitle: l10n.l_factory_reset_this_app,
-            onTap: (context) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              showBlurDialog(
-                context: context,
-                builder: (context) => ResetDialog(devicePath),
               );
             }),
       ]),

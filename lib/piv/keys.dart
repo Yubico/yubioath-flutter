@@ -25,7 +25,6 @@ const managePinAction = Key('$_keyAction.manage_pin');
 const managePukAction = Key('$_keyAction.manage_puk');
 const manageManagementKeyAction = Key('$_keyAction.manage_management_key');
 const pinLockManagementKeyChip = Key('$_keyAction.pinlock_managementkey');
-const resetAction = Key('$_keyAction.reset');
 const setupMacOsAction = Key('$_keyAction.setup_macos');
 
 // Slot actions
