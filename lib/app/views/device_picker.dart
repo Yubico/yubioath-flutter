@@ -23,12 +23,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
-import '../key_customization.dart';
+import '../key_customization/key_customization.dart';
+import '../key_customization/models.dart';
+import '../key_customization/state.dart';
+import '../key_customization/views/key_customization_dialog.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-import 'key_customization_dialog.dart';
 import 'keys.dart' as keys;
 
 final _hiddenDevicesProvider =

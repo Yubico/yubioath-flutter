@@ -19,20 +19,21 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-import '../../core/state.dart';
-import '../../management/models.dart';
-import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
-import '../../widgets/focus_utils.dart';
-import '../../widgets/responsive_dialog.dart';
-import '../key_customization.dart';
-import '../logging.dart';
+import '../../../core/state.dart';
+import '../../../management/models.dart';
+import '../../../widgets/app_input_decoration.dart';
+import '../../../widgets/app_text_form_field.dart';
+import '../../../widgets/focus_utils.dart';
+import '../../../widgets/responsive_dialog.dart';
+import '../../logging.dart';
+import '../../models.dart';
+import '../../state.dart';
+import '../../views/device_avatar.dart';
+import '../../views/keys.dart';
 import '../models.dart';
 import '../state.dart';
-import 'device_avatar.dart';
-import 'keys.dart';
 
-final _log = Logger('KeyCustomizationDialog');
+final _log = Logger('key_customization_dialog');
 
 class KeyCustomizationDialog extends ConsumerStatefulWidget {
   final KeyCustomization? initialCustomization;
@@ -62,7 +63,6 @@ class _KeyCustomizationDialogState
     _displayName = widget.initialCustomization != null
         ? widget.initialCustomization?.properties['display_name']
         : null;
-
     _previewColor = _displayColor != null
         ? Color(int.parse(_displayColor!, radix: 16))
         : null;
@@ -71,7 +71,7 @@ class _KeyCustomizationDialogState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final currentNode = widget.node; //ref.watch(currentDeviceProvider);
+    final currentNode = widget.node;
     final theme = Theme.of(context);
 
     final Widget hero;
@@ -231,18 +231,22 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   ].join(' ');
 }
 
-List<String> _getDeviceStrings(BuildContext context, DeviceNode node) {
-  final messages = (node is UsbYubiKeyNode)
+List<String> _getDeviceStrings(
+    BuildContext context, WidgetRef ref, DeviceNode node) {
+  final data = ref.watch(currentDeviceDataProvider);
+
+  final messages = node is UsbYubiKeyNode
       ? node.info != null
           ? [node.name, _getDeviceInfoString(context, node.info!)]
           : <String>[]
-      : <String>[];
-
-  // Add the NFC reader name, unless it's already included (as device name, like on Android)
-  if (node is NfcReaderNode && !messages.contains(node.name)) {
-    messages.add(node.name);
-  }
-
+      : data.hasValue
+          ? data.value?.node.path == node.path
+              ? [
+                  data.value!.name,
+                  _getDeviceInfoString(context, data.value!.info)
+                ]
+              : <String>[]
+          : <String>[];
   return messages;
 }
 
@@ -282,8 +286,6 @@ class _HeroAvatar extends StatelessWidget {
 
 class _CurrentDeviceAvatar extends ConsumerWidget {
   final DeviceNode node;
-
-  //final AsyncValue<YubiKeyData> data;
   final Color color;
 
   const _CurrentDeviceAvatar(this.node, this.color);
@@ -291,7 +293,7 @@ class _CurrentDeviceAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hero = DeviceAvatar.deviceNode(node, radius: 64);
-    final messages = _getDeviceStrings(context, node);
+    final messages = _getDeviceStrings(context, ref, node);
 
     return Column(
       children: [

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -111,9 +109,11 @@ class DevicePath {
 @freezed
 class DeviceNode with _$DeviceNode {
   const DeviceNode._();
+
   factory DeviceNode.usbYubiKey(
           DevicePath path, String name, UsbPid pid, DeviceInfo? info) =
       UsbYubiKeyNode;
+
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 
   Transport get transport =>
@@ -145,16 +145,4 @@ class WindowState with _$WindowState {
     required bool active,
     @Default(false) bool hidden,
   }) = _WindowState;
-}
-
-class KeyCustomization {
-  final String serialNumber;
-  final Map<String, dynamic> properties;
-
-  const KeyCustomization(this.serialNumber, this.properties);
-
-  factory KeyCustomization.fromString(String serialNumber, String encodedJson) {
-    final data = json.decode(String.fromCharCodes(base64Decode(encodedJson)));
-    return KeyCustomization(serialNumber, data);
-  }
 }

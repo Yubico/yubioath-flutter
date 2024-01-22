@@ -27,7 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/state.dart';
 import '../theme.dart';
 import 'features.dart' as features;
-import 'key_customization.dart';
+import 'key_customization/state.dart';
 import 'logging.dart';
 import 'models.dart';
 

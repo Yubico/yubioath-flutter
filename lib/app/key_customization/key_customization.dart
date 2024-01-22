@@ -18,22 +18,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'logging.dart';
+import '../logging.dart';
 import 'models.dart';
 
-final _log = Logger('key_customization');
-
-final keyCustomizationManagerProvider =
-    Provider<KeyCustomizationManager>((ref) {
-  final retval = KeyCustomizationManager();
-  retval.read();
-  return retval;
-});
+final _log = Logger('key_customization_manager');
 
 class KeyCustomizationManager {
   var _customizations = <String, dynamic>{};
