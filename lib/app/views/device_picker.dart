@@ -24,6 +24,7 @@ import '../../core/state.dart';
 import '../../management/models.dart';
 import '../key_customization.dart';
 import '../models.dart';
+import '../shortcuts.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
@@ -192,6 +193,7 @@ class _DeviceRow extends StatelessWidget {
   final bool extended;
   final bool selected;
   final Color? background;
+  final Widget? trailing;
   final void Function() onTap;
 
   const _DeviceRow({
@@ -202,6 +204,7 @@ class _DeviceRow extends StatelessWidget {
     required this.extended,
     required this.selected,
     this.background,
+    this.trailing,
     required this.onTap,
   });
 
@@ -238,6 +241,7 @@ class _DeviceRow extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
             horizontalTitleGap: 8,
             leading: leading,
+            trailing: trailing,
             title: Text(
               title,
               overflow: TextOverflow.fade,
@@ -326,6 +330,33 @@ _DeviceRow _buildDeviceRow(
   );
 }
 
+Future<void> _showDeviceRowMenu(
+    BuildContext context, TapDownDetails details, String serialNumber) async {
+  final l10n = AppLocalizations.of(context)!;
+  await showMenu(
+    context: context,
+    position: RelativeRect.fromLTRB(
+      details.globalPosition.dx,
+      details.globalPosition.dy,
+      details.globalPosition.dx,
+      0,
+    ),
+    items: [
+      PopupMenuItem(
+        enabled: true,
+        onTap: () {
+          Actions.maybeInvoke(context, const KeyCustomizationIntent());
+        },
+        child: ListTile(
+            title: Text(l10n.s_customize_key_action),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            enabled: true),
+      ),
+    ],
+  );
+}
+
 _DeviceRow _buildCurrentDeviceRow(
   BuildContext context,
   WidgetRef ref,
@@ -340,23 +371,20 @@ _DeviceRow _buildCurrentDeviceRow(
   }
   final title = messages.removeAt(0);
   final subtitle = messages.join('\n');
+  final serialNumber = data.value?.info.serial?.toString();
 
   String displayName = title;
   Color? displayColor;
-  if (node is UsbYubiKeyNode) {
-    if (node.info?.serial != null) {
-      final properties = ref
-          .read(keyCustomizationManagerProvider)
-          .get(node.info?.serial.toString())
-          ?.properties;
-      var customName = properties?['display_name'];
-      if (customName != null && customName != '') {
-        displayName = customName;
-      }
-      var customColor = properties?['display_color'];
-      if (customColor != null) {
-        displayColor = Color(int.parse(customColor, radix: 16));
-      }
+  if (serialNumber != null && serialNumber.isNotEmpty) {
+    final properties =
+        ref.read(keyCustomizationManagerProvider).get(serialNumber)?.properties;
+    var customName = properties?['display_name'];
+    if (customName != null && customName != '') {
+      displayName = customName;
+    }
+    var customColor = properties?['display_color'];
+    if (customColor != null) {
+      displayColor = Color(int.parse(customColor, radix: 16));
     }
   }
 
@@ -374,6 +402,20 @@ _DeviceRow _buildCurrentDeviceRow(
     background: displayColor,
     selected: true,
     onTap: () {},
+    trailing: (serialNumber != null && serialNumber.isNotEmpty)
+        ? GestureDetector(
+            onTapDown: (TapDownDetails details) async {
+              await _showDeviceRowMenu(context, details, serialNumber);
+            },
+            onSecondaryTapDown: (TapDownDetails details) async {
+              await _showDeviceRowMenu(context, details, serialNumber);
+            },
+            child: IconButton(
+              icon: const Icon(Icons.more_vert_outlined),
+              onPressed: () {},
+            ),
+          )
+        : null,
   );
 }
 

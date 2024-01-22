@@ -182,20 +182,6 @@ class NavigationContent extends ConsumerWidget {
                       },
                     ),
                   ],
-                  if (data.info.serial != null) ...[
-                    NavigationItem(
-                      leading: const Icon(Icons.settings_applications_sharp),
-                      title: 'Customize',
-                      collapsed: !extended,
-                      onTap: () {
-                        if (shouldPop) {
-                          Navigator.of(context).pop();
-                        }
-                        Actions.maybeInvoke(
-                            context, const KeyCustomizationIntent());
-                      },
-                    )
-                  ],
                   const SizedBox(height: 32),
                 ],
               ],

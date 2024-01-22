@@ -725,6 +725,7 @@
     "p_ndef_set_clip_failure": "Failed to access clipboard when trying to copy OTP code from YubiKey.",
 
     "@_key_customization": {},
+    "s_customize_key_action": "Customize key",
     "s_custom_key_name": "Custom key name",
     "s_custom_key_color": "Color for YubiKey",
 
