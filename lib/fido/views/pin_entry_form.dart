@@ -18,109 +18,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/views/app_page.dart';
-import '../../app/views/message_page.dart';
-import '../../core/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
-import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
-import 'key_actions.dart';
-import 'pin_dialog.dart';
 
-class FidoLockedPage extends ConsumerWidget {
-  final DeviceNode node;
-  final FidoState state;
-
-  const FidoLockedPage(this.node, this.state, {super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final hasFeature = ref.watch(featureProvider);
-    final hasActions = hasFeature(features.actions);
-
-    if (!state.hasPin) {
-      if (state.bioEnroll != null) {
-        return MessagePage(
-          actions: [
-            ActionChip(
-              label: Text(l10n.s_set_pin),
-              onPressed: () async {
-                await showBlurDialog(
-                    context: context,
-                    builder: (context) => FidoPinDialog(node.path, state));
-              },
-              avatar: const Icon(Icons.pin_outlined),
-            )
-          ],
-          title: l10n.s_webauthn,
-          header: '${l10n.s_fingerprints_get_started} (1/2)',
-          message: l10n.p_set_fingerprints_desc,
-          keyActionsBuilder: hasActions ? _buildActions : null,
-          keyActionsBadge: fidoShowActionsNotifier(state),
-        );
-      } else {
-        return MessagePage(
-          title: l10n.s_webauthn,
-          header: state.credMgmt
-              ? l10n.l_no_discoverable_accounts
-              : l10n.l_ready_to_use,
-          message: l10n.p_optionally_set_a_pin,
-          keyActionsBuilder: hasActions ? _buildActions : null,
-          keyActionsBadge: fidoShowActionsNotifier(state),
-        );
-      }
-    }
-
-    if (!state.credMgmt && state.bioEnroll == null) {
-      return MessagePage(
-        title: l10n.s_webauthn,
-        header: l10n.l_ready_to_use,
-        message: l10n.l_register_sk_on_websites,
-        keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
-      );
-    }
-
-    if (state.forcePinChange) {
-      return MessagePage(
-        title: l10n.s_webauthn,
-        header: l10n.s_pin_change_required,
-        message: l10n.l_pin_change_required_desc,
-        keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
-      );
-    }
-
-    return AppPage(
-      title: l10n.s_webauthn,
-      keyActionsBuilder: hasActions ? _buildActions : null,
-      builder: (context, _) => Column(
-        children: [
-          _PinEntryForm(state, node),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActions(BuildContext context) =>
-      fidoBuildActions(context, node, state, -1);
-}
-
-class _PinEntryForm extends ConsumerStatefulWidget {
+class PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
   final DeviceNode _deviceNode;
-  const _PinEntryForm(this._state, this._deviceNode);
+  const PinEntryForm(this._state, this._deviceNode, {super.key});
 
   @override
-  ConsumerState<_PinEntryForm> createState() => _PinEntryFormState();
+  ConsumerState<PinEntryForm> createState() => _PinEntryFormState();
 }
 
-class _PinEntryFormState extends ConsumerState<_PinEntryForm> {
+class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   final _pinController = TextEditingController();
   bool _blocked = false;
   int? _retries;

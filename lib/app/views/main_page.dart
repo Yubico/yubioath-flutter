@@ -23,7 +23,9 @@ import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
-import '../../fido/views/fido_screen.dart';
+import '../../fido/views/fingerprints_screen.dart';
+import '../../fido/views/passkeys_screen.dart';
+import '../../fido/views/webauthn_page.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
@@ -149,9 +151,9 @@ class MainPage extends ConsumerWidget {
 
               return switch (app) {
                 Application.accounts => OathScreen(data.node.path),
-                Application.webauthn => FidoScreen(data),
-                Application.passkeys => FidoScreen(data),
-                Application.fingerprints => FidoScreen(data),
+                Application.webauthn => const WebAuthnScreen(),
+                Application.passkeys => PasskeysScreen(data),
+                Application.fingerprints => FingerprintsScreen(data),
                 Application.certificates => PivScreen(data.node.path),
                 Application.slots => OtpScreen(data.node.path),
                 _ => MessagePage(
