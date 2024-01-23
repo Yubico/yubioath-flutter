@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -247,30 +249,41 @@ class _FidoUnlockedPageState extends ConsumerState<FidoUnlockedPage> {
                   context, widget.node, widget.state, nFingerprints)
               : null,
           keyActionsBadge: fidoShowActionsNotifier(widget.state),
-          builder: (context, expanded) => Actions(
-            actions: {
-              if (expanded) ...{
-                OpenIntent<FidoCredential>:
-                    CallbackAction<OpenIntent<FidoCredential>>(
-                        onInvoke: (intent) {
-                  setState(() {
-                    _selected = intent.target;
-                  });
-                  return null;
-                }),
-                OpenIntent<Fingerprint>:
-                    CallbackAction<OpenIntent<Fingerprint>>(onInvoke: (intent) {
-                  setState(() {
-                    _selected = intent.target;
-                  });
-                  return null;
-                }),
-              }
-            },
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children.map((f) => f(expanded)).toList()),
-          ),
+          builder: (context, expanded) {
+            // De-select if window is resized to be non-expanded.
+            if (!expanded && _selected != null) {
+              Timer.run(() {
+                setState(() {
+                  _selected = null;
+                });
+              });
+            }
+            return Actions(
+              actions: {
+                if (expanded) ...{
+                  OpenIntent<FidoCredential>:
+                      CallbackAction<OpenIntent<FidoCredential>>(
+                          onInvoke: (intent) {
+                    setState(() {
+                      _selected = intent.target;
+                    });
+                    return null;
+                  }),
+                  OpenIntent<Fingerprint>:
+                      CallbackAction<OpenIntent<Fingerprint>>(
+                          onInvoke: (intent) {
+                    setState(() {
+                      _selected = intent.target;
+                    });
+                    return null;
+                  }),
+                }
+              },
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: children.map((f) => f(expanded)).toList()),
+            );
+          },
         ),
       );
     }
