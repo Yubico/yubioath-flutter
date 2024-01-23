@@ -1049,10 +1049,11 @@ packages:
   window_manager:
     dependency: "direct main"
     description:
-      name: window_manager
-      sha256: dcc865277f26a7dad263a47d0e405d77e21f12cb71f30333a52710a408690bd7
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "7d6a8c6e743ffed4b3d3a8100821bcb0d1f760c7"
+      resolved-ref: "7d6a8c6e743ffed4b3d3a8100821bcb0d1f760c7"
+      url: "https://github.com/fdennis/window_manager.git"
+    source: git
     version: "0.3.7"
   xdg_directories:
     dependency: transitive
