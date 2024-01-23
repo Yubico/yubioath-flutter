@@ -16,11 +16,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import 'key_customization.dart';
 
-final keyCustomizationManagerProvider =
-    Provider<KeyCustomizationManager>((ref) {
-  final retval = KeyCustomizationManager();
-  retval.read();
-  return retval;
-});
+final keyCustomizationManagerProvider = Provider<KeyCustomizationManager>(
+    (ref) => KeyCustomizationManager(ref.watch(prefProvider)));

@@ -15,36 +15,36 @@
  */
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../logging.dart';
 import 'models.dart';
 
 final _log = Logger('key_customization_manager');
+const _prefKeyCustomizations = 'KEY_CUSTOMIZATIONS';
 
 class KeyCustomizationManager {
-  var _customizations = <String, dynamic>{};
+  final SharedPreferences _prefs;
+  final Map<String, dynamic> _customizations;
 
-  void read() async {
-    final customizationFile = await _customizationFile;
-    // get content
-    if (!await customizationFile.exists()) {
-      return;
+  KeyCustomizationManager(this._prefs)
+      : _customizations =
+            readCustomizations(_prefs.getString(_prefKeyCustomizations));
+
+  static Map<String, dynamic> readCustomizations(String? pref) {
+    if (pref == null) {
+      return {};
     }
 
     try {
-      var customizationContent = await customizationFile.readAsString();
-      final jsonString =
-          String.fromCharCodes(base64Decode(customizationContent));
-      _customizations = json.decode(utf8.decode(jsonString.codeUnits));
+      final jsonString = String.fromCharCodes(base64Decode(pref));
+      return json.decode(utf8.decode(jsonString.codeUnits));
     } catch (e) {
-      return;
+      return {};
     }
   }
 
@@ -55,7 +55,7 @@ class KeyCustomizationManager {
       return null;
     }
 
-    final sha = getSerialSha(serialNumber);
+    final sha = _getSerialSha(serialNumber);
 
     if (_customizations.containsKey(sha)) {
       return KeyCustomization(serialNumber, _customizations[sha]);
@@ -70,38 +70,15 @@ class KeyCustomizationManager {
       'display_name': customName?.isNotEmpty == true ? customName : null
     };
     _log.debug('Setting key customization for $serial: $properties');
-    final sha = getSerialSha(serial);
+    final sha = _getSerialSha(serial);
     _customizations[sha] = properties;
   }
 
   Future<void> write() async {
-    final customizationFile = await _customizationFile;
-
-    try {
-      await customizationFile.writeAsString(
-          base64UrlEncode(utf8.encode(json.encode(_customizations))),
-          flush: true);
-    } catch (e) {
-      _log.error('Error writing customization file: $e');
-      return;
-    }
+    await _prefs.setString(_prefKeyCustomizations,
+        base64UrlEncode(utf8.encode(json.encode(_customizations))));
   }
 
-  final _dataSubDir = 'customizations';
-
-  Future<Directory> get _dataDir async {
-    final supportDirectory = await getApplicationSupportDirectory();
-    return Directory(join(supportDirectory.path, _dataSubDir));
-  }
-
-  Future<File> get _customizationFile async {
-    final dataDir = await _dataDir;
-    if (!await dataDir.exists()) {
-      await dataDir.create();
-    }
-    return File(join(dataDir.path, 'key_customizations.dat'));
-  }
-
-  String getSerialSha(String serialNumber) =>
+  String _getSerialSha(String serialNumber) =>
       sha256.convert(utf8.encode(serialNumber)).toString();
 }
