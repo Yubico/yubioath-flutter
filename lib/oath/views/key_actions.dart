@@ -52,7 +52,7 @@ Widget oathBuildActions(
                 ? l10n.l_unlock_first
                 : (capacity != null
                     ? l10n.l_accounts_used(used, capacity)
-                    : ''),
+                    : null),
             actionStyle: ActionStyle.primary,
             icon: const Icon(Icons.person_add_alt_1_outlined),
             onTap: used != null && (capacity == null || capacity > used)
