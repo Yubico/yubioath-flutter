@@ -358,6 +358,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
               title: Text(l10n.s_customize_key_action),
+              leading: const Icon(Icons.palette_outlined),
               dense: true,
               contentPadding: EdgeInsets.zero,
               enabled: true),
@@ -370,6 +371,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_show_hidden_devices),
+            leading: const Icon(Icons.visibility_outlined),
             dense: true,
             contentPadding: EdgeInsets.zero,
             enabled: hidden.isNotEmpty,
@@ -382,6 +384,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_hide_device),
+            leading: const Icon(Icons.visibility_off_outlined),
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
