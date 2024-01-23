@@ -169,8 +169,9 @@ class _Systray extends TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseDown() {
-    trayManager.popUpContextMenu();
+  void onTrayIconRightMouseDown() async {
+    await _updateContextMenu();
+    await trayManager.popUpContextMenu();
   }
 
   Future<void> _updateContextMenu() async {
