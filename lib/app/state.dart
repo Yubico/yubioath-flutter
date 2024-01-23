@@ -54,6 +54,22 @@ extension on Application {
       };
 }
 
+extension on String? {
+  Color? asColor() {
+    final hexValue = this;
+    if (hexValue == null) {
+      return null;
+    }
+
+    final intValue = int.tryParse(hexValue, radix: 16);
+    if (intValue == null) {
+      return null;
+    }
+
+    return Color(intValue);
+  }
+}
+
 List<Application> Function(Ref) implementedApps(List<Application> apps) =>
     (ref) {
       final hasFeature = ref.watch(featureProvider);
@@ -173,13 +189,27 @@ class ThemeNotifier extends Notifier<ThemeData> {
 
   ThemeData _get(ThemeMode themeMode,
       {Color? color, YubiKeyData? yubiKeyData}) {
+    final prefs = ref.read(prefProvider);
+    const prefLastUsedColor = 'LAST_USED_COLOR';
     Color? primaryColor = color;
     if (yubiKeyData != null) {
       final manager = ref.read(keyCustomizationManagerProvider);
       final customization = manager.get(yubiKeyData.info.serial?.toString());
       primaryColor = customization?.getColor() ?? color;
+      if (primaryColor != null) {
+        // remember the last used color
+        prefs.setString(
+          prefLastUsedColor,
+          primaryColor.value.toRadixString(16),
+        );
+      } else {
+        // the current color is null -> remove the last used color preference
+        // the system's primary color will be used
+        prefs.remove(prefLastUsedColor);
+      }
     }
 
+    primaryColor ??= prefs.getString(prefLastUsedColor).asColor();
     primaryColor ??= ref.read(primaryColorProvider);
 
     return (primaryColor != null)

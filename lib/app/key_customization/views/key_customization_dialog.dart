@@ -32,23 +32,6 @@ import '../../views/keys.dart';
 import '../models.dart';
 import '../state.dart';
 
-extension _ColorHelper on String? {
-  // ignore: unused_element
-  Color? asColor() {
-    final hexValue = this;
-    if (hexValue == null) {
-      return null;
-    }
-
-    final intValue = int.tryParse(hexValue, radix: 16);
-    if (intValue == null) {
-      return null;
-    }
-
-    return Color(intValue);
-  }
-}
-
 class KeyCustomizationDialog extends ConsumerStatefulWidget {
   final KeyCustomization? initialCustomization;
   final DeviceNode? node;
