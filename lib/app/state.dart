@@ -185,11 +185,10 @@ class ThemeNotifier extends Notifier<ThemeData> {
     return (primaryColor != null)
         ? _getDefault(themeMode).copyWith(
             colorScheme: ColorScheme.fromSeed(
-                    brightness: themeMode == ThemeMode.dark
-                        ? Brightness.dark
-                        : Brightness.light,
-                    seedColor: primaryColor)
-                .copyWith(primary: primaryColor))
+                brightness: themeMode == ThemeMode.dark
+                    ? Brightness.dark
+                    : Brightness.light,
+                seedColor: primaryColor))
         : _getDefault(themeMode);
   }
 
