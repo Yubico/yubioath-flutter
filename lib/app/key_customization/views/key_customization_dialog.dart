@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../android/state.dart';
 import '../../../core/state.dart';
 import '../../../management/models.dart';
 import '../../../widgets/app_input_decoration.dart';
@@ -32,6 +33,7 @@ import '../models.dart';
 import '../state.dart';
 
 extension _ColorHelper on String? {
+  // ignore: unused_element
   Color? asColor() {
     final hexValue = this;
     if (hexValue == null) {
@@ -140,63 +142,74 @@ class _KeyCustomizationDialogState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  AppTextFormField(
-                    //controller: displayNameController,
-                    initialValue: _customName,
-                    maxLength: 20,
-                    decoration: AppInputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: l10n.s_custom_key_name,
-                      helperText: '', // Prevents dialog resizing when disabled
-                      prefixIcon: const Icon(Icons.key),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: AppTextFormField(
+                      initialValue: _customName,
+                      maxLength: 20,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_custom_key_name,
+                        helperText:
+                            '', // Prevents dialog resizing when disabled
+                        prefixIcon: const Icon(Icons.key),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: (value) {
+                        setState(() {
+                          _customName = value.trim();
+                        });
+                      },
+                      onFieldSubmitted: (_) {},
                     ),
-                    textInputAction: TextInputAction.done,
-                    onChanged: (value) {
-                      setState(() {
-                        _customName = value.trim();
-                      });
-                    },
-                    onFieldSubmitted: (_) {},
                   ),
                   Text(l10n.s_custom_key_color),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    children: [
-                      ...[
-                        Colors.yellow.withOpacity(1.0),
-                        Colors.orange.withOpacity(1.0),
-                        Colors.red.withOpacity(1.0),
-                        Colors.deepPurple.withOpacity(1.0),
-                        Colors.green.withOpacity(1.0),
-                        Colors.teal.withOpacity(1.0),
-                        Colors.cyan.withOpacity(1.0),
-                        'FF88FFBB'.asColor() // example
-                      ].map((e) => _ColorButton(
-                            color: e,
-                            isSelected: _customColor == e,
-                            onPressed: () {
-                              _updateColor(e);
-                            },
-                          )),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      runSpacing: 8,
+                      spacing: 16,
+                      children: [
+                        ...[
+                          Colors.yellow.withOpacity(1.0),
+                          Colors.orange.withOpacity(1.0),
+                          Colors.red.withOpacity(1.0),
+                          Colors.deepPurple.withOpacity(1.0),
+                          Colors.green.withOpacity(1.0),
+                          Colors.teal.withOpacity(1.0),
+                          Colors.cyan.withOpacity(1.0),
+                          // add nice color to devices with dynamic color
+                          if (isAndroid &&
+                              ref.read(androidSdkVersionProvider) >= 31)
+                            Colors.blueAccent.withOpacity(1.0)
+                        ].map((e) => _ColorButton(
+                              color: e,
+                              isSelected: _customColor == e,
+                              onPressed: () {
+                                _updateColor(e);
+                              },
+                            )),
 
-                      // remove color button
-                      RawMaterialButton(
-                        onPressed: () => _updateColor(null),
-                        constraints: const BoxConstraints(
-                            minWidth: 32.0, minHeight: 32.0),
-                        fillColor: _customColor == null
-                            ? theme.colorScheme.surface
-                            : theme.colorScheme.onSurface,
-                        shape: const CircleBorder(),
-                        child: Icon(
-                          Icons.cancel_rounded,
-                          size: 16,
-                          color: _customColor == null
-                              ? theme.colorScheme.onSurface
-                              : theme.colorScheme.surface,
+                        // remove color button
+                        RawMaterialButton(
+                          onPressed: () => _updateColor(null),
+                          constraints: const BoxConstraints(
+                              minWidth: 32.0, minHeight: 32.0),
+                          fillColor: _customColor == null
+                              ? theme.colorScheme.surface
+                              : theme.colorScheme.onSurface,
+                          shape: const CircleBorder(),
+                          child: Icon(
+                            Icons.cancel_rounded,
+                            size: 16,
+                            color: _customColor == null
+                                ? theme.colorScheme.onSurface
+                                : theme.colorScheme.surface,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   )
                 ],
               ),
