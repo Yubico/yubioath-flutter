@@ -52,8 +52,9 @@ Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }
 
-Future<int?> getPrimaryColor() async {
-  return await appMethodsChannel.invokeMethod('getPrimaryColor');
+Future<Color?> getPrimaryColor() async {
+  final value = await appMethodsChannel.invokeMethod('getPrimaryColor');
+  return value != null ? Color(value) : null;
 }
 
 Future<void> setPrimaryClip(String toClipboard, bool isSensitive) async {

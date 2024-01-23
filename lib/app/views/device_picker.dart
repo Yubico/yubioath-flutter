@@ -285,7 +285,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
         ),
       );
     } else {
-      showMenuFn(details) {
+      void showMenuFn(details) {
         showMenu(
           context: context,
           position: RelativeRect.fromLTRB(
@@ -299,16 +299,9 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       }
 
       return GestureDetector(
-        onSecondaryTapDown: isDesktop && menuItems.isNotEmpty
-            ? (details) {
-                showMenuFn(details);
-              }
-            : null,
-        onLongPressStart: isAndroid
-            ? (details) {
-                showMenuFn(details);
-              }
-            : null,
+        onSecondaryTapDown:
+            isDesktop && menuItems.isNotEmpty ? showMenuFn : null,
+        onLongPressStart: isAndroid ? showMenuFn : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
           child: widget.selected

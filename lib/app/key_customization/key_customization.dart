@@ -17,7 +17,6 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,24 +40,21 @@ class KeyCustomizationManager {
     }
 
     try {
-      final jsonString = String.fromCharCodes(base64Decode(pref));
-      return json.decode(utf8.decode(jsonString.codeUnits));
+      return json.decode(utf8.decode(pref.codeUnits));
     } catch (e) {
       return {};
     }
   }
 
-  KeyCustomization? get(String? serialNumber) {
-    _log.debug('Getting key customization for $serialNumber');
+  KeyCustomization? get(String? serial) {
+    _log.debug('Getting key customization for $serial');
 
-    if (serialNumber == null || serialNumber.isEmpty) {
+    if (serial == null || serial.isEmpty) {
       return null;
     }
 
-    final sha = _getSerialSha(serialNumber);
-
-    if (_customizations.containsKey(sha)) {
-      return KeyCustomization(serialNumber, _customizations[sha]);
+    if (_customizations.containsKey(serial)) {
+      return KeyCustomization(serial, _customizations[serial]);
     }
 
     return null;
@@ -70,15 +66,11 @@ class KeyCustomizationManager {
       'display_name': customName?.isNotEmpty == true ? customName : null
     };
     _log.debug('Setting key customization for $serial: $properties');
-    final sha = _getSerialSha(serial);
-    _customizations[sha] = properties;
+    _customizations[serial] = properties;
   }
 
   Future<void> write() async {
     await _prefs.setString(_prefKeyCustomizations,
-        base64UrlEncode(utf8.encode(json.encode(_customizations))));
+        String.fromCharCodes(utf8.encode(json.encode(_customizations))));
   }
-
-  String _getSerialSha(String serialNumber) =>
-      sha256.convert(utf8.encode(serialNumber)).toString();
 }
