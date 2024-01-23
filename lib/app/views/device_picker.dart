@@ -299,12 +299,12 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       }
 
       return GestureDetector(
-        onSecondaryTapDown: isDesktop
+        onSecondaryTapDown: isDesktop && menuItems.isNotEmpty
             ? (details) {
                 showMenuFn(details);
               }
             : null,
-        onDoubleTapDown: isAndroid
+        onLongPressStart: isAndroid
             ? (details) {
                 showMenuFn(details);
               }
@@ -313,13 +313,13 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           padding: const EdgeInsets.symmetric(vertical: 6.5),
           child: widget.selected
               ? IconButton.filled(
-                  tooltip: tooltip,
+                  tooltip: isDesktop ? tooltip : null,
                   icon: widget.leading,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   onPressed: widget.onTap,
                 )
               : IconButton(
-                  tooltip: tooltip,
+                  tooltip: isDesktop ? tooltip : null,
                   icon: widget.leading,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   onPressed: widget.onTap,
@@ -350,7 +350,6 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       if (serial != null)
         PopupMenuItem(
           enabled: true,
-          value: 0,
           onTap: () async {
             await ref.read(withContextProvider)((context) async {
               await _showKeyCustomizationDialog(manager, context, node, serial);
@@ -363,7 +362,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
               contentPadding: EdgeInsets.zero,
               enabled: true),
         ),
-      if (hidden.isNotEmpty)
+      if (isDesktop && hidden.isNotEmpty)
         PopupMenuItem(
           enabled: hidden.isNotEmpty,
           onTap: () {
@@ -377,7 +376,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             enabled: hidden.isNotEmpty,
           ),
         ),
-      if (node != null)
+      if (isDesktop && node is NfcReaderNode)
         PopupMenuItem(
           onTap: () {
             ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
