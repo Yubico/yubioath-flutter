@@ -149,7 +149,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       : null,
                   builder: (context, expanded) {
                     // De-select if window is resized to be non-expanded.
-                    if (!expanded) {
+                    if (!expanded && _selected != null) {
                       Timer.run(() {
                         setState(() {
                           _selected = null;
