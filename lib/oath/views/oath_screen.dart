@@ -31,6 +31,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
@@ -82,6 +83,7 @@ class _LockedView extends ConsumerWidget {
     final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
       title: AppLocalizations.of(context)!.s_accounts,
+      capabilities: const [Capability.oath],
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
           : null,
@@ -173,6 +175,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           )
         ],
         title: l10n.s_accounts,
+        capabilities: const [Capability.oath],
         key: keys.noAccountsView,
         header: l10n.l_authenticator_get_started,
         message: l10n.p_no_accounts_desc,
@@ -246,6 +249,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       },
       builder: (context) => AppPage(
         title: l10n.s_accounts,
+        capabilities: const [Capability.oath],
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
@@ -270,53 +274,60 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ListTitle(l10n.s_details),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  IconTheme(
-                                    data: IconTheme.of(context)
-                                        .copyWith(size: 24),
-                                    child: helper.buildCodeIcon(),
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  DefaultTextStyle.merge(
-                                    style: const TextStyle(fontSize: 28),
-                                    child: helper.buildCodeLabel(),
-                                  ),
-                                ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Card(
+                        elevation: 0.0,
+                        color: Theme.of(context).hoverColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    IconTheme(
+                                      data: IconTheme.of(context)
+                                          .copyWith(size: 24),
+                                      child: helper.buildCodeIcon(),
+                                    ),
+                                    const SizedBox(width: 8.0),
+                                    DefaultTextStyle.merge(
+                                      style: const TextStyle(fontSize: 28),
+                                      child: helper.buildCodeLabel(),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Text(
-                              helper.title,
-                              style: Theme.of(context).textTheme.headlineSmall,
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                            ),
-                            if (subtitle != null)
                               Text(
-                                subtitle,
+                                helper.title,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                                 softWrap: true,
                                 textAlign: TextAlign.center,
-                                // This is what ListTile uses for subtitle
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
                               ),
-                          ],
+                              if (subtitle != null)
+                                Text(
+                                  subtitle,
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                  // This is what ListTile uses for subtitle
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .color,
+                                      ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

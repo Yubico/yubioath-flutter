@@ -102,6 +102,9 @@ class AppTheme {
       );
 }
 
+const capabilityChipBorderColor = Color(0x44777777);
+const capabilityChipTextColor = Color(0xFF777777);
+
 /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
 /// This fixes the issue with FilterChip resizing vertically on toggle.
 BorderSide? _chipBorder(Color color) =>

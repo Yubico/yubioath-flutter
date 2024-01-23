@@ -59,6 +59,7 @@ class PasskeysScreen extends ConsumerWidget {
           if (Capability.fido2.value & enabled == 0) {
             return MessagePage(
               title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
               header: l10n.s_fido_disabled,
               message: l10n.l_webauthn_req_fido2,
             );
@@ -91,6 +92,7 @@ class _FidoLockedPage extends ConsumerWidget {
     if (!state.hasPin) {
       return MessagePage(
         title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         header: state.credMgmt
             ? l10n.l_no_discoverable_accounts
             : l10n.l_ready_to_use,
@@ -103,6 +105,7 @@ class _FidoLockedPage extends ConsumerWidget {
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
         title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -113,6 +116,7 @@ class _FidoLockedPage extends ConsumerWidget {
     if (state.forcePinChange) {
       return MessagePage(
         title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -122,6 +126,7 @@ class _FidoLockedPage extends ConsumerWidget {
 
     return AppPage(
       title: l10n.s_passkeys,
+      capabilities: const [Capability.fido2],
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
@@ -159,6 +164,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       // TODO: Special handling for credMgmt not supported
       return MessagePage(
         title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
@@ -178,6 +184,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     if (credentials.isEmpty) {
       return MessagePage(
         title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
@@ -226,41 +233,48 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         detailViewBuilder: credential != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ListTitle(l10n.s_details),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        // TODO: Reuse from credential_dialog
-                        child: Column(
-                          children: [
-                            Text(
-                              credential.userName,
-                              style: Theme.of(context).textTheme.headlineSmall,
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              credential.rpId,
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                              // This is what ListTile uses for subtitle
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .color,
-                                  ),
-                            ),
-                            const SizedBox(height: 16),
-                            const Icon(Icons.person, size: 72),
-                          ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Card(
+                        elevation: 0.0,
+                        color: Theme.of(context).hoverColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          // TODO: Reuse from credential_dialog
+                          child: Column(
+                            children: [
+                              Text(
+                                credential.userName,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                credential.rpId,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                // This is what ListTile uses for subtitle
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .color,
+                                    ),
+                              ),
+                              const SizedBox(height: 16),
+                              const Icon(Icons.person, size: 72),
+                            ],
+                          ),
                         ),
                       ),
                     ),

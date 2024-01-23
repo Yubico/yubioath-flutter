@@ -56,7 +56,7 @@ class AccountList extends ConsumerWidget {
               selected: entry.credential == selected,
             ),
           ),
-          if (pinnedCreds.isNotEmpty)
+          if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Divider(),

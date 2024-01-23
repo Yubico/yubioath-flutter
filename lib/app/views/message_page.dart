@@ -18,6 +18,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../management/models.dart';
 import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
@@ -31,6 +32,7 @@ class MessagePage extends StatelessWidget {
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
+  final List<Capability>? capabilities;
   final bool keyActionsBadge;
   final bool? centered;
 
@@ -47,12 +49,14 @@ class MessagePage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
+    this.capabilities,
     this.centered,
   });
 
   @override
   Widget build(BuildContext context) => AppPage(
         title: title,
+        capabilities: capabilities,
         centered: centered ?? false,
         actions: actions,
         keyActionsBuilder: keyActionsBuilder,

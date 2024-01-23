@@ -29,6 +29,7 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../models.dart';
@@ -92,35 +93,42 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     },
                     child: AppPage(
                       title: l10n.s_slots,
+                      capabilities: const [Capability.otp],
                       detailViewBuilder: selected != null
                           ? (context) => Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   ListTitle(l10n.s_details),
-                                  Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      // TODO: Reuse from fingerprint_dialog
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            selected.slot.getDisplayName(l10n),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headlineSmall,
-                                            softWrap: true,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          const Icon(
-                                            Icons.touch_app,
-                                            size: 100.0,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(selected.isConfigured
-                                              ? l10n.l_otp_slot_configured
-                                              : l10n.l_otp_slot_empty)
-                                        ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Card(
+                                      elevation: 0.0,
+                                      color: Theme.of(context).hoverColor,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        // TODO: Reuse from fingerprint_dialog
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              selected.slot
+                                                  .getDisplayName(l10n),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall,
+                                              softWrap: true,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            const Icon(
+                                              Icons.touch_app,
+                                              size: 100.0,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(selected.isConfigured
+                                                ? l10n.l_otp_slot_configured
+                                                : l10n.l_otp_slot_empty)
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

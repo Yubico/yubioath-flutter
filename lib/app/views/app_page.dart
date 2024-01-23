@@ -19,6 +19,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../management/models.dart';
+import '../../theme.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
@@ -43,6 +45,7 @@ class AppPage extends StatelessWidget {
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
+  final List<Capability>? capabilities;
   const AppPage({
     super.key,
     this.title,
@@ -53,6 +56,7 @@ class AppPage extends StatelessWidget {
     this.detailViewBuilder,
     this.actionButtonBuilder,
     this.fileDropOverlay,
+    this.capabilities,
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
@@ -150,36 +154,48 @@ class AppPage extends StatelessWidget {
     ));
   }
 
-  List<Widget> _buildTitle(BuildContext context) {
-    return title != null
-        ? [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(title!,
-                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                        color: Theme.of(context).colorScheme.primary)),
-              ),
-            ),
-            const SizedBox(
-              height: 24,
-            )
-          ]
-        : [];
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 2.0,
+            runSpacing: 8.0,
+            children: [
+              Text(title!,
+                  style: Theme.of(context)
+                      .textTheme
+                      .displaySmall!
+                      .copyWith(color: Theme.of(context).colorScheme.primary)),
+              if (capabilities != null)
+                Wrap(
+                  spacing: 4.0,
+                  runSpacing: 8.0,
+                  children: [...capabilities!.map((c) => _CapabilityChip(c))],
+                )
+            ])
+      ],
+    );
   }
 
   Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ..._buildTitle(context),
+        if (title != null)
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
+            child: _buildTitle(context),
+          ),
         builder(context, expanded),
         if (actions.isNotEmpty)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 4,
@@ -322,6 +338,33 @@ class AppPage extends StatelessWidget {
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
       body: body,
+    );
+  }
+}
+
+class _CapabilityChip extends StatelessWidget {
+  final Capability capability;
+
+  const _CapabilityChip(this.capability);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ActionChip(
+      label: Text(
+        capability.getDisplayName(l10n),
+        style: Theme.of(context)
+            .textTheme
+            .labelSmall!
+            .copyWith(color: capabilityChipTextColor),
+      ),
+      padding: const EdgeInsets.all(0.0),
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(
+          color: capabilityChipBorderColor,
+        ),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
     );
   }
 }
