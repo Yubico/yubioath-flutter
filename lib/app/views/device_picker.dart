@@ -164,70 +164,13 @@ List<String> _getDeviceStrings(
 }
 
 class _DeviceMenuButton extends ConsumerWidget {
-  final DeviceNode? node;
-
+  final List<PopupMenuItem> menuItems;
   final double opacity;
 
-  const _DeviceMenuButton({this.node, required this.opacity});
+  const _DeviceMenuButton({required this.menuItems, required this.opacity});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final manager = ref.read(keyCustomizationManagerProvider);
-    final hidden = ref.watch(_hiddenDevicesProvider);
-
-    final data = ref.watch(currentDeviceDataProvider);
-
-    final serial = node is UsbYubiKeyNode
-        ? (node as UsbYubiKeyNode).info?.serial?.toString()
-        : data.hasValue
-            ? data.value?.node.path == node?.path && node != null
-                ? data.value?.info.serial.toString()
-                : null
-            : null;
-
-    final menuItems = [
-      if (serial != null)
-        PopupMenuItem(
-          enabled: true,
-          value: 0,
-          onTap: () async {
-            await ref.read(withContextProvider)((context) async {
-              await _showKeyCustomizationDialog(manager, context, node, serial);
-            });
-          },
-          child: ListTile(
-              title: Text(l10n.s_customize_key_action),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              enabled: true),
-        ),
-      if (hidden.isNotEmpty)
-        PopupMenuItem(
-          enabled: hidden.isNotEmpty,
-          onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).showAll();
-          },
-          child: ListTile(
-            title: Text(l10n.s_show_hidden_devices),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            enabled: hidden.isNotEmpty,
-          ),
-        ),
-      if (node != null)
-        PopupMenuItem(
-          onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node!.path);
-          },
-          child: ListTile(
-            title: Text(l10n.s_hide_device),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        )
-    ];
-
     return Theme(
       data: Theme.of(Navigator.of(context).context), // use app theme
       child: Opacity(
@@ -244,24 +187,9 @@ class _DeviceMenuButton extends ConsumerWidget {
       ),
     );
   }
-
-  Future<void> _showKeyCustomizationDialog(KeyCustomizationManager manager,
-      BuildContext context, DeviceNode? node, String serial) async {
-    final keyCustomization =
-        manager.get(serial) ?? KeyCustomization(serial, {});
-
-    await showBlurDialog(
-      context: context,
-      builder: (context) => KeyCustomizationDialog(
-        node: node,
-        initialCustomization: keyCustomization,
-      ),
-      routeSettings: const RouteSettings(name: 'customize'),
-    );
-  }
 }
 
-class _DeviceRow extends StatefulWidget {
+class _DeviceRow extends ConsumerStatefulWidget {
   final Widget leading;
   final String title;
   final String subtitle;
@@ -284,14 +212,15 @@ class _DeviceRow extends StatefulWidget {
   });
 
   @override
-  State<_DeviceRow> createState() => _DeviceRowState();
+  ConsumerState<_DeviceRow> createState() => _DeviceRowState();
 }
 
-class _DeviceRowState extends State<_DeviceRow> {
+class _DeviceRowState extends ConsumerState<_DeviceRow> {
   bool _showContextMenu = false;
 
   @override
   Widget build(BuildContext context) {
+    final menuItems = _getMenuItems(context, ref, widget.node);
     final tooltip = '${widget.title}\n${widget.subtitle}';
     final themeData = Theme.of(context);
     final seedColor = !widget.selected || widget.background == null
@@ -335,7 +264,7 @@ class _DeviceRowState extends State<_DeviceRow> {
               horizontalTitleGap: 8,
               leading: widget.leading,
               trailing: _DeviceMenuButton(
-                node: widget.node,
+                menuItems: menuItems,
                 opacity: widget.selected
                     ? 1.0
                     : _showContextMenu
@@ -356,24 +285,123 @@ class _DeviceRowState extends State<_DeviceRow> {
         ),
       );
     } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.5),
-        child: widget.selected
-            ? IconButton.filled(
-                tooltip: tooltip,
-                icon: widget.leading,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                onPressed: widget.onTap,
-              )
-            : IconButton(
-                tooltip: tooltip,
-                icon: widget.leading,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                onPressed: widget.onTap,
-                color: colorScheme.secondary,
-              ),
+      showMenuFn(details) {
+        showMenu(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            details.globalPosition.dx,
+            details.globalPosition.dy,
+            details.globalPosition.dx,
+            0,
+          ),
+          items: menuItems,
+        );
+      }
+
+      return GestureDetector(
+        onSecondaryTapDown: isDesktop
+            ? (details) {
+                showMenuFn(details);
+              }
+            : null,
+        onDoubleTapDown: isAndroid
+            ? (details) {
+                showMenuFn(details);
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.5),
+          child: widget.selected
+              ? IconButton.filled(
+                  tooltip: tooltip,
+                  icon: widget.leading,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  onPressed: widget.onTap,
+                )
+              : IconButton(
+                  tooltip: tooltip,
+                  icon: widget.leading,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onTap,
+                  color: colorScheme.secondary,
+                ),
+        ),
       );
     }
+  }
+
+  List<PopupMenuItem> _getMenuItems(
+      BuildContext context, WidgetRef ref, DeviceNode? node) {
+    final l10n = AppLocalizations.of(context)!;
+    final manager = ref.read(keyCustomizationManagerProvider);
+    final hidden = ref.watch(_hiddenDevicesProvider);
+
+    final data = ref.watch(currentDeviceDataProvider);
+
+    final serial = node is UsbYubiKeyNode
+        ? node.info?.serial?.toString()
+        : data.hasValue
+            ? data.value?.node.path == node?.path && node != null
+                ? data.value?.info.serial.toString()
+                : null
+            : null;
+
+    return [
+      if (serial != null)
+        PopupMenuItem(
+          enabled: true,
+          value: 0,
+          onTap: () async {
+            await ref.read(withContextProvider)((context) async {
+              await _showKeyCustomizationDialog(manager, context, node, serial);
+            });
+          },
+          child: ListTile(
+              title: Text(l10n.s_customize_key_action),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              enabled: true),
+        ),
+      if (hidden.isNotEmpty)
+        PopupMenuItem(
+          enabled: hidden.isNotEmpty,
+          onTap: () {
+            ref.read(_hiddenDevicesProvider.notifier).showAll();
+          },
+          child: ListTile(
+            title: Text(l10n.s_show_hidden_devices),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            enabled: hidden.isNotEmpty,
+          ),
+        ),
+      if (node != null)
+        PopupMenuItem(
+          onTap: () {
+            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
+          },
+          child: ListTile(
+            title: Text(l10n.s_hide_device),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        )
+    ];
+  }
+
+  Future<void> _showKeyCustomizationDialog(KeyCustomizationManager manager,
+      BuildContext context, DeviceNode? node, String serial) async {
+    final keyCustomization =
+        manager.get(serial) ?? KeyCustomization(serial, {});
+
+    await showBlurDialog(
+      context: context,
+      builder: (context) => KeyCustomizationDialog(
+        node: node,
+        initialCustomization: keyCustomization,
+      ),
+      routeSettings: const RouteSettings(name: 'customize'),
+    );
   }
 }
 
