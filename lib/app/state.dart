@@ -176,14 +176,8 @@ class ThemeNotifier extends Notifier<ThemeData> {
     Color? primaryColor = color;
     if (yubiKeyData != null) {
       final manager = ref.read(keyCustomizationManagerProvider);
-
       final customization = manager.get(yubiKeyData.info.serial?.toString());
-      String? displayColorCustomization =
-          customization?.properties['display_color'];
-
-      if (displayColorCustomization != null) {
-        primaryColor = Color(int.parse(displayColorCustomization, radix: 16));
-      }
+      primaryColor = customization?.getColor() ?? color;
     }
 
     primaryColor ??= ref.read(primaryColorProvider);

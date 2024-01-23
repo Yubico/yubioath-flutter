@@ -17,7 +17,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 
 import '../../../core/state.dart';
 import '../../../management/models.dart';
@@ -25,7 +24,6 @@ import '../../../widgets/app_input_decoration.dart';
 import '../../../widgets/app_text_form_field.dart';
 import '../../../widgets/focus_utils.dart';
 import '../../../widgets/responsive_dialog.dart';
-import '../../logging.dart';
 import '../../models.dart';
 import '../../state.dart';
 import '../../views/device_avatar.dart';
@@ -33,7 +31,21 @@ import '../../views/keys.dart';
 import '../models.dart';
 import '../state.dart';
 
-final _log = Logger('key_customization_dialog');
+extension _ColorHelper on String? {
+  Color? asColor() {
+    final hexValue = this;
+    if (hexValue == null) {
+      return null;
+    }
+
+    final intValue = int.tryParse(hexValue, radix: 16);
+    if (intValue == null) {
+      return null;
+    }
+
+    return Color(intValue);
+  }
+}
 
 class KeyCustomizationDialog extends ConsumerStatefulWidget {
   final KeyCustomization? initialCustomization;
@@ -49,23 +61,14 @@ class KeyCustomizationDialog extends ConsumerStatefulWidget {
 
 class _KeyCustomizationDialogState
     extends ConsumerState<KeyCustomizationDialog> {
-  String? _displayName;
-  String? _displayColor;
-  Color? _previewColor;
+  String? _customName;
+  Color? _customColor;
 
   @override
   void initState() {
     super.initState();
-
-    _displayColor = widget.initialCustomization != null
-        ? widget.initialCustomization?.properties['display_color']
-        : null;
-    _displayName = widget.initialCustomization != null
-        ? widget.initialCustomization?.properties['display_name']
-        : null;
-    _previewColor = _displayColor != null
-        ? Color(int.parse(_displayColor!, radix: 16))
-        : null;
+    _customName = widget.initialCustomization?.getName();
+    _customColor = widget.initialCustomization?.getColor();
   }
 
   @override
@@ -76,12 +79,12 @@ class _KeyCustomizationDialogState
 
     final Widget hero;
     if (currentNode != null) {
-      hero = _CurrentDeviceAvatar(currentNode, _previewColor ?? Colors.white);
+      hero = _CurrentDeviceAvatar(currentNode, _customColor ?? Colors.white);
     } else {
       hero = Column(
         children: [
           _HeroAvatar(
-            color: _previewColor ?? Colors.white,
+            color: _customColor ?? Colors.white,
             child: DeviceAvatar(
               radius: 64,
               child: Icon(isAndroid ? Icons.no_cell : Icons.usb),
@@ -103,24 +106,17 @@ class _KeyCustomizationDialogState
         colorScheme: ColorScheme.fromSeed(
             brightness: theme.brightness,
             seedColor:
-                _previewColor ?? primaryColor ?? theme.colorScheme.primary),
+                _customColor ?? primaryColor ?? theme.colorScheme.primary),
       ),
       child: ResponsiveDialog(
         actions: [
           TextButton(
             onPressed: () async {
-              KeyCustomization newValue = KeyCustomization(
-                  widget.initialCustomization!.serialNumber, <String, dynamic>{
-                'display_color': _displayColor,
-                'display_name': _displayName
-              });
-
-              _log.debug('Saving customization for '
-                  '${widget.initialCustomization!.serialNumber}: '
-                  '$_displayName/$_displayColor');
-
               final manager = ref.read(keyCustomizationManagerProvider);
-              manager.set(newValue);
+              manager.set(
+                  serial: widget.initialCustomization!.serialNumber,
+                  customName: _customName,
+                  customColor: _customColor);
               await manager.write();
 
               ref.invalidate(lightThemeProvider);
@@ -146,7 +142,7 @@ class _KeyCustomizationDialogState
                 children: [
                   AppTextFormField(
                     //controller: displayNameController,
-                    initialValue: _displayName,
+                    initialValue: _customName,
                     maxLength: 20,
                     decoration: AppInputDecoration(
                       border: const OutlineInputBorder(),
@@ -157,7 +153,7 @@ class _KeyCustomizationDialogState
                     textInputAction: TextInputAction.done,
                     onChanged: (value) {
                       setState(() {
-                        _displayName = value.trim();
+                        _customName = value.trim();
                       });
                     },
                     onFieldSubmitted: (_) {},
@@ -167,18 +163,19 @@ class _KeyCustomizationDialogState
                     alignment: WrapAlignment.center,
                     children: [
                       ...[
-                        [Colors.yellow, 'FFFFEB3B'],
-                        [Colors.orange, 'FFFF9800'],
-                        [Colors.red, 'FFF44336'],
-                        [Colors.deepPurple, 'FF673AB7'],
-                        [Colors.green, 'FF4CAF50'],
-                        [Colors.teal, 'FF009688'],
-                        [Colors.cyan, 'FF00BCD4']
+                        Colors.yellow.withOpacity(1.0),
+                        Colors.orange.withOpacity(1.0),
+                        Colors.red.withOpacity(1.0),
+                        Colors.deepPurple.withOpacity(1.0),
+                        Colors.green.withOpacity(1.0),
+                        Colors.teal.withOpacity(1.0),
+                        Colors.cyan.withOpacity(1.0),
+                        'FF88FFBB'.asColor() // example
                       ].map((e) => _ColorButton(
-                            color: e[0] as MaterialColor,
-                            isSelected: _displayColor == e[1],
+                            color: e,
+                            isSelected: _customColor == e,
                             onPressed: () {
-                              _updateColor(e[1] as String?);
+                              _updateColor(e);
                             },
                           )),
 
@@ -187,14 +184,14 @@ class _KeyCustomizationDialogState
                         onPressed: () => _updateColor(null),
                         constraints: const BoxConstraints(
                             minWidth: 32.0, minHeight: 32.0),
-                        fillColor: _displayColor == null
+                        fillColor: _customColor == null
                             ? theme.colorScheme.surface
                             : theme.colorScheme.onSurface,
                         shape: const CircleBorder(),
                         child: Icon(
                           Icons.cancel_rounded,
                           size: 16,
-                          color: _displayColor == null
+                          color: _customColor == null
                               ? theme.colorScheme.onSurface
                               : theme.colorScheme.surface,
                         ),
@@ -210,11 +207,9 @@ class _KeyCustomizationDialogState
     );
   }
 
-  void _updateColor(String? colorString) {
+  void _updateColor(Color? color) {
     setState(() {
-      _displayColor = colorString;
-      _previewColor =
-          colorString != null ? Color(int.parse(colorString, radix: 16)) : null;
+      _customColor = color;
     });
   }
 }
@@ -310,7 +305,7 @@ class _CurrentDeviceAvatar extends ConsumerWidget {
 }
 
 class _ColorButton extends StatefulWidget {
-  final MaterialColor color;
+  final Color? color;
   final bool isSelected;
   final Function()? onPressed;
 

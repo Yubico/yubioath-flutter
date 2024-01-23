@@ -420,17 +420,9 @@ _DeviceRow _buildDeviceRow(
     nfcReader: (_, __) => l10n.s_select_to_scan,
   );
 
-  String displayName = node.name;
-  if (info?.serial != null) {
-    final properties = ref
-        .read(keyCustomizationManagerProvider)
-        .get(info?.serial?.toString())
-        ?.properties;
-    var customName = properties?['display_name'];
-    if (customName != null && customName != '') {
-      displayName = customName;
-    }
-  }
+  final keyCustomization =
+      ref.read(keyCustomizationManagerProvider).get(info?.serial?.toString());
+  String displayName = keyCustomization?.getName() ?? node.name;
 
   return _DeviceRow(
     key: ValueKey(node.path.key),
@@ -461,24 +453,13 @@ _DeviceRow _buildCurrentDeviceRow(
   final title = messages.removeAt(0);
   final subtitle = messages.join('\n');
 
-  String displayName = title;
-
   final serialNumber =
       data.hasValue ? data.value?.info.serial?.toString() : null;
 
-  Color? displayColor;
-  if (serialNumber != null) {
-    final properties =
-        ref.read(keyCustomizationManagerProvider).get(serialNumber)?.properties;
-    var customName = properties?['display_name'];
-    if (customName != null && customName != '') {
-      displayName = customName;
-    }
-    var customColor = properties?['display_color'];
-    if (customColor != null) {
-      displayColor = Color(int.parse(customColor, radix: 16));
-    }
-  }
+  final keyCustomization =
+      ref.read(keyCustomizationManagerProvider).get(serialNumber);
+  String displayName = keyCustomization?.getName() ?? title;
+  Color? displayColor = keyCustomization?.getColor();
 
   return _DeviceRow(
     key: keys.deviceInfoListTile,

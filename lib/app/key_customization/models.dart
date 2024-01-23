@@ -15,12 +15,29 @@
  */
 
 import 'dart:convert';
+import 'dart:ui';
 
 class KeyCustomization {
   final String serialNumber;
-  final Map<String, dynamic> properties;
+  final Map<String, dynamic> _properties;
 
-  const KeyCustomization(this.serialNumber, this.properties);
+  const KeyCustomization(this.serialNumber, this._properties);
+
+  String? getName() => _properties['display_name'] as String?;
+
+  Color? getColor() {
+    var customColor = _properties['display_color'] as String?;
+    if (customColor == null) {
+      return null;
+    }
+
+    var intValue = int.tryParse(customColor, radix: 16);
+
+    if (intValue == null) {
+      return null;
+    }
+    return Color(intValue);
+  }
 
   factory KeyCustomization.fromString(String serialNumber, String encodedJson) {
     final data = json.decode(String.fromCharCodes(base64Decode(encodedJson)));

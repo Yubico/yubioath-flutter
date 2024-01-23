@@ -16,6 +16,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
@@ -48,7 +49,7 @@ class KeyCustomizationManager {
   }
 
   KeyCustomization? get(String? serialNumber) {
-    _log.debug('Getting customization for: $serialNumber');
+    _log.debug('Getting key customization for $serialNumber');
 
     if (serialNumber == null || serialNumber.isEmpty) {
       return null;
@@ -63,11 +64,14 @@ class KeyCustomizationManager {
     return null;
   }
 
-  void set(KeyCustomization customization) {
-    _log.debug(
-        'Added: ${customization.serialNumber}: ${customization.properties}');
-    final sha = getSerialSha(customization.serialNumber);
-    _customizations[sha] = customization.properties;
+  void set({required String serial, String? customName, Color? customColor}) {
+    final properties = <String, String?>{
+      'display_color': customColor?.value.toRadixString(16),
+      'display_name': customName?.isNotEmpty == true ? customName : null
+    };
+    _log.debug('Setting key customization for $serial: $properties');
+    final sha = getSerialSha(serial);
+    _customizations[sha] = properties;
   }
 
   Future<void> write() async {
