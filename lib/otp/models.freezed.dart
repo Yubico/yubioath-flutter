@@ -124,7 +124,7 @@ class _$OtpStateImpl extends _OtpState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OtpStateImpl &&
@@ -271,7 +271,7 @@ class _$OtpSlotImpl implements _OtpSlot {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OtpSlotImpl &&
@@ -435,7 +435,7 @@ class _$SlotConfigurationOptionsImpl implements _SlotConfigurationOptions {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SlotConfigurationOptionsImpl &&
@@ -691,7 +691,7 @@ class _$SlotConfigurationHotpImpl extends _SlotConfigurationHotp {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SlotConfigurationHotpImpl &&
@@ -894,7 +894,7 @@ class _$SlotConfigurationHmacSha1Impl extends _SlotConfigurationHmacSha1 {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SlotConfigurationHmacSha1Impl &&
@@ -1113,7 +1113,7 @@ class _$SlotConfigurationStaticPasswordImpl
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SlotConfigurationStaticPasswordImpl &&
@@ -1347,7 +1347,7 @@ class _$SlotConfigurationYubiOtpImpl extends _SlotConfigurationYubiOtp {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SlotConfigurationYubiOtpImpl &&

@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../theme.dart';
 import 'state.dart';
 
 const appMethodsChannel = MethodChannel('app.methods');
@@ -52,9 +53,9 @@ Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }
 
-Future<Color?> getPrimaryColor() async {
+Future<Color> getPrimaryColor() async {
   final value = await appMethodsChannel.invokeMethod('getPrimaryColor');
-  return value != null ? Color(value) : null;
+  return value != null ? Color(value) : defaultPrimaryColor;
 }
 
 Future<void> setPrimaryClip(String toClipboard, bool isSensitive) async {

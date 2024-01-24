@@ -147,74 +147,39 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
           orElse: () => supportedThemes.first);
 }
 
-final primaryColorProvider = Provider<Color?>((ref) => null);
+final defaultColorProvider = Provider<Color>((ref) => defaultPrimaryColor);
 
-final darkThemeProvider = NotifierProvider<ThemeNotifier, ThemeData>(
-  () => ThemeNotifier(ThemeMode.dark),
-);
-
-final lightThemeProvider = NotifierProvider<ThemeNotifier, ThemeData>(
-  () => ThemeNotifier(ThemeMode.light),
-);
-
-class ThemeNotifier extends Notifier<ThemeData> {
-  final ThemeMode _themeMode;
-
-  ThemeNotifier(this._themeMode);
-
-  @override
-  ThemeData build() {
-    return _get(
-      _themeMode,
-      yubiKeyData: ref.watch(currentDeviceDataProvider).valueOrNull,
-    );
-  }
-
-  static ThemeData _getDefault(ThemeMode themeMode) =>
-      themeMode == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
-
-  ThemeData _get(ThemeMode themeMode,
-      {Color? color, YubiKeyData? yubiKeyData}) {
-    final prefs = ref.read(prefProvider);
-    const prefLastUsedColor = 'LAST_USED_COLOR';
-    Color? primaryColor = color;
-    if (yubiKeyData != null) {
-      final manager = ref.read(keyCustomizationManagerProvider);
-      final customization = manager.get(yubiKeyData.info.serial?.toString());
-      primaryColor = customization?.color ?? color;
-      if (primaryColor != null) {
-        // remember the last used color
-        prefs.setInt(
-          prefLastUsedColor,
-          primaryColor.value,
-        );
-      } else {
-        // the current color is null -> remove the last used color preference
-        // the system's primary color will be used
-        prefs.remove(prefLastUsedColor);
-      }
+final primaryColorProvider = Provider<Color>((ref) {
+  // First choice, device color
+  final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+  final serial = data?.info.serial;
+  if (serial != null) {
+    final customization = ref.watch(keyCustomizationManagerProvider)[serial];
+    final deviceColor = customization?.color;
+    if (deviceColor != null) {
+      return deviceColor;
     }
-
-    final lastUsedColor = prefs.getInt(prefLastUsedColor);
-    primaryColor ??= lastUsedColor != null
-        ? Color(lastUsedColor)
-        : ref.read(primaryColorProvider);
-
-    return (primaryColor != null)
-        ? _getDefault(themeMode).copyWith(
-            colorScheme: ColorScheme.fromSeed(
-                brightness: themeMode == ThemeMode.dark
-                    ? Brightness.dark
-                    : Brightness.light,
-                seedColor: primaryColor))
-        : _getDefault(themeMode);
   }
 
-  void setColor(Color? color) {
-    _log.debug('Set color to $color');
-    state = _get(_themeMode, color: color);
+  // Second choice, last used color
+  const prefLastUsedColor = 'LAST_USED_COLOR';
+  final prefs = ref.watch(prefProvider);
+  final lastUsedColor = prefs.getInt(prefLastUsedColor);
+  if (lastUsedColor != null) {
+    return Color(lastUsedColor);
   }
-}
+
+  // Third choice, default color
+  return ref.watch(defaultColorProvider);
+});
+
+final darkThemeProvider = Provider<ThemeData>(
+  (ref) => AppTheme.getDarkTheme(ref.watch(primaryColorProvider)),
+);
+
+final lightThemeProvider = Provider<ThemeData>(
+  (ref) => AppTheme.getLightTheme(ref.watch(primaryColorProvider)),
+);
 
 // Override with platform implementation
 final attachedDevicesProvider =

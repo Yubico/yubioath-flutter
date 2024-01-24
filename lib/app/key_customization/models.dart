@@ -25,7 +25,7 @@ part 'models.g.dart';
 @freezed
 class KeyCustomization with _$KeyCustomization {
   factory KeyCustomization({
-    required String serial,
+    required int serial,
     @JsonKey(includeIfNull: false) String? name,
     @JsonKey(includeIfNull: false) @_ColorConverter() Color? color,
   }) = _KeyCustomization;

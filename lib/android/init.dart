@@ -85,7 +85,7 @@ Future<Widget> initialize() async {
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
-      primaryColorProvider.overrideWithValue(await getPrimaryColor()),
+      defaultColorProvider.overrideWithValue(await getPrimaryColor()),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(

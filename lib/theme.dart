@@ -34,14 +34,20 @@ const themeGreen = Color(0xFF78B850);
 const themeGrey = Color(0xFF8C8B8C);
 */
 
-const primaryColor = Colors.blueAccent;
+const defaultPrimaryColor = Colors.blueAccent;
 //const primaryColor = Colors.green;
 //const primaryColor = Colors.deepPurple;
 
 const defaultTextTheme = Typography.englishLike2021;
 
 class AppTheme {
-  static ThemeData get lightTheme => ThemeData(
+  static ThemeData getTheme(Brightness brightness, Color primaryColor) =>
+      switch (brightness) {
+        Brightness.light => getLightTheme(primaryColor),
+        Brightness.dark => getDarkTheme(primaryColor),
+      };
+
+  static ThemeData getLightTheme(Color primaryColor) => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.light,
@@ -71,7 +77,7 @@ class AppTheme {
         ),
       );
 
-  static ThemeData get darkTheme => ThemeData(
+  static ThemeData getDarkTheme(Color primaryColor) => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
