@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from .base import RpcException
 import mss
 import zxingcpp
 import base64
@@ -21,7 +22,7 @@ import sys
 import subprocess  # nosec
 import tempfile
 from mss.exception import ScreenShotError
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 
 def _capture_screen():
@@ -64,11 +65,22 @@ def _capture_screen():
     raise ValueError("Unable to capture screenshot")
 
 
+class InvalidImageException(RpcException):
+    def __init__(self):
+        super().__init__(
+            "invalid-image",
+            "The provided file is not a valid image",
+        )
+
+
 def scan_qr(image_data=None):
     if image_data:
-        msg = base64.b64decode(image_data)
-        buf = io.BytesIO(msg)
-        img = Image.open(buf)
+        try:
+            msg = base64.b64decode(image_data)
+            buf = io.BytesIO(msg)
+            img = Image.open(buf)
+        except UnidentifiedImageError:
+            raise InvalidImageException()
     else:
         img = _capture_screen()
 

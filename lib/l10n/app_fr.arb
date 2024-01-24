@@ -611,6 +611,13 @@
     "l_qr_scanned": "QR code scanné",
     "l_invalid_qr": "QR code invalide",
     "l_qr_not_found": "Aucun QR code trouvé",
+    "l_qr_file_too_large": null,
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {}
+        }
+    },
+    "l_qr_invalid_image_file": null,
     "l_qr_select_file": null,
     "l_qr_not_read": "Erreur de lecture du QR code: {message}",
     "@l_qr_not_read": {
