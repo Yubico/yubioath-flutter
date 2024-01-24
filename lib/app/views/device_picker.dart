@@ -23,6 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
+import '../../management/views/management_screen.dart';
 import '../key_customization/key_customization.dart';
 import '../key_customization/models.dart';
 import '../key_customization/state.dart';
@@ -32,6 +33,7 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
+import 'reset_dialog.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -329,13 +331,16 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
     final manager = ref.read(keyCustomizationManagerProvider);
     final hidden = ref.watch(_hiddenDevicesProvider);
 
-    final data = ref.watch(currentDeviceDataProvider);
+    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+    final managementAvailability = data != null
+        ? Application.management.getAvailability(data)
+        : Availability.unsupported;
 
     final serial = node is UsbYubiKeyNode
         ? node.info?.serial?.toString()
-        : data.hasValue
-            ? data.value?.node.path == node?.path && node != null
-                ? data.value?.info.serial.toString()
+        : data != null
+            ? data.node.path == node?.path && node != null
+                ? data.info.serial.toString()
                 : null
             : null;
 
@@ -380,7 +385,39 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
-        )
+        ),
+      if (node == data?.node && managementAvailability == Availability.enabled)
+        PopupMenuItem(
+          onTap: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ManagementScreen(data),
+            );
+          },
+          child: ListTile(
+            title: Text(data!.info.version.major > 4
+                ? l10n.s_toggle_applications
+                : l10n.s_toggle_interfaces),
+            leading: const Icon(Icons.construction),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+      if (data != null && node == data.node)
+        PopupMenuItem(
+          onTap: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ResetDialog(data),
+            );
+          },
+          child: ListTile(
+            title: Text(l10n.s_factory_reset),
+            leading: const Icon(Icons.delete_forever),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
     ];
   }
 

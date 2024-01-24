@@ -18,21 +18,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../management/views/management_screen.dart';
-import '../message.dart';
 import '../models.dart';
 import '../shortcuts.dart';
 import '../state.dart';
 import 'device_picker.dart';
 import 'keys.dart';
-import 'reset_dialog.dart';
 
 class NavigationItem extends StatelessWidget {
   final Widget leading;
   final String title;
   final bool collapsed;
   final bool selected;
-  final void Function() onTap;
+  final void Function()? onTap;
 
   const NavigationItem({
     super.key,
@@ -40,7 +37,7 @@ class NavigationItem extends StatelessWidget {
     required this.title,
     this.collapsed = false,
     this.selected = false,
-    required this.onTap,
+    this.onTap,
   });
 
   @override
@@ -73,6 +70,7 @@ class NavigationItem extends StatelessWidget {
       );
     } else {
       return ListTile(
+        enabled: onTap != null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
         leading: leading,
         title: Text(title),
@@ -143,7 +141,7 @@ class NavigationContent extends ConsumerWidget {
                 (app) => app.getAvailability(data) != Availability.unsupported)
             .toList()
         : <Application>[];
-    final hasManagement = availableApps.remove(Application.management);
+    availableApps.remove(Application.management);
     final currentApp = ref.watch(currentAppProvider);
 
     return Padding(
@@ -171,48 +169,17 @@ class NavigationContent extends ConsumerWidget {
                             : Icon(app._icon),
                         collapsed: !extended,
                         selected: app == currentApp,
-                        onTap: () {
-                          ref
-                              .read(currentAppProvider.notifier)
-                              .setCurrentApp(app);
-                          if (shouldPop) {
-                            Navigator.of(context).pop();
-                          }
-                        },
+                        onTap: app.getAvailability(data) == Availability.enabled
+                            ? () {
+                                ref
+                                    .read(currentAppProvider.notifier)
+                                    .setCurrentApp(app);
+                                if (shouldPop) {
+                                  Navigator.of(context).pop();
+                                }
+                              }
+                            : null,
                       )),
-                  // Management app
-                  const SizedBox(height: 32),
-                  if (hasManagement) ...[
-                    NavigationItem(
-                      key: managementAppDrawer,
-                      leading: Icon(Application.management._icon),
-                      title: data.info.version.major > 4
-                          ? l10n.s_toggle_applications
-                          : l10n.s_toggle_interfaces,
-                      collapsed: !extended,
-                      onTap: () {
-                        showBlurDialog(
-                          context: context,
-                          // data must be non-null when index == 0
-                          builder: (context) => ManagementScreen(data),
-                        );
-                      },
-                    ),
-                  ],
-                  // TODO: This doesn't belong here longterm
-                  NavigationItem(
-                    key: const Key('app.keys.drawer.reset'),
-                    leading: const Icon(Icons.delete_forever),
-                    title: l10n.s_factory_reset,
-                    collapsed: !extended,
-                    onTap: () {
-                      showBlurDialog(
-                        context: context,
-                        // data must be non-null when index == 0
-                        builder: (context) => ResetDialog(data),
-                      );
-                    },
-                  ),
                   const SizedBox(height: 32),
                 ],
               ],
