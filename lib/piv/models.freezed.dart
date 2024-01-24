@@ -138,7 +138,7 @@ class _$PinMetadataImpl implements _PinMetadata {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinMetadataImpl &&
@@ -276,7 +276,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$PinSuccessImpl);
   }
@@ -396,7 +396,7 @@ class _$PinFailureImpl implements _PinFailure {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinFailureImpl &&
@@ -615,7 +615,7 @@ class _$ManagementKeyMetadataImpl implements _ManagementKeyMetadata {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ManagementKeyMetadataImpl &&
@@ -827,7 +827,7 @@ class _$SlotMetadataImpl implements _SlotMetadata {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SlotMetadataImpl &&
@@ -1057,7 +1057,7 @@ class _$PivStateMetadataImpl implements _PivStateMetadata {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PivStateMetadataImpl &&
@@ -1350,7 +1350,7 @@ class _$PivStateImpl extends _PivState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PivStateImpl &&
@@ -1604,7 +1604,7 @@ class _$CertInfoImpl implements _CertInfo {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CertInfoImpl &&
@@ -1805,7 +1805,7 @@ class _$PivSlotImpl implements _PivSlot {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PivSlotImpl &&
@@ -2015,7 +2015,7 @@ class _$ExamineResultImpl implements _ExamineResult {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ExamineResultImpl &&
@@ -2161,7 +2161,7 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$InvalidPasswordImpl);
   }
@@ -2398,7 +2398,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$GenerateCertificateImpl &&
@@ -2548,7 +2548,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$GenerateCsrImpl &&
@@ -2768,7 +2768,7 @@ class _$PivGenerateResultImpl implements _PivGenerateResult {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PivGenerateResultImpl &&
@@ -2962,7 +2962,7 @@ class _$PivImportResultImpl implements _PivImportResult {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PivImportResultImpl &&

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,20 +65,24 @@ class OathCredential with _$OathCredential {
   factory OathCredential(
       String deviceId,
       String id,
-      String? issuer,
+      @_IssuerConverter() String? issuer,
       String name,
       OathType oathType,
       int period,
       bool touchRequired) = _OathCredential;
 
-  factory OathCredential.fromJson(Map<String, dynamic> json) {
-    final value = _$OathCredentialFromJson(json);
-    // Replace empty issuer string with null
-    return switch (value.issuer) {
-      (String issuer) when issuer.isEmpty => value.copyWith(issuer: null),
-      _ => value,
-    };
-  }
+  factory OathCredential.fromJson(Map<String, dynamic> json) =>
+      _$OathCredentialFromJson(json);
+}
+
+class _IssuerConverter implements JsonConverter<String?, String?> {
+  const _IssuerConverter();
+
+  @override
+  String? fromJson(String? json) => json != null && json.isEmpty ? null : json;
+
+  @override
+  String? toJson(String? object) => object;
 }
 
 @freezed
