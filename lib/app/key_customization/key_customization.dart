@@ -51,11 +51,10 @@ class KeyCustomizationManager {
     return _customizations[serial];
   }
 
-  void set({required String serial, String? customName, Color? customColor}) {
-    _log.debug(
-        'Setting key customization for $serial: $customName, $customColor');
-    _customizations[serial] = KeyCustomization(
-        serial: serial, customName: customName, customColor: customColor);
+  void set({required String serial, String? name, Color? color}) {
+    _log.debug('Setting key customization for $serial: $name, $color');
+    _customizations[serial] =
+        KeyCustomization(serial: serial, name: name, color: color);
   }
 
   Future<void> write() async {

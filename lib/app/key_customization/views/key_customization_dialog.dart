@@ -52,8 +52,8 @@ class _KeyCustomizationDialogState
   @override
   void initState() {
     super.initState();
-    _customName = widget.initialCustomization?.customName;
-    _customColor = widget.initialCustomization?.customColor;
+    _customName = widget.initialCustomization?.name;
+    _customColor = widget.initialCustomization?.color;
   }
 
   @override
@@ -100,8 +100,8 @@ class _KeyCustomizationDialogState
               final manager = ref.read(keyCustomizationManagerProvider);
               manager.set(
                   serial: widget.initialCustomization!.serial,
-                  customName: _customName,
-                  customColor: _customColor);
+                  name: _customName,
+                  color: _customColor);
               await manager.write();
 
               ref.invalidate(lightThemeProvider);

@@ -417,7 +417,7 @@ _DeviceRow _buildDeviceRow(
 
   final keyCustomization =
       ref.read(keyCustomizationManagerProvider).get(info?.serial?.toString());
-  String displayName = keyCustomization?.customName ?? node.name;
+  String displayName = keyCustomization?.name ?? node.name;
 
   return _DeviceRow(
     key: ValueKey(node.path.key),
@@ -453,8 +453,8 @@ _DeviceRow _buildCurrentDeviceRow(
 
   final keyCustomization =
       ref.read(keyCustomizationManagerProvider).get(serialNumber);
-  String displayName = keyCustomization?.customName ?? title;
-  Color? displayColor = keyCustomization?.customColor;
+  String displayName = keyCustomization?.name ?? title;
+  Color? displayColor = keyCustomization?.color;
 
   return _DeviceRow(
     key: keys.deviceInfoListTile,

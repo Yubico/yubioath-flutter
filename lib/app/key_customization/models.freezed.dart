@@ -21,9 +21,9 @@ KeyCustomization _$KeyCustomizationFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$KeyCustomization {
   String get serial => throw _privateConstructorUsedError;
-  String? get customName => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
   @_ColorConverter()
-  Color? get customColor => throw _privateConstructorUsedError;
+  Color? get color => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -37,10 +37,7 @@ abstract class $KeyCustomizationCopyWith<$Res> {
           KeyCustomization value, $Res Function(KeyCustomization) then) =
       _$KeyCustomizationCopyWithImpl<$Res, KeyCustomization>;
   @useResult
-  $Res call(
-      {String serial,
-      String? customName,
-      @_ColorConverter() Color? customColor});
+  $Res call({String serial, String? name, @_ColorConverter() Color? color});
 }
 
 /// @nodoc
@@ -57,21 +54,21 @@ class _$KeyCustomizationCopyWithImpl<$Res, $Val extends KeyCustomization>
   @override
   $Res call({
     Object? serial = null,
-    Object? customName = freezed,
-    Object? customColor = freezed,
+    Object? name = freezed,
+    Object? color = freezed,
   }) {
     return _then(_value.copyWith(
       serial: null == serial
           ? _value.serial
           : serial // ignore: cast_nullable_to_non_nullable
               as String,
-      customName: freezed == customName
-          ? _value.customName
-          : customName // ignore: cast_nullable_to_non_nullable
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String?,
-      customColor: freezed == customColor
-          ? _value.customColor
-          : customColor // ignore: cast_nullable_to_non_nullable
+      color: freezed == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
               as Color?,
     ) as $Val);
   }
@@ -85,10 +82,7 @@ abstract class _$$KeyCustomizationImplCopyWith<$Res>
       __$$KeyCustomizationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String serial,
-      String? customName,
-      @_ColorConverter() Color? customColor});
+  $Res call({String serial, String? name, @_ColorConverter() Color? color});
 }
 
 /// @nodoc
@@ -103,21 +97,21 @@ class __$$KeyCustomizationImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? serial = null,
-    Object? customName = freezed,
-    Object? customColor = freezed,
+    Object? name = freezed,
+    Object? color = freezed,
   }) {
     return _then(_$KeyCustomizationImpl(
       serial: null == serial
           ? _value.serial
           : serial // ignore: cast_nullable_to_non_nullable
               as String,
-      customName: freezed == customName
-          ? _value.customName
-          : customName // ignore: cast_nullable_to_non_nullable
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String?,
-      customColor: freezed == customColor
-          ? _value.customColor
-          : customColor // ignore: cast_nullable_to_non_nullable
+      color: freezed == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
               as Color?,
     ));
   }
@@ -127,9 +121,7 @@ class __$$KeyCustomizationImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$KeyCustomizationImpl implements _KeyCustomization {
   _$KeyCustomizationImpl(
-      {required this.serial,
-      this.customName,
-      @_ColorConverter() this.customColor});
+      {required this.serial, this.name, @_ColorConverter() this.color});
 
   factory _$KeyCustomizationImpl.fromJson(Map<String, dynamic> json) =>
       _$$KeyCustomizationImplFromJson(json);
@@ -137,14 +129,14 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
   @override
   final String serial;
   @override
-  final String? customName;
+  final String? name;
   @override
   @_ColorConverter()
-  final Color? customColor;
+  final Color? color;
 
   @override
   String toString() {
-    return 'KeyCustomization(serial: $serial, customName: $customName, customColor: $customColor)';
+    return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
   }
 
   @override
@@ -153,15 +145,13 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
         (other.runtimeType == runtimeType &&
             other is _$KeyCustomizationImpl &&
             (identical(other.serial, serial) || other.serial == serial) &&
-            (identical(other.customName, customName) ||
-                other.customName == customName) &&
-            (identical(other.customColor, customColor) ||
-                other.customColor == customColor));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.color, color) || other.color == color));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, serial, customName, customColor);
+  int get hashCode => Object.hash(runtimeType, serial, name, color);
 
   @JsonKey(ignore: true)
   @override
@@ -181,8 +171,8 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
 abstract class _KeyCustomization implements KeyCustomization {
   factory _KeyCustomization(
       {required final String serial,
-      final String? customName,
-      @_ColorConverter() final Color? customColor}) = _$KeyCustomizationImpl;
+      final String? name,
+      @_ColorConverter() final Color? color}) = _$KeyCustomizationImpl;
 
   factory _KeyCustomization.fromJson(Map<String, dynamic> json) =
       _$KeyCustomizationImpl.fromJson;
@@ -190,10 +180,10 @@ abstract class _KeyCustomization implements KeyCustomization {
   @override
   String get serial;
   @override
-  String? get customName;
+  String? get name;
   @override
   @_ColorConverter()
-  Color? get customColor;
+  Color? get color;
   @override
   @JsonKey(ignore: true)
   _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
