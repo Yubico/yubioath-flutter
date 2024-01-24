@@ -611,6 +611,13 @@
     "l_qr_scanned": "スキャンしたQRコード",
     "l_invalid_qr": "無効なQRコード",
     "l_qr_not_found": "QRコードが見つかりませんでした",
+    "l_qr_file_too_large": null,
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {}
+        }
+    },
+    "l_qr_invalid_image_file": null,
     "l_qr_select_file": null,
     "l_qr_not_read": "QRコードの読み取りに失敗しました:{message}",
     "@l_qr_not_read": {
