@@ -86,6 +86,9 @@ class _KeyCustomizationDialogState
 
     final primaryColor = ref.read(primaryColorProvider);
 
+    final didChange = widget.initialCustomization?.name != _customName ||
+        widget.initialCustomization?.color != _customColor;
+
     return Theme(
       data: theme.copyWith(
         colorScheme: ColorScheme.fromSeed(
@@ -96,7 +99,7 @@ class _KeyCustomizationDialogState
       child: ResponsiveDialog(
         actions: [
           TextButton(
-            onPressed: _submit,
+            onPressed: didChange ? _submit : null,
             child: Text(l10n.s_save),
           ),
         ],
