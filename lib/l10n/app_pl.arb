@@ -724,5 +724,10 @@
     "p_ndef_parse_failure": "Błąd czytania OTP z YubiKey.",
     "p_ndef_set_clip_failure": "Błąd kopiowania OTP do schowka.",
 
+    "@_key_customization": {},
+    "s_customize_key_action": null,
+    "s_custom_key_name": null,
+    "s_custom_key_color": null,
+
     "@_eof": {}
 }
