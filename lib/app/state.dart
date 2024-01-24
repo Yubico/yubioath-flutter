@@ -173,14 +173,6 @@ final primaryColorProvider = Provider<Color>((ref) {
   return ref.watch(defaultColorProvider);
 });
 
-final darkThemeProvider = Provider<ThemeData>(
-  (ref) => AppTheme.getDarkTheme(ref.watch(primaryColorProvider)),
-);
-
-final lightThemeProvider = Provider<ThemeData>(
-  (ref) => AppTheme.getLightTheme(ref.watch(primaryColorProvider)),
-);
-
 // Override with platform implementation
 final attachedDevicesProvider =
     NotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(

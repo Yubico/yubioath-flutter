@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../theme.dart';
 import 'logging.dart';
 import 'shortcuts.dart';
 import 'state.dart';
@@ -30,23 +31,25 @@ class YubicoAuthenticatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GlobalShortcuts(
         child: LogWarningOverlay(
-          child: Consumer(
-              builder: (context, ref, _) => MaterialApp(
-                    title: ref.watch(l10nProvider).app_name,
-                    theme: ref.watch(lightThemeProvider),
-                    darkTheme: ref.watch(darkThemeProvider),
-                    themeMode: ref.watch(themeModeProvider),
-                    home: page,
-                    debugShowCheckedModeBanner: false,
-                    locale: ref.watch(currentLocaleProvider),
-                    supportedLocales: ref.watch(supportedLocalesProvider),
-                    localizationsDelegates: const [
-                      AppLocalizations.delegate,
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                    ],
-                  )),
+          child: Consumer(builder: (context, ref, _) {
+            final primaryColor = ref.watch(primaryColorProvider);
+            return MaterialApp(
+              title: ref.watch(l10nProvider).app_name,
+              theme: AppTheme.getLightTheme(primaryColor),
+              darkTheme: AppTheme.getDarkTheme(primaryColor),
+              themeMode: ref.watch(themeModeProvider),
+              home: page,
+              debugShowCheckedModeBanner: false,
+              locale: ref.watch(currentLocaleProvider),
+              supportedLocales: ref.watch(supportedLocalesProvider),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+            );
+          }),
         ),
       );
 }
