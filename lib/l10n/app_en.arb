@@ -611,6 +611,13 @@
     "l_qr_scanned": "Scanned QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
+    "l_qr_file_too_large": "File too large (max {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {}
+        }
+    },
+    "l_qr_invalid_image_file": "Invalid image file",
     "l_qr_select_file": "Select file with QR code",
     "l_qr_not_read": "Failed reading QR code: {message}",
     "@l_qr_not_read": {
@@ -723,6 +730,11 @@
     "p_ndef_set_password": "Successfully copied password from YubiKey to clipboard.",
     "p_ndef_parse_failure": "Failed to parse OTP code from YubiKey.",
     "p_ndef_set_clip_failure": "Failed to access clipboard when trying to copy OTP code from YubiKey.",
+
+    "@_key_customization": {},
+    "s_customize_key_action": "Customize key",
+    "s_custom_key_name": "Custom key name",
+    "s_custom_key_color": "Color for YubiKey",
 
     "@_eof": {}
 }

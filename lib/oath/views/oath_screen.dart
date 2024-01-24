@@ -15,7 +15,6 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -144,21 +143,16 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
-        final fileData = await file.readAsBytes();
-        final b64Image = base64Encode(fileData);
-        final qrData = await qrScanner.scanQr(b64Image);
         final withContext = ref.read(withContextProvider);
-        await withContext(
-          (context) async {
-            if (qrData != null) {
-              final credentials = ref.read(credentialsProvider);
-              await handleUri(context, credentials, qrData, widget.devicePath,
-                  widget.oathState, l10n);
-            } else {
-              showMessage(context, l10n.l_qr_not_found);
-            }
-          },
-        );
+        final qrData =
+            await handleQrFile(file, context, withContext, qrScanner);
+        if (qrData != null) {
+          await withContext((context) async {
+            final credentials = ref.read(credentialsProvider);
+            await handleUri(context, credentials, qrData, widget.devicePath,
+                widget.oathState, l10n);
+          });
+        }
       }
     }
 

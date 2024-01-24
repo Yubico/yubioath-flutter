@@ -168,7 +168,7 @@ class _$DeviceConfigImpl implements _DeviceConfig {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DeviceConfigImpl &&
@@ -475,7 +475,7 @@ class _$DeviceInfoImpl implements _DeviceInfo {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DeviceInfoImpl &&

@@ -611,6 +611,13 @@
     "l_qr_scanned": "Zeskanowany kod QR",
     "l_invalid_qr": "Nieprawidłowy kod QR",
     "l_qr_not_found": "Nie znaleziono kodu QR",
+    "l_qr_file_too_large": null,
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {}
+        }
+    },
+    "l_qr_invalid_image_file": null,
     "l_qr_select_file": "Wybierz plik z kodem QR",
     "l_qr_not_read": "Odczytanie kodu QR nie powiodło się: {message}",
     "@l_qr_not_read": {
@@ -723,6 +730,11 @@
     "p_ndef_set_password": "Hasło statyczne zostało skopiowane do schowka.",
     "p_ndef_parse_failure": "Błąd czytania OTP z YubiKey.",
     "p_ndef_set_clip_failure": "Błąd kopiowania OTP do schowka.",
+
+    "@_key_customization": {},
+    "s_customize_key_action": null,
+    "s_custom_key_name": null,
+    "s_custom_key_color": null,
 
     "@_eof": {}
 }

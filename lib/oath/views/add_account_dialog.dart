@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,19 +53,14 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
       onFileDropped: (file) async {
         Navigator.of(context).pop();
         if (qrScanner != null) {
-          final fileData = await file.readAsBytes();
-          final b64Image = base64Encode(fileData);
-          final qrData = await qrScanner.scanQr(b64Image);
-          await withContext(
-            (context) async {
-              if (qrData != null) {
-                await handleUri(context, credentials, qrData, widget.devicePath,
-                    widget.state, l10n);
-              } else {
-                showMessage(context, l10n.l_qr_not_found);
-              }
-            },
-          );
+          final qrData =
+              await handleQrFile(file, context, withContext, qrScanner);
+          if (qrData != null) {
+            await withContext((context) async {
+              await handleUri(context, credentials, qrData, widget.devicePath,
+                  widget.state, l10n);
+            });
+          }
         }
       },
       overlay: FileDropOverlay(

@@ -153,7 +153,7 @@ class _$YubiKeyDataImpl implements _YubiKeyData {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$YubiKeyDataImpl &&
@@ -363,7 +363,7 @@ class _$UsbYubiKeyNodeImpl extends UsbYubiKeyNode {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UsbYubiKeyNodeImpl &&
@@ -523,7 +523,7 @@ class _$NfcReaderNodeImpl extends NfcReaderNode {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NfcReaderNodeImpl &&
@@ -844,7 +844,7 @@ class _$ActionItemImpl implements _ActionItem {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ActionItemImpl &&
@@ -1043,7 +1043,7 @@ class _$WindowStateImpl implements _WindowState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$WindowStateImpl &&

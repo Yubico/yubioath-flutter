@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../theme.dart';
 import 'logging.dart';
 import 'shortcuts.dart';
 import 'state.dart';
@@ -34,8 +33,8 @@ class YubicoAuthenticatorApp extends StatelessWidget {
           child: Consumer(
               builder: (context, ref, _) => MaterialApp(
                     title: ref.watch(l10nProvider).app_name,
-                    theme: AppTheme.lightTheme,
-                    darkTheme: AppTheme.darkTheme,
+                    theme: ref.watch(lightThemeProvider),
+                    darkTheme: ref.watch(darkThemeProvider),
                     themeMode: ref.watch(themeModeProvider),
                     home: page,
                     debugShowCheckedModeBanner: false,

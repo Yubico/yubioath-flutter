@@ -15,7 +15,6 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -314,11 +313,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         final qrScanner = ref.read(qrScannerProvider);
         final withContext = ref.read(withContextProvider);
         if (qrScanner != null) {
-          final fileData = await file.readAsBytes();
-          final b64Image = base64Encode(fileData);
-          final qrData = await qrScanner.scanQr(b64Image);
-          await withContext((context) async {
-            if (qrData != null) {
+          final qrData =
+              await handleQrFile(file, context, withContext, qrScanner);
+          if (qrData != null) {
+            await withContext((context) async {
               List<CredentialData> creds;
               try {
                 creds = CredentialData.fromUri(Uri.parse(qrData));
@@ -333,10 +331,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 await handleUri(context, widget.credentials, qrData,
                     widget.devicePath, widget.state, l10n);
               }
-            } else {
-              showMessage(context, l10n.l_qr_not_found);
-            }
-          });
+            });
+          }
         }
       },
       overlay: FileDropOverlay(

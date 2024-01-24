@@ -611,6 +611,13 @@
     "l_qr_scanned": "QR-Code aufgenommen",
     "l_invalid_qr": "Ungültiger QR-Code",
     "l_qr_not_found": "Kein QR-Code gefunden",
+    "l_qr_file_too_large": null,
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {}
+        }
+    },
+    "l_qr_invalid_image_file": null,
     "l_qr_select_file": null,
     "l_qr_not_read": "Fehler beim Lesen des QR-Codes: {message}",
     "@l_qr_not_read": {
@@ -723,6 +730,11 @@
     "p_ndef_set_password": null,
     "p_ndef_parse_failure": null,
     "p_ndef_set_clip_failure": null,
+
+    "@_key_customization": {},
+    "s_customize_key_action": null,
+    "s_custom_key_name": null,
+    "s_custom_key_color": null,
 
     "@_eof": {}
 }
