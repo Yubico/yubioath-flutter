@@ -387,7 +387,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
   Future<void> _showKeyCustomizationDialog(KeyCustomizationManager manager,
       BuildContext context, DeviceNode? node, String serial) async {
     final keyCustomization =
-        manager.get(serial) ?? KeyCustomization(serial, {});
+        manager.get(serial) ?? KeyCustomization(serial: serial);
 
     await showBlurDialog(
       context: context,
@@ -417,7 +417,7 @@ _DeviceRow _buildDeviceRow(
 
   final keyCustomization =
       ref.read(keyCustomizationManagerProvider).get(info?.serial?.toString());
-  String displayName = keyCustomization?.getName() ?? node.name;
+  String displayName = keyCustomization?.customName ?? node.name;
 
   return _DeviceRow(
     key: ValueKey(node.path.key),
@@ -453,8 +453,8 @@ _DeviceRow _buildCurrentDeviceRow(
 
   final keyCustomization =
       ref.read(keyCustomizationManagerProvider).get(serialNumber);
-  String displayName = keyCustomization?.getName() ?? title;
-  Color? displayColor = keyCustomization?.getColor();
+  String displayName = keyCustomization?.customName ?? title;
+  Color? displayColor = keyCustomization?.customColor;
 
   return _DeviceRow(
     key: keys.deviceInfoListTile,

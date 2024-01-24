@@ -28,13 +28,13 @@ const _prefKeyCustomizations = 'KEY_CUSTOMIZATIONS';
 
 class KeyCustomizationManager {
   final SharedPreferences _prefs;
-  final Map<String, dynamic> _customizations;
+  final Map<String, KeyCustomization> _customizations;
 
   KeyCustomizationManager(this._prefs)
       : _customizations =
             readCustomizations(_prefs.getString(_prefKeyCustomizations));
 
-  static Map<String, dynamic> readCustomizations(String? pref) {
+  static Map<String, KeyCustomization> readCustomizations(String? pref) {
     if (pref == null) {
       return {};
     }
@@ -48,25 +48,14 @@ class KeyCustomizationManager {
 
   KeyCustomization? get(String? serial) {
     _log.debug('Getting key customization for $serial');
-
-    if (serial == null || serial.isEmpty) {
-      return null;
-    }
-
-    if (_customizations.containsKey(serial)) {
-      return KeyCustomization(serial, _customizations[serial]);
-    }
-
-    return null;
+    return _customizations[serial];
   }
 
   void set({required String serial, String? customName, Color? customColor}) {
-    final properties = <String, String?>{
-      'display_color': customColor?.value.toRadixString(16),
-      'display_name': customName?.isNotEmpty == true ? customName : null
-    };
-    _log.debug('Setting key customization for $serial: $properties');
-    _customizations[serial] = properties;
+    _log.debug(
+        'Setting key customization for $serial: $customName, $customColor');
+    _customizations[serial] = KeyCustomization(
+        serial: serial, customName: customName, customColor: customColor);
   }
 
   Future<void> write() async {

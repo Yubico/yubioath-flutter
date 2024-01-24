@@ -52,8 +52,8 @@ class _KeyCustomizationDialogState
   @override
   void initState() {
     super.initState();
-    _customName = widget.initialCustomization?.getName();
-    _customColor = widget.initialCustomization?.getColor();
+    _customName = widget.initialCustomization?.customName;
+    _customColor = widget.initialCustomization?.customColor;
   }
 
   @override
@@ -99,7 +99,7 @@ class _KeyCustomizationDialogState
             onPressed: () async {
               final manager = ref.read(keyCustomizationManagerProvider);
               manager.set(
-                  serial: widget.initialCustomization!.serialNumber,
+                  serial: widget.initialCustomization!.serial,
                   customName: _customName,
                   customColor: _customColor);
               await manager.write();

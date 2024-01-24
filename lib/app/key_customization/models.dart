@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
 import 'dart:ui';
 
-class KeyCustomization {
-  final String serialNumber;
-  final Map<String, dynamic> _properties;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const KeyCustomization(this.serialNumber, this._properties);
+part 'models.freezed.dart';
 
-  String? getName() => _properties['display_name'] as String?;
+part 'models.g.dart';
 
-  Color? getColor() {
-    var customColor = _properties['display_color'] as String?;
-    if (customColor == null) {
-      return null;
-    }
+@freezed
+class KeyCustomization with _$KeyCustomization {
+  factory KeyCustomization({
+    required String serial,
+    String? customName,
+    @_ColorConverter() Color? customColor,
+  }) = _KeyCustomization;
 
-    var intValue = int.tryParse(customColor, radix: 16);
+  factory KeyCustomization.fromJson(Map<String, dynamic> json) =>
+      _$KeyCustomizationFromJson(json);
+}
 
-    if (intValue == null) {
-      return null;
-    }
-    return Color(intValue);
-  }
+class _ColorConverter implements JsonConverter<Color?, int?> {
+  const _ColorConverter();
 
-  factory KeyCustomization.fromString(String serialNumber, String encodedJson) {
-    final data = json.decode(String.fromCharCodes(base64Decode(encodedJson)));
-    return KeyCustomization(serialNumber, data);
-  }
+  @override
+  Color? fromJson(int? json) => json != null ? Color(json) : null;
+
+  @override
+  int? toJson(Color? object) => object?.value;
 }
