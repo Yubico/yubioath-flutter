@@ -48,7 +48,7 @@ dependencies:
   shared_preferences: ^2.2.2
   flutter_riverpod: ^2.4.9
   json_annotation: ^4.8.1
-  freezed_annotation: ^2.2.0
+  freezed_annotation: ^2.4.1
   window_manager: ^0.3.7
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
@@ -83,9 +83,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^3.0.1
 
-  build_runner: ^2.4.7
-  freezed: ^2.4.5
-  json_serializable: ^6.7.0
+  build_runner: ^2.4.8
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
   analyzer:
   analyzer_plugin:
   custom_lint_builder:

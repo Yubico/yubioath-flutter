@@ -22,6 +22,7 @@ OathCredential _$OathCredentialFromJson(Map<String, dynamic> json) {
 mixin _$OathCredential {
   String get deviceId => throw _privateConstructorUsedError;
   String get id => throw _privateConstructorUsedError;
+  @_IssuerConverter()
   String? get issuer => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   OathType get oathType => throw _privateConstructorUsedError;
@@ -43,7 +44,7 @@ abstract class $OathCredentialCopyWith<$Res> {
   $Res call(
       {String deviceId,
       String id,
-      String? issuer,
+      @_IssuerConverter() String? issuer,
       String name,
       OathType oathType,
       int period,
@@ -115,7 +116,7 @@ abstract class _$$OathCredentialImplCopyWith<$Res>
   $Res call(
       {String deviceId,
       String id,
-      String? issuer,
+      @_IssuerConverter() String? issuer,
       String name,
       OathType oathType,
       int period,
@@ -177,8 +178,8 @@ class __$$OathCredentialImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$OathCredentialImpl implements _OathCredential {
-  _$OathCredentialImpl(this.deviceId, this.id, this.issuer, this.name,
-      this.oathType, this.period, this.touchRequired);
+  _$OathCredentialImpl(this.deviceId, this.id, @_IssuerConverter() this.issuer,
+      this.name, this.oathType, this.period, this.touchRequired);
 
   factory _$OathCredentialImpl.fromJson(Map<String, dynamic> json) =>
       _$$OathCredentialImplFromJson(json);
@@ -188,6 +189,7 @@ class _$OathCredentialImpl implements _OathCredential {
   @override
   final String id;
   @override
+  @_IssuerConverter()
   final String? issuer;
   @override
   final String name;
@@ -204,7 +206,7 @@ class _$OathCredentialImpl implements _OathCredential {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OathCredentialImpl &&
@@ -244,7 +246,7 @@ abstract class _OathCredential implements OathCredential {
   factory _OathCredential(
       final String deviceId,
       final String id,
-      final String? issuer,
+      @_IssuerConverter() final String? issuer,
       final String name,
       final OathType oathType,
       final int period,
@@ -258,6 +260,7 @@ abstract class _OathCredential implements OathCredential {
   @override
   String get id;
   @override
+  @_IssuerConverter()
   String? get issuer;
   @override
   String get name;
@@ -395,7 +398,7 @@ class _$OathCodeImpl implements _OathCode {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OathCodeImpl &&
@@ -580,7 +583,7 @@ class _$OathPairImpl implements _OathPair {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OathPairImpl &&
@@ -814,7 +817,7 @@ class _$OathStateImpl implements _OathState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OathStateImpl &&
@@ -1094,7 +1097,7 @@ class _$CredentialDataImpl extends _CredentialData {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CredentialDataImpl &&

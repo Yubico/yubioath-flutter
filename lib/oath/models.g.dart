@@ -10,7 +10,7 @@ _$OathCredentialImpl _$$OathCredentialImplFromJson(Map<String, dynamic> json) =>
     _$OathCredentialImpl(
       json['device_id'] as String,
       json['id'] as String,
-      json['issuer'] as String?,
+      const _IssuerConverter().fromJson(json['issuer'] as String?),
       json['name'] as String,
       $enumDecode(_$OathTypeEnumMap, json['oath_type']),
       json['period'] as int,
@@ -22,7 +22,7 @@ Map<String, dynamic> _$$OathCredentialImplToJson(
     <String, dynamic>{
       'device_id': instance.deviceId,
       'id': instance.id,
-      'issuer': instance.issuer,
+      'issuer': const _IssuerConverter().toJson(instance.issuer),
       'name': instance.name,
       'oath_type': _$OathTypeEnumMap[instance.oathType]!,
       'period': instance.period,
