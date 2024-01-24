@@ -96,23 +96,7 @@ class _KeyCustomizationDialogState
       child: ResponsiveDialog(
         actions: [
           TextButton(
-            onPressed: () async {
-              final manager = ref.read(keyCustomizationManagerProvider);
-              manager.set(
-                  serial: widget.initialCustomization!.serial,
-                  name: _customName,
-                  color: _customColor);
-              await manager.write();
-
-              ref.invalidate(lightThemeProvider);
-              ref.invalidate(darkThemeProvider);
-
-              await ref.read(withContextProvider)((context) async {
-                FocusUtils.unfocus(context);
-                final nav = Navigator.of(context);
-                nav.pop();
-              });
-            },
+            onPressed: _submit,
             child: Text(l10n.s_save),
           ),
         ],
@@ -144,7 +128,9 @@ class _KeyCustomizationDialogState
                           _customName = trimmed.isEmpty ? null : trimmed;
                         });
                       },
-                      onFieldSubmitted: (_) {},
+                      onFieldSubmitted: (_) {
+                        _submit();
+                      },
                     ),
                   ),
                   Text(l10n.s_custom_key_color),
@@ -202,6 +188,24 @@ class _KeyCustomizationDialogState
         ),
       ),
     );
+  }
+
+  void _submit() async {
+    final manager = ref.read(keyCustomizationManagerProvider);
+    manager.set(
+        serial: widget.initialCustomization!.serial,
+        name: _customName,
+        color: _customColor);
+    await manager.write();
+
+    ref.invalidate(lightThemeProvider);
+    ref.invalidate(darkThemeProvider);
+
+    await ref.read(withContextProvider)((context) async {
+      FocusUtils.unfocus(context);
+      final nav = Navigator.of(context);
+      nav.pop();
+    });
   }
 
   void _updateColor(Color? color) {
