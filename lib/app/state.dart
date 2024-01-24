@@ -150,27 +150,34 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 final defaultColorProvider = Provider<Color>((ref) => defaultPrimaryColor);
 
 final primaryColorProvider = Provider<Color>((ref) {
-  // First choice, device color
+  const prefLastUsedColor = 'LAST_USED_COLOR';
+  final prefs = ref.watch(prefProvider);
   final data = ref.watch(currentDeviceDataProvider).valueOrNull;
-  final serial = data?.info.serial;
-  if (serial != null) {
-    final customization = ref.watch(keyCustomizationManagerProvider)[serial];
-    final deviceColor = customization?.color;
-    if (deviceColor != null) {
-      return deviceColor;
+  final defaultColor = ref.watch(defaultColorProvider);
+  if (data != null) {
+    // We have a device, use its color, or the default color
+    final serial = data.info.serial;
+    if (serial != null) {
+      final customization = ref.watch(keyCustomizationManagerProvider)[serial];
+      final deviceColor = customization?.color;
+      if (deviceColor != null) {
+        prefs.setInt(prefLastUsedColor, deviceColor.value);
+        return deviceColor;
+      } else {
+        prefs.remove(prefLastUsedColor);
+        return defaultColor;
+      }
+    }
+  } else {
+    // We don't have a device, use the last used color, if saved
+    final lastUsedColor = prefs.getInt(prefLastUsedColor);
+    if (lastUsedColor != null) {
+      return Color(lastUsedColor);
     }
   }
 
-  // Second choice, last used color
-  const prefLastUsedColor = 'LAST_USED_COLOR';
-  final prefs = ref.watch(prefProvider);
-  final lastUsedColor = prefs.getInt(prefLastUsedColor);
-  if (lastUsedColor != null) {
-    return Color(lastUsedColor);
-  }
-
-  // Third choice, default color
-  return ref.watch(defaultColorProvider);
+  // Default color if nothing else
+  return defaultColor;
 });
 
 // Override with platform implementation

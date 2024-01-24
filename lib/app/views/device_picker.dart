@@ -485,7 +485,7 @@ _DeviceRow _buildCurrentDeviceRow(
   final subtitle = messages.join('\n');
 
   final keyCustomization =
-      ref.watch(keyCustomizationManagerProvider)[data.value?.info.serial];
+      ref.watch(keyCustomizationManagerProvider)[data.valueOrNull?.info.serial];
   String displayName = keyCustomization?.name ?? title;
   Color? displayColor = keyCustomization?.color;
 
