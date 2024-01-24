@@ -80,7 +80,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
     final helper = AccountHelper(context, ref, credential);
 
     return LayoutBuilder(builder: (context, constraints) {
-      final showAvatar = constraints.maxWidth >= 315;
+      final showAvatar = constraints.maxWidth >= 340;
       final subtitle = helper.subtitle;
       final circleAvatar = CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.background,
