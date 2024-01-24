@@ -140,7 +140,8 @@ class _KeyCustomizationDialogState
                       textInputAction: TextInputAction.done,
                       onChanged: (value) {
                         setState(() {
-                          _customName = value.trim();
+                          final trimmed = value.trim();
+                          _customName = trimmed.isEmpty ? null : trimmed;
                         });
                       },
                       onFieldSubmitted: (_) {},

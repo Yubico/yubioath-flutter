@@ -26,8 +26,8 @@ part 'models.g.dart';
 class KeyCustomization with _$KeyCustomization {
   factory KeyCustomization({
     required String serial,
-    String? name,
-    @_ColorConverter() Color? color,
+    @JsonKey(includeIfNull: false) String? name,
+    @JsonKey(includeIfNull: false) @_ColorConverter() Color? color,
   }) = _KeyCustomization;
 
   factory KeyCustomization.fromJson(Map<String, dynamic> json) =>

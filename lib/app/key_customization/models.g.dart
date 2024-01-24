@@ -15,9 +15,18 @@ _$KeyCustomizationImpl _$$KeyCustomizationImplFromJson(
     );
 
 Map<String, dynamic> _$$KeyCustomizationImplToJson(
-        _$KeyCustomizationImpl instance) =>
-    <String, dynamic>{
-      'serial': instance.serial,
-      'name': instance.name,
-      'color': const _ColorConverter().toJson(instance.color),
-    };
+    _$KeyCustomizationImpl instance) {
+  final val = <String, dynamic>{
+    'serial': instance.serial,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('name', instance.name);
+  writeNotNull('color', const _ColorConverter().toJson(instance.color));
+  return val;
+}

@@ -40,8 +40,14 @@ class KeyCustomizationManager {
     }
 
     try {
-      return json.decode(utf8.decode(pref.codeUnits));
+      final retval = <String, KeyCustomization>{};
+      for (var element in json.decode(pref)) {
+        final keyCustomization = KeyCustomization.fromJson(element);
+        retval[keyCustomization.serial] = keyCustomization;
+      }
+      return retval;
     } catch (e) {
+      _log.error('Failure reading customizations: $e');
       return {};
     }
   }
@@ -53,12 +59,17 @@ class KeyCustomizationManager {
 
   void set({required String serial, String? name, Color? color}) {
     _log.debug('Setting key customization for $serial: $name, $color');
-    _customizations[serial] =
-        KeyCustomization(serial: serial, name: name, color: color);
+    if (name == null && color == null) {
+      // remove this customization
+      _customizations.removeWhere((key, value) => key == serial);
+    } else {
+      _customizations[serial] =
+          KeyCustomization(serial: serial, name: name, color: color);
+    }
   }
 
   Future<void> write() async {
-    await _prefs.setString(_prefKeyCustomizations,
-        String.fromCharCodes(utf8.encode(json.encode(_customizations))));
+    await _prefs.setString(
+        _prefKeyCustomizations, json.encode(_customizations.values.toList()));
   }
 }

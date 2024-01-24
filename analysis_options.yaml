@@ -37,5 +37,7 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "build/**/intermediates/**/AndroidManifest.xml"
+  errors:
+    invalid_annotation_target: ignore # see https://github.com/rrousselGit/freezed/issues/488
   plugins:
     - custom_lint

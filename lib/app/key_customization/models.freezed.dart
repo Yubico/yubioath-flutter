@@ -21,7 +21,9 @@ KeyCustomization _$KeyCustomizationFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$KeyCustomization {
   String get serial => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
   String? get name => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
   @_ColorConverter()
   Color? get color => throw _privateConstructorUsedError;
 
@@ -37,7 +39,10 @@ abstract class $KeyCustomizationCopyWith<$Res> {
           KeyCustomization value, $Res Function(KeyCustomization) then) =
       _$KeyCustomizationCopyWithImpl<$Res, KeyCustomization>;
   @useResult
-  $Res call({String serial, String? name, @_ColorConverter() Color? color});
+  $Res call(
+      {String serial,
+      @JsonKey(includeIfNull: false) String? name,
+      @JsonKey(includeIfNull: false) @_ColorConverter() Color? color});
 }
 
 /// @nodoc
@@ -82,7 +87,10 @@ abstract class _$$KeyCustomizationImplCopyWith<$Res>
       __$$KeyCustomizationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String serial, String? name, @_ColorConverter() Color? color});
+  $Res call(
+      {String serial,
+      @JsonKey(includeIfNull: false) String? name,
+      @JsonKey(includeIfNull: false) @_ColorConverter() Color? color});
 }
 
 /// @nodoc
@@ -121,7 +129,9 @@ class __$$KeyCustomizationImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$KeyCustomizationImpl implements _KeyCustomization {
   _$KeyCustomizationImpl(
-      {required this.serial, this.name, @_ColorConverter() this.color});
+      {required this.serial,
+      @JsonKey(includeIfNull: false) this.name,
+      @JsonKey(includeIfNull: false) @_ColorConverter() this.color});
 
   factory _$KeyCustomizationImpl.fromJson(Map<String, dynamic> json) =>
       _$$KeyCustomizationImplFromJson(json);
@@ -129,8 +139,10 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
   @override
   final String serial;
   @override
+  @JsonKey(includeIfNull: false)
   final String? name;
   @override
+  @JsonKey(includeIfNull: false)
   @_ColorConverter()
   final Color? color;
 
@@ -171,8 +183,10 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
 abstract class _KeyCustomization implements KeyCustomization {
   factory _KeyCustomization(
       {required final String serial,
-      final String? name,
-      @_ColorConverter() final Color? color}) = _$KeyCustomizationImpl;
+      @JsonKey(includeIfNull: false) final String? name,
+      @JsonKey(includeIfNull: false)
+      @_ColorConverter()
+      final Color? color}) = _$KeyCustomizationImpl;
 
   factory _KeyCustomization.fromJson(Map<String, dynamic> json) =
       _$KeyCustomizationImpl.fromJson;
@@ -180,8 +194,10 @@ abstract class _KeyCustomization implements KeyCustomization {
   @override
   String get serial;
   @override
+  @JsonKey(includeIfNull: false)
   String? get name;
   @override
+  @JsonKey(includeIfNull: false)
   @_ColorConverter()
   Color? get color;
   @override
