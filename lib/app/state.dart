@@ -54,22 +54,6 @@ extension on Application {
       };
 }
 
-extension on String? {
-  Color? asColor() {
-    final hexValue = this;
-    if (hexValue == null) {
-      return null;
-    }
-
-    final intValue = int.tryParse(hexValue, radix: 16);
-    if (intValue == null) {
-      return null;
-    }
-
-    return Color(intValue);
-  }
-}
-
 List<Application> Function(Ref) implementedApps(List<Application> apps) =>
     (ref) {
       final hasFeature = ref.watch(featureProvider);
@@ -198,9 +182,9 @@ class ThemeNotifier extends Notifier<ThemeData> {
       primaryColor = customization?.color ?? color;
       if (primaryColor != null) {
         // remember the last used color
-        prefs.setString(
+        prefs.setInt(
           prefLastUsedColor,
-          primaryColor.value.toRadixString(16),
+          primaryColor.value,
         );
       } else {
         // the current color is null -> remove the last used color preference
@@ -209,8 +193,10 @@ class ThemeNotifier extends Notifier<ThemeData> {
       }
     }
 
-    primaryColor ??= prefs.getString(prefLastUsedColor).asColor();
-    primaryColor ??= ref.read(primaryColorProvider);
+    final lastUsedColor = prefs.getInt(prefLastUsedColor);
+    primaryColor ??= lastUsedColor != null
+        ? Color(lastUsedColor)
+        : ref.read(primaryColorProvider);
 
     return (primaryColor != null)
         ? _getDefault(themeMode).copyWith(
