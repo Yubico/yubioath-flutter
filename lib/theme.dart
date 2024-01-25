@@ -17,8 +17,6 @@
 import 'package:flutter/material.dart';
 
 const defaultPrimaryColor = Colors.blueAccent;
-const capabilityChipBorderColor = Color(0x44777777);
-const capabilityChipTextColor = Color(0xFF777777);
 
 class AppTheme {
   static ThemeData getTheme(Brightness brightness, Color primaryColor) =>

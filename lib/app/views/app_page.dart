@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../management/models.dart';
-import '../../theme.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
@@ -351,20 +350,14 @@ class _CapabilityChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return ActionChip(
+    final colorScheme = Theme.of(context).colorScheme;
+    return Badge(
+      backgroundColor: colorScheme.secondaryContainer,
+      textColor: colorScheme.onSecondaryContainer,
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      largeSize: 20,
       label: Text(
         capability.getDisplayName(l10n),
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall!
-            .copyWith(color: capabilityChipTextColor),
-      ),
-      padding: const EdgeInsets.all(0.0),
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(
-          color: capabilityChipBorderColor,
-        ),
-        borderRadius: BorderRadius.circular(8.0),
       ),
     );
   }
