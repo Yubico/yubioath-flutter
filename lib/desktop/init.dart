@@ -189,8 +189,8 @@ Future<Widget> initialize(List<String> argv) async {
       supportedAppsProvider.overrideWith(implementedApps([
         Application.accounts,
         Application.webauthn,
-        Application.passkeys,
         Application.fingerprints,
+        Application.passkeys,
         Application.certificates,
         Application.management,
         Application.slots

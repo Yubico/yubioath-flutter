@@ -32,8 +32,8 @@ enum Availability { enabled, disabled, unsupported }
 enum Application {
   accounts,
   webauthn,
-  passkeys,
   fingerprints,
+  passkeys,
   slots,
   certificates,
   openpgp,
@@ -46,8 +46,8 @@ enum Application {
         Application.accounts => Capability.oath.value & capabilities != 0,
         Application.webauthn => Capability.u2f.value & capabilities != 0 &&
             Capability.fido2.value & capabilities == 0,
-        Application.passkeys => Capability.fido2.value & capabilities != 0,
         Application.fingerprints => Capability.fido2.value & capabilities != 0,
+        Application.passkeys => Capability.fido2.value & capabilities != 0,
         Application.slots => Capability.otp.value & capabilities != 0,
         Application.certificates => Capability.piv.value & capabilities != 0,
         Application.openpgp => Capability.openpgp.value & capabilities != 0,
@@ -58,8 +58,8 @@ enum Application {
   String getDisplayName(AppLocalizations l10n) => switch (this) {
         Application.accounts => l10n.s_accounts,
         Application.webauthn => l10n.s_webauthn,
-        Application.passkeys => l10n.s_passkeys,
         Application.fingerprints => l10n.s_fingerprints,
+        Application.passkeys => l10n.s_passkeys,
         Application.certificates => l10n.s_certificates,
         Application.slots => l10n.s_slots,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
