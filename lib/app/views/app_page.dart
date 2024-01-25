@@ -173,7 +173,7 @@ class AppPage extends StatelessWidget {
                 Wrap(
                   spacing: 4.0,
                   runSpacing: 8.0,
-                  children: [...capabilities!.map((c) => _CapabilityChip(c))],
+                  children: [...capabilities!.map((c) => _CapabilityBadge(c))],
                 )
             ])
       ],
@@ -342,10 +342,10 @@ class AppPage extends StatelessWidget {
   }
 }
 
-class _CapabilityChip extends StatelessWidget {
+class _CapabilityBadge extends StatelessWidget {
   final Capability capability;
 
-  const _CapabilityChip(this.capability);
+  const _CapabilityBadge(this.capability);
 
   @override
   Widget build(BuildContext context) {
