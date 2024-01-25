@@ -156,7 +156,6 @@ class AppPage extends StatelessWidget {
   }
 
   Widget _buildTitle(BuildContext context) {
-    ThemeData.dark();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
