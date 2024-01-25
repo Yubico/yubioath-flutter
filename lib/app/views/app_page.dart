@@ -165,10 +165,11 @@ class AppPage extends StatelessWidget {
             runSpacing: 8.0,
             children: [
               Text(title!,
-                  style: Theme.of(context)
-                      .textTheme
-                      .displaySmall!
-                      .copyWith(color: Theme.of(context).colorScheme.primary)),
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.9))),
               if (capabilities != null)
                 Wrap(
                   spacing: 4.0,
