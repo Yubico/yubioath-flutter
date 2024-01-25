@@ -78,50 +78,44 @@ class _AccountViewState extends ConsumerState<AccountView> {
   Widget build(BuildContext context) {
     final hasFeature = ref.watch(featureProvider);
     final helper = AccountHelper(context, ref, credential);
+    final subtitle = helper.subtitle;
+    final circleAvatar = CircleAvatar(
+      foregroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: _iconColor(400),
+      child: Text(
+        (credential.issuer ?? credential.name).characters.first.toUpperCase(),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+      ),
+    );
 
-    return LayoutBuilder(builder: (context, constraints) {
-      final showAvatar = constraints.maxWidth >= 340;
-      final subtitle = helper.subtitle;
-      final circleAvatar = CircleAvatar(
-        foregroundColor: Theme.of(context).colorScheme.background,
-        backgroundColor: _iconColor(400),
-        child: Text(
-          (credential.issuer ?? credential.name).characters.first.toUpperCase(),
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-        ),
-      );
-
-      final openIntent = OpenIntent<OathCredential>(widget.credential);
-      final buttonStyle = FilledButton.styleFrom(
-          backgroundColor: Theme.of(context).hoverColor, elevation: 0);
-      return AppListItem<OathCredential>(
-        credential,
-        selected: widget.selected,
-        leading: showAvatar
-            ? AccountIcon(
-                issuer: credential.issuer, defaultWidget: circleAvatar)
-            : null,
-        title: helper.title,
-        subtitle: subtitle,
-        semanticTitle: _a11yCredentialLabel(
-            credential.issuer, credential.name, helper.code?.value),
-        trailing: helper.code != null
-            ? FilledButton.tonalIcon(
-                icon: helper.buildCodeIcon(),
-                label: helper.buildCodeLabel(),
-                style: buttonStyle,
-                onPressed: Actions.handler(context, openIntent),
-              )
-            : FilledButton.tonal(
-                style: buttonStyle,
-                onPressed: Actions.handler(context, openIntent),
-                child: helper.buildCodeIcon()),
-        tapIntent: isDesktop && !widget.expanded ? null : openIntent,
-        doubleTapIntent: hasFeature(features.accountsClipboard)
-            ? CopyIntent<OathCredential>(credential)
-            : null,
-        buildPopupActions: (_) => helper.buildActions(),
-      );
-    });
+    final openIntent = OpenIntent<OathCredential>(widget.credential);
+    final buttonStyle = FilledButton.styleFrom(
+        backgroundColor: Theme.of(context).hoverColor, elevation: 0);
+    return AppListItem<OathCredential>(
+      credential,
+      selected: widget.selected,
+      leading:
+          AccountIcon(issuer: credential.issuer, defaultWidget: circleAvatar),
+      title: helper.title,
+      subtitle: subtitle,
+      semanticTitle: _a11yCredentialLabel(
+          credential.issuer, credential.name, helper.code?.value),
+      trailing: helper.code != null
+          ? FilledButton.tonalIcon(
+              icon: helper.buildCodeIcon(),
+              label: helper.buildCodeLabel(),
+              style: buttonStyle,
+              onPressed: Actions.handler(context, openIntent),
+            )
+          : FilledButton.tonal(
+              style: buttonStyle,
+              onPressed: Actions.handler(context, openIntent),
+              child: helper.buildCodeIcon()),
+      tapIntent: isDesktop && !widget.expanded ? null : openIntent,
+      doubleTapIntent: hasFeature(features.accountsClipboard)
+          ? CopyIntent<OathCredential>(credential)
+          : null,
+      buildPopupActions: (_) => helper.buildActions(),
+    );
   }
 }
