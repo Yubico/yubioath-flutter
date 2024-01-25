@@ -82,7 +82,6 @@ class AppPage extends StatelessWidget {
               scaffoldState?.openEndDrawer();
             }
             return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
               body: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -285,7 +284,6 @@ class AppPage extends StatelessWidget {
       );
     }
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
       key: scaffoldGlobalKey,
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
