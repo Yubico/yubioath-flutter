@@ -82,6 +82,7 @@ class AppPage extends StatelessWidget {
               scaffoldState?.openEndDrawer();
             }
             return Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.surface,
               body: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -155,6 +156,7 @@ class AppPage extends StatelessWidget {
   }
 
   Widget _buildTitle(BuildContext context) {
+    ThemeData.dark();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -165,10 +167,11 @@ class AppPage extends StatelessWidget {
             runSpacing: 8.0,
             children: [
               Text(title!,
-                  style: Theme.of(context)
-                      .textTheme
-                      .displaySmall!
-                      .copyWith(color: Theme.of(context).colorScheme.primary)),
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.9))),
               if (capabilities != null)
                 Wrap(
                   spacing: 4.0,
@@ -283,6 +286,7 @@ class AppPage extends StatelessWidget {
       );
     }
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       key: scaffoldGlobalKey,
       appBar: AppBar(
         scrolledUnderElevation: 0.0,

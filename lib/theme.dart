@@ -15,30 +15,10 @@
  */
 
 import 'package:flutter/material.dart';
-/*
-const primaryGreen = Color(0xffE58B32);
-const accentGreen = Color(0xffEDAE70);
-const primaryBlue = Color(0xff325f74);
-const primaryRed = Color(0xffea4335);
-const darkRed = Color(0xffda4d41);
-const amber = Color(0xffffca28);
-
-// Theme colors
-const themeBlue = Color(0xFF4276F9);
-const themePurple = Color(0xFF9955A5);
-const themePink = Color(0xFFE2609D);
-const themeRed = Color(0xFFE9645C);
-const themeOrange = Color(0xFFE58B32);
-const themeYellow = Color(0xFFF3C938);
-const themeGreen = Color(0xFF78B850);
-const themeGrey = Color(0xFF8C8B8C);
-*/
 
 const defaultPrimaryColor = Colors.blueAccent;
-//const primaryColor = Colors.green;
-//const primaryColor = Colors.deepPurple;
-
-const defaultTextTheme = Typography.englishLike2021;
+const capabilityChipBorderColor = Color(0x44777777);
+const capabilityChipTextColor = Color(0xFF777777);
 
 class AppTheme {
   static ThemeData getTheme(Brightness brightness, Color primaryColor) =>
@@ -52,20 +32,17 @@ class AppTheme {
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.light,
           seedColor: primaryColor,
-          background: const Color(0xfffefdf4),
+          onSurface: const Color(0xbb000000),
+          onSurfaceVariant: const Color(0x99000000),
         ),
         fontFamily: 'Roboto',
         appBarTheme: const AppBarTheme(
           color: Colors.transparent,
         ),
-        listTileTheme: ListTileThemeData(
+        listTileTheme: const ListTileThemeData(
           // For alignment under menu button
-          contentPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
           visualDensity: VisualDensity.compact,
-          titleTextStyle: defaultTextTheme.bodyLarge!
-              .copyWith(color: Colors.black87, fontFamily: 'Roboto'),
-          subtitleTextStyle: defaultTextTheme.bodyMedium!
-              .copyWith(color: Colors.black54, fontFamily: 'Roboto'),
         ),
         tooltipTheme: const TooltipThemeData(
           waitDuration: Duration(milliseconds: 500),
@@ -83,19 +60,18 @@ class AppTheme {
           brightness: Brightness.dark,
           seedColor: primaryColor,
           background: const Color(0xff282828),
+          surface: const Color(0xff282828),
+          onSurface: const Color(0xeeffffff),
+          onSurfaceVariant: const Color(0xaaffffff),
         ),
         fontFamily: 'Roboto',
         appBarTheme: const AppBarTheme(
           color: Colors.transparent,
         ),
-        listTileTheme: ListTileThemeData(
+        listTileTheme: const ListTileThemeData(
           // For alignment under menu button
-          contentPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
           visualDensity: VisualDensity.compact,
-          titleTextStyle: defaultTextTheme.bodyLarge!
-              .copyWith(color: Colors.white, fontFamily: 'Roboto'),
-          subtitleTextStyle: defaultTextTheme.bodyMedium!
-              .copyWith(color: Colors.white54, fontFamily: 'Roboto'),
         ),
         tooltipTheme: const TooltipThemeData(
           waitDuration: Duration(milliseconds: 500),
@@ -107,9 +83,6 @@ class AppTheme {
         ),
       );
 }
-
-const capabilityChipBorderColor = Color(0x44777777);
-const capabilityChipTextColor = Color(0xFF777777);
 
 /* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
 /// This fixes the issue with FilterChip resizing vertically on toggle.

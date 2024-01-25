@@ -169,9 +169,9 @@ class _CodeLabel extends StatelessWidget {
         opacity: expired ? 0.4 : 1.0,
         child: Text(
           _formatCode(code),
-          style: const TextStyle(
-            fontFeatures: [FontFeature.tabularFigures()],
-          ),
+          style: TextStyle(
+              fontFeatures: const [FontFeature.tabularFigures()],
+              color: Theme.of(context).colorScheme.onSurface),
           textHeightBehavior: TextHeightBehavior(
             // This helps with vertical centering on desktop
             applyHeightToFirstAscent: !isDesktop,

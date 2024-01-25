@@ -95,10 +95,10 @@ class MessagePage extends StatelessWidget {
                         textAlign: centered ?? false
                             ? TextAlign.center
                             : TextAlign.left,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.apply(color: Colors.grey)),
+                        style: Theme.of(context).textTheme.titleSmall?.apply(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
                   ),
                 ],
               ],
