@@ -28,7 +28,7 @@ class WebAuthnScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return MessagePage(
       title: l10n.s_webauthn,
-      capability: Capability.u2f,
+      capabilities: const [Capability.u2f],
       header: l10n.l_ready_to_use,
       message: l10n.l_register_sk_on_websites,
     );

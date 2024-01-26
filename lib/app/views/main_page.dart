@@ -133,7 +133,7 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
-              final capability = app.getCapability();
+              final capabilities = app.getCapabilities();
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(
@@ -149,18 +149,20 @@ class MainPage extends ConsumerWidget {
                   Availability.unsupported) {
                 return MessagePage(
                   title: app.getDisplayName(l10n),
-                  capability: capability,
+                  capabilities: capabilities,
                   header: l10n.s_app_not_supported,
-                  message: l10n.l_app_not_supported_on_yk(
-                      capability?.getDisplayName(l10n) ?? app.name),
+                  message: l10n.l_app_not_supported_on_yk(capabilities
+                      .map((c) => c.getDisplayName(l10n))
+                      .join(',')),
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
                   title: app.getDisplayName(l10n),
-                  capability: capability,
+                  capabilities: capabilities,
                   header: l10n.s_app_disabled,
-                  message: l10n.l_app_disabled_desc(
-                      capability?.getDisplayName(l10n) ?? app.name),
+                  message: l10n.l_app_disabled_desc(capabilities
+                      .map((c) => c.getDisplayName(l10n))
+                      .join(',')),
                   actions: [
                     ActionChip(
                       label: Text(data.info.version.major > 4

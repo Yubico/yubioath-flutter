@@ -32,7 +32,7 @@ class MessagePage extends StatelessWidget {
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
-  final Capability? capability;
+  final List<Capability>? capabilities;
   final bool keyActionsBadge;
   final bool centered;
 
@@ -49,14 +49,14 @@ class MessagePage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
-    this.capability,
+    this.capabilities,
     this.centered = false,
   });
 
   @override
   Widget build(BuildContext context) => AppPage(
         title: title,
-        capability: capability,
+        capabilities: capabilities,
         centered: centered,
         actions: actions,
         keyActionsBuilder: keyActionsBuilder,

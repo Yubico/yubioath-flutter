@@ -44,7 +44,7 @@ class AppPage extends StatelessWidget {
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
-  final Capability? capability;
+  final List<Capability>? capabilities;
   const AppPage({
     super.key,
     this.title,
@@ -55,7 +55,7 @@ class AppPage extends StatelessWidget {
     this.detailViewBuilder,
     this.actionButtonBuilder,
     this.fileDropOverlay,
-    this.capability,
+    this.capabilities,
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
@@ -169,7 +169,12 @@ class AppPage extends StatelessWidget {
                           .colorScheme
                           .primary
                           .withOpacity(0.9))),
-              if (capability != null) _CapabilityBadge(capability!)
+              if (capabilities != null)
+                Wrap(
+                  spacing: 4.0,
+                  runSpacing: 8.0,
+                  children: [...capabilities!.map((c) => _CapabilityBadge(c))],
+                )
             ])
       ],
     );

@@ -61,7 +61,7 @@ class PasskeysScreen extends ConsumerWidget {
           if (Capability.fido2.value & enabled == 0) {
             return MessagePage(
               title: l10n.s_passkeys,
-              capability: Capability.fido2,
+              capabilities: const [Capability.fido2],
               header: l10n.s_fido_disabled,
               message: l10n.l_webauthn_req_fido2,
             );
@@ -94,7 +94,7 @@ class _FidoLockedPage extends ConsumerWidget {
     if (!state.hasPin) {
       return MessagePage(
         title: l10n.s_passkeys,
-        capability: Capability.fido2,
+        capabilities: const [Capability.fido2],
         header: state.credMgmt
             ? l10n.l_no_discoverable_accounts
             : l10n.l_ready_to_use,
@@ -107,7 +107,7 @@ class _FidoLockedPage extends ConsumerWidget {
     if (!state.credMgmt && state.bioEnroll == null) {
       return MessagePage(
         title: l10n.s_passkeys,
-        capability: Capability.fido2,
+        capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -129,7 +129,7 @@ class _FidoLockedPage extends ConsumerWidget {
           )
         ],
         title: l10n.s_passkeys,
-        capability: Capability.fido2,
+        capabilities: const [Capability.fido2],
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -139,7 +139,7 @@ class _FidoLockedPage extends ConsumerWidget {
 
     return AppPage(
       title: l10n.s_passkeys,
-      capability: Capability.fido2,
+      capabilities: const [Capability.fido2],
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
@@ -177,7 +177,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       // TODO: Special handling for credMgmt not supported
       return MessagePage(
         title: l10n.s_passkeys,
-        capability: Capability.fido2,
+        capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
@@ -197,7 +197,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     if (credentials.isEmpty) {
       return MessagePage(
         title: l10n.s_passkeys,
-        capability: Capability.fido2,
+        capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
@@ -246,7 +246,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
-        capability: Capability.fido2,
+        capabilities: const [Capability.fido2],
         detailViewBuilder: credential != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

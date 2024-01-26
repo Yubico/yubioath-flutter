@@ -106,7 +106,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                 },
                 child: AppPage(
                   title: l10n.s_certificates,
-                  capability: Capability.piv,
+                  capabilities: const [Capability.piv],
                   detailViewBuilder: selected != null
                       ? (context) => Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,

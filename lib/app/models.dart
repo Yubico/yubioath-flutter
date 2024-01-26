@@ -30,17 +30,23 @@ const _listEquality = ListEquality();
 enum Availability { enabled, disabled, unsupported }
 
 enum Application {
-  accounts,
-  webauthn,
-  fingerprints,
-  passkeys,
-  slots,
-  certificates,
-  openpgp,
-  hsmauth,
-  management;
+  accounts([Capability.oath]),
+  webauthn([Capability.u2f]),
+  fingerprints([Capability.fido2]),
+  passkeys([Capability.fido2]),
+  slots([Capability.otp]),
+  certificates([Capability.piv]),
+  openpgp([Capability.openpgp]),
+  hsmauth([Capability.hsmauth]),
+  management();
 
-  const Application();
+  final List<Capability> capabilities;
+
+  List<Capability> getCapabilities() {
+    return capabilities;
+  }
+
+  const Application([this.capabilities = const []]);
 
   bool _inCapabilities(int capabilities) => switch (this) {
         Application.accounts => Capability.oath.value & capabilities != 0,
@@ -63,18 +69,6 @@ enum Application {
         Application.certificates => l10n.s_certificates,
         Application.slots => l10n.s_slots,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
-      };
-
-  Capability? getCapability() => switch (this) {
-        Application.accounts => Capability.oath,
-        Application.webauthn => Capability.u2f,
-        Application.passkeys => Capability.fido2,
-        Application.fingerprints => Capability.fido2,
-        Application.certificates => Capability.piv,
-        Application.slots => Capability.otp,
-        Application.hsmauth => Capability.hsmauth,
-        Application.openpgp => Capability.openpgp,
-        _ => null
       };
 
   Availability getAvailability(YubiKeyData data) {

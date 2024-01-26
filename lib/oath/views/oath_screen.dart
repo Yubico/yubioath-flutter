@@ -83,7 +83,7 @@ class _LockedView extends ConsumerWidget {
     final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
       title: AppLocalizations.of(context)!.s_accounts,
-      capability: Capability.oath,
+      capabilities: const [Capability.oath],
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
           : null,
@@ -175,7 +175,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           )
         ],
         title: l10n.s_accounts,
-        capability: Capability.oath,
+        capabilities: const [Capability.oath],
         key: keys.noAccountsView,
         header: l10n.l_authenticator_get_started,
         message: l10n.p_no_accounts_desc,
@@ -249,7 +249,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       },
       builder: (context) => AppPage(
         title: l10n.s_accounts,
-        capability: Capability.oath,
+        capabilities: const [Capability.oath],
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
