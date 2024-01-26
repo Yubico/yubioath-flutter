@@ -73,7 +73,7 @@ class MessagePage extends StatelessWidget {
               right: 16.0,
               bottom: centered && actionsBuilder == null ? 96 : 0),
           child: SizedBox(
-            width: 350,
+            width: centered ? 250 : 350,
             child: Column(
               crossAxisAlignment: centered
                   ? CrossAxisAlignment.center
