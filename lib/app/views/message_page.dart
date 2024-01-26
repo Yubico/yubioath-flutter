@@ -32,9 +32,9 @@ class MessagePage extends StatelessWidget {
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
-  final List<Capability>? capabilities;
+  final Capability? capability;
   final bool keyActionsBadge;
-  final bool? centered;
+  final bool centered;
 
   const MessagePage({
     super.key,
@@ -49,15 +49,15 @@ class MessagePage extends StatelessWidget {
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
-    this.capabilities,
-    this.centered,
+    this.capability,
+    this.centered = false,
   });
 
   @override
   Widget build(BuildContext context) => AppPage(
         title: title,
-        capabilities: capabilities,
-        centered: centered ?? false,
+        capability: capability,
+        centered: centered,
         actions: actions,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
@@ -70,11 +70,11 @@ class MessagePage extends StatelessWidget {
               left: 16.0,
               top: 0.0,
               right: 16.0,
-              bottom: centered ?? false ? 96 : 0),
+              bottom: centered && actions.isEmpty ? 96 : 0),
           child: SizedBox(
             width: 350,
             child: Column(
-              crossAxisAlignment: centered ?? false
+              crossAxisAlignment: centered
                   ? CrossAxisAlignment.center
                   : CrossAxisAlignment.start,
               children: [
@@ -84,17 +84,14 @@ class MessagePage extends StatelessWidget {
                 ],
                 if (header != null)
                   Text(header!,
-                      textAlign:
-                          centered ?? false ? TextAlign.center : TextAlign.left,
+                      textAlign: centered ? TextAlign.center : TextAlign.left,
                       style: Theme.of(context).textTheme.titleLarge),
                 if (message != null) ...[
                   const SizedBox(height: 12.0),
                   Container(
                     constraints: const BoxConstraints(maxWidth: 300),
                     child: Text(message!,
-                        textAlign: centered ?? false
-                            ? TextAlign.center
-                            : TextAlign.left,
+                        textAlign: centered ? TextAlign.center : TextAlign.left,
                         style: Theme.of(context).textTheme.titleSmall?.apply(
                             color: Theme.of(context)
                                 .colorScheme

@@ -25,7 +25,6 @@ import '../../desktop/state.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
-import 'device_avatar.dart';
 import 'message_page.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
@@ -72,8 +71,13 @@ class DeviceErrorScreen extends ConsumerWidget {
     }
     return MessagePage(
       centered: true,
-      graphic: const DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: l10n.l_yk_no_access,
+      graphic: Image.asset(
+        'assets/product-images/generic.png',
+        filterQuality: FilterQuality.medium,
+        scale: 3,
+        color: Theme.of(context).colorScheme.error,
+      ),
+      header: l10n.l_yk_no_access,
     );
   }
 
@@ -86,11 +90,11 @@ class DeviceErrorScreen extends ConsumerWidget {
         'unknown-device' => MessagePage(
             centered: true,
             graphic: Icon(
-              Icons.help_outline,
+              Icons.help_outlined,
               size: 96,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.error,
             ),
-            message: l10n.s_unknown_device,
+            header: l10n.s_unknown_device,
           ),
         _ => MessagePage(
             centered: true,

@@ -61,7 +61,7 @@ class FingerprintsScreen extends ConsumerWidget {
           if (Capability.fido2.value & enabled == 0) {
             return MessagePage(
               title: l10n.s_fingerprints,
-              capabilities: const [Capability.fido2],
+              capability: Capability.fido2,
               header: l10n.s_fido_disabled,
               message: l10n.l_webauthn_req_fido2,
             );
@@ -105,7 +105,7 @@ class _FidoLockedPage extends ConsumerWidget {
           )
         ],
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capability: Capability.fido2,
         header: '${l10n.s_fingerprints_get_started} (1/2)',
         message: l10n.p_set_fingerprints_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -116,17 +116,28 @@ class _FidoLockedPage extends ConsumerWidget {
     if (state.forcePinChange) {
       return MessagePage(
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capability: Capability.fido2,
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
+        actions: [
+          ActionChip(
+            label: Text(l10n.s_change_pin),
+            onPressed: () async {
+              await showBlurDialog(
+                  context: context,
+                  builder: (context) => FidoPinDialog(node.path, state));
+            },
+            avatar: const Icon(Icons.pin_outlined),
+          )
+        ],
       );
     }
 
     return AppPage(
       title: l10n.s_fingerprints,
-      capabilities: const [Capability.fido2],
+      capability: Capability.fido2,
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
@@ -179,7 +190,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
           )
         ],
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capability: Capability.fido2,
         header: '${l10n.s_fingerprints_get_started} (2/2)',
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: hasActions
@@ -239,7 +250,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capability: Capability.fido2,
         detailViewBuilder: fingerprint != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -65,6 +65,18 @@ enum Application {
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
       };
 
+  Capability? getCapability() => switch (this) {
+        Application.accounts => Capability.oath,
+        Application.webauthn => Capability.u2f,
+        Application.passkeys => Capability.fido2,
+        Application.fingerprints => Capability.fido2,
+        Application.certificates => Capability.piv,
+        Application.slots => Capability.otp,
+        Application.hsmauth => Capability.hsmauth,
+        Application.openpgp => Capability.openpgp,
+        _ => null
+      };
+
   Availability getAvailability(YubiKeyData data) {
     if (this == Application.management) {
       final version = data.info.version;

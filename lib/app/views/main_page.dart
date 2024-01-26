@@ -26,10 +26,12 @@ import '../../exception/cancellation_exception.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
+import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
+import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
@@ -131,21 +133,48 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
+              final capability = app.getCapability();
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(
+                  centered: true,
+                  graphic: Icon(
+                    Icons.help_outlined,
+                    size: 96,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   header: l10n.s_yk_not_recognized,
                 );
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
+                  title: app.getDisplayName(l10n),
+                  capability: capability,
                   header: l10n.s_app_not_supported,
-                  message: l10n.l_app_not_supported_on_yk(app.name),
+                  message: l10n.l_app_not_supported_on_yk(
+                      capability?.getDisplayName(l10n) ?? app.name),
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
+                  title: app.getDisplayName(l10n),
+                  capability: capability,
                   header: l10n.s_app_disabled,
-                  message: l10n.l_app_disabled_desc(app.name),
+                  message: l10n.l_app_disabled_desc(
+                      capability?.getDisplayName(l10n) ?? app.name),
+                  actions: [
+                    ActionChip(
+                      label: Text(data.info.version.major > 4
+                          ? l10n.s_toggle_applications
+                          : l10n.s_toggle_interfaces),
+                      onPressed: () async {
+                        await showBlurDialog(
+                          context: context,
+                          builder: (context) => ManagementScreen(data),
+                        );
+                      },
+                      avatar: const Icon(Icons.construction),
+                    )
+                  ],
                 );
               }
 

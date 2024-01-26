@@ -93,7 +93,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     },
                     child: AppPage(
                       title: l10n.s_slots,
-                      capabilities: const [Capability.otp],
+                      capability: Capability.otp,
                       detailViewBuilder: selected != null
                           ? (context) => Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
