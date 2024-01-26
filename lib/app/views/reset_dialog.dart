@@ -164,6 +164,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           children: [
             SegmentedButton<Capability>(
               emptySelectionAllowed: true,
+              //showSelectedIcon: false,
               segments: [
                 Capability.oath,
                 Capability.fido2,
@@ -172,7 +173,11 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   .where((c) => supported & c.value != 0)
                   .map((c) => ButtonSegment(
                         value: c,
-                        label: Text(c.getDisplayName(l10n)),
+                        icon: const Icon(null),
+                        label: Padding(
+                          padding: const EdgeInsets.only(right: 22),
+                          child: Text(c.getDisplayName(l10n)),
+                        ),
                         enabled: enabled & c.value != 0,
                       ))
                   .toList(),
@@ -188,7 +193,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                 Capability.oath => l10n.p_warning_factory_reset,
                 Capability.piv => l10n.p_warning_piv_reset,
                 Capability.fido2 => l10n.p_warning_deletes_accounts,
-                _ => 'Factory reset an application.',
+                _ => l10n.p_factory_reset_an_app,
               },
               style: Theme.of(context)
                   .textTheme
@@ -200,7 +205,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                 Capability.oath => l10n.p_warning_disable_credentials,
                 Capability.piv => l10n.p_warning_piv_reset_desc,
                 Capability.fido2 => l10n.p_warning_disable_accounts,
-                _ => 'Select an application above to reset.',
+                _ => l10n.p_factory_reset_desc,
               },
             ),
             if (_application == Capability.fido2 && _currentStep >= 0) ...[
