@@ -64,10 +64,15 @@ class DeleteAccountDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_warning_delete_account),
+            Text(
+              l10n.p_warning_delete_account,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
             Text(
               l10n.p_warning_disable_credential,
-              style: Theme.of(context).textTheme.bodyLarge,
             ),
             Text(l10n.l_account(getTextName(credential))),
           ]
