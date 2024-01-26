@@ -89,7 +89,7 @@ class MainPage extends ConsumerWidget {
           message: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
-          actions: [
+          actionsBuilder: (context, expanded) => [
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
                   label: Text(l10n.s_enable_nfc),
@@ -163,7 +163,7 @@ class MainPage extends ConsumerWidget {
                   message: l10n.l_app_disabled_desc(capabilities
                       .map((c) => c.getDisplayName(l10n))
                       .join(',')),
-                  actions: [
+                  actionsBuilder: (context, expanded) => [
                     ActionChip(
                       label: Text(data.info.version.major > 4
                           ? l10n.s_toggle_applications

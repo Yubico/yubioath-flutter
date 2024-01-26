@@ -26,10 +26,11 @@ class MessagePage extends StatelessWidget {
   final Widget? graphic;
   final String? header;
   final String? message;
-  final List<Widget> actions;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final List<Widget> Function(BuildContext context, bool expanded)?
+      actionsBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
   final List<Capability>? capabilities;
@@ -42,9 +43,9 @@ class MessagePage extends StatelessWidget {
     this.graphic,
     this.header,
     this.message,
-    this.actions = const [],
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.actionsBuilder,
     this.fileDropOverlay,
     this.onFileDropped,
     this.delayedContent = false,
@@ -58,19 +59,19 @@ class MessagePage extends StatelessWidget {
         title: title,
         capabilities: capabilities,
         centered: centered,
-        actions: actions,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
         fileDropOverlay: fileDropOverlay,
         onFileDropped: onFileDropped,
         actionButtonBuilder: actionButtonBuilder,
+        actionsBuilder: actionsBuilder,
         delayedContent: delayedContent,
         builder: (context, _) => Padding(
           padding: EdgeInsets.only(
               left: 16.0,
               top: 0.0,
               right: 16.0,
-              bottom: centered && actions.isEmpty ? 96 : 0),
+              bottom: centered && actionsBuilder == null ? 96 : 0),
           child: SizedBox(
             width: 350,
             child: Column(

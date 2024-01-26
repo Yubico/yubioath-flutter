@@ -23,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
@@ -90,17 +91,35 @@ class _FidoLockedPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+    final isBio = state.bioEnroll != null;
 
     if (!state.hasPin) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
+        actionsBuilder: isBio
+            ? (context, expanded) {
+                return [
+                  ActionChip(
+                    label: Text(l10n.s_setup_fingerprints),
+                    onPressed: () async {
+                      ref
+                          .read(currentAppProvider.notifier)
+                          .setCurrentApp(Application.fingerprints);
+                    },
+                    avatar: const Icon(Icons.fingerprint_outlined),
+                  )
+                ];
+              }
+            : null,
         header: state.credMgmt
             ? l10n.l_no_discoverable_accounts
             : l10n.l_ready_to_use,
-        message: l10n.p_optionally_set_a_pin,
-        keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        message: isBio
+            ? l10n.p_setup_fingerprints_desc
+            : l10n.p_optionally_set_a_pin,
+        keyActionsBuilder: hasActions && !isBio ? _buildActions : null,
+        keyActionsBadge: !isBio ? fidoShowActionsNotifier(state) : false,
       );
     }
 
@@ -117,16 +136,17 @@ class _FidoLockedPage extends ConsumerWidget {
 
     if (state.forcePinChange) {
       return MessagePage(
-        actions: [
-          ActionChip(
-            label: Text(l10n.s_change_pin),
-            onPressed: () async {
-              await showBlurDialog(
-                  context: context,
-                  builder: (context) => FidoPinDialog(node.path, state));
-            },
-            avatar: const Icon(Icons.pin_outlined),
-          )
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_change_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => FidoPinDialog(node.path, state));
+              },
+              avatar: const Icon(Icons.pin_outlined),
+            )
         ],
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],

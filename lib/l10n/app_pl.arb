@@ -429,6 +429,8 @@
             "message": {}
         }
     },
+    "s_setup_fingerprints": null,
+    "p_setup_fingerprints_desc": null,
     "s_add_fingerprint": "Dodaj odcisk palca",
     "l_fp_step_1_capture": "Krok 1/2: Pobranie odcisku palca",
     "l_fp_step_2_name": "Krok 2/2: Nazwij odcisk palca",

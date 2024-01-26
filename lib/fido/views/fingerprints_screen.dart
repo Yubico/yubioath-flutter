@@ -93,16 +93,17 @@ class _FidoLockedPage extends ConsumerWidget {
 
     if (!state.hasPin) {
       return MessagePage(
-        actions: [
-          ActionChip(
-            label: Text(l10n.s_set_pin),
-            onPressed: () async {
-              await showBlurDialog(
-                  context: context,
-                  builder: (context) => FidoPinDialog(node.path, state));
-            },
-            avatar: const Icon(Icons.pin_outlined),
-          )
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_set_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => FidoPinDialog(node.path, state));
+              },
+              avatar: const Icon(Icons.pin_outlined),
+            )
         ],
         title: l10n.s_fingerprints,
         capabilities: const [Capability.fido2],
@@ -121,16 +122,17 @@ class _FidoLockedPage extends ConsumerWidget {
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
-        actions: [
-          ActionChip(
-            label: Text(l10n.s_change_pin),
-            onPressed: () async {
-              await showBlurDialog(
-                  context: context,
-                  builder: (context) => FidoPinDialog(node.path, state));
-            },
-            avatar: const Icon(Icons.pin_outlined),
-          )
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_change_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => FidoPinDialog(node.path, state));
+              },
+              avatar: const Icon(Icons.pin_outlined),
+            )
         ],
       );
     }
@@ -178,16 +180,18 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final fingerprints = data.value;
     if (fingerprints.isEmpty) {
       return MessagePage(
-        actions: [
-          ActionChip(
-            label: Text(l10n.s_add_fingerprint),
-            onPressed: () async {
-              await showBlurDialog(
-                  context: context,
-                  builder: (context) => AddFingerprintDialog(widget.node.path));
-            },
-            avatar: const Icon(Icons.fingerprint_outlined),
-          )
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_add_fingerprint),
+              onPressed: () async {
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) =>
+                        AddFingerprintDialog(widget.node.path));
+              },
+              avatar: const Icon(Icons.fingerprint_outlined),
+            )
         ],
         title: l10n.s_fingerprints,
         capabilities: const [Capability.fido2],

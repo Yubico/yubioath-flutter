@@ -159,20 +159,21 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        actions: [
-          ActionChip(
-            label: Text(l10n.s_add_account),
-            onPressed: () async {
-              await showBlurDialog(
-                context: context,
-                builder: (context) => AddAccountDialog(
-                  widget.devicePath,
-                  widget.oathState,
-                ),
-              );
-            },
-            avatar: const Icon(Icons.person_add_alt_1_outlined),
-          )
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_add_account),
+              onPressed: () async {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => AddAccountDialog(
+                    widget.devicePath,
+                    widget.oathState,
+                  ),
+                );
+              },
+              avatar: const Icon(Icons.person_add_alt_1_outlined),
+            )
         ],
         title: l10n.s_accounts,
         capabilities: const [Capability.oath],

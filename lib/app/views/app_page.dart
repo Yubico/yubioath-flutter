@@ -36,7 +36,8 @@ class AppPage extends StatelessWidget {
   final String? title;
   final Widget Function(BuildContext context, bool expanded) builder;
   final Widget Function(BuildContext context)? detailViewBuilder;
-  final List<Widget> actions;
+  final List<Widget> Function(BuildContext context, bool expanded)?
+      actionsBuilder;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool keyActionsBadge;
   final bool centered;
@@ -49,11 +50,11 @@ class AppPage extends StatelessWidget {
     super.key,
     this.title,
     required this.builder,
-    this.actions = const [],
     this.centered = false,
     this.keyActionsBuilder,
     this.detailViewBuilder,
     this.actionButtonBuilder,
+    this.actionsBuilder,
     this.fileDropOverlay,
     this.capabilities,
     this.onFileDropped,
@@ -192,7 +193,7 @@ class AppPage extends StatelessWidget {
             child: _buildTitle(context),
           ),
         builder(context, expanded),
-        if (actions.isNotEmpty)
+        if (actionsBuilder != null)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
@@ -200,7 +201,7 @@ class AppPage extends StatelessWidget {
               child: Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: actions,
+                children: actionsBuilder!(context, expanded),
               ),
             ),
           ),

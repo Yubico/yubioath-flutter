@@ -403,7 +403,7 @@
     "s_passkeys": "Passkeys",
     "l_ready_to_use": "Ready to use",
     "l_register_sk_on_websites": "Register as a Security Key on websites",
-    "l_no_discoverable_accounts": "No Passkeys stored",
+    "l_no_discoverable_accounts": "No passkeys stored",
     "s_delete_passkey": "Delete Passkey",
     "l_delete_passkey_desc": "Remove the Passkey from the YubiKey",
     "s_passkey_deleted": "Passkey deleted",
@@ -429,6 +429,8 @@
             "message": {}
         }
     },
+    "s_setup_fingerprints": "Setup fingerprints",
+    "p_setup_fingerprints_desc": "Fingerprints needs to be setup before the key can be used.",
     "s_add_fingerprint": "Add fingerprint",
     "l_fp_step_1_capture": "Step 1/2: Capture fingerprint",
     "l_fp_step_2_name": "Step 2/2: Name fingerprint",

@@ -388,7 +388,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
-        actions: [
+        actionsBuilder: (context, expanded) => [
           ActionChip(
             avatar: const Icon(Icons.copy),
             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,

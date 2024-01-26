@@ -429,6 +429,8 @@
             "message": {}
         }
     },
+    "s_setup_fingerprints": null,
+    "p_setup_fingerprints_desc": null,
     "s_add_fingerprint": "Fingerabdruck hinzufügen",
     "l_fp_step_1_capture": "Schritt 1/2: Fingerabdruck aufnehmen",
     "l_fp_step_2_name": "Schritt 2/2: Fingerabdruck benennen",

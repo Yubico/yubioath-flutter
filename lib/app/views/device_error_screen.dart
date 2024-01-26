@@ -45,7 +45,7 @@ class DeviceErrorScreen extends ConsumerWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
           message: l10n.p_elevated_permissions_required,
-          actions: [
+          actionsBuilder: (context, expanded) => [
             FilledButton.icon(
               label: Text(l10n.s_unlock),
               icon: const Icon(Icons.lock_open),

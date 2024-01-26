@@ -429,6 +429,8 @@
             "message": {}
         }
     },
+    "s_setup_fingerprints": null,
+    "p_setup_fingerprints_desc": null,
     "s_add_fingerprint": "指紋を追加",
     "l_fp_step_1_capture": "ステップ 1/2:指紋を取得する",
     "l_fp_step_2_name": "ステップ 2/2:指紋の名前を付ける",

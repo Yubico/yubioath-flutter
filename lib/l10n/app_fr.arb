@@ -429,6 +429,8 @@
             "message": {}
         }
     },
+    "s_setup_fingerprints": null,
+    "p_setup_fingerprints_desc": null,
     "s_add_fingerprint": "Ajouter une empreinte",
     "l_fp_step_1_capture": "Étape 1/2: Entrez votre empreinte",
     "l_fp_step_2_name": "Étape 2/2: Nommez votre empreinte",
