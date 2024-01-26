@@ -53,7 +53,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   bool _currentInvalidFormat = false;
   bool _newInvalidFormat = false;
   int _attemptsRemaining = -1;
-  ManagementKeyType _keyType = ManagementKeyType.tdes;
+  late ManagementKeyType _keyType;
   final _currentController = TextEditingController();
   final _keyController = TextEditingController();
   bool _isObscure = true;
@@ -63,6 +63,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     super.initState();
 
     _hasMetadata = widget.pivState.metadata != null;
+    _keyType = widget.pivState.metadata?.managementKeyMetadata.keyType ??
+        defaultManagementKeyType;
     _defaultKeyUsed =
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
     _usesStoredKey = widget.pivState.protectedKey;
@@ -142,7 +144,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final l10n = AppLocalizations.of(context)!;
     final currentType =
         widget.pivState.metadata?.managementKeyMetadata.keyType ??
-            ManagementKeyType.tdes;
+            defaultManagementKeyType;
     final hexLength = _keyType.keyLength * 2;
     final protected = widget.pivState.protectedKey;
     final currentKeyOrPin = _currentController.text;
@@ -306,7 +308,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     ChoiceFilterChip<ManagementKeyType>(
                       items: ManagementKeyType.values,
                       value: _keyType,
-                      selected: _keyType != defaultManagementKeyType,
+                      selected: _keyType != currentType,
                       itemBuilder: (value) => Text(value.getDisplayName(l10n)),
                       onChanged: (value) {
                         setState(() {
