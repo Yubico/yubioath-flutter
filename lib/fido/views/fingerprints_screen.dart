@@ -107,7 +107,7 @@ class _FidoLockedPage extends ConsumerWidget {
         ],
         title: l10n.s_fingerprints,
         capabilities: const [Capability.fido2],
-        header: '${l10n.s_fingerprints_get_started} (1/2)',
+        header: l10n.s_fingerprints_get_started,
         message: l10n.p_set_fingerprints_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
@@ -195,7 +195,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         ],
         title: l10n.s_fingerprints,
         capabilities: const [Capability.fido2],
-        header: '${l10n.s_fingerprints_get_started} (2/2)',
+        header: l10n.s_fingerprints_get_started,
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: hasActions
             ? (context) =>
