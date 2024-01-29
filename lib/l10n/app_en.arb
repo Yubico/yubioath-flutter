@@ -105,8 +105,8 @@
     "p_community_translations_desc": "These translations are provided and maintained by the community. They may contain errors or be incomplete.",
 
     "@_theme": {},
-    "s_app_theme": "App theme",
-    "s_choose_app_theme": "Choose app theme",
+    "s_app_theme": "Application theme",
+    "s_choose_app_theme": "Choose theme",
     "s_system_default": "System default",
     "s_light_mode": "Light mode",
     "s_dark_mode": "Dark mode",
@@ -380,7 +380,7 @@
     "s_issuer_optional": "Issuer (optional)",
     "s_counter_based": "Counter based",
     "s_time_based": "Time based",
-    "l_copy_code_desc": "Easily paste the code into another app",
+    "l_copy_code_desc": "Paste the code into another application",
     "l_calculate_code_desc": "Get a new code from your YubiKey",
 
     "@_fido_credentials": {},
