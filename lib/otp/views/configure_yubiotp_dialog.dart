@@ -123,7 +123,7 @@ class _ConfigureYubiOtpDialogState
     }
 
     return ResponsiveDialog(
-      title: Text(l10n.s_yubiotp),
+      title: Text(l10n.s_capability_otp),
       actions: [
         TextButton(
           key: keys.saveButton,
@@ -168,10 +168,10 @@ class _ConfigureYubiOtpDialogState
                           context,
                           outputFile != null
                               ? l10n.l_slot_credential_configured_and_exported(
-                                  l10n.s_yubiotp,
+                                  l10n.s_capability_otp,
                                   outputFile.uri.pathSegments.last)
                               : l10n.l_slot_credential_configured(
-                                  l10n.s_yubiotp));
+                                  l10n.s_capability_otp));
                     });
                   } catch (e) {
                     _log.error('Failed to program credential', e);

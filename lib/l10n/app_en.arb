@@ -551,7 +551,6 @@
     "l_otp_slot_configured": "Slot is configured",
 
     "@_otp_slot_configurations": {},
-    "s_yubiotp": "Yubico OTP",
     "l_yubiotp_desc": "Program a Yubico OTP credential",
     "s_challenge_response": "Challenge-response",
     "l_challenge_response_desc": "Program a challenge-response credential",

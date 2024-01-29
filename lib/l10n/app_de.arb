@@ -551,7 +551,6 @@
     "l_otp_slot_configured": null,
 
     "@_otp_slot_configurations": {},
-    "s_yubiotp": null,
     "l_yubiotp_desc": null,
     "s_challenge_response": null,
     "l_challenge_response_desc": null,
