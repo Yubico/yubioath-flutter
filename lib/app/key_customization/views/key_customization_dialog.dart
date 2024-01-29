@@ -86,7 +86,7 @@ class _KeyCustomizationDialogState
       );
     }
 
-    final primaryColor = ref.read(primaryColorProvider);
+    final primaryColor = ref.watch(defaultColorProvider);
 
     final didChange = widget.initialCustomization.name != _customName ||
         widget.initialCustomization.color != _customColor;
@@ -116,7 +116,7 @@ class _KeyCustomizationDialogState
                       maxLength: 20,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.s_custom_key_name,
+                        labelText: l10n.s_label,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.key),
@@ -133,7 +133,8 @@ class _KeyCustomizationDialogState
                       },
                     ),
                   ),
-                  Text(l10n.s_custom_key_color),
+                  Text(l10n.s_theme_color),
+                  const SizedBox(height: 16),
                   Container(
                     constraints: const BoxConstraints(maxWidth: 360),
                     child: Wrap(

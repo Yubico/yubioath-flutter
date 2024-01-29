@@ -332,8 +332,8 @@
     },
     "s_accounts": "Accounts",
     "s_no_accounts": "No accounts",
-    "p_no_accounts_desc": "Add accounts to your YubiKey from any service provider supporting OATH 2FA.",
-    "l_authenticator_get_started": "Get started with Authenticator",
+    "p_no_accounts_desc": "Add accounts to your YubiKey from any service provider supporting OATH TOTP/HOTP.",
+    "l_authenticator_get_started": "Get started with OTP accounts",
     "s_add_account": "Add account",
     "s_add_accounts": "Add account(s)",
     "p_add_description": "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
@@ -444,7 +444,7 @@
     "l_set_pin_fingerprints": "Set a PIN to register fingerprints",
     "l_no_fps_added": "No fingerprints have been added",
     "s_rename_fp": "Rename fingerprint",
-    "l_rename_fp_desc": "Change the label",
+    "l_rename_fp_desc": "Change the name",
     "s_fingerprint_renamed": "Fingerprint renamed",
     "l_rename_fp_failed": "Error renaming: {message}",
     "@l_rename_fp_failed": {
@@ -460,7 +460,7 @@
         }
     },
     "p_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
-    "p_will_change_label_fp": "This will change the label of the fingerprint.",
+    "p_will_change_label_fp": "This will change the name of the fingerprint.",
     "l_name_fingerprint": "Name this fingerprint",
 
     "@_fido_errors": {},
@@ -751,9 +751,8 @@
     "p_ndef_set_clip_failure": "Failed to access clipboard when trying to copy OTP code from YubiKey.",
 
     "@_key_customization": {},
-    "s_customize_key_action": "Customize key",
-    "s_custom_key_name": "Custom key name",
-    "s_custom_key_color": "Color for YubiKey",
+    "s_customize_key_action": "Set label/color",
+    "s_theme_color": "Theme color",
 
     "@_eof": {}
 }

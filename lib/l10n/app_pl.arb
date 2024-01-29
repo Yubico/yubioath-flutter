@@ -752,8 +752,7 @@
 
     "@_key_customization": {},
     "s_customize_key_action": null,
-    "s_custom_key_name": null,
-    "s_custom_key_color": null,
+    "s_theme_color": null,
 
     "@_eof": {}
 }
