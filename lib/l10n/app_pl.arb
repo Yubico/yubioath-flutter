@@ -616,6 +616,7 @@
     "s_permission_denied": "Odmowa dostępu",
     "l_elevating_permissions": "Podnoszenie uprawnień\u2026",
     "s_review_permissions": "Przegląd uprawnień",
+    "s_admin_privileges_required": null,
     "p_elevated_permissions_required": "Zarządzanie tym urządzeniem wymaga podwyższonych uprawnień.",
     "p_webauthn_elevated_permissions_required": "Zarządzanie WebAuthn wymaga podwyższonych uprawnień.",
     "p_need_camera_permission": "Yubico Authenticator wymaga dostępu do aparatu w celu skanowania kodów QR.",

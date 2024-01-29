@@ -616,6 +616,7 @@
     "s_permission_denied": "Permission denied",
     "l_elevating_permissions": "Elevating permissions\u2026",
     "s_review_permissions": "Review permissions",
+    "s_admin_privileges_required": "Admin privileges required",
     "p_elevated_permissions_required": "Managing this device requires elevated privileges.",
     "p_webauthn_elevated_permissions_required": "WebAuthn management requires elevated privileges.",
     "p_need_camera_permission": "Yubico Authenticator needs Camera permissions for scanning QR codes.",

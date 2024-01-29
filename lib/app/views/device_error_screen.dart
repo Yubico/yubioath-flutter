@@ -37,13 +37,11 @@ class DeviceErrorScreen extends ConsumerWidget {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+        final currentApp = ref.read(currentAppProvider);
         return MessagePage(
-          centered: true,
-          graphic: Icon(
-            Icons.do_not_disturb_on_outlined,
-            size: 96,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          title: currentApp.getDisplayName(l10n),
+          capabilities: currentApp.getCapabilities(),
+          header: l10n.s_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [
             FilledButton.icon(
