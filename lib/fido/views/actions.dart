@@ -138,7 +138,7 @@ List<ActionItem> buildCredentialActions(
       actionStyle: ActionStyle.error,
       icon: const Icon(Icons.delete),
       title: l10n.s_delete_passkey,
-      subtitle: l10n.l_delete_account_desc,
+      subtitle: l10n.l_delete_passkey_desc,
       intent: DeleteIntent(credential),
     ),
   ];

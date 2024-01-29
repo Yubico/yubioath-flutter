@@ -164,7 +164,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           children: [
             SegmentedButton<Capability>(
               emptySelectionAllowed: true,
-              //showSelectedIcon: false,
               segments: [
                 Capability.oath,
                 Capability.fido2,
