@@ -179,7 +179,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         capabilities: const [Capability.oath],
         key: keys.noAccountsView,
         header: l10n.l_authenticator_get_started,
-        message: l10n.p_no_accounts_desc,
+        message: l10n.l_no_accounts_desc,
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                 context, widget.devicePath, widget.oathState, ref,
