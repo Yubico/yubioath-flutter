@@ -49,7 +49,7 @@ dependencies:
   flutter_riverpod: ^2.4.9
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
-  window_manager: ^0.3.7
+  window_manager: ^0.3.8
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   screen_retriever: ^0.1.6
