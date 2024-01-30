@@ -317,7 +317,7 @@ class MainActivity : FlutterFragmentActivity() {
                     dialogManager,
                     appPreferences
                 )
-                OperationContext.Fido -> FidoManager(
+                OperationContext.FidoPasskeys -> FidoManager(
                     this,
                     messenger,
                     viewModel,

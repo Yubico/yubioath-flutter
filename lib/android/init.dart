@@ -57,7 +57,7 @@ Future<Widget> initialize() async {
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
         Application.accounts,
-        Application.webauthn,
+        Application.passkeys,
       ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
