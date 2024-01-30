@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
@@ -32,10 +33,11 @@ final _navKey = GlobalKey();
 final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
-  final Widget? title;
+  final String? title;
   final Widget Function(BuildContext context, bool expanded) builder;
   final Widget Function(BuildContext context)? detailViewBuilder;
-  final List<Widget> actions;
+  final List<Widget> Function(BuildContext context, bool expanded)?
+      actionsBuilder;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool keyActionsBadge;
   final bool centered;
@@ -43,16 +45,18 @@ class AppPage extends StatelessWidget {
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
+  final List<Capability>? capabilities;
   const AppPage({
     super.key,
     this.title,
     required this.builder,
-    this.actions = const [],
     this.centered = false,
     this.keyActionsBuilder,
     this.detailViewBuilder,
     this.actionButtonBuilder,
+    this.actionsBuilder,
     this.fileDropOverlay,
+    this.capabilities,
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
@@ -150,19 +154,54 @@ class AppPage extends StatelessWidget {
     ));
   }
 
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 2.0,
+            runSpacing: 8.0,
+            children: [
+              Text(title!,
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.9))),
+              if (capabilities != null)
+                Wrap(
+                  spacing: 4.0,
+                  runSpacing: 8.0,
+                  children: [...capabilities!.map((c) => _CapabilityBadge(c))],
+                )
+            ])
+      ],
+    );
+  }
+
   Widget _buildMainContent(BuildContext context, bool expanded) {
     final content = Column(
+      crossAxisAlignment:
+          centered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
+        if (title != null)
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
+            child: _buildTitle(context),
+          ),
         builder(context, expanded),
-        if (actions.isNotEmpty)
+        if (actionsBuilder != null)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Wrap(
-                spacing: 4,
+                spacing: 8,
                 runSpacing: 4,
-                children: actions,
+                children: actionsBuilder!(context, expanded),
               ),
             ),
           ),
@@ -248,10 +287,7 @@ class AppPage extends StatelessWidget {
     return Scaffold(
       key: scaffoldGlobalKey,
       appBar: AppBar(
-        title: title,
-        titleSpacing: hasDrawer ? 2 : 8,
-        centerTitle: true,
-        titleTextStyle: Theme.of(context).textTheme.titleLarge,
+        scrolledUnderElevation: 0.0,
         leadingWidth: hasRail ? 84 : null,
         leading: hasRail
             ? const Row(
@@ -304,6 +340,27 @@ class AppPage extends StatelessWidget {
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
       body: body,
+    );
+  }
+}
+
+class _CapabilityBadge extends StatelessWidget {
+  final Capability capability;
+
+  const _CapabilityBadge(this.capability);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Badge(
+      backgroundColor: colorScheme.secondaryContainer,
+      textColor: colorScheme.onSecondaryContainer,
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      largeSize: 20,
+      label: Text(
+        capability.getDisplayName(l10n),
+      ),
     );
   }
 }

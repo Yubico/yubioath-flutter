@@ -98,7 +98,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               buildCounter: buildByteCounterFor(_label),
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.s_label,
+                labelText: l10n.s_name,
                 prefixIcon: const Icon(Icons.fingerprint_outlined),
               ),
               onChanged: (value) {

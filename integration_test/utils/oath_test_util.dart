@@ -302,9 +302,10 @@ extension OathFunctions on WidgetTester {
 
   /// Factory reset OATH application
   Future<void> resetOATH() async {
+    // TODO: Implement this using new Reset Dialog
     await tapActionIconButton();
     await shortWait();
-    await tap(find.byKey(keys.resetAction));
+    //await tap(find.byKey(keys.resetAction));
     await shortWait();
     await tap(find.text('Reset'));
     await shortWait();

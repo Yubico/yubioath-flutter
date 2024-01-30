@@ -26,7 +26,6 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'manage_key_dialog.dart';
 import 'manage_pin_puk_dialog.dart';
-import 'reset_dialog.dart';
 
 Widget pivBuildActions(BuildContext context, DevicePath devicePath,
     PivState pivState, WidgetRef ref) {
@@ -110,20 +109,6 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                   builder: (context) => ManageKeyDialog(devicePath, pivState),
                 );
               }),
-          ActionListItem(
-              key: keys.resetAction,
-              feature: features.actionsReset,
-              icon: const Icon(Icons.delete_outline),
-              actionStyle: ActionStyle.error,
-              title: l10n.s_reset_piv,
-              subtitle: l10n.l_factory_reset_this_app,
-              onTap: (context) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => ResetDialog(devicePath),
-                );
-              })
         ],
       ),
       // TODO

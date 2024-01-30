@@ -23,7 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
-import '../key_customization/key_customization.dart';
+import '../../management/views/management_screen.dart';
 import '../key_customization/models.dart';
 import '../key_customization/state.dart';
 import '../key_customization/views/key_customization_dialog.dart';
@@ -32,6 +32,7 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
+import 'reset_dialog.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -326,16 +327,19 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
   List<PopupMenuItem> _getMenuItems(
       BuildContext context, WidgetRef ref, DeviceNode? node) {
     final l10n = AppLocalizations.of(context)!;
-    final manager = ref.read(keyCustomizationManagerProvider);
+    final keyCustomizations = ref.watch(keyCustomizationManagerProvider);
     final hidden = ref.watch(_hiddenDevicesProvider);
 
-    final data = ref.watch(currentDeviceDataProvider);
+    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+    final managementAvailability = data != null
+        ? Application.management.getAvailability(data)
+        : Availability.unsupported;
 
     final serial = node is UsbYubiKeyNode
-        ? node.info?.serial?.toString()
-        : data.hasValue
-            ? data.value?.node.path == node?.path && node != null
-                ? data.value?.info.serial.toString()
+        ? node.info?.serial
+        : data != null
+            ? data.node.path == node?.path && node != null
+                ? data.info.serial
                 : null
             : null;
 
@@ -345,7 +349,10 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           enabled: true,
           onTap: () async {
             await ref.read(withContextProvider)((context) async {
-              await _showKeyCustomizationDialog(manager, context, node, serial);
+              await _showKeyCustomizationDialog(
+                  keyCustomizations[serial] ?? KeyCustomization(serial: serial),
+                  context,
+                  node);
             });
           },
           child: ListTile(
@@ -380,15 +387,44 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
-        )
+        ),
+      if (node == data?.node && managementAvailability == Availability.enabled)
+        PopupMenuItem(
+          onTap: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ManagementScreen(data),
+            );
+          },
+          child: ListTile(
+            title: Text(data!.info.version.major > 4
+                ? l10n.s_toggle_applications
+                : l10n.s_toggle_interfaces),
+            leading: const Icon(Icons.construction),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+      if (data != null && node == data.node)
+        PopupMenuItem(
+          onTap: () {
+            showBlurDialog(
+              context: context,
+              builder: (context) => ResetDialog(data),
+            );
+          },
+          child: ListTile(
+            title: Text(l10n.s_factory_reset),
+            leading: const Icon(Icons.delete_forever),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
     ];
   }
 
-  Future<void> _showKeyCustomizationDialog(KeyCustomizationManager manager,
-      BuildContext context, DeviceNode? node, String serial) async {
-    final keyCustomization =
-        manager.get(serial) ?? KeyCustomization(serial: serial);
-
+  Future<void> _showKeyCustomizationDialog(KeyCustomization keyCustomization,
+      BuildContext context, DeviceNode? node) async {
     await showBlurDialog(
       context: context,
       builder: (context) => KeyCustomizationDialog(
@@ -416,7 +452,7 @@ _DeviceRow _buildDeviceRow(
   );
 
   final keyCustomization =
-      ref.read(keyCustomizationManagerProvider).get(info?.serial?.toString());
+      ref.watch(keyCustomizationManagerProvider)[info?.serial];
   String displayName = keyCustomization?.name ?? node.name;
 
   return _DeviceRow(
@@ -448,11 +484,8 @@ _DeviceRow _buildCurrentDeviceRow(
   final title = messages.removeAt(0);
   final subtitle = messages.join('\n');
 
-  final serialNumber =
-      data.hasValue ? data.value?.info.serial?.toString() : null;
-
   final keyCustomization =
-      ref.read(keyCustomizationManagerProvider).get(serialNumber);
+      ref.watch(keyCustomizationManagerProvider)[data.valueOrNull?.info.serial];
   String displayName = keyCustomization?.name ?? title;
   Color? displayColor = keyCustomization?.color;
 

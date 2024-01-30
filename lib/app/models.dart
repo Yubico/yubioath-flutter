@@ -30,32 +30,44 @@ const _listEquality = ListEquality();
 enum Availability { enabled, disabled, unsupported }
 
 enum Application {
-  oath,
-  fido,
-  otp,
-  piv,
-  openpgp,
-  hsmauth,
-  management;
+  accounts([Capability.oath]),
+  webauthn([Capability.u2f]),
+  fingerprints([Capability.fido2]),
+  passkeys([Capability.fido2]),
+  slots([Capability.otp]),
+  certificates([Capability.piv]),
+  openpgp([Capability.openpgp]),
+  hsmauth([Capability.hsmauth]),
+  management();
 
-  const Application();
+  final List<Capability> capabilities;
+
+  List<Capability> getCapabilities() {
+    return capabilities;
+  }
+
+  const Application([this.capabilities = const []]);
 
   bool _inCapabilities(int capabilities) => switch (this) {
-        Application.oath => Capability.oath.value & capabilities != 0,
-        Application.fido =>
-          (Capability.u2f.value | Capability.fido2.value) & capabilities != 0,
-        Application.otp => Capability.otp.value & capabilities != 0,
-        Application.piv => Capability.piv.value & capabilities != 0,
+        Application.accounts => Capability.oath.value & capabilities != 0,
+        Application.webauthn => Capability.u2f.value & capabilities != 0 &&
+            Capability.fido2.value & capabilities == 0,
+        Application.fingerprints => Capability.fido2.value & capabilities != 0,
+        Application.passkeys => Capability.fido2.value & capabilities != 0,
+        Application.slots => Capability.otp.value & capabilities != 0,
+        Application.certificates => Capability.piv.value & capabilities != 0,
         Application.openpgp => Capability.openpgp.value & capabilities != 0,
         Application.hsmauth => Capability.hsmauth.value & capabilities != 0,
         Application.management => true,
       };
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        Application.oath => l10n.s_authenticator,
-        Application.fido => l10n.s_webauthn,
-        Application.piv => l10n.s_certificates,
-        Application.otp => l10n.s_slots,
+        Application.accounts => l10n.s_accounts,
+        Application.webauthn => l10n.s_webauthn,
+        Application.fingerprints => l10n.s_fingerprints,
+        Application.passkeys => l10n.s_passkeys,
+        Application.certificates => l10n.s_certificates,
+        Application.slots => l10n.s_slots,
         _ => name.substring(0, 1).toUpperCase() + name.substring(1),
       };
 
@@ -67,6 +79,15 @@ enum Application {
           version.major == 3); // NEO
       // Management can't be disabled
       return available ? Availability.enabled : Availability.unsupported;
+    }
+
+    // TODO: Require credman for passkeys
+
+    if (this == Application.fingerprints) {
+      if (!const {FormFactor.usbABio, FormFactor.usbCBio}
+          .contains(data.info.formFactor)) {
+        return Availability.unsupported;
+      }
     }
 
     final int supported =

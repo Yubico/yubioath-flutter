@@ -187,11 +187,13 @@ Future<Widget> initialize(List<String> argv) async {
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
-        Application.oath,
-        Application.fido,
-        Application.piv,
+        Application.accounts,
+        Application.webauthn,
+        Application.fingerprints,
+        Application.passkeys,
+        Application.certificates,
         Application.management,
-        Application.otp
+        Application.slots
       ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
@@ -383,9 +385,10 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
     if (slow) {
       final l10n = AppLocalizations.of(context)!;
       return MessagePage(
+        centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
-        actions: [
+        actionsBuilder: (context, expanded) => [
           ActionChip(
             avatar: const Icon(Icons.copy),
             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -411,6 +414,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
       );
     } else {
       return const MessagePage(
+        centered: true,
         delayedContent: true,
         graphic: CircularProgressIndicator(),
       );

@@ -20,7 +20,7 @@ KeyCustomization _$KeyCustomizationFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$KeyCustomization {
-  String get serial => throw _privateConstructorUsedError;
+  int get serial => throw _privateConstructorUsedError;
   @JsonKey(includeIfNull: false)
   String? get name => throw _privateConstructorUsedError;
   @JsonKey(includeIfNull: false)
@@ -40,7 +40,7 @@ abstract class $KeyCustomizationCopyWith<$Res> {
       _$KeyCustomizationCopyWithImpl<$Res, KeyCustomization>;
   @useResult
   $Res call(
-      {String serial,
+      {int serial,
       @JsonKey(includeIfNull: false) String? name,
       @JsonKey(includeIfNull: false) @_ColorConverter() Color? color});
 }
@@ -66,7 +66,7 @@ class _$KeyCustomizationCopyWithImpl<$Res, $Val extends KeyCustomization>
       serial: null == serial
           ? _value.serial
           : serial // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -88,7 +88,7 @@ abstract class _$$KeyCustomizationImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String serial,
+      {int serial,
       @JsonKey(includeIfNull: false) String? name,
       @JsonKey(includeIfNull: false) @_ColorConverter() Color? color});
 }
@@ -112,7 +112,7 @@ class __$$KeyCustomizationImplCopyWithImpl<$Res>
       serial: null == serial
           ? _value.serial
           : serial // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -137,7 +137,7 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
       _$$KeyCustomizationImplFromJson(json);
 
   @override
-  final String serial;
+  final int serial;
   @override
   @JsonKey(includeIfNull: false)
   final String? name;
@@ -182,7 +182,7 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
 
 abstract class _KeyCustomization implements KeyCustomization {
   factory _KeyCustomization(
-      {required final String serial,
+      {required final int serial,
       @JsonKey(includeIfNull: false) final String? name,
       @JsonKey(includeIfNull: false)
       @_ColorConverter()
@@ -192,7 +192,7 @@ abstract class _KeyCustomization implements KeyCustomization {
       _$KeyCustomizationImpl.fromJson;
 
   @override
-  String get serial;
+  int get serial;
   @override
   @JsonKey(includeIfNull: false)
   String? get name;

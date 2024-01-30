@@ -14,10 +14,67 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/state.dart';
-import 'key_customization.dart';
+import '../logging.dart';
+import 'models.dart';
 
-final keyCustomizationManagerProvider = Provider<KeyCustomizationManager>(
-    (ref) => KeyCustomizationManager(ref.watch(prefProvider)));
+final keyCustomizationManagerProvider =
+    StateNotifierProvider<KeyCustomizationNotifier, Map<int, KeyCustomization>>(
+        (ref) => KeyCustomizationNotifier(ref.watch(prefProvider)));
+
+final _log = Logger('key_customization_manager');
+
+class KeyCustomizationNotifier
+    extends StateNotifier<Map<int, KeyCustomization>> {
+  static const _prefKeyCustomizations = 'KEY_CUSTOMIZATIONS';
+  final SharedPreferences _prefs;
+
+  KeyCustomizationNotifier(this._prefs)
+      : super(_readCustomizations(_prefs.getString(_prefKeyCustomizations)));
+
+  static Map<int, KeyCustomization> _readCustomizations(String? pref) {
+    if (pref == null) {
+      return {};
+    }
+
+    try {
+      final retval = <int, KeyCustomization>{};
+      for (var element in json.decode(pref)) {
+        final keyCustomization = KeyCustomization.fromJson(element);
+        retval[keyCustomization.serial] = keyCustomization;
+      }
+      return retval;
+    } catch (e) {
+      _log.error('Failure reading customizations: $e');
+      return {};
+    }
+  }
+
+  KeyCustomization? get(int serial) {
+    _log.debug('Getting key customization for $serial');
+    return state[serial];
+  }
+
+  Future<void> set({required int serial, String? name, Color? color}) async {
+    _log.debug('Setting key customization for $serial: $name, $color');
+    if (name == null && color == null) {
+      // remove this customization
+      state = {...state..remove(serial)};
+    } else {
+      state = {
+        ...state
+          ..[serial] =
+              KeyCustomization(serial: serial, name: name, color: color)
+      };
+    }
+    await _prefs.setString(
+        _prefKeyCustomizations, json.encode(state.values.toList()));
+  }
+}

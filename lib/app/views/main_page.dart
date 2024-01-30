@@ -23,11 +23,15 @@ import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
-import '../../fido/views/fido_screen.dart';
+import '../../fido/views/fingerprints_screen.dart';
+import '../../fido/views/passkeys_screen.dart';
+import '../../fido/views/webauthn_page.dart';
+import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
+import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
@@ -80,11 +84,12 @@ class MainPage extends ConsumerWidget {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return MessagePage(
+          centered: true,
           graphic: noKeyImage,
           message: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
-          actions: [
+          actionsBuilder: (context, expanded) => [
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
                   label: Text(l10n.s_enable_nfc),
@@ -118,6 +123,7 @@ class MainPage extends ConsumerWidget {
         );
       } else {
         return MessagePage(
+          centered: true,
           delayedContent: false,
           graphic: noKeyImage,
           header: l10n.l_insert_yk,
@@ -127,29 +133,60 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
+              final capabilities = app.getCapabilities();
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(
+                  centered: true,
+                  graphic: Icon(
+                    Icons.help_outlined,
+                    size: 96,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   header: l10n.s_yk_not_recognized,
                 );
               } else if (app.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
+                  title: app.getDisplayName(l10n),
+                  capabilities: capabilities,
                   header: l10n.s_app_not_supported,
-                  message: l10n.l_app_not_supported_on_yk(app.name),
+                  message: l10n.l_app_not_supported_on_yk(capabilities
+                      .map((c) => c.getDisplayName(l10n))
+                      .join(',')),
                 );
               } else if (app.getAvailability(data) != Availability.enabled) {
                 return MessagePage(
+                  title: app.getDisplayName(l10n),
+                  capabilities: capabilities,
                   header: l10n.s_app_disabled,
-                  message: l10n.l_app_disabled_desc(app.name),
+                  message: l10n.l_app_disabled_desc(capabilities
+                      .map((c) => c.getDisplayName(l10n))
+                      .join(',')),
+                  actionsBuilder: (context, expanded) => [
+                    ActionChip(
+                      label: Text(data.info.version.major > 4
+                          ? l10n.s_toggle_applications
+                          : l10n.s_toggle_interfaces),
+                      onPressed: () async {
+                        await showBlurDialog(
+                          context: context,
+                          builder: (context) => ManagementScreen(data),
+                        );
+                      },
+                      avatar: const Icon(Icons.construction),
+                    )
+                  ],
                 );
               }
 
               return switch (app) {
-                Application.oath => OathScreen(data.node.path),
-                Application.fido => FidoScreen(data),
-                Application.piv => PivScreen(data.node.path),
-                Application.otp => OtpScreen(data.node.path),
+                Application.accounts => OathScreen(data.node.path),
+                Application.webauthn => const WebAuthnScreen(),
+                Application.passkeys => PasskeysScreen(data),
+                Application.fingerprints => FingerprintsScreen(data),
+                Application.certificates => PivScreen(data.node.path),
+                Application.slots => OtpScreen(data.node.path),
                 _ => MessagePage(
                     header: l10n.s_app_not_supported,
                     message: l10n.l_app_not_supported_desc,

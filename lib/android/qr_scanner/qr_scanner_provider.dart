@@ -42,14 +42,15 @@ class AndroidQrScanner implements QrScanner {
   @override
   Future<String?> scanQr([String? imageData]) async {
     if (imageData == null) {
-      var scannedCode = await _withContext((context) async =>
-          await Navigator.of(context).push(PageRouteBuilder(
-            pageBuilder: (_, __, ___) =>
-                Theme(data: AppTheme.darkTheme, child: const QrScannerView()),
-            settings: const RouteSettings(name: 'android_qr_scanner_view'),
-            transitionDuration: const Duration(seconds: 0),
-            reverseTransitionDuration: const Duration(seconds: 0),
-          )));
+      var scannedCode = await _withContext(
+          (context) async => await Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (_, __, ___) => Theme(
+                    data: AppTheme.getDarkTheme(defaultPrimaryColor),
+                    child: const QrScannerView()),
+                settings: const RouteSettings(name: 'android_qr_scanner_view'),
+                transitionDuration: const Duration(seconds: 0),
+                reverseTransitionDuration: const Duration(seconds: 0),
+              )));
       if (scannedCode == null) {
         // user has cancelled the scan
         throw CancellationException();

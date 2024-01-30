@@ -27,7 +27,9 @@ const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
 // drawer items
 const managementAppDrawer = Key('$_prefix.drawer.management');
 const oathAppDrawer = Key('$_prefix.drawer.oath');
-const fidoAppDrawer = Key('$_prefix.drawer.fido');
+const u2fAppDrawer = Key('$_prefix.drawer.fido.webauthn');
+const fidoPasskeysAppDrawer = Key('$_prefix.drawer.fido.passkeys');
+const fidoFingerprintsAppDrawer = Key('$_prefix.drawer.fido.fingerprints');
 const otpAppDrawer = Key('$_prefix.drawer.otp');
 const pivAppDrawer = Key('$_prefix.drawer.piv');
 const hsmauthAppDrawer = Key('$_prefix.drawer.hsmauth');

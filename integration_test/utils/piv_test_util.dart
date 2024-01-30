@@ -50,6 +50,7 @@ extension PIVFunctions on WidgetTester {
 
   /// Resets the PIV application of a key
   Future<void> resetPiv() async {
+    // TODO: Implement this using new Reset Dialog
     // 1. open PIV view
     var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
     await tap(pivDrawerButton);
@@ -59,7 +60,7 @@ extension PIVFunctions on WidgetTester {
     await tap(find.byKey(actionsIconButtonKey).hitTestable());
     await longWait();
     // 2. Click Reset PIV
-    await tap(find.byKey(resetAction).hitTestable());
+    //await tap(find.byKey(resetAction).hitTestable());
     await longWait();
     // 3. Click Reset
     await tap(find.byKey(resetButton).hitTestable());

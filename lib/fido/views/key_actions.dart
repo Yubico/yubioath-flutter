@@ -25,7 +25,6 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'add_fingerprint_dialog.dart';
 import 'pin_dialog.dart';
-import 'reset_dialog.dart';
 
 bool fidoShowActionsNotifier(FidoState state) {
   return (state.alwaysUv && !state.hasPin) ||
@@ -33,15 +32,23 @@ bool fidoShowActionsNotifier(FidoState state) {
       state.forcePinChange;
 }
 
-Widget fidoBuildActions(
-    BuildContext context, DeviceNode node, FidoState state, int fingerprints) {
+Widget passkeysBuildActions(
+        BuildContext context, DeviceNode node, FidoState state) =>
+    _fidoBuildActions(context, node, state);
+
+Widget fingerprintsBuildActions(BuildContext context, DeviceNode node,
+        FidoState state, int fingerprints) =>
+    _fidoBuildActions(context, node, state, fingerprints);
+
+Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
+    [int? fingerprints]) {
   final l10n = AppLocalizations.of(context)!;
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
 
   return Column(
     children: [
-      if (state.bioEnroll != null)
+      if (fingerprints != null)
         ActionListSection(
           l10n.s_setup,
           children: [
@@ -94,21 +101,6 @@ Widget fidoBuildActions(
                   builder: (context) => FidoPinDialog(node.path, state),
                 );
               }),
-          ActionListItem(
-            key: keys.resetAction,
-            feature: features.actionsReset,
-            actionStyle: ActionStyle.error,
-            icon: const Icon(Icons.delete_outline),
-            title: l10n.s_reset_fido,
-            subtitle: l10n.l_factory_reset_this_app,
-            onTap: (context) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              showBlurDialog(
-                context: context,
-                builder: (context) => ResetDialog(node),
-              );
-            },
-          ),
         ],
       )
     ],

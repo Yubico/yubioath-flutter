@@ -36,7 +36,6 @@ void main() {
       await tester.shortWait();
       expect(find.byKey(keys.addAccountAction), findsOneWidget);
       expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
-      expect(find.byKey(keys.resetAction), findsOneWidget);
       // close dialog
       await tester.tapTopLeftCorner();
       await tester.longWait();
