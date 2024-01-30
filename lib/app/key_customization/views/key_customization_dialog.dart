@@ -141,17 +141,17 @@ class _KeyCustomizationDialogState
                       spacing: 16,
                       children: [
                         ...[
-                          Colors.teal.withOpacity(1.0),
-                          Colors.cyan.withOpacity(1.0),
-                          Colors.blueAccent.withOpacity(1.0),
-                          Colors.deepPurple.withOpacity(1.0),
-                          Colors.red.withOpacity(1.0),
-                          Colors.orange.withOpacity(1.0),
-                          Colors.yellow.withOpacity(1.0),
+                          Colors.teal,
+                          Colors.cyan,
+                          Colors.blueAccent,
+                          Colors.deepPurple,
+                          Colors.red,
+                          Colors.orange,
+                          Colors.yellow,
                           // add nice color to devices with dynamic color
                           if (isAndroid &&
                               ref.read(androidSdkVersionProvider) >= 31)
-                            Colors.lightGreen.withOpacity(1.0)
+                            Colors.lightGreen
                         ].map((e) => _ColorButton(
                               color: e,
                               isSelected: _customColor == e,
