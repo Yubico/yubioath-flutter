@@ -71,7 +71,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     final textTheme = Theme.of(context).textTheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
-      color: textTheme.bodySmall!.color,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
 
     return ResponsiveDialog(

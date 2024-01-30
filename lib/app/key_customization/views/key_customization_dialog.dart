@@ -61,17 +61,17 @@ class _KeyCustomizationDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentNode = widget.node;
-
     final theme = Theme.of(context);
+    final primaryColor = ref.watch(defaultColorProvider);
 
     final Widget hero;
     if (currentNode != null) {
-      hero = _CurrentDeviceAvatar(currentNode, _customColor ?? Colors.white);
+      hero = _CurrentDeviceAvatar(currentNode, _customColor ?? primaryColor);
     } else {
       hero = Column(
         children: [
           _HeroAvatar(
-            color: _customColor ?? Colors.white,
+            color: _customColor ?? primaryColor,
             child: DeviceAvatar(
               radius: 64,
               child: Icon(isAndroid ? Icons.no_cell : Icons.usb),
@@ -85,8 +85,6 @@ class _KeyCustomizationDialogState
         ],
       );
     }
-
-    final primaryColor = ref.watch(defaultColorProvider);
 
     final didChange = widget.initialCustomization.name != _customName ||
         widget.initialCustomization.color != _customColor;
@@ -143,17 +141,17 @@ class _KeyCustomizationDialogState
                       spacing: 16,
                       children: [
                         ...[
-                          Colors.yellow.withOpacity(1.0),
-                          Colors.orange.withOpacity(1.0),
-                          Colors.red.withOpacity(1.0),
-                          Colors.deepPurple.withOpacity(1.0),
-                          Colors.green.withOpacity(1.0),
                           Colors.teal.withOpacity(1.0),
                           Colors.cyan.withOpacity(1.0),
+                          Colors.blueAccent.withOpacity(1.0),
+                          Colors.deepPurple.withOpacity(1.0),
+                          Colors.red.withOpacity(1.0),
+                          Colors.orange.withOpacity(1.0),
+                          Colors.yellow.withOpacity(1.0),
                           // add nice color to devices with dynamic color
                           if (isAndroid &&
                               ref.read(androidSdkVersionProvider) >= 31)
-                            Colors.blueAccent.withOpacity(1.0)
+                            Colors.lightGreen.withOpacity(1.0)
                         ].map((e) => _ColorButton(
                               color: e,
                               isSelected: _customColor == e,
@@ -167,16 +165,17 @@ class _KeyCustomizationDialogState
                           onPressed: () => _updateColor(null),
                           constraints: const BoxConstraints(
                               minWidth: 32.0, minHeight: 32.0),
-                          fillColor: _customColor == null
-                              ? theme.colorScheme.surface
-                              : theme.colorScheme.onSurface,
+                          fillColor: (isAndroid &&
+                                  ref.read(androidSdkVersionProvider) >= 31)
+                              ? theme.colorScheme.onSurface
+                              : primaryColor,
                           shape: const CircleBorder(),
                           child: Icon(
                             Icons.cancel_rounded,
                             size: 16,
                             color: _customColor == null
                                 ? theme.colorScheme.onSurface
-                                : theme.colorScheme.surface,
+                                : theme.colorScheme.surface.withOpacity(0.2),
                           ),
                         ),
                       ],

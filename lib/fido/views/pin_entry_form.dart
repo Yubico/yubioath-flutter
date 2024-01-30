@@ -83,7 +83,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
         children: [
           Text(l10n.l_enter_fido2_pin),
           Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+            padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
             child: AppTextField(
               autofocus: true,
               obscureText: _isObscure,
@@ -116,8 +116,10 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
             ),
           ),
           ListTile(
-            leading:
-                noFingerprints ? const Icon(Icons.warning_amber_rounded) : null,
+            leading: noFingerprints
+                ? Icon(Icons.warning_amber,
+                    color: Theme.of(context).colorScheme.tertiary)
+                : null,
             title: noFingerprints
                 ? Text(
                     l10n.l_no_fps_added,

@@ -73,38 +73,40 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
               Text(
                 l10n.l_enter_oath_pw,
               ),
-              const SizedBox(height: 16.0),
-              AppTextField(
-                key: keys.passwordField,
-                controller: _passwordController,
-                autofocus: true,
-                obscureText: _isObscure,
-                autofillHints: const [AutofillHints.password],
-                decoration: AppInputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_password,
-                  errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
-                  helperText: '', // Prevents resizing when errorText shown
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                    tooltip: _isObscure
-                        ? l10n.s_show_password
-                        : l10n.s_hide_password,
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
+                child: AppTextField(
+                  key: keys.passwordField,
+                  controller: _passwordController,
+                  autofocus: true,
+                  obscureText: _isObscure,
+                  autofillHints: const [AutofillHints.password],
+                  decoration: AppInputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: l10n.s_password,
+                    errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
+                    helperText: '', // Prevents resizing when errorText shown
+                    prefixIcon: const Icon(Icons.password_outlined),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password,
+                    ),
                   ),
+                  onChanged: (_) => setState(() {
+                    _passwordIsWrong = false;
+                  }), // Update state on change
+                  onSubmitted: (_) => _submit(),
                 ),
-                onChanged: (_) => setState(() {
-                  _passwordIsWrong = false;
-                }), // Update state on change
-                onSubmitted: (_) => _submit(),
               ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 3.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -120,7 +122,9 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                               spacing: 4.0,
                               runSpacing: 8.0,
                               children: [
-                                const Icon(Icons.warning_amber_rounded),
+                                Icon(Icons.warning_amber,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
                                 Text(l10n.l_keystore_unavailable)
                               ],
                             )

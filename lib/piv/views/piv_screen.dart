@@ -75,7 +75,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final textTheme = theme.textTheme;
             // This is what ListTile uses for subtitle
             final subtitleStyle = textTheme.bodyMedium!.copyWith(
-              color: textTheme.bodySmall!.color,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             );
             return PivActions(
               devicePath: widget.devicePath,
