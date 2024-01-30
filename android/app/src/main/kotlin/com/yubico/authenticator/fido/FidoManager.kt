@@ -20,16 +20,12 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
-import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.MainViewModel
-import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
-import com.yubico.authenticator.fido.data.FidoResetState
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
@@ -59,38 +55,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.util.Arrays
 import java.util.concurrent.Executors
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.suspendCoroutine
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
-
-class FidoPinStore {
-    private var pin: CharArray? = null
-
-    fun hasPin() : Boolean {
-        return pin != null
-    }
-
-    fun getPin() : CharArray {
-        return pin!!
-    }
-
-    fun setPin(newPin: CharArray?) {
-        pin = newPin?.clone()
-    }
-}
 
 class FidoManager(
     private val lifecycleOwner: LifecycleOwner,
     messenger: BinaryMessenger,
     private val appViewModel: MainViewModel,
     private val fidoViewModel: FidoViewModel,
-    private val dialogManager: DialogManager,
+    dialogManager: DialogManager,
 ) : AppContextManager {
 
     companion object {
@@ -113,20 +90,27 @@ class FidoManager(
         }
     }
 
+    private val connectionHelper = FidoConnectionHelper(appViewModel, dialogManager)
+
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private val fidoChannel = MethodChannel(messenger, "android.fido.methods")
 
     private val logger = LoggerFactory.getLogger(FidoManager::class.java)
-    private var pendingAction: FidoAction? = null
-    private var pinStore = FidoPinStore()
+
+    private val pinStore = FidoPinStore()
+
+    private val resetHelper =
+        FidoResetHelper(appViewModel, fidoViewModel, connectionHelper, pinStore)
 
     private val lifecycleObserver = object : DefaultLifecycleObserver {
 
         private var startTimeMs: Long = -1
 
         override fun onPause(owner: LifecycleOwner) {
+            // cancel any FIDO reset flow which might be in progress
+            resetHelper.cancelReset()
             startTimeMs = currentTimeMs
             super.onPause(owner)
         }
@@ -152,19 +136,22 @@ class FidoManager(
 
     private val usbObserver = Observer<UsbYubiKeyDevice?> {
         if (it == null) {
-            appViewModel.setDeviceInfo(null)
-            fidoViewModel.setSessionState(null)
+            if (!resetHelper.inProgress) {
+                // only reset the view model if there is no FIDO reset in progress
+                appViewModel.setDeviceInfo(null)
+                fidoViewModel.setSessionState(null)
+            }
         }
     }
 
     init {
         appViewModel.connectedYubiKey.observe(lifecycleOwner, usbObserver)
-        //fidoViewModel.credentials.observe(lifecycleOwner, credentialObserver)
 
-        // FIDO methods callable from Flutter:
         fidoChannel.setHandler(coroutineScope) { method, args ->
             when (method) {
-                "reset" -> reset()
+                "reset" -> resetHelper.reset()
+
+                "cancelReset" -> resetHelper.cancelReset()
 
                 "unlock" -> unlock(
                     (args["pin"] as String).toCharArray()
@@ -194,45 +181,7 @@ class FidoManager(
         coroutineScope.cancel()
     }
 
-
-    private suspend fun prepareReset() {
-
-        if (appViewModel.connectedYubiKey.value != null) {
-            // USB connection
-            fidoViewModel.updateResetState(FidoResetState.Remove)
-            delay(1000)
-            fidoViewModel.updateResetState(FidoResetState.Insert)
-            delay(1000)
-            fidoViewModel.updateResetState(FidoResetState.Touch)
-            delay(1000)
-        } else {
-            // NFC connection
-            fidoViewModel.updateResetState(FidoResetState.Insert)
-        }
-
-    }
-
-    private suspend fun reset(): String {
-
-        prepareReset();
-
-        return useSession(FidoActionDescription.Reset) { fidoSession ->
-            try {
-                // TODO: verify that the session is started with the original key
-                fidoSession.reset(null)
-                // there was no exception, reset UI state
-                pinStore.setPin(null)
-                fidoViewModel.setSessionState(Session(fidoSession.info, true))
-                fidoViewModel.updateCredentials(emptyList())
-                NULL
-            } finally {
-
-            }
-        }
-    }
-
     override suspend fun processYubiKey(device: YubiKeyDevice) {
-
         try {
             if (device.supportsConnection(FidoConnection::class.java)) {
                 device.withConnection<FidoConnection, Unit> { connection ->
@@ -285,20 +234,7 @@ class FidoManager(
         )
 
         if (sessionAaguid == previousAaguid && device is NfcYubiKeyDevice) {
-            // Run any pending action
-            pendingAction?.let { action ->
-                action.invoke(Result.success(fidoSession))
-                pendingAction = null
-            }
-
-            // not possible to reuse token in new session
-            //    token?.let {
-            //        // read creds
-            //
-            //        val credentials = getCredentials(fidoSession, clientPin!!, it)
-            //        logger.debug("Creds: {}", credentials)
-            //        fidoViewModel.updateCredentials(credentials)
-            //    }
+            connectionHelper.invokePending(fidoSession)
         } else {
 
             if (sessionAaguid != previousAaguid) {
@@ -328,7 +264,7 @@ class FidoManager(
         }
     }
 
-    private fun getPermissions(fidoSession: YubiKitFidoSession) : Int {
+    private fun getPermissions(fidoSession: YubiKitFidoSession): Int {
         val permissions =
             if (CredentialManagement.isSupported(fidoSession.cachedInfo))
                 ClientPin.PIN_PERMISSION_CM
@@ -392,7 +328,7 @@ class FidoManager(
         }
 
     private suspend fun unlock(pin: CharArray): String =
-        useSession(FidoActionDescription.Unlock) { fidoSession ->
+        connectionHelper.useSession(FidoActionDescription.Unlock) { fidoSession ->
 
             try {
                 val clientPin =
@@ -424,7 +360,7 @@ class FidoManager(
     }
 
     private suspend fun setPin(pin: CharArray?, newPin: CharArray): String =
-        useSession(FidoActionDescription.SetPin) { fidoSession ->
+        connectionHelper.useSession(FidoActionDescription.SetPin) { fidoSession ->
             try {
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -470,7 +406,7 @@ class FidoManager(
         }
 
     private suspend fun deleteCredential(rpId: String, credentialId: String): String =
-        useSession(FidoActionDescription.DeleteCredential) { fidoSession ->
+        connectionHelper.useSession(FidoActionDescription.DeleteCredential) { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -503,66 +439,4 @@ class FidoManager(
                 )
             ).toString()
         }
-
-    private suspend fun <T> useSession(
-        actionDescription: FidoActionDescription,
-        action: (YubiKitFidoSession) -> T
-    ): T {
-        return appViewModel.connectedYubiKey.value?.let {
-            useSessionUsb(it, action)
-        } ?: useSessionNfc(actionDescription, action)
-    }
-
-    private suspend fun <T> useSessionUsb(
-        device: UsbYubiKeyDevice,
-        block: (YubiKitFidoSession) -> T
-    ): T = device.withConnection<FidoConnection, T> {
-        block(YubiKitFidoSession(it))
-    }
-
-    private suspend fun <T> useSessionNfc(
-        actionDescription: FidoActionDescription,
-        block: (YubiKitFidoSession) -> T
-    ): T {
-        try {
-            val result = suspendCoroutine { outer ->
-                pendingAction = {
-                    outer.resumeWith(runCatching {
-                        block.invoke(it.value)
-                    })
-                }
-                dialogManager.showDialog(
-                    DialogIcon.Nfc,
-                    DialogTitle.TapKey,
-                    actionDescription.id
-                ) {
-                    logger.debug("Cancelled Dialog {}", actionDescription.name)
-                    pendingAction?.invoke(Result.failure(CancellationException()))
-                    pendingAction = null
-                }
-            }
-            // Personally I find it better to not have the dialog updates for FIDO
-            //    dialogManager.updateDialogState(
-            //        dialogIcon = DialogIcon.Success,
-            //        dialogTitle = DialogTitle.OperationSuccessful
-            //    )
-            //    // TODO: This delays the closing of the dialog, but also the return value
-            //    delay(500)
-            return result
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (error: Throwable) {
-            // Personally I find it better to not have the dialog updates for FIDO
-            //    dialogManager.updateDialogState(
-            //        dialogIcon = DialogIcon.Failure,
-            //        dialogTitle = DialogTitle.OperationFailed,
-            //        dialogDescriptionId = FidoActionDescription.ActionFailure.id
-            //    )
-            //    // TODO: This delays the closing of the dialog, but also the return value
-            //    delay(1500)
-            throw error
-        } finally {
-            dialogManager.closeDialog()
-        }
-    }
 }

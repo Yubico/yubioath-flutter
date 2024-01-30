@@ -62,7 +62,9 @@ class _FidoStateNotifier extends FidoStateNotifier {
   Stream<InteractionEvent> reset() {
     final controller = StreamController<InteractionEvent>();
     const resetEvents = EventChannel('android.fido.reset');
-    final resetSub = resetEvents.receiveBroadcastStream().listen((event) {
+
+    final resetSub =
+        resetEvents.receiveBroadcastStream().skip(1).listen((event) {
       _log.debug('Received event: \'$event\'');
       if (event is String && event.isNotEmpty) {
         controller.sink.add(InteractionEvent.values
@@ -70,9 +72,10 @@ class _FidoStateNotifier extends FidoStateNotifier {
       }
     });
 
-    controller.onCancel = () {
+    controller.onCancel = () async {
+      await _methods.invokeMethod('cancelReset');
       if (!controller.isClosed) {
-        resetSub.cancel();
+        await resetSub.cancel();
       }
     };
 
