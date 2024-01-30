@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
@@ -67,7 +68,8 @@ class AppPage extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          if (width < 400) {
+          if (width < 400 ||
+              (isAndroid && width < 600 && width < constraints.maxHeight)) {
             return _buildScaffold(context, true, false, false);
           }
           if (width < 800) {
