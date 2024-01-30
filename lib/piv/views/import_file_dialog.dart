@@ -88,7 +88,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     final textTheme = Theme.of(context).textTheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
-      color: textTheme.bodySmall!.color,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
     final state = _state;
     if (state == null) {

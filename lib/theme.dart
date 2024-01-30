@@ -16,7 +16,7 @@
 
 import 'package:flutter/material.dart';
 
-const defaultPrimaryColor = Colors.blueAccent;
+const defaultPrimaryColor = Colors.lightGreen;
 
 class AppTheme {
   static ThemeData getTheme(Brightness brightness, Color primaryColor) =>
@@ -58,7 +58,6 @@ class AppTheme {
           brightness: Brightness.dark,
           seedColor: primaryColor,
           background: const Color(0xff282828),
-          surface: const Color(0xff282828),
           onSurface: const Color(0xeeffffff),
           onSurfaceVariant: const Color(0xaaffffff),
         ),

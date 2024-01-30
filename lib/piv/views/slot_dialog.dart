@@ -45,7 +45,7 @@ class SlotDialog extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
-      color: textTheme.bodySmall!.color,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
 
     final pivState = ref.watch(pivStateProvider(node.path)).valueOrNull;
