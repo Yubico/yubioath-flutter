@@ -1050,11 +1050,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "7d6a8c6e743ffed4b3d3a8100821bcb0d1f760c7"
-      resolved-ref: "7d6a8c6e743ffed4b3d3a8100821bcb0d1f760c7"
+      ref: "2272d45bcf46d7e2b452a038906fbc85df3ce83d"
+      resolved-ref: "2272d45bcf46d7e2b452a038906fbc85df3ce83d"
       url: "https://github.com/fdennis/window_manager.git"
     source: git
-    version: "0.3.7"
+    version: "0.3.8"
   xdg_directories:
     dependency: transitive
     description:
