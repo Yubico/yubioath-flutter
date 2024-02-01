@@ -149,9 +149,10 @@ class _Systray extends TrayListener {
   }
 
   @override
-  void onTrayIconMouseDown() {
+  void onTrayIconMouseDown() async {
     if (Platform.isMacOS) {
-      trayManager.popUpContextMenu();
+      await _updateContextMenu();
+      await trayManager.popUpContextMenu();
     } else {
       final now = DateTime.now().millisecondsSinceEpoch;
       if (now - _lastClick < 500) {
@@ -159,7 +160,7 @@ class _Systray extends TrayListener {
         if (_isHidden) {
           _ref.read(desktopWindowStateProvider.notifier).setWindowHidden(false);
         } else {
-          windowManager.focus();
+          await windowManager.focus();
         }
       } else {
         _lastClick = now;
@@ -168,11 +169,13 @@ class _Systray extends TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseDown() {
-    trayManager.popUpContextMenu();
+  void onTrayIconRightMouseDown() async {
+    await _updateContextMenu();
+    await trayManager.popUpContextMenu();
   }
 
   Future<void> _updateContextMenu() async {
+    final isVisible = await windowManager.isVisible();
     await trayManager.setContextMenu(
       Menu(
         items: [
@@ -207,11 +210,11 @@ class _Systray extends TrayListener {
             ),
           MenuItem.separator(),
           MenuItem(
-            label: _isHidden ? _l10n.s_show_window : _l10n.s_hide_window,
+            label: !isVisible ? _l10n.s_show_window : _l10n.s_hide_window,
             onClick: (_) {
               _ref
                   .read(desktopWindowStateProvider.notifier)
-                  .setWindowHidden(!_isHidden);
+                  .setWindowHidden(isVisible);
             },
           ),
           MenuItem.separator(),

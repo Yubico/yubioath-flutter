@@ -141,10 +141,8 @@ Future<Widget> initialize(List<String> argv) async {
   _log.debug('Using saved window bounds (or defaults): $bounds');
 
   unawaited(windowManager
-      .waitUntilReadyToShow(WindowOptions(
-    minimumSize: WindowDefaults.minSize,
-    skipTaskbar: isHidden,
-  ))
+      .waitUntilReadyToShow(
+          const WindowOptions(minimumSize: WindowDefaults.minSize))
       .then((_) async {
     await windowManagerHelper.setBounds(bounds);
 
