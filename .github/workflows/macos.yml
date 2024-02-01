@@ -130,7 +130,7 @@ jobs:
         ghcr.io/yubico/scribe-ci:v1
         --project-id scribe-prod-987134
         --bucket scribe-s-pub-yubioath-flutter-498g0p
-        --config /.github/scribe-sign.yaml
+        --config .github/scribe-sign.yaml
         submit .
         --synchronous
         --download-artifacts
