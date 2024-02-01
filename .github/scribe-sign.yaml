@@ -1,0 +1,10 @@
+stub: test01
+releaseType: public
+jobs:
+  - name: sign-source
+    platform: linux
+    steps:
+      - id: 1
+        action: gpg
+        files:
+          - yubioath-desktop.dmg

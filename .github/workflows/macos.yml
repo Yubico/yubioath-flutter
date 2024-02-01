@@ -99,3 +99,36 @@ jobs:
       with:
         name: yubioath-desktop-macos
         path: deploy
+
+  sign-source:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repo
+      uses: actions/checkout@v2
+
+    - name: docker login
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ci@yubico.com
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: write service account credentials
+      env:
+        GAC: ${{ secrets.SCRIBE_SA }}
+      run: |
+        echo "${GAC}" > scribe_sa.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
+
+    - name: run scribe
+      run: >
+        docker run
+        --user $(id -u):$(id -g)                  # run the container as the current user to preserve permissions on the artifacts
+        --volume $(pwd):/scribe                   # mount the current directory to /scribe in the container
+        --env-file <(env)                         # pass in the current environment to the container
+        ghcr.io/yubico/scribe-ci:v1               # run v1 of the scribe-ci container
+        --bucket scribe-s-pub-yubioath-flutter-498g0p  # the name of the unsigned artifacts bucket to upload to
+        --config /.github/scribe-sign.yaml # the path of the 
+        submit                                    # run the submit command
+        .                                         # the path relative to /scribe for where to find the artifacts
