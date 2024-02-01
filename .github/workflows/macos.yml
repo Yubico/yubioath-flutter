@@ -105,7 +105,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+    
+    - name: download artifacts
+      uses: actions/download-artifact@v4
 
     - name: docker login
       uses: docker/login-action@v1
@@ -121,6 +124,9 @@ jobs:
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
 
+    - name: list files
+      run: ls -a
+    
     - name: run scribe
       run: >
         docker run
@@ -129,8 +135,8 @@ jobs:
         --env-file <(env)
         ghcr.io/yubico/scribe-ci:v1
         --project-id scribe-prod-987134
-        --bucket scribe-s-pub-yubioath-flutter-498g0p
-        --config .github/scribe-sign.yaml
+        --bucket scribe-u-pub-yubioath-flutter-f94pro
+        --config /scribe/.github/scribe-sign.yaml
         submit .
         --synchronous
         --download-artifacts

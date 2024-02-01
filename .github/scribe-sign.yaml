@@ -1,4 +1,4 @@
-stub: test01
+stub: yubioath-flutter
 releaseType: public
 jobs:
   - name: sign-source
@@ -7,4 +7,4 @@ jobs:
       - id: 1
         action: gpg
         files:
-          - yubioath-desktop.dmg
+          - yubioath-desktop-macos/yubioath-desktop.dmg
