@@ -18,20 +18,24 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../management/models.dart';
 import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
-  final Widget? title;
+  final String? title;
   final Widget? graphic;
   final String? header;
   final String? message;
-  final List<Widget> actions;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final List<Widget> Function(BuildContext context, bool expanded)?
+      actionsBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
+  final List<Capability>? capabilities;
   final bool keyActionsBadge;
+  final bool centered;
 
   const MessagePage({
     super.key,
@@ -39,32 +43,41 @@ class MessagePage extends StatelessWidget {
     this.graphic,
     this.header,
     this.message,
-    this.actions = const [],
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.actionsBuilder,
     this.fileDropOverlay,
     this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
+    this.capabilities,
+    this.centered = false,
   });
 
   @override
   Widget build(BuildContext context) => AppPage(
         title: title,
-        centered: true,
-        actions: actions,
+        capabilities: capabilities,
+        centered: centered,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
         fileDropOverlay: fileDropOverlay,
         onFileDropped: onFileDropped,
         actionButtonBuilder: actionButtonBuilder,
+        actionsBuilder: actionsBuilder,
         delayedContent: delayedContent,
         builder: (context, _) => Padding(
-          padding: const EdgeInsets.only(
-              left: 32.0, top: 0.0, right: 32.0, bottom: 96.0),
+          padding: EdgeInsets.only(
+              left: 16.0,
+              top: 0.0,
+              right: 16.0,
+              bottom: centered && actionsBuilder == null ? 96 : 0),
           child: SizedBox(
-            width: 350,
+            width: centered ? 250 : 350,
             child: Column(
+              crossAxisAlignment: centered
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               children: [
                 if (graphic != null) ...[
                   graphic!,
@@ -72,16 +85,19 @@ class MessagePage extends StatelessWidget {
                 ],
                 if (header != null)
                   Text(header!,
-                      textAlign: TextAlign.center,
+                      textAlign: centered ? TextAlign.center : TextAlign.left,
                       style: Theme.of(context).textTheme.titleLarge),
                 if (message != null) ...[
                   const SizedBox(height: 12.0),
-                  Text(message!,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.apply(color: Colors.grey)),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: Text(message!,
+                        textAlign: centered ? TextAlign.center : TextAlign.left,
+                        style: Theme.of(context).textTheme.titleSmall?.apply(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
+                  ),
                 ],
               ],
             ),

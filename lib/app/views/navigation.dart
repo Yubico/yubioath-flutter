@@ -18,8 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../management/views/management_screen.dart';
-import '../message.dart';
 import '../models.dart';
 import '../shortcuts.dart';
 import '../state.dart';
@@ -31,7 +29,7 @@ class NavigationItem extends StatelessWidget {
   final String title;
   final bool collapsed;
   final bool selected;
-  final void Function() onTap;
+  final void Function()? onTap;
 
   const NavigationItem({
     super.key,
@@ -39,7 +37,7 @@ class NavigationItem extends StatelessWidget {
     required this.title,
     this.collapsed = false,
     this.selected = false,
-    required this.onTap,
+    this.onTap,
   });
 
   @override
@@ -72,6 +70,7 @@ class NavigationItem extends StatelessWidget {
       );
     } else {
       return ListTile(
+        enabled: onTap != null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
         leading: leading,
         title: Text(title),
@@ -88,23 +87,39 @@ class NavigationItem extends StatelessWidget {
 
 extension on Application {
   IconData get _icon => switch (this) {
-        Application.oath => Icons.supervisor_account_outlined,
-        Application.fido => Icons.security_outlined,
-        Application.otp => Icons.touch_app_outlined,
-        Application.piv => Icons.approval_outlined,
+        Application.accounts => Icons.supervisor_account_outlined,
+        Application.webauthn => Icons.security_outlined,
+        Application.passkeys => Icons.security_outlined,
+        Application.fingerprints => Icons.fingerprint_outlined,
+        Application.slots => Icons.touch_app_outlined,
+        Application.certificates => Icons.approval_outlined,
         Application.management => Icons.construction_outlined,
         Application.openpgp => Icons.key_outlined,
         Application.hsmauth => Icons.key_outlined,
       };
 
   IconData get _filledIcon => switch (this) {
-        Application.oath => Icons.supervisor_account,
-        Application.fido => Icons.security,
-        Application.otp => Icons.touch_app,
-        Application.piv => Icons.approval,
+        Application.accounts => Icons.supervisor_account,
+        Application.webauthn => Icons.security,
+        Application.passkeys => Icons.security,
+        Application.fingerprints => Icons.fingerprint,
+        Application.slots => Icons.touch_app,
+        Application.certificates => Icons.approval,
         Application.management => Icons.construction,
         Application.openpgp => Icons.key,
         Application.hsmauth => Icons.key,
+      };
+
+  Key get _key => switch (this) {
+        Application.accounts => oathAppDrawer,
+        Application.webauthn => u2fAppDrawer,
+        Application.passkeys => fidoPasskeysAppDrawer,
+        Application.fingerprints => fidoFingerprintsAppDrawer,
+        Application.slots => otpAppDrawer,
+        Application.certificates => pivAppDrawer,
+        Application.hsmauth => hsmauthAppDrawer,
+        Application.management => managementAppDrawer,
+        Application.openpgp => openpgpAppDrawer,
       };
 }
 
@@ -126,7 +141,7 @@ class NavigationContent extends ConsumerWidget {
                 (app) => app.getAvailability(data) != Availability.unsupported)
             .toList()
         : <Application>[];
-    final hasManagement = availableApps.remove(Application.management);
+    availableApps.remove(Application.management);
     final currentApp = ref.watch(currentAppProvider);
 
     return Padding(
@@ -147,40 +162,24 @@ class NavigationContent extends ConsumerWidget {
                 if (data != null) ...[
                   // Normal YubiKey Applications
                   ...availableApps.map((app) => NavigationItem(
-                        key: _getAppDrawerKey(app),
+                        key: app._key,
                         title: app.getDisplayName(l10n),
                         leading: app == currentApp
                             ? Icon(app._filledIcon)
                             : Icon(app._icon),
                         collapsed: !extended,
                         selected: app == currentApp,
-                        onTap: () {
-                          ref
-                              .read(currentAppProvider.notifier)
-                              .setCurrentApp(app);
-                          if (shouldPop) {
-                            Navigator.of(context).pop();
-                          }
-                        },
+                        onTap: app.getAvailability(data) == Availability.enabled
+                            ? () {
+                                ref
+                                    .read(currentAppProvider.notifier)
+                                    .setCurrentApp(app);
+                                if (shouldPop) {
+                                  Navigator.of(context).pop();
+                                }
+                              }
+                            : null,
                       )),
-                  // Management app
-                  if (hasManagement) ...[
-                    NavigationItem(
-                      key: managementAppDrawer,
-                      leading: Icon(Application.management._icon),
-                      title: data.info.version.major > 4
-                          ? l10n.s_toggle_applications
-                          : l10n.s_toggle_interfaces,
-                      collapsed: !extended,
-                      onTap: () {
-                        showBlurDialog(
-                          context: context,
-                          // data must be non-null when index == 0
-                          builder: (context) => ManagementScreen(data),
-                        );
-                      },
-                    ),
-                  ],
                   const SizedBox(height: 32),
                 ],
               ],
@@ -216,14 +215,4 @@ class NavigationContent extends ConsumerWidget {
       ),
     );
   }
-
-  Key _getAppDrawerKey(Application app) => switch (app) {
-        Application.oath => oathAppDrawer,
-        Application.fido => fidoAppDrawer,
-        Application.otp => otpAppDrawer,
-        Application.piv => pivAppDrawer,
-        Application.hsmauth => hsmauthAppDrawer,
-        Application.management => managementAppDrawer,
-        Application.openpgp => openpgpAppDrawer,
-      };
 }

@@ -44,10 +44,12 @@ final supportedAppsProvider =
 
 extension on Application {
   Feature get _feature => switch (this) {
-        Application.oath => features.oath,
-        Application.fido => features.fido,
-        Application.otp => features.otp,
-        Application.piv => features.piv,
+        Application.accounts => features.oath,
+        Application.webauthn => features.fido,
+        Application.passkeys => features.fido,
+        Application.fingerprints => features.fido,
+        Application.slots => features.otp,
+        Application.certificates => features.piv,
         Application.management => features.management,
         Application.openpgp => features.openpgp,
         Application.hsmauth => features.oath,
@@ -145,74 +147,38 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
           orElse: () => supportedThemes.first);
 }
 
-final primaryColorProvider = Provider<Color?>((ref) => null);
+final defaultColorProvider = Provider<Color>((ref) => defaultPrimaryColor);
 
-final darkThemeProvider = NotifierProvider<ThemeNotifier, ThemeData>(
-  () => ThemeNotifier(ThemeMode.dark),
-);
-
-final lightThemeProvider = NotifierProvider<ThemeNotifier, ThemeData>(
-  () => ThemeNotifier(ThemeMode.light),
-);
-
-class ThemeNotifier extends Notifier<ThemeData> {
-  final ThemeMode _themeMode;
-
-  ThemeNotifier(this._themeMode);
-
-  @override
-  ThemeData build() {
-    return _get(
-      _themeMode,
-      yubiKeyData: ref.watch(currentDeviceDataProvider).valueOrNull,
-    );
-  }
-
-  static ThemeData _getDefault(ThemeMode themeMode) =>
-      themeMode == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
-
-  ThemeData _get(ThemeMode themeMode,
-      {Color? color, YubiKeyData? yubiKeyData}) {
-    final prefs = ref.read(prefProvider);
-    const prefLastUsedColor = 'LAST_USED_COLOR';
-    Color? primaryColor = color;
-    if (yubiKeyData != null) {
-      final manager = ref.read(keyCustomizationManagerProvider);
-      final customization = manager.get(yubiKeyData.info.serial?.toString());
-      primaryColor = customization?.color ?? color;
-      if (primaryColor != null) {
-        // remember the last used color
-        prefs.setInt(
-          prefLastUsedColor,
-          primaryColor.value,
-        );
+final primaryColorProvider = Provider<Color>((ref) {
+  const prefLastUsedColor = 'LAST_USED_COLOR';
+  final prefs = ref.watch(prefProvider);
+  final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+  final defaultColor = ref.watch(defaultColorProvider);
+  if (data != null) {
+    // We have a device, use its color, or the default color
+    final serial = data.info.serial;
+    if (serial != null) {
+      final customization = ref.watch(keyCustomizationManagerProvider)[serial];
+      final deviceColor = customization?.color;
+      if (deviceColor != null) {
+        prefs.setInt(prefLastUsedColor, deviceColor.value);
+        return deviceColor;
       } else {
-        // the current color is null -> remove the last used color preference
-        // the system's primary color will be used
         prefs.remove(prefLastUsedColor);
+        return defaultColor;
       }
     }
-
+  } else {
+    // We don't have a device, use the last used color, if saved
     final lastUsedColor = prefs.getInt(prefLastUsedColor);
-    primaryColor ??= lastUsedColor != null
-        ? Color(lastUsedColor)
-        : ref.read(primaryColorProvider);
-
-    return (primaryColor != null)
-        ? _getDefault(themeMode).copyWith(
-            colorScheme: ColorScheme.fromSeed(
-                brightness: themeMode == ThemeMode.dark
-                    ? Brightness.dark
-                    : Brightness.light,
-                seedColor: primaryColor))
-        : _getDefault(themeMode);
+    if (lastUsedColor != null) {
+      return Color(lastUsedColor);
+    }
   }
 
-  void setColor(Color? color) {
-    _log.debug('Set color to $color');
-    state = _get(_themeMode, color: color);
-  }
-}
+  // Default color if nothing else
+  return defaultColor;
+});
 
 // Override with platform implementation
 final attachedDevicesProvider =

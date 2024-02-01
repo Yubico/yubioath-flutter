@@ -29,6 +29,7 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../models.dart';
@@ -54,13 +55,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
-        loading: () => MessagePage(
-              title: Text(l10n.s_slots),
-              graphic: const CircularProgressIndicator(),
+        loading: () => const MessagePage(
+              centered: true,
+              graphic: CircularProgressIndicator(),
               delayedContent: true,
             ),
-        error: (error, _) =>
-            AppFailurePage(title: Text(l10n.s_slots), cause: error),
+        error: (error, _) => AppFailurePage(cause: error),
         data: (otpState) {
           final selected = _selected != null
               ? otpState.slots.firstWhere((e) => e.slot == _selected)
@@ -92,36 +92,43 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       }),
                     },
                     child: AppPage(
-                      title: Text(l10n.s_slots),
+                      title: l10n.s_slots,
+                      capabilities: const [Capability.otp],
                       detailViewBuilder: selected != null
                           ? (context) => Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   ListTitle(l10n.s_details),
-                                  Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      // TODO: Reuse from fingerprint_dialog
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            selected.slot.getDisplayName(l10n),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headlineSmall,
-                                            softWrap: true,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          const Icon(
-                                            Icons.touch_app,
-                                            size: 100.0,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(selected.isConfigured
-                                              ? l10n.l_otp_slot_configured
-                                              : l10n.l_otp_slot_empty)
-                                        ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Card(
+                                      elevation: 0.0,
+                                      color: Theme.of(context).hoverColor,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        // TODO: Reuse from fingerprint_dialog
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              selected.slot
+                                                  .getDisplayName(l10n),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall,
+                                              softWrap: true,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            const Icon(
+                                              Icons.touch_app,
+                                              size: 100.0,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(selected.isConfigured
+                                                ? l10n.l_otp_slot_configured
+                                                : l10n.l_otp_slot_empty)
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -159,7 +166,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                               }),
                           },
                           child: Column(children: [
-                            ListTitle(l10n.s_slots),
                             ...otpState.slots.map((e) => _SlotListItem(
                                   e,
                                   expanded: expanded,

@@ -29,6 +29,7 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../keys.dart';
@@ -56,13 +57,12 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(pivStateProvider(widget.devicePath)).when(
-          loading: () => MessagePage(
-            title: Text(l10n.s_certificates),
-            graphic: const CircularProgressIndicator(),
+          loading: () => const MessagePage(
+            centered: true,
+            graphic: CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_certificates),
             cause: error,
           ),
           data: (pivState) {
@@ -75,7 +75,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final textTheme = theme.textTheme;
             // This is what ListTile uses for subtitle
             final subtitleStyle = textTheme.bodyMedium!.copyWith(
-              color: textTheme.bodySmall!.color,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             );
             return PivActions(
               devicePath: widget.devicePath,
@@ -105,33 +105,39 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                   ),
                 },
                 child: AppPage(
-                  title: Text(l10n.s_certificates),
+                  title: l10n.s_certificates,
+                  capabilities: const [Capability.piv],
                   detailViewBuilder: selected != null
                       ? (context) => Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               ListTitle(l10n.s_details),
-                              Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        selected.slot.getDisplayName(l10n),
-                                        style: textTheme.headlineSmall,
-                                        softWrap: true,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      selected.certInfo != null
-                                          ? CertInfoTable(selected.certInfo!)
-                                          : Text(
-                                              l10n.l_no_certificate,
-                                              softWrap: true,
-                                              textAlign: TextAlign.center,
-                                              style: subtitleStyle,
-                                            ),
-                                    ],
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: Card(
+                                  elevation: 0.0,
+                                  color: Theme.of(context).hoverColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          selected.slot.getDisplayName(l10n),
+                                          style: textTheme.headlineSmall,
+                                          softWrap: true,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        selected.certInfo != null
+                                            ? CertInfoTable(selected.certInfo!)
+                                            : Text(
+                                                l10n.l_no_certificate,
+                                                softWrap: true,
+                                                textAlign: TextAlign.center,
+                                                style: subtitleStyle,
+                                              ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -170,7 +176,6 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       },
                       child: Column(
                         children: [
-                          ListTitle(l10n.s_certificates),
                           if (pivSlots?.hasValue == true)
                             ...pivSlots!.value.map(
                               (e) => _CertificateListItem(

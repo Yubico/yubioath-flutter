@@ -152,7 +152,7 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
       key: keys.configureYubiOtp,
       feature: features.slotsConfigureYubiOtp,
       icon: const Icon(Icons.shuffle_outlined),
-      title: l10n.s_yubiotp,
+      title: l10n.s_capability_otp,
       subtitle: l10n.l_yubiotp_desc,
       intent: ConfigureYubiOtpIntent(slot),
     ),

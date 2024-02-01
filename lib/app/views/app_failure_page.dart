@@ -22,14 +22,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
+import '../../management/models.dart';
 import '../message.dart';
 import '../state.dart';
 import 'message_page.dart';
 
 class AppFailurePage extends ConsumerWidget {
-  final Widget? title;
   final Object cause;
-  const AppFailurePage({this.title, required this.cause, super.key}) : super();
+  const AppFailurePage({required this.cause, super.key}) : super();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +40,9 @@ class AppFailurePage extends ConsumerWidget {
         Icon(Icons.error, size: 96, color: Theme.of(context).colorScheme.error);
     String? header = l10n.l_error_occurred;
     String? message = reason.toString();
+    String? title;
+    bool centered = true;
+    List<Capability>? capabilities;
     List<Widget> actions = [];
 
     if (reason is RpcError) {
@@ -58,10 +61,13 @@ class AppFailurePage extends ConsumerWidget {
           case 'fido':
             if (Platform.isWindows &&
                 !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-              graphic = Icon(Icons.stop,
-                  size: 96, color: Theme.of(context).colorScheme.primary);
-              header = null;
+              final currentApp = ref.read(currentAppProvider);
+              title = currentApp.getDisplayName(l10n);
+              capabilities = currentApp.getCapabilities();
+              header = l10n.s_admin_privileges_required;
               message = l10n.p_webauthn_elevated_permissions_required;
+              centered = false;
+              graphic = null;
               actions = [
                 FilledButton.icon(
                   label: Text(l10n.s_unlock),
@@ -99,11 +105,13 @@ class AppFailurePage extends ConsumerWidget {
     }
 
     return MessagePage(
+      centered: centered,
       title: title,
+      capabilities: capabilities,
       graphic: graphic,
       header: header,
       message: message,
-      actions: actions,
+      actionsBuilder: (context, expanded) => actions,
     );
   }
 }

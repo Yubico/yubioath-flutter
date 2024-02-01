@@ -54,7 +54,7 @@ Future<Widget> initialize() async {
   return ProviderScope(
     overrides: [
       supportedAppsProvider.overrideWith(implementedApps([
-        Application.oath,
+        Application.accounts,
       ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
@@ -85,7 +85,7 @@ Future<Widget> initialize() async {
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
-      primaryColorProvider.overrideWithValue(await getPrimaryColor()),
+      defaultColorProvider.overrideWithValue(await getPrimaryColor()),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(

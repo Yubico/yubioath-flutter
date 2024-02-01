@@ -25,7 +25,6 @@ import '../../desktop/state.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
-import 'device_avatar.dart';
 import 'message_page.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
@@ -38,14 +37,13 @@ class DeviceErrorScreen extends ConsumerWidget {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+        final currentApp = ref.read(currentAppProvider);
         return MessagePage(
-          graphic: Icon(
-            Icons.do_not_disturb_on_outlined,
-            size: 96,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          title: currentApp.getDisplayName(l10n),
+          capabilities: currentApp.getCapabilities(),
+          header: l10n.s_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
-          actions: [
+          actionsBuilder: (context, expanded) => [
             FilledButton.icon(
               label: Text(l10n.s_unlock),
               icon: const Icon(Icons.lock_open),
@@ -70,8 +68,14 @@ class DeviceErrorScreen extends ConsumerWidget {
       }
     }
     return MessagePage(
-      graphic: const DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: l10n.l_yk_no_access,
+      centered: true,
+      graphic: Image.asset(
+        'assets/product-images/generic.png',
+        filterQuality: FilterQuality.medium,
+        scale: 3,
+        color: Theme.of(context).colorScheme.error,
+      ),
+      header: l10n.l_yk_no_access,
     );
   }
 
@@ -82,14 +86,16 @@ class DeviceErrorScreen extends ConsumerWidget {
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
       nfcReader: (node) => switch (error) {
         'unknown-device' => MessagePage(
+            centered: true,
             graphic: Icon(
-              Icons.help_outline,
+              Icons.help_outlined,
               size: 96,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.error,
             ),
-            message: l10n.s_unknown_device,
+            header: l10n.s_unknown_device,
           ),
         _ => MessagePage(
+            centered: true,
             graphic: Image.asset(
               'assets/graphics/no-key.png',
               filterQuality: FilterQuality.medium,

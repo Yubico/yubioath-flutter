@@ -24,7 +24,6 @@ const _fingerprintAction = '$_prefix.fingerprint.actions';
 // Key actions
 const managePinAction = Key('$_keyAction.manage_pin');
 const addFingerprintAction = Key('$_keyAction.add_fingerprint');
-const resetAction = Key('$_keyAction.reset');
 
 // Credential actions
 const editCredentialAction = Key('$_credentialAction.edit');

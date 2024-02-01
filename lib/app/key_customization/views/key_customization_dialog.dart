@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../android/state.dart';
 import '../../../core/state.dart';
 import '../../../management/models.dart';
+import '../../../theme.dart';
 import '../../../widgets/app_input_decoration.dart';
 import '../../../widgets/app_text_form_field.dart';
 import '../../../widgets/focus_utils.dart';
@@ -33,7 +34,7 @@ import '../models.dart';
 import '../state.dart';
 
 class KeyCustomizationDialog extends ConsumerStatefulWidget {
-  final KeyCustomization? initialCustomization;
+  final KeyCustomization initialCustomization;
   final DeviceNode? node;
 
   const KeyCustomizationDialog(
@@ -52,8 +53,8 @@ class _KeyCustomizationDialogState
   @override
   void initState() {
     super.initState();
-    _customName = widget.initialCustomization?.name;
-    _customColor = widget.initialCustomization?.color;
+    _customName = widget.initialCustomization.name;
+    _customColor = widget.initialCustomization.color;
   }
 
   @override
@@ -61,15 +62,16 @@ class _KeyCustomizationDialogState
     final l10n = AppLocalizations.of(context)!;
     final currentNode = widget.node;
     final theme = Theme.of(context);
+    final primaryColor = ref.watch(defaultColorProvider);
 
     final Widget hero;
     if (currentNode != null) {
-      hero = _CurrentDeviceAvatar(currentNode, _customColor ?? Colors.white);
+      hero = _CurrentDeviceAvatar(currentNode, _customColor ?? primaryColor);
     } else {
       hero = Column(
         children: [
           _HeroAvatar(
-            color: _customColor ?? Colors.white,
+            color: _customColor ?? primaryColor,
             child: DeviceAvatar(
               radius: 64,
               child: Icon(isAndroid ? Icons.no_cell : Icons.usb),
@@ -84,18 +86,11 @@ class _KeyCustomizationDialogState
       );
     }
 
-    final primaryColor = ref.read(primaryColorProvider);
-
-    final didChange = widget.initialCustomization?.name != _customName ||
-        widget.initialCustomization?.color != _customColor;
+    final didChange = widget.initialCustomization.name != _customName ||
+        widget.initialCustomization.color != _customColor;
 
     return Theme(
-      data: theme.copyWith(
-        colorScheme: ColorScheme.fromSeed(
-            brightness: theme.brightness,
-            seedColor:
-                _customColor ?? primaryColor ?? theme.colorScheme.primary),
-      ),
+      data: AppTheme.getTheme(theme.brightness, _customColor ?? primaryColor),
       child: ResponsiveDialog(
         actions: [
           TextButton(
@@ -119,7 +114,7 @@ class _KeyCustomizationDialogState
                       maxLength: 20,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.s_custom_key_name,
+                        labelText: l10n.s_label,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         prefixIcon: const Icon(Icons.key),
@@ -136,7 +131,8 @@ class _KeyCustomizationDialogState
                       },
                     ),
                   ),
-                  Text(l10n.s_custom_key_color),
+                  Text(l10n.s_theme_color),
+                  const SizedBox(height: 16),
                   Container(
                     constraints: const BoxConstraints(maxWidth: 360),
                     child: Wrap(
@@ -145,17 +141,17 @@ class _KeyCustomizationDialogState
                       spacing: 16,
                       children: [
                         ...[
-                          Colors.yellow.withOpacity(1.0),
-                          Colors.orange.withOpacity(1.0),
-                          Colors.red.withOpacity(1.0),
-                          Colors.deepPurple.withOpacity(1.0),
-                          Colors.green.withOpacity(1.0),
-                          Colors.teal.withOpacity(1.0),
-                          Colors.cyan.withOpacity(1.0),
+                          Colors.teal,
+                          Colors.cyan,
+                          Colors.blueAccent,
+                          Colors.deepPurple,
+                          Colors.red,
+                          Colors.orange,
+                          Colors.yellow,
                           // add nice color to devices with dynamic color
                           if (isAndroid &&
                               ref.read(androidSdkVersionProvider) >= 31)
-                            Colors.blueAccent.withOpacity(1.0)
+                            Colors.lightGreen
                         ].map((e) => _ColorButton(
                               color: e,
                               isSelected: _customColor == e,
@@ -169,16 +165,17 @@ class _KeyCustomizationDialogState
                           onPressed: () => _updateColor(null),
                           constraints: const BoxConstraints(
                               minWidth: 32.0, minHeight: 32.0),
-                          fillColor: _customColor == null
-                              ? theme.colorScheme.surface
-                              : theme.colorScheme.onSurface,
+                          fillColor: (isAndroid &&
+                                  ref.read(androidSdkVersionProvider) >= 31)
+                              ? theme.colorScheme.onSurface
+                              : primaryColor,
                           shape: const CircleBorder(),
                           child: Icon(
                             Icons.cancel_rounded,
                             size: 16,
                             color: _customColor == null
                                 ? theme.colorScheme.onSurface
-                                : theme.colorScheme.surface,
+                                : theme.colorScheme.surface.withOpacity(0.2),
                           ),
                         ),
                       ],
@@ -194,15 +191,11 @@ class _KeyCustomizationDialogState
   }
 
   void _submit() async {
-    final manager = ref.read(keyCustomizationManagerProvider);
-    manager.set(
-        serial: widget.initialCustomization!.serial,
+    final manager = ref.read(keyCustomizationManagerProvider.notifier);
+    await manager.set(
+        serial: widget.initialCustomization.serial,
         name: _customName,
         color: _customColor);
-    await manager.write();
-
-    ref.invalidate(lightThemeProvider);
-    ref.invalidate(darkThemeProvider);
 
     await ref.read(withContextProvider)((context) async {
       FocusUtils.unfocus(context);

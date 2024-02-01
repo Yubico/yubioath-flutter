@@ -31,6 +31,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
@@ -43,6 +44,7 @@ import 'account_dialog.dart';
 import 'account_helper.dart';
 import 'account_list.dart';
 import 'actions.dart';
+import 'add_account_dialog.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
@@ -54,15 +56,13 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => MessagePage(
-            title: Text(l10n.s_authenticator),
-            graphic: const CircularProgressIndicator(),
+          loading: () => const MessagePage(
+            centered: true,
+            graphic: CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_authenticator),
             cause: error,
           ),
           data: (oathState) => oathState.locked
@@ -82,12 +82,13 @@ class _LockedView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
-      title: Text(AppLocalizations.of(context)!.s_authenticator),
+      title: AppLocalizations.of(context)!.s_accounts,
+      capabilities: const [Capability.oath],
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
           : null,
       builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 18),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: UnlockForm(
           devicePath,
           keystore: oathState.keystore,
@@ -158,11 +159,27 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        title: Text(l10n.s_authenticator),
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_add_account),
+              onPressed: () async {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => AddAccountDialog(
+                    widget.devicePath,
+                    widget.oathState,
+                  ),
+                );
+              },
+              avatar: const Icon(Icons.person_add_alt_1_outlined),
+            )
+        ],
+        title: l10n.s_accounts,
+        capabilities: const [Capability.oath],
         key: keys.noAccountsView,
-        graphic: Icon(Icons.people,
-            size: 96, color: Theme.of(context).colorScheme.primary),
-        header: l10n.s_no_accounts,
+        header: l10n.l_authenticator_get_started,
+        message: l10n.l_no_accounts_desc,
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                 context, widget.devicePath, widget.oathState, ref,
@@ -173,6 +190,14 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           title: l10n.s_add_account,
           subtitle: l10n.l_drop_qr_description,
         ),
+      );
+    }
+
+    if (numCreds == null) {
+      return AppPage(
+        centered: true,
+        delayedContent: true,
+        builder: (context, _) => const CircularProgressIndicator(),
       );
     }
 
@@ -232,73 +257,15 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           }),
       },
       builder: (context) => AppPage(
-        title: Focus(
-          canRequestFocus: false,
-          onKeyEvent: (node, event) {
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              node.focusInDirection(TraversalDirection.down);
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: Builder(builder: (context) {
-            final textTheme = Theme.of(context).textTheme;
-            return AppTextFormField(
-              key: keys.searchAccountsField,
-              controller: searchController,
-              focusNode: searchFocus,
-              // Use the default style, but with a smaller font size:
-              style: textTheme.titleMedium
-                  ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-              decoration: AppInputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                  borderSide: BorderSide(
-                    width: 0,
-                    style: searchFocus.hasFocus
-                        ? BorderStyle.solid
-                        : BorderStyle.none,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.all(16),
-                fillColor: Theme.of(context).hoverColor,
-                filled: true,
-                hintText: l10n.s_search_accounts,
-                isDense: true,
-                prefixIcon: const Padding(
-                  padding: EdgeInsetsDirectional.only(start: 8.0),
-                  child: Icon(Icons.search_outlined),
-                ),
-                suffixIcon: searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        iconSize: 16,
-                        onPressed: () {
-                          searchController.clear();
-                          ref.read(searchProvider.notifier).setFilter('');
-                          setState(() {});
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                ref.read(searchProvider.notifier).setFilter(value);
-                setState(() {});
-              },
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (value) {
-                Focus.of(context).focusInDirection(TraversalDirection.down);
-              },
-            );
-          }),
-        ),
+        title: l10n.s_accounts,
+        capabilities: const [Capability.oath],
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
                   widget.devicePath,
                   widget.oathState,
                   ref,
-                  used: numCreds ?? 0,
+                  used: numCreds,
                 )
             : null,
         onFileDropped: onFileDropped,
@@ -306,8 +273,6 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           title: l10n.s_add_account,
           subtitle: l10n.l_drop_qr_description,
         ),
-        centered: numCreds == null,
-        delayedContent: numCreds == null,
         detailViewBuilder: _selected != null
             ? (context) {
                 final helper = AccountHelper(context, ref, _selected!);
@@ -316,53 +281,60 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ListTitle(l10n.s_details),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  IconTheme(
-                                    data: IconTheme.of(context)
-                                        .copyWith(size: 24),
-                                    child: helper.buildCodeIcon(),
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  DefaultTextStyle.merge(
-                                    style: const TextStyle(fontSize: 28),
-                                    child: helper.buildCodeLabel(),
-                                  ),
-                                ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Card(
+                        elevation: 0.0,
+                        color: Theme.of(context).hoverColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    IconTheme(
+                                      data: IconTheme.of(context)
+                                          .copyWith(size: 24),
+                                      child: helper.buildCodeIcon(),
+                                    ),
+                                    const SizedBox(width: 8.0),
+                                    DefaultTextStyle.merge(
+                                      style: const TextStyle(fontSize: 28),
+                                      child: helper.buildCodeLabel(),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Text(
-                              helper.title,
-                              style: Theme.of(context).textTheme.headlineSmall,
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                            ),
-                            if (subtitle != null)
                               Text(
-                                subtitle,
+                                helper.title,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                                 softWrap: true,
                                 textAlign: TextAlign.center,
-                                // This is what ListTile uses for subtitle
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
                               ),
-                          ],
+                              if (subtitle != null)
+                                Text(
+                                  subtitle,
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                  // This is what ListTile uses for subtitle
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .color,
+                                      ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -384,31 +356,100 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               });
             });
           }
-          return numCreds != null
-              ? Actions(
-                  actions: {
-                    if (expanded)
-                      OpenIntent<OathCredential>:
-                          CallbackAction<OpenIntent<OathCredential>>(
-                              onInvoke: (OpenIntent<OathCredential> intent) {
-                        setState(() {
-                          _selected = intent.target;
-                        });
-                        return null;
-                      }),
+          return Actions(
+            actions: {
+              if (expanded)
+                OpenIntent<OathCredential>:
+                    CallbackAction<OpenIntent<OathCredential>>(
+                        onInvoke: (OpenIntent<OathCredential> intent) {
+                  setState(() {
+                    _selected = intent.target;
+                  });
+                  return null;
+                }),
+            },
+            child: Column(
+              children: [
+                Focus(
+                  canRequestFocus: false,
+                  onKeyEvent: (node, event) {
+                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                      node.focusInDirection(TraversalDirection.down);
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
                   },
-                  child: Consumer(
-                    builder: (context, ref, _) {
-                      return AccountList(
-                        ref.watch(credentialListProvider(widget.devicePath)) ??
-                            [],
-                        expanded: expanded,
-                        selected: _selected,
-                      );
-                    },
-                  ),
+                  child: Builder(builder: (context) {
+                    final textTheme = Theme.of(context).textTheme;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: AppTextFormField(
+                        key: keys.searchAccountsField,
+                        controller: searchController,
+                        focusNode: searchFocus,
+                        // Use the default style, but with a smaller font size:
+                        style: textTheme.titleMedium?.copyWith(
+                            fontSize: textTheme.titleSmall?.fontSize),
+                        decoration: AppInputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: searchFocus.hasFocus
+                                  ? BorderStyle.solid
+                                  : BorderStyle.none,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                          fillColor: Theme.of(context).hoverColor,
+                          filled: true,
+                          hintText: l10n.s_search_accounts,
+                          isDense: true,
+                          prefixIcon: const Padding(
+                            padding: EdgeInsetsDirectional.only(start: 8.0),
+                            child: Icon(Icons.search_outlined),
+                          ),
+                          suffixIcon: searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  iconSize: 16,
+                                  onPressed: () {
+                                    searchController.clear();
+                                    ref
+                                        .read(searchProvider.notifier)
+                                        .setFilter('');
+                                    setState(() {});
+                                  },
+                                )
+                              : null,
+                        ),
+                        onChanged: (value) {
+                          ref.read(searchProvider.notifier).setFilter(value);
+                          setState(() {});
+                        },
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (value) {
+                          Focus.of(context)
+                              .focusInDirection(TraversalDirection.down);
+                        },
+                      ),
+                    );
+                  }),
+                ),
+                Consumer(
+                  builder: (context, ref, _) {
+                    return AccountList(
+                      ref.watch(credentialListProvider(widget.devicePath)) ??
+                          [],
+                      expanded: expanded,
+                      selected: _selected,
+                    );
+                  },
                 )
-              : const CircularProgressIndicator();
+              ],
+            ),
+          );
         },
       ),
     );

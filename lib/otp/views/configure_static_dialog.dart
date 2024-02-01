@@ -160,7 +160,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                           : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
-                    tooltip: l10n.s_generate_passowrd,
+                    tooltip: l10n.s_generate_random,
                     icon: const Icon(Icons.refresh),
                     onPressed: () async {
                       final password = await ref

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../core/models.dart';
@@ -41,17 +42,26 @@ enum FormFactor {
 }
 
 enum Capability {
-  otp(0x001, 'OTP'),
-  piv(0x010, 'PIV'),
-  oath(0x020, 'OATH'),
-  openpgp(0x008, 'OpenPGP'),
-  hsmauth(0x100, 'YubiHSM Auth'),
-  u2f(0x002, 'FIDO U2F'),
-  fido2(0x200, 'FIDO2');
+  otp(0x001),
+  piv(0x010),
+  oath(0x020),
+  openpgp(0x008),
+  hsmauth(0x100),
+  u2f(0x002),
+  fido2(0x200);
 
   final int value;
-  final String name;
-  const Capability(this.value, this.name);
+  const Capability(this.value);
+
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        Capability.otp => l10n.s_capability_otp,
+        Capability.piv => l10n.s_capability_piv,
+        Capability.oath => l10n.s_capability_oath,
+        Capability.openpgp => l10n.s_capability_openpgp,
+        Capability.hsmauth => l10n.s_capability_hsmauth,
+        Capability.u2f => l10n.s_capability_u2f,
+        Capability.fido2 => l10n.s_capability_fido2,
+      };
 }
 
 @freezed
