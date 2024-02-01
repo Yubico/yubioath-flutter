@@ -128,6 +128,7 @@ jobs:
         --volume $(pwd):/scribe                   # mount the current directory to /scribe in the container
         --env-file <(env)                         # pass in the current environment to the container
         ghcr.io/yubico/scribe-ci:v1               # run v1 of the scribe-ci container
+        --project-id scribe-prod-987134
         --bucket scribe-s-pub-yubioath-flutter-498g0p  # the name of the unsigned artifacts bucket to upload to
         --config /.github/scribe-sign.yaml # the path of the 
         submit                                    # run the submit command
