@@ -86,7 +86,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           centered: true,
           graphic: noKeyImage,
-          message: hasNfcSupport && isNfcEnabled
+          header: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
           actionsBuilder: (context, expanded) => [
