@@ -124,12 +124,13 @@ jobs:
     - name: run scribe
       run: >
         docker run
-        --user $(id -u):$(id -g)                  # run the container as the current user to preserve permissions on the artifacts
-        --volume $(pwd):/scribe                   # mount the current directory to /scribe in the container
-        --env-file <(env)                         # pass in the current environment to the container
-        ghcr.io/yubico/scribe-ci:v1               # run v1 of the scribe-ci container
+        --user $(id -u):$(id -g)
+        --volume $(pwd):/scribe
+        --env-file <(env)
+        ghcr.io/yubico/scribe-ci:v1
         --project-id scribe-prod-987134
-        --bucket scribe-s-pub-yubioath-flutter-498g0p  # the name of the unsigned artifacts bucket to upload to
-        --config /.github/scribe-sign.yaml # the path of the 
-        submit                                    # run the submit command
-        .                                         # the path relative to /scribe for where to find the artifacts
+        --bucket scribe-s-pub-yubioath-flutter-498g0p
+        --config /.github/scribe-sign.yaml
+        submit .
+        --synchronous
+        --download-artifacts
