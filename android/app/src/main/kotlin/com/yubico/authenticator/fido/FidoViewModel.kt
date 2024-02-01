@@ -24,7 +24,7 @@ import com.yubico.authenticator.fido.data.FidoResetState
 import com.yubico.authenticator.fido.data.Session
 
 class FidoViewModel : ViewModel() {
-    private val _sessionState = MutableLiveData<Session?>()
+    private val _sessionState = MutableLiveData<Session?>(null)
     val sessionState: LiveData<Session?> = _sessionState
 
     fun setSessionState(sessionState: Session?) {

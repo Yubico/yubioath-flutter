@@ -65,10 +65,27 @@ class OathScreen extends ConsumerWidget {
           error: (error, _) => AppFailurePage(
             cause: error,
           ),
-          data: (oathState) => oathState.locked
-              ? _LockedView(devicePath, oathState)
-              : _UnlockedView(devicePath, oathState),
+          data: (oathState) => oathState.initialized
+              ? oathState.locked
+                  ? _LockedView(devicePath, oathState)
+                  : _UnlockedView(devicePath, oathState)
+              : const _InsertTapView(),
         );
+  }
+}
+
+class _InsertTapView extends ConsumerWidget {
+  const _InsertTapView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return MessagePage(
+      title: AppLocalizations.of(context)!.s_accounts,
+      centered: false,
+      capabilities: const [Capability.oath],
+      header: l10n.l_insert_or_tap_yk,
+    );
   }
 }
 

@@ -43,6 +43,7 @@ import 'pin_entry_form.dart';
 
 class PasskeysScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
+
   const PasskeysScreen(this.deviceData, {super.key});
 
   @override
@@ -73,10 +74,27 @@ class PasskeysScreen extends ConsumerWidget {
           );
         },
         data: (fidoState) {
-          return fidoState.unlocked
-              ? _FidoUnlockedPage(deviceData.node, fidoState)
-              : _FidoLockedPage(deviceData.node, fidoState);
+          return fidoState.initialized
+              ? fidoState.unlocked
+                  ? _FidoUnlockedPage(deviceData.node, fidoState)
+                  : _FidoLockedPage(deviceData.node, fidoState)
+              : const _FidoInsertTapPage();
         });
+  }
+}
+
+class _FidoInsertTapPage extends ConsumerWidget {
+  const _FidoInsertTapPage();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return MessagePage(
+      title: l10n.s_passkeys,
+      centered: false,
+      capabilities: const [Capability.fido2],
+      header: l10n.l_insert_or_tap_yk,
+    );
   }
 }
 

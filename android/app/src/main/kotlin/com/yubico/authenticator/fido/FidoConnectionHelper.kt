@@ -20,6 +20,7 @@ import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -30,7 +31,7 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
 
 class FidoConnectionHelper(
-    private val appViewModel: MainViewModel,
+    private val deviceManager: DeviceManager,
     private val dialogManager: DialogManager
 ) {
     private var pendingAction: FidoAction? = null
@@ -46,9 +47,9 @@ class FidoConnectionHelper(
         actionDescription: FidoActionDescription,
         action: (YubiKitFidoSession) -> T
     ): T {
-        return appViewModel.connectedYubiKey.value?.let {
-            useSessionUsb(it, action)
-        } ?: useSessionNfc(actionDescription, action)
+        return deviceManager.withKey(
+            onNfc = { useSessionNfc(actionDescription,action) },
+            onUsb = { useSessionUsb(it, action) })
     }
 
     suspend fun <T> useSessionUsb(

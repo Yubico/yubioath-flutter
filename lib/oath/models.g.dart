@@ -70,6 +70,7 @@ _$OathStateImpl _$$OathStateImplFromJson(Map<String, dynamic> json) =>
       remembered: json['remembered'] as bool,
       locked: json['locked'] as bool,
       keystore: $enumDecode(_$KeystoreStateEnumMap, json['keystore']),
+      initialized: json['initialized'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$$OathStateImplToJson(_$OathStateImpl instance) =>
@@ -80,6 +81,7 @@ Map<String, dynamic> _$$OathStateImplToJson(_$OathStateImpl instance) =>
       'remembered': instance.remembered,
       'locked': instance.locked,
       'keystore': _$KeystoreStateEnumMap[instance.keystore]!,
+      'initialized': instance.initialized,
     };
 
 const _$KeystoreStateEnumMap = {

@@ -16,13 +16,12 @@
 
 package com.yubico.authenticator.fido
 
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
-import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.asString
+import com.yubico.authenticator.device.DeviceListener
+import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
@@ -63,16 +62,14 @@ import java.util.concurrent.Executors
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
 class FidoManager(
-    private val lifecycleOwner: LifecycleOwner,
+    lifecycleOwner: LifecycleOwner,
     messenger: BinaryMessenger,
-    private val appViewModel: MainViewModel,
+    private val deviceManager: DeviceManager,
     private val fidoViewModel: FidoViewModel,
     dialogManager: DialogManager,
-) : AppContextManager {
+) : AppContextManager(lifecycleOwner), DeviceListener {
 
     companion object {
-        const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
-
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
             val pinUvAuthProtocols = infoData.pinUvAuthProtocols
             val pinSupported = infoData.options["clientPin"] != null
@@ -90,7 +87,7 @@ class FidoManager(
         }
     }
 
-    private val connectionHelper = FidoConnectionHelper(appViewModel, dialogManager)
+    private val connectionHelper = FidoConnectionHelper(deviceManager, dialogManager)
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -102,50 +99,15 @@ class FidoManager(
     private val pinStore = FidoPinStore()
 
     private val resetHelper =
-        FidoResetHelper(appViewModel, fidoViewModel, connectionHelper, pinStore)
+        FidoResetHelper(deviceManager, fidoViewModel, connectionHelper, pinStore)
 
-    private val lifecycleObserver = object : DefaultLifecycleObserver {
-
-        private var startTimeMs: Long = -1
-
-        override fun onPause(owner: LifecycleOwner) {
-            // cancel any FIDO reset flow which might be in progress
-            resetHelper.cancelReset()
-            startTimeMs = currentTimeMs
-            super.onPause(owner)
-        }
-
-        override fun onResume(owner: LifecycleOwner) {
-            super.onResume(owner)
-            if (canInvoke) {
-                if (appViewModel.connectedYubiKey.value == null) {
-                    // no USB YubiKey is connected, reset known data on resume
-                    logger.debug("Removing NFC data after resume.")
-                    appViewModel.setDeviceInfo(null)
-                    fidoViewModel.setSessionState(null)
-                }
-            }
-        }
-
-        private val currentTimeMs
-            get() = System.currentTimeMillis()
-
-        private val canInvoke: Boolean
-            get() = startTimeMs != -1L && currentTimeMs - startTimeMs > NFC_DATA_CLEANUP_DELAY
-    }
-
-    private val usbObserver = Observer<UsbYubiKeyDevice?> {
-        if (it == null) {
-            if (!resetHelper.inProgress) {
-                // only reset the view model if there is no FIDO reset in progress
-                appViewModel.setDeviceInfo(null)
-                fidoViewModel.setSessionState(null)
-            }
-        }
+    override fun onPause() {
+        // cancel any FIDO reset flow which might be in progress
+        resetHelper.cancelReset()
     }
 
     init {
-        appViewModel.connectedYubiKey.observe(lifecycleOwner, usbObserver)
+        deviceManager.addDeviceListener(this)
 
         fidoChannel.setHandler(coroutineScope) { method, args ->
             when (method) {
@@ -171,12 +133,18 @@ class FidoManager(
             }
         }
 
-        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        if (!deviceManager.isUsbKeyConnected()) {
+            // for NFC connections require extra tap when switching context
+            if (fidoViewModel.sessionState.value == null) {
+                fidoViewModel.setSessionState(Session.uninitialized)
+            }
+        }
+
     }
 
     override fun dispose() {
-        lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
-        appViewModel.connectedYubiKey.removeObserver(usbObserver)
+        super.dispose()
+        deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
         coroutineScope.cancel()
     }
@@ -207,7 +175,7 @@ class FidoManager(
                 }
 
                 logger.debug("Setting device info: {}", deviceInfo)
-                appViewModel.setDeviceInfo(deviceInfo)
+                deviceManager.setDeviceInfo(deviceInfo)
             }
 
             // Clear any cached FIDO state
@@ -253,7 +221,7 @@ class FidoManager(
             // Update deviceInfo since the deviceId has changed
             val pid = (device as? UsbYubiKeyDevice)?.pid
             val deviceInfo = DeviceUtil.readInfo(connection, pid)
-            appViewModel.setDeviceInfo(
+            deviceManager.setDeviceInfo(
                 Info(
                     name = DeviceUtil.getName(deviceInfo, pid?.type),
                     isNfc = device.transport == Transport.NFC,
@@ -439,4 +407,14 @@ class FidoManager(
                 )
             ).toString()
         }
+
+    override fun onDisconnected() {
+        if (!resetHelper.inProgress) {
+            fidoViewModel.setSessionState(null)
+        }
+    }
+
+    override fun onTimeout() {
+        fidoViewModel.setSessionState(null)
+    }
 }

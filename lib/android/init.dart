@@ -70,8 +70,15 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentAppProvider.overrideWith(
-          (ref) => AndroidSubPageNotifier(ref.watch(supportedAppsProvider))),
+      currentAppProvider.overrideWith((ref) {
+        final notifier =
+            AndroidSubPageNotifier(ref.watch(supportedAppsProvider));
+        ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
+            (_, data) {
+          notifier.notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
+        }, fireImmediately: true);
+        return notifier;
+      }),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
       currentDeviceProvider.overrideWith(
         () => AndroidCurrentDeviceNotifier(),

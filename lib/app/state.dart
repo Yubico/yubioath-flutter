@@ -209,7 +209,7 @@ final currentAppProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
   final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
+    notifier.notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
   return notifier;
 });
@@ -223,7 +223,7 @@ class CurrentAppNotifier extends StateNotifier<Application> {
     state = app;
   }
 
-  void _notifyDeviceChanged(YubiKeyData? data) {
+  void notifyDeviceChanged(YubiKeyData? data) {
     if (data == null ||
         state.getAvailability(data) != Availability.unsupported) {
       // Keep current app

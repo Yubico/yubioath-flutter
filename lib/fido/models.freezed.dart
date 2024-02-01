@@ -22,6 +22,7 @@ FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
 mixin _$FidoState {
   Map<String, dynamic> get info => throw _privateConstructorUsedError;
   bool get unlocked => throw _privateConstructorUsedError;
+  bool get initialized => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -34,7 +35,7 @@ abstract class $FidoStateCopyWith<$Res> {
   factory $FidoStateCopyWith(FidoState value, $Res Function(FidoState) then) =
       _$FidoStateCopyWithImpl<$Res, FidoState>;
   @useResult
-  $Res call({Map<String, dynamic> info, bool unlocked});
+  $Res call({Map<String, dynamic> info, bool unlocked, bool initialized});
 }
 
 /// @nodoc
@@ -52,6 +53,7 @@ class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
   $Res call({
     Object? info = null,
     Object? unlocked = null,
+    Object? initialized = null,
   }) {
     return _then(_value.copyWith(
       info: null == info
@@ -61,6 +63,10 @@ class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
       unlocked: null == unlocked
           ? _value.unlocked
           : unlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      initialized: null == initialized
+          ? _value.initialized
+          : initialized // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -74,7 +80,7 @@ abstract class _$$FidoStateImplCopyWith<$Res>
       __$$FidoStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Map<String, dynamic> info, bool unlocked});
+  $Res call({Map<String, dynamic> info, bool unlocked, bool initialized});
 }
 
 /// @nodoc
@@ -90,6 +96,7 @@ class __$$FidoStateImplCopyWithImpl<$Res>
   $Res call({
     Object? info = null,
     Object? unlocked = null,
+    Object? initialized = null,
   }) {
     return _then(_$FidoStateImpl(
       info: null == info
@@ -100,6 +107,10 @@ class __$$FidoStateImplCopyWithImpl<$Res>
           ? _value.unlocked
           : unlocked // ignore: cast_nullable_to_non_nullable
               as bool,
+      initialized: null == initialized
+          ? _value.initialized
+          : initialized // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -108,7 +119,9 @@ class __$$FidoStateImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$FidoStateImpl extends _FidoState {
   _$FidoStateImpl(
-      {required final Map<String, dynamic> info, required this.unlocked})
+      {required final Map<String, dynamic> info,
+      required this.unlocked,
+      this.initialized = true})
       : _info = info,
         super._();
 
@@ -125,26 +138,31 @@ class _$FidoStateImpl extends _FidoState {
 
   @override
   final bool unlocked;
+  @override
+  @JsonKey()
+  final bool initialized;
 
   @override
   String toString() {
-    return 'FidoState(info: $info, unlocked: $unlocked)';
+    return 'FidoState(info: $info, unlocked: $unlocked, initialized: $initialized)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FidoStateImpl &&
             const DeepCollectionEquality().equals(other._info, _info) &&
             (identical(other.unlocked, unlocked) ||
-                other.unlocked == unlocked));
+                other.unlocked == unlocked) &&
+            (identical(other.initialized, initialized) ||
+                other.initialized == initialized));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_info), unlocked);
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_info), unlocked, initialized);
 
   @JsonKey(ignore: true)
   @override
@@ -163,7 +181,8 @@ class _$FidoStateImpl extends _FidoState {
 abstract class _FidoState extends FidoState {
   factory _FidoState(
       {required final Map<String, dynamic> info,
-      required final bool unlocked}) = _$FidoStateImpl;
+      required final bool unlocked,
+      final bool initialized}) = _$FidoStateImpl;
   _FidoState._() : super._();
 
   factory _FidoState.fromJson(Map<String, dynamic> json) =
@@ -173,6 +192,8 @@ abstract class _FidoState extends FidoState {
   Map<String, dynamic> get info;
   @override
   bool get unlocked;
+  @override
+  bool get initialized;
   @override
   @JsonKey(ignore: true)
   _$$FidoStateImplCopyWith<_$FidoStateImpl> get copyWith =>
@@ -265,7 +286,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$PinSuccessImpl);
   }
@@ -392,7 +413,7 @@ class _$PinFailureImpl implements _PinFailure {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinFailureImpl &&
@@ -594,7 +615,7 @@ class _$FingerprintImpl extends _Fingerprint {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FingerprintImpl &&
@@ -750,7 +771,7 @@ class _$EventCaptureImpl implements _EventCapture {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventCaptureImpl &&
@@ -900,7 +921,7 @@ class _$EventCompleteImpl implements _EventComplete {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventCompleteImpl &&
@@ -1040,7 +1061,7 @@ class _$EventErrorImpl implements _EventError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventErrorImpl &&
@@ -1274,7 +1295,7 @@ class _$FidoCredentialImpl implements _FidoCredential {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FidoCredentialImpl &&

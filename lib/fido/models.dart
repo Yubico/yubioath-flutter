@@ -27,7 +27,8 @@ class FidoState with _$FidoState {
 
   factory FidoState(
       {required Map<String, dynamic> info,
-      required bool unlocked}) = _FidoState;
+      required bool unlocked,
+      @Default(true) bool initialized}) = _FidoState;
 
   factory FidoState.fromJson(Map<String, dynamic> json) =>
       _$FidoStateFromJson(json);

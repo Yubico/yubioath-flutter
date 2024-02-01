@@ -34,7 +34,8 @@ data class Session(
     @SerialName("remembered")
     val isRemembered: Boolean,
     @SerialName("locked")
-    val isLocked: Boolean
+    val isLocked: Boolean,
+    val initialized: Boolean
 ) {
     @SerialName("keystore")
     @Suppress("unused")
@@ -50,6 +51,18 @@ data class Session(
         ),
         oathSession.isAccessKeySet,
         isRemembered,
-        oathSession.isLocked
+        oathSession.isLocked,
+        initialized = true
     )
+
+    companion object {
+        val uninitialized = Session(
+            deviceId = "",
+            version = Version(0, 0, 0),
+            isAccessKeySet = false,
+            isRemembered = false,
+            isLocked = false,
+            initialized = false
+        )
+    }
 }

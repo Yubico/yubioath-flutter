@@ -40,7 +40,8 @@ class SerializationTest {
         Version(1, 2, 3),
         isAccessKeySet = false,
         isRemembered = false,
-        isLocked = false
+        isLocked = false,
+        initialized = true
     )
 
     @Test

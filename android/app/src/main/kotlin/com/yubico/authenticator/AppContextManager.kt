@@ -16,12 +16,37 @@
 
 package com.yubico.authenticator
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.yubico.yubikit.core.YubiKeyDevice
 
 /**
  * Provides behavior to run when a YubiKey is inserted/tapped for a specific view of the app.
  */
-interface AppContextManager {
-    suspend fun processYubiKey(device: YubiKeyDevice)
-    fun dispose()
+abstract class AppContextManager(
+    private val lifecycleOwner: LifecycleOwner
+) {
+    abstract suspend fun processYubiKey(device: YubiKeyDevice)
+
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onPause(owner: LifecycleOwner) {
+            onPause()
+        }
+
+        override fun onResume(owner: LifecycleOwner) {
+            onResume()
+        }
+    }
+
+    init {
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+    }
+
+    open fun dispose() {
+        lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+    }
+
+    open fun onPause() {}
+
+    open fun onResume() {}
 }

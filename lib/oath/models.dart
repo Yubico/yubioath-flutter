@@ -110,6 +110,7 @@ class OathState with _$OathState {
     required bool remembered,
     required bool locked,
     required KeystoreState keystore,
+    @Default(true) bool initialized,
   }) = _OathState;
 
   factory OathState.fromJson(Map<String, dynamic> json) =>

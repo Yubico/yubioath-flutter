@@ -19,6 +19,7 @@ package com.yubico.authenticator.fido
 import androidx.lifecycle.viewModelScope
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
+import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.FidoResetState
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
@@ -35,7 +36,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class FidoResetHelper(
-    private val appViewModel: MainViewModel,
+    private val deviceManager: DeviceManager,
     private val fidoViewModel: FidoViewModel,
     private val connectionHelper: FidoConnectionHelper,
     private val pinStore: FidoPinStore
@@ -49,9 +50,10 @@ class FidoResetHelper(
 
     suspend fun reset(): String {
         try {
+            deviceManager.clearDeviceInfoOnDisconnect = false
             inProgress = true
             fidoViewModel.updateResetState(FidoResetState.Remove)
-            val usb = appViewModel.connectedYubiKey.value != null
+            val usb = deviceManager.isUsbKeyConnected()
             if (usb) {
                 resetOverUSB()
             } else {
@@ -62,8 +64,8 @@ class FidoResetHelper(
             logger.debug("FIDO reset cancelled")
         } finally {
             inProgress = false
-            if (appViewModel.connectedYubiKey.value == null) {
-                appViewModel.setDeviceInfo(null)
+            deviceManager.clearDeviceInfoOnDisconnect = true
+            if (!deviceManager.isUsbKeyConnected()) {
                 fidoViewModel.setSessionState(null)
                 fidoViewModel.updateCredentials(emptyList())
             }
@@ -81,7 +83,7 @@ class FidoResetHelper(
     private suspend fun waitForUsbDisconnect() = suspendCoroutine { continuation ->
         coroutineScope.launch {
             cancelReset = false
-            while (appViewModel.connectedYubiKey.value != null) {
+            while (deviceManager.isUsbKeyConnected()) {
                 if (cancelReset) {
                     logger.debug("Reset was cancelled")
                     continuation.resumeWithException(CancellationException())
@@ -98,7 +100,7 @@ class FidoResetHelper(
         coroutineScope.launch {
             fidoViewModel.updateResetState(FidoResetState.Insert)
             cancelReset = false
-            while (appViewModel.connectedYubiKey.value == null) {
+            while (!deviceManager.isUsbKeyConnected()) {
                 if (cancelReset) {
                     logger.debug("Reset was cancelled")
                     continuation.resumeWithException(CancellationException())
@@ -111,44 +113,44 @@ class FidoResetHelper(
         }
     }
 
-
     private suspend fun resetAfterTouch() = suspendCoroutine { continuation ->
         coroutineScope.launch(Dispatchers.Main) {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             logger.debug("Waiting for touch")
-            connectionHelper.useSessionUsb(appViewModel.connectedYubiKey.value!!) { fidoSession ->
-                resetCommandState = CommandState()
-                try {
-                    doReset(fidoSession)
-                    continuation.resume(Unit)
-                } catch (e: CtapException) {
-                    when (e.ctapError) {
-                        CtapException.ERR_KEEPALIVE_CANCEL -> {
-                            logger.debug("Received ERR_KEEPALIVE_CANCEL during FIDO reset")
+            deviceManager.withKey { usbYubiKeyDevice ->
+                connectionHelper.useSessionUsb(usbYubiKeyDevice) { fidoSession ->
+                    resetCommandState = CommandState()
+                    try {
+                        doReset(fidoSession)
+                        continuation.resume(Unit)
+                    } catch (e: CtapException) {
+                        when (e.ctapError) {
+                            CtapException.ERR_KEEPALIVE_CANCEL -> {
+                                logger.debug("Received ERR_KEEPALIVE_CANCEL during FIDO reset")
+                            }
+
+                            CtapException.ERR_ACTION_TIMEOUT -> {
+                                logger.debug("Received ERR_ACTION_TIMEOUT during FIDO reset")
+                            }
+
+                            else -> {
+                                logger.error("Received CtapException during FIDO reset: ", e)
+                            }
                         }
 
-                        CtapException.ERR_ACTION_TIMEOUT -> {
-                            logger.debug("Received ERR_ACTION_TIMEOUT during FIDO reset")
-                        }
-
-                        else -> {
-                            logger.error("Received CtapException during FIDO reset: ", e)
-                        }
+                        continuation.resumeWithException(CancellationException())
+                    } catch (e: IOException) {
+                        // communication error, key was removed?
+                        logger.error("IOException during FIDO reset: ", e)
+                        // treat it as cancellation
+                        continuation.resumeWithException(CancellationException())
+                    } finally {
+                        resetCommandState = null
                     }
-
-                    continuation.resumeWithException(CancellationException())
-                } catch (e: IOException) {
-                    // communication error, key was removed?
-                    logger.error("IOException during FIDO reset: ", e)
-                    // treat it as cancellation
-                    continuation.resumeWithException(CancellationException())
-                } finally {
-                    resetCommandState = null
                 }
             }
         }
     }
-
 
     private suspend fun resetOverUSB() {
         waitForUsbDisconnect()
@@ -186,5 +188,4 @@ class FidoResetHelper(
     companion object {
         private val logger = LoggerFactory.getLogger(FidoResetHelper::class.java)
     }
-
 }

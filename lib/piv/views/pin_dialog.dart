@@ -28,7 +28,6 @@ import '../state.dart';
 
 class PinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-
   const PinDialog(this.devicePath, {super.key});
 
   @override

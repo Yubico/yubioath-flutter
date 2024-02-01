@@ -104,6 +104,12 @@ class AndroidSubPageNotifier extends CurrentAppNotifier {
   void _handleSubPage(Application subPage) async {
     await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
   }
+
+  @override
+  void notifyDeviceChanged(YubiKeyData? data) {
+    super.notifyDeviceChanged(data);
+    _handleSubPage(state);
+  }
 }
 
 class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
