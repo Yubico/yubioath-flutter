@@ -179,7 +179,7 @@ class _$SuccessImpl implements Success {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SuccessImpl &&
@@ -358,7 +358,7 @@ class _$SignalImpl implements Signal {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SignalImpl &&
@@ -547,7 +547,7 @@ class _$RpcErrorImpl implements RpcError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$RpcErrorImpl &&
@@ -773,7 +773,7 @@ class _$RpcStateImpl implements _RpcState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$RpcStateImpl &&
