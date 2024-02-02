@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/models.dart';
@@ -302,12 +303,38 @@ extension OathFunctions on WidgetTester {
 
   /// Factory reset OATH application
   Future<void> resetOATH() async {
+
     // TODO: Implement this using new Reset Dialog
-    await tapActionIconButton();
+
+    /// 1. instead of tapping actioniconbutton, first click navigation
+    await openDrawer();
     await shortWait();
-    //await tap(find.byKey(keys.resetAction));
-    await shortWait();
-    await tap(find.text('Reset'));
+
+    //     await tapActionIconButton();
+    // Future<void> tapActionIconButton() async {
+    //   await tap(findActionIconButton());
+    //   await pump(const Duration(milliseconds: 500));
+    // }
+
+    /// 2. then click the meatball button+'Factory reset' for correct S/N
+    // stealing some of startUp to get serialnumber check:
+    await collectYubiKeyInformation();
+    final approvedSerialNumbers = await getApprovedSerialNumbers();
+
+    if (approvedSerialNumbers.contains(yubiKeySerialNumber)) {
+      // this does not work, yubikeyPopupMenuButton probably wrong!?
+      await tap(find.byKey(yubikeyPopupMenuButton).hitTestable());
+      await shortWait();
+      await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
+      await longWait();
+    }
+
+    /// 3. then toggle 'OATH' in the 'Factory reset' reset_dialog.dart
+    await tap(find.byKey(factoryResetPickResetOath));
+    await longWait();
+
+    /// 4. Click reset TextButton: done
+    await tap(find.byKey(factoryResetReset));
     await shortWait();
   }
 
