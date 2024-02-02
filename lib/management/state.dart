@@ -37,4 +37,6 @@ abstract class ManagementStateNotifier
     int challengeResponseTimeout = 0,
     int? autoEjectTimeout,
   });
+
+  Future<void> deviceReset();
 }

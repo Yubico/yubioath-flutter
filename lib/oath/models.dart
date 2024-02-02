@@ -103,6 +103,8 @@ class OathPair with _$OathPair {
 
 @freezed
 class OathState with _$OathState {
+  const OathState._();
+
   factory OathState(
     String deviceId,
     Version version, {
@@ -111,6 +113,9 @@ class OathState with _$OathState {
     required bool locked,
     required KeystoreState keystore,
   }) = _OathState;
+
+  int? get capacity =>
+      version.isAtLeast(4) ? (version.isAtLeast(5, 7) ? 64 : 32) : null;
 
   factory OathState.fromJson(Map<String, dynamic> json) =>
       _$OathStateFromJson(json);

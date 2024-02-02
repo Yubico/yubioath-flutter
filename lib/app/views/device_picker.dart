@@ -405,7 +405,12 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             contentPadding: EdgeInsets.zero,
           ),
         ),
-      if (data != null && node == data.node)
+      if (data != null &&
+          node == data.node &&
+          resetCapabilities.any((c) =>
+              c.value &
+                  (data.info.supportedCapabilities[node!.transport] ?? 0) !=
+              0))
         PopupMenuItem(
           onTap: () {
             showBlurDialog(

@@ -39,7 +39,7 @@ Widget oathBuildActions(
   int? used,
 }) {
   final l10n = AppLocalizations.of(context)!;
-  final capacity = oathState.version.isAtLeast(4) ? 32 : null;
+  final capacity = oathState.capacity;
 
   return Column(
     children: [
