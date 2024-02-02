@@ -23,6 +23,7 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
@@ -31,17 +32,20 @@ import '../../management/state.dart';
 import '../../oath/state.dart';
 import '../../piv/state.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../features.dart' as features;
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 
 final _log = Logger('fido.views.reset_dialog');
 
-const resetCapabilities = [
-  Capability.oath,
-  Capability.fido2,
-  Capability.piv,
-];
+List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
+      if (hasFeature(features.oath)) Capability.oath,
+      if (isDesktop) ...{
+        if (hasFeature(features.fido)) Capability.fido2,
+        if (hasFeature(features.piv)) Capability.piv,
+      }
+    ];
 
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
@@ -77,6 +81,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final hasFeature = ref.watch(featureProvider);
     final supported =
         widget.data.info.supportedCapabilities[widget.data.node.transport] ?? 0;
     final enabled = widget
@@ -187,7 +192,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             if (!globalReset)
               SegmentedButton<Capability>(
                 emptySelectionAllowed: true,
-                segments: resetCapabilities
+                segments: getResetCapabilities(hasFeature)
                     .where((c) => supported & c.value != 0)
                     .map((c) => ButtonSegment(
                           value: c,
