@@ -63,7 +63,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
 
-    private val nfcConfiguration = NfcConfiguration()
+    private val nfcConfiguration = NfcConfiguration().timeout(2000)
 
     private var hasNfc: Boolean = false
 
