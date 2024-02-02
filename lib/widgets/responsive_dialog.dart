@@ -76,6 +76,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         ? l10n.s_close
         : l10n.s_cancel;
     return PopScope(
+      canPop: widget.allowCancel,
       child: AlertDialog(
         title: widget.title,
         titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
@@ -87,10 +88,12 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         ),
         actions: [
           TextButton(
+            onPressed: widget.allowCancel
+                ? () {
+                    Navigator.of(context).pop();
+                  }
+                : null,
             child: Text(cancelText),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
           ),
           ...widget.actions
         ],
