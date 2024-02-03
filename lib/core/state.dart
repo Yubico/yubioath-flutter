@@ -100,6 +100,10 @@ class FeatureFlagsNotifier extends StateNotifier<Map<String, bool>> {
     const falsey = [0, false, null];
     state = {for (final k in config.keys) k: !falsey.contains(config[k])};
   }
+
+  void setFeature(Feature feature, dynamic value) {
+    state = {...state, feature.path: value};
+  }
 }
 
 final featureProvider = Provider<FeatureProvider>((ref) {

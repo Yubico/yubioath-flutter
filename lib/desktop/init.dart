@@ -33,7 +33,6 @@ import 'package:window_manager/window_manager.dart';
 import '../app/app.dart';
 import '../app/logging.dart';
 import '../app/message.dart';
-import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
@@ -184,15 +183,6 @@ Future<Widget> initialize(List<String> argv) async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(implementedApps([
-        Application.accounts,
-        Application.webauthn,
-        Application.fingerprints,
-        Application.passkeys,
-        Application.certificates,
-        Application.management,
-        Application.slots
-      ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(

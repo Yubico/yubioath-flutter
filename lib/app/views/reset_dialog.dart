@@ -41,10 +41,8 @@ final _log = Logger('fido.views.reset_dialog');
 
 List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
       if (hasFeature(features.oath)) Capability.oath,
-      if (isDesktop) ...{
-        if (hasFeature(features.fido)) Capability.fido2,
-        if (hasFeature(features.piv)) Capability.piv,
-      }
+      if (hasFeature(features.fido)) Capability.fido2,
+      if (hasFeature(features.piv)) Capability.piv,
     ];
 
 class ResetDialog extends ConsumerStatefulWidget {
@@ -56,7 +54,6 @@ class ResetDialog extends ConsumerStatefulWidget {
 }
 
 class _ResetDialogState extends ConsumerState<ResetDialog> {
-  // TODO: Capabilities based on enabled/supported. Feature checks.
   Capability? _application;
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;

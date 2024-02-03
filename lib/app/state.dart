@@ -38,29 +38,24 @@ const officialLocales = [
   Locale('en', ''),
 ];
 
-// Override this to alter the set of supported apps.
-final supportedAppsProvider =
-    Provider<List<Application>>(implementedApps(Application.values));
-
 extension on Application {
   Feature get _feature => switch (this) {
         Application.accounts => features.oath,
         Application.webauthn => features.fido,
         Application.passkeys => features.fido,
-        Application.fingerprints => features.fido,
+        Application.fingerprints => features.fingerprints,
         Application.slots => features.otp,
         Application.certificates => features.piv,
         Application.management => features.management,
-        Application.openpgp => features.openpgp,
-        Application.hsmauth => features.oath,
       };
 }
 
-List<Application> Function(Ref) implementedApps(List<Application> apps) =>
-    (ref) {
-      final hasFeature = ref.watch(featureProvider);
-      return apps.where((app) => hasFeature(app._feature)).toList();
-    };
+final supportedAppsProvider = Provider<List<Application>>(
+  (ref) {
+    final hasFeature = ref.watch(featureProvider);
+    return Application.values.where((app) => hasFeature(app._feature)).toList();
+  },
+);
 
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(

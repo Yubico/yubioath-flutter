@@ -34,32 +34,13 @@ enum Application {
   webauthn([Capability.u2f]),
   fingerprints([Capability.fido2]),
   passkeys([Capability.fido2]),
-  slots([Capability.otp]),
   certificates([Capability.piv]),
-  openpgp([Capability.openpgp]),
-  hsmauth([Capability.hsmauth]),
+  slots([Capability.otp]),
   management();
 
   final List<Capability> capabilities;
 
-  List<Capability> getCapabilities() {
-    return capabilities;
-  }
-
   const Application([this.capabilities = const []]);
-
-  bool _inCapabilities(int capabilities) => switch (this) {
-        Application.accounts => Capability.oath.value & capabilities != 0,
-        Application.webauthn => Capability.u2f.value & capabilities != 0 &&
-            Capability.fido2.value & capabilities == 0,
-        Application.fingerprints => Capability.fido2.value & capabilities != 0,
-        Application.passkeys => Capability.fido2.value & capabilities != 0,
-        Application.slots => Capability.otp.value & capabilities != 0,
-        Application.certificates => Capability.piv.value & capabilities != 0,
-        Application.openpgp => Capability.openpgp.value & capabilities != 0,
-        Application.hsmauth => Capability.hsmauth.value & capabilities != 0,
-        Application.management => true,
-      };
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
         Application.accounts => l10n.s_accounts,
@@ -81,8 +62,7 @@ enum Application {
       return available ? Availability.enabled : Availability.unsupported;
     }
 
-    // TODO: Require credman for passkeys
-
+    // TODO: Require credman for passkeys?
     if (this == Application.fingerprints) {
       if (!const {FormFactor.usbABio, FormFactor.usbCBio}
           .contains(data.info.formFactor)) {
@@ -95,11 +75,21 @@ enum Application {
     final int enabled =
         data.info.config.enabledCapabilities[data.node.transport] ?? 0;
 
-    return _inCapabilities(supported)
-        ? (_inCapabilities(enabled)
-            ? Availability.enabled
-            : Availability.disabled)
-        : Availability.unsupported;
+    // Don't show WebAuthn if we have FIDO2
+    if (this == Application.webauthn &&
+        Capability.fido2.value & supported != 0) {
+      return Availability.unsupported;
+    }
+
+    // Check for all bits in capabilities:
+    final bitmask = capabilities.map((c) => c.value).sum;
+    if (supported & bitmask == bitmask) {
+      if (enabled & bitmask == bitmask) {
+        return Availability.enabled;
+      }
+      return Availability.disabled;
+    }
+    return Availability.unsupported;
   }
 }
 
