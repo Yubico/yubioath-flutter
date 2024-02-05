@@ -207,6 +207,7 @@ extension on OathCredential {
 }
 
 const String _steamCharTable = '23456789BCDFGHJKMNPQRTVWXY';
+
 String _formatSteam(String response) {
   final offset = int.parse(response.substring(response.length - 1), radix: 16);
   var number =
@@ -225,6 +226,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
+
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
       : super();
 
