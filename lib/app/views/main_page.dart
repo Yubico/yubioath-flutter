@@ -19,15 +19,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../android/app_methods.dart';
-import '../../android/oath/state.dart';
-import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
 import '../../management/views/management_screen.dart';
+import '../../oath/state.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
@@ -103,7 +101,7 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
-              ref.read(androidAddAccountFlowProvider)(context);
+              ref.read(addOathAccount)(context);
             },
           ),
         );

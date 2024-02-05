@@ -26,6 +26,13 @@ import '../app/state.dart';
 import '../core/state.dart';
 import 'models.dart';
 
+final addOathAccount = Provider<
+    void Function(
+      BuildContext, [
+      DevicePath? devicePath,
+      OathState? oathState,
+    ])>((ref) => throw UnimplementedError());
+
 final searchProvider =
     StateNotifierProvider<SearchNotifier, String>((ref) => SearchNotifier());
 

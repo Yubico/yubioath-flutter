@@ -64,6 +64,7 @@ Future<Widget> initialize() async {
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(androidDeviceDataProvider),
       ),
+      addOathAccount.overrideWith((ref) => ref.read(androidAddOathAccount)),
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),

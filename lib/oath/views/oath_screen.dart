@@ -22,7 +22,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../android/oath/state.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -45,7 +44,6 @@ import 'account_dialog.dart';
 import 'account_helper.dart';
 import 'account_list.dart';
 import 'actions.dart';
-import 'add_account_dialog.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
@@ -165,17 +163,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             ActionChip(
               label: Text(l10n.s_add_account),
               onPressed: () async {
-                if (isAndroid) {
-                  ref.read(androidAddAccountFlowProvider)(context);
-                } else {
-                  await showBlurDialog(
-                    context: context,
-                    builder: (context) => AddAccountDialog(
-                      widget.devicePath,
-                      widget.oathState,
-                    ),
-                  );
-                }
+                ref.read(addOathAccount)(
+                  context,
+                  widget.devicePath,
+                  widget.oathState,
+                );
               },
               avatar: const Icon(Icons.person_add_alt_1_outlined),
             )
