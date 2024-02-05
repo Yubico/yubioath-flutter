@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../android/app_methods.dart';
+import '../../android/oath/state.dart';
 import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
@@ -102,22 +103,7 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
-              final withContext = ref.read(withContextProvider);
-              final qrScanner = ref.read(qrScannerProvider);
-              if (qrScanner != null) {
-                try {
-                  final qrData = await qrScanner.scanQr();
-                  await AndroidQrScanner.handleScannedData(
-                      qrData, withContext, qrScanner, l10n);
-                } on CancellationException catch (_) {
-                  // ignored - user cancelled
-                  return;
-                }
-              } else {
-                // no QR scanner - enter data manually
-                await AndroidQrScanner.showAccountManualEntryDialog(
-                    withContext, l10n);
-              }
+              ref.read(androidAddAccountFlowProvider)(context);
             },
           ),
         );

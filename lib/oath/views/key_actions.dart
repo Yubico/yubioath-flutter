@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../android/oath/state.dart';
 import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -59,17 +60,7 @@ Widget oathBuildActions(
                 ? (context) async {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                     if (isAndroid) {
-                      final withContext = ref.read(withContextProvider);
-                      final qrScanner = ref.read(qrScannerProvider);
-                      if (qrScanner != null) {
-                        final qrData = await qrScanner.scanQr();
-                        await AndroidQrScanner.handleScannedData(
-                            qrData, withContext, qrScanner, l10n);
-                      } else {
-                        // no QR scanner - enter data manually
-                        await AndroidQrScanner.showAccountManualEntryDialog(
-                            withContext, l10n);
-                      }
+                      ref.read(androidAddAccountFlowProvider)(context);
                     } else {
                       await showBlurDialog(
                         context: context,
