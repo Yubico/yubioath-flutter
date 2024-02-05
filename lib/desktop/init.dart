@@ -233,17 +233,18 @@ Future<Widget> initialize(List<String> argv) async {
           // Load feature flags, if they exist
           featureFile.exists().then(
             (exists) async {
+              final featureFlag = ref.read(featureFlagProvider.notifier);
               if (exists) {
                 try {
                   final featureConfig =
                       jsonDecode(await featureFile.readAsString());
-                  ref
-                      .read(featureFlagProvider.notifier)
-                      .loadConfig(featureConfig);
+                  featureFlag.loadConfig(featureConfig);
                 } catch (error) {
                   _log.error('Failed to parse feature flags', error);
                 }
               }
+              // Hardcode features here:
+              // featureFlag.setFeature(feature, false);
             },
           );
 

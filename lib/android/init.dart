@@ -87,12 +87,16 @@ Future<Widget> initialize() async {
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
-          // Hardcoded feature set
-          ref.read(featureFlagProvider.notifier)
-            ..setFeature(features.fido, false)
-            ..setFeature(features.piv, false)
-            ..setFeature(features.otp, false)
-            ..setFeature(features.management, false);
+          Timer.run(() {
+            ref.read(featureFlagProvider.notifier)
+              // TODO: Load feature flags from file/config?
+              //..loadConfig(config)
+              // Disable unimplemented feature
+              ..setFeature(features.fido, false)
+              ..setFeature(features.piv, false)
+              ..setFeature(features.otp, false)
+              ..setFeature(features.management, false);
+          });
 
           // activates window state provider
           ref.read(androidWindowStateProvider);
