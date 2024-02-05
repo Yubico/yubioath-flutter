@@ -94,8 +94,6 @@ extension on Application {
         Application.slots => Icons.touch_app_outlined,
         Application.certificates => Icons.approval_outlined,
         Application.management => Icons.construction_outlined,
-        Application.openpgp => Icons.key_outlined,
-        Application.hsmauth => Icons.key_outlined,
       };
 
   IconData get _filledIcon => switch (this) {
@@ -106,8 +104,6 @@ extension on Application {
         Application.slots => Icons.touch_app,
         Application.certificates => Icons.approval,
         Application.management => Icons.construction,
-        Application.openpgp => Icons.key,
-        Application.hsmauth => Icons.key,
       };
 
   Key get _key => switch (this) {
@@ -117,9 +113,7 @@ extension on Application {
         Application.fingerprints => fidoFingerprintsAppDrawer,
         Application.slots => otpAppDrawer,
         Application.certificates => pivAppDrawer,
-        Application.hsmauth => hsmauthAppDrawer,
         Application.management => managementAppDrawer,
-        Application.openpgp => openpgpAppDrawer,
       };
 }
 

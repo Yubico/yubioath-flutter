@@ -133,7 +133,7 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
-              final capabilities = app.getCapabilities();
+              final capabilities = app.capabilities;
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(

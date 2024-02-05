@@ -25,8 +25,8 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/app.dart';
+import '../app/features.dart' as features;
 import '../app/logging.dart';
-import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
@@ -53,9 +53,6 @@ Future<Widget> initialize() async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(implementedApps([
-        Application.accounts,
-      ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
       attachedDevicesProvider.overrideWith(
@@ -90,6 +87,17 @@ Future<Widget> initialize() async {
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
+          Timer.run(() {
+            ref.read(featureFlagProvider.notifier)
+              // TODO: Load feature flags from file/config?
+              //..loadConfig(config)
+              // Disable unimplemented feature
+              ..setFeature(features.fido, false)
+              ..setFeature(features.piv, false)
+              ..setFeature(features.otp, false)
+              ..setFeature(features.management, false);
+          });
+
           // activates window state provider
           ref.read(androidWindowStateProvider);
 
