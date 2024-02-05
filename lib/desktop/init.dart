@@ -214,7 +214,6 @@ Future<Widget> initialize(List<String> argv) async {
         (ref) => ref.watch(desktopDeviceDataProvider),
       ),
       // OATH
-      addOathAccount.overrideWith((ref) => ref.read(desktopAddOathAccount)),
       oathStateProvider.overrideWithProvider(desktopOathState.call),
       credentialListProvider
           .overrideWithProvider(desktopOathCredentialListProvider.call),

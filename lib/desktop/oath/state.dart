@@ -24,29 +24,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../../oath/views/add_account_dialog.dart';
 import '../rpc.dart';
 import '../state.dart';
 
 final _log = Logger('desktop.oath.state');
-
-final desktopAddOathAccount = Provider<
-    void Function(
-      BuildContext, [
-      DevicePath? devicePath,
-      OathState? oathState,
-    ])>((ref) => (context, [devicePath, oathState]) async {
-      await showBlurDialog(
-        context: context,
-        builder: (context) => AddAccountDialog(devicePath, oathState),
-      );
-    });
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(

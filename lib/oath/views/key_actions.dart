@@ -26,7 +26,7 @@ import '../features.dart' as features;
 import '../icon_provider/icon_pack_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
-import '../state.dart';
+import '../utils.dart';
 import 'manage_password_dialog.dart';
 
 Widget oathBuildActions(
@@ -56,7 +56,7 @@ Widget oathBuildActions(
             onTap: used != null && (capacity == null || capacity > used)
                 ? (context) async {
                     Navigator.of(context).popUntil((route) => route.isFirst);
-                    ref.read(addOathAccount)(context, devicePath, oathState);
+                    addOathAccount(context, ref, devicePath, oathState);
                   }
                 : null),
       ]),

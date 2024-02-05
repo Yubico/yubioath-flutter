@@ -32,36 +32,10 @@ import '../../exception/cancellation_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../qr_scanner/qr_scanner_provider.dart';
 
 final _log = Logger('android.oath.state');
 
 const _methods = MethodChannel('android.oath.methods');
-
-// handles adding account on Android
-final androidAddOathAccount = Provider<
-    void Function(
-      BuildContext, [
-      DevicePath? devicePath,
-      OathState? oathState,
-    ])>((ref) => (context, [devicePath, oathState]) async {
-      final l10n = AppLocalizations.of(context)!;
-      final withContext = ref.read(withContextProvider);
-      final qrScanner = ref.read(qrScannerProvider);
-      if (qrScanner != null) {
-        try {
-          final qrData = await qrScanner.scanQr();
-          await AndroidQrScanner.handleScannedData(
-              qrData, withContext, qrScanner, l10n);
-        } on CancellationException catch (_) {
-          //ignored - user cancelled
-          return;
-        }
-      } else {
-        // no QR scanner - enter data manually
-        await AndroidQrScanner.showAccountManualEntryDialog(withContext, l10n);
-      }
-    });
 
 final androidOathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(

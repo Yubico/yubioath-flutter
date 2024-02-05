@@ -40,6 +40,7 @@ import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import '../utils.dart';
 import 'account_dialog.dart';
 import 'account_helper.dart';
 import 'account_list.dart';
@@ -163,8 +164,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             ActionChip(
               label: Text(l10n.s_add_account),
               onPressed: () async {
-                ref.read(addOathAccount)(
+                addOathAccount(
                   context,
+                  ref,
                   widget.devicePath,
                   widget.oathState,
                 );

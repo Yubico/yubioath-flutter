@@ -25,7 +25,7 @@ import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
 import '../../management/views/management_screen.dart';
-import '../../oath/state.dart';
+import '../../oath/utils.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
@@ -101,7 +101,7 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
-              ref.read(addOathAccount)(context);
+              addOathAccount(context, ref);
             },
           ),
         );
