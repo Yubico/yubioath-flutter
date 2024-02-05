@@ -87,7 +87,7 @@ dev_dependencies:
   flutter_lints: ^3.0.1
 
   build_runner: ^2.4.8
-  freezed: ^2.4.6
+  freezed: ^2.4.7
   json_serializable: ^6.7.1
   analyzer:
   analyzer_plugin:
