@@ -44,6 +44,7 @@ class AppFailurePage extends ConsumerWidget {
     bool centered = true;
     List<Capability>? capabilities;
     List<Widget> actions = [];
+    String? footnote;
 
     if (reason is RpcError) {
       if (reason.status == 'connection-error') {
@@ -71,6 +72,7 @@ class AppFailurePage extends ConsumerWidget {
               actions = [
                 const ElevateFidoButtons(),
               ];
+              footnote = l10n.l_ms_store_permission_note;
             }
             break;
           default:
@@ -87,6 +89,7 @@ class AppFailurePage extends ConsumerWidget {
       graphic: graphic,
       header: header,
       message: message,
+      footnote: footnote,
       actionsBuilder: (context, expanded) => actions,
     );
   }

@@ -46,6 +46,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           actionsBuilder: (context, expanded) => [
             const ElevateFidoButtons(),
           ],
+          footnote: l10n.l_ms_store_permission_note,
         );
       }
     }

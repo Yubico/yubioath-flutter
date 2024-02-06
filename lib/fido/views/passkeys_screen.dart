@@ -117,7 +117,8 @@ class _FidoLockedPage extends ConsumerWidget {
             : l10n.l_ready_to_use,
         message: isBio
             ? l10n.p_setup_fingerprints_desc
-            : '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+            : l10n.l_register_sk_on_websites,
+        footnote: isBio ? null : l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions && !isBio ? _buildActions : null,
         keyActionsBadge: !isBio ? fidoShowActionsNotifier(state) : false,
       );
@@ -128,8 +129,8 @@ class _FidoLockedPage extends ConsumerWidget {
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
+        footnote: l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
       );
@@ -200,8 +201,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
+        footnote: l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
@@ -221,13 +222,13 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
         keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        footnote: l10n.l_non_passkeys_note,
       );
     }
 
@@ -270,6 +271,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
+        footnote: l10n.l_non_passkeys_note,
         detailViewBuilder: credential != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -349,26 +351,18 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 }),
               }
             },
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ...credentials.map(
-                (cred) => _CredentialListItem(
-                  cred,
-                  expanded: expanded,
-                  selected: _selected == cred,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Opacity(
-                  opacity: 0.6,
-                  child: Text(
-                    l10n.l_non_passkeys_note,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ),
-            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: credentials
+                  .map(
+                    (cred) => _CredentialListItem(
+                      cred,
+                      expanded: expanded,
+                      selected: _selected == cred,
+                    ),
+                  )
+                  .toList(),
+            ),
           );
         },
       ),

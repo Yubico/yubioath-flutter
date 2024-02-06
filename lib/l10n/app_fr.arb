@@ -604,6 +604,7 @@
     "s_admin_privileges_required": null,
     "p_elevated_permissions_required": "Gérer cet appareil demande des privilèges plus élevés.",
     "p_webauthn_elevated_permissions_required": "La gestion WebAuthn demande des privilèges plus élevés.",
+    "l_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator a besoin des permission d'utiliser la caméra pour scanner les QR code.",
 
     "@_qr_codes": {},

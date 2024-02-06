@@ -604,6 +604,7 @@
     "s_admin_privileges_required": null,
     "p_elevated_permissions_required": "Die Verwaltung dieses Geräts benötigt erhöhte Berechtigungen.",
     "p_webauthn_elevated_permissions_required": "WebAuthn-Verwaltung benötigt erhöhte Berechtigungen.",
+    "l_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator benötigt Zugriff auf die Kamera um QR-Codes aufnehmen zu können.",
 
     "@_qr_codes": {},
