@@ -44,7 +44,6 @@ import 'account_dialog.dart';
 import 'account_helper.dart';
 import 'account_list.dart';
 import 'actions.dart';
-import 'add_account_dialog.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
@@ -164,12 +163,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             ActionChip(
               label: Text(l10n.s_add_account),
               onPressed: () async {
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) => AddAccountDialog(
-                    widget.devicePath,
-                    widget.oathState,
-                  ),
+                await addOathAccount(
+                  context,
+                  ref,
+                  widget.devicePath,
+                  widget.oathState,
                 );
               },
               avatar: const Icon(Icons.person_add_alt_1_outlined),

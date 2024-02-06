@@ -71,8 +71,12 @@ Map<String, dynamic> _$$SlotMetadataImplToJson(_$SlotMetadataImpl instance) =>
 const _$KeyTypeEnumMap = {
   KeyType.rsa1024: 6,
   KeyType.rsa2048: 7,
+  KeyType.rsa3072: 5,
+  KeyType.rsa4096: 22,
   KeyType.eccp256: 17,
   KeyType.eccp384: 20,
+  KeyType.ed25519: 224,
+  KeyType.x25519: 225,
 };
 
 const _$PinPolicyEnumMap = {

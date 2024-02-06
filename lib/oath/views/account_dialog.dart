@@ -77,13 +77,14 @@ class AccountDialog extends ConsumerWidget {
             return renamed;
           }),
         if (hasFeature(features.accountsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (intent) async {
+          DeleteIntent<OathCredential>:
+              CallbackAction<DeleteIntent<OathCredential>>(
+                  onInvoke: (intent) async {
             final deleted =
                 await (Actions.invoke(context, intent) as Future<dynamic>?);
             // Pop the account dialog if deleted
-            final withContext = ref.read(withContextProvider);
             if (deleted == true) {
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
               });
             }

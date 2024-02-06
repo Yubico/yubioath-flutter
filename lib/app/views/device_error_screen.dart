@@ -40,7 +40,7 @@ class DeviceErrorScreen extends ConsumerWidget {
         final currentApp = ref.read(currentAppProvider);
         return MessagePage(
           title: currentApp.getDisplayName(l10n),
-          capabilities: currentApp.getCapabilities(),
+          capabilities: currentApp.capabilities,
           header: l10n.s_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [

@@ -328,6 +328,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       BuildContext context, WidgetRef ref, DeviceNode? node) {
     final l10n = AppLocalizations.of(context)!;
     final keyCustomizations = ref.watch(keyCustomizationManagerProvider);
+    final hasFeature = ref.watch(featureProvider);
     final hidden = ref.watch(_hiddenDevicesProvider);
 
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
@@ -405,7 +406,12 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             contentPadding: EdgeInsets.zero,
           ),
         ),
-      if (data != null && node == data.node)
+      if (data != null &&
+          node == data.node &&
+          getResetCapabilities(hasFeature).any((c) =>
+              c.value &
+                  (data.info.supportedCapabilities[node!.transport] ?? 0) !=
+              0))
         PopupMenuItem(
           onTap: () {
             showBlurDialog(

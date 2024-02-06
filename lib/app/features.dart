@@ -19,7 +19,7 @@ import '../core/state.dart';
 final oath = root.feature('oath');
 final fido = root.feature('fido');
 final piv = root.feature('piv');
-final management = root.feature('management');
-final openpgp = root.feature('openpgp');
-final hsmauth = root.feature('hsmauth');
 final otp = root.feature('otp');
+final management = root.feature('management');
+
+final fingerprints = fido.feature('fingerprints');

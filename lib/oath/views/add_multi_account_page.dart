@@ -222,7 +222,7 @@ class _OathAddMultiAccountPageState
     if (widget.state != null) {
       final credsToAdd =
           _credStates.values.where((element) => element.$1).length;
-      final capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
+      final capacity = widget.state!.capacity;
       return (credsToAdd > 0) &&
           (capacity == null || (_numCreds! + credsToAdd <= capacity));
     } else {

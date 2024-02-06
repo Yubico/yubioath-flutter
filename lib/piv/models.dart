@@ -28,6 +28,7 @@ const defaultKeyType = KeyType.eccp256;
 const defaultGenerateType = GenerateType.certificate;
 
 enum GenerateType {
+  // TODO: Add "publicKey"? Needed for X25519
   certificate,
   csr;
 
@@ -116,10 +117,18 @@ enum KeyType {
   rsa1024,
   @JsonValue(0x07)
   rsa2048,
+  @JsonValue(0x05)
+  rsa3072,
+  @JsonValue(0x16)
+  rsa4096,
   @JsonValue(0x11)
   eccp256,
   @JsonValue(0x14)
-  eccp384;
+  eccp384,
+  @JsonValue(0xe0)
+  ed25519,
+  @JsonValue(0xe1)
+  x25519;
 
   const KeyType();
 
