@@ -111,7 +111,7 @@ void main() {
       await tester.shortWait();
 
       // this writes and saves oath secret
-      await tester.enterText(find.byKey(secretField), "asdfasdf");
+      await tester.enterText(find.byKey(secretField), 'asdfasdf');
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
