@@ -22,6 +22,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart';
 import '../state.dart';
 
 class SwapSlotsDialog extends ConsumerWidget {
@@ -35,6 +36,7 @@ class SwapSlotsDialog extends ConsumerWidget {
       title: Text(l10n.s_swap_slots),
       actions: [
         TextButton(
+          key: swap,
             onPressed: () async {
               await ref.read(otpStateProvider(devicePath).notifier).swapSlots();
               await ref.read(withContextProvider)((context) async {

@@ -18,6 +18,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/otp/keys.dart';
 
 import 'utils/test_util.dart';
 
@@ -29,6 +30,135 @@ void main() {
     appTest('OTP menu items exist', (WidgetTester tester) async {
       await tester.tap(find.byKey(otpAppDrawer));
       await tester.shortWait();
+
+      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
+      await tester.shortWait();
+    });
+
+    appTest('Yubico OTP slot 1', (WidgetTester tester) async {
+      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
+      await tester.shortWait();
+
+      //verify "Slot 1 is empty"
+
+      // we are missing the right click on top of the correct slot
+
+      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
+      await tester.shortWait();
+
+      // this generates all the fields and saves yubiotp
+      await tester.tap(find.byKey(useSerial).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(generatePrivateId).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(generateSecretKey).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      //verify "Slot 1 is configured"
+    });
+
+    appTest('Challenge-Response slot 1', (WidgetTester tester) async {
+      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 1 is configured"
+
+      // we are missing the right click on top of the correct slot
+
+      await tester.tap(find.byKey(configureChalResp).hitTestable());
+      await tester.shortWait();
+
+      // this generates and saves chall-resp
+      await tester.tap(find.byKey(generateSecretKey).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 1 is configured"
+    });
+
+    appTest('Static Password slot 2', (WidgetTester tester) async {
+      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 2 is empty"
+
+      // we are missing the right click on top of the correct slot
+
+      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
+      await tester.shortWait();
+
+      // this generates and saves static password
+      await tester.tap(find.byKey(generateSecretKey).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 2 is configured"
+    });
+
+    appTest('OATH-HOTP slot 2', (WidgetTester tester) async {
+      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 2 is configured"
+
+      // we are missing the right click on top of the correct slot
+
+      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
+      await tester.shortWait();
+
+      // this writes and saves oath secret
+      await tester.enterText(find.byKey(secretField), "asdfasdf");
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 2 is configured"
+    });
+
+    appTest('Swap slots', (WidgetTester tester) async {
+      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 1 is configured"
+      // verify "Slot 2 is configured"
+
+      // taps swap
+      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(swapSlots).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(swap).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 1 is configured"
+      // verify "Slot 2 is configured"
+
+    });
+    appTest('Delete Credentials', (WidgetTester tester) async {
+      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 1 is configured"
+      // verify "Slot 2 is configured"
+
+      // we need to right click on slot 1
+      await tester.tap(find.byKey(deleteAction).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(deleteButton).hitTestable());
+      await tester.shortWait();
+
+      // we need to right click on slot 2
+      await tester.tap(find.byKey(deleteAction).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(deleteButton).hitTestable());
+      await tester.shortWait();
+
+      // verify "Slot 1 is empty"
+      // verify "Slot 2 is empty"
     });
   });
 }

@@ -20,6 +20,8 @@ const _prefix = 'otp.keys';
 const _keyAction = '$_prefix.actions';
 const _slotAction = '$_prefix.slot.actions';
 
+/// const getOtpSlotKey = '$_prefix.pick_otp_slot';
+
 // Key actions
 const swapSlots = Key('$_keyAction.swap_slots');
 
@@ -32,7 +34,12 @@ const deleteAction = Key('$_slotAction.delete');
 
 const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
+const swap = Key('$_prefix.swap');
 
 const secretField = Key('$_prefix.secret');
 const publicIdField = Key('$_prefix.public_id');
 const privateIdField = Key('$_prefix.private_id');
+
+const useSerial = Key('$_prefix.use_serial');
+const generatePrivateId = Key('$_prefix.generate_private_id');
+const generateSecretKey = Key('$_prefix.generate_secret_key');

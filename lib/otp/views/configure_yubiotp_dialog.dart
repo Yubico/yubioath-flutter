@@ -34,6 +34,7 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'overwrite_confirm_dialog.dart';
@@ -215,6 +216,7 @@ class _ConfigureYubiOtpDialogState
                       : null,
                   prefixIcon: const Icon(Icons.public_outlined),
                   suffixIcon: IconButton(
+                    key: useSerial,
                     tooltip: l10n.s_use_serial,
                     icon: const Icon(Icons.auto_awesome_outlined),
                     onPressed: (info?.serial != null)
@@ -250,6 +252,7 @@ class _ConfigureYubiOtpDialogState
                       : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
+                    key: generatePrivateId,
                     tooltip: l10n.s_generate_random,
                     icon: const Icon(Icons.refresh),
                     onPressed: () {
@@ -286,6 +289,7 @@ class _ConfigureYubiOtpDialogState
                       : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
+                    key: generateSecretKey,
                     tooltip: l10n.s_generate_random,
                     icon: const Icon(Icons.refresh),
                     onPressed: () {
