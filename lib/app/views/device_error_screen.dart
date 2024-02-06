@@ -21,6 +21,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../desktop/state.dart';
 import '../models.dart';
 import '../state.dart';
@@ -46,7 +47,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           actionsBuilder: (context, expanded) => [
             const ElevateFidoButtons(),
           ],
-          footnote: l10n.l_ms_store_permission_note,
+          footnote: isMicrosoftStore ? l10n.l_ms_store_permission_note : null,
         );
       }
     }

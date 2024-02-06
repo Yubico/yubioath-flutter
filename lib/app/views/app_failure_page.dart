@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
@@ -72,7 +73,9 @@ class AppFailurePage extends ConsumerWidget {
               actions = [
                 const ElevateFidoButtons(),
               ];
-              footnote = l10n.l_ms_store_permission_note;
+              if (isMicrosoftStore) {
+                footnote = l10n.l_ms_store_permission_note;
+              }
             }
             break;
           default:
