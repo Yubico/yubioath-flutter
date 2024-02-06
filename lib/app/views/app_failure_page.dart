@@ -23,8 +23,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
 import '../../management/models.dart';
-import '../message.dart';
 import '../state.dart';
+import 'elevate_fido_buttons.dart';
 import 'message_page.dart';
 
 class AppFailurePage extends ConsumerWidget {
@@ -69,31 +69,7 @@ class AppFailurePage extends ConsumerWidget {
               centered = false;
               graphic = null;
               actions = [
-                FilledButton.icon(
-                  label: Text(l10n.s_unlock),
-                  icon: const Icon(Icons.lock_open),
-                  onPressed: () async {
-                    final closeMessage = showMessage(
-                        context, l10n.l_elevating_permissions,
-                        duration: const Duration(seconds: 30));
-                    try {
-                      if (await ref.read(rpcProvider).requireValue.elevate()) {
-                        ref.invalidate(rpcProvider);
-                      } else {
-                        await ref.read(withContextProvider)(
-                          (context) async {
-                            showMessage(
-                              context,
-                              l10n.s_permission_denied,
-                            );
-                          },
-                        );
-                      }
-                    } finally {
-                      closeMessage();
-                    }
-                  },
-                ),
+                const ElevateFidoButtons(),
               ];
             }
             break;

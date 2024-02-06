@@ -596,9 +596,11 @@
 
     "@_permissions": {},
     "s_enable_nfc": "NFC aktivieren",
+    "s_request_access": null,
     "s_permission_denied": "Zugriff verweigert",
     "l_elevating_permissions": "Erhöhe Berechtigungen\u2026",
     "s_review_permissions": "Berechtigungen überprüfen",
+    "s_open_windows_settings": null,
     "s_admin_privileges_required": null,
     "p_elevated_permissions_required": "Die Verwaltung dieses Geräts benötigt erhöhte Berechtigungen.",
     "p_webauthn_elevated_permissions_required": "WebAuthn-Verwaltung benötigt erhöhte Berechtigungen.",

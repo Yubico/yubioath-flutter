@@ -596,9 +596,11 @@
 
     "@_permissions": {},
     "s_enable_nfc": "Activer le NFC",
+    "s_request_access": null,
     "s_permission_denied": "Permission refusée",
     "l_elevating_permissions": "Élevation des permissions\u2026",
     "s_review_permissions": "Révision des permissions",
+    "s_open_windows_settings": null,
     "s_admin_privileges_required": null,
     "p_elevated_permissions_required": "Gérer cet appareil demande des privilèges plus élevés.",
     "p_webauthn_elevated_permissions_required": "La gestion WebAuthn demande des privilèges plus élevés.",
