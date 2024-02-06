@@ -601,7 +601,7 @@
     "l_elevating_permissions": "Elevating permissions\u2026",
     "s_review_permissions": "Review permissions",
     "s_open_windows_settings": "Open Windows settings",
-    "s_admin_privileges_required": "Administrator privileges required",
+    "l_admin_privileges_required": "Administrator privileges required",
     "p_elevated_permissions_required": "Managing this device requires elevated privileges. Alternatively, you can use Windows Settings to manage FIDO configuration.",
     "p_webauthn_elevated_permissions_required": "WebAuthn management requires elevated privileges. Alternatively, you can use Windows Settings to manage FIDO configuration.",
     "l_ms_store_permission_note": "The Microsoft store version of the app may be unable to elevate permissions",

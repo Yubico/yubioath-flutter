@@ -66,7 +66,7 @@ class AppFailurePage extends ConsumerWidget {
               final currentApp = ref.read(currentAppProvider);
               title = currentApp.getDisplayName(l10n);
               capabilities = currentApp.capabilities;
-              header = l10n.s_admin_privileges_required;
+              header = l10n.l_admin_privileges_required;
               message = l10n.p_webauthn_elevated_permissions_required;
               centered = false;
               graphic = null;

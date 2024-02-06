@@ -601,7 +601,7 @@
     "l_elevating_permissions": "権限の昇格\u2026",
     "s_review_permissions": "権限の確認",
     "s_open_windows_settings": null,
-    "s_admin_privileges_required": null,
+    "l_admin_privileges_required": null,
     "p_elevated_permissions_required": "このデバイスを管理するには権限の昇格が必要です",
     "p_webauthn_elevated_permissions_required": "WebAuthn管理には権限の昇格が必要です",
     "l_ms_store_permission_note": null,

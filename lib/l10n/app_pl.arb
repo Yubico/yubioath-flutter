@@ -601,7 +601,7 @@
     "l_elevating_permissions": "Podnoszenie uprawnień\u2026",
     "s_review_permissions": "Przegląd uprawnień",
     "s_open_windows_settings": null,
-    "s_admin_privileges_required": "Wymagane uprawnienia administratora",
+    "l_admin_privileges_required": "Wymagane uprawnienia administratora",
     "p_elevated_permissions_required": "Zarządzanie tym urządzeniem wymaga podwyższonych uprawnień.",
     "p_webauthn_elevated_permissions_required": "Zarządzanie WebAuthn wymaga podwyższonych uprawnień.",
     "l_ms_store_permission_note": null,

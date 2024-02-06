@@ -42,7 +42,7 @@ class DeviceErrorScreen extends ConsumerWidget {
         return MessagePage(
           title: currentApp.getDisplayName(l10n),
           capabilities: currentApp.capabilities,
-          header: l10n.s_admin_privileges_required,
+          header: l10n.l_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [
             const ElevateFidoButtons(),
