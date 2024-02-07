@@ -303,19 +303,17 @@ extension OathFunctions on WidgetTester {
 
   /// Factory reset OATH application
   Future<void> resetOATH() async {
-    /// 1. open drawer if needed
-    await openDrawer();
+    final targetKey = approvedKeys[0]; // only reset approved keys!
+
+    /// 1. make sure we are using approved key
+    await switchToKey(targetKey);
     await shortWait();
 
-    /// 2. then click the meatball button+'Factory reset' for correct S/N
-    await collectYubiKeyInformation();
-    final approvedSerialNumbers = await getApprovedSerialNumbers();
-    if (approvedSerialNumbers.contains(yubiKeySerialNumber)) {
-      await tap(find.byKey(yubikeyPopupMenuButton).hitTestable());
-      await shortWait();
-      await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
-      await longWait();
-    }
+    /// 2. open the key menu
+    await tapPopupMenu(targetKey);
+    await shortWait();
+    await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
+    await longWait();
 
     /// 3. then toggle 'OATH' in the 'Factory reset' reset_dialog.dart
     await tap(find.byKey(factoryResetPickResetOath));
