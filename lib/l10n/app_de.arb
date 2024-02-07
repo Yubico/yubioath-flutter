@@ -469,6 +469,7 @@
     "l_certificate_exported": null,
     "l_import_file": null,
     "l_import_desc": null,
+    "l_import_nothing": null,
     "l_importing_file": null,
     "s_file_imported": null,
     "l_delete_certificate": null,
