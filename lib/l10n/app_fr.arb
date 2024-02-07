@@ -79,6 +79,7 @@
     "s_show_secret_key": null,
     "s_hide_secret_key": null,
     "s_private_key": "Clé privée",
+    "s_public_key": null,
     "s_invalid_length": "Longueur invalide",
     "l_invalid_format_allowed_chars": null,
     "@l_invalid_format_allowed_chars": {
@@ -460,6 +461,7 @@
     "s_csr": "CSR",
     "s_subject": "Sujet",
     "l_export_csr_file": "Sauvegarder le CSR vers un fichier",
+    "l_export_public_key_file": null,
     "l_select_import_file": "Sélectionnez un fichier à importer",
     "l_export_certificate": "Exporter le certificat",
     "l_export_certificate_file": "Exporter le certificat vers un fichier",

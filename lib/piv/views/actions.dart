@@ -123,21 +123,33 @@ class PivActions extends ConsumerWidget {
                 ),
               );
 
-              switch (result?.generateType) {
-                case GenerateType.csr:
+              if (result != null) {
+                final (fileExt, title, data) = switch (result.generateType) {
+                  GenerateType.publicKey => (
+                      'pem',
+                      l10n.l_export_public_key_file,
+                      result.publicKey,
+                    ),
+                  GenerateType.csr => (
+                      'csr',
+                      l10n.l_export_csr_file,
+                      result.result,
+                    ),
+                  _ => (null, null, null),
+                };
+
+                if (fileExt != null) {
                   final filePath = await FilePicker.platform.saveFile(
-                    dialogTitle: l10n.l_export_csr_file,
-                    allowedExtensions: ['csr'],
+                    dialogTitle: title,
+                    allowedExtensions: [fileExt],
                     type: FileType.custom,
                     lockParentWindow: true,
                   );
                   if (filePath != null) {
                     final file = File(filePath);
-                    await file.writeAsString(result!.result, flush: true);
+                    await file.writeAsString(data!, flush: true);
                   }
-                  break;
-                default:
-                  break;
+                }
               }
 
               return result != null;
@@ -248,165 +260,6 @@ class PivActions extends ConsumerWidget {
       ),
     );
   }
-}
-
-Widget registerPivActions(
-  DevicePath devicePath,
-  PivState pivState, {
-  required WidgetRef ref,
-  required Widget Function(BuildContext context) builder,
-  Map<Type, Action<Intent>> actions = const {},
-}) {
-  final hasFeature = ref.watch(featureProvider);
-  return Actions(
-    actions: {
-      if (hasFeature(features.slotsGenerate))
-        GenerateIntent:
-            CallbackAction<GenerateIntent>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
-          if (!pivState.protectedKey &&
-              !await withContext(
-                  (context) => _authIfNeeded(context, devicePath, pivState))) {
-            return false;
-          }
-
-          // TODO: Avoid asking for PIN if not needed?
-          final verified = await withContext((context) async =>
-                  await showBlurDialog(
-                      context: context,
-                      builder: (context) => PinDialog(devicePath))) ??
-              false;
-
-          if (!verified) {
-            return false;
-          }
-
-          return await withContext((context) async {
-            final l10n = AppLocalizations.of(context)!;
-            final PivGenerateResult? result = await showBlurDialog(
-              context: context,
-              builder: (context) => GenerateKeyDialog(
-                devicePath,
-                pivState,
-                intent.slot,
-              ),
-            );
-
-            switch (result?.generateType) {
-              case GenerateType.csr:
-                final filePath = await FilePicker.platform.saveFile(
-                  dialogTitle: l10n.l_export_csr_file,
-                  allowedExtensions: ['csr'],
-                  type: FileType.custom,
-                  lockParentWindow: true,
-                );
-                if (filePath != null) {
-                  final file = File(filePath);
-                  await file.writeAsString(result!.result, flush: true);
-                }
-                break;
-              default:
-                break;
-            }
-
-            return result != null;
-          });
-        }),
-      if (hasFeature(features.slotsImport))
-        ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
-
-          if (!await withContext(
-              (context) => _authIfNeeded(context, devicePath, pivState))) {
-            return false;
-          }
-
-          final picked = await withContext(
-            (context) async {
-              final l10n = AppLocalizations.of(context)!;
-              return await FilePicker.platform.pickFiles(
-                  allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
-                  type: FileType.custom,
-                  allowMultiple: false,
-                  lockParentWindow: true,
-                  dialogTitle: l10n.l_select_import_file);
-            },
-          );
-          if (picked == null || picked.files.isEmpty) {
-            return false;
-          }
-
-          return await withContext((context) async =>
-              await showBlurDialog(
-                context: context,
-                builder: (context) => ImportFileDialog(
-                  devicePath,
-                  pivState,
-                  intent.slot,
-                  File(picked.paths.first!),
-                ),
-              ) ??
-              false);
-        }),
-      if (hasFeature(features.slotsExport))
-        ExportIntent: CallbackAction<ExportIntent>(onInvoke: (intent) async {
-          final (_, cert) = await ref
-              .read(pivSlotsProvider(devicePath).notifier)
-              .read(intent.slot.slot);
-
-          if (cert == null) {
-            return false;
-          }
-
-          final withContext = ref.read(withContextProvider);
-
-          final filePath = await withContext((context) async {
-            final l10n = AppLocalizations.of(context)!;
-            return await FilePicker.platform.saveFile(
-              dialogTitle: l10n.l_export_certificate_file,
-              allowedExtensions: ['pem'],
-              type: FileType.custom,
-              lockParentWindow: true,
-            );
-          });
-
-          if (filePath == null) {
-            return false;
-          }
-
-          final file = File(filePath);
-          await file.writeAsString(cert, flush: true);
-
-          await withContext((context) async {
-            final l10n = AppLocalizations.of(context)!;
-            showMessage(context, l10n.l_certificate_exported);
-          });
-          return true;
-        }),
-      if (hasFeature(features.slotsDelete))
-        DeleteIntent<PivSlot>:
-            CallbackAction<DeleteIntent<PivSlot>>(onInvoke: (intent) async {
-          final withContext = ref.read(withContextProvider);
-          if (!await withContext(
-              (context) => _authIfNeeded(context, devicePath, pivState))) {
-            return false;
-          }
-
-          final bool? deleted = await withContext((context) async =>
-              await showBlurDialog(
-                context: context,
-                builder: (context) => DeleteCertificateDialog(
-                  devicePath,
-                  intent.target,
-                ),
-              ) ??
-              false);
-          return deleted;
-        }),
-      ...actions,
-    },
-    child: Builder(builder: builder),
-  );
 }
 
 List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {

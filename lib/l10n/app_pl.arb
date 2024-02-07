@@ -79,6 +79,7 @@
     "s_show_secret_key": "Pokaż tajny klucz",
     "s_hide_secret_key": "Ukryj tajny klucz",
     "s_private_key": "Klucz prywatny",
+    "s_public_key": null,
     "s_invalid_length": "Nieprawidłowa długość",
     "l_invalid_format_allowed_chars": "Nieprawidłowy format, dozwolone znaki: {characters}",
     "@l_invalid_format_allowed_chars": {
@@ -460,6 +461,7 @@
     "s_csr": "CSR",
     "s_subject": "Temat",
     "l_export_csr_file": "Zapisz CSR do pliku",
+    "l_export_public_key_file": null,
     "l_select_import_file": "Wybierz plik do zaimportowania",
     "l_export_certificate": "Eksportuj certyfikat",
     "l_export_certificate_file": "Eksportuj certyfikat do pliku",
