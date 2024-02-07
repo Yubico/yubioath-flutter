@@ -119,8 +119,8 @@ class _FidoLockedPage extends ConsumerWidget {
             ? l10n.p_setup_fingerprints_desc
             : l10n.l_register_sk_on_websites,
         footnote: isBio ? null : l10n.l_non_passkeys_note,
-        keyActionsBuilder: hasActions && !isBio ? _buildActions : null,
-        keyActionsBadge: !isBio ? fidoShowActionsNotifier(state) : false,
+        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
 
@@ -194,6 +194,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+    final noFingerprints = widget.state.bioEnroll == false;
 
     if (!widget.state.credMgmt) {
       // TODO: Special handling for credMgmt not supported
@@ -221,8 +222,25 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
+        actionsBuilder: noFingerprints
+            ? (context, expanded) {
+                return [
+                  ActionChip(
+                    label: Text(l10n.s_setup_fingerprints),
+                    onPressed: () async {
+                      ref
+                          .read(currentAppProvider.notifier)
+                          .setCurrentApp(Application.fingerprints);
+                    },
+                    avatar: const Icon(Icons.fingerprint_outlined),
+                  )
+                ];
+              }
+            : null,
         header: l10n.l_no_discoverable_accounts,
-        message: l10n.l_register_sk_on_websites,
+        message: noFingerprints
+            ? l10n.p_setup_fingerprints_desc
+            : l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
