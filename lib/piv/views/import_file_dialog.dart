@@ -255,7 +255,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height: 120, // Needed for layout, adapt if text sizes changes
+                  height: 140, // Needed for layout, adapt if text sizes changes
                   child: CertInfoTable(certInfo, null),
                 ),
               ]
