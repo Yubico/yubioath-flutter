@@ -156,8 +156,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
               null => null,
               _ => throw UnsupportedError('Application cannot be reset'),
             },
-            child: Text(l10n.s_reset),
             key: factoryResetReset,
+            child: Text(l10n.s_reset),
           )
       ],
       child: Padding(
@@ -177,6 +177,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                         value: c,
                         icon: const Icon(null),
                         label: Padding(
+                          key: switch (c) {
+                            Capability.oath => factoryResetPickResetOath,
+                            Capability.fido2 => factoryResetPickResetFido2,
+                            Capability.piv => factoryResetPickResetPiv,
+                            _ => const Key('_invalid') // no reset
+                          },
                           padding: const EdgeInsets.only(right: 22),
                           child: Text(c.getDisplayName(l10n)),
                         ),

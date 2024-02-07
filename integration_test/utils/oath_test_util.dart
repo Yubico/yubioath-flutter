@@ -303,26 +303,14 @@ extension OathFunctions on WidgetTester {
 
   /// Factory reset OATH application
   Future<void> resetOATH() async {
-
-    // TODO: Implement this using new Reset Dialog
-
-    /// 1. instead of tapping actioniconbutton, first click navigation
+    /// 1. open drawer if needed
     await openDrawer();
     await shortWait();
 
-    //     await tapActionIconButton();
-    // Future<void> tapActionIconButton() async {
-    //   await tap(findActionIconButton());
-    //   await pump(const Duration(milliseconds: 500));
-    // }
-
     /// 2. then click the meatball button+'Factory reset' for correct S/N
-    // stealing some of startUp to get serialnumber check:
     await collectYubiKeyInformation();
     final approvedSerialNumbers = await getApprovedSerialNumbers();
-
     if (approvedSerialNumbers.contains(yubiKeySerialNumber)) {
-      // this does not work, yubikeyPopupMenuButton probably wrong!?
       await tap(find.byKey(yubikeyPopupMenuButton).hitTestable());
       await shortWait();
       await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());

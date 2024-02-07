@@ -178,6 +178,7 @@ class _DeviceMenuButton extends ConsumerWidget {
       child: Opacity(
         opacity: menuItems.isNotEmpty ? opacity : 0.0,
         child: PopupMenuButton(
+          key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
           icon: const Icon(Icons.more_horiz_outlined),
           tooltip: '',
@@ -348,7 +349,6 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       if (serial != null)
         PopupMenuItem(
           enabled: true,
-          key: yubikeyPopupMenuButton,
           onTap: () async {
             await ref.read(withContextProvider)((context) async {
               await _showKeyCustomizationDialog(

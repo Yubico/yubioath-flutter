@@ -37,9 +37,12 @@ const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
 
 // drawer yubikey more items
 const yubikeyPopupMenuButton = Key('$_prefix.yubikey_popup_menu_button');
-const yubikeyLabelColorMenuButton = Key('$_prefix.yubikey_label_color_menu_button');
-const yubikeyApplicationToggleMenuButton = Key('$_prefix.yubikey_application_toggle_menu_button');
-const yubikeyFactoryResetMenuButton = Key('$_prefix.yubikey_factory_reset_menu_button');
+const yubikeyLabelColorMenuButton =
+    Key('$_prefix.yubikey_label_color_menu_button');
+const yubikeyApplicationToggleMenuButton =
+    Key('$_prefix.yubikey_application_toggle_menu_button');
+const yubikeyFactoryResetMenuButton =
+    Key('$_prefix.yubikey_factory_reset_menu_button');
 
 // factory reset dialog
 const factoryResetPickResetOath = Key('$_prefix.yubikey_factory_reset_oath');
@@ -47,7 +50,6 @@ const factoryResetPickResetFido2 = Key('$_prefix.yubikey_factory_reset_fido2');
 const factoryResetPickResetPiv = Key('$_prefix.yubikey_factory_reset_piv');
 const factoryResetCancel = Key('$_prefix.yubikey_factory_reset_cancel');
 const factoryResetReset = Key('$_prefix.yubikey_factory_reset_reset');
-
 
 // settings page
 const settingDrawerIcon = Key('$_prefix.settings_drawer_icon');
