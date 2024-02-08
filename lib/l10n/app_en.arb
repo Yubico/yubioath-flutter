@@ -486,7 +486,7 @@
     "l_key_no_certificate": "Key without certificate loaded",
     "s_generate_key": "Generate key",
     "l_generate_desc": "Generate a new certificate or CSR",
-    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
+    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be saved to file, embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
     "@p_generate_desc": {
         "placeholders": {
             "slot": {}
