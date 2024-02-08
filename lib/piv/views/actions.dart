@@ -198,18 +198,29 @@ class PivActions extends ConsumerWidget {
           }),
         if (hasFeature(features.slotsExport))
           ExportIntent: CallbackAction<ExportIntent>(onInvoke: (intent) async {
-            final (_, cert) = await ref
+            final l10n = AppLocalizations.of(context)!;
+            final (metadata, cert) = await ref
                 .read(pivSlotsProvider(devicePath).notifier)
                 .read(intent.slot.slot);
 
-            if (cert == null) {
+            String title;
+            String message;
+            String data;
+            if (cert != null) {
+              title = l10n.l_export_certificate_file;
+              message = l10n.l_certificate_exported;
+              data = cert;
+            } else if (metadata != null) {
+              title = l10n.l_export_public_key_file;
+              message = l10n.l_public_key_exported;
+              data = metadata.publicKey;
+            } else {
               return false;
             }
 
             final filePath = await withContext((context) async {
-              final l10n = AppLocalizations.of(context)!;
               return await FilePicker.platform.saveFile(
-                dialogTitle: l10n.l_export_certificate_file,
+                dialogTitle: title,
                 allowedExtensions: ['pem'],
                 type: FileType.custom,
                 lockParentWindow: true,
@@ -221,11 +232,10 @@ class PivActions extends ConsumerWidget {
             }
 
             final file = File(filePath);
-            await file.writeAsString(cert, flush: true);
+            await file.writeAsString(data, flush: true);
 
             await withContext((context) async {
-              final l10n = AppLocalizations.of(context)!;
-              showMessage(context, l10n.l_certificate_exported);
+              showMessage(context, message);
             });
             return true;
           }),
@@ -264,6 +274,7 @@ class PivActions extends ConsumerWidget {
 
 List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
   final hasCert = slot.certInfo != null;
+  final hasKey = slot.metadata != null;
   return [
     ActionItem(
       key: keys.generateAction,
@@ -299,6 +310,15 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         title: l10n.l_delete_certificate,
         subtitle: l10n.l_delete_certificate_desc,
         intent: DeleteIntent(slot),
+      ),
+    ] else if (hasKey) ...[
+      ActionItem(
+        key: keys.exportAction,
+        feature: features.slotsExport,
+        icon: const Icon(Icons.file_upload_outlined),
+        title: l10n.l_export_public_key,
+        subtitle: l10n.l_export_public_key_desc,
+        intent: ExportIntent(slot),
       ),
     ],
   ];

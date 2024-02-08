@@ -56,7 +56,7 @@ _$SlotMetadataImpl _$$SlotMetadataImplFromJson(Map<String, dynamic> json) =>
       $enumDecode(_$PinPolicyEnumMap, json['pin_policy']),
       $enumDecode(_$TouchPolicyEnumMap, json['touch_policy']),
       json['generated'] as bool,
-      json['public_key_encoded'] as String,
+      json['public_key'] as String,
     );
 
 Map<String, dynamic> _$$SlotMetadataImplToJson(_$SlotMetadataImpl instance) =>
@@ -65,7 +65,7 @@ Map<String, dynamic> _$$SlotMetadataImplToJson(_$SlotMetadataImpl instance) =>
       'pin_policy': _$PinPolicyEnumMap[instance.pinPolicy]!,
       'touch_policy': _$TouchPolicyEnumMap[instance.touchPolicy]!,
       'generated': instance.generated,
-      'public_key_encoded': instance.publicKeyEncoded,
+      'public_key': instance.publicKey,
     };
 
 const _$KeyTypeEnumMap = {

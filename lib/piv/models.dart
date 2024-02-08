@@ -203,7 +203,7 @@ class SlotMetadata with _$SlotMetadata {
     PinPolicy pinPolicy,
     TouchPolicy touchPolicy,
     bool generated,
-    String publicKeyEncoded,
+    String publicKey,
   ) = _SlotMetadata;
 
   factory SlotMetadata.fromJson(Map<String, dynamic> json) =>

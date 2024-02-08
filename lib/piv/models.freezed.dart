@@ -677,7 +677,7 @@ mixin _$SlotMetadata {
   PinPolicy get pinPolicy => throw _privateConstructorUsedError;
   TouchPolicy get touchPolicy => throw _privateConstructorUsedError;
   bool get generated => throw _privateConstructorUsedError;
-  String get publicKeyEncoded => throw _privateConstructorUsedError;
+  String get publicKey => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -696,7 +696,7 @@ abstract class $SlotMetadataCopyWith<$Res> {
       PinPolicy pinPolicy,
       TouchPolicy touchPolicy,
       bool generated,
-      String publicKeyEncoded});
+      String publicKey});
 }
 
 /// @nodoc
@@ -716,7 +716,7 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
     Object? pinPolicy = null,
     Object? touchPolicy = null,
     Object? generated = null,
-    Object? publicKeyEncoded = null,
+    Object? publicKey = null,
   }) {
     return _then(_value.copyWith(
       keyType: null == keyType
@@ -735,9 +735,9 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
           ? _value.generated
           : generated // ignore: cast_nullable_to_non_nullable
               as bool,
-      publicKeyEncoded: null == publicKeyEncoded
-          ? _value.publicKeyEncoded
-          : publicKeyEncoded // ignore: cast_nullable_to_non_nullable
+      publicKey: null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -756,7 +756,7 @@ abstract class _$$SlotMetadataImplCopyWith<$Res>
       PinPolicy pinPolicy,
       TouchPolicy touchPolicy,
       bool generated,
-      String publicKeyEncoded});
+      String publicKey});
 }
 
 /// @nodoc
@@ -774,7 +774,7 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
     Object? pinPolicy = null,
     Object? touchPolicy = null,
     Object? generated = null,
-    Object? publicKeyEncoded = null,
+    Object? publicKey = null,
   }) {
     return _then(_$SlotMetadataImpl(
       null == keyType
@@ -793,9 +793,9 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
           ? _value.generated
           : generated // ignore: cast_nullable_to_non_nullable
               as bool,
-      null == publicKeyEncoded
-          ? _value.publicKeyEncoded
-          : publicKeyEncoded // ignore: cast_nullable_to_non_nullable
+      null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -805,7 +805,7 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SlotMetadataImpl implements _SlotMetadata {
   _$SlotMetadataImpl(this.keyType, this.pinPolicy, this.touchPolicy,
-      this.generated, this.publicKeyEncoded);
+      this.generated, this.publicKey);
 
   factory _$SlotMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$SlotMetadataImplFromJson(json);
@@ -819,11 +819,11 @@ class _$SlotMetadataImpl implements _SlotMetadata {
   @override
   final bool generated;
   @override
-  final String publicKeyEncoded;
+  final String publicKey;
 
   @override
   String toString() {
-    return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKeyEncoded: $publicKeyEncoded)';
+    return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKey: $publicKey)';
   }
 
   @override
@@ -838,14 +838,14 @@ class _$SlotMetadataImpl implements _SlotMetadata {
                 other.touchPolicy == touchPolicy) &&
             (identical(other.generated, generated) ||
                 other.generated == generated) &&
-            (identical(other.publicKeyEncoded, publicKeyEncoded) ||
-                other.publicKeyEncoded == publicKeyEncoded));
+            (identical(other.publicKey, publicKey) ||
+                other.publicKey == publicKey));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, keyType, pinPolicy, touchPolicy,
-      generated, publicKeyEncoded);
+  int get hashCode => Object.hash(
+      runtimeType, keyType, pinPolicy, touchPolicy, generated, publicKey);
 
   @JsonKey(ignore: true)
   @override
@@ -867,7 +867,7 @@ abstract class _SlotMetadata implements SlotMetadata {
       final PinPolicy pinPolicy,
       final TouchPolicy touchPolicy,
       final bool generated,
-      final String publicKeyEncoded) = _$SlotMetadataImpl;
+      final String publicKey) = _$SlotMetadataImpl;
 
   factory _SlotMetadata.fromJson(Map<String, dynamic> json) =
       _$SlotMetadataImpl.fromJson;
@@ -881,7 +881,7 @@ abstract class _SlotMetadata implements SlotMetadata {
   @override
   bool get generated;
   @override
-  String get publicKeyEncoded;
+  String get publicKey;
   @override
   @JsonKey(ignore: true)
   _$$SlotMetadataImplCopyWith<_$SlotMetadataImpl> get copyWith =>
