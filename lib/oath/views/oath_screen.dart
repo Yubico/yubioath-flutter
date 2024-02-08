@@ -375,6 +375,13 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                       node.focusInDirection(TraversalDirection.down);
                       return KeyEventResult.handled;
                     }
+                    if (event.logicalKey == LogicalKeyboardKey.escape) {
+                      searchController.clear();
+                      ref.read(searchProvider.notifier).setFilter('');
+                      node.unfocus();
+                      setState(() {});
+                      return KeyEventResult.handled;
+                    }
                     return KeyEventResult.ignored;
                   },
                   child: Builder(builder: (context) {
