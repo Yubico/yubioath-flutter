@@ -28,7 +28,7 @@ import 'desktop/util.dart' as desktop_test_util;
 
 const shortWaitMs = 200;
 const longWaitMs = 500;
-const ultraLongWaitMs = 5000;
+const ultraLongWaitMs = 3000;
 
 /// information about YubiKey as seen by the app
 String? yubiKeyName;

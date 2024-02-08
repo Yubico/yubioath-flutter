@@ -137,11 +137,11 @@ void main() {
 
       await tester.openSlotMenu(SlotId.one);
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.longWait();
+      await tester.shortWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
 
       /// TODO:  wait for any toasts to be gone
-      await tester.pump(const Duration(seconds: 3));
+      await tester.ultraLongWait();
       var closeFinder = find.byKey(closeButton);
       if (closeFinder.evaluate().isNotEmpty) {
         // close the view
@@ -152,7 +152,7 @@ void main() {
       // we need to right click on slot 2
       await tester.openSlotMenu(SlotId.two);
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.longWait();
+      await tester.shortWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
       await tester.shortWait();
 

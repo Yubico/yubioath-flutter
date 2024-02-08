@@ -21,7 +21,7 @@ import 'package:yubico_authenticator/otp/models.dart';
 
 import 'test_util.dart';
 
-extension OathFunctions on WidgetTester {
+extension OtpFunctions on WidgetTester {
   /// Opens the menu of specific OTP Slot, either by tapping the button or
   /// by tapping the list item
   Future<void> openSlotMenu(SlotId slotId) async {
