@@ -100,3 +100,10 @@ class ManagementNode(RpcNode):
             params.pop("auto_eject_timeout"),
         )
         return dict()
+
+    @action(
+        condition=lambda self: issubclass(self._connection_type, SmartCardConnection)
+    )
+    def device_reset(self, params, event, signal):
+        self.session.device_reset()
+        return dict()

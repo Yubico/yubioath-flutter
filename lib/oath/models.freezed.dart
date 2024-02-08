@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 OathCredential _$OathCredentialFromJson(Map<String, dynamic> json) {
   return _OathCredential.fromJson(json);
@@ -788,12 +788,13 @@ class __$$OathStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$OathStateImpl implements _OathState {
+class _$OathStateImpl extends _OathState {
   _$OathStateImpl(this.deviceId, this.version,
       {required this.hasKey,
       required this.remembered,
       required this.locked,
-      required this.keystore});
+      required this.keystore})
+      : super._();
 
   factory _$OathStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$OathStateImplFromJson(json);
@@ -851,12 +852,13 @@ class _$OathStateImpl implements _OathState {
   }
 }
 
-abstract class _OathState implements OathState {
+abstract class _OathState extends OathState {
   factory _OathState(final String deviceId, final Version version,
       {required final bool hasKey,
       required final bool remembered,
       required final bool locked,
       required final KeystoreState keystore}) = _$OathStateImpl;
+  _OathState._() : super._();
 
   factory _OathState.fromJson(Map<String, dynamic> json) =
       _$OathStateImpl.fromJson;

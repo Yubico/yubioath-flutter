@@ -23,19 +23,28 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../../management/models.dart';
+import '../../management/state.dart';
 import '../../oath/state.dart';
 import '../../piv/state.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../features.dart' as features;
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'keys.dart';
 
 final _log = Logger('fido.views.reset_dialog');
+
+List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
+      if (hasFeature(features.oath)) Capability.oath,
+      if (hasFeature(features.fido)) Capability.fido2,
+      if (hasFeature(features.piv)) Capability.piv,
+    ];
 
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
@@ -46,7 +55,6 @@ class ResetDialog extends ConsumerStatefulWidget {
 }
 
 class _ResetDialogState extends ConsumerState<ResetDialog> {
-  // TODO: Capabilities based on enabled/supported. Feature checks.
   Capability? _application;
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
@@ -71,11 +79,16 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final hasFeature = ref.watch(featureProvider);
     final supported =
         widget.data.info.supportedCapabilities[widget.data.node.transport] ?? 0;
     final enabled = widget
             .data.info.config.enabledCapabilities[widget.data.node.transport] ??
         0;
+
+    final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
+        .contains(widget.data.info.formFactor);
+    final globalReset = isBio && (supported & Capability.piv.value) != 0;
     final l10n = AppLocalizations.of(context)!;
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);
     return ResponsiveDialog(
@@ -153,7 +166,18 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     showMessage(context, l10n.l_piv_app_reset);
                   });
                 },
-              null => null,
+              null => globalReset
+                  ? () async {
+                      await ref
+                          .read(managementStateProvider(widget.data.node.path)
+                              .notifier)
+                          .deviceReset();
+                      await ref.read(withContextProvider)((context) async {
+                        Navigator.of(context).pop();
+                        showMessage(context, l10n.s_factory_reset);
+                      });
+                    }
+                  : null,
               _ => throw UnsupportedError('Application cannot be reset'),
             },
             key: factoryResetReset,
@@ -165,43 +189,36 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SegmentedButton<Capability>(
-              emptySelectionAllowed: true,
-              segments: [
-                Capability.oath,
-                Capability.fido2,
-                Capability.piv,
-              ]
-                  .where((c) => supported & c.value != 0)
-                  .map((c) => ButtonSegment(
-                        value: c,
-                        icon: const Icon(null),
-                        label: Padding(
-                          key: switch (c) {
-                            Capability.oath => factoryResetPickResetOath,
-                            Capability.fido2 => factoryResetPickResetFido2,
-                            Capability.piv => factoryResetPickResetPiv,
-                            _ => const Key('_invalid') // no reset
-                          },
-                          padding: const EdgeInsets.only(right: 22),
-                          child: Text(c.getDisplayName(l10n)),
-                        ),
-                        enabled: enabled & c.value != 0,
-                      ))
-                  .toList(),
-              selected: _application != null ? {_application!} : {},
-              onSelectionChanged: (selected) {
-                setState(() {
-                  _application = selected.first;
-                });
-              },
-            ),
+            if (!globalReset)
+              SegmentedButton<Capability>(
+                emptySelectionAllowed: true,
+                segments: getResetCapabilities(hasFeature)
+                    .where((c) => supported & c.value != 0)
+                    .map((c) => ButtonSegment(
+                          value: c,
+                          icon: const Icon(null),
+                          label: Padding(
+                            padding: const EdgeInsets.only(right: 22),
+                            child: Text(c.getDisplayName(l10n)),
+                          ),
+                          enabled: enabled & c.value != 0,
+                        ))
+                    .toList(),
+                selected: _application != null ? {_application!} : {},
+                onSelectionChanged: (selected) {
+                  setState(() {
+                    _application = selected.first;
+                  });
+                },
+              ),
             Text(
               switch (_application) {
                 Capability.oath => l10n.p_warning_factory_reset,
                 Capability.piv => l10n.p_warning_piv_reset,
                 Capability.fido2 => l10n.p_warning_deletes_accounts,
-                _ => l10n.p_factory_reset_an_app,
+                _ => globalReset
+                    ? l10n.p_warning_global_reset
+                    : l10n.p_factory_reset_an_app,
               },
               style: Theme.of(context)
                   .textTheme
@@ -213,7 +230,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                 Capability.oath => l10n.p_warning_disable_credentials,
                 Capability.piv => l10n.p_warning_piv_reset_desc,
                 Capability.fido2 => l10n.p_warning_disable_accounts,
-                _ => l10n.p_factory_reset_desc,
+                _ => globalReset
+                    ? l10n.p_warning_global_reset_desc
+                    : l10n.p_factory_reset_desc,
               },
             ),
             if (_application == Capability.fido2 && _currentStep >= 0) ...[

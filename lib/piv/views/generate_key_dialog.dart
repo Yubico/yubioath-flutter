@@ -65,6 +65,18 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     _validToMax = DateTime.utc(now.year + 10, now.month, now.day);
   }
 
+  List<KeyType> _getSupportedKeyTypes() => [
+        KeyType.rsa1024,
+        KeyType.rsa2048,
+        if (widget.pivState.version.isAtLeast(5, 7)) ...[
+          KeyType.rsa3072,
+          KeyType.rsa4096,
+          KeyType.ed25519,
+        ],
+        KeyType.eccp256,
+        KeyType.eccp384,
+      ];
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -98,7 +110,6 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
 
                   final pivNotifier =
                       ref.read(pivSlotsProvider(widget.devicePath).notifier);
-                  final withContext = ref.read(withContextProvider);
 
                   if (!await pivNotifier.validateRfc4514(_subject)) {
                     setState(() {
@@ -108,31 +119,19 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     return;
                   }
 
-                  void Function()? close;
-                  final PivGenerateResult result;
-                  try {
-                    close = await withContext<void Function()>(
-                        (context) async => showMessage(
-                              context,
-                              l10n.l_generating_private_key,
-                              duration: const Duration(seconds: 30),
-                            ));
-                    result = await pivNotifier.generate(
-                      widget.pivSlot.slot,
-                      _keyType,
-                      parameters: switch (_generateType) {
-                        GenerateType.certificate =>
-                          PivGenerateParameters.certificate(
-                              subject: _subject,
-                              validFrom: _validFrom,
-                              validTo: _validTo),
-                        GenerateType.csr =>
-                          PivGenerateParameters.csr(subject: _subject),
-                      },
-                    );
-                  } finally {
-                    close?.call();
-                  }
+                  final result = await pivNotifier.generate(
+                    widget.pivSlot.slot,
+                    _keyType,
+                    parameters: switch (_generateType) {
+                      GenerateType.certificate =>
+                        PivGenerateParameters.certificate(
+                            subject: _subject,
+                            validFrom: _validFrom,
+                            validTo: _validTo),
+                      GenerateType.csr =>
+                        PivGenerateParameters.csr(subject: _subject),
+                    },
+                  );
 
                   await ref.read(withContextProvider)(
                     (context) async {
@@ -193,7 +192,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                 runSpacing: 8.0,
                 children: [
                   ChoiceFilterChip<KeyType>(
-                    items: KeyType.values,
+                    items: _getSupportedKeyTypes(),
                     value: _keyType,
                     selected: _keyType != defaultKeyType,
                     itemBuilder: (value) => Text(value.getDisplayName(l10n)),
@@ -240,6 +239,16 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                             },
                     ),
                 ]),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Visibility(
+                visible: _generating,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: const LinearProgressIndicator(),
+              ),
+            ),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

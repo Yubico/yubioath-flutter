@@ -596,12 +596,15 @@
 
     "@_permissions": {},
     "s_enable_nfc": "NFCを有効にする",
+    "s_request_access": null,
     "s_permission_denied": "権限がありません",
     "l_elevating_permissions": "権限の昇格\u2026",
     "s_review_permissions": "権限の確認",
-    "s_admin_privileges_required": null,
+    "s_open_windows_settings": null,
+    "l_admin_privileges_required": null,
     "p_elevated_permissions_required": "このデバイスを管理するには権限の昇格が必要です",
     "p_webauthn_elevated_permissions_required": "WebAuthn管理には権限の昇格が必要です",
+    "l_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico AuthenticatorにはQRコードをスキャンするためのカメラ権限が必要です",
 
     "@_qr_codes": {},

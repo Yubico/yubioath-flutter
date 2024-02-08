@@ -111,4 +111,9 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
     });
     ref.read(attachedDevicesProvider.notifier).refresh();
   }
+
+  @override
+  Future<void> deviceReset() async {
+    await _session.command('device_reset', target: ['ccid', 'management']);
+  }
 }

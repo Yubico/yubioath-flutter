@@ -297,12 +297,19 @@ def _choose_cert(certs):
 def _get_cert_info(cert):
     if cert is None:
         return None
+    try:  # Prefer timezone-aware variant (cryptography >= 42)
+        not_before = cert.not_valid_before_utc
+        not_after = cert.not_valid_after_utc
+    except AttributeError:
+        not_before = cert.not_valid_before
+        not_after = cert.not_valid_after
+
     return dict(
         subject=cert.subject.rfc4514_string(),
         issuer=cert.issuer.rfc4514_string(),
         serial=hex(cert.serial_number)[2:],
-        not_valid_before=cert.not_valid_before.isoformat(),
-        not_valid_after=cert.not_valid_after.isoformat(),
+        not_valid_before=not_before.isoformat(),
+        not_valid_after=not_after.isoformat(),
         fingerprint=cert.fingerprint(hashes.SHA256()),
     )
 

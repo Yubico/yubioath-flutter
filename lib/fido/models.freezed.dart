@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
   return _FidoState.fromJson(json);
@@ -132,7 +132,7 @@ class _$FidoStateImpl extends _FidoState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FidoStateImpl &&
@@ -265,7 +265,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$PinSuccessImpl);
   }
@@ -392,7 +392,7 @@ class _$PinFailureImpl implements _PinFailure {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinFailureImpl &&
@@ -594,7 +594,7 @@ class _$FingerprintImpl extends _Fingerprint {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FingerprintImpl &&
@@ -750,7 +750,7 @@ class _$EventCaptureImpl implements _EventCapture {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventCaptureImpl &&
@@ -900,7 +900,7 @@ class _$EventCompleteImpl implements _EventComplete {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventCompleteImpl &&
@@ -1040,7 +1040,7 @@ class _$EventErrorImpl implements _EventError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventErrorImpl &&
@@ -1274,7 +1274,7 @@ class _$FidoCredentialImpl implements _FidoCredential {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FidoCredentialImpl &&

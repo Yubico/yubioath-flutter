@@ -55,7 +55,7 @@ jobs:
 
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           build/linux/helper

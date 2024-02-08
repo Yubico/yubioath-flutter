@@ -92,44 +92,57 @@ class _FidoLockedPage extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final isBio = state.bioEnroll != null;
+    final alwaysUv = state.alwaysUv;
 
     if (!state.hasPin) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
-        actionsBuilder: isBio
-            ? (context, expanded) {
-                return [
-                  ActionChip(
-                    label: Text(l10n.s_setup_fingerprints),
-                    onPressed: () async {
-                      ref
-                          .read(currentAppProvider.notifier)
-                          .setCurrentApp(Application.fingerprints);
-                    },
-                    avatar: const Icon(Icons.fingerprint_outlined),
-                  )
-                ];
-              }
-            : null,
+        actionsBuilder: (context, expanded) {
+          return [
+            if (isBio)
+              ActionChip(
+                label: Text(l10n.s_setup_fingerprints),
+                onPressed: () async {
+                  ref
+                      .read(currentAppProvider.notifier)
+                      .setCurrentApp(Application.fingerprints);
+                },
+                avatar: const Icon(Icons.fingerprint_outlined),
+              ),
+            if (!isBio && alwaysUv)
+              ActionChip(
+                label: Text(l10n.s_set_pin),
+                onPressed: () async {
+                  await showBlurDialog(
+                      context: context,
+                      builder: (context) => FidoPinDialog(node.path, state));
+                },
+                avatar: const Icon(Icons.pin_outlined),
+              )
+          ];
+        },
         header: state.credMgmt
             ? l10n.l_no_discoverable_accounts
             : l10n.l_ready_to_use,
         message: isBio
             ? l10n.p_setup_fingerprints_desc
-            : '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
-        keyActionsBuilder: hasActions && !isBio ? _buildActions : null,
-        keyActionsBadge: !isBio ? fidoShowActionsNotifier(state) : false,
+            : alwaysUv
+                ? l10n.l_pin_change_required_desc
+                : l10n.l_register_sk_on_websites,
+        footnote: isBio ? null : l10n.l_non_passkeys_note,
+        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBadge: fidoShowActionsNotifier(state),
       );
     }
 
-    if (!state.credMgmt && state.bioEnroll == null) {
+    if (!state.credMgmt && !isBio) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
+        footnote: l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fidoShowActionsNotifier(state),
       );
@@ -193,6 +206,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+    final noFingerprints = widget.state.bioEnroll == false;
 
     if (!widget.state.credMgmt) {
       // TODO: Special handling for credMgmt not supported
@@ -200,8 +214,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
+        footnote: l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
@@ -220,14 +234,31 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
+        actionsBuilder: noFingerprints
+            ? (context, expanded) {
+                return [
+                  ActionChip(
+                    label: Text(l10n.s_setup_fingerprints),
+                    onPressed: () async {
+                      ref
+                          .read(currentAppProvider.notifier)
+                          .setCurrentApp(Application.fingerprints);
+                    },
+                    avatar: const Icon(Icons.fingerprint_outlined),
+                  )
+                ];
+              }
+            : null,
         header: l10n.l_no_discoverable_accounts,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: noFingerprints
+            ? l10n.p_setup_fingerprints_desc
+            : l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
         keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        footnote: l10n.l_non_passkeys_note,
       );
     }
 
@@ -270,6 +301,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
+        footnote: l10n.l_non_passkeys_note,
         detailViewBuilder: credential != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -349,26 +381,18 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 }),
               }
             },
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ...credentials.map(
-                (cred) => _CredentialListItem(
-                  cred,
-                  expanded: expanded,
-                  selected: _selected == cred,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Opacity(
-                  opacity: 0.6,
-                  child: Text(
-                    l10n.l_non_passkeys_note,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ),
-            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: credentials
+                  .map(
+                    (cred) => _CredentialListItem(
+                      cred,
+                      expanded: expanded,
+                      selected: _selected == cred,
+                    ),
+                  )
+                  .toList(),
+            ),
           );
         },
       ),
