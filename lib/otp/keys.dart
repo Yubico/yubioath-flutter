@@ -22,8 +22,6 @@ const _prefix = 'otp.keys';
 const _keyAction = '$_prefix.actions';
 const _slotAction = '$_prefix.slot.actions';
 
-/// const getOtpSlotKey = '$_prefix.pick_otp_slot';
-
 // Key actions
 const swapSlots = Key('$_keyAction.swap_slots');
 

@@ -29,7 +29,6 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
-import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'overwrite_confirm_dialog.dart';
@@ -161,7 +160,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                           : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
-                    key: generateSecretKey,
+                    key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
                     icon: const Icon(Icons.refresh),
                     onPressed: () async {
