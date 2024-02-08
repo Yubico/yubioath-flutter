@@ -21,10 +21,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../desktop/state.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'elevate_fido_buttons.dart';
 import 'message_page.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
@@ -41,29 +42,12 @@ class DeviceErrorScreen extends ConsumerWidget {
         return MessagePage(
           title: currentApp.getDisplayName(l10n),
           capabilities: currentApp.capabilities,
-          header: l10n.s_admin_privileges_required,
+          header: l10n.l_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [
-            FilledButton.icon(
-              label: Text(l10n.s_unlock),
-              icon: const Icon(Icons.lock_open),
-              onPressed: () async {
-                final closeMessage = showMessage(
-                    context, l10n.l_elevating_permissions,
-                    duration: const Duration(seconds: 30));
-                try {
-                  if (await ref.read(rpcProvider).requireValue.elevate()) {
-                    ref.invalidate(rpcProvider);
-                  } else {
-                    await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, l10n.s_permission_denied));
-                  }
-                } finally {
-                  closeMessage();
-                }
-              },
-            ),
+            const ElevateFidoButtons(),
           ],
+          footnote: isMicrosoftStore ? l10n.l_ms_store_permission_note : null,
         );
       }
     }

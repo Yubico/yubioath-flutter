@@ -35,6 +35,7 @@ final _navExpandedKey = GlobalKey();
 
 class AppPage extends StatelessWidget {
   final String? title;
+  final String? footnote;
   final Widget Function(BuildContext context, bool expanded) builder;
   final Widget Function(BuildContext context)? detailViewBuilder;
   final List<Widget> Function(BuildContext context, bool expanded)?
@@ -50,6 +51,7 @@ class AppPage extends StatelessWidget {
   const AppPage({
     super.key,
     this.title,
+    this.footnote,
     required this.builder,
     this.centered = false,
     this.keyActionsBuilder,
@@ -204,6 +206,17 @@ class AppPage extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 4,
                 children: actionsBuilder!(context, expanded),
+              ),
+            ),
+          ),
+        if (footnote != null)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Opacity(
+              opacity: 0.6,
+              child: Text(
+                footnote!,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
           ),

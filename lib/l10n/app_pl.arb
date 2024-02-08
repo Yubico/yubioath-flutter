@@ -596,12 +596,15 @@
 
     "@_permissions": {},
     "s_enable_nfc": "Włącz NFC",
+    "s_request_access": null,
     "s_permission_denied": "Odmowa dostępu",
     "l_elevating_permissions": "Podnoszenie uprawnień\u2026",
     "s_review_permissions": "Przegląd uprawnień",
-    "s_admin_privileges_required": "Wymagane uprawnienia administratora",
+    "s_open_windows_settings": null,
+    "l_admin_privileges_required": "Wymagane uprawnienia administratora",
     "p_elevated_permissions_required": "Zarządzanie tym urządzeniem wymaga podwyższonych uprawnień.",
     "p_webauthn_elevated_permissions_required": "Zarządzanie WebAuthn wymaga podwyższonych uprawnień.",
+    "l_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator wymaga dostępu do aparatu w celu skanowania kodów QR.",
 
     "@_qr_codes": {},
