@@ -36,7 +36,7 @@ class SwapSlotsDialog extends ConsumerWidget {
       title: Text(l10n.s_swap_slots),
       actions: [
         TextButton(
-          key: swap,
+            key: swapButton,
             onPressed: () async {
               await ref.read(otpStateProvider(devicePath).notifier).swapSlots();
               await ref.read(withContextProvider)((context) async {

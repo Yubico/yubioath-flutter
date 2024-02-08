@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-@Tags(['android', 'desktop', 'oath'])
+@Tags(['desktop', 'otp'])
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/otp/keys.dart';
+import 'package:yubico_authenticator/otp/models.dart';
 
+import 'utils/otp_test_util.dart';
 import 'utils/test_util.dart';
 
 void main() {
@@ -27,21 +29,12 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('OTP UI tests', () {
-    appTest('OTP menu items exist', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer));
-      await tester.shortWait();
-
-      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
-      await tester.shortWait();
-    });
-
     appTest('Yubico OTP slot 1', (WidgetTester tester) async {
       await tester.tap(find.byKey(otpAppDrawer).hitTestable());
       await tester.shortWait();
 
       //verify "Slot 1 is empty"
-
-      // we are missing the right click on top of the correct slot
+      await tester.openSlotMenu(SlotId.one);
 
       await tester.tap(find.byKey(configureYubiOtp).hitTestable());
       await tester.shortWait();
@@ -65,7 +58,7 @@ void main() {
 
       // verify "Slot 1 is configured"
 
-      // we are missing the right click on top of the correct slot
+      await tester.openSlotMenu(SlotId.one);
 
       await tester.tap(find.byKey(configureChalResp).hitTestable());
       await tester.shortWait();
@@ -85,9 +78,9 @@ void main() {
 
       // verify "Slot 2 is empty"
 
-      // we are missing the right click on top of the correct slot
+      await tester.openSlotMenu(SlotId.two);
 
-      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
+      await tester.tap(find.byKey(configureStatic).hitTestable());
       await tester.shortWait();
 
       // this generates and saves static password
@@ -105,9 +98,9 @@ void main() {
 
       // verify "Slot 2 is configured"
 
-      // we are missing the right click on top of the correct slot
+      await tester.openSlotMenu(SlotId.two);
 
-      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
+      await tester.tap(find.byKey(configureHotp).hitTestable());
       await tester.shortWait();
 
       // this writes and saves oath secret
@@ -127,17 +120,14 @@ void main() {
       // verify "Slot 2 is configured"
 
       // taps swap
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(swapSlots).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(swap).hitTestable());
+      await tester.tapSwapSlotsButton();
+      await tester.tap(find.byKey(swapButton).hitTestable());
       await tester.shortWait();
 
       // verify "Slot 1 is configured"
       // verify "Slot 2 is configured"
-
     });
+
     appTest('Delete Credentials', (WidgetTester tester) async {
       await tester.tap(find.byKey(otpAppDrawer).hitTestable());
       await tester.shortWait();
@@ -145,15 +135,24 @@ void main() {
       // verify "Slot 1 is configured"
       // verify "Slot 2 is configured"
 
-      // we need to right click on slot 1
+      await tester.openSlotMenu(SlotId.one);
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.shortWait();
+      await tester.longWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.shortWait();
+
+      // wait for any toasts to be gone
+      await tester.pump(const Duration(seconds: 3));
+      var closeFinder = find.byKey(closeButton);
+      if (closeFinder.evaluate().isNotEmpty) {
+        // close the view
+        await tester.tap(closeFinder);
+        await tester.shortWait();
+      }
 
       // we need to right click on slot 2
+      await tester.openSlotMenu(SlotId.two);
       await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.shortWait();
+      await tester.longWait();
       await tester.tap(find.byKey(deleteButton).hitTestable());
       await tester.shortWait();
 
