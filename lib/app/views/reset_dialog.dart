@@ -208,7 +208,15 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       .where((c) => supported & c.value != 0)
                       .map((c) => ButtonSegment(
                             value: c,
-                            icon: Icon(c._icon),
+                            icon: Icon(
+                              c._icon,
+                              key: switch (c) {
+                                Capability.oath => factoryResetPickResetOath,
+                                Capability.fido2 => factoryResetPickResetFido2,
+                                Capability.piv => factoryResetPickResetPiv,
+                                _ => const Key('_invalid') // no reset
+                              },
+                            ),
                             label: showLabels
                                 ? Text(c.getDisplayName(l10n))
                                 : null,
