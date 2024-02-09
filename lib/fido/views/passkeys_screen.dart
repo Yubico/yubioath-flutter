@@ -132,7 +132,7 @@ class _FidoLockedPage extends ConsumerWidget {
                 : l10n.l_register_sk_on_websites,
         footnote: isBio ? null : l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
 
@@ -144,7 +144,7 @@ class _FidoLockedPage extends ConsumerWidget {
         message: l10n.l_register_sk_on_websites,
         footnote: l10n.l_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
 
@@ -167,7 +167,7 @@ class _FidoLockedPage extends ConsumerWidget {
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
 
@@ -220,7 +220,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
       );
     }
 
@@ -257,7 +257,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
         footnote: l10n.l_non_passkeys_note,
       );
     }
@@ -358,7 +358,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
         builder: (context, expanded) {
           // De-select if window is resized to be non-expanded.
           if (!expanded && _selected != null) {

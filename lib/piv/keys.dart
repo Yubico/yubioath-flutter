@@ -56,11 +56,14 @@ const appListItem9c = Key('$_prefix.9c.applistitem');
 const appListItem9d = Key('$_prefix.9d.applistitem');
 const appListItem9e = Key('$_prefix.9e.applistitem');
 
-// CertInfo body keys
+// SlotMetadata body keys
+const slotMetadataKeyType = Key('$_prefix.slotMetadata.keyType');
 
-const certInfoSubjectKey = Key('$_prefix.certInfo.subject');
-const certInfoIssuerKey = Key('$_prefix.certInfo.issuer');
-const certInfoSerialKey = Key('$_prefix.certInfo.serial');
-const certInfoFingerprintKey = Key('$_prefix.certInfo.fingerprint');
-const certInfoValidFromKey = Key('$_prefix.certInfo.validFrom');
-const certInfoValidToKey = Key('$_prefix.certInfo.validTo');
+// CertInfo body keys
+const certInfoKeyType = Key('$_prefix.certInfo.keyType');
+const certInfoSubject = Key('$_prefix.certInfo.subject');
+const certInfoIssuer = Key('$_prefix.certInfo.issuer');
+const certInfoSerial = Key('$_prefix.certInfo.serial');
+const certInfoFingerprint = Key('$_prefix.certInfo.fingerprint');
+const certInfoValidFrom = Key('$_prefix.certInfo.validFrom');
+const certInfoValidTo = Key('$_prefix.certInfo.validTo');

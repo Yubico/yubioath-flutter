@@ -26,14 +26,17 @@ const defaultManagementKey = '010203040506070801020304050607080102030405060708';
 const defaultManagementKeyType = ManagementKeyType.tdes;
 const defaultKeyType = KeyType.eccp256;
 const defaultGenerateType = GenerateType.certificate;
+const defaultPin = '123456';
+const defaultPuk = '12345678';
 
 enum GenerateType {
-  // TODO: Add "publicKey"? Needed for X25519
+  publicKey,
   certificate,
   csr;
 
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
+      GenerateType.publicKey => l10n.s_public_key,
       GenerateType.certificate => l10n.s_certificate,
       GenerateType.csr => l10n.s_csr,
     };
@@ -202,7 +205,7 @@ class SlotMetadata with _$SlotMetadata {
     PinPolicy pinPolicy,
     TouchPolicy touchPolicy,
     bool generated,
-    String publicKeyEncoded,
+    String publicKey,
   ) = _SlotMetadata;
 
   factory SlotMetadata.fromJson(Map<String, dynamic> json) =>
@@ -247,6 +250,7 @@ class PivState with _$PivState {
 @freezed
 class CertInfo with _$CertInfo {
   factory CertInfo({
+    required KeyType? keyType,
     required String subject,
     required String issuer,
     required String serial,
@@ -263,7 +267,7 @@ class CertInfo with _$CertInfo {
 class PivSlot with _$PivSlot {
   factory PivSlot({
     required SlotId slot,
-    bool? hasKey,
+    SlotMetadata? metadata,
     CertInfo? certInfo,
   }) = _PivSlot;
 
@@ -286,11 +290,14 @@ class PivExamineResult with _$PivExamineResult {
 
 @freezed
 class PivGenerateParameters with _$PivGenerateParameters {
+  factory PivGenerateParameters.publicKey() = _GeneratePublicKey;
+
   factory PivGenerateParameters.certificate({
     required String subject,
     required DateTime validFrom,
     required DateTime validTo,
   }) = _GenerateCertificate;
+
   factory PivGenerateParameters.csr({
     required String subject,
   }) = _GenerateCsr;
@@ -301,7 +308,7 @@ class PivGenerateResult with _$PivGenerateResult {
   factory PivGenerateResult({
     required GenerateType generateType,
     required String publicKey,
-    required String result,
+    String? result,
   }) = _PivGenerateResult;
 
   factory PivGenerateResult.fromJson(Map<String, dynamic> json) =>

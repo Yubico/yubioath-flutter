@@ -228,6 +228,14 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             children: [
               Text(l10n.p_import_items_desc(
                   widget.pivSlot.slot.getDisplayName(l10n))),
+              if (keyType == null && certInfo == null) ...[
+                Text(
+                  l10n.l_import_nothing,
+                  style: subtitleStyle,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
+              ],
               if (keyType != null) ...[
                 Text(
                   l10n.s_private_key,
@@ -255,8 +263,8 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height: 120, // Needed for layout, adapt if text sizes changes
-                  child: CertInfoTable(certInfo),
+                  height: 140, // Needed for layout, adapt if text sizes changes
+                  child: CertInfoTable(certInfo, null),
                 ),
               ]
             ]

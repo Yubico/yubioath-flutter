@@ -79,6 +79,7 @@
     "s_show_secret_key": null,
     "s_hide_secret_key": null,
     "s_private_key": null,
+    "s_public_key": null,
     "s_invalid_length": "Ungültige Länge",
     "l_invalid_format_allowed_chars": null,
     "@l_invalid_format_allowed_chars": {
@@ -273,6 +274,10 @@
             "name": {}
         }
     },
+    "l_warning_default_pin": null,
+    "l_warning_default_puk": null,
+    "l_default_pin_used": null,
+    "l_default_puk_used": null,
 
     "@_passwords": {},
     "s_password": "Passwort",
@@ -460,13 +465,18 @@
     "s_csr": null,
     "s_subject": null,
     "l_export_csr_file": null,
-    "l_select_import_file": null,
+    "l_export_public_key": null,
+    "l_export_public_key_file": null,
+    "l_export_public_key_desc": null,
+    "l_public_key_exported": null,
     "l_export_certificate": null,
     "l_export_certificate_file": null,
     "l_export_certificate_desc": null,
     "l_certificate_exported": null,
+    "l_select_import_file": null,
     "l_import_file": null,
     "l_import_desc": null,
+    "l_import_nothing": null,
     "l_importing_file": null,
     "s_file_imported": null,
     "l_delete_certificate": null,

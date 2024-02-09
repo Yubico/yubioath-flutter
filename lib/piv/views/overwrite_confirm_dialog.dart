@@ -68,7 +68,7 @@ Future<bool> confirmOverwrite(
   required bool writeCert,
 }) async {
   final overwritesCert = writeCert && pivSlot.certInfo != null;
-  final overwritesKey = writeKey ? pivSlot.hasKey : false;
+  final overwritesKey = writeKey ? pivSlot.metadata != null : false;
   if (overwritesCert || overwritesKey != false) {
     return await showBlurDialog(
             context: context,

@@ -334,6 +334,12 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
       });
 
       final (type, subject, validFrom, validTo) = parameters.when(
+        publicKey: () => (
+          GenerateType.publicKey,
+          null,
+          null,
+          null,
+        ),
         certificate: (subject, validFrom, validTo) => (
           GenerateType.certificate,
           subject,

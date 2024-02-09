@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/app/views/device_picker.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/views/keys.dart';
@@ -28,12 +29,84 @@ import 'desktop/util.dart' as desktop_test_util;
 
 const shortWaitMs = 200;
 const longWaitMs = 500;
-const ultraLongWaitMs = 5000;
+const ultraLongWaitMs = 3000;
 
-/// information about YubiKey as seen by the app
-String? yubiKeyName;
-String? yubiKeyFirmware;
-String? yubiKeySerialNumber;
+class ConnectedKey {
+  final String? name;
+  final String? serialNumber;
+  final String? firmware;
+
+  const ConnectedKey(this.name, this.serialNumber, this.firmware);
+
+  @override
+  String toString() {
+    return 'ConnectedYubiKey{name: $name, serialNumber: $serialNumber, firmware: $firmware}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConnectedKey &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          serialNumber == other.serialNumber &&
+          firmware == other.firmware;
+
+  @override
+  int get hashCode => name.hashCode ^ serialNumber.hashCode ^ firmware.hashCode;
+}
+
+extension ConnectedKeyExt on List<ConnectedKey> {
+  String serialNumbers() => where((e) => e.serialNumber != null)
+      .map((e) => e.serialNumber!)
+      .toList()
+      .join(',');
+
+  String prettyList() {
+    var retval = '';
+    if (this.isEmpty) {
+      return 'No keys.';
+    }
+    for (final (index, connectedKey) in indexed) {
+      retval += '${index + 1}: ${connectedKey.name} / '
+          'SN: ${connectedKey.serialNumber} / '
+          'FW: ${connectedKey.firmware}\n';
+    }
+    return retval;
+  }
+}
+
+extension ListTileInfoExt on ListTile {
+  ConnectedKey getKeyInfo() {
+    final itemName = (title as Text).data;
+    String? itemSerialNumber;
+    String? itemFirmware;
+    var subtitle = (this.subtitle as Text?)?.data;
+
+    if (subtitle != null) {
+      RegExpMatch? match =
+          RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)').firstMatch(subtitle);
+      if (match != null) {
+        itemSerialNumber = match.group(1);
+        itemFirmware = match.group(2);
+      } else {
+        match = RegExp(r'F/W: (\d\.\d\.\d)').firstMatch(subtitle);
+        if (match != null) {
+          itemFirmware = match.group(1);
+        }
+      }
+    }
+
+    return ConnectedKey(
+      itemName,
+      itemSerialNumber,
+      itemFirmware,
+    );
+  }
+}
+
+/// contains information about connected YubiKeys approved for testing
+final approvedKeys = <ConnectedKey>[];
 bool collectedYubiKeyInformation = false;
 
 extension AppWidgetTester on WidgetTester {
@@ -75,8 +148,11 @@ extension AppWidgetTester on WidgetTester {
   }
 
   Future<void> tapActionIconButton() async {
-    await tap(findActionIconButton());
-    await pump(const Duration(milliseconds: 500));
+    final actionIconButtonFinder = findActionIconButton();
+    if (actionIconButtonFinder.evaluate().isNotEmpty) {
+      await tap(actionIconButtonFinder);
+      await pump(const Duration(milliseconds: 500));
+    }
   }
 
   Future<void> tapTopLeftCorner() async {
@@ -87,12 +163,15 @@ extension AppWidgetTester on WidgetTester {
   /// Drawer helpers
   bool hasDrawer() => scaffoldGlobalKey.currentState!.hasDrawer;
 
-  /// Open drawer
-  Future<void> openDrawer() async {
-    if (hasDrawer()) {
+  /// Open drawer if not opened
+  /// return open state
+  Future<bool> openDrawer() async {
+    bool isOpened = isDrawerOpened();
+    if (hasDrawer() && !isOpened) {
       scaffoldGlobalKey.currentState!.openDrawer();
       await pump(const Duration(milliseconds: 500));
     }
+    return isOpened;
   }
 
   /// Close drawer
@@ -118,6 +197,41 @@ extension AppWidgetTester on WidgetTester {
     var appButtonFinder = find.byKey(appKey).hitTestable();
     await tap(appButtonFinder);
     await longWait();
+  }
+
+  Future<void> switchToKey(ConnectedKey key) async {
+    await openDrawer();
+    final drawerDevicesFinder = await getDrawerDevices();
+    var itemIndex = 0;
+    for (var element in drawerDevicesFinder.evaluate()) {
+      final listTile = element.widget as ListTile;
+      if (key == listTile.getKeyInfo()) {
+        await tap(drawerDevicesFinder.at(itemIndex));
+        break;
+      }
+      itemIndex++;
+    }
+
+    await closeDrawer();
+  }
+
+  Future<void> tapPopupMenu(ConnectedKey key) async {
+    await openDrawer();
+    final drawerDevicesFinder = await getDrawerDevices();
+    var itemIndex = 0;
+    for (var element in drawerDevicesFinder.evaluate()) {
+      final listTile = element.widget as ListTile;
+      if (key == listTile.getKeyInfo()) {
+        // find the popup menu
+        final popupMenu = find.descendant(
+            of: drawerDevicesFinder.at(itemIndex),
+            matching: find.byKey(yubikeyPopupMenuButton));
+        expect(popupMenu, findsOne);
+        await tap(popupMenu);
+        break;
+      }
+      itemIndex++;
+    }
   }
 
   /// Management screen
@@ -161,9 +275,10 @@ extension AppWidgetTester on WidgetTester {
       testLog(false, 'Failed to read $approvedKeysResource');
     }
 
-    return (approved + (approved.isEmpty ? ',' : '') + envVar)
+    return (approved + (approved.isEmpty ? '' : ',') + envVar)
         .split(',')
         .map((e) => e.trim())
+        .sorted()
         .toList(growable: false);
   }
 
@@ -172,19 +287,29 @@ extension AppWidgetTester on WidgetTester {
         ? await android_test_util.startUp(this, startUpParams)
         : await desktop_test_util.startUp(this, startUpParams);
 
-    await collectYubiKeyInformation();
+    if (!collectedYubiKeyInformation) {
+      final connectedKeys = await collectYubiKeyInformation();
+      if (connectedKeys.isEmpty) {
+        fail('No YubiKey connected');
+      }
 
-    if (yubiKeySerialNumber == null) {
-      fail('No YubiKey connected');
-    }
+      final approvedSerialNumbers = await getApprovedSerialNumbers();
 
-    final approvedSerialNumbers = await getApprovedSerialNumbers();
+      approvedKeys.addAll(connectedKeys
+          .where(
+              (element) => approvedSerialNumbers.contains(element.serialNumber))
+          .toList(growable: false));
 
-    if (!approvedSerialNumbers.contains(yubiKeySerialNumber)) {
-      fail('YubiKey with S/N $yubiKeySerialNumber is not approved for '
-          'integration tests.\nUse --dart-define='
-          'YA_TEST_APPROVED_KEY_SN=$yubiKeySerialNumber test '
-          'parameter to approve it.');
+      testLog(false, 'Approved keys:');
+      testLog(false, approvedKeys.prettyList());
+
+      if (approvedKeys.isEmpty) {
+        final connectedSerials = connectedKeys.serialNumbers();
+        fail('None of the connected YubiKeys ($connectedSerials) '
+            'is approved for integration tests.\nUse --dart-define='
+            'YA_TEST_APPROVED_KEY_SN=$connectedSerials test '
+            'parameter to approve it.');
+      }
     }
 
     return result;
@@ -197,48 +322,36 @@ extension AppWidgetTester on WidgetTester {
   }
 
   /// get key information
-  Future<void> collectYubiKeyInformation() async {
-    if (collectedYubiKeyInformation) {
-      return;
-    }
+  Future<Finder> getDrawerDevices() async {
+    var devicePickerContent =
+        await waitForFinder(find.byType(DevicePickerContent));
+
+    var deviceRows = find.descendant(
+        of: devicePickerContent, matching: find.byType(ListTile));
+
+    return deviceRows;
+  }
+
+  Future<List<ConnectedKey>> collectYubiKeyInformation() async {
+    final connectedKeys = <ConnectedKey>[];
 
     await openDrawer();
 
-    var deviceInfo =
-        await waitForFinder(find.byKey(app_keys.deviceInfoListTile));
-    if (deviceInfo.evaluate().isNotEmpty) {
-      ListTile lt = find
-          .descendant(of: deviceInfo, matching: find.byType(ListTile))
-          .evaluate()
-          .single
-          .widget as ListTile;
-
-      yubiKeyName = (lt.title as Text).data;
-      var subtitle = (lt.subtitle as Text?)?.data;
-
-      if (subtitle != null) {
-        RegExpMatch? match =
-            RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)').firstMatch(subtitle);
-        if (match != null) {
-          yubiKeySerialNumber = match.group(1);
-          yubiKeyFirmware = match.group(2);
-        } else {
-          match = RegExp(r'F/W: (\d\.\d\.\d)').firstMatch(subtitle);
-          if (match != null) {
-            yubiKeyFirmware = match.group(1);
-          }
-        }
-      }
+    final drawerDevicesFinder = await getDrawerDevices();
+    for (var element in drawerDevicesFinder.evaluate()) {
+      final listTile = element.widget as ListTile;
+      connectedKeys.add(listTile.getKeyInfo());
     }
 
     // close the opened menu
     await closeDrawer();
 
-    if (yubiKeySerialNumber != null) {
-      testLog(false,
-          'Connected YubiKey: $yubiKeySerialNumber/$yubiKeyFirmware - $yubiKeyName');
-    }
+    testLog(false, 'Connected YubiKeys:');
+    testLog(false, connectedKeys.prettyList());
+
     collectedYubiKeyInformation = true;
+
+    return connectedKeys;
   }
 
   bool isTextButtonEnabled(Key buttonKey) {
