@@ -24,14 +24,16 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
 import '../state.dart';
 
 enum ManageTarget { pin, puk, unblock }
 
 class ManagePinPukDialog extends ConsumerStatefulWidget {
   final DevicePath path;
+  final PivState pivState;
   final ManageTarget target;
-  const ManagePinPukDialog(this.path,
+  const ManagePinPukDialog(this.path, this.pivState,
       {super.key, this.target = ManageTarget.pin});
 
   @override
@@ -40,7 +42,7 @@ class ManagePinPukDialog extends ConsumerStatefulWidget {
 }
 
 class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
-  String _currentPin = '';
+  final _currentPinController = TextEditingController();
   String _newPin = '';
   String _confirmPin = '';
   bool _currentIsWrong = false;
@@ -48,13 +50,40 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   bool _isObscureCurrent = true;
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
+  late bool _defaultPinUsed;
+  late bool _defaultPukUsed;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _defaultPinUsed =
+        widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
+    _defaultPukUsed =
+        widget.pivState.metadata?.pukMetadata.defaultValue ?? false;
+    if (widget.target == ManageTarget.pin && _defaultPinUsed) {
+      _currentPinController.text = defaultPin;
+    }
+    if (widget.target != ManageTarget.pin && _defaultPukUsed) {
+      _currentPinController.text = defaultPuk;
+    }
+  }
+
+  @override
+  void dispose() {
+    _currentPinController.dispose();
+    super.dispose();
+  }
 
   _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     final result = await switch (widget.target) {
-      ManageTarget.pin => notifier.changePin(_currentPin, _newPin),
-      ManageTarget.puk => notifier.changePuk(_currentPin, _newPin),
-      ManageTarget.unblock => notifier.unblockPin(_currentPin, _newPin),
+      ManageTarget.pin =>
+        notifier.changePin(_currentPinController.text, _newPin),
+      ManageTarget.puk =>
+        notifier.changePuk(_currentPinController.text, _newPin),
+      ManageTarget.unblock =>
+        notifier.unblockPin(_currentPinController.text, _newPin),
     };
 
     result.when(success: () {
@@ -71,22 +100,28 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
       setState(() {
         _attemptsRemaining = attemptsRemaining;
         _currentIsWrong = true;
-        _currentPin = '';
       });
+      _currentPinController.clear();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currentPin = _currentPinController.text;
     final isValid =
-        _newPin.isNotEmpty && _newPin == _confirmPin && _currentPin.isNotEmpty;
+        _newPin.isNotEmpty && _newPin == _confirmPin && currentPin.isNotEmpty;
 
     final titleText = switch (widget.target) {
       ManageTarget.pin => l10n.s_change_pin,
       ManageTarget.puk => l10n.s_change_puk,
       ManageTarget.unblock => l10n.s_unblock_pin,
     };
+
+    final showDefaultPinUsed =
+        widget.target == ManageTarget.pin && _defaultPinUsed;
+    final showDefaultPukUsed =
+        widget.target != ManageTarget.pin && _defaultPukUsed;
 
     return ResponsiveDialog(
       title: Text(titleText),
@@ -107,13 +142,20 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 ? l10n.p_enter_current_pin_or_reset
                 : l10n.p_enter_current_puk_or_reset),
             AppTextField(
-              autofocus: true,
+              autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
               obscureText: _isObscureCurrent,
               maxLength: 8,
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
+              readOnly: showDefaultPinUsed || showDefaultPukUsed,
+              controller: _currentPinController,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
+                helperText: showDefaultPinUsed
+                    ? l10n.l_default_pin_used
+                    : showDefaultPukUsed
+                        ? l10n.l_default_puk_used
+                        : null,
                 labelText: widget.target == ManageTarget.pin
                     ? l10n.s_current_pin
                     : l10n.s_current_puk,
@@ -144,7 +186,6 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               onChanged: (value) {
                 setState(() {
                   _currentIsWrong = false;
-                  _currentPin = value;
                 });
               },
             ),
@@ -152,6 +193,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
             AppTextField(
               key: keys.newPinPukField,
+              autofocus: showDefaultPinUsed || showDefaultPukUsed,
               obscureText: _isObscureNew,
               maxLength: 8,
               autofillHints: const [AutofillHints.newPassword],
@@ -174,7 +216,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
                 // Old YubiKeys allowed a 4 digit PIN
-                enabled: _currentPin.length >= 4,
+                enabled: currentPin.length >= 4,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -212,7 +254,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                enabled: _currentPin.length >= 4 && _newPin.length >= 6,
+                enabled: currentPin.length >= 4 && _newPin.length >= 6,
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

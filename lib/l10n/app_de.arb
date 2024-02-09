@@ -274,6 +274,10 @@
             "name": {}
         }
     },
+    "l_warning_default_pin": null,
+    "l_warning_default_puk": null,
+    "l_default_pin_used": null,
+    "l_default_puk_used": null,
 
     "@_passwords": {},
     "s_password": "Passwort",

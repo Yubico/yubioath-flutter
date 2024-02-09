@@ -110,7 +110,7 @@ class _FidoLockedPage extends ConsumerWidget {
         header: l10n.s_fingerprints_get_started,
         message: l10n.p_set_fingerprints_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: fingerprintsShowActionsNotifier(state),
       );
     }
 
@@ -121,7 +121,7 @@ class _FidoLockedPage extends ConsumerWidget {
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: fingerprintsShowActionsNotifier(state),
         actionsBuilder: (context, expanded) => [
           if (!expanded)
             ActionChip(
@@ -201,7 +201,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             ? (context) =>
                 fingerprintsBuildActions(context, widget.node, widget.state, 0)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
       );
     }
 
@@ -296,7 +296,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             ? (context) => fingerprintsBuildActions(
                 context, widget.node, widget.state, fingerprints.length)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
         builder: (context, expanded) {
           // De-select if window is resized to be non-expanded.
           if (!expanded && _selected != null) {

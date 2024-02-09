@@ -26,10 +26,12 @@ import '../models.dart';
 import 'add_fingerprint_dialog.dart';
 import 'pin_dialog.dart';
 
-bool fidoShowActionsNotifier(FidoState state) {
-  return (state.alwaysUv && !state.hasPin) ||
-      state.bioEnroll == false ||
-      state.forcePinChange;
+bool passkeysShowActionsNotifier(FidoState state) {
+  return (state.alwaysUv && !state.hasPin) || state.forcePinChange;
+}
+
+bool fingerprintsShowActionsNotifier(FidoState state) {
+  return !state.hasPin || state.bioEnroll == false || state.forcePinChange;
 }
 
 Widget passkeysBuildActions(
@@ -63,8 +65,9 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
                   : state.hasPin
                       ? l10n.l_unlock_pin_first
                       : l10n.l_set_pin_first,
-              trailing: fingerprints == 0
-                  ? Icon(Icons.warning_amber, color: colors.tertiary)
+              trailing: fingerprints == 0 || fingerprints == -1
+                  ? Icon(Icons.warning_amber,
+                      color: state.unlocked ? colors.tertiary : null)
                   : null,
               onTap: state.unlocked && fingerprints < 5
                   ? (context) {
@@ -90,7 +93,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
                   ? (state.forcePinChange
                       ? l10n.s_pin_change_required
                       : l10n.s_fido_pin_protection)
-                  : l10n.l_fido_pin_protection_optional,
+                  : l10n.s_fido_pin_protection,
               trailing: state.alwaysUv && !state.hasPin || state.forcePinChange
                   ? Icon(Icons.warning_amber, color: colors.tertiary)
                   : null,
