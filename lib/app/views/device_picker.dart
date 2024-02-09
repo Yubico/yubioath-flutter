@@ -32,6 +32,7 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
+import 'keys.dart';
 import 'reset_dialog.dart';
 
 final _hiddenDevicesProvider =
@@ -177,6 +178,7 @@ class _DeviceMenuButton extends ConsumerWidget {
       child: Opacity(
         opacity: menuItems.isNotEmpty ? opacity : 0.0,
         child: PopupMenuButton(
+          key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
           icon: const Icon(Icons.more_horiz_outlined),
           tooltip: '',
@@ -359,6 +361,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           child: ListTile(
               title: Text(l10n.s_customize_key_action),
               leading: const Icon(Icons.palette_outlined),
+              key: yubikeyLabelColorMenuButton,
               dense: true,
               contentPadding: EdgeInsets.zero,
               enabled: true),
@@ -402,6 +405,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
                 ? l10n.s_toggle_applications
                 : l10n.s_toggle_interfaces),
             leading: const Icon(Icons.construction),
+            key: yubikeyApplicationToggleMenuButton,
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
@@ -422,6 +426,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           child: ListTile(
             title: Text(l10n.s_factory_reset),
             leading: const Icon(Icons.delete_forever),
+            key: yubikeyFactoryResetMenuButton,
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),

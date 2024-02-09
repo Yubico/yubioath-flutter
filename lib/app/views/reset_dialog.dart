@@ -36,6 +36,7 @@ import '../features.dart' as features;
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'keys.dart';
 
 final _log = Logger('fido.views.reset_dialog');
 
@@ -101,6 +102,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
+      key: factoryResetCancel,
       onCancel: switch (_application) {
         Capability.fido2 => _currentStep < 3
             ? () {
@@ -187,6 +189,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   : null,
               _ => throw UnsupportedError('Application cannot be reset'),
             },
+            key: factoryResetReset,
             child: Text(l10n.s_reset),
           )
       ],

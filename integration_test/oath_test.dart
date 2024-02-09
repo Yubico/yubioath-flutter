@@ -45,9 +45,9 @@ void main() {
   group('Account creation', () {
     appTest('Initial reset OATH', (WidgetTester tester) async {
       /// reset OATH application
-      await tester.tapAppDrawerButton(oathAppDrawer);
+      //await tester.tapAppDrawerButton(oathAppDrawer);
       await tester.resetOATH();
-      await tester.longWait();
+      await tester.shortWait();
     });
     appTest('Create 32 Accounts', (WidgetTester tester) async {
       await tester.tapAppDrawerButton(oathAppDrawer);

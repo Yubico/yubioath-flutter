@@ -48,24 +48,29 @@ extension PIVFunctions on WidgetTester {
     await sendKeyEvent(LogicalKeyboardKey.escape);
   }
 
-  /// Resets the PIV application of a key
+  /// Factory reset Piv application
   Future<void> resetPiv() async {
-    // TODO: Implement this using new Reset Dialog
-    // 1. open PIV view
-    var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-    await tap(pivDrawerButton);
+    final targetKey = approvedKeys[0]; // only reset approved keys!
+
+    /// 1. make sure we are using approved key
+    await switchToKey(targetKey);
+    await shortWait();
+
+    /// 2. open the key menu
+    await tapPopupMenu(targetKey);
+    await shortWait();
+    await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
     await longWait();
-    // 1.3. Reset PIV
-    // 1. Click Configure YubiKey
-    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+
+    /// 3. then toggle 'Piv' in the 'Factory reset' reset_dialog.dart
+    await tap(find.byKey(factoryResetPickResetPiv));
     await longWait();
-    // 2. Click Reset PIV
-    //await tap(find.byKey(resetAction).hitTestable());
-    await longWait();
-    // 3. Click Reset
-    await tap(find.byKey(resetButton).hitTestable());
-    await longWait();
-    // 4. Verify Resetedness
+
+    /// 4. Click reset TextButton: done
+    await tap(find.byKey(factoryResetReset));
+    await shortWait();
+
+    // 5. Verify Resetedness
     // /// TODO: this expect algorithm is flaky
     // expect(find.byWidgetPredicate((widget) {
     //   if (widget is AppListItem) {
