@@ -26,6 +26,8 @@ const defaultManagementKey = '010203040506070801020304050607080102030405060708';
 const defaultManagementKeyType = ManagementKeyType.tdes;
 const defaultKeyType = KeyType.eccp256;
 const defaultGenerateType = GenerateType.certificate;
+const defaultPin = '123456';
+const defaultPuk = '12345678';
 
 enum GenerateType {
   publicKey,

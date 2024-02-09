@@ -76,6 +76,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                         context: context,
                         builder: (context) => ManagePinPukDialog(
                           devicePath,
+                          pivState,
                           target: pinBlocked
                               ? ManageTarget.unblock
                               : ManageTarget.pin,
@@ -103,7 +104,8 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                       Navigator.of(context).popUntil((route) => route.isFirst);
                       showBlurDialog(
                         context: context,
-                        builder: (context) => ManagePinPukDialog(devicePath,
+                        builder: (context) => ManagePinPukDialog(
+                            devicePath, pivState,
                             target: ManageTarget.puk),
                       );
                     }
