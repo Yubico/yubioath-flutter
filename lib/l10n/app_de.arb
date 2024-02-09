@@ -310,6 +310,8 @@
     "s_generate_random": null,
     "s_use_default": null,
     "l_warning_default_key": null,
+    "l_warning_default_pin": null,
+    "l_warning_default_puk": null,
     "s_protect_key": null,
     "l_pin_protected_key": null,
     "l_wrong_key": null,

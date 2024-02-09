@@ -310,6 +310,8 @@
     "s_generate_random": "Generate random",
     "s_use_default": "Use default",
     "l_warning_default_key": "Warning: Default key used",
+    "l_warning_default_pin": "Warning: Default PIN used",
+    "l_warning_default_puk": "Warning: Default PUK used",
     "s_protect_key": "Protect with PIN",
     "l_pin_protected_key": "PIN can be used instead",
     "l_wrong_key": "Wrong key",

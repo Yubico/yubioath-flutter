@@ -158,6 +158,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       ? (context) => pivBuildActions(
                           context, widget.devicePath, pivState, ref)
                       : null,
+                  keyActionsBadge: pivShowActionsNotifier(pivState),
                   builder: (context, expanded) {
                     // De-select if window is resized to be non-expanded.
                     if (!expanded && _selected != null) {

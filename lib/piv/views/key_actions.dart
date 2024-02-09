@@ -27,12 +27,23 @@ import '../models.dart';
 import 'manage_key_dialog.dart';
 import 'manage_pin_puk_dialog.dart';
 
+bool pivShowActionsNotifier(PivState state) {
+  final usingDefaultPin = state.metadata?.pinMetadata.defaultValue == true;
+  final usingDefaultPuk = state.metadata?.pukMetadata.defaultValue == true;
+  final usingDefaultMgmtKey =
+      state.metadata?.managementKeyMetadata.defaultValue == true;
+
+  return usingDefaultPin || usingDefaultPuk || usingDefaultMgmtKey;
+}
+
 Widget pivBuildActions(BuildContext context, DevicePath devicePath,
     PivState pivState, WidgetRef ref) {
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
   final l10n = AppLocalizations.of(context)!;
 
+  final usingDefaultPin = pivState.metadata?.pinMetadata.defaultValue == true;
+  final usingDefaultPuk = pivState.metadata?.pukMetadata.defaultValue == true;
   final usingDefaultMgmtKey =
       pivState.metadata?.managementKeyMetadata.defaultValue == true;
 
@@ -53,9 +64,11 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                   ? (pukAttempts != 0
                       ? l10n.l_piv_pin_blocked
                       : l10n.l_piv_pin_puk_blocked)
-                  : l10n.l_attempts_remaining(pivState.pinAttempts),
+                  : usingDefaultPin
+                      ? '${l10n.l_attempts_remaining(pivState.pinAttempts)}\n${l10n.l_warning_default_pin}'
+                      : l10n.l_attempts_remaining(pivState.pinAttempts),
               icon: const Icon(Icons.pin_outlined),
-              trailing: pinBlocked ? alertIcon : null,
+              trailing: pinBlocked || usingDefaultPin ? alertIcon : null,
               onTap: !(pinBlocked && pukAttempts == 0)
                   ? (context) {
                       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -77,10 +90,14 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
               subtitle: pukAttempts != null
                   ? (pukAttempts == 0
                       ? l10n.l_piv_pin_puk_blocked
-                      : l10n.l_attempts_remaining(pukAttempts))
-                  : null,
+                      : usingDefaultPuk
+                          ? '${l10n.l_attempts_remaining(pukAttempts)}\n${l10n.l_warning_default_puk}'
+                          : l10n.l_attempts_remaining(pukAttempts))
+                  : usingDefaultPuk
+                      ? l10n.l_warning_default_puk
+                      : null,
               icon: const Icon(Icons.pin_outlined),
-              trailing: pukAttempts == 0 ? alertIcon : null,
+              trailing: pukAttempts == 0 || usingDefaultPuk ? alertIcon : null,
               onTap: pukAttempts != 0
                   ? (context) {
                       Navigator.of(context).popUntil((route) => route.isFirst);

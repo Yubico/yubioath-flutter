@@ -310,6 +310,8 @@
     "s_generate_random": "Generuj losowo",
     "s_use_default": "Użyj domyślnego",
     "l_warning_default_key": "Uwaga: Używany jest klucz domyślny",
+    "l_warning_default_pin": null,
+    "l_warning_default_puk": null,
     "s_protect_key": "Zabezpiecz kodem PIN",
     "l_pin_protected_key": "Zamiast tego można użyć kodu PIN",
     "l_wrong_key": "Błędny klucz",
