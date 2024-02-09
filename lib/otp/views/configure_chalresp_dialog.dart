@@ -141,6 +141,7 @@ class _ConfigureChalrespDialogState
                           : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
+                    key: keys.generateSecretKey,
                     icon: const Icon(Icons.refresh),
                     onPressed: () {
                       setState(() {
