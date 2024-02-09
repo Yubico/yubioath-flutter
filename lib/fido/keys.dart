@@ -28,6 +28,11 @@ const newPin = Key('$_keyAction.new_pin');
 const confirmPin = Key('$_keyAction.confirm_pin');
 const currentPin = Key('$_keyAction.current_pin');
 
+// pin entry
+const pinEntry = Key('$_keyAction.pin_entry');
+const unlockFido2WithPin = Key('$_keyAction.unlock_fido2_with_pin');
+
+
 // Credential actions
 const editCredentialAction = Key('$_credentialAction.edit');
 const deleteCredentialAction = Key('$_credentialAction.delete');

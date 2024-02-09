@@ -30,8 +30,7 @@ extension Fido2Functions on WidgetTester {
   /// Open the PIV Configuration
   Future<void> configurePasskey() async {
     // 1. open PIV view
-    var pivDrawerButton = find.byKey(fidoPasskeysAppDrawer).hitTestable();
-    await tap(pivDrawerButton);
+    await tap(find.byKey(fidoPasskeysAppDrawer).hitTestable());
     await shortWait();
     await tap(find.byKey(actionsIconButtonKey).hitTestable());
     await shortWait();
@@ -59,7 +58,11 @@ extension Fido2Functions on WidgetTester {
     await tap(find.byKey(factoryResetReset));
     await fido2DanceWait();
 
-    /// TODO 5. Verify Resetedness
+    /// 5. Click the 'Close' button
+    await tap(find.text('Close').hitTestable());
+    await shortWait();
+
+    /// TODO 6. Verify Resetedness
 
   }
 }

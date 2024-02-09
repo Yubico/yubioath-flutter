@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -85,6 +86,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
             child: AppTextField(
+              key: pinEntry,
               autofocus: true,
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],
