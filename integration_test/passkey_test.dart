@@ -20,6 +20,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/fido/keys.dart';
 
+import 'utils/passkey_test_util.dart';
 import 'utils/test_util.dart';
 
 void main() {
@@ -27,80 +28,62 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Passkey PIN tests', () {
-    const _simplePin = '1111';
-    const _fidoPin1 = '9473';
-    const _fidoPin2 = '4781';
+    const simplePin = '1111';
+    const fidoPin1 = '9473';
+    const fidoPin2 = '4781';
     appTest('Reset Key', (WidgetTester tester) async {
-      await tester.tap(find.byKey(fidoPasskeysAppDrawer));
-      await tester.shortWait();
-
-      await tester.tap(find.byKey(factoryresetfido2).hitTestable());
-      await tester.shortWait();
+      // await tester.configurePasskey();
+      await tester.resetFido2();
     });
     appTest('Set SimplePin', (WidgetTester tester) async {
-      await tester.tap(find.byKey(fidoPasskeysAppDrawer));
-      await tester.shortWait();
-
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.shortWait();
+      await tester.configurePasskey();
 
       await tester.tap(find.byKey(managePinAction));
       await tester.shortWait();
 
-      await tester.enterText(find.byKey(newPin), _simplePin);
+      await tester.enterText(find.byKey(newPin), simplePin);
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPin), _simplePin);
+      await tester.enterText(find.byKey(newPin), simplePin);
       await tester.shortWait();
 
       await tester.tap(find.byKey(saveButton));
       await tester.shortWait();
     });
     appTest('Change to FidoPin1', (WidgetTester tester) async {
-      await tester.tap(find.byKey(fidoPasskeysAppDrawer));
-      await tester.shortWait();
-
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.shortWait();
+      await tester.configurePasskey();
 
       await tester.tap(find.byKey(managePinAction));
       await tester.shortWait();
 
-      await tester.enterText(find.byKey(currentPin), _simplePin);
+      await tester.enterText(find.byKey(currentPin), simplePin);
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPin), _fidoPin1);
+      await tester.enterText(find.byKey(newPin), fidoPin1);
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPin), _fidoPin1);
+      await tester.enterText(find.byKey(newPin), fidoPin1);
       await tester.shortWait();
 
       await tester.tap(find.byKey(saveButton));
       await tester.shortWait();
     });
     appTest('Change to FidoPin2', (WidgetTester tester) async {
-      await tester.tap(find.byKey(fidoPasskeysAppDrawer));
-      await tester.shortWait();
-
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.shortWait();
+      await tester.configurePasskey();
 
       await tester.tap(find.byKey(managePinAction));
       await tester.shortWait();
 
-      await tester.enterText(find.byKey(currentPin), _fidoPin1);
+      await tester.enterText(find.byKey(currentPin), fidoPin1);
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPin), _fidoPin2);
+      await tester.enterText(find.byKey(newPin), fidoPin2);
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPin), _fidoPin2);
+      await tester.enterText(find.byKey(newPin), fidoPin2);
       await tester.shortWait();
 
       await tester.tap(find.byKey(saveButton));
       await tester.shortWait();
     });
     appTest('Reset Key', (WidgetTester tester) async {
-      await tester.tap(find.byKey(fidoPasskeysAppDrawer));
-      await tester.shortWait();
-
-      await tester.tap(find.byKey(factoryresetfido2).hitTestable());
-      await tester.shortWait();
+      await tester.configurePasskey();
+      await tester.resetFido2();
     });
   });
 }
