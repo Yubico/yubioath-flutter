@@ -24,6 +24,7 @@ import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../management/views/management_screen.dart';
+import '../features.dart' as features;
 import '../key_customization/models.dart';
 import '../key_customization/state.dart';
 import '../key_customization/views/key_customization_dialog.dart';
@@ -334,9 +335,10 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
     final hidden = ref.watch(_hiddenDevicesProvider);
 
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
-    final managementAvailability = data != null
-        ? Application.management.getAvailability(data)
-        : Availability.unsupported;
+    final managementAvailability =
+        data == null || !hasFeature(features.management)
+            ? Availability.unsupported
+            : Application.management.getAvailability(data);
 
     final serial = node is UsbYubiKeyNode
         ? node.info?.serial
