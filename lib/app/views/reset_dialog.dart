@@ -39,6 +39,15 @@ import '../state.dart';
 
 final _log = Logger('fido.views.reset_dialog');
 
+extension on Capability {
+  IconData get _icon => switch (this) {
+        Capability.oath => Icons.supervisor_account_outlined,
+        Capability.fido2 => Icons.security_outlined,
+        Capability.piv => Icons.approval_outlined,
+        _ => throw UnsupportedError('Icon not defined'),
+      };
+}
+
 List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
       if (hasFeature(features.oath)) Capability.oath,
       if (hasFeature(features.fido)) Capability.fido2,
@@ -187,27 +196,32 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!globalReset)
-              SegmentedButton<Capability>(
-                emptySelectionAllowed: true,
-                segments: getResetCapabilities(hasFeature)
-                    .where((c) => supported & c.value != 0)
-                    .map((c) => ButtonSegment(
-                          value: c,
-                          icon: const Icon(null),
-                          label: Padding(
-                            padding: const EdgeInsets.only(right: 22),
-                            child: Text(c.getDisplayName(l10n)),
-                          ),
-                          enabled: enabled & c.value != 0,
-                        ))
-                    .toList(),
-                selected: _application != null ? {_application!} : {},
-                onSelectionChanged: (selected) {
-                  setState(() {
-                    _application = selected.first;
-                  });
-                },
-              ),
+              Builder(builder: (context) {
+                final width = MediaQuery.of(context).size.width;
+                final showLabels = width > 320;
+                return SegmentedButton<Capability>(
+                  emptySelectionAllowed: true,
+                  segments: getResetCapabilities(hasFeature)
+                      .where((c) => supported & c.value != 0)
+                      .map((c) => ButtonSegment(
+                            value: c,
+                            icon: Icon(c._icon),
+                            label: showLabels
+                                ? Text(c.getDisplayName(l10n))
+                                : null,
+                            tooltip:
+                                !showLabels ? c.getDisplayName(l10n) : null,
+                            enabled: enabled & c.value != 0,
+                          ))
+                      .toList(),
+                  selected: _application != null ? {_application!} : {},
+                  onSelectionChanged: (selected) {
+                    setState(() {
+                      _application = selected.first;
+                    });
+                  },
+                );
+              }),
             Text(
               switch (_application) {
                 Capability.oath => l10n.p_warning_factory_reset,
