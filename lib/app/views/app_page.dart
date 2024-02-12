@@ -197,7 +197,8 @@ class AppPage extends StatelessWidget {
             child: _buildTitle(context),
           ),
         builder(context, expanded),
-        if (actionsBuilder != null)
+        if (actionsBuilder != null &&
+            actionsBuilder!(context, expanded).isNotEmpty)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
