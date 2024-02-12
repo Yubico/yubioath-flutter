@@ -27,6 +27,7 @@ import '../../desktop/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -67,6 +68,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
+          key: saveButton,
           child: Text(l10n.s_save),
         ),
       ],
@@ -78,6 +80,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             if (hasPin) ...[
               Text(l10n.p_enter_current_pin_or_reset_no_puk),
               AppTextFormField(
+                key: currentPin,
                 initialValue: _currentPin,
                 autofocus: true,
                 obscureText: _isObscureCurrent,
@@ -112,6 +115,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             Text(l10n.p_enter_new_fido2_pin(minPinLength)),
             // TODO: Set max characters based on UTF-8 bytes
             AppTextFormField(
+              key: newPin,
               initialValue: _newPin,
               autofocus: !hasPin,
               obscureText: _isObscureNew,
@@ -142,6 +146,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               },
             ),
             AppTextFormField(
+              key: confirmPin,
               initialValue: _confirmPin,
               obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.password],
