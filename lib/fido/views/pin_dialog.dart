@@ -68,8 +68,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
-          child: Text(l10n.s_save),
           key: saveButton,
+          child: Text(l10n.s_save),
         ),
       ],
       child: Padding(
