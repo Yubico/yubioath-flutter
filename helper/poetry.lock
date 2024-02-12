@@ -519,23 +519,23 @@ files = [
 
 [[package]]
 name = "pyinstaller"
-version = "6.3.0"
+version = "6.4.0"
 description = "PyInstaller bundles a Python application and all its dependencies into a single package."
 optional = false
 python-versions = "<3.13,>=3.8"
 files = [
-    {file = "pyinstaller-6.3.0-py3-none-macosx_10_13_universal2.whl", hash = "sha256:75a6f2a6f835a2e6e0899d10e60c10caf5defd25aced38b1dd48fbbabc89de07"},
-    {file = "pyinstaller-6.3.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:de25beb176f73a944758553caacec46cc665bf3910ad8a174706d79cf6e95340"},
-    {file = "pyinstaller-6.3.0-py3-none-manylinux2014_i686.whl", hash = "sha256:e436fcc0ea87c3f132baac916d508c24c84a8f6d8a06c3154fbc753f169b76c7"},
-    {file = "pyinstaller-6.3.0-py3-none-manylinux2014_ppc64le.whl", hash = "sha256:b721d793a33b6d9946c7dd95d3ea7589c0424b51cf1b9fe580f03c544f1336b2"},
-    {file = "pyinstaller-6.3.0-py3-none-manylinux2014_s390x.whl", hash = "sha256:96c37a1ee5b2fd5bb25c098ef510661d6d17b6515d0b86d8fc93727dd2475ba3"},
-    {file = "pyinstaller-6.3.0-py3-none-manylinux2014_x86_64.whl", hash = "sha256:abe91106a3bbccc3f3a27af4325676ecdb6f46cb842ac663625002a870fc503b"},
-    {file = "pyinstaller-6.3.0-py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:41c937fe8f07ae02009b3b5a96ac3eb0800a4f8a97af142d4100060fe2135bb9"},
-    {file = "pyinstaller-6.3.0-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:886b3b995b674905a20ad5b720b47cc395897d7b391117831027a4c8c5d67a58"},
-    {file = "pyinstaller-6.3.0-py3-none-win32.whl", hash = "sha256:0597fb04337695e5cc5250253e0655530bf14f264b7a5b7d219cc65f6889c4bd"},
-    {file = "pyinstaller-6.3.0-py3-none-win_amd64.whl", hash = "sha256:156b32ba943e0090bcc68e40ae1cb68fd92b7f1ab6fe0bdf8faf3d3cfc4e12dd"},
-    {file = "pyinstaller-6.3.0-py3-none-win_arm64.whl", hash = "sha256:1eadbd1fae84e2e6c678d8b4ed6a232ec5c8fe3a839aea5a3071c4c0282f98cc"},
-    {file = "pyinstaller-6.3.0.tar.gz", hash = "sha256:914d4c96cc99472e37ac552fdd82fbbe09e67bb592d0717fcffaa99ea74273df"},
+    {file = "pyinstaller-6.4.0-py3-none-macosx_10_13_universal2.whl", hash = "sha256:a2e63fa71784f290bbf79b31b60a27c45b17a18b8c7f910757f9474e0c12c95d"},
+    {file = "pyinstaller-6.4.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:3127724d1841f785a9916d7b4cfd9595f359925e9ce7d137a16db8c29ca8453b"},
+    {file = "pyinstaller-6.4.0-py3-none-manylinux2014_i686.whl", hash = "sha256:a37f83850cb150ad1e00fe92acecc4d39b8e10162a1850a5836a05fcb2daa870"},
+    {file = "pyinstaller-6.4.0-py3-none-manylinux2014_ppc64le.whl", hash = "sha256:28b98fa3c74602bdc4c5a7698e907f31e714cc40a13f6358082bcbc74ddab35c"},
+    {file = "pyinstaller-6.4.0-py3-none-manylinux2014_s390x.whl", hash = "sha256:3ae62cf8858ec4dc54df6fa03d29bc78297e3c87caf532887eae8c3893be0789"},
+    {file = "pyinstaller-6.4.0-py3-none-manylinux2014_x86_64.whl", hash = "sha256:e3e1e6922a4260dcacf6f5655b0ca857451e05ac502d01642935d0f2873ad3c7"},
+    {file = "pyinstaller-6.4.0-py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:78fb66ca753ef8becdf059eaa1e764d384cacb8c2ec76800126f8c9ef6d19a50"},
+    {file = "pyinstaller-6.4.0-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:e07cff584600647af7dc279dd04c60cd1b4b1b41947b0753f8fcf1969300a583"},
+    {file = "pyinstaller-6.4.0-py3-none-win32.whl", hash = "sha256:c7bc0fbea8a9010484cfa7d3856416003af73271f03ca3da4bc0eaf14680ad17"},
+    {file = "pyinstaller-6.4.0-py3-none-win_amd64.whl", hash = "sha256:ec8a08c983e3febb0247893cd9bd59f55b6767a1f649cb41a0a129b8f04ff2cb"},
+    {file = "pyinstaller-6.4.0-py3-none-win_arm64.whl", hash = "sha256:11e6da6a6e441379352ee460a8880f2633dac91dac0f5a9eeff5d449d459b046"},
+    {file = "pyinstaller-6.4.0.tar.gz", hash = "sha256:1bf608ed947b58614711275a7ff169289b32560dc97ec748ebd5fa8bdec80649"},
 ]
 
 [package.dependencies]
@@ -544,7 +544,7 @@ importlib-metadata = {version = ">=4.6", markers = "python_version < \"3.10\""}
 macholib = {version = ">=1.8", markers = "sys_platform == \"darwin\""}
 packaging = ">=22.0"
 pefile = {version = ">=2022.5.30", markers = "sys_platform == \"win32\""}
-pyinstaller-hooks-contrib = ">=2021.4"
+pyinstaller-hooks-contrib = ">=2024.0"
 pywin32-ctypes = {version = ">=0.2.1", markers = "sys_platform == \"win32\""}
 setuptools = ">=42.0.0"
 
@@ -575,11 +575,16 @@ description = "Smartcard module for Python."
 optional = false
 python-versions = "*"
 files = [
+    {file = "pyscard-2.0.7-cp310-cp310-win32.whl", hash = "sha256:06666a597e1293421fa90e0d4fc2418add447b10b7dc85f49b3cafc23480f046"},
     {file = "pyscard-2.0.7-cp310-cp310-win_amd64.whl", hash = "sha256:a2266345bd387854298153264bff8b74f494581880a76e3e8679460c1b090fab"},
+    {file = "pyscard-2.0.7-cp311-cp311-win32.whl", hash = "sha256:beacdcdc3d1516e195f7a38ec3966c5d4df7390c8f036cb41f6fef72bc5cc646"},
     {file = "pyscard-2.0.7-cp311-cp311-win_amd64.whl", hash = "sha256:8e37b697327e8dc4848c481428d1cbd10b7ae2ce037bc799e5b8bbd2fc3ab5ed"},
+    {file = "pyscard-2.0.7-cp37-cp37m-win32.whl", hash = "sha256:a0c5edbedafba62c68160884f878d9f53996d7219a3fc11b1cea6bab59c7f34a"},
     {file = "pyscard-2.0.7-cp37-cp37m-win_amd64.whl", hash = "sha256:f704ad40dc40306e1c0981941789518ab16aa1f84443b1d52ec0264884092b3b"},
+    {file = "pyscard-2.0.7-cp38-cp38-win32.whl", hash = "sha256:59a466ab7ae20188dd197664b9ca1ea9524d115a5aa5b16b575a6b772cdcb73c"},
     {file = "pyscard-2.0.7-cp38-cp38-win_amd64.whl", hash = "sha256:da70aa5b7be5868b88cdb6d4a419d2791b6165beeb90cd01d2748033302a0f43"},
     {file = "pyscard-2.0.7-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:2d4bdc1f4e0e6c46e417ac1bc9d5990f7cfb24a080e890d453781405f7bd29dc"},
+    {file = "pyscard-2.0.7-cp39-cp39-win32.whl", hash = "sha256:39e030c47878b37ae08038a917959357be6468da52e8b144e84ffc659f50e6e2"},
     {file = "pyscard-2.0.7-cp39-cp39-win_amd64.whl", hash = "sha256:5a5865675be294c8d91f22dc91e7d897c4138881e5295fb6b2cd821f7c0389d9"},
     {file = "pyscard-2.0.7.tar.gz", hash = "sha256:278054525fa75fbe8b10460d87edcd03a70ad94d688b11345e4739987f85c1bf"},
 ]
@@ -780,4 +785,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6664f12e752d8b41c996d11e43a8572ed47f7fbfaaf84fa894be725fe2208d80"
+content-hash = "e1413099ef87b71f3ade7bd2b7b8a1c8fd581ec40bcd216cbe25dcee16d7e244"
