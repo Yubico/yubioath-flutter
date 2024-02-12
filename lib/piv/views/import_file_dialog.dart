@@ -31,6 +31,7 @@ import '../models.dart';
 import '../state.dart';
 import 'cert_info_view.dart';
 import 'overwrite_confirm_dialog.dart';
+import 'utils.dart';
 
 class ImportFileDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -86,10 +87,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      color: colorScheme.onSurfaceVariant,
     );
+    // This is what TextInput errors look like
+    final errorStyle = textTheme.labelLarge!.copyWith(color: colorScheme.error);
     final state = _state;
     if (state == null) {
       return ResponsiveDialog(
@@ -166,116 +170,142 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           ),
         ),
       ),
-      result: (_, keyType, certInfo) => ResponsiveDialog(
-        title: Text(l10n.l_import_file),
-        actions: [
-          TextButton(
-            key: keys.unlockButton,
-            onPressed: (keyType == null && certInfo == null) || _importing
-                ? null
-                : () async {
-                    final withContext = ref.read(withContextProvider);
+      result: (_, keyType, certInfo) {
+        final isFips =
+            ref.watch(currentDeviceDataProvider).valueOrNull?.info.isFips ??
+                false;
+        final unsupportedKey = keyType != null &&
+            !getSupportedKeyTypes(widget.pivState.version, isFips)
+                .contains(keyType);
+        return ResponsiveDialog(
+          title: Text(l10n.l_import_file),
+          actions: [
+            TextButton(
+              key: keys.unlockButton,
+              onPressed: (keyType == null && certInfo == null) ||
+                      _importing ||
+                      unsupportedKey
+                  ? null
+                  : () async {
+                      final withContext = ref.read(withContextProvider);
 
-                    if (!await confirmOverwrite(
-                      context,
-                      widget.pivSlot,
-                      writeKey: keyType != null,
-                      writeCert: certInfo != null,
-                    )) {
-                      return;
-                    }
+                      if (!await confirmOverwrite(
+                        context,
+                        widget.pivSlot,
+                        writeKey: keyType != null,
+                        writeCert: certInfo != null,
+                      )) {
+                        return;
+                      }
 
-                    setState(() {
-                      _importing = true;
-                    });
-
-                    void Function()? close;
-                    try {
-                      close = await withContext<void Function()>(
-                          (context) async => showMessage(
-                                context,
-                                l10n.l_importing_file,
-                                duration: const Duration(seconds: 30),
-                              ));
-                      await ref
-                          .read(pivSlotsProvider(widget.devicePath).notifier)
-                          .import(widget.pivSlot.slot, _data,
-                              password:
-                                  _password.isNotEmpty ? _password : null);
-                      await withContext(
-                        (context) async {
-                          Navigator.of(context).pop(true);
-                          showMessage(context, l10n.s_file_imported);
-                        },
-                      );
-                    } catch (err) {
-                      // TODO: More error cases
                       setState(() {
-                        _passwordIsWrong = true;
-                        _importing = false;
+                        _importing = true;
                       });
-                    } finally {
-                      close?.call();
-                    }
-                  },
-            child: Text(l10n.s_import),
-          ),
-        ],
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.p_import_items_desc(
-                  widget.pivSlot.slot.getDisplayName(l10n))),
-              if (keyType == null && certInfo == null) ...[
-                Text(
-                  l10n.l_import_nothing,
-                  style: subtitleStyle,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              if (keyType != null) ...[
-                Text(
-                  l10n.s_private_key,
-                  style: textTheme.bodyLarge,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(l10n.s_algorithm),
-                    const SizedBox(width: 8),
-                    Text(
-                      keyType.name.toUpperCase(),
-                      style: subtitleStyle,
+
+                      void Function()? close;
+                      try {
+                        close = await withContext<void Function()>(
+                            (context) async => showMessage(
+                                  context,
+                                  l10n.l_importing_file,
+                                  duration: const Duration(seconds: 30),
+                                ));
+                        await ref
+                            .read(pivSlotsProvider(widget.devicePath).notifier)
+                            .import(widget.pivSlot.slot, _data,
+                                password:
+                                    _password.isNotEmpty ? _password : null);
+                        await withContext(
+                          (context) async {
+                            Navigator.of(context).pop(true);
+                            showMessage(context, l10n.s_file_imported);
+                          },
+                        );
+                      } catch (err) {
+                        // TODO: More error cases
+                        setState(() {
+                          _passwordIsWrong = true;
+                          _importing = false;
+                        });
+                      } finally {
+                        close?.call();
+                      }
+                    },
+              child: Text(l10n.s_import),
+            ),
+          ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.p_import_items_desc(
+                    widget.pivSlot.slot.getDisplayName(l10n))),
+                if (keyType == null && certInfo == null) ...[
+                  Row(
+                    children: [
+                      Icon(Icons.error, color: colorScheme.error),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.l_import_nothing,
+                        style: errorStyle,
+                      ),
+                    ],
+                  ),
+                ],
+                if (keyType != null) ...[
+                  Text(
+                    l10n.s_private_key,
+                    style: textTheme.bodyLarge,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l10n.s_algorithm),
+                      const SizedBox(width: 8),
+                      Text(
+                        keyType.name.toUpperCase(),
+                        style: subtitleStyle,
+                      ),
+                    ],
+                  ),
+                  if (unsupportedKey)
+                    Row(
+                      children: [
+                        Icon(Icons.error, color: colorScheme.error),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.l_unsupported_key_type,
+                          style: errorStyle,
+                        ),
+                      ],
                     ),
-                  ],
-                )
-              ],
-              if (certInfo != null) ...[
-                Text(
-                  l10n.s_certificate,
-                  style: textTheme.bodyLarge,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 140, // Needed for layout, adapt if text sizes changes
-                  child: CertInfoTable(certInfo, null),
-                ),
+                ],
+                if (certInfo != null) ...[
+                  Text(
+                    l10n.s_certificate,
+                    style: textTheme.bodyLarge,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height:
+                        140, // Needed for layout, adapt if text sizes changes
+                    child: CertInfoTable(certInfo, null),
+                  ),
+                ]
               ]
-            ]
-                .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: e,
-                    ))
-                .toList(),
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: e,
+                      ))
+                  .toList(),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

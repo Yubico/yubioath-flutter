@@ -479,6 +479,7 @@
     "l_import_nothing": null,
     "l_importing_file": "Importation d'un fichier\u2026",
     "s_file_imported": "Fichier importé",
+    "l_unsupported_key_type": null,
     "l_delete_certificate": "Supprimer un certificat",
     "l_delete_certificate_desc": "Supprimer un certificat de votre YubiKey",
     "s_issuer": "Émetteur",
