@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@Tags(['android', 'desktop', 'oath'])
+@Tags(['desktop', 'passkey'])
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/fido/keys.dart';
