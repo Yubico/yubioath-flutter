@@ -106,6 +106,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
       onCancel: switch (_application) {
         Capability.fido2 => _currentStep < 3
             ? () {
+                _currentStep = -1;
                 _subscription?.cancel();
               }
             : null,
@@ -222,7 +223,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                 : null,
                             tooltip:
                                 !showLabels ? c.getDisplayName(l10n) : null,
-                            enabled: enabled & c.value != 0,
+                            enabled:
+                                enabled & c.value != 0 && (_currentStep == -1),
                           ))
                       .toList(),
                   selected: _application != null ? {_application!} : {},
