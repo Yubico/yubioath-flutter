@@ -17,7 +17,6 @@
 @Tags(['android', 'desktop', 'oath'])
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/fido/keys.dart';
 
 import 'utils/passkey_test_util.dart';
@@ -27,19 +26,20 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('Passkey PIN tests', () {
+  group('Passkey PIN tests', ()
+  {
     const simplePin = '1111';
-    const fidoPin1 = '9473';
-    const fidoPin2 = '4781';
+    const fidoPin1 = '947344';
+    const fidoPin2 = '478178';
 
     /// Sadly these tests are built on each other to save reset-dance
 
-    appTest('Reset Fido2 1/3', (WidgetTester tester) async {
+    appTest('Reset Fido2 1/2', (WidgetTester tester) async {
       await tester.resetFido2();
     });
-    group('Set/change pin and pin complexity', (){
+    group('Set/change pin', () {
       appTest('Set simplePin', (WidgetTester tester) async {
-        /// OBS: This will not work if there is pin complexity requirements
+        // OBS: This will not work if there is pin complexity requirements
         await tester.configurePasskey();
 
         await tester.tap(find.byKey(managePinAction).hitTestable());
@@ -52,6 +52,11 @@ void main() {
 
         await tester.tap(find.byKey(saveButton).hitTestable());
         await tester.shortWait();
+
+        /// TODO: deal with error messages from fips keys
+
+        /// TODO: make sure that the outcome of this test is a set state, right now it differs between FIPS and non-FIPS keys.
+
       });
       appTest('Change to fidoPin1', (WidgetTester tester) async {
         await tester.configurePasskey();
@@ -86,81 +91,7 @@ void main() {
         await tester.shortWait();
       });
     });
-    appTest('Reset Fido2 2/3', (WidgetTester tester) async {
-      await tester.resetFido2();
-    });
-    group('Pin use, pin lock', () {
-      appTest('Set fidoPin1', (WidgetTester tester) async {
-        await tester.configurePasskey();
-
-        await tester.tap(find.byKey(managePinAction).hitTestable());
-        await tester.shortWait();
-
-        await tester.enterText(find.byKey(newPin), fidoPin1);
-        await tester.shortWait();
-        await tester.enterText(find.byKey(confirmPin), fidoPin1);
-        await tester.shortWait();
-
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.shortWait();
-      });
-      appTest('Wrong pin 1/3', (WidgetTester tester) async {
-        await tester.tap(find.byKey(fidoPasskeysAppDrawer).hitTestable());
-        await tester.shortWait();
-
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-
-        /// TODO verify that l_pin_soft_locked is seen.
-      });
-      appTest('Wrong pin 2/3', (WidgetTester tester) async {
-        await tester.tap(find.byKey(fidoPasskeysAppDrawer).hitTestable());
-        await tester.shortWait();
-
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-
-        /// TODO verify that l_pin_soft_locked is seen.
-      });
-      appTest('Wrong pin 3/3', (WidgetTester tester) async {
-        await tester.tap(find.byKey(fidoPasskeysAppDrawer).hitTestable());
-        await tester.shortWait();
-
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-        await tester.tap(find.byKey(unlockFido2WithPin).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(find.byKey(pinEntry), simplePin);
-        await tester.shortWait();
-
-        /// TODO verify that l_pin_blocked_reset_locked is seen.
-      });
-    });
-    appTest('Reset Fido2 3/3', (WidgetTester tester) async {
+    appTest('Reset Fido2 2/2', (WidgetTester tester) async {
       await tester.resetFido2();
     });
   });

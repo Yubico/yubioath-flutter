@@ -132,6 +132,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 0),
             minLeadingWidth: 0,
             trailing: FilledButton.icon(
+              key: unlockFido2WithPin,
               icon: const Icon(Icons.lock_open),
               label: Text(l10n.s_unlock),
               onPressed:
