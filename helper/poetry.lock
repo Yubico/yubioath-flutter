@@ -575,11 +575,16 @@ description = "Smartcard module for Python."
 optional = false
 python-versions = "*"
 files = [
+    {file = "pyscard-2.0.7-cp310-cp310-win32.whl", hash = "sha256:06666a597e1293421fa90e0d4fc2418add447b10b7dc85f49b3cafc23480f046"},
     {file = "pyscard-2.0.7-cp310-cp310-win_amd64.whl", hash = "sha256:a2266345bd387854298153264bff8b74f494581880a76e3e8679460c1b090fab"},
+    {file = "pyscard-2.0.7-cp311-cp311-win32.whl", hash = "sha256:beacdcdc3d1516e195f7a38ec3966c5d4df7390c8f036cb41f6fef72bc5cc646"},
     {file = "pyscard-2.0.7-cp311-cp311-win_amd64.whl", hash = "sha256:8e37b697327e8dc4848c481428d1cbd10b7ae2ce037bc799e5b8bbd2fc3ab5ed"},
+    {file = "pyscard-2.0.7-cp37-cp37m-win32.whl", hash = "sha256:a0c5edbedafba62c68160884f878d9f53996d7219a3fc11b1cea6bab59c7f34a"},
     {file = "pyscard-2.0.7-cp37-cp37m-win_amd64.whl", hash = "sha256:f704ad40dc40306e1c0981941789518ab16aa1f84443b1d52ec0264884092b3b"},
+    {file = "pyscard-2.0.7-cp38-cp38-win32.whl", hash = "sha256:59a466ab7ae20188dd197664b9ca1ea9524d115a5aa5b16b575a6b772cdcb73c"},
     {file = "pyscard-2.0.7-cp38-cp38-win_amd64.whl", hash = "sha256:da70aa5b7be5868b88cdb6d4a419d2791b6165beeb90cd01d2748033302a0f43"},
     {file = "pyscard-2.0.7-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:2d4bdc1f4e0e6c46e417ac1bc9d5990f7cfb24a080e890d453781405f7bd29dc"},
+    {file = "pyscard-2.0.7-cp39-cp39-win32.whl", hash = "sha256:39e030c47878b37ae08038a917959357be6468da52e8b144e84ffc659f50e6e2"},
     {file = "pyscard-2.0.7-cp39-cp39-win_amd64.whl", hash = "sha256:5a5865675be294c8d91f22dc91e7d897c4138881e5295fb6b2cd821f7c0389d9"},
     {file = "pyscard-2.0.7.tar.gz", hash = "sha256:278054525fa75fbe8b10460d87edcd03a70ad94d688b11345e4739987f85c1bf"},
 ]
@@ -688,13 +693,13 @@ files = [
 
 [[package]]
 name = "types-pillow"
-version = "10.2.0.20240125"
+version = "10.2.0.20240206"
 description = "Typing stubs for Pillow"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-Pillow-10.2.0.20240125.tar.gz", hash = "sha256:c449b2c43b9fdbe0494a7b950e6b39a4e50516091213fec24ef3f33c1d017717"},
-    {file = "types_Pillow-10.2.0.20240125-py3-none-any.whl", hash = "sha256:322dbae32b4b7918da5e8a47c50ac0f24b0aa72a804a23857620f2722b03c858"},
+    {file = "types-Pillow-10.2.0.20240206.tar.gz", hash = "sha256:f0de5107ff8362ffdbbd53ec896202ac905e6ab22ae784b46bcdad160ea143b9"},
+    {file = "types_Pillow-10.2.0.20240206-py3-none-any.whl", hash = "sha256:abc339ae28af5916146a7729261480d68ac902cd4ff57e0bdd402eee7962644d"},
 ]
 
 [[package]]
@@ -780,4 +785,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6664f12e752d8b41c996d11e43a8572ed47f7fbfaaf84fa894be725fe2208d80"
+content-hash = "fb3a19518fdb04951e4856d5316b6b110f0982149048dd41d89e71c21737be8c"
