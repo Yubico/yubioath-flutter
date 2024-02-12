@@ -26,8 +26,7 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('Passkey PIN tests', ()
-  {
+  group('Passkey PIN tests', () {
     const simplePin = '1111';
     const fidoPin1 = '947344';
     const fidoPin2 = '478178';
@@ -56,7 +55,6 @@ void main() {
         /// TODO: deal with error messages from fips keys
 
         /// TODO: make sure that the outcome of this test is a set state, right now it differs between FIPS and non-FIPS keys.
-
       });
       appTest('Change to fidoPin1', (WidgetTester tester) async {
         await tester.configurePasskey();

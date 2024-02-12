@@ -22,7 +22,6 @@ import 'test_util.dart';
 const fido2DanceLongWaitMs = 15000;
 
 extension Fido2Functions on WidgetTester {
-
   Future<void> fido2DanceWait() async {
     await pump(const Duration(milliseconds: fido2DanceLongWaitMs));
   }
@@ -63,6 +62,5 @@ extension Fido2Functions on WidgetTester {
     await shortWait();
 
     /// TODO 6. Verify Resetedness
-
   }
 }
