@@ -69,6 +69,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   InteractionEvent? _interaction;
   int _currentStep = -1;
   final _totalSteps = 3;
+  bool _resetInProgress = false;
 
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
@@ -117,6 +118,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             onPressed: switch (_application) {
               Capability.fido2 => _subscription == null
                   ? () async {
+                      _resetInProgress = true;
                       _subscription = ref
                           .read(
                               fidoStateProvider(widget.data.node.path).notifier)
@@ -222,7 +224,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                 : null,
                             tooltip:
                                 !showLabels ? c.getDisplayName(l10n) : null,
-                            enabled: enabled & c.value != 0,
+                            enabled:
+                                enabled & c.value != 0 && !_resetInProgress,
                           ))
                       .toList(),
                   selected: _application != null ? {_application!} : {},
