@@ -110,7 +110,7 @@ class _FidoLockedPage extends ConsumerWidget {
                 },
                 avatar: const Icon(Icons.fingerprint_outlined),
               ),
-            if (!isBio && alwaysUv)
+            if (!isBio && alwaysUv && !expanded)
               ActionChip(
                 label: Text(l10n.s_set_pin),
                 onPressed: () async {

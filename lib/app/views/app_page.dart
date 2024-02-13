@@ -202,7 +202,8 @@ class AppPage extends StatelessWidget {
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              padding: const EdgeInsets.only(
+                  top: 16, bottom: 0, left: 16, right: 16),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 4,
@@ -212,7 +213,8 @@ class AppPage extends StatelessWidget {
           ),
         if (footnote != null)
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding:
+                const EdgeInsets.only(bottom: 16, top: 33, left: 16, right: 16),
             child: Opacity(
               opacity: 0.6,
               child: Text(
