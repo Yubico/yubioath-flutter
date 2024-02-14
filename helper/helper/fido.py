@@ -126,8 +126,9 @@ class Ctap2Node(RpcNode):
             try:
                 conn = dev.open_connection(FidoConnection)
                 if removed:
+                    conn.close()
                     sleep(1.0)  # Wait for the device to settle
-                    return conn
+                    return dev.open_connection(FidoConnection)
                 conn.close()
             except CardConnectionException:
                 pass  # Expected, ignore
