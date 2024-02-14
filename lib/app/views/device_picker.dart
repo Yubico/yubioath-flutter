@@ -31,6 +31,7 @@ import '../key_customization/views/key_customization_dialog.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'app_context_menu.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
 import 'keys.dart';
@@ -166,26 +167,41 @@ List<String> _getDeviceStrings(
   return messages;
 }
 
-class _DeviceMenuButton extends ConsumerWidget {
-  final List<PopupMenuItem> menuItems;
+class _DeviceMenuButton extends ConsumerStatefulWidget {
+  final List<MenuItemButton> menuItems;
   final double opacity;
 
   const _DeviceMenuButton({required this.menuItems, required this.opacity});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_DeviceMenuButton> createState() => _DeviceMenuButtonState();
+}
+
+class _DeviceMenuButtonState extends ConsumerState<_DeviceMenuButton> {
+  final FocusNode _focusNode = FocusNode();
+  @override
+  Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(Navigator.of(context).context), // use app theme
       child: Opacity(
-        opacity: menuItems.isNotEmpty ? opacity : 0.0,
-        child: PopupMenuButton(
-          key: yubikeyPopupMenuButton,
-          enabled: menuItems.isNotEmpty,
-          icon: const Icon(Icons.more_horiz_outlined),
-          tooltip: '',
-          iconColor: Theme.of(context).listTileTheme.textColor,
-          itemBuilder: (context) {
-            return menuItems;
+        opacity: widget.menuItems.isNotEmpty ? widget.opacity : 0.0,
+        child: MenuAnchor(
+          childFocusNode: _focusNode,
+          menuChildren: buildMenuChildren(
+              context, widget.menuItems, [yubikeyFactoryResetMenuButton]),
+          builder: (context, controller, child) {
+            return IconButton(
+              focusNode: _focusNode,
+              color: Theme.of(context).listTileTheme.textColor,
+              onPressed: () {
+                if (controller.isOpen) {
+                  controller.close();
+                } else {
+                  controller.open();
+                }
+              },
+              icon: const Icon(Icons.more_horiz_outlined),
+            );
           },
         ),
       ),
@@ -289,23 +305,9 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
         ),
       );
     } else {
-      void showMenuFn(details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: menuItems,
-        );
-      }
-
-      return GestureDetector(
-        onSecondaryTapDown:
-            isDesktop && menuItems.isNotEmpty ? showMenuFn : null,
-        onLongPressStart: isAndroid ? showMenuFn : null,
+      return AppContextMenu(
+        menuChildren: menuItems,
+        dividers: const [yubikeyFactoryResetMenuButton],
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
           child: widget.selected
@@ -327,7 +329,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
     }
   }
 
-  List<PopupMenuItem> _getMenuItems(
+  List<MenuItemButton> _getMenuItems(
       BuildContext context, WidgetRef ref, DeviceNode? node) {
     final l10n = AppLocalizations.of(context)!;
     final keyCustomizations = ref.watch(keyCustomizationManagerProvider);
@@ -350,9 +352,9 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
 
     return [
       if (serial != null)
-        PopupMenuItem(
-          enabled: true,
-          onTap: () async {
+        MenuItemButton(
+          key: yubikeyLabelColorMenuButton,
+          onPressed: () async {
             await ref.read(withContextProvider)((context) async {
               await _showKeyCustomizationDialog(
                   keyCustomizations[serial] ?? KeyCustomization(serial: serial),
@@ -360,57 +362,40 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
                   node);
             });
           },
-          child: ListTile(
-              title: Text(l10n.s_customize_key_action),
-              leading: const Icon(Icons.palette_outlined),
-              key: yubikeyLabelColorMenuButton,
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              enabled: true),
+          leadingIcon: const Icon(Icons.palette_outlined),
+          child: Text(l10n.s_customize_key_action),
         ),
       if (isDesktop && hidden.isNotEmpty)
-        PopupMenuItem(
-          enabled: hidden.isNotEmpty,
-          onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).showAll();
-          },
-          child: ListTile(
-            title: Text(l10n.s_show_hidden_devices),
-            leading: const Icon(Icons.visibility_outlined),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            enabled: hidden.isNotEmpty,
-          ),
+        MenuItemButton(
+          onPressed: hidden.isNotEmpty
+              ? () {
+                  ref.read(_hiddenDevicesProvider.notifier).showAll();
+                }
+              : null,
+          leadingIcon: const Icon(Icons.visibility_outlined),
+          child: Text(l10n.s_show_hidden_devices),
         ),
       if (isDesktop && node is NfcReaderNode)
-        PopupMenuItem(
-          onTap: () {
+        MenuItemButton(
+          onPressed: () {
             ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
           },
-          child: ListTile(
-            title: Text(l10n.s_hide_device),
-            leading: const Icon(Icons.visibility_off_outlined),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
+          leadingIcon: const Icon(Icons.visibility_off_outlined),
+          child: Text(l10n.s_hide_device),
         ),
       if (node == data?.node && managementAvailability == Availability.enabled)
-        PopupMenuItem(
-          onTap: () {
+        MenuItemButton(
+          key: yubikeyApplicationToggleMenuButton,
+          onPressed: () {
             showBlurDialog(
               context: context,
               builder: (context) => ManagementScreen(data),
             );
           },
-          child: ListTile(
-            title: Text(data!.info.version.major > 4
-                ? l10n.s_toggle_applications
-                : l10n.s_toggle_interfaces),
-            leading: const Icon(Icons.construction),
-            key: yubikeyApplicationToggleMenuButton,
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
+          leadingIcon: const Icon(Icons.construction),
+          child: Text(data!.info.version.major > 4
+              ? l10n.s_toggle_applications
+              : l10n.s_toggle_interfaces),
         ),
       if (data != null &&
           node == data.node &&
@@ -418,20 +403,16 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
               c.value &
                   (data.info.supportedCapabilities[node!.transport] ?? 0) !=
               0))
-        PopupMenuItem(
-          onTap: () {
+        MenuItemButton(
+          key: yubikeyFactoryResetMenuButton,
+          onPressed: () {
             showBlurDialog(
               context: context,
               builder: (context) => ResetDialog(data),
             );
           },
-          child: ListTile(
-            title: Text(l10n.s_factory_reset),
-            leading: const Icon(Icons.delete_forever),
-            key: yubikeyFactoryResetMenuButton,
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
+          leadingIcon: const Icon(Icons.delete_forever),
+          child: Text(l10n.s_factory_reset),
         ),
     ];
   }

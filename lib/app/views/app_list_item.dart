@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/state.dart';
 import '../models.dart';
 import '../shortcuts.dart';
+import 'app_context_menu.dart';
 
 class AppListItem<T> extends ConsumerStatefulWidget {
   final T item;
@@ -31,6 +32,7 @@ class AppListItem<T> extends ConsumerStatefulWidget {
   final String? semanticTitle;
   final Widget? trailing;
   final List<ActionItem> Function(BuildContext context)? buildPopupActions;
+  final List<Key>? popupMenuDividers;
   final Intent? tapIntent;
   final Intent? doubleTapIntent;
   final bool selected;
@@ -44,6 +46,7 @@ class AppListItem<T> extends ConsumerStatefulWidget {
     this.subtitle,
     this.trailing,
     this.buildPopupActions,
+    this.popupMenuDividers,
     this.tapIntent,
     this.doubleTapIntent,
     this.selected = false,
@@ -67,6 +70,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
   Widget build(BuildContext context) {
     final subtitle = widget.subtitle;
     final buildPopupActions = widget.buildPopupActions;
+    final popupMenuDividers = widget.popupMenuDividers;
     final tapIntent = widget.tapIntent;
     final doubleTapIntent = widget.doubleTapIntent;
     final trailing = widget.trailing;
@@ -76,101 +80,90 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
       label: widget.semanticTitle ?? widget.title,
       child: ItemShortcuts<T>(
         item: widget.item,
-        child: MenuAnchor(
-          anchorTapClosesMenu: true,
-          builder:
-              (BuildContext context, MenuController controller, Widget? child) {
-            return InkWell(
-              focusNode: _focusNode,
-              borderRadius: BorderRadius.circular(30),
-              onSecondaryTapDown: buildPopupActions == null
-                  ? null
-                  : (details) {
-                      final menuItems = buildPopupActions(context)
-                          .where((action) =>
-                              action.feature == null ||
-                              hasFeature(action.feature!))
-                          .toList();
-                      if (menuItems.isNotEmpty && !controller.isOpen) {
-                        controller.open(position: details.localPosition);
-                      }
-                    },
-              onTap: () {
-                _focusNode.requestFocus();
-                if (tapIntent != null) {
-                  Actions.invoke(context, tapIntent);
-                }
-                if (isDesktop && doubleTapIntent != null) {
-                  final now = DateTime.now().millisecondsSinceEpoch;
-                  if (now - _lastTap < 500) {
-                    setState(() {
-                      _lastTap = 0;
-                    });
-                    Actions.invoke(context, doubleTapIntent);
-                  } else {
-                    setState(() {
-                      _lastTap = now;
-                    });
-                  }
-                }
-              },
-              onLongPress: doubleTapIntent == null
-                  ? null
-                  : () {
-                      Actions.invoke(context, doubleTapIntent);
-                    },
-              child: Stack(
-                alignment: AlignmentDirectional.center,
-                children: [
-                  const SizedBox(height: 64),
-                  ListTile(
-                    mouseCursor: widget.tapIntent != null
-                        ? SystemMouseCursors.click
-                        : null,
-                    selected: widget.selected,
-                    leading: widget.leading,
-                    title: Text(
-                      widget.title,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false,
-                    ),
-                    subtitle: subtitle != null
-                        ? Text(
-                            subtitle,
-                            overflow: TextOverflow.fade,
-                            maxLines: 1,
-                            softWrap: false,
-                          )
-                        : null,
-                    trailing: trailing == null
-                        ? null
-                        : Focus(
-                            skipTraversal: true,
-                            descendantsAreTraversable: false,
-                            child: trailing,
-                          ),
-                  ),
-                ],
-              ),
-            );
-          },
+        child: AppContextMenu(
           menuChildren: buildPopupActions != null
               ? buildPopupActions(context)
-                  .map((e) => buildMenuItem(context, e))
+                  .where((action) =>
+                      action.feature == null || hasFeature(action.feature!))
+                  .toList()
+                  .map((e) => _buildMenuItem(context, e))
                   .toList()
               : [],
+          dividers: popupMenuDividers,
+          child: InkWell(
+            focusNode: _focusNode,
+            borderRadius: BorderRadius.circular(30),
+            onTap: () {
+              _focusNode.requestFocus();
+              if (tapIntent != null) {
+                Actions.invoke(context, tapIntent);
+              }
+              if (isDesktop && doubleTapIntent != null) {
+                final now = DateTime.now().millisecondsSinceEpoch;
+                if (now - _lastTap < 500) {
+                  setState(() {
+                    _lastTap = 0;
+                  });
+                  Actions.invoke(context, doubleTapIntent);
+                } else {
+                  setState(() {
+                    _lastTap = now;
+                  });
+                }
+              }
+            },
+            onLongPress: doubleTapIntent == null
+                ? null
+                : () {
+                    Actions.invoke(context, doubleTapIntent);
+                  },
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                const SizedBox(height: 64),
+                ListTile(
+                  mouseCursor: widget.tapIntent != null
+                      ? SystemMouseCursors.click
+                      : null,
+                  selected: widget.selected,
+                  leading: widget.leading,
+                  title: Text(
+                    widget.title,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                  ),
+                  subtitle: subtitle != null
+                      ? Text(
+                          subtitle,
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                          softWrap: false,
+                        )
+                      : null,
+                  trailing: trailing == null
+                      ? null
+                      : Focus(
+                          skipTraversal: true,
+                          descendantsAreTraversable: false,
+                          child: trailing,
+                        ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-MenuItemButton buildMenuItem(BuildContext context, ActionItem actionItem) {
+MenuItemButton _buildMenuItem(BuildContext context, ActionItem actionItem) {
   final intent = actionItem.intent;
   final enabled = intent != null;
   final shortcut = actionItem.shortcut;
   return MenuItemButton(
+    key: actionItem.key,
     onPressed: enabled
         ? () {
             // Wait for popup menu to close before running action.

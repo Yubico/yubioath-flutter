@@ -22,6 +22,7 @@ import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
 import '../../core/state.dart';
 import '../features.dart' as features;
+import '../keys.dart' as keys;
 import '../models.dart';
 import 'account_helper.dart';
 import 'account_icon.dart';
@@ -116,6 +117,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ? CopyIntent<OathCredential>(credential)
           : null,
       buildPopupActions: (_) => helper.buildActions(),
+      popupMenuDividers: const [keys.deleteAction],
     );
   }
 }
