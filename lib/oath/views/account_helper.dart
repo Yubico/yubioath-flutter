@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -73,7 +73,7 @@ class AccountHelper {
               icon: const Icon(Icons.copy),
               title: l10n.l_copy_to_clipboard,
               subtitle: l10n.l_copy_code_desc,
-              shortcut: Platform.isMacOS ? '\u2318 C' : 'Ctrl+C',
+              shortcut: ctrlOrCmd(LogicalKeyboardKey.keyC),
               actionStyle: canCopy ? ActionStyle.primary : null,
               intent: canCopy ? CopyIntent(credential) : null,
             ),
@@ -84,7 +84,7 @@ class AccountHelper {
                 icon: const Icon(Icons.refresh),
                 title: l10n.s_calculate,
                 subtitle: l10n.l_calculate_code_desc,
-                shortcut: Platform.isMacOS ? '\u2318 R' : 'Ctrl+R',
+                shortcut: ctrlOrCmd(LogicalKeyboardKey.keyR),
                 intent: ready ? RefreshIntent(credential) : null,
               ),
             ActionItem(

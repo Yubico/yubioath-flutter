@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
 import '../models.dart';
 import '../shortcuts.dart';
-import 'action_popup_menu.dart';
 
 class AppListItem<T> extends ConsumerStatefulWidget {
   final T item;
@@ -75,83 +76,111 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
       label: widget.semanticTitle ?? widget.title,
       child: ItemShortcuts<T>(
         item: widget.item,
-        child: InkWell(
-          focusNode: _focusNode,
-          borderRadius: BorderRadius.circular(30),
-          onSecondaryTapDown: buildPopupActions == null
-              ? null
-              : (details) {
-                  final menuItems = buildPopupActions(context)
-                      .where((action) =>
-                          action.feature == null || hasFeature(action.feature!))
-                      .toList();
-                  if (menuItems.isNotEmpty) {
-                    showPopupMenu(
-                      context,
-                      details.globalPosition,
-                      menuItems,
-                    );
+        child: MenuAnchor(
+          anchorTapClosesMenu: true,
+          builder:
+              (BuildContext context, MenuController controller, Widget? child) {
+            return InkWell(
+              focusNode: _focusNode,
+              borderRadius: BorderRadius.circular(30),
+              onSecondaryTapDown: buildPopupActions == null
+                  ? null
+                  : (details) {
+                      final menuItems = buildPopupActions(context)
+                          .where((action) =>
+                              action.feature == null ||
+                              hasFeature(action.feature!))
+                          .toList();
+                      if (menuItems.isNotEmpty && !controller.isOpen) {
+                        controller.open(position: details.localPosition);
+                      }
+                    },
+              onTap: () {
+                _focusNode.requestFocus();
+                if (tapIntent != null) {
+                  Actions.invoke(context, tapIntent);
+                }
+                if (isDesktop && doubleTapIntent != null) {
+                  final now = DateTime.now().millisecondsSinceEpoch;
+                  if (now - _lastTap < 500) {
+                    setState(() {
+                      _lastTap = 0;
+                    });
+                    Actions.invoke(context, doubleTapIntent);
+                  } else {
+                    setState(() {
+                      _lastTap = now;
+                    });
                   }
-                },
-          onTap: () {
-            _focusNode.requestFocus();
-            if (tapIntent != null) {
-              Actions.invoke(context, tapIntent);
-            }
-            if (isDesktop && doubleTapIntent != null) {
-              final now = DateTime.now().millisecondsSinceEpoch;
-              if (now - _lastTap < 500) {
-                setState(() {
-                  _lastTap = 0;
-                });
-                Actions.invoke(context, doubleTapIntent);
-              } else {
-                setState(() {
-                  _lastTap = now;
-                });
-              }
-            }
-          },
-          onLongPress: doubleTapIntent == null
-              ? null
-              : () {
-                  Actions.invoke(context, doubleTapIntent);
-                },
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: [
-              const SizedBox(height: 64),
-              ListTile(
-                mouseCursor:
-                    widget.tapIntent != null ? SystemMouseCursors.click : null,
-                selected: widget.selected,
-                leading: widget.leading,
-                title: Text(
-                  widget.title,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
-                ),
-                subtitle: subtitle != null
-                    ? Text(
-                        subtitle,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                      )
-                    : null,
-                trailing: trailing == null
-                    ? null
-                    : Focus(
-                        skipTraversal: true,
-                        descendantsAreTraversable: false,
-                        child: trailing,
-                      ),
+                }
+              },
+              onLongPress: doubleTapIntent == null
+                  ? null
+                  : () {
+                      Actions.invoke(context, doubleTapIntent);
+                    },
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  const SizedBox(height: 64),
+                  ListTile(
+                    mouseCursor: widget.tapIntent != null
+                        ? SystemMouseCursors.click
+                        : null,
+                    selected: widget.selected,
+                    leading: widget.leading,
+                    title: Text(
+                      widget.title,
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                    subtitle: subtitle != null
+                        ? Text(
+                            subtitle,
+                            overflow: TextOverflow.fade,
+                            maxLines: 1,
+                            softWrap: false,
+                          )
+                        : null,
+                    trailing: trailing == null
+                        ? null
+                        : Focus(
+                            skipTraversal: true,
+                            descendantsAreTraversable: false,
+                            child: trailing,
+                          ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
+          menuChildren: buildPopupActions != null
+              ? buildPopupActions(context)
+                  .map((e) => buildMenuItem(context, e))
+                  .toList()
+              : [],
         ),
       ),
     );
   }
+}
+
+MenuItemButton buildMenuItem(BuildContext context, ActionItem actionItem) {
+  final intent = actionItem.intent;
+  final enabled = intent != null;
+  final shortcut = actionItem.shortcut;
+  return MenuItemButton(
+    onPressed: enabled
+        ? () {
+            // Wait for popup menu to close before running action.
+            Timer.run(() {
+              Actions.invoke(context, intent);
+            });
+          }
+        : null,
+    leadingIcon: actionItem.icon,
+    shortcut: shortcut,
+    child: Text(actionItem.title),
+  );
 }

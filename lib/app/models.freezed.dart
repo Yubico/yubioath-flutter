@@ -629,7 +629,7 @@ mixin _$ActionItem {
   Widget get icon => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String? get subtitle => throw _privateConstructorUsedError;
-  String? get shortcut => throw _privateConstructorUsedError;
+  MenuSerializableShortcut? get shortcut => throw _privateConstructorUsedError;
   Widget? get trailing => throw _privateConstructorUsedError;
   Intent? get intent => throw _privateConstructorUsedError;
   ActionStyle? get actionStyle => throw _privateConstructorUsedError;
@@ -651,7 +651,7 @@ abstract class $ActionItemCopyWith<$Res> {
       {Widget icon,
       String title,
       String? subtitle,
-      String? shortcut,
+      MenuSerializableShortcut? shortcut,
       Widget? trailing,
       Intent? intent,
       ActionStyle? actionStyle,
@@ -698,7 +698,7 @@ class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
       shortcut: freezed == shortcut
           ? _value.shortcut
           : shortcut // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as MenuSerializableShortcut?,
       trailing: freezed == trailing
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
@@ -735,7 +735,7 @@ abstract class _$$ActionItemImplCopyWith<$Res>
       {Widget icon,
       String title,
       String? subtitle,
-      String? shortcut,
+      MenuSerializableShortcut? shortcut,
       Widget? trailing,
       Intent? intent,
       ActionStyle? actionStyle,
@@ -780,7 +780,7 @@ class __$$ActionItemImplCopyWithImpl<$Res>
       shortcut: freezed == shortcut
           ? _value.shortcut
           : shortcut // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as MenuSerializableShortcut?,
       trailing: freezed == trailing
           ? _value.trailing
           : trailing // ignore: cast_nullable_to_non_nullable
@@ -826,7 +826,7 @@ class _$ActionItemImpl implements _ActionItem {
   @override
   final String? subtitle;
   @override
-  final String? shortcut;
+  final MenuSerializableShortcut? shortcut;
   @override
   final Widget? trailing;
   @override
@@ -879,7 +879,7 @@ abstract class _ActionItem implements ActionItem {
       {required final Widget icon,
       required final String title,
       final String? subtitle,
-      final String? shortcut,
+      final MenuSerializableShortcut? shortcut,
       final Widget? trailing,
       final Intent? intent,
       final ActionStyle? actionStyle,
@@ -893,7 +893,7 @@ abstract class _ActionItem implements ActionItem {
   @override
   String? get subtitle;
   @override
-  String? get shortcut;
+  MenuSerializableShortcut? get shortcut;
   @override
   Widget? get trailing;
   @override

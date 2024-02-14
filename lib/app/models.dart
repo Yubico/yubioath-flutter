@@ -137,7 +137,7 @@ class ActionItem with _$ActionItem {
     required Widget icon,
     required String title,
     String? subtitle,
-    String? shortcut,
+    MenuSerializableShortcut? shortcut,
     Widget? trailing,
     Intent? intent,
     ActionStyle? actionStyle,
