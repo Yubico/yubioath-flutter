@@ -107,8 +107,7 @@ void main() {
       await tester.shortWait();
       await tester.enterText(find.byKey(newPinPukField).hitTestable(), uno);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), uno);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), uno);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -119,8 +118,7 @@ void main() {
       await tester.shortWait();
       await tester.enterText(find.byKey(newPinPukField).hitTestable(), due);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), due);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), due);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -131,8 +129,7 @@ void main() {
       await tester.shortWait();
       await tester.enterText(find.byKey(newPinPukField).hitTestable(), tre);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), tre);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), tre);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -161,8 +158,7 @@ void main() {
       await tester.shortWait();
       await tester.enterText(find.byKey(newPinPukField).hitTestable(), uno);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), uno);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), uno);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -173,8 +169,7 @@ void main() {
       await tester.shortWait();
       await tester.enterText(find.byKey(newPinPukField).hitTestable(), due);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), due);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), due);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -185,8 +180,7 @@ void main() {
       await tester.shortWait();
       await tester.enterText(find.byKey(newPinPukField).hitTestable(), tre);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), tre);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), tre);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
