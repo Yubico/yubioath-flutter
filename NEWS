@@ -9,6 +9,7 @@
  ** PIV: Add output format for public key when generating keys.
  ** Desktop: Window hidden/shown state no longer saved when closing the app,
     use --hidden to start the app in a hidden to systray state.
+ ** Desktop: Fix FIDO reset over NFC.
  ** Windows: Add option to launch Windows Settings for FIDO management.
  ** Android: Increase read timeout for NFC, improving compatibility with older YubiKeys.
 

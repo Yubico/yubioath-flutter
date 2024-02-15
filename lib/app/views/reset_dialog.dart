@@ -68,12 +68,19 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
-  final _totalSteps = 3;
+  late final int _totalSteps;
+
+  @override
+  void initState() {
+    super.initState();
+    final nfc = widget.data.node.transport == Transport.nfc;
+    _totalSteps = nfc ? 2 : 3;
+  }
 
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
     final nfc = widget.data.node.transport == Transport.nfc;
-    if (_currentStep == 3) {
+    if (_currentStep == _totalSteps) {
       return l10n.l_fido_app_reset;
     }
     return switch (_interaction) {
@@ -104,7 +111,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
       title: Text(l10n.s_factory_reset),
       key: factoryResetCancel,
       onCancel: switch (_application) {
-        Capability.fido2 => _currentStep < 3
+        Capability.fido2 => _currentStep < _totalSteps
             ? () {
                 _currentStep = -1;
                 _subscription?.cancel();
@@ -113,7 +120,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         _ => null,
       },
       actions: [
-        if (_currentStep < 3)
+        if (_currentStep < _totalSteps)
           TextButton(
             onPressed: switch (_application) {
               Capability.fido2 => _subscription == null
