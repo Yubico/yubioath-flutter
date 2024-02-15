@@ -22,30 +22,68 @@ import 'package:yubico_authenticator/piv/keys.dart';
 import 'test_util.dart';
 
 extension PIVFunctions on WidgetTester {
+  static const ett = 'firstpin';
+  static const tva = 'lockpinn';
+
   /// Open the PIV Configuration
   Future<void> configurePiv() async {
-    // 1. open PIV view
-    var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-    await tap(pivDrawerButton);
-    await longWait();
+    await tap(find.byKey(pivAppDrawer).hitTestable());
+    await shortWait();
     await tap(find.byKey(actionsIconButtonKey).hitTestable());
-    await longWait();
+    await shortWait();
   }
 
-  /// Locks PIN or PUK
-  Future<void> lockPinPuk() async {
+  Future<void> pinView() async {
+    await tap(find.byKey(pivAppDrawer).hitTestable());
+    await shortWait();
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await shortWait();
+    await tap(find.byKey(managePinAction));
+    await shortWait();
+  }
+
+  Future<void> pukView() async {
+    await tap(find.byKey(pivAppDrawer).hitTestable());
+    await shortWait();
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await shortWait();
+    await tap(find.byKey(managePukAction));
+    await shortWait();
+  }
+
+  Future<void> managementKeyView() async {
+    await tap(find.byKey(pivAppDrawer).hitTestable());
+    await shortWait();
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await shortWait();
+    await tap(find.byKey(manageManagementKeyAction));
+    await shortWait();
+  }
+
+  Future<void> pivFirst() async {
+    // when in pin or puk view, remove factorypin/puk
+    await enterText(find.byKey(newPinPukField), ett);
+    await shortWait();
+    await enterText(find.byKey(confirmPinPukField), ett);
+    await shortWait();
+    await tap(find.byKey(saveButton).hitTestable());
+    await shortWait();
+  }
+
+  Future<void> pivLock() async {
+    // when in pin or puk view this will lock it
     for (var i = 0; i < 3; i += 1) {
-      var wrongpin = '123456$i';
-      await enterText(find.byKey(pinPukField).hitTestable(), wrongpin);
+      await enterText(find.byKey(pinPukField), tva);
       await shortWait();
-      await enterText(find.byKey(newPinPukField).hitTestable(), wrongpin);
+      await enterText(find.byKey(newPinPukField), tva);
       await shortWait();
-      await enterText(find.byKey(confirmPinPukField).hitTestable(), wrongpin);
+      await enterText(find.byKey(confirmPinPukField), tva);
       await shortWait();
       await tap(find.byKey(saveButton).hitTestable());
-      await longWait();
+      await shortWait();
     }
     await sendKeyEvent(LogicalKeyboardKey.escape);
+    await shortWait();
   }
 
   /// Factory reset Piv application
