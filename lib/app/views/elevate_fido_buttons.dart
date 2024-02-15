@@ -43,7 +43,7 @@ class ElevateFidoButtons extends ConsumerWidget {
                 duration: const Duration(seconds: 30));
             try {
               if (await ref.read(rpcProvider).requireValue.elevate()) {
-                ref.invalidate(rpcProvider);
+                ref.invalidate(rpcStateProvider);
               } else {
                 await ref.read(withContextProvider)((context) async =>
                     showMessage(context, l10n.s_permission_denied));
