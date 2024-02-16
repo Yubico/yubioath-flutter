@@ -18,6 +18,18 @@ esac
 echo "Building authenticator-helper for $OS..."
 OUTPUT="build/$OS"
 
+if command -v docker &> /dev/null
+then
+	echo "Using Docker to build"
+	cd helper
+	DOCKER_BUILDKIT=1 docker build -f Dockerfile --output output .
+	cp -r output/helper ../$OUTPUT/
+	cp -r output/helper.json ../assets/licenses/helper.json
+	echo "All done, output in $OUTPUT/"
+	exit 0
+fi
+
+
 cd helper
 poetry install
 

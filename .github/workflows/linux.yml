@@ -21,36 +21,17 @@ jobs:
 
     - name: Install dependencies
       run: |
-        export PYVER_MINOR=${PYVER%.*}
-        echo "PYVER_MINOR: $PYVER_MINOR"
         apt-get update
         apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         add-apt-repository -y ppa:git-core/ppa
-        add-apt-repository -y ppa:deadsnakes/ppa
-        apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
+        apt-get install -qq git
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
-        PYVER_TEMP=`/usr/local/bin/python --version`
-        export PYVERINST=${PYVER_TEMP#* }
-        echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
-        echo "Installed python version: $PYVERINST"
-        python -m ensurepip --user
-        python -m pip install -U pip pipx
-
-    - name: Verify Python version
-      if: ${{ env.PYVERINST != env.PYVER }}
-      run: |
-        echo "Python version not compatible"
-        echo "Installed python version: $PYVERINST"
-        echo "Expected: $PYVER"
-        exit 1
 
     - uses: actions/checkout@v4
 
     - name: Check app versions
       run: |
-        python set-version.py
+        python3 set-version.py
         git diff --exit-code
 
     - name: Cache helper
@@ -64,11 +45,7 @@ jobs:
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        apt-get install -qq swig libpcsclite-dev build-essential cmake
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pipx/poetry on PATH
-        pipx install poetry
-        ./build-helper.sh
+      run: ./build-helper.sh
 
     - name: Install Flutter dependencies
       run: |
