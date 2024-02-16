@@ -186,6 +186,7 @@ class AppPage extends StatelessWidget {
   }
 
   Widget _buildMainContent(BuildContext context, bool expanded) {
+    final actions = actionsBuilder?.call(context, expanded) ?? [];
     final content = Column(
       crossAxisAlignment:
           centered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
@@ -197,8 +198,7 @@ class AppPage extends StatelessWidget {
             child: _buildTitle(context),
           ),
         builder(context, expanded),
-        if (actionsBuilder != null &&
-            actionsBuilder!(context, expanded).isNotEmpty)
+        if (actions.isNotEmpty)
           Align(
             alignment: centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
@@ -207,7 +207,7 @@ class AppPage extends StatelessWidget {
               child: Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: actionsBuilder!(context, expanded),
+                children: actions,
               ),
             ),
           ),
