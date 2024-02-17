@@ -1,10 +1,73 @@
 name: Linux
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
-  build:
+  build-helper:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12.2-slim-bullseye
+      env:
+        DEBIAN_FRONTEND: noninteractive
 
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        sparse-checkout: .github/workflows/env
+
+    - name: Read variables from repo
+      run: |
+        cat .github/workflows/env >> $GITHUB_ENV
+        PYVER_TEMP=`python --version`
+        export PYVERINST=${PYVER_TEMP#* }
+        echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
+
+    - name: Verify Python version
+      if: ${{ env.PYVERINST != env.PYVER }}
+      run: |
+        echo "Python version not compatible"
+        echo "Installed python version: $PYVERINST"
+        echo "Expected: $PYVER"
+        exit 1
+
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -qq swig libpcsclite-dev build-essential
+
+    - uses: actions/checkout@v4
+
+    - name: Cache helper
+      id: cache-helper
+      uses: actions/cache@v4
+      with:
+        path: |
+          build/linux/helper
+          assets/licenses/helper.json
+        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+
+    - name: Build the Helper
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      working-directory: ./helper
+      run: |
+        apt-get install -qq swig libpcsclite-dev build-essential
+        pip install poetry
+        poetry install
+        poetry run pyinstaller authenticator-helper.spec
+        find dist/helper -type f -exec chmod a-x {} +
+        chmod a+x dist/helper/authenticator-helper
+        mkdir -p ../build/linux
+        mv dist/helper ../build/linux/
+        poetry build
+        python -m venv .venv
+        .venv/bin/pip install --upgrade pip wheel
+        .venv/bin/pip install dist/authenticator_helper-0.1.0-py3-none-any.whl pip-licenses
+        mkdir licenses
+        .venv/bin/pip-licenses --format=json --no-license-path --with-license-file --ignore-packages authenticator-helper zxing-cpp --output-file ../assets/licenses/helper.json
+
+  build-app:
+
+    needs: build-helper
     runs-on: ubuntu-latest
     container:
       image: ubuntu:20.04
@@ -43,9 +106,9 @@ jobs:
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
 
-    - name: Build the Helper
+    - name: Require the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: ./build-helper.sh
+      run: exit 1
 
     - name: Install Flutter dependencies
       run: |
@@ -66,8 +129,8 @@ jobs:
       env:
         SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
-        pipx install pre-commit
+        export PATH=$PATH:$HOME/.local/bin
+        pip install pre-commit
         pre-commit run --all-files
         flutter test
 
