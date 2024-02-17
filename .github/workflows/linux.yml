@@ -37,6 +37,12 @@ jobs:
 
     - uses: actions/checkout@v4
 
+    - name: Calculate cache key
+      run: echo "CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
+      env:
+        CACHE_KEY: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+
+
     - name: Cache helper
       id: cache-helper
       uses: actions/cache@v4
@@ -44,7 +50,7 @@ jobs:
         path: |
           build/linux/helper
           assets/licenses/helper.json
-        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+        key: ${{ env.CACHE_KEY }}
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
