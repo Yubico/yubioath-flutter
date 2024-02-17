@@ -3,6 +3,45 @@ name: Linux
 on: [push]
 
 jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Read variables from repo
+      run: cat .github/workflows/env >> $GITHUB_ENV
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYVER }}
+
+    - name: Install Flutter dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq swig libpcsclite-dev build-essential
+        sudo apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
+
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: ${{ env.FLUTTER }}
+
+    - name: Check app versions
+      run: |
+        python3 set-version.py
+        git diff --exit-code
+
+    - name: Run lints/tests
+      run: |
+        export PATH=$PATH:$HOME/.local/bin
+        python3 -m pip install --upgrade pip
+        pip install poetry pre-commit
+        (cd helper && poetry install)
+        pre-commit run --all-files
+        flutter test
+
   build-helper:
     runs-on: ubuntu-latest
     container:
@@ -11,9 +50,8 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
 
     steps:
+
     - uses: actions/checkout@v4
-      with:
-        sparse-checkout: .github/workflows/env
 
     - name: Read variables from repo
       run: |
@@ -30,18 +68,10 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
-    - name: Install dependencies
-      run: |
-        apt-get update
-        apt-get install -qq swig libpcsclite-dev build-essential
-
-    - uses: actions/checkout@v4
-
     - name: Calculate cache key
       run: echo "CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
       env:
         CACHE_KEY: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
-
 
     - name: Cache helper
       id: cache-helper
@@ -81,27 +111,19 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        sparse-checkout: .github/workflows/env
 
-    - name: Read variables from repo
-      run: cat .github/workflows/env >> $GITHUB_ENV
-
-    - name: Install dependencies
+    - name: Install git
       run: |
         apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
+        apt-get install -qq curl software-properties-common
         add-apt-repository -y ppa:git-core/ppa
         apt-get install -qq git
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - uses: actions/checkout@v4
 
-    - name: Check app versions
-      run: |
-        python3 set-version.py
-        git diff --exit-code
+    - name: Read variables from repo
+      run: cat .github/workflows/env >> $GITHUB_ENV
 
     - name: Cache helper
       id: cache-helper
@@ -118,6 +140,8 @@ jobs:
 
     - name: Install Flutter dependencies
       run: |
+        apt-get update
+        apt-get install -qq libnotify-dev libayatana-appindicator3-dev patchelf
         apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
 
     - uses: subosito/flutter-action@v2
@@ -131,20 +155,13 @@ jobs:
         flutter config --enable-linux-desktop
         flutter --version
 
-    - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
-      run: |
-        export PATH=$PATH:$HOME/.local/bin
-        pip install pre-commit
-        pre-commit run --all-files
-        flutter test
-
     - name: Build the app
       run: flutter build linux
 
     - name: Check generated files
-      run: git diff --exit-code
+      run: |
+        ls -lah
+        git diff --exit-code
 
     - name: Embedd appindicator
       run: |
