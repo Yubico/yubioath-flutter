@@ -22,13 +22,13 @@ import 'package:intl/intl.dart';
 import '../../app/message.dart';
 import '../../app/state.dart';
 import '../../widgets/tooltip_if_truncated.dart';
-import '../keys.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 
-class CertInfoTable extends ConsumerWidget {
-  final CertInfo certInfo;
+class _InfoTable extends ConsumerWidget {
+  final Map<String, (String, Key)> values;
 
-  const CertInfoTable(this.certInfo, {super.key});
+  const _InfoTable(this.values);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,70 +38,96 @@ class CertInfoTable extends ConsumerWidget {
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
-    final dateFormat =
-        DateFormat.yMMMEd(ref.watch(currentLocaleProvider).toString());
     final clipboard = ref.watch(clipboardProvider);
     final withContext = ref.watch(withContextProvider);
 
-    Widget header(String title) => Text(
-          title,
-          textAlign: TextAlign.right,
-        );
-
-    Widget body(String title, String value, Key key) => GestureDetector(
-          onDoubleTap: () async {
-            await clipboard.setText(value);
-            if (!clipboard.platformGivesFeedback()) {
-              await withContext((context) async {
-                showMessage(context, l10n.p_target_copied_clipboard(title));
-              });
-            }
-          },
-          child: TooltipIfTruncated(
-            key: key,
-            text: value,
-            style: subtitleStyle,
-            tooltip: value.replaceAllMapped(
-                RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
-          ),
-        );
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            header(l10n.s_subject),
-            header(l10n.s_issuer),
-            header(l10n.s_serial),
-            header(l10n.s_certificate_fingerprint),
-            header(l10n.s_valid_from),
-            header(l10n.s_valid_to),
-          ],
+          children: values.keys
+              .map((title) => Text(
+                    title,
+                    textAlign: TextAlign.right,
+                  ))
+              .toList(),
         ),
         const SizedBox(width: 8),
         Flexible(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              body(l10n.s_subject, certInfo.subject, certInfoSubjectKey),
-              body(l10n.s_issuer, certInfo.issuer, certInfoIssuerKey),
-              body(l10n.s_serial, certInfo.serial, certInfoSerialKey),
-              body(l10n.s_certificate_fingerprint, certInfo.fingerprint,
-                  certInfoFingerprintKey),
-              body(
-                  l10n.s_valid_from,
-                  dateFormat.format(DateTime.parse(certInfo.notValidBefore)),
-                  certInfoValidFromKey),
-              body(
-                  l10n.s_valid_to,
-                  dateFormat.format(DateTime.parse(certInfo.notValidAfter)),
-                  certInfoValidToKey),
-            ],
+            children: values.entries.map((e) {
+              final title = e.key;
+              final (value, key) = e.value;
+              return GestureDetector(
+                onDoubleTap: () async {
+                  await clipboard.setText(value);
+                  if (!clipboard.platformGivesFeedback()) {
+                    await withContext((context) async {
+                      showMessage(
+                          context, l10n.p_target_copied_clipboard(title));
+                    });
+                  }
+                },
+                child: TooltipIfTruncated(
+                  key: key,
+                  text: value,
+                  style: subtitleStyle,
+                  tooltip: value.replaceAllMapped(
+                      RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
+                ),
+              );
+            }).toList(),
           ),
         ),
       ],
     );
+  }
+}
+
+class CertInfoTable extends ConsumerWidget {
+  final CertInfo? certInfo;
+  final SlotMetadata? metadata;
+
+  const CertInfoTable(this.certInfo, this.metadata, {super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dateFormat =
+        DateFormat.yMMMEd(ref.watch(currentLocaleProvider).toString());
+
+    final certInfo = this.certInfo;
+    final metadata = this.metadata;
+    return _InfoTable({
+      if (metadata != null)
+        l10n.s_private_key: (
+          metadata.keyType.getDisplayName(l10n),
+          keys.slotMetadataKeyType
+        ),
+      if (certInfo != null) ...{
+        l10n.s_public_key: (
+          certInfo.keyType?.getDisplayName(l10n) ?? l10n.s_unknown_type,
+          keys.certInfoKeyType
+        ),
+        l10n.s_subject: (certInfo.subject, keys.certInfoSubject),
+        l10n.s_issuer: (certInfo.issuer, keys.certInfoIssuer),
+        l10n.s_serial: (certInfo.serial, keys.certInfoSerial),
+        l10n.s_certificate_fingerprint: (
+          certInfo.fingerprint,
+          keys.certInfoFingerprint
+        ),
+        l10n.s_valid_from: (
+          dateFormat.format(DateTime.parse(certInfo.notValidBefore)),
+          keys.certInfoValidFrom
+        ),
+        l10n.s_valid_to: (
+          dateFormat.format(DateTime.parse(certInfo.notValidAfter)),
+          keys.certInfoValidTo
+        ),
+      },
+    });
   }
 }

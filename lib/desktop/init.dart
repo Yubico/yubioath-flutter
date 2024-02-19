@@ -33,7 +33,6 @@ import 'package:window_manager/window_manager.dart';
 import '../app/app.dart';
 import '../app/logging.dart';
 import '../app/message.dart';
-import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
@@ -141,10 +140,8 @@ Future<Widget> initialize(List<String> argv) async {
   _log.debug('Using saved window bounds (or defaults): $bounds');
 
   unawaited(windowManager
-      .waitUntilReadyToShow(WindowOptions(
-    minimumSize: WindowDefaults.minSize,
-    skipTaskbar: isHidden,
-  ))
+      .waitUntilReadyToShow(
+          const WindowOptions(minimumSize: WindowDefaults.minSize))
       .then((_) async {
     await windowManagerHelper.setBounds(bounds);
 
@@ -186,15 +183,6 @@ Future<Widget> initialize(List<String> argv) async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(implementedApps([
-        Application.accounts,
-        Application.webauthn,
-        Application.fingerprints,
-        Application.passkeys,
-        Application.certificates,
-        Application.management,
-        Application.slots
-      ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
@@ -245,17 +233,18 @@ Future<Widget> initialize(List<String> argv) async {
           // Load feature flags, if they exist
           featureFile.exists().then(
             (exists) async {
+              final featureFlag = ref.read(featureFlagProvider.notifier);
               if (exists) {
                 try {
                   final featureConfig =
                       jsonDecode(await featureFile.readAsString());
-                  ref
-                      .read(featureFlagProvider.notifier)
-                      .loadConfig(featureConfig);
+                  featureFlag.loadConfig(featureConfig);
                 } catch (error) {
                   _log.error('Failed to parse feature flags', error);
                 }
               }
+              // Hardcode features here:
+              // featureFlag.setFeature(feature, false);
             },
           );
 

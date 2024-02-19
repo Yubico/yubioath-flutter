@@ -79,6 +79,7 @@
     "s_show_secret_key": "Show secret key",
     "s_hide_secret_key": "Hide secret key",
     "s_private_key": "Private key",
+    "s_public_key": "Public key",
     "s_invalid_length": "Invalid length",
     "l_invalid_format_allowed_chars": "Invalid format, allowed characters: {characters}",
     "@l_invalid_format_allowed_chars": {
@@ -273,6 +274,10 @@
             "name": {}
         }
     },
+    "l_warning_default_pin": "Warning: Default PIN used",
+    "l_warning_default_puk": "Warning: Default PUK used",
+    "l_default_pin_used": "Default PIN used",
+    "l_default_puk_used": "Default PUK used",
 
     "@_passwords": {},
     "s_password": "Password",
@@ -460,13 +465,18 @@
     "s_csr": "CSR",
     "s_subject": "Subject",
     "l_export_csr_file": "Save CSR to file",
-    "l_select_import_file": "Select file to import",
+    "l_export_public_key": "Export public key",
+    "l_export_public_key_file": "Save public key to file",
+    "l_export_public_key_desc": "Export the public key to a file",
+    "l_public_key_exported": "Public key exported",
     "l_export_certificate": "Export certificate",
     "l_export_certificate_file": "Export certificate to file",
     "l_export_certificate_desc": "Export the certificate to a file",
     "l_certificate_exported": "Certificate exported",
+    "l_select_import_file": "Select file to import",
     "l_import_file": "Import file",
     "l_import_desc": "Import a key and/or certificate",
+    "l_import_nothing": "Nothing to import",
     "l_importing_file": "Importing file\u2026",
     "s_file_imported": "File imported",
     "l_delete_certificate": "Delete certificate",
@@ -480,7 +490,7 @@
     "l_key_no_certificate": "Key without certificate loaded",
     "s_generate_key": "Generate key",
     "l_generate_desc": "Generate a new certificate or CSR",
-    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
+    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be saved to file, embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
     "@p_generate_desc": {
         "placeholders": {
             "slot": {}
@@ -596,12 +606,15 @@
 
     "@_permissions": {},
     "s_enable_nfc": "Enable NFC",
+    "s_request_access": "Request access",
     "s_permission_denied": "Permission denied",
     "l_elevating_permissions": "Elevating permissions\u2026",
     "s_review_permissions": "Review permissions",
-    "s_admin_privileges_required": "Admin privileges required",
-    "p_elevated_permissions_required": "Managing this device requires elevated privileges.",
-    "p_webauthn_elevated_permissions_required": "WebAuthn management requires elevated privileges.",
+    "s_open_windows_settings": "Open Windows settings",
+    "l_admin_privileges_required": "Administrator privileges required",
+    "p_elevated_permissions_required": "Managing this device requires elevated privileges. Alternatively, you can use Windows Settings to manage FIDO configuration.",
+    "p_webauthn_elevated_permissions_required": "WebAuthn management requires elevated privileges. Alternatively, you can use Windows Settings to manage FIDO configuration.",
+    "l_ms_store_permission_note": "The Microsoft Store version of the app may be unable to elevate permissions",
     "p_need_camera_permission": "Yubico Authenticator needs Camera permissions for scanning QR codes.",
 
     "@_qr_codes": {},

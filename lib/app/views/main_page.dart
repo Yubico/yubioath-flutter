@@ -19,15 +19,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../android/app_methods.dart';
-import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
 import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../oath/views/utils.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
 import '../../widgets/custom_icons.dart';
@@ -86,7 +85,7 @@ class MainPage extends ConsumerWidget {
         return MessagePage(
           centered: true,
           graphic: noKeyImage,
-          message: hasNfcSupport && isNfcEnabled
+          header: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
           actionsBuilder: (context, expanded) => [
@@ -102,22 +101,7 @@ class MainPage extends ConsumerWidget {
             icon: const Icon(Icons.person_add_alt_1),
             tooltip: l10n.s_add_account,
             onPressed: () async {
-              final withContext = ref.read(withContextProvider);
-              final qrScanner = ref.read(qrScannerProvider);
-              if (qrScanner != null) {
-                try {
-                  final qrData = await qrScanner.scanQr();
-                  await AndroidQrScanner.handleScannedData(
-                      qrData, withContext, qrScanner, l10n);
-                } on CancellationException catch (_) {
-                  // ignored - user cancelled
-                  return;
-                }
-              } else {
-                // no QR scanner - enter data manually
-                await AndroidQrScanner.showAccountManualEntryDialog(
-                    withContext, l10n);
-              }
+              await addOathAccount(context, ref);
             },
           ),
         );
@@ -133,7 +117,7 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final app = ref.watch(currentAppProvider);
-              final capabilities = app.getCapabilities();
+              final capabilities = app.capabilities;
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return MessagePage(

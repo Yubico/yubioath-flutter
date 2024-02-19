@@ -24,6 +24,7 @@ import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../management/views/management_screen.dart';
+import '../features.dart' as features;
 import '../key_customization/models.dart';
 import '../key_customization/state.dart';
 import '../key_customization/views/key_customization_dialog.dart';
@@ -32,6 +33,7 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
+import 'keys.dart';
 import 'reset_dialog.dart';
 
 final _hiddenDevicesProvider =
@@ -177,6 +179,7 @@ class _DeviceMenuButton extends ConsumerWidget {
       child: Opacity(
         opacity: menuItems.isNotEmpty ? opacity : 0.0,
         child: PopupMenuButton(
+          key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
           icon: const Icon(Icons.more_horiz_outlined),
           tooltip: '',
@@ -328,12 +331,14 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       BuildContext context, WidgetRef ref, DeviceNode? node) {
     final l10n = AppLocalizations.of(context)!;
     final keyCustomizations = ref.watch(keyCustomizationManagerProvider);
+    final hasFeature = ref.watch(featureProvider);
     final hidden = ref.watch(_hiddenDevicesProvider);
 
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
-    final managementAvailability = data != null
-        ? Application.management.getAvailability(data)
-        : Availability.unsupported;
+    final managementAvailability =
+        data == null || !hasFeature(features.management)
+            ? Availability.unsupported
+            : Application.management.getAvailability(data);
 
     final serial = node is UsbYubiKeyNode
         ? node.info?.serial
@@ -358,6 +363,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           child: ListTile(
               title: Text(l10n.s_customize_key_action),
               leading: const Icon(Icons.palette_outlined),
+              key: yubikeyLabelColorMenuButton,
               dense: true,
               contentPadding: EdgeInsets.zero,
               enabled: true),
@@ -401,11 +407,17 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
                 ? l10n.s_toggle_applications
                 : l10n.s_toggle_interfaces),
             leading: const Icon(Icons.construction),
+            key: yubikeyApplicationToggleMenuButton,
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
         ),
-      if (data != null && node == data.node)
+      if (data != null &&
+          node == data.node &&
+          getResetCapabilities(hasFeature).any((c) =>
+              c.value &
+                  (data.info.supportedCapabilities[node!.transport] ?? 0) !=
+              0))
         PopupMenuItem(
           onTap: () {
             showBlurDialog(
@@ -416,6 +428,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           child: ListTile(
             title: Text(l10n.s_factory_reset),
             leading: const Icon(Icons.delete_forever),
+            key: yubikeyFactoryResetMenuButton,
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),

@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
 
-bool get isDesktop {
-  return const [
-    TargetPlatform.windows,
-    TargetPlatform.macOS,
-    TargetPlatform.linux
-  ].contains(defaultTargetPlatform);
-}
+bool get isDesktop => const [
+      TargetPlatform.windows,
+      TargetPlatform.macOS,
+      TargetPlatform.linux
+    ].contains(defaultTargetPlatform);
 
-bool get isAndroid {
-  return defaultTargetPlatform == TargetPlatform.android;
-}
+bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
+
+bool get isMicrosoftStore =>
+    Platform.isWindows &&
+    Platform.resolvedExecutable.contains('\\WindowsApps\\');
 
 // This must be initialized before use, in main.dart.
 final prefProvider = Provider<SharedPreferences>((ref) {
@@ -99,6 +101,10 @@ class FeatureFlagsNotifier extends StateNotifier<Map<String, bool>> {
   void loadConfig(Map<String, dynamic> config) {
     const falsey = [0, false, null];
     state = {for (final k in config.keys) k: !falsey.contains(config[k])};
+  }
+
+  void setFeature(Feature feature, dynamic value) {
+    state = {...state, feature.path: value};
   }
 }
 

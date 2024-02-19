@@ -215,6 +215,7 @@ class _ConfigureYubiOtpDialogState
                       : null,
                   prefixIcon: const Icon(Icons.public_outlined),
                   suffixIcon: IconButton(
+                    key: keys.useSerial,
                     tooltip: l10n.s_use_serial,
                     icon: const Icon(Icons.auto_awesome_outlined),
                     onPressed: (info?.serial != null)
@@ -250,6 +251,7 @@ class _ConfigureYubiOtpDialogState
                       : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
+                    key: keys.generatePrivateId,
                     tooltip: l10n.s_generate_random,
                     icon: const Icon(Icons.refresh),
                     onPressed: () {
@@ -286,6 +288,7 @@ class _ConfigureYubiOtpDialogState
                       : null,
                   prefixIcon: const Icon(Icons.key_outlined),
                   suffixIcon: IconButton(
+                    key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
                     icon: const Icon(Icons.refresh),
                     onPressed: () {

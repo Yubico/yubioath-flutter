@@ -59,6 +59,7 @@ class SlotDialog extends ConsumerWidget {
     }
 
     final certInfo = slotData.certInfo;
+    final metadata = slotData.metadata;
     return PivActions(
       devicePath: node.path,
       pivState: pivState,
@@ -79,26 +80,34 @@ class SlotDialog extends ConsumerWidget {
                         softWrap: true,
                         textAlign: TextAlign.center,
                       ),
-                      if (certInfo != null) ...[
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: CertInfoTable(certInfo),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            if (certInfo != null || metadata != null) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: CertInfoTable(certInfo, metadata),
+                              ),
+                            ],
+                            if (certInfo == null) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Text(
+                                  l10n.l_no_certificate,
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                  style: subtitleStyle,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ] else ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text(
-                            l10n.l_no_certificate,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                            style: subtitleStyle,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
                 ActionListSection.fromMenuActions(
                   context,
                   l10n.s_actions,

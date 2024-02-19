@@ -75,6 +75,7 @@ class InvalidPinException(RpcException):
 
 @unique
 class GENERATE_TYPE(str, Enum):
+    PUBLIC_KEY = "publicKey"
     CSR = "csr"
     CERTIFICATE = "certificate"
 
@@ -297,12 +298,25 @@ def _choose_cert(certs):
 def _get_cert_info(cert):
     if cert is None:
         return None
+    try:  # Prefer timezone-aware variant (cryptography >= 42)
+        not_before = cert.not_valid_before_utc
+        not_after = cert.not_valid_after_utc
+    except AttributeError:
+        not_before = cert.not_valid_before
+        not_after = cert.not_valid_after
+
+    try:
+        key_type = KEY_TYPE.from_public_key(cert.public_key())
+    except ValueError:
+        key_type = None
+
     return dict(
+        key_type=key_type,
         subject=cert.subject.rfc4514_string(),
         issuer=cert.issuer.rfc4514_string(),
         serial=hex(cert.serial_number)[2:],
-        not_valid_before=cert.not_valid_before.isoformat(),
-        not_valid_after=cert.not_valid_after.isoformat(),
+        not_valid_before=not_before.isoformat(),
+        not_valid_after=not_after.isoformat(),
         fingerprint=cert.fingerprint(hashes.SHA256()),
     )
 
@@ -341,7 +355,7 @@ class SlotsNode(RpcNode):
             f"{int(slot):02x}": dict(
                 slot=int(slot),
                 name=slot.name,
-                has_key=metadata is not None if self._has_metadata else None,
+                metadata=_metadata_dict(metadata),
                 cert_info=_get_cert_info(cert),
             )
             for slot, (metadata, cert) in self._slots.items()
@@ -353,6 +367,17 @@ class SlotsNode(RpcNode):
             metadata, certificate = self._slots[slot]
             return SlotNode(self.session, slot, metadata, certificate, self.refresh)
         return super().create_child(name)
+
+
+def _metadata_dict(metadata):
+    if not metadata:
+        return None
+    data = asdict(metadata)
+    data["public_key"] = metadata.public_key.public_bytes(
+        encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+    ).decode()
+    del data["public_key_encoded"]
+    return data
 
 
 class SlotNode(RpcNode):
@@ -368,7 +393,7 @@ class SlotNode(RpcNode):
         return dict(
             id=f"{int(self.slot):02x}",
             name=self.slot.name,
-            metadata=asdict(self.metadata) if self.metadata else None,
+            metadata=_metadata_dict(self.metadata),
             certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
             if self.certificate
             else None,
@@ -418,7 +443,7 @@ class SlotNode(RpcNode):
         self._refresh()
 
         return dict(
-            metadata=asdict(metadata) if metadata else None,
+            metadata=_metadata_dict(metadata),
             public_key=private_key.public_key()
             .public_bytes(
                 encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
@@ -443,6 +468,9 @@ class SlotNode(RpcNode):
         public_key = self.session.generate_key(
             self.slot, key_type, pin_policy, touch_policy
         )
+        public_key_pem = public_key.public_bytes(
+            encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+        ).decode()
 
         if pin_policy != PIN_POLICY.NEVER:
             # TODO: Check if verified?
@@ -452,7 +480,9 @@ class SlotNode(RpcNode):
         if touch_policy in (TOUCH_POLICY.ALWAYS, TOUCH_POLICY.CACHED):
             signal("touch")
 
-        if generate_type == GENERATE_TYPE.CSR:
+        if generate_type == GENERATE_TYPE.PUBLIC_KEY:
+            result = public_key_pem
+        elif generate_type == GENERATE_TYPE.CSR:
             csr = generate_csr(self.session, self.slot, public_key, subject)
             result = csr.public_bytes(encoding=Encoding.PEM).decode()
         elif generate_type == GENERATE_TYPE.CERTIFICATE:
@@ -472,13 +502,8 @@ class SlotNode(RpcNode):
             self.session.put_certificate(self.slot, cert)
             self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
         else:
-            raise ValueError("Unsupported GENERATE_TYPE")
+            raise ValueError(f"Unsupported GENERATE_TYPE: {generate_type}")
 
         self._refresh()
 
-        return dict(
-            public_key=public_key.public_bytes(
-                encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
-            ).decode(),
-            result=result,
-        )
+        return dict(public_key=public_key_pem, result=result)

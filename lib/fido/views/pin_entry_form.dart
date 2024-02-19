@@ -22,6 +22,7 @@ import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -90,6 +91,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
             child: AppTextField(
+              key: pinEntry,
               autofocus: true,
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],
@@ -135,6 +137,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 0),
             minLeadingWidth: 0,
             trailing: FilledButton.icon(
+              key: unlockFido2WithPin,
               icon: const Icon(Icons.lock_open),
               label: Text(l10n.s_unlock),
               onPressed:

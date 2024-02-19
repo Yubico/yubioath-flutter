@@ -32,6 +32,7 @@ import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -197,6 +198,7 @@ class _SlotListItem extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
 
     return AppListItem(
+      key: getAppListItemKey(slot),
       otpSlot,
       selected: selected,
       leading: CircleAvatar(
@@ -209,6 +211,7 @@ class _SlotListItem extends ConsumerWidget {
       trailing: expanded
           ? null
           : OutlinedButton(
+              key: getOpenMenuButtonKey(slot),
               onPressed: Actions.handler(context, OpenIntent(otpSlot)),
               child: const Icon(Icons.more_horiz),
             ),

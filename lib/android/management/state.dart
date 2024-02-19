@@ -54,4 +54,9 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
 
     ref.read(attachedDevicesProvider.notifier).refresh();
   }
+
+  @override
+  Future<void> deviceReset() {
+    throw UnimplementedError();
+  }
 }

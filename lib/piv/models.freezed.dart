@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 PinMetadata _$PinMetadataFromJson(Map<String, dynamic> json) {
   return _PinMetadata.fromJson(json);
@@ -677,7 +677,7 @@ mixin _$SlotMetadata {
   PinPolicy get pinPolicy => throw _privateConstructorUsedError;
   TouchPolicy get touchPolicy => throw _privateConstructorUsedError;
   bool get generated => throw _privateConstructorUsedError;
-  String get publicKeyEncoded => throw _privateConstructorUsedError;
+  String get publicKey => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -696,7 +696,7 @@ abstract class $SlotMetadataCopyWith<$Res> {
       PinPolicy pinPolicy,
       TouchPolicy touchPolicy,
       bool generated,
-      String publicKeyEncoded});
+      String publicKey});
 }
 
 /// @nodoc
@@ -716,7 +716,7 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
     Object? pinPolicy = null,
     Object? touchPolicy = null,
     Object? generated = null,
-    Object? publicKeyEncoded = null,
+    Object? publicKey = null,
   }) {
     return _then(_value.copyWith(
       keyType: null == keyType
@@ -735,9 +735,9 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
           ? _value.generated
           : generated // ignore: cast_nullable_to_non_nullable
               as bool,
-      publicKeyEncoded: null == publicKeyEncoded
-          ? _value.publicKeyEncoded
-          : publicKeyEncoded // ignore: cast_nullable_to_non_nullable
+      publicKey: null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -756,7 +756,7 @@ abstract class _$$SlotMetadataImplCopyWith<$Res>
       PinPolicy pinPolicy,
       TouchPolicy touchPolicy,
       bool generated,
-      String publicKeyEncoded});
+      String publicKey});
 }
 
 /// @nodoc
@@ -774,7 +774,7 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
     Object? pinPolicy = null,
     Object? touchPolicy = null,
     Object? generated = null,
-    Object? publicKeyEncoded = null,
+    Object? publicKey = null,
   }) {
     return _then(_$SlotMetadataImpl(
       null == keyType
@@ -793,9 +793,9 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
           ? _value.generated
           : generated // ignore: cast_nullable_to_non_nullable
               as bool,
-      null == publicKeyEncoded
-          ? _value.publicKeyEncoded
-          : publicKeyEncoded // ignore: cast_nullable_to_non_nullable
+      null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -805,7 +805,7 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SlotMetadataImpl implements _SlotMetadata {
   _$SlotMetadataImpl(this.keyType, this.pinPolicy, this.touchPolicy,
-      this.generated, this.publicKeyEncoded);
+      this.generated, this.publicKey);
 
   factory _$SlotMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$SlotMetadataImplFromJson(json);
@@ -819,11 +819,11 @@ class _$SlotMetadataImpl implements _SlotMetadata {
   @override
   final bool generated;
   @override
-  final String publicKeyEncoded;
+  final String publicKey;
 
   @override
   String toString() {
-    return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKeyEncoded: $publicKeyEncoded)';
+    return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKey: $publicKey)';
   }
 
   @override
@@ -838,14 +838,14 @@ class _$SlotMetadataImpl implements _SlotMetadata {
                 other.touchPolicy == touchPolicy) &&
             (identical(other.generated, generated) ||
                 other.generated == generated) &&
-            (identical(other.publicKeyEncoded, publicKeyEncoded) ||
-                other.publicKeyEncoded == publicKeyEncoded));
+            (identical(other.publicKey, publicKey) ||
+                other.publicKey == publicKey));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, keyType, pinPolicy, touchPolicy,
-      generated, publicKeyEncoded);
+  int get hashCode => Object.hash(
+      runtimeType, keyType, pinPolicy, touchPolicy, generated, publicKey);
 
   @JsonKey(ignore: true)
   @override
@@ -867,7 +867,7 @@ abstract class _SlotMetadata implements SlotMetadata {
       final PinPolicy pinPolicy,
       final TouchPolicy touchPolicy,
       final bool generated,
-      final String publicKeyEncoded) = _$SlotMetadataImpl;
+      final String publicKey) = _$SlotMetadataImpl;
 
   factory _SlotMetadata.fromJson(Map<String, dynamic> json) =
       _$SlotMetadataImpl.fromJson;
@@ -881,7 +881,7 @@ abstract class _SlotMetadata implements SlotMetadata {
   @override
   bool get generated;
   @override
-  String get publicKeyEncoded;
+  String get publicKey;
   @override
   @JsonKey(ignore: true)
   _$$SlotMetadataImplCopyWith<_$SlotMetadataImpl> get copyWith =>
@@ -1431,6 +1431,7 @@ CertInfo _$CertInfoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CertInfo {
+  KeyType? get keyType => throw _privateConstructorUsedError;
   String get subject => throw _privateConstructorUsedError;
   String get issuer => throw _privateConstructorUsedError;
   String get serial => throw _privateConstructorUsedError;
@@ -1450,7 +1451,8 @@ abstract class $CertInfoCopyWith<$Res> {
       _$CertInfoCopyWithImpl<$Res, CertInfo>;
   @useResult
   $Res call(
-      {String subject,
+      {KeyType? keyType,
+      String subject,
       String issuer,
       String serial,
       String notValidBefore,
@@ -1471,6 +1473,7 @@ class _$CertInfoCopyWithImpl<$Res, $Val extends CertInfo>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? keyType = freezed,
     Object? subject = null,
     Object? issuer = null,
     Object? serial = null,
@@ -1479,6 +1482,10 @@ class _$CertInfoCopyWithImpl<$Res, $Val extends CertInfo>
     Object? fingerprint = null,
   }) {
     return _then(_value.copyWith(
+      keyType: freezed == keyType
+          ? _value.keyType
+          : keyType // ignore: cast_nullable_to_non_nullable
+              as KeyType?,
       subject: null == subject
           ? _value.subject
           : subject // ignore: cast_nullable_to_non_nullable
@@ -1516,7 +1523,8 @@ abstract class _$$CertInfoImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String subject,
+      {KeyType? keyType,
+      String subject,
       String issuer,
       String serial,
       String notValidBefore,
@@ -1535,6 +1543,7 @@ class __$$CertInfoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? keyType = freezed,
     Object? subject = null,
     Object? issuer = null,
     Object? serial = null,
@@ -1543,6 +1552,10 @@ class __$$CertInfoImplCopyWithImpl<$Res>
     Object? fingerprint = null,
   }) {
     return _then(_$CertInfoImpl(
+      keyType: freezed == keyType
+          ? _value.keyType
+          : keyType // ignore: cast_nullable_to_non_nullable
+              as KeyType?,
       subject: null == subject
           ? _value.subject
           : subject // ignore: cast_nullable_to_non_nullable
@@ -1575,7 +1588,8 @@ class __$$CertInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CertInfoImpl implements _CertInfo {
   _$CertInfoImpl(
-      {required this.subject,
+      {required this.keyType,
+      required this.subject,
       required this.issuer,
       required this.serial,
       required this.notValidBefore,
@@ -1585,6 +1599,8 @@ class _$CertInfoImpl implements _CertInfo {
   factory _$CertInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$CertInfoImplFromJson(json);
 
+  @override
+  final KeyType? keyType;
   @override
   final String subject;
   @override
@@ -1600,7 +1616,7 @@ class _$CertInfoImpl implements _CertInfo {
 
   @override
   String toString() {
-    return 'CertInfo(subject: $subject, issuer: $issuer, serial: $serial, notValidBefore: $notValidBefore, notValidAfter: $notValidAfter, fingerprint: $fingerprint)';
+    return 'CertInfo(keyType: $keyType, subject: $subject, issuer: $issuer, serial: $serial, notValidBefore: $notValidBefore, notValidAfter: $notValidAfter, fingerprint: $fingerprint)';
   }
 
   @override
@@ -1608,6 +1624,7 @@ class _$CertInfoImpl implements _CertInfo {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CertInfoImpl &&
+            (identical(other.keyType, keyType) || other.keyType == keyType) &&
             (identical(other.subject, subject) || other.subject == subject) &&
             (identical(other.issuer, issuer) || other.issuer == issuer) &&
             (identical(other.serial, serial) || other.serial == serial) &&
@@ -1621,7 +1638,7 @@ class _$CertInfoImpl implements _CertInfo {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, subject, issuer, serial,
+  int get hashCode => Object.hash(runtimeType, keyType, subject, issuer, serial,
       notValidBefore, notValidAfter, fingerprint);
 
   @JsonKey(ignore: true)
@@ -1640,7 +1657,8 @@ class _$CertInfoImpl implements _CertInfo {
 
 abstract class _CertInfo implements CertInfo {
   factory _CertInfo(
-      {required final String subject,
+      {required final KeyType? keyType,
+      required final String subject,
       required final String issuer,
       required final String serial,
       required final String notValidBefore,
@@ -1650,6 +1668,8 @@ abstract class _CertInfo implements CertInfo {
   factory _CertInfo.fromJson(Map<String, dynamic> json) =
       _$CertInfoImpl.fromJson;
 
+  @override
+  KeyType? get keyType;
   @override
   String get subject;
   @override
@@ -1675,7 +1695,7 @@ PivSlot _$PivSlotFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$PivSlot {
   SlotId get slot => throw _privateConstructorUsedError;
-  bool? get hasKey => throw _privateConstructorUsedError;
+  SlotMetadata? get metadata => throw _privateConstructorUsedError;
   CertInfo? get certInfo => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1688,8 +1708,9 @@ abstract class $PivSlotCopyWith<$Res> {
   factory $PivSlotCopyWith(PivSlot value, $Res Function(PivSlot) then) =
       _$PivSlotCopyWithImpl<$Res, PivSlot>;
   @useResult
-  $Res call({SlotId slot, bool? hasKey, CertInfo? certInfo});
+  $Res call({SlotId slot, SlotMetadata? metadata, CertInfo? certInfo});
 
+  $SlotMetadataCopyWith<$Res>? get metadata;
   $CertInfoCopyWith<$Res>? get certInfo;
 }
 
@@ -1707,7 +1728,7 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
   @override
   $Res call({
     Object? slot = null,
-    Object? hasKey = freezed,
+    Object? metadata = freezed,
     Object? certInfo = freezed,
   }) {
     return _then(_value.copyWith(
@@ -1715,15 +1736,27 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
           ? _value.slot
           : slot // ignore: cast_nullable_to_non_nullable
               as SlotId,
-      hasKey: freezed == hasKey
-          ? _value.hasKey
-          : hasKey // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      metadata: freezed == metadata
+          ? _value.metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as SlotMetadata?,
       certInfo: freezed == certInfo
           ? _value.certInfo
           : certInfo // ignore: cast_nullable_to_non_nullable
               as CertInfo?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $SlotMetadataCopyWith<$Res>? get metadata {
+    if (_value.metadata == null) {
+      return null;
+    }
+
+    return $SlotMetadataCopyWith<$Res>(_value.metadata!, (value) {
+      return _then(_value.copyWith(metadata: value) as $Val);
+    });
   }
 
   @override
@@ -1746,8 +1779,10 @@ abstract class _$$PivSlotImplCopyWith<$Res> implements $PivSlotCopyWith<$Res> {
       __$$PivSlotImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({SlotId slot, bool? hasKey, CertInfo? certInfo});
+  $Res call({SlotId slot, SlotMetadata? metadata, CertInfo? certInfo});
 
+  @override
+  $SlotMetadataCopyWith<$Res>? get metadata;
   @override
   $CertInfoCopyWith<$Res>? get certInfo;
 }
@@ -1764,7 +1799,7 @@ class __$$PivSlotImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? slot = null,
-    Object? hasKey = freezed,
+    Object? metadata = freezed,
     Object? certInfo = freezed,
   }) {
     return _then(_$PivSlotImpl(
@@ -1772,10 +1807,10 @@ class __$$PivSlotImplCopyWithImpl<$Res>
           ? _value.slot
           : slot // ignore: cast_nullable_to_non_nullable
               as SlotId,
-      hasKey: freezed == hasKey
-          ? _value.hasKey
-          : hasKey // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      metadata: freezed == metadata
+          ? _value.metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as SlotMetadata?,
       certInfo: freezed == certInfo
           ? _value.certInfo
           : certInfo // ignore: cast_nullable_to_non_nullable
@@ -1787,7 +1822,7 @@ class __$$PivSlotImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$PivSlotImpl implements _PivSlot {
-  _$PivSlotImpl({required this.slot, this.hasKey, this.certInfo});
+  _$PivSlotImpl({required this.slot, this.metadata, this.certInfo});
 
   factory _$PivSlotImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivSlotImplFromJson(json);
@@ -1795,13 +1830,13 @@ class _$PivSlotImpl implements _PivSlot {
   @override
   final SlotId slot;
   @override
-  final bool? hasKey;
+  final SlotMetadata? metadata;
   @override
   final CertInfo? certInfo;
 
   @override
   String toString() {
-    return 'PivSlot(slot: $slot, hasKey: $hasKey, certInfo: $certInfo)';
+    return 'PivSlot(slot: $slot, metadata: $metadata, certInfo: $certInfo)';
   }
 
   @override
@@ -1810,14 +1845,15 @@ class _$PivSlotImpl implements _PivSlot {
         (other.runtimeType == runtimeType &&
             other is _$PivSlotImpl &&
             (identical(other.slot, slot) || other.slot == slot) &&
-            (identical(other.hasKey, hasKey) || other.hasKey == hasKey) &&
+            (identical(other.metadata, metadata) ||
+                other.metadata == metadata) &&
             (identical(other.certInfo, certInfo) ||
                 other.certInfo == certInfo));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, slot, hasKey, certInfo);
+  int get hashCode => Object.hash(runtimeType, slot, metadata, certInfo);
 
   @JsonKey(ignore: true)
   @override
@@ -1836,7 +1872,7 @@ class _$PivSlotImpl implements _PivSlot {
 abstract class _PivSlot implements PivSlot {
   factory _PivSlot(
       {required final SlotId slot,
-      final bool? hasKey,
+      final SlotMetadata? metadata,
       final CertInfo? certInfo}) = _$PivSlotImpl;
 
   factory _PivSlot.fromJson(Map<String, dynamic> json) = _$PivSlotImpl.fromJson;
@@ -1844,7 +1880,7 @@ abstract class _PivSlot implements PivSlot {
   @override
   SlotId get slot;
   @override
-  bool? get hasKey;
+  SlotMetadata? get metadata;
   @override
   CertInfo? get certInfo;
   @override
@@ -2253,9 +2289,9 @@ abstract class _InvalidPassword implements PivExamineResult {
 
 /// @nodoc
 mixin _$PivGenerateParameters {
-  String get subject => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() publicKey,
     required TResult Function(
             String subject, DateTime validFrom, DateTime validTo)
         certificate,
@@ -2264,6 +2300,7 @@ mixin _$PivGenerateParameters {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
         certificate,
     TResult? Function(String subject)? csr,
@@ -2271,6 +2308,7 @@ mixin _$PivGenerateParameters {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
         certificate,
     TResult Function(String subject)? csr,
@@ -2279,26 +2317,25 @@ mixin _$PivGenerateParameters {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_GeneratePublicKey value) publicKey,
     required TResult Function(_GenerateCertificate value) certificate,
     required TResult Function(_GenerateCsr value) csr,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GeneratePublicKey value)? publicKey,
     TResult? Function(_GenerateCertificate value)? certificate,
     TResult? Function(_GenerateCsr value)? csr,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GeneratePublicKey value)? publicKey,
     TResult Function(_GenerateCertificate value)? certificate,
     TResult Function(_GenerateCsr value)? csr,
     required TResult orElse(),
   }) =>
-      throw _privateConstructorUsedError;
-
-  @JsonKey(ignore: true)
-  $PivGenerateParametersCopyWith<PivGenerateParameters> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2307,8 +2344,6 @@ abstract class $PivGenerateParametersCopyWith<$Res> {
   factory $PivGenerateParametersCopyWith(PivGenerateParameters value,
           $Res Function(PivGenerateParameters) then) =
       _$PivGenerateParametersCopyWithImpl<$Res, PivGenerateParameters>;
-  @useResult
-  $Res call({String subject});
 }
 
 /// @nodoc
@@ -2321,28 +2356,125 @@ class _$PivGenerateParametersCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? subject = null,
-  }) {
-    return _then(_value.copyWith(
-      subject: null == subject
-          ? _value.subject
-          : subject // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
 }
 
 /// @nodoc
-abstract class _$$GenerateCertificateImplCopyWith<$Res>
-    implements $PivGenerateParametersCopyWith<$Res> {
+abstract class _$$GeneratePublicKeyImplCopyWith<$Res> {
+  factory _$$GeneratePublicKeyImplCopyWith(_$GeneratePublicKeyImpl value,
+          $Res Function(_$GeneratePublicKeyImpl) then) =
+      __$$GeneratePublicKeyImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$GeneratePublicKeyImplCopyWithImpl<$Res>
+    extends _$PivGenerateParametersCopyWithImpl<$Res, _$GeneratePublicKeyImpl>
+    implements _$$GeneratePublicKeyImplCopyWith<$Res> {
+  __$$GeneratePublicKeyImplCopyWithImpl(_$GeneratePublicKeyImpl _value,
+      $Res Function(_$GeneratePublicKeyImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$GeneratePublicKeyImpl implements _GeneratePublicKey {
+  _$GeneratePublicKeyImpl();
+
+  @override
+  String toString() {
+    return 'PivGenerateParameters.publicKey()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$GeneratePublicKeyImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() publicKey,
+    required TResult Function(
+            String subject, DateTime validFrom, DateTime validTo)
+        certificate,
+    required TResult Function(String subject) csr,
+  }) {
+    return publicKey();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? publicKey,
+    TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult? Function(String subject)? csr,
+  }) {
+    return publicKey?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? publicKey,
+    TResult Function(String subject, DateTime validFrom, DateTime validTo)?
+        certificate,
+    TResult Function(String subject)? csr,
+    required TResult orElse(),
+  }) {
+    if (publicKey != null) {
+      return publicKey();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_GeneratePublicKey value) publicKey,
+    required TResult Function(_GenerateCertificate value) certificate,
+    required TResult Function(_GenerateCsr value) csr,
+  }) {
+    return publicKey(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GeneratePublicKey value)? publicKey,
+    TResult? Function(_GenerateCertificate value)? certificate,
+    TResult? Function(_GenerateCsr value)? csr,
+  }) {
+    return publicKey?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GeneratePublicKey value)? publicKey,
+    TResult Function(_GenerateCertificate value)? certificate,
+    TResult Function(_GenerateCsr value)? csr,
+    required TResult orElse(),
+  }) {
+    if (publicKey != null) {
+      return publicKey(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _GeneratePublicKey implements PivGenerateParameters {
+  factory _GeneratePublicKey() = _$GeneratePublicKeyImpl;
+}
+
+/// @nodoc
+abstract class _$$GenerateCertificateImplCopyWith<$Res> {
   factory _$$GenerateCertificateImplCopyWith(_$GenerateCertificateImpl value,
           $Res Function(_$GenerateCertificateImpl) then) =
       __$$GenerateCertificateImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String subject, DateTime validFrom, DateTime validTo});
 }
@@ -2421,6 +2553,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() publicKey,
     required TResult Function(
             String subject, DateTime validFrom, DateTime validTo)
         certificate,
@@ -2432,6 +2565,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
         certificate,
     TResult? Function(String subject)? csr,
@@ -2442,6 +2576,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
         certificate,
     TResult Function(String subject)? csr,
@@ -2456,6 +2591,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_GeneratePublicKey value) publicKey,
     required TResult Function(_GenerateCertificate value) certificate,
     required TResult Function(_GenerateCsr value) csr,
   }) {
@@ -2465,6 +2601,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GeneratePublicKey value)? publicKey,
     TResult? Function(_GenerateCertificate value)? certificate,
     TResult? Function(_GenerateCsr value)? csr,
   }) {
@@ -2474,6 +2611,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GeneratePublicKey value)? publicKey,
     TResult Function(_GenerateCertificate value)? certificate,
     TResult Function(_GenerateCsr value)? csr,
     required TResult orElse(),
@@ -2491,23 +2629,19 @@ abstract class _GenerateCertificate implements PivGenerateParameters {
       required final DateTime validFrom,
       required final DateTime validTo}) = _$GenerateCertificateImpl;
 
-  @override
   String get subject;
   DateTime get validFrom;
   DateTime get validTo;
-  @override
   @JsonKey(ignore: true)
   _$$GenerateCertificateImplCopyWith<_$GenerateCertificateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$GenerateCsrImplCopyWith<$Res>
-    implements $PivGenerateParametersCopyWith<$Res> {
+abstract class _$$GenerateCsrImplCopyWith<$Res> {
   factory _$$GenerateCsrImplCopyWith(
           _$GenerateCsrImpl value, $Res Function(_$GenerateCsrImpl) then) =
       __$$GenerateCsrImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String subject});
 }
@@ -2567,6 +2701,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() publicKey,
     required TResult Function(
             String subject, DateTime validFrom, DateTime validTo)
         certificate,
@@ -2578,6 +2713,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
         certificate,
     TResult? Function(String subject)? csr,
@@ -2588,6 +2724,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
         certificate,
     TResult Function(String subject)? csr,
@@ -2602,6 +2739,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_GeneratePublicKey value) publicKey,
     required TResult Function(_GenerateCertificate value) certificate,
     required TResult Function(_GenerateCsr value) csr,
   }) {
@@ -2611,6 +2749,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_GeneratePublicKey value)? publicKey,
     TResult? Function(_GenerateCertificate value)? certificate,
     TResult? Function(_GenerateCsr value)? csr,
   }) {
@@ -2620,6 +2759,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GeneratePublicKey value)? publicKey,
     TResult Function(_GenerateCertificate value)? certificate,
     TResult Function(_GenerateCsr value)? csr,
     required TResult orElse(),
@@ -2634,9 +2774,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
 abstract class _GenerateCsr implements PivGenerateParameters {
   factory _GenerateCsr({required final String subject}) = _$GenerateCsrImpl;
 
-  @override
   String get subject;
-  @override
   @JsonKey(ignore: true)
   _$$GenerateCsrImplCopyWith<_$GenerateCsrImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -2650,7 +2788,7 @@ PivGenerateResult _$PivGenerateResultFromJson(Map<String, dynamic> json) {
 mixin _$PivGenerateResult {
   GenerateType get generateType => throw _privateConstructorUsedError;
   String get publicKey => throw _privateConstructorUsedError;
-  String get result => throw _privateConstructorUsedError;
+  String? get result => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -2664,7 +2802,7 @@ abstract class $PivGenerateResultCopyWith<$Res> {
           PivGenerateResult value, $Res Function(PivGenerateResult) then) =
       _$PivGenerateResultCopyWithImpl<$Res, PivGenerateResult>;
   @useResult
-  $Res call({GenerateType generateType, String publicKey, String result});
+  $Res call({GenerateType generateType, String publicKey, String? result});
 }
 
 /// @nodoc
@@ -2682,7 +2820,7 @@ class _$PivGenerateResultCopyWithImpl<$Res, $Val extends PivGenerateResult>
   $Res call({
     Object? generateType = null,
     Object? publicKey = null,
-    Object? result = null,
+    Object? result = freezed,
   }) {
     return _then(_value.copyWith(
       generateType: null == generateType
@@ -2693,10 +2831,10 @@ class _$PivGenerateResultCopyWithImpl<$Res, $Val extends PivGenerateResult>
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
-      result: null == result
+      result: freezed == result
           ? _value.result
           : result // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ) as $Val);
   }
 }
@@ -2709,7 +2847,7 @@ abstract class _$$PivGenerateResultImplCopyWith<$Res>
       __$$PivGenerateResultImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GenerateType generateType, String publicKey, String result});
+  $Res call({GenerateType generateType, String publicKey, String? result});
 }
 
 /// @nodoc
@@ -2725,7 +2863,7 @@ class __$$PivGenerateResultImplCopyWithImpl<$Res>
   $Res call({
     Object? generateType = null,
     Object? publicKey = null,
-    Object? result = null,
+    Object? result = freezed,
   }) {
     return _then(_$PivGenerateResultImpl(
       generateType: null == generateType
@@ -2736,10 +2874,10 @@ class __$$PivGenerateResultImplCopyWithImpl<$Res>
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
-      result: null == result
+      result: freezed == result
           ? _value.result
           : result // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
@@ -2748,9 +2886,7 @@ class __$$PivGenerateResultImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PivGenerateResultImpl implements _PivGenerateResult {
   _$PivGenerateResultImpl(
-      {required this.generateType,
-      required this.publicKey,
-      required this.result});
+      {required this.generateType, required this.publicKey, this.result});
 
   factory _$PivGenerateResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivGenerateResultImplFromJson(json);
@@ -2760,7 +2896,7 @@ class _$PivGenerateResultImpl implements _PivGenerateResult {
   @override
   final String publicKey;
   @override
-  final String result;
+  final String? result;
 
   @override
   String toString() {
@@ -2802,7 +2938,7 @@ abstract class _PivGenerateResult implements PivGenerateResult {
   factory _PivGenerateResult(
       {required final GenerateType generateType,
       required final String publicKey,
-      required final String result}) = _$PivGenerateResultImpl;
+      final String? result}) = _$PivGenerateResultImpl;
 
   factory _PivGenerateResult.fromJson(Map<String, dynamic> json) =
       _$PivGenerateResultImpl.fromJson;
@@ -2812,7 +2948,7 @@ abstract class _PivGenerateResult implements PivGenerateResult {
   @override
   String get publicKey;
   @override
-  String get result;
+  String? get result;
   @override
   @JsonKey(ignore: true)
   _$$PivGenerateResultImplCopyWith<_$PivGenerateResultImpl> get copyWith =>

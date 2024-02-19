@@ -128,14 +128,19 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                           textAlign: TextAlign.center,
                                         ),
                                         const SizedBox(height: 16),
-                                        selected.certInfo != null
-                                            ? CertInfoTable(selected.certInfo!)
-                                            : Text(
-                                                l10n.l_no_certificate,
-                                                softWrap: true,
-                                                textAlign: TextAlign.center,
-                                                style: subtitleStyle,
-                                              ),
+                                        if (selected.certInfo != null ||
+                                            selected.metadata != null) ...[
+                                          CertInfoTable(selected.certInfo,
+                                              selected.metadata),
+                                          const SizedBox(height: 16),
+                                        ],
+                                        if (selected.certInfo == null)
+                                          Text(
+                                            l10n.l_no_certificate,
+                                            softWrap: true,
+                                            textAlign: TextAlign.center,
+                                            style: subtitleStyle,
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -153,6 +158,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       ? (context) => pivBuildActions(
                           context, widget.devicePath, pivState, ref)
                       : null,
+                  keyActionsBadge: pivShowActionsNotifier(pivState),
                   builder: (context, expanded) {
                     // De-select if window is resized to be non-expanded.
                     if (!expanded && _selected != null) {
@@ -225,7 +231,7 @@ class _CertificateListItem extends ConsumerWidget {
       subtitle: certInfo != null
           // Simplify subtitle by stripping "CN=", etc.
           ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
-          : pivSlot.hasKey == true
+          : pivSlot.metadata != null
               ? l10n.l_key_no_certificate
               : l10n.l_no_certificate,
       trailing: expanded

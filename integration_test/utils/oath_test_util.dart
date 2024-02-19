@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/models.dart';
@@ -302,12 +303,24 @@ extension OathFunctions on WidgetTester {
 
   /// Factory reset OATH application
   Future<void> resetOATH() async {
-    // TODO: Implement this using new Reset Dialog
-    await tapActionIconButton();
+    final targetKey = approvedKeys[0]; // only reset approved keys!
+
+    /// 1. make sure we are using approved key
+    await switchToKey(targetKey);
     await shortWait();
-    //await tap(find.byKey(keys.resetAction));
+
+    /// 2. open the key menu
+    await tapPopupMenu(targetKey);
     await shortWait();
-    await tap(find.text('Reset'));
+    await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
+    await longWait();
+
+    /// 3. then toggle 'OATH' in the 'Factory reset' reset_dialog.dart
+    await tap(find.byKey(factoryResetPickResetOath));
+    await longWait();
+
+    /// 4. Click reset TextButton: done
+    await tap(find.byKey(factoryResetReset));
     await shortWait();
   }
 

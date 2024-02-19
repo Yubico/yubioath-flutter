@@ -26,6 +26,7 @@ class MessagePage extends StatelessWidget {
   final Widget? graphic;
   final String? header;
   final String? message;
+  final String? footnote;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
@@ -43,6 +44,7 @@ class MessagePage extends StatelessWidget {
     this.graphic,
     this.header,
     this.message,
+    this.footnote,
     this.keyActionsBuilder,
     this.actionButtonBuilder,
     this.actionsBuilder,
@@ -58,6 +60,7 @@ class MessagePage extends StatelessWidget {
   Widget build(BuildContext context) => AppPage(
         title: title,
         capabilities: capabilities,
+        footnote: footnote,
         centered: centered,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
