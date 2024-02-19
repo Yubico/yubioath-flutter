@@ -92,7 +92,7 @@ dev_dependencies:
   analyzer:
   analyzer_plugin:
   custom_lint_builder:
-  custom_lint:
+  custom_lint: 0.6.2
   lint:
     path: lint
 
