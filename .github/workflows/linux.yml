@@ -21,6 +21,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        echo "PYVER=3.12.1" >> $GITHUB_ENV  # Remove once 3.12.2 is available from PPA
         export PYVER_MINOR=${PYVER%.*}
         echo "PYVER_MINOR: $PYVER_MINOR"
         apt-get update

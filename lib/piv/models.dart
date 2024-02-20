@@ -77,7 +77,11 @@ enum PinPolicy {
   @JsonValue(0x02)
   once,
   @JsonValue(0x03)
-  always;
+  always,
+  @JsonValue(0x04)
+  matchOnce,
+  @JsonValue(0x05)
+  matchAlways;
 
   const PinPolicy();
 

@@ -1,3 +1,18 @@
+* Version 6.4.0
+ ** UI: Major UI overhaul, with improvements including:
+  *** Add new UI layouts for wider windows to better utilize screen space.
+  *** Add YubiKey personalization through custom naming and theme color.
+  *** Split FIDO/WebAuthn into multiple sections.
+  *** Move factory reset functionality into a single dialog, from the individual sections.
+ ** Add support for Yubico OTP provisioning.
+ ** PIV: Display more information about keys and certificates.
+ ** PIV: Add output format for public key when generating keys.
+ ** Desktop: Window hidden/shown state no longer saved when closing the app,
+    use --hidden to start the app in a hidden to systray state.
+ ** Desktop: Fix FIDO reset over NFC.
+ ** Windows: Add option to launch Windows Settings for FIDO management.
+ ** Android: Increase read timeout for NFC, improving compatibility with older YubiKeys.
+
 * Version 6.3.1 (released 2023-12-12)
  ** Add command line options: --hidden/--shown, --log-file FILE.
  ** Disable autocorrect in text fields.
