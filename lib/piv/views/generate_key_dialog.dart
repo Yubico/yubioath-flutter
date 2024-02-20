@@ -30,6 +30,7 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'overwrite_confirm_dialog.dart';
+import 'utils.dart';
 
 class GenerateKeyDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -64,19 +65,6 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     _validTo = _validToDefault;
     _validToMax = DateTime.utc(now.year + 10, now.month, now.day);
   }
-
-  List<KeyType> _getSupportedKeyTypes(bool isFips) => [
-        if (!isFips) KeyType.rsa1024,
-        KeyType.rsa2048,
-        if (widget.pivState.version.isAtLeast(5, 7)) ...[
-          KeyType.rsa3072,
-          KeyType.rsa4096,
-          KeyType.ed25519,
-          if (!isFips) KeyType.x25519,
-        ],
-        KeyType.eccp256,
-        KeyType.eccp384,
-      ];
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +190,8 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                 runSpacing: 8.0,
                 children: [
                   ChoiceFilterChip<KeyType>(
-                    items: _getSupportedKeyTypes(isFips),
+                    items:
+                        getSupportedKeyTypes(widget.pivState.version, isFips),
                     value: _keyType,
                     selected: _keyType != defaultKeyType,
                     itemBuilder: (value) => Text(value.getDisplayName(l10n)),

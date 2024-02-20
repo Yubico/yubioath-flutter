@@ -235,21 +235,21 @@ files = [
 
 [[package]]
 name = "jaraco-classes"
-version = "3.3.0"
+version = "3.3.1"
 description = "Utility functions for Python class constructs"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jaraco.classes-3.3.0-py3-none-any.whl", hash = "sha256:10afa92b6743f25c0cf5f37c6bb6e18e2c5bb84a16527ccfc0040ea377e7aaeb"},
-    {file = "jaraco.classes-3.3.0.tar.gz", hash = "sha256:c063dd08e89217cee02c8d5e5ec560f2c8ce6cdc2fcdc2e68f7b2e5547ed3621"},
+    {file = "jaraco.classes-3.3.1-py3-none-any.whl", hash = "sha256:86b534de565381f6b3c1c830d13f931d7be1a75f0081c57dff615578676e2206"},
+    {file = "jaraco.classes-3.3.1.tar.gz", hash = "sha256:cb28a5ebda8bc47d8c8015307d93163464f9f2b91ab4006e09ff0ce07e8bfb30"},
 ]
 
 [package.dependencies]
 more-itertools = "*"
 
 [package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
+docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [[package]]
 name = "jeepney"
@@ -575,11 +575,16 @@ description = "Smartcard module for Python."
 optional = false
 python-versions = "*"
 files = [
+    {file = "pyscard-2.0.7-cp310-cp310-win32.whl", hash = "sha256:06666a597e1293421fa90e0d4fc2418add447b10b7dc85f49b3cafc23480f046"},
     {file = "pyscard-2.0.7-cp310-cp310-win_amd64.whl", hash = "sha256:a2266345bd387854298153264bff8b74f494581880a76e3e8679460c1b090fab"},
+    {file = "pyscard-2.0.7-cp311-cp311-win32.whl", hash = "sha256:beacdcdc3d1516e195f7a38ec3966c5d4df7390c8f036cb41f6fef72bc5cc646"},
     {file = "pyscard-2.0.7-cp311-cp311-win_amd64.whl", hash = "sha256:8e37b697327e8dc4848c481428d1cbd10b7ae2ce037bc799e5b8bbd2fc3ab5ed"},
+    {file = "pyscard-2.0.7-cp37-cp37m-win32.whl", hash = "sha256:a0c5edbedafba62c68160884f878d9f53996d7219a3fc11b1cea6bab59c7f34a"},
     {file = "pyscard-2.0.7-cp37-cp37m-win_amd64.whl", hash = "sha256:f704ad40dc40306e1c0981941789518ab16aa1f84443b1d52ec0264884092b3b"},
+    {file = "pyscard-2.0.7-cp38-cp38-win32.whl", hash = "sha256:59a466ab7ae20188dd197664b9ca1ea9524d115a5aa5b16b575a6b772cdcb73c"},
     {file = "pyscard-2.0.7-cp38-cp38-win_amd64.whl", hash = "sha256:da70aa5b7be5868b88cdb6d4a419d2791b6165beeb90cd01d2748033302a0f43"},
     {file = "pyscard-2.0.7-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:2d4bdc1f4e0e6c46e417ac1bc9d5990f7cfb24a080e890d453781405f7bd29dc"},
+    {file = "pyscard-2.0.7-cp39-cp39-win32.whl", hash = "sha256:39e030c47878b37ae08038a917959357be6468da52e8b144e84ffc659f50e6e2"},
     {file = "pyscard-2.0.7-cp39-cp39-win_amd64.whl", hash = "sha256:5a5865675be294c8d91f22dc91e7d897c4138881e5295fb6b2cd821f7c0389d9"},
     {file = "pyscard-2.0.7.tar.gz", hash = "sha256:278054525fa75fbe8b10460d87edcd03a70ad94d688b11345e4739987f85c1bf"},
 ]
@@ -688,13 +693,13 @@ files = [
 
 [[package]]
 name = "types-pillow"
-version = "10.2.0.20240125"
+version = "10.2.0.20240206"
 description = "Typing stubs for Pillow"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-Pillow-10.2.0.20240125.tar.gz", hash = "sha256:c449b2c43b9fdbe0494a7b950e6b39a4e50516091213fec24ef3f33c1d017717"},
-    {file = "types_Pillow-10.2.0.20240125-py3-none-any.whl", hash = "sha256:322dbae32b4b7918da5e8a47c50ac0f24b0aa72a804a23857620f2722b03c858"},
+    {file = "types-Pillow-10.2.0.20240206.tar.gz", hash = "sha256:f0de5107ff8362ffdbbd53ec896202ac905e6ab22ae784b46bcdad160ea143b9"},
+    {file = "types_Pillow-10.2.0.20240206-py3-none-any.whl", hash = "sha256:abc339ae28af5916146a7729261480d68ac902cd4ff57e0bdd402eee7962644d"},
 ]
 
 [[package]]
