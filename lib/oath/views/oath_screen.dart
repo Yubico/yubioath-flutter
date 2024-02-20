@@ -350,6 +350,77 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 );
               }
             : null,
+        headerSliver: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.escape) {
+              searchController.clear();
+              ref.read(searchProvider.notifier).setFilter('');
+              node.unfocus();
+              setState(() {});
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Builder(builder: (context) {
+            final textTheme = Theme.of(context).textTheme;
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: AppTextFormField(
+                key: keys.searchAccountsField,
+                controller: searchController,
+                focusNode: searchFocus,
+                // Use the default style, but with a smaller font size:
+                style: textTheme.titleMedium
+                    ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                decoration: AppInputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide(
+                      width: 0,
+                      style: searchFocus.hasFocus
+                          ? BorderStyle.solid
+                          : BorderStyle.none,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                  fillColor: Theme.of(context).hoverColor,
+                  filled: true,
+                  hintText: l10n.s_search_accounts,
+                  isDense: true,
+                  prefixIcon: const Padding(
+                    padding: EdgeInsetsDirectional.only(start: 8.0),
+                    child: Icon(Icons.search_outlined),
+                  ),
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          iconSize: 16,
+                          onPressed: () {
+                            searchController.clear();
+                            ref.read(searchProvider.notifier).setFilter('');
+                            setState(() {});
+                          },
+                        )
+                      : null,
+                ),
+                onChanged: (value) {
+                  ref.read(searchProvider.notifier).setFilter(value);
+                  setState(() {});
+                },
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (value) {
+                  Focus.of(context).focusInDirection(TraversalDirection.down);
+                },
+              ),
+            );
+          }),
+        ),
         builder: (context, expanded) {
           // De-select if window is resized to be non-expanded.
           if (!expanded && _selected != null) {
@@ -373,80 +444,6 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             },
             child: Column(
               children: [
-                Focus(
-                  canRequestFocus: false,
-                  onKeyEvent: (node, event) {
-                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                      node.focusInDirection(TraversalDirection.down);
-                      return KeyEventResult.handled;
-                    }
-                    if (event.logicalKey == LogicalKeyboardKey.escape) {
-                      searchController.clear();
-                      ref.read(searchProvider.notifier).setFilter('');
-                      node.unfocus();
-                      setState(() {});
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: Builder(builder: (context) {
-                    final textTheme = Theme.of(context).textTheme;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      child: AppTextFormField(
-                        key: keys.searchAccountsField,
-                        controller: searchController,
-                        focusNode: searchFocus,
-                        // Use the default style, but with a smaller font size:
-                        style: textTheme.titleMedium?.copyWith(
-                            fontSize: textTheme.titleSmall?.fontSize),
-                        decoration: AppInputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: searchFocus.hasFocus
-                                  ? BorderStyle.solid
-                                  : BorderStyle.none,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.all(16),
-                          fillColor: Theme.of(context).hoverColor,
-                          filled: true,
-                          hintText: l10n.s_search_accounts,
-                          isDense: true,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsetsDirectional.only(start: 8.0),
-                            child: Icon(Symbols.search),
-                          ),
-                          suffixIcon: searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Symbols.clear),
-                                  iconSize: 16,
-                                  onPressed: () {
-                                    searchController.clear();
-                                    ref
-                                        .read(searchProvider.notifier)
-                                        .setFilter('');
-                                    setState(() {});
-                                  },
-                                )
-                              : null,
-                        ),
-                        onChanged: (value) {
-                          ref.read(searchProvider.notifier).setFilter(value);
-                          setState(() {});
-                        },
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (value) {
-                          Focus.of(context)
-                              .focusInDirection(TraversalDirection.down);
-                        },
-                      ).init(),
-                    );
-                  }),
-                ),
                 Consumer(
                   builder: (context, ref, _) {
                     return AccountList(

@@ -57,9 +57,11 @@ class AccountList extends ConsumerWidget {
             ),
           ),
           if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+              ),
             ),
           ...creds.map(
             (entry) => AccountView(

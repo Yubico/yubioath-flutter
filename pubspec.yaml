@@ -49,7 +49,7 @@ dependencies:
   flutter_riverpod: ^2.4.10
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
-  window_manager: 
+  window_manager:
     git:
       url: https://github.com/fdennis/window_manager.git
       ref: 2272d45bcf46d7e2b452a038906fbc85df3ce83d
@@ -71,6 +71,7 @@ dependencies:
   base32: ^2.1.3
   convert: ^3.1.1
   material_symbols_icons: ^4.2719.1
+  sliver_tools: ^0.2.12
 
 dev_dependencies:
   integration_test:

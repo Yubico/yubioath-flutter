@@ -34,9 +34,6 @@ class AppTheme {
           onSurfaceVariant: const Color(0x99000000),
         ),
         fontFamily: 'Roboto',
-        appBarTheme: const AppBarTheme(
-          color: Colors.transparent,
-        ),
         listTileTheme: const ListTileThemeData(
           // For alignment under menu button
           contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
@@ -62,9 +59,6 @@ class AppTheme {
           onSurfaceVariant: const Color(0xaaffffff),
         ),
         fontFamily: 'Roboto',
-        appBarTheme: const AppBarTheme(
-          color: Colors.transparent,
-        ),
         listTileTheme: const ListTileThemeData(
           // For alignment under menu button
           contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
