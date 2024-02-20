@@ -3,41 +3,62 @@ name: Linux
 on: [push, pull_request]
 
 jobs:
-  build:
-
+  run-checks:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:20.04
-      env:
-        DEBIAN_FRONTEND: noninteractive
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        sparse-checkout: .github/workflows/env
 
     - name: Read variables from repo
       run: cat .github/workflows/env >> $GITHUB_ENV
 
-    - name: Install dependencies
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYVER }}
+
+    - name: Install Flutter dependencies
       run: |
-        echo "PYVER=3.12.1" >> $GITHUB_ENV  # Remove once 3.12.2 is available from PPA
-        export PYVER_MINOR=${PYVER%.*}
-        echo "PYVER_MINOR: $PYVER_MINOR"
-        apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
-        add-apt-repository -y ppa:git-core/ppa
-        add-apt-repository -y ppa:deadsnakes/ppa
-        apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
-        git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
-        PYVER_TEMP=`/usr/local/bin/python --version`
+        sudo apt-get update
+        sudo apt-get install -qq swig libpcsclite-dev build-essential
+        sudo apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
+
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: ${{ env.FLUTTER }}
+
+    - name: Check app versions
+      run: |
+        python3 set-version.py
+        git diff --exit-code
+
+    - name: Run lints/tests
+      run: |
+        export PATH=$PATH:$HOME/.local/bin
+        python3 -m pip install --upgrade pip
+        pip install poetry pre-commit
+        (cd helper && poetry install)
+        pre-commit run --all-files
+        flutter test
+
+  build-helper:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12.2-slim-bullseye  # This need to be manually updates in sync with env
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Read variables from repo
+      run: |
+        cat .github/workflows/env >> $GITHUB_ENV
+        PYVER_TEMP=`python --version`
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
-        echo "Installed python version: $PYVERINST"
-        python -m ensurepip --user
-        python -m pip install -U pip pipx
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
@@ -47,12 +68,63 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
+    - name: Calculate cache key
+      run: echo "CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
+      env:
+        CACHE_KEY: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+
+    - name: Cache helper
+      id: cache-helper
+      uses: actions/cache@v4
+      with:
+        path: |
+          build/linux/helper
+          assets/licenses/helper.json
+        key: ${{ env.CACHE_KEY }}
+
+    - name: Build the Helper
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      working-directory: ./helper
+      run: |
+        apt-get update
+        apt-get install -qq swig libpcsclite-dev build-essential
+        pip install poetry
+        poetry install
+        poetry run pyinstaller authenticator-helper.spec
+        find dist/helper -type f -exec chmod a-x {} +
+        chmod a+x dist/helper/authenticator-helper
+        mkdir -p ../build/linux
+        mv dist/helper ../build/linux/
+        poetry build
+        python -m venv .venv
+        .venv/bin/pip install --upgrade pip wheel
+        .venv/bin/pip install dist/authenticator_helper-0.1.0-py3-none-any.whl pip-licenses
+        mkdir licenses
+        .venv/bin/pip-licenses --format=json --no-license-path --with-license-file --ignore-packages authenticator-helper zxing-cpp --output-file ../assets/licenses/helper.json
+
+  build-app:
+
+    needs: build-helper
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
+    steps:
+
+    - name: Install git
+      run: |
+        apt-get update
+        apt-get install -qq curl software-properties-common
+        add-apt-repository -y ppa:git-core/ppa
+        apt-get install -qq git
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
     - uses: actions/checkout@v4
 
-    - name: Check app versions
-      run: |
-        python set-version.py
-        git diff --exit-code
+    - name: Read variables from repo
+      run: cat .github/workflows/env >> $GITHUB_ENV
 
     - name: Cache helper
       id: cache-helper
@@ -63,16 +135,14 @@ jobs:
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
 
-    - name: Build the Helper
+    - name: Require the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        apt-get install -qq swig libpcsclite-dev build-essential cmake
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pipx/poetry on PATH
-        pipx install poetry
-        ./build-helper.sh
+      run: exit 1
 
     - name: Install Flutter dependencies
       run: |
+        apt-get update
+        apt-get install -qq libnotify-dev libayatana-appindicator3-dev patchelf
         apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
 
     - uses: subosito/flutter-action@v2
@@ -85,15 +155,6 @@ jobs:
         git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-$FLUTTER-x64
         flutter config --enable-linux-desktop
         flutter --version
-
-    - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
-      run: |
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
-        pipx install pre-commit
-        pre-commit run --all-files
-        flutter test
 
     - name: Build the app
       run: flutter build linux
