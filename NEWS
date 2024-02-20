@@ -1,4 +1,4 @@
-* Version 6.4.0
+* Version 6.4.0 (released 2024-02-20)
  ** UI: Major UI overhaul, with improvements including:
   *** Add new UI layouts for wider windows to better utilize screen space.
   *** Add YubiKey personalization through custom naming and theme color.
