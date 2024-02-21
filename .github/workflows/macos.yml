@@ -140,3 +140,18 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
+
+    - name: verify signatures
+      run: |
+        mkdir -p signed
+        mv scribe-download/*/sign-source/1.zip signed/
+        cd signed
+        unzip -j 1.zip || true
+        rm 1.zip
+
+    - name: upload signed artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: signed
+        path: signed/*
+        if-no-files-found: error
