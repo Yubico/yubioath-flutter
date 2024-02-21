@@ -16,35 +16,48 @@
 
 package com.yubico.authenticator.fido
 
-import androidx.lifecycle.viewModelScope
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.fido.data.FidoResetState
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.io.IOException
+import java.util.Timer
+import java.util.TimerTask
+import java.util.concurrent.Executors
+import kotlin.concurrent.schedule
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+enum class FidoResetState(val value: String) {
+    Remove("remove"),
+    Insert("insert"),
+    Touch("touch")
+}
+
 class FidoResetHelper(
     private val deviceManager: DeviceManager,
     private val fidoViewModel: FidoViewModel,
+    private val mainViewModel: MainViewModel,
     private val connectionHelper: FidoConnectionHelper,
     private val pinStore: FidoPinStore
 ) {
 
     var inProgress = false
 
-    private val coroutineScope = fidoViewModel.viewModelScope
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
     private var resetCommandState: CommandState? = null
     private var cancelReset: Boolean = false
 
@@ -80,12 +93,27 @@ class FidoResetHelper(
         return NULL
     }
 
+    private var cancellationTimer: TimerTask? = null
+    fun onPause() {
+        cancellationTimer?.cancel()
+        cancellationTimer = Timer().schedule(300) {
+            // the timer has not been cancelled at this point,
+            // the application is in PAUSED state longer than 300ms
+            // cancel ongoing reset
+            cancelReset()
+        }
+    }
+
+    fun onResume() {
+        cancellationTimer?.cancel()
+    }
+
     private suspend fun waitForUsbDisconnect() = suspendCoroutine { continuation ->
         coroutineScope.launch {
             cancelReset = false
             while (deviceManager.isUsbKeyConnected()) {
                 if (cancelReset) {
-                    logger.debug("Reset was cancelled")
+                    logger.debug("Reset was cancelled while waiting for YubiKey to be disconnected")
                     continuation.resumeWithException(CancellationException())
                     return@launch
                 }
@@ -99,10 +127,10 @@ class FidoResetHelper(
     private suspend fun waitForConnection() = suspendCoroutine { continuation ->
         coroutineScope.launch {
             fidoViewModel.updateResetState(FidoResetState.Insert)
-            cancelReset = false
             while (!deviceManager.isUsbKeyConnected()) {
                 if (cancelReset) {
-                    logger.debug("Reset was cancelled")
+                    // the key is not connected, clean device info
+                    mainViewModel.setDeviceInfo(null)
                     continuation.resumeWithException(CancellationException())
                     return@launch
                 }
@@ -159,7 +187,6 @@ class FidoResetHelper(
     }
 
     private suspend fun resetOverNfc() = suspendCoroutine { continuation ->
-        fidoViewModel.updateResetState(FidoResetState.Insert)
         coroutineScope.launch {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             try {
@@ -167,11 +194,13 @@ class FidoResetHelper(
                     doReset(fidoSession)
                     continuation.resume(Unit)
                 }
-            } catch (e: CancellationException) {
-                logger.debug("FIDO reset over NFC was cancelled")
-                continuation.resumeWithException(e)
             } catch (e: Throwable) {
-                logger.error("FIDO reset over NFC failed with exception: ", e)
+                when (e) {
+                    is CancellationException -> logger.debug("FIDO reset over NFC was cancelled")
+                    else ->  logger.error("FIDO reset over NFC failed with exception: ", e)
+                }
+                // on NFC, clean device info in this situation
+                mainViewModel.setDeviceInfo(null)
                 continuation.resumeWithException(e)
             }
         }
@@ -180,9 +209,9 @@ class FidoResetHelper(
     private fun doReset(fidoSession: YubiKitFidoSession) {
         logger.debug("Calling FIDO reset")
         fidoSession.reset(resetCommandState)
-        pinStore.setPin(null)
         fidoViewModel.setSessionState(Session(fidoSession.info, true))
         fidoViewModel.updateCredentials(emptyList())
+        pinStore.setPin(null)
     }
 
     companion object {

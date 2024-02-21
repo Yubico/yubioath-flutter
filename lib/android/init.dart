@@ -74,7 +74,7 @@ Future<Widget> initialize() async {
           .overrideWithProvider(androidCredentialListProvider.call),
       currentAppProvider.overrideWith((ref) {
         final notifier =
-            AndroidSubPageNotifier(ref.watch(supportedAppsProvider));
+            AndroidSubPageNotifier(ref, ref.watch(supportedAppsProvider));
         ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
             (_, data) {
           notifier.notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
@@ -112,7 +112,6 @@ Future<Widget> initialize() async {
               // TODO: Load feature flags from file/config?
               //..loadConfig(config)
               // Disable unimplemented feature
-              ..setFeature(features.fido, false)
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
               ..setFeature(features.management, false);

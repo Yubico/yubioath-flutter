@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,15 @@
 
 package com.yubico.authenticator
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.yubico.yubikit.core.YubiKeyDevice
 
 /**
  * Provides behavior to run when a YubiKey is inserted/tapped for a specific view of the app.
  */
-abstract class AppContextManager(
-    private val lifecycleOwner: LifecycleOwner
-) {
+abstract class AppContextManager {
     abstract suspend fun processYubiKey(device: YubiKeyDevice)
 
-    private val lifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onPause(owner: LifecycleOwner) {
-            onPause()
-        }
-
-        override fun onResume(owner: LifecycleOwner) {
-            onResume()
-        }
-    }
-
-    init {
-        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
-    }
-
-    open fun dispose() {
-        lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
-    }
+    open fun dispose() {}
 
     open fun onPause() {}
 

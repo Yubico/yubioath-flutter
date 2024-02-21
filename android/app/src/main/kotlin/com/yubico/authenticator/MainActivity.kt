@@ -46,7 +46,6 @@ import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
-import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -164,6 +163,8 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onPause() {
 
+        contextManager?.onPause()
+
         appPreferences.unregisterListener(sharedPreferencesListener)
 
         if (!preserveConnectionOnPause) {
@@ -253,6 +254,8 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences.registerListener(sharedPreferencesListener)
 
         preserveConnectionOnPause = false
+
+        contextManager?.onResume()
     }
 
     override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
@@ -343,10 +346,10 @@ class MainActivity : FlutterFragmentActivity() {
             )
 
             OperationContext.FidoPasskeys -> FidoManager(
-                this,
                 messenger,
                 deviceManager,
                 fidoViewModel,
+                viewModel,
                 dialogManager
             )
 

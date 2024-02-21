@@ -90,25 +90,32 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   }
 });
 
+class _AndroidAppContextHandler {
+  Future<void> switchAppContext(Application subPage) async {
+    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
+  }
+}
+
+final androidAppContextHandler =
+    Provider<_AndroidAppContextHandler>((ref) => _AndroidAppContextHandler());
+
 class AndroidSubPageNotifier extends CurrentAppNotifier {
-  AndroidSubPageNotifier(super.supportedApps) {
-    _handleSubPage(state);
+  final StateNotifierProviderRef<CurrentAppNotifier, Application> _ref;
+
+  AndroidSubPageNotifier(this._ref, super.supportedApps) {
+    _ref.read(androidAppContextHandler).switchAppContext(state);
   }
 
   @override
   void setCurrentApp(Application app) {
     super.setCurrentApp(app);
-    _handleSubPage(app);
-  }
-
-  void _handleSubPage(Application subPage) async {
-    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
+    _ref.read(androidAppContextHandler).switchAppContext(app);
   }
 
   @override
   void notifyDeviceChanged(YubiKeyData? data) {
     super.notifyDeviceChanged(data);
-    _handleSubPage(state);
+    _ref.read(androidAppContextHandler).switchAppContext(state);
   }
 }
 

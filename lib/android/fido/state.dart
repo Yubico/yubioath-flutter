@@ -81,10 +81,15 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
     controller.onListen = () async {
       try {
+        // await ref
+        //     .read(androidAppContextHandler)
+        //     .switchAppContext(Application.passkeys);
         await _methods.invokeMethod('reset');
+        _log.debug('Finished reset');
         await controller.sink.close();
         ref.invalidateSelf();
       } catch (e) {
+        _log.debug('Received error: \'$e\'');
         controller.sink.addError(e);
       }
     };

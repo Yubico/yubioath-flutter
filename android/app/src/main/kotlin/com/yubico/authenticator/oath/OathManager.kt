@@ -78,7 +78,7 @@ class OathManager(
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
-) : AppContextManager(lifecycleOwner), DeviceListener {
+) : AppContextManager(), DeviceListener {
 
     companion object {
         private val memoryKeyProvider = ClearingMemProvider()

@@ -16,9 +16,9 @@
 
 package com.yubico.authenticator.fido
 
-import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
+import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
@@ -62,12 +62,12 @@ import java.util.concurrent.Executors
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
 class FidoManager(
-    lifecycleOwner: LifecycleOwner,
     messenger: BinaryMessenger,
     private val deviceManager: DeviceManager,
     private val fidoViewModel: FidoViewModel,
+    mainViewModel: MainViewModel,
     dialogManager: DialogManager,
-) : AppContextManager(lifecycleOwner), DeviceListener {
+) : AppContextManager(), DeviceListener {
 
     companion object {
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
@@ -99,11 +99,14 @@ class FidoManager(
     private val pinStore = FidoPinStore()
 
     private val resetHelper =
-        FidoResetHelper(deviceManager, fidoViewModel, connectionHelper, pinStore)
+        FidoResetHelper(deviceManager, fidoViewModel, mainViewModel, connectionHelper, pinStore)
 
     override fun onPause() {
-        // cancel any FIDO reset flow which might be in progress
-        resetHelper.cancelReset()
+        resetHelper.onPause()
+    }
+
+    override fun onResume() {
+        resetHelper.onResume()
     }
 
     init {
@@ -192,20 +195,21 @@ class FidoManager(
                 YubiKitFidoSession(connection as SmartCardConnection)
             }
 
-        val previousAaguid = fidoViewModel.sessionState.value?.info?.aaguid?.asString()
-        val sessionAaguid = fidoSession.cachedInfo.aaguid.asString()
-
+        val previousSession = fidoViewModel.sessionState.value?.info
+        val currentSession = fidoSession.cachedInfo
         logger.debug(
-            "Previous aaguid: {}, current aaguid: {}",
-            previousAaguid,
-            sessionAaguid
+            "Previous session: {}, current session: {}",
+            previousSession,
+            currentSession
         )
 
-        if (sessionAaguid == previousAaguid && device is NfcYubiKeyDevice) {
+        val sameDevice = currentSession.equals(previousSession)
+
+        if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
             connectionHelper.invokePending(fidoSession)
         } else {
 
-            if (sessionAaguid != previousAaguid) {
+            if (!sameDevice) {
                 // different key
                 logger.debug("This is a different key than previous, invalidating the PIN token")
                 pinStore.setPin(null)
@@ -233,14 +237,11 @@ class FidoManager(
     }
 
     private fun getPermissions(fidoSession: YubiKitFidoSession): Int {
-        val permissions =
-            if (CredentialManagement.isSupported(fidoSession.cachedInfo))
-                ClientPin.PIN_PERMISSION_CM
-            else
-                0
         // TODO: Add bio Enrollment permissions if supported
-
-        return permissions
+        return if (CredentialManagement.isSupported(fidoSession.cachedInfo))
+            ClientPin.PIN_PERMISSION_CM
+        else
+            0
     }
 
     private fun unlockSession(
