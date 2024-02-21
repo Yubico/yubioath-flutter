@@ -479,6 +479,7 @@
     "l_import_nothing": null,
     "l_importing_file": "ファイルのインポート中\u2026",
     "s_file_imported": "ファイル をインポートしました",
+    "l_unsupported_key_type": null,
     "l_delete_certificate": "証明書を削除",
     "l_delete_certificate_desc": "YubiKeyか証明書の削除",
     "s_issuer": "発行者",

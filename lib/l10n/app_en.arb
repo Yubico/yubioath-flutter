@@ -479,6 +479,7 @@
     "l_import_nothing": "Nothing to import",
     "l_importing_file": "Importing file\u2026",
     "s_file_imported": "File imported",
+    "l_unsupported_key_type": "Unsupported key type",
     "l_delete_certificate": "Delete certificate",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
     "s_issuer": "Issuer",

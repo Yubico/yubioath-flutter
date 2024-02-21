@@ -479,6 +479,7 @@
     "l_import_nothing": null,
     "l_importing_file": null,
     "s_file_imported": null,
+    "l_unsupported_key_type": null,
     "l_delete_certificate": null,
     "l_delete_certificate_desc": null,
     "s_issuer": null,

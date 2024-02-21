@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,6 +26,7 @@ import '../../app/logging.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
+import '../../desktop/state.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../../management/models.dart';
@@ -36,6 +38,7 @@ import '../features.dart' as features;
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
+import 'elevate_fido_buttons.dart';
 import 'keys.dart';
 
 final _log = Logger('fido.views.reset_dialog');
@@ -68,12 +71,19 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
-  final _totalSteps = 3;
+  late final int _totalSteps;
+
+  @override
+  void initState() {
+    super.initState();
+    final nfc = widget.data.node.transport == Transport.nfc;
+    _totalSteps = nfc ? 2 : 3;
+  }
 
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
     final nfc = widget.data.node.transport == Transport.nfc;
-    if (_currentStep == 3) {
+    if (_currentStep == _totalSteps) {
       return l10n.l_fido_app_reset;
     }
     return switch (_interaction) {
@@ -99,20 +109,26 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         .contains(widget.data.info.formFactor);
     final globalReset = isBio && (supported & Capability.piv.value) != 0;
     final l10n = AppLocalizations.of(context)!;
+
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);
+    final needsElevation = Platform.isWindows &&
+        _application == Capability.fido2 &&
+        !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
+
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
       key: factoryResetCancel,
       onCancel: switch (_application) {
-        Capability.fido2 => _currentStep < 3
+        Capability.fido2 => _currentStep < _totalSteps
             ? () {
+                _currentStep = -1;
                 _subscription?.cancel();
               }
             : null,
         _ => null,
       },
       actions: [
-        if (_currentStep < 3)
+        if (_currentStep < _totalSteps)
           TextButton(
             onPressed: switch (_application) {
               Capability.fido2 => _subscription == null
@@ -222,7 +238,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                 : null,
                             tooltip:
                                 !showLabels ? c.getDisplayName(l10n) : null,
-                            enabled: enabled & c.value != 0,
+                            enabled:
+                                enabled & c.value != 0 && (_currentStep == -1),
                           ))
                       .toList(),
                   selected: _application != null ? {_application!} : {},
@@ -247,16 +264,21 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   .bodyMedium
                   ?.copyWith(fontWeight: FontWeight.w700),
             ),
-            Text(
-              switch (_application) {
-                Capability.oath => l10n.p_warning_disable_credentials,
-                Capability.piv => l10n.p_warning_piv_reset_desc,
-                Capability.fido2 => l10n.p_warning_disable_accounts,
-                _ => globalReset
-                    ? l10n.p_warning_global_reset_desc
-                    : l10n.p_factory_reset_desc,
-              },
-            ),
+            if (needsElevation) ...[
+              Text(l10n.p_elevated_permissions_required),
+              const ElevateFidoButtons(),
+            ] else ...[
+              Text(
+                switch (_application) {
+                  Capability.oath => l10n.p_warning_disable_credentials,
+                  Capability.piv => l10n.p_warning_piv_reset_desc,
+                  Capability.fido2 => l10n.p_warning_disable_accounts,
+                  _ => globalReset
+                      ? l10n.p_warning_global_reset_desc
+                      : l10n.p_factory_reset_desc,
+                },
+              ),
+            ],
             if (_application == Capability.fido2 && _currentStep >= 0) ...[
               Text('${l10n.s_status}: ${_getMessage()}'),
               LinearProgressIndicator(value: progress)

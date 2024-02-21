@@ -84,6 +84,8 @@ const _$PinPolicyEnumMap = {
   PinPolicy.never: 1,
   PinPolicy.once: 2,
   PinPolicy.always: 3,
+  PinPolicy.matchOnce: 4,
+  PinPolicy.matchAlways: 5,
 };
 
 _$PivStateMetadataImpl _$$PivStateMetadataImplFromJson(

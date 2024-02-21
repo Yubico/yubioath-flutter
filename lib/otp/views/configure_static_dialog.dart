@@ -83,7 +83,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final password = _passwordController.text.replaceAll(' ', '');
+    final password = _passwordController.text;
     final passwordLengthValid =
         password.isNotEmpty && password.length <= passwordMaxLength;
     final passwordFormatValid =
