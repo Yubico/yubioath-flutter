@@ -54,7 +54,7 @@ framework. The previous Qt codebase can be found in the `legacy` branch.
 
 |Linux
 |Ubuntu 22.04 & above
-|Ubuntu 18.04 (or equivalent)
+|Ubuntu 20.04 (or equivalent)
 
 |Android
 |Android 11 & above
