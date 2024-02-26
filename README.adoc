@@ -45,8 +45,8 @@ framework. The previous Qt codebase can be found in the `legacy` branch.
 ||Supported|Best-effort
 
 |Windows
-|Windows 10 & above, 64-bit
-|Windows 8.1, 64-bit
+|Windows 10 & above, x64
+|Windows 10 & above, x64
 
 |macOS
 |macOS 11 (Big Sur) & above
