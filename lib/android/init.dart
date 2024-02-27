@@ -58,7 +58,11 @@ Future<Widget> initialize() async {
     overrides: [
       supportedAppsProvider.overrideWith(
         (ref) {
-          return [Application.accounts, Application.passkeys];
+          return [
+            Application.accounts,
+            Application.fingerprints,
+            Application.passkeys
+          ];
         },
       ),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
