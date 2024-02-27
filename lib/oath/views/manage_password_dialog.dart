@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
@@ -54,9 +55,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         .read(oathStateProvider(widget.path).notifier)
         .setPassword(_currentPassword, _newPassword);
     if (result) {
-      if (!mounted) return;
-      Navigator.of(context).pop();
-      showMessage(context, AppLocalizations.of(context)!.s_password_set);
+      if (mounted) {
+        await ref.read(withContextProvider)((context) async {
+          Navigator.of(context).pop();
+          showMessage(context, AppLocalizations.of(context)!.s_password_set);
+        });
+      }
     } else {
       setState(() {
         _currentIsWrong = true;
@@ -72,7 +76,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
-      title: Text(l10n.s_manage_password),
+      title: Text(
+          widget.state.hasKey ? l10n.s_manage_password : l10n.s_set_password),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
@@ -131,9 +136,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                                 .read(oathStateProvider(widget.path).notifier)
                                 .unsetPassword(_currentPassword);
                             if (result) {
-                              if (!mounted) return;
-                              Navigator.of(context).pop();
-                              showMessage(context, l10n.s_password_removed);
+                              if (mounted) {
+                                await ref.read(withContextProvider)(
+                                    (context) async {
+                                  Navigator.of(context).pop();
+                                  showMessage(context, l10n.s_password_removed);
+                                });
+                              }
                             } else {
                               setState(() {
                                 _currentIsWrong = true;
@@ -150,9 +159,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         await ref
                             .read(oathStateProvider(widget.path).notifier)
                             .forgetPassword();
-                        if (!mounted) return;
-                        Navigator.of(context).pop();
-                        showMessage(context, l10n.s_password_forgotten);
+                        if (mounted) {
+                          await ref.read(withContextProvider)((context) async {
+                            Navigator.of(context).pop();
+                            showMessage(context, l10n.s_password_forgotten);
+                          });
+                        }
                       },
                     ),
                 ],
