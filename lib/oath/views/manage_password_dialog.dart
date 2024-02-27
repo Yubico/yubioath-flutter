@@ -76,7 +76,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         (!widget.state.hasKey || _currentPassword.isNotEmpty);
 
     return ResponsiveDialog(
-      title: Text(l10n.s_manage_password),
+      title: Text(
+          widget.state.hasKey ? l10n.s_manage_password : l10n.s_set_password),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
