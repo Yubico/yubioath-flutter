@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -92,10 +93,6 @@ class AppPage extends ConsumerStatefulWidget {
 }
 
 class _AppPageState extends ConsumerState<AppPage> {
-  final ScrollController _mainScrollController = ScrollController();
-  final ScrollController _navScrollController = ScrollController();
-  final ScrollController _detailsScrollController = ScrollController();
-
   bool _isSliverTitleScrolledUnder = false;
   bool _isNavigationScrolledUnder = false;
   bool _isDetailsScrolledUnder = false;
@@ -111,37 +108,6 @@ class _AppPageState extends ConsumerState<AppPage> {
       return appBarHeight - position.dy > 0;
     }
     return false;
-  }
-
-  @override
-  void dispose() {
-    _mainScrollController.dispose();
-    _navScrollController.dispose();
-    _detailsScrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _mainScrollController.addListener(() {
-      setState(() {
-        _isSliverTitleScrolledUnder =
-            _scrolledUnderAppBar(_sliverTitleGlobalKey);
-      });
-    });
-    _navScrollController.addListener(() {
-      setState(() {
-        _isNavigationScrolledUnder = _scrolledUnderAppBar(_navKey) ||
-            _scrolledUnderAppBar(_navExpandedKey);
-      });
-    });
-    _detailsScrollController.addListener(() {
-      setState(() {
-        _isDetailsScrolledUnder = _scrolledUnderAppBar(_detailsViewGlobalKey);
-      });
-    });
   }
 
   @override
@@ -365,31 +331,40 @@ class _AppPageState extends ConsumerState<AppPage> {
       ]);
     }
     if (widget.title != null) {
-      return CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        key: _mainContentGlobalKey,
-        controller: _mainScrollController,
-        slivers: [
-          SliverMainAxisGroup(
-            slivers: [
-              SliverPinnedHeader(
-                child: ColoredBox(
-                  color: Theme.of(context).colorScheme.background,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
-                    child: _buildTitle(context),
+      return NotificationListener(
+        onNotification: (_) {
+          Timer.run(() {
+            setState(() {
+              _isSliverTitleScrolledUnder =
+                  _scrolledUnderAppBar(_sliverTitleGlobalKey);
+            });
+          });
+          return false;
+        },
+        child: CustomScrollView(
+          key: _mainContentGlobalKey,
+          slivers: [
+            SliverMainAxisGroup(
+              slivers: [
+                SliverPinnedHeader(
+                  child: ColoredBox(
+                    color: Theme.of(context).colorScheme.background,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
+                      child: _buildTitle(context),
+                    ),
                   ),
                 ),
-              ),
-              if (widget.headerSliver != null)
-                SliverToBoxAdapter(
-                  child: widget.headerSliver,
-                )
-            ],
-          ),
-          SliverToBoxAdapter(child: safeArea)
-        ],
+                if (widget.headerSliver != null)
+                  SliverToBoxAdapter(
+                    child: widget.headerSliver,
+                  )
+              ],
+            ),
+            SliverToBoxAdapter(child: safeArea)
+          ],
+        ),
       );
     }
 
@@ -419,24 +394,39 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasRail && (!fullyExpanded || !showNavigation))
             SizedBox(
               width: 72,
-              child: SingleChildScrollView(
-                controller: _navScrollController,
-                child: NavigationContent(
-                  key: _navKey,
-                  shouldPop: false,
-                  extended: false,
+              child: NotificationListener(
+                onNotification: (_) {
+                  setState(() {
+                    _isNavigationScrolledUnder = _scrolledUnderAppBar(_navKey);
+                  });
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  child: NavigationContent(
+                    key: _navKey,
+                    shouldPop: false,
+                    extended: false,
+                  ),
                 ),
               ),
             ),
           if (fullyExpanded && showNavigation)
             SizedBox(
               width: 280,
-              child: SingleChildScrollView(
-                controller: _navScrollController,
-                child: NavigationContent(
-                  key: _navExpandedKey,
-                  shouldPop: false,
-                  extended: true,
+              child: NotificationListener(
+                onNotification: (_) {
+                  setState(() {
+                    _isNavigationScrolledUnder =
+                        _scrolledUnderAppBar(_navExpandedKey);
+                  });
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  child: NavigationContent(
+                    key: _navExpandedKey,
+                    shouldPop: false,
+                    extended: true,
+                  ),
                 ),
               ),
             ),
@@ -457,20 +447,28 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasManage &&
               (widget.detailViewBuilder != null ||
                   widget.keyActionsBuilder != null))
-            SingleChildScrollView(
-              controller: _detailsScrollController,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: SizedBox(
-                  width: 320,
-                  child: Column(
-                    key: _detailsViewGlobalKey,
-                    children: [
-                      if (widget.detailViewBuilder != null)
-                        widget.detailViewBuilder!(context),
-                      if (widget.keyActionsBuilder != null)
-                        widget.keyActionsBuilder!(context),
-                    ],
+            NotificationListener(
+              onNotification: (_) {
+                setState(() {
+                  _isDetailsScrolledUnder =
+                      _scrolledUnderAppBar(_detailsViewGlobalKey);
+                });
+                return false;
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SizedBox(
+                    width: 320,
+                    child: Column(
+                      key: _detailsViewGlobalKey,
+                      children: [
+                        if (widget.detailViewBuilder != null)
+                          widget.detailViewBuilder!(context),
+                        if (widget.keyActionsBuilder != null)
+                          widget.keyActionsBuilder!(context),
+                      ],
+                    ),
                   ),
                 ),
               ),
