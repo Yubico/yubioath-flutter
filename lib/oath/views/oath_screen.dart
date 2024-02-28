@@ -210,7 +210,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
           searchController.selection = TextSelection(
               baseOffset: 0, extentOffset: searchController.text.length);
-          searchFocus.requestFocus();
+          searchFocus.unfocus();
+          Timer.run(() => searchFocus.requestFocus());
           return null;
         }),
         EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
