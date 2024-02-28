@@ -18,6 +18,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -31,6 +32,17 @@ import 'fs_dialog.dart';
 import 'keys.dart';
 import 'navigation.dart';
 
+final _navigationProvider = StateNotifierProvider<_NavigationProvider, bool>(
+    (ref) => _NavigationProvider());
+
+class _NavigationProvider extends StateNotifier<bool> {
+  _NavigationProvider() : super(true);
+
+  void toggleExpanded() {
+    state = !state;
+  }
+}
+
 // We use global keys here to maintain the content between AppPages,
 // and keep track of what has been scrolled under AppBar
 final _navKey = GlobalKey();
@@ -39,7 +51,7 @@ final _sliverTitleGlobalKey = GlobalKey();
 final _detailsViewGlobalKey = GlobalKey();
 final _mainContentGlobalKey = GlobalKey();
 
-class AppPage extends StatefulWidget {
+class AppPage extends ConsumerStatefulWidget {
   final String? title;
   final String? alternativeTitle;
   final String? footnote;
@@ -76,15 +88,14 @@ class AppPage extends StatefulWidget {
       : assert(!(onFileDropped != null && fileDropOverlay == null),
             'Declaring onFileDropped requires declaring a fileDropOverlay');
   @override
-  State<AppPage> createState() => _AppPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AppPageState();
 }
 
-class _AppPageState extends State<AppPage> {
+class _AppPageState extends ConsumerState<AppPage> {
   final ScrollController _mainScrollController = ScrollController();
   final ScrollController _navScrollController = ScrollController();
   final ScrollController _detailsScrollController = ScrollController();
 
-  bool _showFullNavigation = true;
   bool _isSliverTitleScrolledUnder = false;
   bool _isNavigationScrolledUnder = false;
   bool _isDetailsScrolledUnder = false;
@@ -137,15 +148,7 @@ class _AppPageState extends State<AppPage> {
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          // Reset state on screen width change, to make sure
-          // navigation always expands in fully expanded layout
-          if (width < 1000) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _showFullNavigation = true;
-              });
-            });
-          }
+
           if (width < 400 ||
               (isAndroid && width < 600 && width < constraints.maxHeight)) {
             return _buildScaffold(context, true, false, false);
@@ -256,10 +259,10 @@ class _AppPageState extends State<AppPage> {
 
   Widget? _buildAppBarTitle(
       BuildContext context, bool hasRail, bool hasManage, bool fullyExpanded) {
+    final showNavigation = ref.watch(_navigationProvider);
     EdgeInsets padding;
     if (fullyExpanded) {
-      padding =
-          EdgeInsets.only(left: _showFullNavigation ? 280 : 72, right: 320);
+      padding = EdgeInsets.only(left: showNavigation ? 280 : 72, right: 320);
     } else if (!hasRail && hasManage) {
       padding = const EdgeInsets.only(right: 320);
     } else if (hasRail && hasManage) {
@@ -391,8 +394,6 @@ class _AppPageState extends State<AppPage> {
     }
 
     return SingleChildScrollView(
-      key: _mainContentGlobalKey,
-      controller: _mainScrollController,
       primary: false,
       child: safeArea,
     );
@@ -401,6 +402,7 @@ class _AppPageState extends State<AppPage> {
   Scaffold _buildScaffold(
       BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
+    final showNavigation = ref.watch(_navigationProvider);
     var body = _buildMainContent(context, hasManage);
 
     if (widget.onFileDropped != null) {
@@ -414,7 +416,7 @@ class _AppPageState extends State<AppPage> {
       body = Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (hasRail && (!fullyExpanded || !_showFullNavigation))
+          if (hasRail && (!fullyExpanded || !showNavigation))
             SizedBox(
               width: 72,
               child: SingleChildScrollView(
@@ -426,7 +428,7 @@ class _AppPageState extends State<AppPage> {
                 ),
               ),
             ),
-          if (fullyExpanded && _showFullNavigation)
+          if (fullyExpanded && showNavigation)
             SizedBox(
               width: 280,
               child: SingleChildScrollView(
@@ -508,9 +510,9 @@ class _AppPageState extends State<AppPage> {
                     child: DrawerButton(
                       onPressed: fullyExpanded
                           ? () {
-                              setState(() {
-                                _showFullNavigation = !_showFullNavigation;
-                              });
+                              ref
+                                  .read(_navigationProvider.notifier)
+                                  .toggleExpanded();
                             }
                           : null,
                     ),
