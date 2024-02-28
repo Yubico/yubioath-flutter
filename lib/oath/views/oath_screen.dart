@@ -144,6 +144,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         .select((value) => value?.length));
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+    final searchText = searchController.text;
 
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
@@ -262,6 +263,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       },
       builder: (context) => AppPage(
         title: l10n.s_accounts,
+        alternativeTitle: searchText != '' ? 'Results for "$searchText"' : null,
         capabilities: const [Capability.oath],
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
@@ -381,7 +383,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                     ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
                 decoration: AppInputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32),
+                    borderRadius: BorderRadius.circular(48),
                     borderSide: BorderSide(
                       width: 0,
                       style: searchFocus.hasFocus

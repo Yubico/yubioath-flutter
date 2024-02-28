@@ -41,6 +41,7 @@ final _mainContentGlobalKey = GlobalKey();
 
 class AppPage extends StatefulWidget {
   final String? title;
+  final String? alternativeTitle;
   final String? footnote;
   final Widget Function(BuildContext context, bool expanded) builder;
   final Widget Function(BuildContext context)? detailViewBuilder;
@@ -58,6 +59,7 @@ class AppPage extends StatefulWidget {
   const AppPage(
       {super.key,
       this.title,
+      this.alternativeTitle,
       this.footnote,
       required this.builder,
       this.centered = false,
@@ -215,31 +217,38 @@ class _AppPageState extends State<AppPage> {
         AnimatedOpacity(
           opacity: !_isSliverTitleScrolledUnder ? 1 : 0,
           duration: const Duration(milliseconds: 300),
-          child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 2.0,
-              runSpacing: 8.0,
-              children: [
-                Text(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
                   key: _sliverTitleGlobalKey,
-                  widget.title!,
+                  widget.alternativeTitle ?? widget.title!,
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.9),
+                        color: widget.alternativeTitle != null
+                            ? Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withOpacity(0.4)
+                            : Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.9),
                       ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                if (widget.capabilities != null)
-                  Wrap(
-                    spacing: 4.0,
-                    runSpacing: 8.0,
-                    children: [
-                      ...widget.capabilities!.map((c) => CapabilityBadge(c))
-                    ],
-                  )
-              ]),
+              ),
+              if (widget.capabilities != null &&
+                  widget.alternativeTitle == null)
+                Wrap(
+                  spacing: 4.0,
+                  runSpacing: 8.0,
+                  children: [
+                    ...widget.capabilities!.map((c) => CapabilityBadge(c))
+                  ],
+                )
+            ],
+          ),
         )
       ],
     );
@@ -267,7 +276,7 @@ class _AppPageState extends State<AppPage> {
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
           opacity: _isSliverTitleScrolledUnder ? 1 : 0,
-          child: Text(widget.title!),
+          child: Text(widget.alternativeTitle ?? widget.title!),
         ),
       );
     }

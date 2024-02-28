@@ -77,7 +77,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
         item: widget.item,
         child: InkWell(
           focusNode: _focusNode,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(48),
           onSecondaryTapDown: buildPopupActions == null
               ? null
               : (details) {
