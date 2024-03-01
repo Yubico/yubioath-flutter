@@ -63,33 +63,28 @@ class _FidoStateNotifier extends FidoStateNotifier {
     final controller = StreamController<InteractionEvent>();
     const resetEvents = EventChannel('android.fido.reset');
 
-    final resetSub =
+    final subscription =
         resetEvents.receiveBroadcastStream().skip(1).listen((event) {
-      _log.debug('Received event: \'$event\'');
       if (event is String && event.isNotEmpty) {
-        controller.sink.add(InteractionEvent.values
-            .firstWhere((e) => '"${e.name}"' == event)); // TODO fix event form
+        controller.sink.add(
+            InteractionEvent.values.firstWhere((e) => '"${e.name}"' == event));
       }
     });
 
     controller.onCancel = () async {
-      await _methods.invokeMethod('cancelReset');
+      await _methods.invokeMethod('fido_reset_cancel');
       if (!controller.isClosed) {
-        await resetSub.cancel();
+        await subscription.cancel();
       }
     };
 
     controller.onListen = () async {
       try {
-        // await ref
-        //     .read(androidAppContextHandler)
-        //     .switchAppContext(Application.passkeys);
-        await _methods.invokeMethod('reset');
-        _log.debug('Finished reset');
+        await _methods.invokeMethod('fido_reset');
         await controller.sink.close();
         ref.invalidateSelf();
       } catch (e) {
-        _log.debug('Received error: \'$e\'');
+        _log.debug('Error during fido_reset: \'$e\'');
         controller.sink.addError(e);
       }
     };
@@ -100,26 +95,28 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<PinResult> setPin(String newPin, {String? oldPin}) async {
     try {
-      final setPinResponse = jsonDecode(await _methods.invokeMethod('set_pin', {
-        'pin': oldPin,
-        'new_pin': newPin,
-      }));
-      if (setPinResponse['success'] == true) {
+      final response = jsonDecode(await _methods.invokeMethod(
+        'session_set_pin',
+        {
+          'pin': oldPin,
+          'new_pin': newPin,
+        },
+      ));
+      if (response['success'] == true) {
         _log.debug('FIDO pin set/change successful');
         return PinResult.success();
       }
 
       _log.debug('FIDO pin set/change failed');
       return PinResult.failed(
-          setPinResponse['pinRetries'], setPinResponse['authBlocked']);
+        response['pin_retries'],
+        response['auth_blocked'],
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
-        _log.debug('User cancelled Set/Change FIDO PIN operation');
-      } else {
-        _log.error('Set/Change FIDO PIN operation failed.', pe);
+        _log.debug('User cancelled set/change FIDO PIN operation');
       }
-
       throw decodedException;
     }
   }
@@ -127,25 +124,26 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<PinResult> unlock(String pin) async {
     try {
-      final unlockResponse =
-          jsonDecode(await _methods.invokeMethod('unlock', {'pin': pin}));
+      final response = jsonDecode(await _methods.invokeMethod(
+        'session_unlock',
+        {'pin': pin},
+      ));
 
-      if (unlockResponse['success'] == true) {
+      if (response['success'] == true) {
         _log.debug('FIDO applet unlocked');
         return PinResult.success();
       }
 
       _log.debug('FIDO applet unlock failed');
       return PinResult.failed(
-          unlockResponse['pinRetries'], unlockResponse['authBlocked']);
+        response['pin_retries'],
+        response['auth_blocked'],
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
         _log.debug('User cancelled unlock FIDO operation');
-      } else {
-        _log.error('Unlock FIDO operation failed.', pe);
       }
-
       throw decodedException;
     }
   }
@@ -208,28 +206,20 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   @override
   Future<void> deleteCredential(FidoCredential credential) async {
     try {
-      final deleteCredentialResponse = jsonDecode(await _methods.invokeMethod(
-        'delete_credential',
+      await _methods.invokeMethod(
+        'credential_delete',
         {
           'rp_id': credential.rpId,
           'credential_id': credential.credentialId,
         },
-      ));
-
-      if (deleteCredentialResponse['success'] == true) {
-        _log.debug('FIDO delete credential succeeded');
-      } else {
-        _log.debug('FIDO delete credential failed');
-      }
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
         _log.debug('User cancelled delete credential FIDO operation');
       } else {
-        _log.error('Delete credential FIDO operation failed.', pe);
+        throw decodedException;
       }
-
-      throw decodedException;
     }
   }
 }

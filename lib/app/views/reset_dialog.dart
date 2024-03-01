@@ -80,6 +80,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     _totalSteps = nfc ? 2 : 3;
   }
 
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
     final nfc = widget.data.node.transport == Transport.nfc;

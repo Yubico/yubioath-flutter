@@ -78,10 +78,6 @@ class FidoResetHelper(
         } finally {
             inProgress = false
             deviceManager.clearDeviceInfoOnDisconnect = true
-            if (!deviceManager.isUsbKeyConnected()) {
-                fidoViewModel.setSessionState(null)
-                fidoViewModel.updateCredentials(emptyList())
-            }
         }
         return NULL
     }
@@ -195,10 +191,6 @@ class FidoResetHelper(
                     continuation.resume(Unit)
                 }
             } catch (e: Throwable) {
-                when (e) {
-                    is CancellationException -> logger.debug("FIDO reset over NFC was cancelled")
-                    else ->  logger.error("FIDO reset over NFC failed with exception: ", e)
-                }
                 // on NFC, clean device info in this situation
                 mainViewModel.setDeviceInfo(null)
                 continuation.resumeWithException(e)
