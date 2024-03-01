@@ -26,6 +26,7 @@ import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.Session
+import com.yubico.authenticator.fido.data.SessionInfo
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.getDeviceInfo
@@ -196,7 +197,7 @@ class FidoManager(
             }
 
         val previousSession = fidoViewModel.sessionState.value?.info
-        val currentSession = fidoSession.cachedInfo
+        val currentSession = SessionInfo(fidoSession.cachedInfo)
         logger.debug(
             "Previous session: {}, current session: {}",
             previousSession,
