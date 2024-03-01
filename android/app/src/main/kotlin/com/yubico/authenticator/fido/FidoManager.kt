@@ -150,6 +150,8 @@ class FidoManager(
         super.dispose()
         deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
+        fidoViewModel.setSessionState(null)
+        fidoViewModel.updateCredentials(listOf())
         coroutineScope.cancel()
     }
 

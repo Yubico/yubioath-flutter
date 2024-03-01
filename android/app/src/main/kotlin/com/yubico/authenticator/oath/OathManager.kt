@@ -214,6 +214,8 @@ class OathManager(
         deviceManager.removeDeviceListener(this)
         oathViewModel.credentials.removeObserver(credentialObserver)
         oathChannel.setMethodCallHandler(null)
+        oathViewModel.setSessionState(null)
+        oathViewModel.updateCredentials(mapOf())
         coroutineScope.cancel()
     }
 
