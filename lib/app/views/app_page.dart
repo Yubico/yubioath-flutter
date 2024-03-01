@@ -331,12 +331,14 @@ class _AppPageState extends ConsumerState<AppPage> {
       ]);
     }
     if (widget.title != null) {
-      return NotificationListener(
-        onNotification: (_) {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scrollNotification) {
+          final scrollOffset = scrollNotification.metrics.pixels;
           Timer.run(() {
             setState(() {
               _isSliverTitleScrolledUnder =
-                  _scrolledUnderAppBar(_sliverTitleGlobalKey);
+                  _scrolledUnderAppBar(_sliverTitleGlobalKey) &&
+                      scrollOffset != 0;
             });
           });
           return false;
@@ -394,10 +396,12 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasRail && (!fullyExpanded || !showNavigation))
             SizedBox(
               width: 72,
-              child: NotificationListener(
-                onNotification: (_) {
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  final scrollOffset = scrollNotification.metrics.pixels;
                   setState(() {
-                    _isNavigationScrolledUnder = _scrolledUnderAppBar(_navKey);
+                    _isNavigationScrolledUnder =
+                        _scrolledUnderAppBar(_navKey) && scrollOffset != 0;
                   });
                   return false;
                 },
@@ -413,11 +417,13 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (fullyExpanded && showNavigation)
             SizedBox(
               width: 280,
-              child: NotificationListener(
-                onNotification: (_) {
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  final scrollOffset = scrollNotification.metrics.pixels;
                   setState(() {
                     _isNavigationScrolledUnder =
-                        _scrolledUnderAppBar(_navExpandedKey);
+                        _scrolledUnderAppBar(_navExpandedKey) &&
+                            scrollOffset != 0;
                   });
                   return false;
                 },
@@ -447,11 +453,13 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasManage &&
               (widget.detailViewBuilder != null ||
                   widget.keyActionsBuilder != null))
-            NotificationListener(
-              onNotification: (_) {
+            NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                final scrollOffset = scrollNotification.metrics.pixels;
                 setState(() {
                   _isDetailsScrolledUnder =
-                      _scrolledUnderAppBar(_detailsViewGlobalKey);
+                      _scrolledUnderAppBar(_detailsViewGlobalKey) &&
+                          scrollOffset != 0;
                 });
                 return false;
               },
