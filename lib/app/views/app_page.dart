@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -93,6 +93,9 @@ class AppPage extends ConsumerStatefulWidget {
 }
 
 class _AppPageState extends ConsumerState<AppPage> {
+  final ScrollController _mainController = ScrollController();
+  final ScrollController _navController = ScrollController();
+  final ScrollController _detailsController = ScrollController();
   bool _isSliverTitleScrolledUnder = false;
   bool _isNavigationScrolledUnder = false;
   bool _isDetailsScrolledUnder = false;
@@ -108,6 +111,47 @@ class _AppPageState extends ConsumerState<AppPage> {
       return appBarHeight - position.dy > 0;
     }
     return false;
+  }
+
+  void _handleScroll(
+      ScrollController controller, bool isScrolledUnderState, GlobalKey key) {
+    final scrollDirection = controller.position.userScrollDirection;
+    final scrollOffset = controller.offset;
+
+    if (isScrolledUnderState && scrollDirection == ScrollDirection.forward ||
+        !isScrolledUnderState && scrollDirection == ScrollDirection.reverse ||
+        scrollOffset == 0) {
+      final scrolledUnder = _scrolledUnderAppBar(key);
+      if (scrolledUnder != isScrolledUnderState || scrollOffset == 0) {
+        setState(() {
+          if (controller == _mainController) {
+            _isSliverTitleScrolledUnder = scrolledUnder && scrollOffset != 0;
+          } else if (controller == _navController) {
+            _isNavigationScrolledUnder = scrolledUnder && scrollOffset != 0;
+          } else {
+            _isDetailsScrolledUnder = scrolledUnder && scrollOffset != 0;
+          }
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _mainController.addListener(() {
+      _handleScroll(
+          _mainController, _isSliverTitleScrolledUnder, _sliverTitleGlobalKey);
+    });
+    _navController.addListener(() {
+      _handleScroll(_navController, _isNavigationScrolledUnder, _navKey);
+      _handleScroll(
+          _navController, _isNavigationScrolledUnder, _navExpandedKey);
+    });
+    _detailsController.addListener(() {
+      _handleScroll(
+          _detailsController, _isDetailsScrolledUnder, _detailsViewGlobalKey);
+    });
   }
 
   @override
@@ -331,44 +375,31 @@ class _AppPageState extends ConsumerState<AppPage> {
       ]);
     }
     if (widget.title != null) {
-      return NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          final scrollOffset = scrollNotification.metrics.pixels;
-          final scrolledUnder = _scrolledUnderAppBar(_sliverTitleGlobalKey);
-          if (_isSliverTitleScrolledUnder != scrolledUnder) {
-            Timer.run(() {
-              setState(() {
-                _isSliverTitleScrolledUnder =
-                    scrolledUnder && scrollOffset != 0;
-              });
-            });
-          }
-          return false;
-        },
-        child: CustomScrollView(
-          key: _mainContentGlobalKey,
-          slivers: [
-            SliverMainAxisGroup(
-              slivers: [
-                SliverPinnedHeader(
-                  child: ColoredBox(
-                    color: Theme.of(context).colorScheme.background,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
-                      child: _buildTitle(context),
-                    ),
+      return CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: _mainController,
+        key: _mainContentGlobalKey,
+        slivers: [
+          SliverMainAxisGroup(
+            slivers: [
+              SliverPinnedHeader(
+                child: ColoredBox(
+                  color: Theme.of(context).colorScheme.background,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
+                    child: _buildTitle(context),
                   ),
                 ),
-                if (widget.headerSliver != null)
-                  SliverToBoxAdapter(
-                    child: widget.headerSliver,
-                  )
-              ],
-            ),
-            SliverToBoxAdapter(child: safeArea)
-          ],
-        ),
+              ),
+              if (widget.headerSliver != null)
+                SliverToBoxAdapter(
+                  child: widget.headerSliver,
+                )
+            ],
+          ),
+          SliverToBoxAdapter(child: safeArea)
+        ],
       );
     }
 
@@ -398,48 +429,24 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasRail && (!fullyExpanded || !showNavigation))
             SizedBox(
               width: 72,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  final scrollOffset = scrollNotification.metrics.pixels;
-                  final scrolledUnder = _scrolledUnderAppBar(_navKey);
-                  if (_isNavigationScrolledUnder != scrolledUnder) {
-                    setState(() {
-                      _isNavigationScrolledUnder =
-                          scrolledUnder && scrollOffset != 0;
-                    });
-                  }
-                  return false;
-                },
-                child: SingleChildScrollView(
-                  child: NavigationContent(
-                    key: _navKey,
-                    shouldPop: false,
-                    extended: false,
-                  ),
+              child: SingleChildScrollView(
+                controller: _navController,
+                child: NavigationContent(
+                  key: _navKey,
+                  shouldPop: false,
+                  extended: false,
                 ),
               ),
             ),
           if (fullyExpanded && showNavigation)
             SizedBox(
               width: 280,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  final scrollOffset = scrollNotification.metrics.pixels;
-                  final scrolledUnder = _scrolledUnderAppBar(_navExpandedKey);
-                  if (_isNavigationScrolledUnder != scrolledUnder) {
-                    setState(() {
-                      _isNavigationScrolledUnder =
-                          scrolledUnder && scrollOffset != 0;
-                    });
-                  }
-                  return false;
-                },
-                child: SingleChildScrollView(
-                  child: NavigationContent(
-                    key: _navExpandedKey,
-                    shouldPop: false,
-                    extended: true,
-                  ),
+              child: SingleChildScrollView(
+                controller: _navController,
+                child: NavigationContent(
+                  key: _navExpandedKey,
+                  shouldPop: false,
+                  extended: true,
                 ),
               ),
             ),
@@ -460,33 +467,20 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasManage &&
               (widget.detailViewBuilder != null ||
                   widget.keyActionsBuilder != null))
-            NotificationListener<ScrollNotification>(
-              onNotification: (scrollNotification) {
-                final scrollOffset = scrollNotification.metrics.pixels;
-                final scrolledUnder =
-                    _scrolledUnderAppBar(_detailsViewGlobalKey);
-                if (_isDetailsScrolledUnder != scrolledUnder) {
-                  setState(() {
-                    _isDetailsScrolledUnder =
-                        scrolledUnder && scrollOffset != 0;
-                  });
-                }
-                return false;
-              },
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: SizedBox(
-                    width: 320,
-                    child: Column(
-                      key: _detailsViewGlobalKey,
-                      children: [
-                        if (widget.detailViewBuilder != null)
-                          widget.detailViewBuilder!(context),
-                        if (widget.keyActionsBuilder != null)
-                          widget.keyActionsBuilder!(context),
-                      ],
-                    ),
+            SingleChildScrollView(
+              controller: _detailsController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  width: 320,
+                  child: Column(
+                    key: _detailsViewGlobalKey,
+                    children: [
+                      if (widget.detailViewBuilder != null)
+                        widget.detailViewBuilder!(context),
+                      if (widget.keyActionsBuilder != null)
+                        widget.keyActionsBuilder!(context),
+                    ],
                   ),
                 ),
               ),
