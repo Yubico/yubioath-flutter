@@ -115,22 +115,22 @@ class FidoManager(
 
         fidoChannel.setHandler(coroutineScope) { method, args ->
             when (method) {
-                "fido_reset" -> resetHelper.reset()
+                "reset" -> resetHelper.reset()
 
-                "fido_reset_cancel" -> resetHelper.cancelReset()
+                "cancelReset" -> resetHelper.cancelReset()
 
-                "session_unlock" -> unlock(
+                "unlock" -> unlock(
                     (args["pin"] as String).toCharArray()
                 )
 
-                "session_set_pin" -> setPin(
+                "setPin" -> setPin(
                     (args["pin"] as String?)?.toCharArray(),
-                    (args["new_pin"] as String).toCharArray(),
+                    (args["newPin"] as String).toCharArray(),
                 )
 
-                "credential_delete" -> deleteCredential(
-                    args["rp_id"] as String,
-                    args["credential_id"] as String
+                "deleteCredential" -> deleteCredential(
+                    args["rpId"] as String,
+                    args["credentialId"] as String
                 )
 
                 else -> throw NotImplementedError()
@@ -288,8 +288,8 @@ class FidoManager(
                 JSONObject(
                     mapOf(
                         "success" to false,
-                        "pin_retries" to pinRetriesResult.count,
-                        "auth_blocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED)
+                        "pinRetries" to pinRetriesResult.count,
+                        "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED)
                     )
                 ).toString()
             } else {

@@ -72,7 +72,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
     });
 
     controller.onCancel = () async {
-      await _methods.invokeMethod('fido_reset_cancel');
+      await _methods.invokeMethod('cancelReset');
       if (!controller.isClosed) {
         await subscription.cancel();
       }
@@ -80,11 +80,11 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
     controller.onListen = () async {
       try {
-        await _methods.invokeMethod('fido_reset');
+        await _methods.invokeMethod('reset');
         await controller.sink.close();
         ref.invalidateSelf();
       } catch (e) {
-        _log.debug('Error during fido_reset: \'$e\'');
+        _log.debug('Error during reset: \'$e\'');
         controller.sink.addError(e);
       }
     };
@@ -96,10 +96,10 @@ class _FidoStateNotifier extends FidoStateNotifier {
   Future<PinResult> setPin(String newPin, {String? oldPin}) async {
     try {
       final response = jsonDecode(await _methods.invokeMethod(
-        'session_set_pin',
+        'setPin',
         {
           'pin': oldPin,
-          'new_pin': newPin,
+          'newPin': newPin,
         },
       ));
       if (response['success'] == true) {
@@ -109,8 +109,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
       _log.debug('FIDO pin set/change failed');
       return PinResult.failed(
-        response['pin_retries'],
-        response['auth_blocked'],
+        response['pinRetries'],
+        response['authBlocked'],
       );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
@@ -125,7 +125,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
   Future<PinResult> unlock(String pin) async {
     try {
       final response = jsonDecode(await _methods.invokeMethod(
-        'session_unlock',
+        'unlock',
         {'pin': pin},
       ));
 
@@ -136,8 +136,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
       _log.debug('FIDO applet unlock failed');
       return PinResult.failed(
-        response['pin_retries'],
-        response['auth_blocked'],
+        response['pinRetries'],
+        response['authBlocked'],
       );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
@@ -207,10 +207,10 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   Future<void> deleteCredential(FidoCredential credential) async {
     try {
       await _methods.invokeMethod(
-        'credential_delete',
+        'deleteCredential',
         {
-          'rp_id': credential.rpId,
-          'credential_id': credential.credentialId,
+          'rpId': credential.rpId,
+          'credentialId': credential.credentialId,
         },
       );
     } on PlatformException catch (pe) {
