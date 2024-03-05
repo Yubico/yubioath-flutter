@@ -29,6 +29,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.Timer
@@ -44,6 +46,36 @@ enum class FidoResetState(val value: String) {
     Remove("remove"),
     Insert("insert"),
     Touch("touch")
+}
+
+@Serializable
+sealed class FidoRegisterFpEvent(val status: String)
+
+@Serializable
+data class FidoRegisterFpCaptureEvent(private val remaining: Int) : FidoRegisterFpEvent("capture")
+
+@Serializable
+data class FidoRegisterFpCaptureErrorEvent(val code: Int) : FidoRegisterFpEvent("capture-error")
+
+
+fun createCaptureEvent(remaining: Int): FidoRegisterFpCaptureEvent {
+    return FidoRegisterFpCaptureEvent(remaining)
+//    return JSONObject(mapOf(
+//        "status" to "capture",
+//        "body" to JSONObject(mapOf(
+//            "remaining" to 5
+//        )).toString()
+//    ))
+}
+
+fun createCaptureErrorEvent(code: Int) : FidoRegisterFpCaptureErrorEvent {
+    return FidoRegisterFpCaptureErrorEvent(code)
+//    return JSONObject(mapOf(
+//        "status" to "capture-error",
+//        "body" to JSONObject(mapOf(
+//            "code" to code
+//        )).toString()
+//    ))
 }
 
 class FidoResetHelper(

@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
+import org.json.JSONObject
 
 class FidoViewModel : ViewModel() {
     private val _sessionState = MutableLiveData<Session?>(null)
@@ -58,6 +59,10 @@ class FidoViewModel : ViewModel() {
         _fingerprints.postValue(fingerprints)
     }
 
+    fun addFingerprint(fingerprint: FidoFingerprint) {
+        _fingerprints.postValue(_fingerprints.value?.plus(fingerprint))
+    }
+
     fun removeFingerprint(templateId: String) {
         _fingerprints.postValue(_fingerprints.value?.filter {
             it.templateId != templateId
@@ -70,5 +75,12 @@ class FidoViewModel : ViewModel() {
                 FidoFingerprint(templateId, name)
             } else it
         })
+    }
+
+    private val _registerFingerprint = MutableLiveData<FidoRegisterFpEvent>()
+    val registerFingerprint: LiveData<FidoRegisterFpEvent> = _registerFingerprint
+
+    fun updateRegisterFpState(registerFpState: FidoRegisterFpEvent) {
+        _registerFingerprint.postValue(registerFpState)
     }
 }

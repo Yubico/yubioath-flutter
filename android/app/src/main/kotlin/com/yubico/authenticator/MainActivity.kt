@@ -326,6 +326,7 @@ class MainActivity : FlutterFragmentActivity() {
             fidoViewModel.credentials.streamTo(this, messenger, "android.fido.credentials"),
             fidoViewModel.fingerprints.streamTo(this, messenger, "android.fido.fingerprints"),
             fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
+            fidoViewModel.registerFingerprint.streamTo(this, messenger, "android.fido.registerFp"),
         )
 
         viewModel.appContext.observe(this) {

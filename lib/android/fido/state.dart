@@ -23,6 +23,7 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
+import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
@@ -81,9 +82,6 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
     controller.onListen = () async {
       try {
-        // await ref
-        //     .read(androidAppContextHandler)
-        //     .switchAppContext(Application.passkeys);
         await _methods.invokeMethod('reset');
         _log.debug('Finished reset');
         await controller.sink.close();
@@ -181,6 +179,66 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   @override
   Stream<FingerprintEvent> registerFingerprint({String? name}) {
     final controller = StreamController<FingerprintEvent>();
+    const registerEvents = EventChannel('android.fido.registerFp');
+
+    final registerFpSub =
+        registerEvents.receiveBroadcastStream().skip(1).listen((event) {
+      if (controller.isClosed) {
+        _log.debug('Controller already closed, ignoring: $event');
+      }
+      _log.debug('Received register fingerprint event: $event');
+      if (event is String && event.isNotEmpty) {
+        final e = jsonDecode(event);
+        _log.debug('Received register fingerprint event: $e');
+
+        final status = e['status'];
+
+        controller.sink.add(switch (status) {
+          'capture' => FingerprintEvent.capture(e['remaining']),
+          'capture-error' => FingerprintEvent.error(e['code']),
+          final other => throw UnimplementedError(other)
+        });
+      }
+    });
+
+    controller.onCancel = () async {
+      if (!controller.isClosed) {
+        _log.debug('Cancelling fingerprint registration');
+        await _methods.invokeMethod('register_fingerprint_cancel');
+        await registerFpSub.cancel();
+      }
+    };
+
+    controller.onListen = () async {
+      try {
+        final registerFpResult =
+            await _methods.invokeMethod('register_fingerprint', {'name': name});
+
+        _log.debug('Finished register_fingerprint with: $registerFpResult');
+
+        final resultJson = jsonDecode(registerFpResult);
+
+        if (resultJson['success'] == true) {
+          controller.sink
+              .add(FingerprintEvent.complete(Fingerprint.fromJson(resultJson)));
+        } else {
+          // TODO abstract platform errors
+          final errorStatus = resultJson['status'];
+          if (errorStatus != 'user-cancelled') {
+            throw RpcError(errorStatus, 'Platform error: $errorStatus', {});
+          }
+        }
+
+        await controller.sink.close();
+      } on PlatformException catch (pe) {
+        _log.debug('Received platform exception: \'$pe\'');
+        final decoded = pe.decode();
+        controller.sink.addError(decoded);
+      } catch (e) {
+        _log.debug('Received error: \'$e\'');
+        controller.sink.addError(e);
+      }
+    };
 
     return controller.stream;
   }

@@ -19,6 +19,7 @@ package com.yubico.authenticator.fido
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
@@ -37,8 +38,10 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyConnection
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
+import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.fido.FidoConnection
+import com.yubico.yubikit.core.internal.Logger
 import com.yubico.yubikit.core.internal.codec.Base64
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
@@ -55,13 +58,19 @@ import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.util.Arrays
 import java.util.concurrent.Executors
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
@@ -144,6 +153,12 @@ class FidoManager(
                     args["template_id"] as String,
                     args["name"] as String
                 )
+
+                "register_fingerprint" -> registerFingerprint(
+                    args["name"] as String?,
+                )
+
+                "register_fingerprint_cancel" -> registerFingerprintCancel()
 
                 else -> throw NotImplementedError()
             }
@@ -441,7 +456,8 @@ class FidoManager(
         val bioEnrollment =
             FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, pinUvAuthToken)
 
-        return bioEnrollment.enumerateEnrollments().map { enrollment ->
+        val enrollments: Map<ByteArray, String?> = bioEnrollment.enumerateEnrollments()
+        return enrollments.map { enrollment ->
             FidoFingerprint(Base64.toUrlSafeString(enrollment.key), enrollment.value)
         }
 
@@ -493,6 +509,87 @@ class FidoManager(
                 )
             ).toString()
         }
+
+    private var state : CommandState? = null
+    private fun registerFingerprintCancel(): String {
+        state?.cancel()
+        return NULL
+    }
+
+    private suspend fun registerFingerprint(name: String?): String =
+        connectionHelper.useSession(FidoActionDescription.RegisterFingerprint) { fidoSession ->
+            state?.cancel()
+            state = CommandState()
+            val clientPin =
+                ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
+
+            val token =
+                clientPin.getPinToken(
+                    pinStore.getPin(),
+                    getPinPermissionsBE(fidoSession),
+                    null
+                )
+
+            val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
+
+            val fingerprintEnrollmentContext = bioEnrollment.enroll(null)
+            var templateId: ByteArray? = null
+            while (templateId == null) {
+                try {
+                    templateId = fingerprintEnrollmentContext.capture(state)
+                    fidoViewModel.updateRegisterFpState(
+                        createCaptureEvent(fingerprintEnrollmentContext.remaining!!)
+                    )
+                } catch (captureError: FingerprintBioEnrollment.CaptureError) {
+                    fidoViewModel.updateRegisterFpState(createCaptureErrorEvent(captureError.code))
+                } catch (ctapException: CtapException) {
+                    when (ctapException.ctapError) {
+                        CtapException.ERR_KEEPALIVE_CANCEL -> {
+                            fingerprintEnrollmentContext.cancel()
+                            return@useSession JSONObject(
+                                mapOf(
+                                    "success" to false,
+                                    "status" to "user-cancelled"
+                                )
+                            ).toString()
+                        }
+                        CtapException.ERR_USER_ACTION_TIMEOUT -> {
+                            fingerprintEnrollmentContext.cancel()
+                            return@useSession JSONObject(
+                                mapOf(
+                                    "success" to false,
+                                    "status" to "user-action-timeout"
+                                )
+                            ).toString()
+                        }
+                        else -> throw ctapException
+                    }
+                } catch (io: IOException) {
+                    return@useSession JSONObject(
+                        mapOf(
+                            "success" to false,
+                            "status" to "connection-error"
+                        )
+                    ).toString()
+                }
+            }
+
+            if (!name.isNullOrBlank()) {
+                bioEnrollment.setName(templateId, name)
+                Logger.debug(logger, "Set name to {}", name)
+            }
+
+            fidoViewModel.addFingerprint(FidoFingerprint(Base64.toUrlSafeString(templateId), name))
+
+            return@useSession JSONObject(
+                mapOf(
+                    "success" to true,
+                    "template_id" to Base64.toUrlSafeString(templateId),
+                    "name" to name
+                )
+            ).toString()
+        }
+
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {

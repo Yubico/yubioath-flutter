@@ -62,6 +62,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   void dispose() {
     _animator.dispose();
     _nameFocus.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 

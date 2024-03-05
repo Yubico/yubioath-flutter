@@ -25,7 +25,8 @@ enum class FidoActionDescription(private val value: Int) {
     DeleteCredential(3),
     DeleteFingerprint(4),
     RenameFingerprint(5),
-    ActionFailure(6);
+    RegisterFingerprint(6),
+    ActionFailure(7);
 
     val id: Int
         get() = value + dialogDescriptionOathIndex
