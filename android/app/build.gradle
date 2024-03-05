@@ -1,3 +1,11 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlinx-serialization'
+    id 'dev.flutter.flutter-gradle-plugin'
+    id 'com.google.android.gms.oss-licenses-plugin'
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -6,30 +14,15 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new FileNotFoundException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    //noinspection GroovyUnusedAssignment
     flutterVersionCode = '1'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    //noinspection GroovyUnusedAssignment
     flutterVersionName = '1.0'
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlinx-serialization'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.android.gms.oss-licenses-plugin'
-
-import com.android.build.OutputFile
 
 android {
 
@@ -58,7 +51,6 @@ android {
         versionName flutterVersionName
     }
 
-
     buildTypes {
         release {
             minifyEnabled true
@@ -78,7 +70,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             def abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, x86: 3, x86_64: 4]
-            def abiCode = abiCodes.get(output.getFilter(OutputFile.ABI))
+            def abiCode = abiCodes.get(output.getFilter(com.android.build.OutputFile.ABI))
             output.versionCodeOverride = variant.versionCode * 10 + (abiCode != null ? abiCode : 0)
         }
     }
@@ -99,8 +91,8 @@ dependencies {
     api "com.yubico.yubikit:fido:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
 
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
