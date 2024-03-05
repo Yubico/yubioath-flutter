@@ -85,8 +85,7 @@ def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
 tasks.register('collectLicenses') {
     dependsOn(":app:releaseOssLicensesTask")
     doLast {
-        def ossPluginResDir = new File(layout.buildDirectory.get().asFile, "generated/third_party_licenses/release/res/raw/")
-        def flutterAssetsDir = new File(project.rootDir.parent, "assets/licenses/raw/")
-        collectLicenses(project.rootDir, ossPluginResDir, flutterAssetsDir)
+        def ossPluginResDir = new File(project.buildDir, "generated/third_party_licenses/release/res/raw/")
+        collectLicenses(project.rootDir, ossPluginResDir, new File(project.rootDir.parent, "assets/licenses/raw/"))
     }
 }

@@ -19,8 +19,8 @@ export YUBIOATH_KEY_PASSWORD=...
 
 def keystoreData = System.getenv('YUBIOATH_STORE_BASE64')
 if (keystoreData) {
-    file("${layout.buildDirectory}/keystore").mkdirs()
-    def keystore = file("${layout.buildDirectory}/keystore/yubioath-android.jks")
+    file("$buildDir/keystore").mkdirs()
+    def keystore = file("$buildDir/keystore/yubioath-android.jks")
     keystore.delete()
     keystore << keystoreData.decodeBase64()
 
