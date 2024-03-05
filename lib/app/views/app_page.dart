@@ -111,6 +111,7 @@ class _AppPageState extends ConsumerState<AppPage> {
   final _detailsViewProvider =
       StateNotifierProvider<_ScrolledUnderProvider, bool>(
           (ref) => _ScrolledUnderProvider());
+
   bool _scrolledUnderAppBar(GlobalKey key) {
     final currentContext = key.currentContext;
     if (currentContext != null) {
@@ -204,7 +205,6 @@ class _AppPageState extends ConsumerState<AppPage> {
             children: [
               Flexible(
                 child: Text(
-                  key: _sliverTitleGlobalKey,
                   widget.alternativeTitle ?? widget.title!,
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: widget.alternativeTitle != null
@@ -346,9 +346,18 @@ class _AppPageState extends ConsumerState<AppPage> {
     if (widget.title != null) {
       return NotificationListener<ScrollMetricsNotification>(
         onNotification: (notification) {
+          final isSliverScrolledUnder = ref.read(_sliverTitleProvider);
+          final scrolledUnder = _scrolledUnderAppBar(_sliverTitleGlobalKey);
+          if (isSliverScrolledUnder != scrolledUnder &&
+              isSliverScrolledUnder &&
+              !scrolledUnder) {
+            Scrollable.ensureVisible(_sliverTitleGlobalKey.currentContext!,
+                duration: const Duration(milliseconds: 300));
+          }
           ref
               .read(_sliverTitleProvider.notifier)
-              .toggleScrolledUnder(_scrolledUnderAppBar(_sliverTitleGlobalKey));
+              .toggleScrolledUnder(scrolledUnder);
+
           return false;
         },
         child: CustomScrollView(
@@ -360,6 +369,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                   child: ColoredBox(
                     color: Theme.of(context).colorScheme.background,
                     child: Padding(
+                        key: _sliverTitleGlobalKey,
                         padding: const EdgeInsets.only(
                             left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
                         child: Consumer(
