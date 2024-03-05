@@ -68,7 +68,7 @@ def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
     println "Created ${outFile.absolutePath}"
 
     // copy license assets to flutter resources
-    def licensesDir = new File(rootDir, "licenses/");
+    def licensesDir = new File(rootDir, "licenses/")
     copy {
         from(licensesDir.absolutePath) {
             include "**/*txt"
@@ -85,7 +85,7 @@ def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
 tasks.register('collectLicenses') {
     dependsOn(":app:releaseOssLicensesTask")
     doLast {
-        def ossPluginResDir = new File(project.buildDir, "generated/third_party_licenses/release/res/raw/")
+        def ossPluginResDir = new File(project.layout.buildDirectory, "generated/third_party_licenses/release/res/raw/")
         collectLicenses(project.rootDir, ossPluginResDir, new File(project.rootDir.parent, "assets/licenses/raw/"))
     }
 }
