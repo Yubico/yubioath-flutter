@@ -25,6 +25,8 @@ import '../../core/state.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
+import '../../home/views/home_message_page.dart';
+import '../../home/views/home_screen.dart';
 import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
@@ -82,7 +84,7 @@ class MainPage extends ConsumerWidget {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
-        return MessagePage(
+        return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,
           header: hasNfcSupport && isNfcEnabled
@@ -106,7 +108,7 @@ class MainPage extends ConsumerWidget {
           ),
         );
       } else {
-        return MessagePage(
+        return HomeMessagePage(
           centered: true,
           delayedContent: false,
           graphic: noKeyImage,
@@ -120,7 +122,7 @@ class MainPage extends ConsumerWidget {
               final capabilities = app.capabilities;
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
-                return MessagePage(
+                return HomeMessagePage(
                   centered: true,
                   graphic: Icon(
                     Symbols.help,
@@ -165,6 +167,7 @@ class MainPage extends ConsumerWidget {
               }
 
               return switch (app) {
+                Application.home => HomeScreen(data),
                 Application.accounts => OathScreen(data.node.path),
                 Application.webauthn => const WebAuthnScreen(),
                 Application.passkeys => PasskeysScreen(data),

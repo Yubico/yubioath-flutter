@@ -61,12 +61,17 @@
     "s_actions": "Działania",
     "s_manage": "Zarządzaj",
     "s_setup": "Konfiguruj",
+    "s_device": null,
+    "s_application": null,
     "s_settings": "Ustawienia",
+    "l_settings_desc": null,
     "s_certificates": "Certyfikaty",
     "s_webauthn": "WebAuthn",
     "s_slots": "Sloty",
     "s_help_and_about": "Pomoc i informacje",
+    "l_help_and_about_desc": null,
     "s_help_and_feedback": "Pomoc i opinie",
+    "s_home": null,
     "s_send_feedback": "Prześlij opinię",
     "s_i_need_help": "Pomoc",
     "s_troubleshooting": "Rozwiązywanie problemów",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": null,
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Podłącz klucz YubiKey",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Przełączanie funkcji",
     "s_toggle_interfaces": "Przełącz interfejsy",
+    "l_toggle_applications_desc": null,
+    "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "Rekonfigurowanie YubiKey\u2026",
     "s_config_updated": "Zaktualizowano konfigurację",
     "l_config_updated_reinsert": "Zaktualizowano konfigurację, podłącz ponownie klucz YubiKey",
@@ -645,6 +664,7 @@
     "@_factory_reset": {},
     "s_reset": "Zresetuj",
     "s_factory_reset": "Ustawienia fabryczne",
+    "l_factory_reset_desc": null,
     "l_oath_application_reset": "Reset funkcji OATH",
     "l_fido_app_reset": "Reset funkcji FIDO",
     "l_reset_failed": "Błąd podczas resetowania: {message}",
@@ -744,7 +764,11 @@
 
     "@_key_customization": {},
     "s_customize_key_action": "Dostosuj klucz",
+    "s_set_label": null,
+    "s_change_label": null,
     "s_theme_color": "Kolor motywu",
+    "p_set_will_add_custom_name": null,
+    "p_rename_will_change_custom_name": null,
 
     "@_eof": {}
 }

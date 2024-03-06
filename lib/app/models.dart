@@ -25,11 +25,14 @@ import '../core/state.dart';
 
 part 'models.freezed.dart';
 
+part 'models.g.dart';
+
 const _listEquality = ListEquality();
 
 enum Availability { enabled, disabled, unsupported }
 
 enum Application {
+  home(),
   accounts([Capability.oath]),
   webauthn([Capability.u2f]),
   fingerprints([Capability.fido2]),
@@ -43,6 +46,7 @@ enum Application {
   const Application([this.capabilities = const []]);
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
+        Application.home => l10n.s_home,
         Application.accounts => l10n.s_accounts,
         Application.webauthn => l10n.s_webauthn,
         Application.fingerprints => l10n.s_fingerprints,
@@ -154,4 +158,26 @@ class WindowState with _$WindowState {
     required bool active,
     @Default(false) bool hidden,
   }) = _WindowState;
+}
+
+@freezed
+class KeyCustomization with _$KeyCustomization {
+  factory KeyCustomization({
+    required int serial,
+    @JsonKey(includeIfNull: false) String? name,
+    @JsonKey(includeIfNull: false) @_ColorConverter() Color? color,
+  }) = _KeyCustomization;
+
+  factory KeyCustomization.fromJson(Map<String, dynamic> json) =>
+      _$KeyCustomizationFromJson(json);
+}
+
+class _ColorConverter implements JsonConverter<Color?, int?> {
+  const _ColorConverter();
+
+  @override
+  Color? fromJson(int? json) => json != null ? Color(json) : null;
+
+  @override
+  int? toJson(Color? object) => object?.value;
 }

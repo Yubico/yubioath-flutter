@@ -21,5 +21,6 @@ final fido = root.feature('fido');
 final piv = root.feature('piv');
 final otp = root.feature('otp');
 final management = root.feature('management');
+final home = root.feature('home');
 
 final fingerprints = fido.feature('fingerprints');

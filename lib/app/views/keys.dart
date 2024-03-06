@@ -25,6 +25,7 @@ const noDeviceAvatar = Key('$_prefix.no_device_avatar');
 const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
 
 // drawer items
+const homeDrawer = Key('$_prefix.drawer.home');
 const managementAppDrawer = Key('$_prefix.drawer.management');
 const oathAppDrawer = Key('$_prefix.drawer.oath');
 const u2fAppDrawer = Key('$_prefix.drawer.fido.webauthn');
