@@ -48,6 +48,7 @@ class ManageKeyDialog extends ConsumerStatefulWidget {
 class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   late bool _hasMetadata;
   late bool _defaultKeyUsed;
+  late bool _defaultPinUsed;
   late bool _usesStoredKey;
   late bool _storeKey;
   bool _currentIsWrong = false;
@@ -68,9 +69,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         defaultManagementKeyType;
     _defaultKeyUsed =
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
+    _defaultPinUsed =
+        widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
     _usesStoredKey = widget.pivState.protectedKey;
     if (!_usesStoredKey && _defaultKeyUsed) {
       _currentController.text = defaultManagementKey;
+    } else if (_usesStoredKey && _defaultPinUsed) {
+      _currentController.text = defaultPin;
     }
     _storeKey = _usesStoredKey;
   }
@@ -118,15 +123,19 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     }
 
     if (_storeKey && !_usesStoredKey) {
-      final withContext = ref.read(withContextProvider);
-      final verified = await withContext((context) async =>
-              await showBlurDialog(
-                  context: context,
-                  builder: (context) => PinDialog(widget.path))) ??
-          false;
+      if (_defaultPinUsed) {
+        await notifier.verifyPin(defaultPin);
+      } else {
+        final withContext = ref.read(withContextProvider);
+        final verified = await withContext((context) async =>
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => PinDialog(widget.path))) ??
+            false;
 
-      if (!verified) {
-        return;
+        if (!verified) {
+          return;
+        }
       }
     }
 
@@ -147,9 +156,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         widget.pivState.metadata?.managementKeyMetadata.keyType ??
             defaultManagementKeyType;
     final hexLength = _keyType.keyLength * 2;
-    final protected = widget.pivState.protectedKey;
     final currentKeyOrPin = _currentController.text;
-    final currentLenOk = protected
+    final currentLenOk = _usesStoredKey
         ? currentKeyOrPin.length >= 4
         : currentKeyOrPin.length == currentType.keyLength * 2;
     final newLenOk = _keyController.text.length == hexLength;
@@ -169,7 +177,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.p_change_management_key_desc),
-            if (protected)
+            if (_usesStoredKey)
               AppTextField(
                 autofocus: true,
                 obscureText: _isObscure,
@@ -177,9 +185,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 key: keys.pinPukField,
                 maxLength: 8,
                 controller: _currentController,
+                readOnly: _defaultPinUsed,
                 decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_pin,
+                  helperText: _defaultPinUsed ? l10n.l_default_pin_used : null,
                   errorText: _currentIsWrong
                       ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                       : _currentInvalidFormat
@@ -207,7 +217,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   });
                 },
               ),
-            if (!protected)
+            if (!_usesStoredKey)
               AppTextFormField(
                 key: keys.managementKeyField,
                 autofocus: !_defaultKeyUsed,
