@@ -41,7 +41,8 @@ class ManagePasswordDialog extends ConsumerStatefulWidget {
 }
 
 class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
-  String _currentPassword = '';
+  final _currentPasswordController = TextEditingController();
+  final _currentPasswordFocus = FocusNode();
   String _newPassword = '';
   String _confirmPassword = '';
   bool _currentIsWrong = false;
@@ -49,12 +50,19 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
 
+  @override
+  void dispose() {
+    _currentPasswordController.dispose();
+    _currentPasswordFocus.dispose();
+    super.dispose();
+  }
+
   _submit() async {
     FocusUtils.unfocus(context);
 
     final result = await ref
         .read(oathStateProvider(widget.path).notifier)
-        .setPassword(_currentPassword, _newPassword);
+        .setPassword(_currentPasswordController.text, _newPassword);
     if (result) {
       if (mounted) {
         await ref.read(withContextProvider)((context) async {
@@ -63,6 +71,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         });
       }
     } else {
+      _currentPasswordController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _currentPasswordController.text.length);
+      _currentPasswordFocus.requestFocus();
       setState(() {
         _currentIsWrong = true;
       });
@@ -72,9 +83,10 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isValid = _newPassword.isNotEmpty &&
+    final isValid = !_currentIsWrong &&
+        _newPassword.isNotEmpty &&
         _newPassword == _confirmPassword &&
-        (!widget.state.hasKey || _currentPassword.isNotEmpty);
+        (!widget.state.hasKey || _currentPasswordController.text.isNotEmpty);
 
     return ResponsiveDialog(
       title: Text(
@@ -98,6 +110,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
                 key: keys.currentPasswordField,
+                controller: _currentPasswordController,
+                focusNode: _currentPasswordFocus,
                 decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_password,
@@ -121,7 +135,6 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
-                    _currentPassword = value;
                   });
                 },
               ),
@@ -131,11 +144,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 children: [
                   OutlinedButton(
                     key: keys.removePasswordButton,
-                    onPressed: _currentPassword.isNotEmpty
+                    onPressed: _currentPasswordController.text.isNotEmpty &&
+                            !_currentIsWrong
                         ? () async {
                             final result = await ref
                                 .read(oathStateProvider(widget.path).notifier)
-                                .unsetPassword(_currentPassword);
+                                .unsetPassword(_currentPasswordController.text);
                             if (result) {
                               if (mounted) {
                                 await ref.read(withContextProvider)(
@@ -145,6 +159,12 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                                 });
                               }
                             } else {
+                              _currentPasswordController.selection =
+                                  TextSelection(
+                                      baseOffset: 0,
+                                      extentOffset: _currentPasswordController
+                                          .text.length);
+                              _currentPasswordFocus.requestFocus();
                               setState(() {
                                 _currentIsWrong = true;
                               });
@@ -193,7 +213,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                     tooltip: _isObscureNew
                         ? l10n.s_show_password
                         : l10n.s_hide_password),
-                enabled: !widget.state.hasKey || _currentPassword.isNotEmpty,
+                enabled: !widget.state.hasKey ||
+                    _currentPasswordController.text.isNotEmpty,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -227,9 +248,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                     tooltip: _isObscureConfirm
                         ? l10n.s_show_password
                         : l10n.s_hide_password),
-                enabled:
-                    (!widget.state.hasKey || _currentPassword.isNotEmpty) &&
-                        _newPassword.isNotEmpty,
+                enabled: (!widget.state.hasKey ||
+                        _currentPasswordController.text.isNotEmpty) &&
+                    _newPassword.isNotEmpty,
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

@@ -57,6 +57,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   int _attemptsRemaining = -1;
   late ManagementKeyType _keyType;
   final _currentController = TextEditingController();
+  final _currentFocus = FocusNode();
   final _keyController = TextEditingController();
   bool _isObscure = true;
 
@@ -84,6 +85,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   void dispose() {
     _keyController.dispose();
     _currentController.dispose();
+    _currentFocus.dispose();
     super.dispose();
   }
 
@@ -103,6 +105,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       final status = (await notifier.verifyPin(_currentController.text)).when(
         success: () => true,
         failure: (attemptsRemaining) {
+          _currentController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _currentController.text.length);
+          _currentFocus.requestFocus();
           setState(() {
             _attemptsRemaining = attemptsRemaining;
             _currentIsWrong = true;
@@ -115,6 +120,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       }
     } else {
       if (!await notifier.authenticate(_currentController.text)) {
+        _currentController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _currentController.text.length);
+        _currentFocus.requestFocus();
         setState(() {
           _currentIsWrong = true;
         });
@@ -166,7 +174,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       title: Text(l10n.l_change_management_key),
       actions: [
         TextButton(
-          onPressed: currentLenOk && newLenOk ? _submit : null,
+          onPressed:
+              !_currentIsWrong && currentLenOk && newLenOk ? _submit : null,
           key: keys.saveButton,
           child: Text(l10n.s_save),
         )
@@ -185,6 +194,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 key: keys.pinPukField,
                 maxLength: 8,
                 controller: _currentController,
+                focusNode: _currentFocus,
                 readOnly: _defaultPinUsed,
                 decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
@@ -223,6 +233,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 autofocus: !_defaultKeyUsed,
                 autofillHints: const [AutofillHints.password],
                 controller: _currentController,
+                focusNode: _currentFocus,
                 readOnly: _defaultKeyUsed,
                 maxLength: !_defaultKeyUsed ? currentType.keyLength * 2 : null,
                 decoration: AppInputDecoration(

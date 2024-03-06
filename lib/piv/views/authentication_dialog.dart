@@ -44,10 +44,12 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   bool _keyIsWrong = false;
   bool _keyFormatInvalid = false;
   final _keyController = TextEditingController();
+  final _keyFocus = FocusNode();
 
   @override
   void dispose() {
     _keyController.dispose();
+    _keyFocus.dispose();
     super.dispose();
   }
 
@@ -65,7 +67,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _keyController.text.length == keyLen
+          onPressed: !_keyIsWrong && _keyController.text.length == keyLen
               ? () async {
                   if (keyFormatInvalid) {
                     setState(() {
@@ -81,6 +83,10 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                     if (status) {
                       navigator.pop(true);
                     } else {
+                      _keyController.selection = TextSelection(
+                          baseOffset: 0,
+                          extentOffset: _keyController.text.length);
+                      _keyFocus.requestFocus();
                       setState(() {
                         _keyIsWrong = true;
                       });
@@ -88,6 +94,10 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                   } on CancellationException catch (_) {
                     navigator.pop(false);
                   } catch (_) {
+                    _keyController.selection = TextSelection(
+                        baseOffset: 0,
+                        extentOffset: _keyController.text.length);
+                    _keyFocus.requestFocus();
                     // TODO: More error cases
                     setState(() {
                       _keyIsWrong = true;
@@ -109,6 +119,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
               autofocus: true,
               autofillHints: const [AutofillHints.password],
               controller: _keyController,
+              focusNode: _keyFocus,
               readOnly: _defaultKeyUsed,
               maxLength: !_defaultKeyUsed ? keyLen : null,
               decoration: AppInputDecoration(

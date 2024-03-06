@@ -38,6 +38,7 @@ class UnlockForm extends ConsumerStatefulWidget {
 
 class _UnlockFormState extends ConsumerState<UnlockForm> {
   final _passwordController = TextEditingController();
+  final _passwordFocus = FocusNode();
   bool _remember = false;
   bool _passwordIsWrong = false;
   bool _isObscure = true;
@@ -51,9 +52,11 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
         .unlock(_passwordController.text, remember: _remember);
     if (!mounted) return;
     if (!success) {
+      _passwordController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _passwordController.text.length);
+      _passwordFocus.requestFocus();
       setState(() {
         _passwordIsWrong = true;
-        _passwordController.clear();
       });
     } else if (_remember && !remembered) {
       showMessage(context, AppLocalizations.of(context)!.l_remember_pw_failed);
@@ -79,6 +82,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 child: AppTextField(
                   key: keys.passwordField,
                   controller: _passwordController,
+                  focusNode: _passwordFocus,
                   autofocus: true,
                   obscureText: _isObscure,
                   autofillHints: const [AutofillHints.password],

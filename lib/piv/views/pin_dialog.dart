@@ -37,6 +37,7 @@ class PinDialog extends ConsumerStatefulWidget {
 
 class _PinDialogState extends ConsumerState<PinDialog> {
   final _pinController = TextEditingController();
+  final _pinFocus = FocusNode();
   bool _pinIsWrong = false;
   int _attemptsRemaining = -1;
   bool _isObscure = true;
@@ -44,6 +45,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   void dispose() {
     _pinController.dispose();
+    _pinFocus.dispose();
     super.dispose();
   }
 
@@ -58,8 +60,10 @@ class _PinDialogState extends ConsumerState<PinDialog> {
           navigator.pop(true);
         },
         failure: (attemptsRemaining) {
+          _pinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _pinController.text.length);
+          _pinFocus.requestFocus();
           setState(() {
-            _pinController.clear();
             _attemptsRemaining = attemptsRemaining;
             _pinIsWrong = true;
           });
@@ -73,12 +77,14 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final version = ref.watch(pivStateProvider(widget.devicePath)).valueOrNull;
+    final minPinLen = version?.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _pinController.text.length >= 4 ? _submit : null,
+          onPressed: _pinController.text.length >= minPinLen ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -95,6 +101,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
               controller: _pinController,
+              focusNode: _pinFocus,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,

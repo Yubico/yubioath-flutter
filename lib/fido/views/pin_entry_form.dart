@@ -37,10 +37,18 @@ class PinEntryForm extends ConsumerStatefulWidget {
 
 class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   final _pinController = TextEditingController();
+  final _pinFocus = FocusNode();
   bool _blocked = false;
   int? _retries;
   bool _pinIsWrong = false;
   bool _isObscure = true;
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    _pinFocus.dispose();
+    super.dispose();
+  }
 
   void _submit() async {
     setState(() {
@@ -51,8 +59,10 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
         .read(fidoStateProvider(widget._deviceNode.path).notifier)
         .unlock(_pinController.text);
     result.whenOrNull(failed: (retries, authBlocked) {
+      _pinController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _pinController.text.length);
+      _pinFocus.requestFocus();
       setState(() {
-        _pinController.clear();
         _pinIsWrong = true;
         _retries = retries;
         _blocked = authBlocked;
@@ -92,6 +102,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],
               controller: _pinController,
+              focusNode: _pinFocus,
+              enabled: !_blocked && (_retries ?? 1) > 0,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
@@ -137,7 +149,9 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               icon: const Icon(Symbols.lock_open),
               label: Text(l10n.s_unlock),
               onPressed:
-                  _pinController.text.isNotEmpty && !_blocked ? _submit : null,
+                  !_pinIsWrong && _pinController.text.length >= 4 && !_blocked
+                      ? _submit
+                      : null,
             ),
           ),
         ],

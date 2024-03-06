@@ -44,7 +44,8 @@ class FidoPinDialog extends ConsumerStatefulWidget {
 }
 
 class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
-  String _currentPin = '';
+  final _currentPinController = TextEditingController();
+  final _currentPinFocus = FocusNode();
   String _newPin = '';
   String _confirmPin = '';
   String? _currentPinError;
@@ -54,15 +55,24 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   bool _isObscureCurrent = true;
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
+  bool _isBlocked = false;
+
+  @override
+  void dispose() {
+    _currentPinController.dispose();
+    _currentPinFocus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final hasPin = widget.state.hasPin;
-    final isValid = _newPin.isNotEmpty &&
-        _newPin == _confirmPin &&
-        (!hasPin || _currentPin.isNotEmpty);
     final minPinLength = widget.state.minPinLength;
+    // N.B. current PIN may be shorter than minimum, if it was set before the minimum was increased
+    final currentPinLenOk = !hasPin || _currentPinController.text.length >= 4;
+    final newPinLenOk = _newPin.length >= minPinLength;
+    final isValid = currentPinLenOk && newPinLenOk && _newPin == _confirmPin;
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
@@ -82,11 +92,13 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               Text(l10n.p_enter_current_pin_or_reset_no_puk),
               AppTextFormField(
                 key: currentPin,
-                initialValue: _currentPin,
+                controller: _currentPinController,
+                focusNode: _currentPinFocus,
                 autofocus: true,
                 obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
                 decoration: AppInputDecoration(
+                  enabled: !_isBlocked,
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_pin,
                   errorText: _currentIsWrong ? _currentPinError : null,
@@ -108,7 +120,6 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
-                    _currentPin = value;
                   });
                 },
               ),
@@ -124,7 +135,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
-                enabled: !hasPin || _currentPin.isNotEmpty,
+                enabled: !_isBlocked && currentPinLenOk,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Symbols.pin),
@@ -168,8 +179,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   tooltip:
                       _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
-                enabled:
-                    (!hasPin || _currentPin.isNotEmpty) && _newPin.isNotEmpty,
+                enabled: !_isBlocked && currentPinLenOk && newPinLenOk,
               ),
               onChanged: (value) {
                 setState(() {
@@ -196,7 +206,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   void _submit() async {
     final l10n = AppLocalizations.of(context)!;
     final minPinLength = widget.state.minPinLength;
-    final oldPin = _currentPin.isNotEmpty ? _currentPin : null;
+    final oldPin = _currentPinController.text.isNotEmpty
+        ? _currentPinController.text
+        : null;
+    // TODO: Remove this? It shouldn't happen...
     if (_newPin.length < minPinLength) {
       setState(() {
         _newPinError = l10n.l_new_pin_len(minPinLength);
@@ -213,9 +226,13 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
         showMessage(context, l10n.s_pin_set);
       }, failed: (retries, authBlocked) {
         setState(() {
+          _currentPinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _currentPinController.text.length);
+          _currentPinFocus.requestFocus();
           if (authBlocked) {
             _currentPinError = l10n.l_pin_soft_locked;
             _currentIsWrong = true;
+            _isBlocked = true;
           } else {
             _currentPinError = l10n.l_wrong_pin_attempts_remaining(retries);
             _currentIsWrong = true;
