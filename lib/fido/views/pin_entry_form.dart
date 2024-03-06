@@ -148,10 +148,12 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               key: unlockFido2WithPin,
               icon: const Icon(Symbols.lock_open),
               label: Text(l10n.s_unlock),
-              onPressed:
-                  !_pinIsWrong && _pinController.text.length >= 4 && !_blocked
-                      ? _submit
-                      : null,
+              onPressed: !_pinIsWrong &&
+                      _pinController.text.length >=
+                          widget._state.minPinLength &&
+                      !_blocked
+                  ? _submit
+                  : null,
             ),
           ),
         ],
