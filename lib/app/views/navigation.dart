@@ -168,7 +168,6 @@ class NavigationContent extends ConsumerWidget {
                             }
                           : null,
                     )),
-                const SizedBox(height: 32),
               ],
             ),
           ),

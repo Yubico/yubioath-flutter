@@ -44,7 +44,6 @@ class AppPage extends StatelessWidget {
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final bool keyActionsBadge;
   final bool centered;
-  final bool centerTitle;
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
@@ -56,7 +55,6 @@ class AppPage extends StatelessWidget {
     this.footnote,
     required this.builder,
     this.centered = false,
-    this.centerTitle = false,
     this.keyActionsBuilder,
     this.detailViewBuilder,
     this.actionButtonBuilder,
@@ -73,6 +71,7 @@ class AppPage extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
+
           if (width < 400 ||
               (isAndroid && width < 600 && width < constraints.maxHeight)) {
             return _buildScaffold(context, true, false, false);
@@ -181,6 +180,7 @@ class AppPage extends StatelessWidget {
   Widget _buildMainContent(BuildContext context, bool expanded) {
     final actions = actionsBuilder?.call(context, expanded) ?? [];
     final content = Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment:
           centered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
@@ -218,41 +218,59 @@ class AppPage extends StatelessWidget {
           ),
       ],
     );
+
+    final safeArea = SafeArea(
+      child: delayedContent
+          ? DelayedVisibility(
+              key: GlobalKey(), // Ensure we reset the delay on rebuild
+              delay: const Duration(milliseconds: 400),
+              child: content,
+            )
+          : content,
+    );
+
+    if (centered) {
+      return Stack(
+        children: [
+          if (title != null)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 24.0),
+                  child: _buildTitle(context),
+                ),
+              ),
+            ),
+          Positioned.fill(
+            top: title != null ? 68.0 : 0,
+            child: Align(
+              alignment: Alignment.center,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: safeArea,
+                ),
+              ),
+            ),
+          )
+        ],
+      );
+    }
+
     return SingleChildScrollView(
       primary: false,
-      child: SafeArea(
-        child: delayedContent
-            ? DelayedVisibility(
-                key: GlobalKey(), // Ensure we reset the delay on rebuild
-                delay: const Duration(milliseconds: 400),
-                child: content,
-              )
-            : content,
-      ),
+      child: safeArea,
     );
   }
 
   Scaffold _buildScaffold(
       BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
     var body = _buildMainContent(context, hasManage);
-    if (centered) {
-      body = Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (title != null)
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 16.0, right: 16.0, bottom: 24.0),
-                child: _buildTitle(context),
-              ),
-            ),
-          Expanded(
-            child: Center(child: body),
-          ),
-        ],
-      );
-    }
+
     if (onFileDropped != null) {
       body = FileDropTarget(
         onFileDropped: onFileDropped!,
