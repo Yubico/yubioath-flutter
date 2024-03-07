@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import 'app_input_decoration.dart';
 
 /// TextField without autocorrect and suggestions
-// ignore: must_be_immutable
 class AppTextField extends TextField {
-  bool _initialized = false;
-  AppTextField({
+  const AppTextField({
     // default settings to turn off autocorrect
     super.autocorrect = false,
     super.enableSuggestions = false,
@@ -89,22 +84,14 @@ class AppTextField extends TextField {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  }) : super(decoration: decoration) {
-    // TODO: Replace this with a custom lint check, if possible
-    Timer.run(() {
-      assert(_initialized, 'AppTextField not initialized!');
-    });
-  }
+  }) : super(decoration: decoration);
 
-  Widget init() {
-    _initialized = true;
-    return Builder(
-      builder: (context) => DefaultSelectionStyle(
-        selectionColor: decoration?.errorText != null
-            ? Theme.of(context).colorScheme.error
-            : null,
-        child: this,
-      ),
-    );
-  }
+  Widget init() => Builder(
+        builder: (context) => DefaultSelectionStyle(
+          selectionColor: decoration?.errorText != null
+              ? Theme.of(context).colorScheme.error
+              : null,
+          child: this,
+        ),
+      );
 }
