@@ -127,6 +127,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
               key: keys.secretField,
               controller: _secretController,
               obscureText: _isObscure,
+              autofocus: true,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
