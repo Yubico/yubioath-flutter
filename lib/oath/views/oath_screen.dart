@@ -439,7 +439,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           Focus.of(context)
                               .focusInDirection(TraversalDirection.down);
                         },
-                      ),
+                      ).init(),
                     );
                   }),
                 ),

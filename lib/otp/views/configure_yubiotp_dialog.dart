@@ -237,7 +237,7 @@ class _ConfigureYubiOtpDialogState
                   _validatePublicIdFormat = false;
                 });
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.privateIdField,
               controller: _privateIdController,
@@ -274,7 +274,7 @@ class _ConfigureYubiOtpDialogState
                   _validatePrivateIdFormat = false;
                 });
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.secretField,
               controller: _secretController,
@@ -311,7 +311,7 @@ class _ConfigureYubiOtpDialogState
                   _validateSecretFormat = false;
                 });
               },
-            ),
+            ).init(),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,

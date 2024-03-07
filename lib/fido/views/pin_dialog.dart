@@ -126,7 +126,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                     _currentIsWrong = false;
                   });
                 },
-              ),
+              ).init(),
             ],
             Text(l10n.p_enter_new_fido2_pin(minPinLength)),
             // TODO: Set max characters based on UTF-8 bytes
@@ -161,7 +161,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   _newPin = value;
                 });
               },
-            ),
+            ).init(),
             AppTextFormField(
               key: confirmPin,
               initialValue: _confirmPin,
@@ -200,7 +200,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

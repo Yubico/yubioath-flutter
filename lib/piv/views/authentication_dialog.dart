@@ -160,7 +160,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                   _keyFormatInvalid = false;
                 });
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

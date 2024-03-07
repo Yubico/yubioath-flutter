@@ -226,7 +226,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     _currentInvalidFormat = false;
                   });
                 },
-              ),
+              ).init(),
             if (!_usesStoredKey)
               AppTextFormField(
                 key: keys.managementKeyField,
@@ -272,7 +272,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     _currentIsWrong = false;
                   });
                 },
-              ),
+              ).init(),
             AppTextField(
               key: keys.newPinPukField,
               autofocus: _defaultKeyUsed,
@@ -320,7 +320,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
             Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 4.0,

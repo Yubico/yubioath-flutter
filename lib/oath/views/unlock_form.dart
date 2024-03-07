@@ -110,7 +110,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     _passwordIsWrong = false;
                   }), // Update state on change
                   onSubmitted: (_) => _submit(),
-                ),
+                ).init(),
               ),
               const SizedBox(height: 3.0),
               Column(

@@ -256,7 +256,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                       onFieldSubmitted: (_) {
                         _submit();
                       },
-                    ),
+                    ).init(),
                   )
                 ]
               ],

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'app_input_decoration.dart';
 
 /// TextFormField without autocorrect and suggestions
+// ignore: must_be_immutable
 class AppTextFormField extends TextFormField {
+  final AppInputDecoration? decoration;
+  bool _initialized = false;
   AppTextFormField({
     // default settings to turn off autocorrect
     super.autocorrect = false,
@@ -30,7 +35,7 @@ class AppTextFormField extends TextFormField {
     super.controller,
     super.initialValue,
     super.focusNode,
-    AppInputDecoration? decoration,
+    this.decoration,
     super.textCapitalization,
     super.textInputAction,
     super.style,
@@ -89,5 +94,22 @@ class AppTextFormField extends TextFormField {
     super.clipBehavior,
     super.scribbleEnabled,
     super.canRequestFocus,
-  }) : super(decoration: decoration);
+  }) : super(decoration: decoration) {
+    // TODO: Replace this with a custom lint check, if possible
+    Timer.run(() {
+      assert(_initialized, 'AppTextFormField not initialized!');
+    });
+  }
+
+  Widget init() {
+    _initialized = true;
+    return Builder(
+      builder: (context) => DefaultSelectionStyle(
+        selectionColor: decoration?.errorText != null
+            ? Theme.of(context).colorScheme.error
+            : null,
+        child: this,
+      ),
+    );
+  }
 }

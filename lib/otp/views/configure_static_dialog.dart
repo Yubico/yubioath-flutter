@@ -181,7 +181,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                   _validatePassword = false;
                 });
               },
-            ),
+            ).init(),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,

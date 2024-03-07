@@ -159,7 +159,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                   _validateSecret = false;
                 });
               },
-            ),
+            ).init(),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,

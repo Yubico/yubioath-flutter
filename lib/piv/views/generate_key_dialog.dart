@@ -174,7 +174,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                   _subject = value;
                 });
               },
-            ),
+            ).init(),
             Text(
               l10n.rfc4514_examples,
               style: subtitleStyle,

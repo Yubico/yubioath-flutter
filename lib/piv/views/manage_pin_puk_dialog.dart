@@ -207,7 +207,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _currentIsWrong = false;
                 });
               },
-            ),
+            ).init(),
             Text(l10n.p_enter_new_piv_pin_puk(
                 widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
             AppTextField(
@@ -248,7 +248,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.confirmPinPukField,
               obscureText: _isObscureConfirm,
@@ -293,7 +293,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

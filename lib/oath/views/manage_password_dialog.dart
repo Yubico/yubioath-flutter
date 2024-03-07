@@ -137,7 +137,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                     _currentIsWrong = false;
                   });
                 },
-              ),
+              ).init(),
               Wrap(
                 spacing: 4.0,
                 runSpacing: 8.0,
@@ -227,7 +227,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.confirmPasswordField,
               obscureText: _isObscureConfirm,
@@ -268,7 +268,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

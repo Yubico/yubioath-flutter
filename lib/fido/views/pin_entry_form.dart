@@ -128,7 +128,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                 });
               }, // Update state on change
               onSubmitted: (_) => _submit(),
-            ),
+            ).init(),
           ),
           ListTile(
             leading: noFingerprints

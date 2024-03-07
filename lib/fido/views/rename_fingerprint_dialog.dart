@@ -112,7 +112,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
