@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../core/state.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_picker.dart';
@@ -126,7 +127,9 @@ class NavigationContent extends ConsumerWidget {
             .where(
                 (app) => app.getAvailability(data) != Availability.unsupported)
             .toList()
-        : [Application.home];
+        : !isAndroid // TODO: Remove check when Home is implemented on Android
+            ? [Application.home]
+            : <Application>[];
     availableApps.remove(Application.management);
     final currentApp = ref.watch(currentAppProvider);
 
@@ -138,9 +141,7 @@ class NavigationContent extends ConsumerWidget {
             duration: const Duration(milliseconds: 150),
             child: DevicePickerContent(extended: extended),
           ),
-
           const SizedBox(height: 32),
-
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
             child: Column(
@@ -153,7 +154,7 @@ class NavigationContent extends ConsumerWidget {
                           Icon(app._icon, fill: app == currentApp ? 1.0 : 0.0),
                       collapsed: !extended,
                       selected: app == currentApp,
-                      onTap: currentApp == Application.home ||
+                      onTap: data == null && currentApp == Application.home ||
                               data != null &&
                                   app.getAvailability(data) ==
                                       Availability.enabled
@@ -171,32 +172,6 @@ class NavigationContent extends ConsumerWidget {
               ],
             ),
           ),
-
-          // // Non-YubiKey pages
-          // NavigationItem(
-          //   leading: const Icon(Icons.settings_outlined),
-          //   key: settingDrawerIcon,
-          //   title: l10n.s_settings,
-          //   collapsed: !extended,
-          //   onTap: () {
-          //     if (shouldPop) {
-          //       Navigator.of(context).pop();
-          //     }
-          //     Actions.maybeInvoke(context, const SettingsIntent());
-          //   },
-          // ),
-          // NavigationItem(
-          //   leading: const Icon(Icons.help_outline),
-          //   key: helpDrawerIcon,
-          //   title: l10n.s_help_and_about,
-          //   collapsed: !extended,
-          //   onTap: () {
-          //     if (shouldPop) {
-          //       Navigator.of(context).pop();
-          //     }
-          //     Actions.maybeInvoke(context, const AboutIntent());
-          //   },
-          // ),
         ],
       ),
     );

@@ -91,7 +91,7 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
 });
 
 class AndroidSubPageNotifier extends CurrentAppNotifier {
-  AndroidSubPageNotifier(super.supportedApps) {
+  AndroidSubPageNotifier(super.supportedApps, super.prefs) {
     _handleSubPage(state);
   }
 

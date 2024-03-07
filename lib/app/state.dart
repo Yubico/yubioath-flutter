@@ -203,7 +203,8 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
 
 final currentAppProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
+  final notifier = CurrentAppNotifier(
+      ref.watch(supportedAppsProvider), ref.watch(prefProvider));
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
     notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
@@ -212,16 +213,29 @@ final currentAppProvider =
 
 class CurrentAppNotifier extends StateNotifier<Application> {
   final List<Application> _supportedApps;
+  static const String _key = 'APP_STATE_LAST_APP';
+  final SharedPreferences _prefs;
 
-  CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
+  CurrentAppNotifier(this._supportedApps, this._prefs)
+      : super(_fromName(_prefs.getString(_key), _supportedApps));
 
   void setCurrentApp(Application app) {
     state = app;
+    _prefs.setString(_key, app.name);
   }
 
   void _notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null ||
-        state.getAvailability(data) != Availability.unsupported) {
+    if (data == null) {
+      state = _supportedApps.first;
+      return;
+    }
+
+    String? lastAppName = _prefs.getString(_key);
+    if (lastAppName != null && lastAppName != state.name) {
+      // Try switching to saved app
+      state = Application.values.firstWhere((app) => app.name == lastAppName);
+    }
+    if (state.getAvailability(data) != Availability.unsupported) {
       // Keep current app
       return;
     }
@@ -231,6 +245,10 @@ class CurrentAppNotifier extends StateNotifier<Application> {
       orElse: () => _supportedApps.first,
     );
   }
+
+  static Application _fromName(String? name, List<Application> supportedApps) =>
+      supportedApps.firstWhere((element) => element.name == name,
+          orElse: () => supportedApps.first);
 }
 
 abstract class QrScanner {

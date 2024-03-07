@@ -64,8 +64,8 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentAppProvider.overrideWith(
-          (ref) => AndroidSubPageNotifier(ref.watch(supportedAppsProvider))),
+      currentAppProvider.overrideWith((ref) => AndroidSubPageNotifier(
+          ref.watch(supportedAppsProvider), ref.watch(prefProvider))),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
       currentDeviceProvider.overrideWith(
         () => AndroidCurrentDeviceNotifier(),
@@ -95,6 +95,7 @@ Future<Widget> initialize() async {
               ..setFeature(features.fido, false)
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
+              ..setFeature(features.home, false)
               ..setFeature(features.management, false);
           });
 
