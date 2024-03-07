@@ -184,6 +184,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
                 enabled: !_isBlocked && currentPinLenOk && newPinLenOk,
+                errorText: _newPin.length == _confirmPin.length &&
+                        _newPin != _confirmPin
+                    ? l10n.l_pin_mismatch
+                    : null,
+                helperText: '', // Prevents resizing when errorText shown
               ),
               onChanged: (value) {
                 setState(() {

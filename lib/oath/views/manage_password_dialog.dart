@@ -251,6 +251,11 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 enabled: (!widget.state.hasKey ||
                         _currentPasswordController.text.isNotEmpty) &&
                     _newPassword.isNotEmpty,
+                errorText: _newPassword.length == _confirmPassword.length &&
+                        _newPassword != _confirmPassword
+                    ? l10n.l_password_mismatch
+                    : null,
+                helperText: '', // Prevents resizing when errorText shown
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

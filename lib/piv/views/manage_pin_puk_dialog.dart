@@ -274,6 +274,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
                 enabled: currentPin.length >= _minPinLen && _newPin.length >= 6,
+                errorText: _newPin.length == _confirmPin.length &&
+                        _newPin != _confirmPin
+                    ? (widget.target == ManageTarget.pin
+                        ? l10n.l_pin_mismatch
+                        : l10n.l_puk_mismatch)
+                    : null,
+                helperText: '', // Prevents resizing when errorText shown
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

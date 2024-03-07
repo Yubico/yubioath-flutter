@@ -147,7 +147,8 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                         key: keys.unlockButton,
                         label: Text(l10n.s_unlock),
                         icon: const Icon(Symbols.lock_open),
-                        onPressed: _passwordController.text.isNotEmpty
+                        onPressed: _passwordController.text.isNotEmpty &&
+                                !_passwordIsWrong
                             ? _submit
                             : null,
                       ),
