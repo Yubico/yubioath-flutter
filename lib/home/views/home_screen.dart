@@ -56,8 +56,7 @@ class HomeScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _DeviceName(deviceData, keyCustomization),
-              _DeviceInfoContent(deviceData.info),
+              _DeviceContent(deviceData, keyCustomization),
               const SizedBox(height: 16.0),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,8 +68,8 @@ class HomeScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Wrap(
-                          spacing: 8,
-                          runSpacing: 16,
+                          spacing: 4,
+                          runSpacing: 8,
                           children: Capability.values
                               .where((c) => enabledCapabilities & c.value != 0)
                               .map((c) => CapabilityBadge(c))
@@ -111,15 +110,18 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _DeviceName extends ConsumerWidget {
+class _DeviceContent extends ConsumerWidget {
   final YubiKeyData deviceData;
   final KeyCustomization? initialCustomization;
-  const _DeviceName(this.deviceData, this.initialCustomization);
+  const _DeviceContent(this.deviceData, this.initialCustomization);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     final name = deviceData.name;
     final serial = deviceData.info.serial;
+    final version = deviceData.info.version;
 
     final label = initialCustomization?.name;
     String displayName = label != null ? '$label ($name)' : name;
@@ -128,10 +130,30 @@ class _DeviceName extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Flexible(
-            child: Text(
-          displayName,
-          style: Theme.of(context).textTheme.titleLarge,
-        )),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                displayName,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              if (serial != null)
+                Text(
+                  l10n.l_serial_number(serial),
+                  style: Theme.of(context).textTheme.titleSmall?.apply(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+              Text(
+                l10n.l_firmware_version(version),
+                style: Theme.of(context).textTheme.titleSmall?.apply(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ),
+            ],
+          ),
+        ),
         if (serial != null)
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -158,40 +180,6 @@ class _DeviceName extends ConsumerWidget {
       builder: (context) => ManageLabelDialog(
         initialCustomization: keyCustomization,
       ),
-    );
-  }
-}
-
-class _DeviceInfoContent extends StatelessWidget {
-  final DeviceInfo deviceInfo;
-
-  const _DeviceInfoContent(this.deviceInfo);
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final serial = deviceInfo.serial;
-    final version = deviceInfo.version;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (serial != null)
-          Text(
-            l10n.l_serial_number(serial),
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
-          ),
-        Text(
-          l10n.l_firmware_version(version),
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall
-              ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-      ],
     );
   }
 }
