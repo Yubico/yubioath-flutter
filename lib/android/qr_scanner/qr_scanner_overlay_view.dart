@@ -17,6 +17,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import 'qr_scanner_scan_status.dart';
 
@@ -109,7 +110,7 @@ class _OverlayPainter extends CustomPainter {
     canvas.drawPath(path, paint);
 
     if (_status == ScanStatus.success) {
-      const icon = Icons.check_circle;
+      const icon = Symbols.check_circle;
       final iconSize =
           overlayRRect.width < 150 ? overlayRRect.width - 5.0 : 150.0;
       TextPainter iconPainter = TextPainter(

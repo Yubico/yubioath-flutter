@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -137,10 +138,11 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                           ? l10n.l_invalid_format_allowed_chars(
                               Format.base32.allowedCharacters)
                           : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(_isObscure
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscure = !_isObscure;

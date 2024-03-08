@@ -18,11 +18,11 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../core/models.dart';
-import '../../widgets/custom_icons.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -81,7 +81,7 @@ class _ModeForm extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ListTile(
-        leading: const Icon(Icons.usb),
+        leading: const Icon(Symbols.usb),
         title: Text(l10n.s_usb),
         contentPadding: const EdgeInsets.only(bottom: 8),
       ),
@@ -125,7 +125,7 @@ class _CapabilitiesForm extends StatelessWidget {
       children: [
         if (usbCapabilities != 0) ...[
           ListTile(
-            leading: const Icon(Icons.usb),
+            leading: const Icon(Symbols.usb),
             title: Text(l10n.s_usb),
             contentPadding: const EdgeInsets.only(bottom: 8),
           ),
@@ -144,7 +144,7 @@ class _CapabilitiesForm extends StatelessWidget {
               padding: EdgeInsets.only(top: 12, bottom: 12),
             ),
           ListTile(
-            leading: nfcIcon,
+            leading: const Icon(Symbols.contactless),
             title: Text(l10n.s_nfc),
             contentPadding: const EdgeInsets.only(bottom: 8),
           ),

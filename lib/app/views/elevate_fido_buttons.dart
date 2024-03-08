@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../desktop/state.dart';
 import '../message.dart';
@@ -36,7 +37,7 @@ class ElevateFidoButtons extends ConsumerWidget {
       children: [
         FilledButton.icon(
           label: Text(l10n.s_request_access),
-          icon: const Icon(Icons.lock_open),
+          icon: const Icon(Symbols.lock_open),
           onPressed: () async {
             final closeMessage = showMessage(
                 context, l10n.l_elevating_permissions,
@@ -55,7 +56,7 @@ class ElevateFidoButtons extends ConsumerWidget {
         ),
         OutlinedButton.icon(
           label: Text(l10n.s_open_windows_settings),
-          icon: const Icon(Icons.open_in_new),
+          icon: const Icon(Symbols.open_in_new),
           onPressed: () async {
             await Process.start('powershell.exe', [
               '-NoProfile',

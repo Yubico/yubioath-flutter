@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
@@ -29,7 +30,6 @@ import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
-import '../../widgets/custom_icons.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
@@ -92,13 +92,13 @@ class MainPage extends ConsumerWidget {
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
                   label: Text(l10n.s_enable_nfc),
-                  icon: nfcIcon,
+                  icon: const Icon(Symbols.contactless),
                   onPressed: () async {
                     await openNfcSettings();
                   })
           ],
           actionButtonBuilder: (context) => IconButton(
-            icon: const Icon(Icons.person_add_alt_1),
+            icon: const Icon(Symbols.person_add_alt),
             tooltip: l10n.s_add_account,
             onPressed: () async {
               await addOathAccount(context, ref);
@@ -123,7 +123,7 @@ class MainPage extends ConsumerWidget {
                 return MessagePage(
                   centered: true,
                   graphic: Icon(
-                    Icons.help_outlined,
+                    Symbols.help,
                     size: 96,
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -158,7 +158,7 @@ class MainPage extends ConsumerWidget {
                           builder: (context) => ManagementScreen(data),
                         );
                       },
-                      avatar: const Icon(Icons.construction),
+                      avatar: const Icon(Symbols.construction),
                     )
                   ],
                 );

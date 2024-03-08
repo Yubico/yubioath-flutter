@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -151,7 +152,7 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
     ActionItem(
       key: keys.configureYubiOtp,
       feature: features.slotsConfigureYubiOtp,
-      icon: const Icon(Icons.shuffle_outlined),
+      icon: const Icon(Symbols.shuffle),
       title: l10n.s_capability_otp,
       subtitle: l10n.l_yubiotp_desc,
       intent: ConfigureYubiOtpIntent(slot),
@@ -159,21 +160,21 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
     ActionItem(
         key: keys.configureChalResp,
         feature: features.slotsConfigureChalResp,
-        icon: const Icon(Icons.key_outlined),
+        icon: const Icon(Symbols.key),
         title: l10n.s_challenge_response,
         subtitle: l10n.l_challenge_response_desc,
         intent: ConfigureChalRespIntent(slot)),
     ActionItem(
         key: keys.configureStatic,
         feature: features.slotsConfigureStatic,
-        icon: const Icon(Icons.password_outlined),
+        icon: const Icon(Symbols.password),
         title: l10n.s_static_password,
         subtitle: l10n.l_static_password_desc,
         intent: ConfigureStaticIntent(slot)),
     ActionItem(
         key: keys.configureHotp,
         feature: features.slotsConfigureHotp,
-        icon: const Icon(Icons.tag_outlined),
+        icon: const Icon(Symbols.tag),
         title: l10n.s_hotp,
         subtitle: l10n.l_hotp_desc,
         intent: ConfigureHotpIntent(slot)),
@@ -181,7 +182,7 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
       key: keys.deleteAction,
       feature: features.slotsDelete,
       actionStyle: ActionStyle.error,
-      icon: const Icon(Icons.delete_outline),
+      icon: const Icon(Symbols.delete),
       title: l10n.s_delete_slot,
       subtitle: l10n.l_delete_slot_desc,
       intent: slot.isConfigured ? DeleteIntent(slot) : null,

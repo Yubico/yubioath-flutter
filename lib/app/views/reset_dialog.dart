@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../core/models.dart';
@@ -45,9 +46,9 @@ final _log = Logger('fido.views.reset_dialog');
 
 extension on Capability {
   IconData get _icon => switch (this) {
-        Capability.oath => Icons.supervisor_account_outlined,
-        Capability.fido2 => Icons.security_outlined,
-        Capability.piv => Icons.approval_outlined,
+        Capability.oath => Symbols.supervisor_account,
+        Capability.fido2 => Symbols.passkey,
+        Capability.piv => Symbols.approval,
         _ => throw UnsupportedError('Icon not defined'),
       };
 }

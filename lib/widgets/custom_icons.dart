@@ -17,12 +17,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 final Widget pushPinStrokeIcon = Builder(builder: (context) {
   return CustomPaint(
     painter: _StrikethroughPainter(IconTheme.of(context).color ?? Colors.black),
     child: ClipPath(
-        clipper: _StrikethroughClipper(), child: const Icon(Icons.push_pin)),
+        clipper: _StrikethroughClipper(), child: const Icon(Symbols.push_pin)),
   );
 });
 

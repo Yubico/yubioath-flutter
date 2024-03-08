@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -52,7 +53,7 @@ Widget oathBuildActions(
                     ? l10n.l_accounts_used(used, capacity)
                     : null),
             actionStyle: ActionStyle.primary,
-            icon: const Icon(Icons.person_add_alt_1_outlined),
+            icon: const Icon(Symbols.person_add_alt),
             onTap: used != null && (capacity == null || capacity > used)
                 ? (context) async {
                     Navigator.of(context).popUntil((route) => route.isFirst);
@@ -66,7 +67,7 @@ Widget oathBuildActions(
             feature: features.actionsIcons,
             title: l10n.s_custom_icons,
             subtitle: l10n.l_set_icons_for_accounts,
-            icon: const Icon(Icons.image_outlined),
+            icon: const Icon(Symbols.image),
             onTap: (context) async {
               Navigator.of(context).popUntil((route) => route.isFirst);
               await ref.read(withContextProvider)((context) => showBlurDialog(
@@ -82,7 +83,7 @@ Widget oathBuildActions(
             title:
                 oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password,
             subtitle: l10n.l_optional_password_protection,
-            icon: const Icon(Icons.password_outlined),
+            icon: const Icon(Symbols.password),
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
               showBlurDialog(

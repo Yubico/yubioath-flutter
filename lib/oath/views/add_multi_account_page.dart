@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/logging.dart';
@@ -101,9 +102,8 @@ class _OathAddMultiAccountPageState
                                     });
                                   }
                                 : null,
-                            icon: Icon(touch
-                                ? Icons.touch_app
-                                : Icons.touch_app_outlined)),
+                            icon: Icon(Symbols.touch_app,
+                                fill: touch ? 1.0 : 0.0)),
                       ),
                     Semantics(
                       label: l10n.s_rename_account,
@@ -148,7 +148,7 @@ class _OathAddMultiAccountPageState
                         },
                         icon: IconTheme(
                             data: IconTheme.of(context),
-                            child: const Icon(Icons.edit_outlined)),
+                            child: const Icon(Symbols.edit)),
                       ),
                     ),
                   ]),

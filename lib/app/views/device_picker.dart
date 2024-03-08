@@ -18,6 +18,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../android/state.dart';
@@ -83,7 +84,7 @@ class DevicePickerContent extends ConsumerWidget {
           : l10n.l_insert_yk;
 
       androidNoKeyWidget = _DeviceRow(
-        leading: const DeviceAvatar(child: Icon(Icons.usb)),
+        leading: const DeviceAvatar(child: Icon(Symbols.usb)),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -97,7 +98,7 @@ class DevicePickerContent extends ConsumerWidget {
     List<Widget> children = [
       if (showUsb)
         _DeviceRow(
-          leading: const DeviceAvatar(child: Icon(Icons.usb)),
+          leading: const DeviceAvatar(child: Icon(Symbols.usb)),
           title: l10n.s_usb,
           subtitle: l10n.l_no_yk_present,
           onTap: () {
@@ -181,7 +182,7 @@ class _DeviceMenuButton extends ConsumerWidget {
         child: PopupMenuButton(
           key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
-          icon: const Icon(Icons.more_horiz_outlined),
+          icon: const Icon(Symbols.more_horiz),
           tooltip: '',
           iconColor: Theme.of(context).listTileTheme.textColor,
           itemBuilder: (context) {
@@ -376,7 +377,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_show_hidden_devices),
-            leading: const Icon(Icons.visibility_outlined),
+            leading: const Icon(Symbols.visibility),
             dense: true,
             contentPadding: EdgeInsets.zero,
             enabled: hidden.isNotEmpty,
@@ -389,7 +390,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_hide_device),
-            leading: const Icon(Icons.visibility_off_outlined),
+            leading: const Icon(Symbols.visibility_off),
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),

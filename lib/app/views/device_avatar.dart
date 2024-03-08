@@ -16,11 +16,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
-import '../../widgets/custom_icons.dart';
 import '../../widgets/product_image.dart';
 import '../models.dart';
 import '../state.dart';
@@ -34,7 +34,9 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
-        badge: isDesktop && data.node is NfcReaderNode ? nfcIcon : null,
+        badge: isDesktop && data.node is NfcReaderNode
+            ? const Icon(Symbols.contactless)
+            : null,
         radius: radius,
         child: ProductImage(
             name: data.name,
@@ -63,7 +65,7 @@ class DeviceAvatar extends StatelessWidget {
         },
         nfcReader: (_) => DeviceAvatar(
           radius: radius,
-          child: nfcIcon,
+          child: const Icon(Symbols.contactless),
         ),
       );
 
@@ -84,7 +86,7 @@ class DeviceAvatar extends StatelessWidget {
       return DeviceAvatar(
         radius: radius,
         key: noDeviceAvatar,
-        child: const Icon(Icons.usb),
+        child: const Icon(Symbols.usb),
       );
     }
   }
@@ -107,12 +109,12 @@ class DeviceAvatar extends StatelessWidget {
         ),
         if (badge != null)
           CircleAvatar(
-            radius: radius / 3,
+            radius: radius / 2,
             backgroundColor: Colors.transparent,
             child: IconTheme(
               data: IconTheme.of(context).copyWith(
                 color: Theme.of(context).colorScheme.onPrimary,
-                size: radius * 0.5,
+                size: radius * 0.8,
               ),
               child: badge!,
             ),

@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../core/models.dart';
@@ -121,13 +122,12 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                             Format.hex.allowedCharacters)
                         : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.key_outlined),
+                prefixIcon: const Icon(Symbols.key),
                 suffixIcon: hasMetadata
                     ? null
                     : IconButton(
-                        icon: Icon(_defaultKeyUsed
-                            ? Icons.auto_awesome
-                            : Icons.auto_awesome_outlined),
+                        icon: Icon(Symbols.auto_awesome,
+                            fill: _defaultKeyUsed ? 1.0 : 0.0),
                         tooltip: l10n.s_use_default,
                         onPressed: () {
                           setState(() {

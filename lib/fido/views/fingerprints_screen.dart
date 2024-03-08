@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -102,7 +103,7 @@ class _FidoLockedPage extends ConsumerWidget {
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
         title: l10n.s_fingerprints,
@@ -131,7 +132,7 @@ class _FidoLockedPage extends ConsumerWidget {
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
       );
@@ -190,7 +191,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                     builder: (context) =>
                         AddFingerprintDialog(widget.node.path));
               },
-              avatar: const Icon(Icons.fingerprint_outlined),
+              avatar: const Icon(Symbols.fingerprint),
             )
         ],
         title: l10n.s_fingerprints,
@@ -278,7 +279,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 16),
-                              const Icon(Icons.fingerprint, size: 72),
+                              const Icon(Symbols.fingerprint, size: 72),
                             ],
                           ),
                         ),
@@ -356,14 +357,14 @@ class _FingerprintListItem extends StatelessWidget {
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onSecondary,
         backgroundColor: Theme.of(context).colorScheme.secondary,
-        child: const Icon(Icons.fingerprint),
+        child: const Icon(Symbols.fingerprint),
       ),
       title: fingerprint.label,
       trailing: expanded
           ? null
           : OutlinedButton(
               onPressed: Actions.handler(context, OpenIntent(fingerprint)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(fingerprint),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(fingerprint) : null,

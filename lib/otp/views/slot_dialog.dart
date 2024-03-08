@@ -18,6 +18,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
@@ -73,7 +74,7 @@ class SlotDialog extends ConsumerWidget {
                             ),
                             const SizedBox(height: 8),
                             const Icon(
-                              Icons.touch_app,
+                              Symbols.touch_app,
                               size: 100.0,
                             ),
                             const SizedBox(height: 8),

@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -69,7 +70,7 @@ class AccountHelper {
             ActionItem(
               key: keys.copyAction,
               feature: features.accountsClipboard,
-              icon: const Icon(Icons.copy),
+              icon: const Icon(Symbols.content_copy_rounded),
               title: l10n.l_copy_to_clipboard,
               subtitle: l10n.l_copy_code_desc,
               shortcut: Platform.isMacOS ? '\u2318 C' : 'Ctrl+C',
@@ -80,7 +81,7 @@ class AccountHelper {
               ActionItem(
                 key: keys.calculateAction,
                 actionStyle: !canCopy ? ActionStyle.primary : null,
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Symbols.refresh),
                 title: l10n.s_calculate,
                 subtitle: l10n.l_calculate_code_desc,
                 shortcut: Platform.isMacOS ? '\u2318 R' : 'Ctrl+R',
@@ -89,9 +90,7 @@ class AccountHelper {
             ActionItem(
               key: keys.togglePinAction,
               feature: features.accountsPin,
-              icon: pinned
-                  ? pushPinStrokeIcon
-                  : const Icon(Icons.push_pin_outlined),
+              icon: pinned ? pushPinStrokeIcon : const Icon(Symbols.push_pin),
               title: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               subtitle: l10n.l_pin_account_desc,
               intent: TogglePinIntent(credential),
@@ -100,7 +99,7 @@ class AccountHelper {
               ActionItem(
                 key: keys.editAction,
                 feature: features.accountsRename,
-                icon: const Icon(Icons.edit_outlined),
+                icon: const Icon(Symbols.edit),
                 title: l10n.s_rename_account,
                 subtitle: l10n.l_rename_account_desc,
                 intent: EditIntent(credential),
@@ -109,7 +108,7 @@ class AccountHelper {
               key: keys.deleteAction,
               feature: features.accountsDelete,
               actionStyle: ActionStyle.error,
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Symbols.delete_outline),
               title: l10n.s_delete_account,
               subtitle: l10n.l_delete_account_desc,
               intent: DeleteIntent(credential),
@@ -125,10 +124,10 @@ class AccountHelper {
         child: Opacity(
           opacity: 0.4,
           child: (credential.oathType == OathType.hotp
-                  ? (expired ? const Icon(Icons.refresh) : null)
+                  ? (expired ? const Icon(Symbols.refresh) : null)
                   : (expired || code == null
                       ? (credential.touchRequired
-                          ? const Icon(Icons.touch_app)
+                          ? const Icon(Symbols.touch_app)
                           : null)
                       : Builder(builder: (context) {
                           return SizedBox.square(

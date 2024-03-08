@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -225,7 +226,7 @@ class _CertificateListItem extends ConsumerWidget {
       leading: CircleAvatar(
         foregroundColor: colorScheme.onSecondary,
         backgroundColor: colorScheme.secondary,
-        child: const Icon(Icons.approval),
+        child: const Icon(Symbols.approval),
       ),
       title: slot.getDisplayName(l10n),
       subtitle: certInfo != null
@@ -239,7 +240,7 @@ class _CertificateListItem extends ConsumerWidget {
           : OutlinedButton(
               key: _getMeatballKey(slot),
               onPressed: Actions.handler(context, OpenIntent(pivSlot)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
