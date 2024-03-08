@@ -172,7 +172,7 @@ class NavigationContent extends ConsumerWidget {
 
           // Non-YubiKey pages
           NavigationItem(
-            leading: const Icon(Icons.settings_outlined),
+            leading: const Icon(Symbols.settings),
             key: settingDrawerIcon,
             title: l10n.s_settings,
             collapsed: !extended,
@@ -184,7 +184,7 @@ class NavigationContent extends ConsumerWidget {
             },
           ),
           NavigationItem(
-            leading: const Icon(Icons.help_outline),
+            leading: const Icon(Symbols.help),
             key: helpDrawerIcon,
             title: l10n.s_help_and_about,
             collapsed: !extended,

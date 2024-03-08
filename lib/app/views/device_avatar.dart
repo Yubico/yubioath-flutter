@@ -38,10 +38,14 @@ class DeviceAvatar extends StatelessWidget {
             ? const Icon(Symbols.contactless)
             : null,
         radius: radius,
-        child: ProductImage(
-            name: data.name,
-            formFactor: data.info.formFactor,
-            isNfc: data.info.supportedCapabilities.containsKey(Transport.nfc)),
+        child: CircleAvatar(
+          backgroundColor: Colors.transparent,
+          child: ProductImage(
+              name: data.name,
+              formFactor: data.info.formFactor,
+              isNfc:
+                  data.info.supportedCapabilities.containsKey(Transport.nfc)),
+        ),
       );
 
   factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>
@@ -56,16 +60,22 @@ class DeviceAvatar extends StatelessWidget {
           }
           return DeviceAvatar(
             radius: radius,
-            child: const ProductImage(
-              name: '',
-              formFactor: FormFactor.unknown,
-              isNfc: false,
+            child: const CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: ProductImage(
+                name: '',
+                formFactor: FormFactor.unknown,
+                isNfc: false,
+              ),
             ),
           );
         },
         nfcReader: (_) => DeviceAvatar(
           radius: radius,
-          child: const Icon(Symbols.contactless),
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.contactless),
+          ),
         ),
       );
 
@@ -86,35 +96,28 @@ class DeviceAvatar extends StatelessWidget {
       return DeviceAvatar(
         radius: radius,
         key: noDeviceAvatar,
-        child: const Icon(Symbols.usb),
+        child: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(Symbols.usb),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final radius = this.radius ?? 20;
     return Stack(
       alignment: AlignmentDirectional.bottomEnd,
       children: [
-        CircleAvatar(
-          radius: radius,
-          backgroundColor: Colors.transparent,
-          child: IconTheme(
-            data: IconTheme.of(context).copyWith(
-              size: radius,
-            ),
-            child: child,
-          ),
-        ),
+        child,
         if (badge != null)
           CircleAvatar(
-            radius: radius / 2,
+            radius: 10,
             backgroundColor: Colors.transparent,
             child: IconTheme(
               data: IconTheme.of(context).copyWith(
                 color: Theme.of(context).colorScheme.onPrimary,
-                size: radius * 0.8,
+                size: 18,
               ),
               child: badge!,
             ),
