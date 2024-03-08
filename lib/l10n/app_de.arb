@@ -61,12 +61,17 @@
     "s_actions": null,
     "s_manage": "Verwalten",
     "s_setup": "Einrichten",
+    "s_device": null,
+    "s_application": null,
     "s_settings": "Einstellungen",
+    "l_settings_desc": null,
     "s_certificates": null,
     "s_webauthn": "WebAuthn",
     "s_slots": null,
     "s_help_and_about": "Hilfe und Über",
+    "l_help_and_about_desc": null,
     "s_help_and_feedback": "Hilfe und Feedback",
+    "s_home": null,
     "s_send_feedback": "Senden Sie uns Feedback",
     "s_i_need_help": "Ich brauche Hilfe",
     "s_troubleshooting": "Problembehebung",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": null,
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKey anschließen",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Anwendungen umschalten",
     "s_toggle_interfaces": null,
+    "l_toggle_applications_desc": null,
+    "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "YubiKey wird neu konfiguriert\u2026",
     "s_config_updated": "Konfiguration aktualisiert",
     "l_config_updated_reinsert": "Konfiguration aktualisiert, entfernen Sie Ihren YubiKey und schließen ihn wieder an",
@@ -645,6 +664,7 @@
     "@_factory_reset": {},
     "s_reset": "Zurücksetzen",
     "s_factory_reset": "Werkseinstellungen",
+    "l_factory_reset_desc": null,
     "l_oath_application_reset": "OATH Anwendung zurücksetzen",
     "l_fido_app_reset": "FIDO Anwendung zurückgesetzt",
     "l_reset_failed": "Fehler beim Zurücksetzen: {message}",
@@ -744,7 +764,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": null,
+    "s_set_label": null,
+    "s_change_label": null,
     "s_theme_color": null,
+    "s_color": null,
+    "p_set_will_add_custom_name": null,
+    "p_rename_will_change_custom_name": null,
 
     "@_eof": {}
 }

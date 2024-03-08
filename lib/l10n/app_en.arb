@@ -61,12 +61,17 @@
     "s_actions": "Actions",
     "s_manage": "Manage",
     "s_setup": "Setup",
+    "s_device": "Device",
+    "s_application": "Application",
     "s_settings": "Settings",
+    "l_settings_desc": "Change application preferences",
     "s_certificates": "Certificates",
     "s_webauthn": "WebAuthn",
     "s_slots": "Slots",
     "s_help_and_about": "Help and about",
+    "l_help_and_about_desc": "Troubleshoot and support",
     "s_help_and_feedback": "Help and feedback",
+    "s_home": "Home",
     "s_send_feedback": "Send us feedback",
     "s_i_need_help": "I need help",
     "s_troubleshooting": "Troubleshooting",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": "Serial number: {serial}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": "Firmware version: {version}",
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insert your YubiKey",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Toggle applications",
     "s_toggle_interfaces": "Toggle interfaces",
+    "l_toggle_applications_desc": "Enable/disable applications",
+    "l_toggle_interfaces_desc": "Enable/disable interfaces",
     "s_reconfiguring_yk": "Reconfiguring YubiKey\u2026",
     "s_config_updated": "Configuration updated",
     "l_config_updated_reinsert": "Configuration updated, remove and reinsert your YubiKey",
@@ -645,6 +664,7 @@
     "@_factory_reset": {},
     "s_reset": "Reset",
     "s_factory_reset": "Factory reset",
+    "l_factory_reset_desc": "Restore YubiKey defaults",
     "l_oath_application_reset": "OATH application reset",
     "l_fido_app_reset": "FIDO application reset",
     "l_reset_failed": "Error performing reset: {message}",
@@ -744,7 +764,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": "Set label/color",
+    "s_set_label": "Set label",
+    "s_change_label": "Change label",
     "s_theme_color": "Theme color",
+    "s_color": "Color",
+    "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",
+    "p_rename_will_change_custom_name": "This will change the label of your YubiKey.",
 
     "@_eof": {}
 }
