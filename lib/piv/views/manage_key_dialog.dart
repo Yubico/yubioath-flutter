@@ -19,6 +19,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -186,10 +187,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                               Format.hex.allowedCharacters)
                           : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Icons.pin_outlined),
+                  prefixIcon: const Icon(Symbols.pin),
                   suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(_isObscure
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
                       onPressed: () {
                         setState(() {
                           _isObscure = !_isObscure;
@@ -224,13 +226,12 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                               Format.hex.allowedCharacters)
                           : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: _hasMetadata
                       ? null
                       : IconButton(
-                          icon: Icon(_defaultKeyUsed
-                              ? Icons.auto_awesome
-                              : Icons.auto_awesome_outlined),
+                          icon: Icon(Symbols.auto_awesome,
+                              fill: _defaultKeyUsed ? 1.0 : 0.0),
                           tooltip: l10n.s_use_default,
                           onPressed: () {
                             setState(() {
@@ -265,10 +266,10 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         Format.hex.allowedCharacters)
                     : null,
                 enabled: currentLenOk,
-                prefixIcon: const Icon(Icons.key_outlined),
+                prefixIcon: const Icon(Symbols.key),
                 suffixIcon: IconButton(
                   key: keys.managementKeyRefresh,
-                  icon: const Icon(Icons.refresh),
+                  icon: const Icon(Symbols.refresh),
                   tooltip: l10n.s_generate_random,
                   onPressed: currentLenOk
                       ? () {

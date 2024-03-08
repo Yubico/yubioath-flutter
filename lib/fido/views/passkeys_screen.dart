@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -108,7 +109,7 @@ class _FidoLockedPage extends ConsumerWidget {
                       .read(currentAppProvider.notifier)
                       .setCurrentApp(Application.fingerprints);
                 },
-                avatar: const Icon(Icons.fingerprint_outlined),
+                avatar: const Icon(Symbols.fingerprint),
               ),
             if (!isBio && alwaysUv && !expanded)
               ActionChip(
@@ -118,7 +119,7 @@ class _FidoLockedPage extends ConsumerWidget {
                       context: context,
                       builder: (context) => FidoPinDialog(node.path, state));
                 },
-                avatar: const Icon(Icons.pin_outlined),
+                avatar: const Icon(Symbols.pin),
               )
           ];
         },
@@ -159,7 +160,7 @@ class _FidoLockedPage extends ConsumerWidget {
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
         title: l10n.s_passkeys,
@@ -244,7 +245,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                           .read(currentAppProvider.notifier)
                           .setCurrentApp(Application.fingerprints);
                     },
-                    avatar: const Icon(Icons.fingerprint_outlined),
+                    avatar: const Icon(Symbols.fingerprint),
                   )
                 ];
               }
@@ -340,7 +341,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                     ),
                               ),
                               const SizedBox(height: 16),
-                              const Icon(Icons.person, size: 72),
+                              const Icon(Symbols.person, size: 72),
                             ],
                           ),
                         ),
@@ -422,7 +423,7 @@ class _CredentialListItem extends StatelessWidget {
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Icons.person),
+        child: const Icon(Symbols.person),
       ),
       title: credential.userName,
       subtitle: credential.rpId,
@@ -430,7 +431,7 @@ class _CredentialListItem extends StatelessWidget {
           ? null
           : OutlinedButton(
               onPressed: Actions.handler(context, OpenIntent(credential)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,

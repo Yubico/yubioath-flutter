@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -211,7 +212,9 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                     animation: _color,
                     builder: (context, _) {
                       return Icon(
-                        _fingerprint == null ? Icons.fingerprint : Icons.check,
+                        _fingerprint == null
+                            ? Symbols.fingerprint
+                            : Symbols.check,
                         size: 128.0,
                         color: _color.value,
                       );
@@ -243,7 +246,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_name,
-                        prefixIcon: const Icon(Icons.fingerprint_outlined),
+                        prefixIcon: const Icon(Symbols.fingerprint),
                       ),
                       onChanged: (value) {
                         setState(() {

@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
@@ -101,10 +102,10 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                     ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                     : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.pin_outlined),
+                prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                      _isObscure ? Symbols.visibility : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;

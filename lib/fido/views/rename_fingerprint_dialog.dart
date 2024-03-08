@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -99,7 +100,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_name,
-                prefixIcon: const Icon(Icons.fingerprint_outlined),
+                prefixIcon: const Icon(Symbols.fingerprint),
               ),
               onChanged: (value) {
                 setState(() {

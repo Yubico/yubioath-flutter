@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import 'android/state.dart';
 import 'app/app_url_launcher.dart';
@@ -157,7 +158,7 @@ class AboutPage extends ConsumerWidget {
               const SizedBox(height: 12.0),
               ActionChip(
                 key: diagnosticsChip,
-                avatar: const Icon(Icons.bug_report_outlined),
+                avatar: const Icon(Symbols.bug_report),
                 backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
@@ -221,7 +222,7 @@ class LoggingPanel extends ConsumerWidget {
       children: [
         ChoiceFilterChip<Level>(
           avatar: Icon(
-            Icons.insights,
+            Symbols.insights,
             color: Theme.of(context).colorScheme.primary,
           ),
           value: logLevel,
@@ -238,7 +239,7 @@ class LoggingPanel extends ConsumerWidget {
         ),
         ActionChip(
           key: logChip,
-          avatar: const Icon(Icons.copy),
+          avatar: const Icon(Symbols.content_copy),
           backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           label: Text(l10n.s_copy_log),
           onPressed: () async {

@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -170,7 +171,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   widget.oathState,
                 );
               },
-              avatar: const Icon(Icons.person_add_alt_1_outlined),
+              avatar: const Icon(Symbols.person_add_alt),
             )
         ],
         title: l10n.s_accounts,
@@ -413,11 +414,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           isDense: true,
                           prefixIcon: const Padding(
                             padding: EdgeInsetsDirectional.only(start: 8.0),
-                            child: Icon(Icons.search_outlined),
+                            child: Icon(Symbols.search),
                           ),
                           suffixIcon: searchController.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear),
+                                  icon: const Icon(Symbols.clear),
                                   iconSize: 16,
                                   onPressed: () {
                                     searchController.clear();

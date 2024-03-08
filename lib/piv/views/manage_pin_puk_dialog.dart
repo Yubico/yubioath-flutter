@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -167,11 +168,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             .l_wrong_puk_attempts_remaining(_attemptsRemaining))
                     : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.password_outlined),
+                prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureCurrent
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscureCurrent = !_isObscureCurrent;
@@ -202,10 +203,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
-                prefixIcon: const Icon(Icons.password_outlined),
+                prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  icon: Icon(_isObscureNew
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscureNew = !_isObscureNew;
@@ -240,11 +242,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_confirm_puk
                     : l10n.s_confirm_pin,
-                prefixIcon: const Icon(Icons.password_outlined),
+                prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureConfirm
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscureConfirm = !_isObscureConfirm;

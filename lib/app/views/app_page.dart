@@ -18,6 +18,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/state.dart';
 import '../../management/models.dart';
@@ -341,9 +342,9 @@ class AppPage extends StatelessWidget {
                 },
                 icon: keyActionsBadge
                     ? const Badge(
-                        child: Icon(Icons.more_vert_outlined),
+                        child: Icon(Symbols.more_vert),
                       )
-                    : const Icon(Icons.more_vert_outlined),
+                    : const Icon(Symbols.more_vert),
                 iconSize: 24,
                 tooltip: AppLocalizations.of(context)!.s_configure_yk,
                 padding: const EdgeInsets.all(12),

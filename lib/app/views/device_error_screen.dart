@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
 import '../../core/state.dart';
@@ -72,7 +73,7 @@ class DeviceErrorScreen extends ConsumerWidget {
         'unknown-device' => MessagePage(
             centered: true,
             graphic: Icon(
-              Icons.help_outlined,
+              Symbols.help,
               size: 96,
               color: Theme.of(context).colorScheme.error,
             ),

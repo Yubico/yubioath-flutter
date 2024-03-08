@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -112,7 +113,7 @@ List<ActionItem> buildFingerprintActions(
     ActionItem(
       key: keys.editFingerintAction,
       feature: features.fingerprintsEdit,
-      icon: const Icon(Icons.edit),
+      icon: const Icon(Symbols.edit),
       title: l10n.s_rename_fp,
       subtitle: l10n.l_rename_fp_desc,
       intent: EditIntent(fingerprint),
@@ -121,7 +122,7 @@ List<ActionItem> buildFingerprintActions(
       key: keys.deleteFingerprintAction,
       feature: features.fingerprintsDelete,
       actionStyle: ActionStyle.error,
-      icon: const Icon(Icons.delete),
+      icon: const Icon(Symbols.delete),
       title: l10n.s_delete_fingerprint,
       subtitle: l10n.l_delete_fingerprint_desc,
       intent: DeleteIntent(fingerprint),
@@ -136,7 +137,7 @@ List<ActionItem> buildCredentialActions(
       key: keys.deleteCredentialAction,
       feature: features.credentialsDelete,
       actionStyle: ActionStyle.error,
-      icon: const Icon(Icons.delete),
+      icon: const Icon(Symbols.delete),
       title: l10n.s_delete_passkey,
       subtitle: l10n.l_delete_passkey_desc,
       intent: DeleteIntent(credential),

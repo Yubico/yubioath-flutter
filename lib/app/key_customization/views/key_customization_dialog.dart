@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../android/state.dart';
 import '../../../core/state.dart';
@@ -74,7 +75,7 @@ class _KeyCustomizationDialogState
             color: _customColor ?? primaryColor,
             child: DeviceAvatar(
               radius: 64,
-              child: Icon(isAndroid ? Icons.no_cell : Icons.usb),
+              child: Icon(isAndroid ? Symbols.contactless_off : Symbols.usb),
             ),
           ),
           ListTile(
@@ -117,7 +118,7 @@ class _KeyCustomizationDialogState
                         labelText: l10n.s_label,
                         helperText:
                             '', // Prevents dialog resizing when disabled
-                        prefixIcon: const Icon(Icons.key),
+                        prefixIcon: const Icon(Symbols.key),
                       ),
                       textInputAction: TextInputAction.done,
                       onChanged: (value) {
@@ -171,7 +172,7 @@ class _KeyCustomizationDialogState
                               : primaryColor,
                           shape: const CircleBorder(),
                           child: Icon(
-                            Icons.cancel_rounded,
+                            Symbols.cancel,
                             size: 16,
                             color: _customColor == null
                                 ? theme.colorScheme.onSurface
@@ -325,7 +326,7 @@ class _ColorButtonState extends State<_ColorButton> {
       fillColor: widget.color,
       shape: const CircleBorder(),
       child: Icon(
-        Icons.circle,
+        Symbols.circle,
         size: 16,
         color: widget.isSelected ? Colors.white : Colors.transparent,
       ),

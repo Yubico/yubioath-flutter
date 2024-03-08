@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -58,7 +59,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
               key: keys.addFingerprintAction,
               feature: features.actionsAddFingerprint,
               actionStyle: ActionStyle.primary,
-              icon: const Icon(Icons.fingerprint_outlined),
+              icon: const Icon(Symbols.fingerprint),
               title: l10n.s_add_fingerprint,
               subtitle: state.unlocked
                   ? l10n.l_fingerprints_used(fingerprints)
@@ -66,7 +67,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
                       ? l10n.l_unlock_pin_first
                       : l10n.l_set_pin_first,
               trailing: fingerprints == 0 || fingerprints == -1
-                  ? Icon(Icons.warning_amber,
+                  ? Icon(Symbols.warning_amber,
                       color: state.unlocked ? colors.tertiary : null)
                   : null,
               onTap: state.unlocked && fingerprints < 5
@@ -87,7 +88,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
           ActionListItem(
               key: keys.managePinAction,
               feature: features.actionsPin,
-              icon: const Icon(Icons.pin_outlined),
+              icon: const Icon(Symbols.pin),
               title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
               subtitle: state.hasPin
                   ? (state.forcePinChange
@@ -95,7 +96,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
                       : l10n.s_fido_pin_protection)
                   : l10n.s_fido_pin_protection,
               trailing: state.alwaysUv && !state.hasPin || state.forcePinChange
-                  ? Icon(Icons.warning_amber, color: colors.tertiary)
+                  ? Icon(Symbols.warning_amber, color: colors.tertiary)
                   : null,
               onTap: (context) {
                 Navigator.of(context).popUntil((route) => route.isFirst);
