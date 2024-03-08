@@ -181,7 +181,7 @@ class _IconPackDescription extends ConsumerWidget {
                       },
                     );
                   },
-                  icon: const Icon(Symbols.delete_outline)),
+                  icon: const Icon(Symbols.delete)),
             ],
           )
         ]);

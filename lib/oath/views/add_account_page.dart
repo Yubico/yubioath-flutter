@@ -407,7 +407,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             : isUnique
                                 ? null
                                 : l10n.l_name_already_exists,
-                        prefixIcon: const Icon(Symbols.person_outline),
+                        prefixIcon: const Icon(Symbols.person),
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {

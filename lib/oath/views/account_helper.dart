@@ -108,7 +108,7 @@ class AccountHelper {
               key: keys.deleteAction,
               feature: features.accountsDelete,
               actionStyle: ActionStyle.error,
-              icon: const Icon(Symbols.delete_outline),
+              icon: const Icon(Symbols.delete),
               title: l10n.s_delete_account,
               subtitle: l10n.l_delete_account_desc,
               intent: DeleteIntent(credential),

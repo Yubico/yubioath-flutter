@@ -220,7 +220,7 @@ extension OathFunctions on WidgetTester {
     await openAccountDialog(a);
 
     /// click the delete IconButton in the account dialog
-    var deleteIconButton = find.byIcon(Symbols.delete_outline).hitTestable();
+    var deleteIconButton = find.byIcon(Symbols.delete).hitTestable();
     expect(deleteIconButton, findsOneWidget);
     await tap(deleteIconButton);
     await longWait();
