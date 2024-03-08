@@ -88,10 +88,10 @@ class FidoManager(
         }
     }
 
-    private val connectionHelper = FidoConnectionHelper(deviceManager, dialogManager)
-
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+
+    private val connectionHelper = FidoConnectionHelper(deviceManager, dialogManager, coroutineScope)
 
     private val fidoChannel = MethodChannel(messenger, "android.fido.methods")
 
@@ -198,15 +198,19 @@ class FidoManager(
                 YubiKitFidoSession(connection as SmartCardConnection)
             }
 
+        if (deviceManager.isUsbKeyConnected() && connectionHelper.isWaitingForNfcTap()) {
+            // rerun the action on the USB device
+            connectionHelper.invokePending(fidoSession)
+            return
+        }
+
         val previousSession = fidoViewModel.sessionState.value?.info
         val currentSession = SessionInfo(fidoSession.cachedInfo)
-        logger.debug(
-            "Previous session: {}, current session: {}",
-            previousSession,
-            currentSession
-        )
-
-        val sameDevice = currentSession.equals(previousSession)
+        val sameDevice = currentSession == previousSession
+        if (!sameDevice) {
+            logger.debug("Device changed from {}", previousSession)
+            logger.debug("Device changed to   {}", currentSession)
+        }
 
         if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
             connectionHelper.invokePending(fidoSession)
@@ -215,6 +219,7 @@ class FidoManager(
             if (!sameDevice) {
                 // different key
                 logger.debug("This is a different key than previous, invalidating the PIN token")
+                connectionHelper.cancelCurrent()
                 pinStore.setPin(null)
             }
 
@@ -253,6 +258,7 @@ class FidoManager(
         pin: CharArray
     ): String {
 
+        logger.debug("Unlocking session with pin {}", String(pin))
         val permissions = getPermissions(fidoSession)
 
         if (permissions != 0) {
@@ -306,12 +312,20 @@ class FidoManager(
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-                catchPinErrors(clientPin) {
+                val result = catchPinErrors(clientPin) {
                     unlockSession(fidoSession, clientPin, pin)
                 }
-
-            } finally {
                 Arrays.fill(pin, 0.toChar())
+                result
+            } catch (illegalArgumentException: IllegalArgumentException) {
+                // pin issue
+                JSONObject(
+                    mapOf(
+                        "success" to false,
+                    )
+                ).toString()
+            } finally {
+                
             }
         }
 
