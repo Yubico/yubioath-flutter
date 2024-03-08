@@ -93,7 +93,7 @@ extension on Application {
         Application.passkeys => Symbols.passkey,
         Application.fingerprints => Symbols.fingerprint,
         Application.slots => Symbols.touch_app,
-        Application.certificates => Symbols.approval,
+        Application.certificates => Symbols.badge,
         Application.management => Symbols.construction,
         Application.home => Symbols.home
       };
