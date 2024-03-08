@@ -44,11 +44,8 @@ class HomeScreen extends ConsumerWidget {
     final enabledCapabilities =
         deviceData.info.config.enabledCapabilities[deviceData.node.transport] ??
             0;
-    final image = ProductImage(
-        name: deviceData.name,
-        formFactor: deviceData.info.formFactor,
-        isNfc:
-            deviceData.info.supportedCapabilities.containsKey(Transport.nfc));
+    final primaryColor = ref.watch(defaultColorProvider);
+
     return AppPage(
       title: l10n.s_home,
       keyActionsBuilder: (context) =>
@@ -60,7 +57,6 @@ class HomeScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _DeviceName(deviceData, keyCustomization),
-              const SizedBox(height: 16.0),
               _DeviceInfoContent(deviceData.info),
               const SizedBox(height: 16.0),
               Row(
@@ -94,7 +90,15 @@ class HomeScreen extends ConsumerWidget {
                     flex: 6,
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 200),
-                      child: image,
+                      child: _HeroAvatar(
+                        color: keyCustomization?.color ?? primaryColor,
+                        child: ProductImage(
+                          name: deviceData.name,
+                          formFactor: deviceData.info.formFactor,
+                          isNfc: deviceData.info.supportedCapabilities
+                              .containsKey(Transport.nfc),
+                        ),
+                      ),
                     ),
                   )
                 ],
@@ -121,6 +125,7 @@ class _DeviceName extends ConsumerWidget {
     String displayName = label != null ? '$label ($name)' : name;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Flexible(
             child: Text(
@@ -172,20 +177,20 @@ class _DeviceInfoContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (serial != null)
-          Opacity(
-            opacity: 0.6,
-            child: Text(
-              l10n.l_serial_number(serial),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+          Text(
+            l10n.l_serial_number(serial),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
-        Opacity(
-          opacity: 0.6,
-          child: Text(
-            l10n.l_firmware_version(version),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        )
+        Text(
+          l10n.l_firmware_version(version),
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
       ],
     );
   }
@@ -199,6 +204,7 @@ class _DeviceColor extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primaryColor = ref.watch(defaultColorProvider);
     final defaultColor =
@@ -208,6 +214,7 @@ class _DeviceColor extends ConsumerWidget {
     final customColor = initialCustomization.color;
 
     return ChoiceFilterChip<Color?>(
+      disableHover: true,
       value: customColor,
       items: const [null],
       selected: customColor != null && customColor != defaultColor,
@@ -246,6 +253,7 @@ class _DeviceColor extends ConsumerWidget {
             fillColor: (isAndroid && ref.read(androidSdkVersionProvider) >= 31)
                 ? theme.colorScheme.onSurface
                 : primaryColor,
+            hoverColor: Colors.black12,
             shape: const CircleBorder(),
             child: Icon(
               Icons.cancel_rounded,
@@ -268,7 +276,7 @@ class _DeviceColor extends ConsumerWidget {
           const SizedBox(
             width: 12,
           ),
-          const Flexible(child: Text('Key color'))
+          Flexible(child: Text(l10n.s_color))
         ],
       ),
       onChanged: (e) {},
@@ -307,11 +315,46 @@ class _ColorButtonState extends State<_ColorButton> {
       onPressed: widget.onPressed,
       constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
       fillColor: widget.color,
+      hoverColor: Colors.black12,
       shape: const CircleBorder(),
       child: Icon(
         Icons.circle,
         size: 16,
         color: widget.isSelected ? Colors.white : Colors.transparent,
+      ),
+    );
+  }
+}
+
+class _HeroAvatar extends StatelessWidget {
+  final Widget child;
+  final Color color;
+
+  const _HeroAvatar({required this.color, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            color.withOpacity(0.6),
+            color.withOpacity(0.25),
+            (DialogTheme.of(context).backgroundColor ??
+                    theme.dialogBackgroundColor)
+                .withOpacity(0),
+          ],
+        ),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Theme(
+        // Give the avatar a transparent background
+        data: theme.copyWith(
+            colorScheme:
+                theme.colorScheme.copyWith(surfaceVariant: Colors.transparent)),
+        child: child,
       ),
     );
   }

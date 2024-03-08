@@ -28,6 +28,7 @@ class ChoiceFilterChip<T> extends StatefulWidget {
   final void Function(T value)? onChanged;
   final Widget? avatar;
   final bool selected;
+  final bool? disableHover;
   const ChoiceFilterChip({
     super.key,
     required this.value,
@@ -37,6 +38,7 @@ class ChoiceFilterChip<T> extends StatefulWidget {
     this.tooltip,
     this.avatar,
     this.selected = false,
+    this.disableHover,
     this.labelBuilder,
   });
 
@@ -69,6 +71,8 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       color: Theme.of(context).colorScheme.background,
       items: widget.items
           .map((e) => PopupMenuItem<T>(
+                enabled:
+                    widget.disableHover != null ? !widget.disableHover! : true,
                 value: e,
                 height: chipBox.size.height,
                 textStyle: ChipTheme.of(context).labelStyle,

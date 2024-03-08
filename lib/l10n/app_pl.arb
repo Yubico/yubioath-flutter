@@ -767,6 +767,7 @@
     "s_set_label": null,
     "s_change_label": null,
     "s_theme_color": "Kolor motywu",
+    "s_color": null,
     "p_set_will_add_custom_name": null,
     "p_rename_will_change_custom_name": null,
 

@@ -67,6 +67,7 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
                 ? l10n.p_set_will_add_custom_name
                 : l10n.p_rename_will_change_custom_name),
             AppTextFormField(
+              autofocus: true,
               initialValue: _label,
               maxLength: 20,
               decoration: AppInputDecoration(

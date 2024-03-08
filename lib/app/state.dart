@@ -235,6 +235,14 @@ class CurrentAppNotifier extends StateNotifier<Application> {
       // Try switching to saved app
       state = Application.values.firstWhere((app) => app.name == lastAppName);
     }
+    if (state == Application.passkeys &&
+        state.getAvailability(data) != Availability.enabled) {
+      state = Application.webauthn;
+    }
+    if (state == Application.webauthn &&
+        state.getAvailability(data) != Availability.enabled) {
+      state = Application.passkeys;
+    }
     if (state.getAvailability(data) != Availability.unsupported) {
       // Keep current app
       return;
