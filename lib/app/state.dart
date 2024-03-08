@@ -38,23 +38,24 @@ const officialLocales = [
   Locale('en', ''),
 ];
 
-extension on Application {
+extension on Section {
   Feature get _feature => switch (this) {
-        Application.home => features.home,
-        Application.accounts => features.oath,
-        Application.webauthn => features.fido,
-        Application.passkeys => features.fido,
-        Application.fingerprints => features.fingerprints,
-        Application.slots => features.otp,
-        Application.certificates => features.piv,
-        Application.management => features.management,
+        Section.home => features.home,
+        Section.accounts => features.oath,
+        Section.securityKey => features.fido,
+        Section.passkeys => features.fido,
+        Section.fingerprints => features.fingerprints,
+        Section.slots => features.otp,
+        Section.certificates => features.piv,
       };
 }
 
-final supportedAppsProvider = Provider<List<Application>>(
+final supportedSectionsProvider = Provider<List<Section>>(
   (ref) {
     final hasFeature = ref.watch(featureProvider);
-    return Application.values.where((app) => hasFeature(app._feature)).toList();
+    return Section.values
+        .where((section) => hasFeature(section._feature))
+        .toList();
   },
 );
 
@@ -201,62 +202,62 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
   setCurrentDevice(DeviceNode? device);
 }
 
-final currentAppProvider =
-    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  final notifier = CurrentAppNotifier(
-      ref.watch(supportedAppsProvider), ref.watch(prefProvider));
+final currentSectionProvider =
+    StateNotifierProvider<CurrentSectionNotifier, Section>((ref) {
+  final notifier = CurrentSectionNotifier(
+      ref.watch(supportedSectionsProvider), ref.watch(prefProvider));
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
     notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
   return notifier;
 });
 
-class CurrentAppNotifier extends StateNotifier<Application> {
-  final List<Application> _supportedApps;
-  static const String _key = 'APP_STATE_LAST_APP';
+class CurrentSectionNotifier extends StateNotifier<Section> {
+  final List<Section> _supportedSections;
+  static const String _key = 'APP_STATE_LAST_SECTION';
   final SharedPreferences _prefs;
 
-  CurrentAppNotifier(this._supportedApps, this._prefs)
-      : super(_fromName(_prefs.getString(_key), _supportedApps));
+  CurrentSectionNotifier(this._supportedSections, this._prefs)
+      : super(_fromName(_prefs.getString(_key), _supportedSections));
 
-  void setCurrentApp(Application app) {
-    state = app;
-    _prefs.setString(_key, app.name);
+  void setCurrentSection(Section section) {
+    state = section;
+    _prefs.setString(_key, section.name);
   }
 
   void _notifyDeviceChanged(YubiKeyData? data) {
     if (data == null) {
-      state = _supportedApps.first;
+      state = _supportedSections.first;
       return;
     }
 
     String? lastAppName = _prefs.getString(_key);
     if (lastAppName != null && lastAppName != state.name) {
       // Try switching to saved app
-      state = Application.values.firstWhere((app) => app.name == lastAppName);
+      state = Section.values.firstWhere((app) => app.name == lastAppName);
     }
-    if (state == Application.passkeys &&
+    if (state == Section.passkeys &&
         state.getAvailability(data) != Availability.enabled) {
-      state = Application.webauthn;
+      state = Section.securityKey;
     }
-    if (state == Application.webauthn &&
+    if (state == Section.securityKey &&
         state.getAvailability(data) != Availability.enabled) {
-      state = Application.passkeys;
+      state = Section.passkeys;
     }
     if (state.getAvailability(data) != Availability.unsupported) {
       // Keep current app
       return;
     }
 
-    state = _supportedApps.firstWhere(
+    state = _supportedSections.firstWhere(
       (app) => app.getAvailability(data) == Availability.enabled,
-      orElse: () => _supportedApps.first,
+      orElse: () => _supportedSections.first,
     );
   }
 
-  static Application _fromName(String? name, List<Application> supportedApps) =>
-      supportedApps.firstWhere((element) => element.name == name,
-          orElse: () => supportedApps.first);
+  static Section _fromName(String? name, List<Section> supportedSections) =>
+      supportedSections.firstWhere((element) => element.name == name,
+          orElse: () => supportedSections.first);
 }
 
 abstract class QrScanner {

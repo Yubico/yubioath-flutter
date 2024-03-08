@@ -66,7 +66,7 @@
     "s_settings": "設定",
     "l_settings_desc": null,
     "s_certificates": "証明書",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": null,
     "s_slots": null,
     "s_help_and_about": "ヘルプと概要",
     "l_help_and_about_desc": null,

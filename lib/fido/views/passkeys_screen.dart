@@ -106,8 +106,8 @@ class _FidoLockedPage extends ConsumerWidget {
                 label: Text(l10n.s_setup_fingerprints),
                 onPressed: () async {
                   ref
-                      .read(currentAppProvider.notifier)
-                      .setCurrentApp(Application.fingerprints);
+                      .read(currentSectionProvider.notifier)
+                      .setCurrentSection(Section.fingerprints);
                 },
                 avatar: const Icon(Symbols.fingerprint),
               ),
@@ -242,8 +242,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                     label: Text(l10n.s_setup_fingerprints),
                     onPressed: () async {
                       ref
-                          .read(currentAppProvider.notifier)
-                          .setCurrentApp(Application.fingerprints);
+                          .read(currentSectionProvider.notifier)
+                          .setCurrentSection(Section.fingerprints);
                     },
                     avatar: const Icon(Symbols.fingerprint),
                   )

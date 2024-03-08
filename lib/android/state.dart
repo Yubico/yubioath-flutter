@@ -90,18 +90,18 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   }
 });
 
-class AndroidSubPageNotifier extends CurrentAppNotifier {
-  AndroidSubPageNotifier(super.supportedApps, super.prefs) {
+class AndroidSectionNotifier extends CurrentSectionNotifier {
+  AndroidSectionNotifier(super._supportedSections, super.prefs) {
     _handleSubPage(state);
   }
 
   @override
-  void setCurrentApp(Application app) {
-    super.setCurrentApp(app);
-    _handleSubPage(app);
+  void setCurrentSection(Section section) {
+    super.setCurrentSection(section);
+    _handleSubPage(section);
   }
 
-  void _handleSubPage(Application subPage) async {
+  void _handleSubPage(Section subPage) async {
     await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
   }
 }

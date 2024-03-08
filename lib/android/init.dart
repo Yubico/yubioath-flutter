@@ -64,8 +64,8 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentAppProvider.overrideWith((ref) => AndroidSubPageNotifier(
-          ref.watch(supportedAppsProvider), ref.watch(prefProvider))),
+      currentSectionProvider.overrideWith((ref) => AndroidSectionNotifier(
+          ref.watch(supportedSectionsProvider), ref.watch(prefProvider))),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
       currentDeviceProvider.overrideWith(
         () => AndroidCurrentDeviceNotifier(),
