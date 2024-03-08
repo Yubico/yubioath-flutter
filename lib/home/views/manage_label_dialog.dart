@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -74,7 +75,7 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_label,
                 helperText: '',
-                prefixIcon: const Icon(Icons.key),
+                prefixIcon: const Icon(Symbols.key),
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

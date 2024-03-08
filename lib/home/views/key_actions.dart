@@ -17,6 +17,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/features.dart' as features;
 import '../../app/message.dart';
@@ -47,7 +49,7 @@ Widget homeBuildActions(
             if (managementAvailability == Availability.enabled)
               ActionListItem(
                 feature: features.management,
-                icon: const Icon(Icons.construction),
+                icon: const Icon(Symbols.construction),
                 actionStyle: ActionStyle.primary,
                 title: deviceData.info.version.major > 4
                     ? l10n.s_toggle_applications
@@ -71,7 +73,7 @@ Widget homeBuildActions(
                         0) !=
                 0))
               ActionListItem(
-                icon: const Icon(Icons.delete_forever),
+                icon: const Icon(Symbols.delete_forever),
                 title: l10n.s_factory_reset,
                 subtitle: l10n.l_factory_reset_desc,
                 actionStyle: ActionStyle.primary,
@@ -88,7 +90,7 @@ Widget homeBuildActions(
         ),
       ActionListSection(l10n.s_application, children: [
         ActionListItem(
-          icon: const Icon(Icons.settings_outlined),
+          icon: const Icon(Symbols.settings),
           title: l10n.s_settings,
           subtitle: l10n.l_settings_desc,
           actionStyle: ActionStyle.primary,
@@ -97,7 +99,7 @@ Widget homeBuildActions(
           },
         ),
         ActionListItem(
-          icon: const Icon(Icons.help_outline),
+          icon: const Icon(Symbols.help),
           title: l10n.s_help_and_about,
           subtitle: l10n.l_help_and_about_desc,
           actionStyle: ActionStyle.primary,

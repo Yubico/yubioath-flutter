@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
 import '../../app/message.dart';
@@ -158,7 +159,7 @@ class _DeviceContent extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: IconButton(
-              icon: const Icon(Icons.edit_outlined),
+              icon: const Icon(Symbols.edit),
               onPressed: () async {
                 await ref.read(withContextProvider)((context) async {
                   await _showManageLabelDialog(
@@ -244,7 +245,7 @@ class _DeviceColor extends ConsumerWidget {
             hoverColor: Colors.black12,
             shape: const CircleBorder(),
             child: Icon(
-              Icons.cancel_rounded,
+              Symbols.cancel,
               size: 16,
               color: customColor == null
                   ? theme.colorScheme.onSurface
@@ -306,7 +307,8 @@ class _ColorButtonState extends State<_ColorButton> {
       hoverColor: Colors.black12,
       shape: const CircleBorder(),
       child: Icon(
-        Icons.circle,
+        Symbols.circle,
+        fill: 1,
         size: 16,
         color: widget.isSelected ? Colors.white : Colors.transparent,
       ),
