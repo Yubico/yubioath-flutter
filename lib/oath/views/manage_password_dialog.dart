@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -102,11 +103,11 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   labelText: l10n.s_current_password,
                   errorText: _currentIsWrong ? l10n.s_wrong_password : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Icons.password_outlined),
+                  prefixIcon: const Icon(Symbols.password),
                   suffixIcon: IconButton(
                       icon: Icon(_isObscureCurrent
-                          ? Icons.visibility
-                          : Icons.visibility_off),
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
                       onPressed: () {
                         setState(() {
                           _isObscureCurrent = !_isObscureCurrent;
@@ -179,11 +180,11 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_password,
-                prefixIcon: const Icon(Icons.password_outlined),
+                prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                     icon: Icon(_isObscureNew
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscureNew = !_isObscureNew;
@@ -213,11 +214,11 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_password,
-                prefixIcon: const Icon(Icons.password_outlined),
+                prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                     icon: Icon(_isObscureConfirm
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscureConfirm = !_isObscureConfirm;

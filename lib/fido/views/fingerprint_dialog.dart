@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
@@ -80,7 +81,7 @@ class FingerprintDialog extends ConsumerWidget {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
-                      const Icon(Icons.fingerprint, size: 72),
+                      const Icon(Symbols.fingerprint, size: 72),
                     ],
                   ),
                 ),

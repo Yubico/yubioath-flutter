@@ -20,6 +20,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -279,7 +280,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
     ActionItem(
       key: keys.generateAction,
       feature: features.slotsGenerate,
-      icon: const Icon(Icons.add_outlined),
+      icon: const Icon(Symbols.add),
       actionStyle: ActionStyle.primary,
       title: l10n.s_generate_key,
       subtitle: l10n.l_generate_desc,
@@ -288,7 +289,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
     ActionItem(
       key: keys.importAction,
       feature: features.slotsImport,
-      icon: const Icon(Icons.file_download_outlined),
+      icon: const Icon(Symbols.file_download),
       title: l10n.l_import_file,
       subtitle: l10n.l_import_desc,
       intent: ImportIntent(slot),
@@ -297,7 +298,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
       ActionItem(
         key: keys.exportAction,
         feature: features.slotsExport,
-        icon: const Icon(Icons.file_upload_outlined),
+        icon: const Icon(Symbols.file_upload),
         title: l10n.l_export_certificate,
         subtitle: l10n.l_export_certificate_desc,
         intent: ExportIntent(slot),
@@ -306,7 +307,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         key: keys.deleteAction,
         feature: features.slotsDelete,
         actionStyle: ActionStyle.error,
-        icon: const Icon(Icons.delete_outline),
+        icon: const Icon(Symbols.delete),
         title: l10n.l_delete_certificate,
         subtitle: l10n.l_delete_certificate_desc,
         intent: DeleteIntent(slot),
@@ -315,7 +316,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
       ActionItem(
         key: keys.exportAction,
         feature: features.slotsExport,
-        icon: const Icon(Icons.file_upload_outlined),
+        icon: const Icon(Symbols.file_upload),
         title: l10n.l_export_public_key,
         subtitle: l10n.l_export_public_key_desc,
         intent: ExportIntent(slot),

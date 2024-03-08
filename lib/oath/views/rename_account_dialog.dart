@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -184,7 +185,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
-                prefixIcon: const Icon(Icons.business_outlined),
+                prefixIcon: const Icon(Symbols.business),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -208,7 +209,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                     : !isUnique
                         ? l10n.l_name_already_exists
                         : null,
-                prefixIcon: const Icon(Icons.people_alt_outlined),
+                prefixIcon: const Icon(Symbols.people_alt),
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

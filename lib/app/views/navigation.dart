@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../models.dart';
 import '../shortcuts.dart';
@@ -87,23 +88,13 @@ class NavigationItem extends StatelessWidget {
 
 extension on Application {
   IconData get _icon => switch (this) {
-        Application.accounts => Icons.supervisor_account_outlined,
-        Application.webauthn => Icons.security_outlined,
-        Application.passkeys => Icons.security_outlined,
-        Application.fingerprints => Icons.fingerprint_outlined,
-        Application.slots => Icons.touch_app_outlined,
-        Application.certificates => Icons.approval_outlined,
-        Application.management => Icons.construction_outlined,
-      };
-
-  IconData get _filledIcon => switch (this) {
-        Application.accounts => Icons.supervisor_account,
-        Application.webauthn => Icons.security,
-        Application.passkeys => Icons.security,
-        Application.fingerprints => Icons.fingerprint,
-        Application.slots => Icons.touch_app,
-        Application.certificates => Icons.approval,
-        Application.management => Icons.construction,
+        Application.accounts => Symbols.supervisor_account,
+        Application.webauthn => Symbols.security_key,
+        Application.passkeys => Symbols.passkey,
+        Application.fingerprints => Symbols.fingerprint,
+        Application.slots => Symbols.touch_app,
+        Application.certificates => Symbols.approval,
+        Application.management => Symbols.construction,
       };
 
   Key get _key => switch (this) {
@@ -158,9 +149,8 @@ class NavigationContent extends ConsumerWidget {
                   ...availableApps.map((app) => NavigationItem(
                         key: app._key,
                         title: app.getDisplayName(l10n),
-                        leading: app == currentApp
-                            ? Icon(app._filledIcon)
-                            : Icon(app._icon),
+                        leading: Icon(app._icon,
+                            fill: app == currentApp ? 1.0 : 0.0),
                         collapsed: !extended,
                         selected: app == currentApp,
                         onTap: app.getAvailability(data) == Availability.enabled
@@ -182,7 +172,7 @@ class NavigationContent extends ConsumerWidget {
 
           // Non-YubiKey pages
           NavigationItem(
-            leading: const Icon(Icons.settings_outlined),
+            leading: const Icon(Symbols.settings),
             key: settingDrawerIcon,
             title: l10n.s_settings,
             collapsed: !extended,
@@ -194,7 +184,7 @@ class NavigationContent extends ConsumerWidget {
             },
           ),
           NavigationItem(
-            leading: const Icon(Icons.help_outline),
+            leading: const Icon(Symbols.help),
             key: helpDrawerIcon,
             title: l10n.s_help_and_about,
             collapsed: !extended,

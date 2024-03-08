@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -139,10 +140,10 @@ class _ConfigureChalrespDialogState
                           ? l10n.l_invalid_format_allowed_chars(
                               Format.hex.allowedCharacters)
                           : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generateSecretKey,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh),
                     onPressed: () {
                       setState(() {
                         final random = Random.secure();

@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
@@ -102,10 +103,10 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                 helperText: '', // Prevents dialog resizing
                 errorText: _pinIsWrong ? _getErrorText() : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.pin_outlined),
+                prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                      _isObscure ? Symbols.visibility : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;
@@ -124,7 +125,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
           ),
           ListTile(
             leading: noFingerprints
-                ? Icon(Icons.warning_amber,
+                ? Icon(Symbols.warning_amber,
                     color: Theme.of(context).colorScheme.tertiary)
                 : null,
             title: noFingerprints
@@ -138,7 +139,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
             minLeadingWidth: 0,
             trailing: FilledButton.icon(
               key: unlockFido2WithPin,
-              icon: const Icon(Icons.lock_open),
+              icon: const Icon(Symbols.lock_open),
               label: Text(l10n.s_unlock),
               onPressed:
                   _pinController.text.isNotEmpty && !_blocked ? _submit : null,

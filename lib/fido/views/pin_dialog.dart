@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -92,11 +93,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   labelText: l10n.s_current_pin,
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Icons.pin_outlined),
+                  prefixIcon: const Icon(Symbols.pin),
                   suffixIcon: IconButton(
                     icon: Icon(_isObscureCurrent
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isObscureCurrent = !_isObscureCurrent;
@@ -128,10 +129,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 enabled: !hasPin || _currentPin.isNotEmpty,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.pin_outlined),
+                prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscureNew ? Icons.visibility : Icons.visibility_off),
+                  icon: Icon(_isObscureNew
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscureNew = !_isObscureNew;
@@ -155,11 +157,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
-                prefixIcon: const Icon(Icons.pin_outlined),
+                prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureConfirm
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscureConfirm = !_isObscureConfirm;

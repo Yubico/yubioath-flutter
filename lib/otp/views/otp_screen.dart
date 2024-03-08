@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -121,7 +122,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                             ),
                                             const SizedBox(height: 8),
                                             const Icon(
-                                              Icons.touch_app,
+                                              Symbols.touch_app,
                                               size: 100.0,
                                             ),
                                             const SizedBox(height: 8),
@@ -213,7 +214,7 @@ class _SlotListItem extends ConsumerWidget {
           : OutlinedButton(
               key: getOpenMenuButtonKey(slot),
               onPressed: Actions.handler(context, OpenIntent(otpSlot)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(otpSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(otpSlot) : null,

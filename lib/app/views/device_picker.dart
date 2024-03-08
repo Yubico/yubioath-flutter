@@ -18,6 +18,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../android/state.dart';
@@ -83,7 +84,11 @@ class DevicePickerContent extends ConsumerWidget {
           : l10n.l_insert_yk;
 
       androidNoKeyWidget = _DeviceRow(
-        leading: const DeviceAvatar(child: Icon(Icons.usb)),
+        leading: const DeviceAvatar(
+            child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(Symbols.usb),
+        )),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -97,7 +102,11 @@ class DevicePickerContent extends ConsumerWidget {
     List<Widget> children = [
       if (showUsb)
         _DeviceRow(
-          leading: const DeviceAvatar(child: Icon(Icons.usb)),
+          leading: const DeviceAvatar(
+              child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.usb),
+          )),
           title: l10n.s_usb,
           subtitle: l10n.l_no_yk_present,
           onTap: () {
@@ -181,7 +190,7 @@ class _DeviceMenuButton extends ConsumerWidget {
         child: PopupMenuButton(
           key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
-          icon: const Icon(Icons.more_horiz_outlined),
+          icon: const Icon(Symbols.more_horiz),
           tooltip: '',
           iconColor: Theme.of(context).listTileTheme.textColor,
           itemBuilder: (context) {
@@ -312,7 +321,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
               ? IconButton.filled(
                   tooltip: isDesktop ? tooltip : null,
                   icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   onPressed: widget.onTap,
                 )
               : IconButton(
@@ -362,7 +371,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
               title: Text(l10n.s_customize_key_action),
-              leading: const Icon(Icons.palette_outlined),
+              leading: const Icon(Symbols.palette),
               key: yubikeyLabelColorMenuButton,
               dense: true,
               contentPadding: EdgeInsets.zero,
@@ -376,7 +385,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_show_hidden_devices),
-            leading: const Icon(Icons.visibility_outlined),
+            leading: const Icon(Symbols.visibility),
             dense: true,
             contentPadding: EdgeInsets.zero,
             enabled: hidden.isNotEmpty,
@@ -389,7 +398,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_hide_device),
-            leading: const Icon(Icons.visibility_off_outlined),
+            leading: const Icon(Symbols.visibility_off),
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
@@ -406,7 +415,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             title: Text(data!.info.version.major > 4
                 ? l10n.s_toggle_applications
                 : l10n.s_toggle_interfaces),
-            leading: const Icon(Icons.construction),
+            leading: const Icon(Symbols.construction),
             key: yubikeyApplicationToggleMenuButton,
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -427,7 +436,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_factory_reset),
-            leading: const Icon(Icons.delete_forever),
+            leading: const Icon(Symbols.delete_forever),
             key: yubikeyFactoryResetMenuButton,
             dense: true,
             contentPadding: EdgeInsets.zero,

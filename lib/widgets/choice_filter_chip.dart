@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class ChoiceFilterChip<T> extends StatefulWidget {
   final T value;
@@ -91,7 +92,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
           Padding(
             padding: const EdgeInsets.only(left: 6),
             child: Icon(
-              _showing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+              _showing ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
               color: ChipTheme.of(context).checkmarkColor,
               size: 18,
             ),

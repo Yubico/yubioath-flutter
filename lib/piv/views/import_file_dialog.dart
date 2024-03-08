@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -139,10 +140,11 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   labelText: l10n.s_password,
                   errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Icons.password_outlined),
+                  prefixIcon: const Icon(Symbols.password),
                   suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(_isObscure
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
                       onPressed: () {
                         setState(() {
                           _isObscure = !_isObscure;
@@ -244,7 +246,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                 if (keyType == null && certInfo == null) ...[
                   Row(
                     children: [
-                      Icon(Icons.error, color: colorScheme.error),
+                      Icon(Symbols.error, color: colorScheme.error),
                       const SizedBox(width: 8),
                       Text(
                         l10n.l_import_nothing,
@@ -274,7 +276,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   if (unsupportedKey)
                     Row(
                       children: [
-                        Icon(Icons.error, color: colorScheme.error),
+                        Icon(Symbols.error, color: colorScheme.error),
                         const SizedBox(width: 8),
                         Text(
                           l10n.l_unsupported_key_type,
