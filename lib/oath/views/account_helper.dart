@@ -70,7 +70,7 @@ class AccountHelper {
             ActionItem(
               key: keys.copyAction,
               feature: features.accountsClipboard,
-              icon: const Icon(Symbols.content_copy_rounded),
+              icon: const Icon(Symbols.content_copy),
               title: l10n.l_copy_to_clipboard,
               subtitle: l10n.l_copy_code_desc,
               shortcut: Platform.isMacOS ? '\u2318 C' : 'Ctrl+C',

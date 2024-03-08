@@ -239,7 +239,7 @@ class LoggingPanel extends ConsumerWidget {
         ),
         ActionChip(
           key: logChip,
-          avatar: const Icon(Symbols.content_copy_rounded),
+          avatar: const Icon(Symbols.content_copy),
           backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           label: Text(l10n.s_copy_log),
           onPressed: () async {

@@ -172,7 +172,7 @@ class _KeyCustomizationDialogState
                               : primaryColor,
                           shape: const CircleBorder(),
                           child: Icon(
-                            Symbols.cancel_rounded,
+                            Symbols.cancel,
                             size: 16,
                             color: _customColor == null
                                 ? theme.colorScheme.onSurface
