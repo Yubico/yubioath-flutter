@@ -24,7 +24,6 @@ import '../../app/features.dart' as features;
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
-import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/reset_dialog.dart';
 import '../../core/state.dart';
@@ -57,12 +56,11 @@ Widget homeBuildActions(
                 subtitle: deviceData.info.version.major > 4
                     ? l10n.l_toggle_applications_desc
                     : l10n.l_toggle_interfaces_desc,
-                onTap: (context) async {
-                  await ref.read(withContextProvider)(
-                    (context) => showBlurDialog(
-                      context: context,
-                      builder: (context) => ManagementScreen(deviceData),
-                    ),
+                onTap: (context) {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  showBlurDialog(
+                    context: context,
+                    builder: (context) => ManagementScreen(deviceData),
                   );
                 },
               ),
@@ -77,12 +75,11 @@ Widget homeBuildActions(
                 title: l10n.s_factory_reset,
                 subtitle: l10n.l_factory_reset_desc,
                 actionStyle: ActionStyle.primary,
-                onTap: (context) async {
-                  await ref.read(withContextProvider)(
-                    (context) => showBlurDialog(
-                      context: context,
-                      builder: (context) => ResetDialog(deviceData),
-                    ),
+                onTap: (context) {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  showBlurDialog(
+                    context: context,
+                    builder: (context) => ResetDialog(deviceData),
                   );
                 },
               )
@@ -94,7 +91,8 @@ Widget homeBuildActions(
           title: l10n.s_settings,
           subtitle: l10n.l_settings_desc,
           actionStyle: ActionStyle.primary,
-          onTap: (_) {
+          onTap: (context) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
             Actions.maybeInvoke(context, const SettingsIntent());
           },
         ),
@@ -103,7 +101,8 @@ Widget homeBuildActions(
           title: l10n.s_help_and_about,
           subtitle: l10n.l_help_and_about_desc,
           actionStyle: ActionStyle.primary,
-          onTap: (_) {
+          onTap: (context) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
             Actions.maybeInvoke(context, const AboutIntent());
           },
         )
