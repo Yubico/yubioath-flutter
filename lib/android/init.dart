@@ -58,7 +58,7 @@ Future<Widget> initialize() async {
     overrides: [
       supportedAppsProvider.overrideWith(
         (ref) {
-          return [Application.accounts, Application.passkeys];
+          return [Application.home, Application.accounts, Application.passkeys];
         },
       ),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
@@ -117,7 +117,6 @@ Future<Widget> initialize() async {
               // Disable unimplemented feature
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
-              ..setFeature(features.home, false)
               ..setFeature(features.management, false);
           });
 

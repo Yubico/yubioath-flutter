@@ -19,7 +19,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../core/state.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_picker.dart';
@@ -127,9 +126,7 @@ class NavigationContent extends ConsumerWidget {
             .where(
                 (app) => app.getAvailability(data) != Availability.unsupported)
             .toList()
-        : !isAndroid // TODO: Remove check when Home is implemented on Android
-            ? [Application.home]
-            : <Application>[];
+        : [Application.home];
     availableApps.remove(Application.management);
     final currentApp = ref.watch(currentAppProvider);
 
