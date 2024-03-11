@@ -62,7 +62,7 @@ dependencies:
   vector_graphics: ^1.1.9+1
   vector_graphics_compiler: ^1.1.9+1
   path: ^1.8.2
-  file_picker: ^6.1.1
+  file_picker: ^6.2.0
   archive: ^3.4.9
   crypto: ^3.0.2
   tray_manager: ^0.2.0
