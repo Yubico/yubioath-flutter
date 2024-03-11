@@ -28,6 +28,7 @@ class FidoPinStore {
     }
 
     fun setPin(newPin: CharArray?) {
+        pin?.fill(0.toChar())
         pin = newPin?.clone()
     }
 }
