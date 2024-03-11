@@ -90,12 +90,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   }
 
   _submit() async {
-    final currentInvalidFormat = Format.hex.isValid(_currentController.text);
-    final newInvalidFormat = Format.hex.isValid(_keyController.text);
-    if (!currentInvalidFormat || !newInvalidFormat) {
+    final currentValidFormat =
+        _usesStoredKey || Format.hex.isValid(_currentController.text);
+    final newValidFormat = Format.hex.isValid(_keyController.text);
+    if (!currentValidFormat || !newValidFormat) {
       setState(() {
-        _currentInvalidFormat = !currentInvalidFormat;
-        _newInvalidFormat = !newInvalidFormat;
+        _currentInvalidFormat = !currentValidFormat;
+        _newInvalidFormat = !newValidFormat;
       });
       return;
     }
@@ -202,10 +203,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   helperText: _defaultPinUsed ? l10n.l_default_pin_used : null,
                   errorText: _currentIsWrong
                       ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                      : _currentInvalidFormat
-                          ? l10n.l_invalid_format_allowed_chars(
-                              Format.hex.allowedCharacters)
-                          : null,
+                      : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Symbols.pin),
                   suffixIcon: IconButton(
