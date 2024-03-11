@@ -141,7 +141,6 @@ class NavigationContent extends ConsumerWidget {
             duration: const Duration(milliseconds: 150),
             child: DevicePickerContent(extended: extended),
           ),
-          const SizedBox(height: 32),
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
             child: Column(
