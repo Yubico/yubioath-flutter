@@ -30,6 +30,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
@@ -79,23 +80,8 @@ class PasskeysScreen extends ConsumerWidget {
               ? fidoState.unlocked
                   ? _FidoUnlockedPage(deviceData.node, fidoState)
                   : _FidoLockedPage(deviceData.node, fidoState)
-              : const _FidoInsertTapPage();
+              : MessagePageNotInitialized(title: l10n.s_passkeys);
         });
-  }
-}
-
-class _FidoInsertTapPage extends ConsumerWidget {
-  const _FidoInsertTapPage();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return MessagePage(
-      title: l10n.s_passkeys,
-      centered: false,
-      capabilities: const [Capability.fido2],
-      header: l10n.l_insert_or_tap_yk,
-    );
   }
 }
 

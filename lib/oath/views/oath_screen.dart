@@ -31,6 +31,7 @@ import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
@@ -56,6 +57,7 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
           loading: () => const MessagePage(
             centered: true,
@@ -69,23 +71,8 @@ class OathScreen extends ConsumerWidget {
               ? oathState.locked
                   ? _LockedView(devicePath, oathState)
                   : _UnlockedView(devicePath, oathState)
-              : const _InsertTapView(),
+              : MessagePageNotInitialized(title: l10n.s_accounts),
         );
-  }
-}
-
-class _InsertTapView extends ConsumerWidget {
-  const _InsertTapView();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return MessagePage(
-      title: AppLocalizations.of(context)!.s_accounts,
-      centered: false,
-      capabilities: const [Capability.oath],
-      header: l10n.l_insert_or_tap_yk,
-    );
   }
 }
 
