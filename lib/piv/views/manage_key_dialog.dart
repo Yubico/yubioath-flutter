@@ -30,6 +30,7 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -194,6 +195,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 autofillHints: const [AutofillHints.password],
                 key: keys.pinPukField,
                 maxLength: 8,
+                inputFormatters: [limitBytesLength(8)],
+                buildCounter: buildByteCounterFor(_currentController.text),
                 controller: _currentController,
                 focusNode: _currentFocus,
                 readOnly: _defaultPinUsed,

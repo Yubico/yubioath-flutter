@@ -24,6 +24,7 @@ import '../../app/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -121,6 +122,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentPin = _currentPinController.text;
+    final currentPinLen = byteLength(currentPin);
+    final newPinLen = byteLength(_newPin);
     final isValid = !_currentIsWrong &&
         _newPin.isNotEmpty &&
         _newPin == _confirmPin &&
@@ -158,6 +161,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
               obscureText: _isObscureCurrent,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(currentPin),
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
               readOnly: showDefaultPinUsed || showDefaultPukUsed,
@@ -215,6 +220,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofocus: showDefaultPinUsed || showDefaultPukUsed,
               obscureText: _isObscureNew,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_newPin),
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -235,7 +242,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                enabled: currentPin.length >= _minPinLen,
+                enabled: currentPinLen >= _minPinLen,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -253,6 +260,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               key: keys.confirmPinPukField,
               obscureText: _isObscureConfirm,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_confirmPin),
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -273,13 +282,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                enabled: currentPin.length >= _minPinLen && _newPin.length >= 6,
-                errorText: _newPin.length == _confirmPin.length &&
-                        _newPin != _confirmPin
-                    ? (widget.target == ManageTarget.pin
-                        ? l10n.l_pin_mismatch
-                        : l10n.l_puk_mismatch)
-                    : null,
+                enabled: currentPinLen >= _minPinLen && newPinLen >= 6,
+                errorText:
+                    newPinLen == _confirmPin.length && _newPin != _confirmPin
+                        ? (widget.target == ManageTarget.pin
+                            ? l10n.l_pin_mismatch
+                            : l10n.l_puk_mismatch)
+                        : null,
                 helperText: '', // Prevents resizing when errorText shown
               ),
               textInputAction: TextInputAction.done,
