@@ -233,6 +233,8 @@
     "s_confirm_pin": "Confirm PIN",
     "s_confirm_puk": "Confirm PUK",
     "s_unblock_pin": "Unblock PIN",
+    "l_pin_mismatch": "PINs do not match",
+    "l_puk_mismatch": "PUKs do not match",
     "l_new_pin_len": "New PIN must be at least {length} characters",
     "@l_new_pin_len": {
         "placeholders": {
@@ -309,6 +311,7 @@
     "s_new_password": "New password",
     "s_current_password": "Current password",
     "s_confirm_password": "Confirm password",
+    "l_password_mismatch": "Passwords do not match",
     "s_wrong_password": "Wrong password",
     "s_remove_password": "Remove password",
     "s_password_removed": "Password removed",

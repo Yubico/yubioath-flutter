@@ -390,7 +390,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     AppTextField(
                       key: keys.nameField,
                       controller: _accountController,
@@ -418,7 +418,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     AppTextField(
                       key: keys.secretField,
                       controller: _secretController,
@@ -460,7 +460,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     const SizedBox(height: 8),
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,

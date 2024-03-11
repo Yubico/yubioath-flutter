@@ -162,7 +162,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   });
                 },
                 onSubmitted: (_) => _examine(),
-              ),
+              ).init(),
             ]
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),

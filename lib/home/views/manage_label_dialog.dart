@@ -87,7 +87,7 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
               onFieldSubmitted: (_) {
                 _submit();
               },
-            )
+            ).init()
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

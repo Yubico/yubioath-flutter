@@ -24,6 +24,7 @@ import '../../app/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -44,20 +45,25 @@ class ManagePinPukDialog extends ConsumerStatefulWidget {
 
 class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   final _currentPinController = TextEditingController();
+  final _currentPinFocus = FocusNode();
   String _newPin = '';
   String _confirmPin = '';
+  bool _pinIsBlocked = false;
   bool _currentIsWrong = false;
   int _attemptsRemaining = -1;
   bool _isObscureCurrent = true;
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
-  late bool _defaultPinUsed;
-  late bool _defaultPukUsed;
+  late final bool _defaultPinUsed;
+  late final bool _defaultPukUsed;
+  late final int _minPinLen;
 
   @override
   void initState() {
     super.initState();
 
+    // Old YubiKeys allowed a 4 digit PIN
+    _minPinLen = widget.pivState.version.isAtLeast(4, 3, 1) ? 6 : 4;
     _defaultPinUsed =
         widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
     _defaultPukUsed =
@@ -73,6 +79,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   @override
   void dispose() {
     _currentPinController.dispose();
+    _currentPinFocus.dispose();
     super.dispose();
   }
 
@@ -98,11 +105,16 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             _ => l10n.s_pin_set,
           });
     }, failure: (attemptsRemaining) {
+      _currentPinController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _currentPinController.text.length);
+      _currentPinFocus.requestFocus();
       setState(() {
         _attemptsRemaining = attemptsRemaining;
         _currentIsWrong = true;
+        if (_attemptsRemaining == 0) {
+          _pinIsBlocked = true;
+        }
       });
-      _currentPinController.clear();
     });
   }
 
@@ -110,8 +122,12 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentPin = _currentPinController.text;
-    final isValid =
-        _newPin.isNotEmpty && _newPin == _confirmPin && currentPin.isNotEmpty;
+    final currentPinLen = byteLength(currentPin);
+    final newPinLen = byteLength(_newPin);
+    final isValid = !_currentIsWrong &&
+        _newPin.isNotEmpty &&
+        _newPin == _confirmPin &&
+        currentPin.isNotEmpty;
 
     final titleText = switch (widget.target) {
       ManageTarget.pin => l10n.s_change_pin,
@@ -138,7 +154,6 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //TODO fix string
             Text(widget.target == ManageTarget.pin
                 ? l10n.p_enter_current_pin_or_reset
                 : l10n.p_enter_current_puk_or_reset),
@@ -146,10 +161,14 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
               obscureText: _isObscureCurrent,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(currentPin),
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
               readOnly: showDefaultPinUsed || showDefaultPukUsed,
               controller: _currentPinController,
+              focusNode: _currentPinFocus,
+              enabled: !_pinIsBlocked,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 helperText: showDefaultPinUsed
@@ -160,13 +179,17 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 labelText: widget.target == ManageTarget.pin
                     ? l10n.s_current_pin
                     : l10n.s_current_puk,
-                errorText: _currentIsWrong
+                errorText: _pinIsBlocked
                     ? (widget.target == ManageTarget.pin
-                        ? l10n
-                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                        : l10n
-                            .l_wrong_puk_attempts_remaining(_attemptsRemaining))
-                    : null,
+                        ? l10n.l_piv_pin_blocked
+                        : l10n.l_piv_pin_puk_blocked)
+                    : (_currentIsWrong
+                        ? (widget.target == ManageTarget.pin
+                            ? l10n.l_wrong_pin_attempts_remaining(
+                                _attemptsRemaining)
+                            : l10n.l_wrong_puk_attempts_remaining(
+                                _attemptsRemaining))
+                        : null),
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
@@ -189,7 +212,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _currentIsWrong = false;
                 });
               },
-            ),
+            ).init(),
             Text(l10n.p_enter_new_piv_pin_puk(
                 widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
             AppTextField(
@@ -197,6 +220,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofocus: showDefaultPinUsed || showDefaultPukUsed,
               obscureText: _isObscureNew,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_newPin),
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -217,8 +242,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                // Old YubiKeys allowed a 4 digit PIN
-                enabled: currentPin.length >= 4,
+                enabled: currentPinLen >= _minPinLen,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -231,11 +255,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.confirmPinPukField,
               obscureText: _isObscureConfirm,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_confirmPin),
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -256,7 +282,14 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                enabled: currentPin.length >= 4 && _newPin.length >= 6,
+                enabled: currentPinLen >= _minPinLen && newPinLen >= 6,
+                errorText:
+                    newPinLen == _confirmPin.length && _newPin != _confirmPin
+                        ? (widget.target == ManageTarget.pin
+                            ? l10n.l_pin_mismatch
+                            : l10n.l_puk_mismatch)
+                        : null,
+                helperText: '', // Prevents resizing when errorText shown
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {
@@ -269,7 +302,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
