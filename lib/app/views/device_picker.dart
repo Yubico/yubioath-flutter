@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +27,6 @@ import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
-import 'keys.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -67,6 +65,7 @@ class DevicePickerContent extends ConsumerWidget {
     final currentNode = ref.watch(currentDeviceProvider);
 
     final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
+    final menuItems = _getMenuItems(context, ref, currentNode);
 
     Widget? androidNoKeyWidget;
     if (isAndroid && devices.isEmpty) {
@@ -131,7 +130,57 @@ class DevicePickerContent extends ConsumerWidget {
       ),
     ];
 
-    return Column(children: children);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onSecondaryTapDown: isDesktop && menuItems.isNotEmpty
+          ? (details) => showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  details.globalPosition.dx,
+                  details.globalPosition.dy,
+                  details.globalPosition.dx,
+                  0,
+                ),
+                items: menuItems,
+              )
+          : null,
+      child: Column(children: [...children, const SizedBox(height: 32)]),
+    );
+  }
+
+  List<PopupMenuItem> _getMenuItems(
+      BuildContext context, WidgetRef ref, DeviceNode? node) {
+    final l10n = AppLocalizations.of(context)!;
+    final hidden = ref.watch(_hiddenDevicesProvider);
+
+    return [
+      if (isDesktop && hidden.isNotEmpty)
+        PopupMenuItem(
+          enabled: hidden.isNotEmpty,
+          onTap: () {
+            ref.read(_hiddenDevicesProvider.notifier).showAll();
+          },
+          child: ListTile(
+            title: Text(l10n.s_show_hidden_devices),
+            leading: const Icon(Symbols.visibility),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            enabled: hidden.isNotEmpty,
+          ),
+        ),
+      if (isDesktop && node is NfcReaderNode)
+        PopupMenuItem(
+          onTap: () {
+            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
+          },
+          child: ListTile(
+            title: Text(l10n.s_hide_device),
+            leading: const Icon(Symbols.visibility_off),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+    ];
   }
 }
 
@@ -168,34 +217,7 @@ List<String> _getDeviceStrings(
   return messages;
 }
 
-class _DeviceMenuButton extends ConsumerWidget {
-  final List<PopupMenuItem> menuItems;
-  final double opacity;
-
-  const _DeviceMenuButton({required this.menuItems, required this.opacity});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Theme(
-      data: Theme.of(Navigator.of(context).context), // use app theme
-      child: Opacity(
-        opacity: menuItems.isNotEmpty ? opacity : 0.0,
-        child: PopupMenuButton(
-          key: yubikeyPopupMenuButton,
-          enabled: menuItems.isNotEmpty,
-          icon: const Icon(Symbols.more_horiz),
-          tooltip: '',
-          iconColor: Theme.of(context).listTileTheme.textColor,
-          itemBuilder: (context) {
-            return menuItems;
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _DeviceRow extends ConsumerStatefulWidget {
+class _DeviceRow extends ConsumerWidget {
   final Widget leading;
   final String title;
   final String subtitle;
@@ -218,152 +240,69 @@ class _DeviceRow extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_DeviceRow> createState() => _DeviceRowState();
-}
-
-class _DeviceRowState extends ConsumerState<_DeviceRow> {
-  bool _showContextMenu = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final menuItems = _getMenuItems(context, ref, widget.node);
-    final tooltip = '${widget.title}\n${widget.subtitle}';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tooltip = '$title\n$subtitle';
     final themeData = Theme.of(context);
-    final seedColor = !widget.selected || widget.background == null
+    final seedColor = !selected || background == null
         ? themeData.colorScheme.primary
-        : widget.background!;
+        : background!;
     final colorScheme = ColorScheme.fromSeed(
         seedColor: seedColor, brightness: themeData.brightness);
-    final localThemeData = widget.selected
+    final localThemeData = selected
         ? themeData.copyWith(
             colorScheme: colorScheme,
             listTileTheme: themeData.listTileTheme.copyWith(
-              tileColor: widget.background != null
+              tileColor: background != null
                   ? colorScheme.primary
                   : themeData.colorScheme.primary,
-              textColor: widget.selected ? colorScheme.onPrimary : null,
-              iconColor: widget.selected ? colorScheme.onPrimary : null,
+              textColor: selected ? colorScheme.onPrimary : null,
+              iconColor: selected ? colorScheme.onPrimary : null,
             ),
           )
         : themeData;
-    if (widget.extended) {
+    if (extended) {
       return Tooltip(
         message: '', // no tooltip for drawer
         child: Theme(
           data: localThemeData,
-          child: MouseRegion(
-            onEnter: (PointerEnterEvent event) {
-              setState(() {
-                _showContextMenu = true;
-              });
-            },
-            onExit: (PointerExitEvent event) {
-              setState(() {
-                _showContextMenu = false;
-              });
-            },
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(48)),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-              horizontalTitleGap: 8,
-              leading: widget.leading,
-              trailing: menuItems.isNotEmpty
-                  ? _DeviceMenuButton(
-                      menuItems: menuItems,
-                      opacity: widget.selected
-                          ? 1.0
-                          : _showContextMenu
-                              ? 0.3
-                              : 0.0,
-                    )
-                  : null,
-              title: Text(
-                widget.title,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-              ),
-              subtitle: Text(widget.subtitle,
-                  overflow: TextOverflow.fade, softWrap: false),
-              dense: true,
-              onTap: widget.onTap,
+          child: ListTile(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            horizontalTitleGap: 8,
+            leading: leading,
+            title: Text(
+              title,
+              overflow: TextOverflow.fade,
+              softWrap: false,
             ),
+            subtitle:
+                Text(subtitle, overflow: TextOverflow.fade, softWrap: false),
+            dense: true,
+            onTap: onTap,
           ),
         ),
       );
     } else {
-      void showMenuFn(details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: menuItems,
-        );
-      }
-
-      return GestureDetector(
-        onSecondaryTapDown:
-            isDesktop && menuItems.isNotEmpty ? showMenuFn : null,
-        onLongPressStart: isAndroid ? showMenuFn : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.5),
-          child: widget.selected
-              ? IconButton.filled(
-                  tooltip: isDesktop ? tooltip : null,
-                  icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onTap,
-                )
-              : IconButton(
-                  tooltip: isDesktop ? tooltip : null,
-                  icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onTap,
-                  color: colorScheme.secondary,
-                ),
-        ),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.5),
+        child: selected
+            ? IconButton.filled(
+                tooltip: isDesktop ? tooltip : null,
+                icon: leading,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                onPressed: onTap,
+              )
+            : IconButton(
+                tooltip: isDesktop ? tooltip : null,
+                icon: leading,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                onPressed: onTap,
+                color: colorScheme.secondary,
+              ),
       );
     }
-  }
-
-  List<PopupMenuItem> _getMenuItems(
-      BuildContext context, WidgetRef ref, DeviceNode? node) {
-    final l10n = AppLocalizations.of(context)!;
-    final hidden = ref.watch(_hiddenDevicesProvider);
-
-    return [
-      if (isDesktop && hidden.isNotEmpty)
-        PopupMenuItem(
-          enabled: hidden.isNotEmpty,
-          onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).showAll();
-          },
-          child: ListTile(
-            title: Text(l10n.s_show_hidden_devices),
-            leading: const Icon(Symbols.visibility),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            enabled: hidden.isNotEmpty,
-          ),
-        ),
-      if (isDesktop && node is NfcReaderNode)
-        PopupMenuItem(
-          onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
-          },
-          child: ListTile(
-            title: Text(l10n.s_hide_device),
-            leading: const Icon(Symbols.visibility_off),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-    ];
   }
 }
 
