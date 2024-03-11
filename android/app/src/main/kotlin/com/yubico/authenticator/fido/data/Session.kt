@@ -28,16 +28,21 @@ data class Options(
     val credentialMgmtPreview: Boolean,
     val bioEnroll: Boolean?,
     val alwaysUv: Boolean
-)
+) {
+    constructor(infoData: InfoData) : this(
+        infoData.getOptionsBoolean("clientPin") ?: false,
+        infoData.getOptionsBoolean("credMgmt") ?: false,
+        infoData.getOptionsBoolean("credentialMgmtPreview") ?: false,
+        infoData.getOptionsBoolean("bioEnroll"),
+        infoData.getOptionsBoolean("alwaysUv") ?: false,
+    )
 
-fun Map<String, Any?>.getBoolean(
-    key: String,
-    default: Boolean = false
-): Boolean = get(key) as? Boolean ?: default
-
-fun Map<String, Any?>.getOptionalBoolean(
-    key: String
-): Boolean? = get(key) as? Boolean
+    companion object {
+        private fun InfoData.getOptionsBoolean(
+            key: String
+        ): Boolean? = options[key] as? Boolean?
+    }
+}
 
 @Serializable
 data class SessionInfo(
@@ -49,13 +54,7 @@ data class SessionInfo(
     val forcePinChange: Boolean
 ) {
     constructor(infoData: InfoData) : this(
-        Options(
-            infoData.options.getBoolean("clientPin"),
-            infoData.options.getBoolean("credMgmt"),
-            infoData.options.getBoolean("credentialMgmtPreview"),
-            infoData.options.getOptionalBoolean("bioEnroll"),
-            infoData.options.getBoolean("alwaysUv")
-        ),
+        Options(infoData),
         infoData.aaguid,
         infoData.minPinLength,
         infoData.forcePinChange
