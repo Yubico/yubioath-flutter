@@ -214,18 +214,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
   void _submit() async {
     final l10n = AppLocalizations.of(context)!;
-    final minPinLength = widget.state.minPinLength;
     final oldPin = _currentPinController.text.isNotEmpty
         ? _currentPinController.text
         : null;
-    // TODO: Remove this? It shouldn't happen...
-    if (_newPin.length < minPinLength) {
-      setState(() {
-        _newPinError = l10n.l_new_pin_len(minPinLength);
-        _newIsWrong = true;
-      });
-      return;
-    }
     try {
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
