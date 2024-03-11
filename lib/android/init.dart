@@ -73,8 +73,11 @@ Future<Widget> initialize() async {
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
       currentAppProvider.overrideWith((ref) {
-        final notifier =
-            AndroidSubPageNotifier(ref, ref.watch(supportedAppsProvider));
+        final notifier = AndroidSubPageNotifier(
+          ref,
+          ref.watch(supportedAppsProvider),
+          ref.watch(prefProvider),
+        );
         ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
             (_, data) {
           notifier.notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
@@ -114,6 +117,7 @@ Future<Widget> initialize() async {
               // Disable unimplemented feature
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
+              ..setFeature(features.home, false)
               ..setFeature(features.management, false);
           });
 

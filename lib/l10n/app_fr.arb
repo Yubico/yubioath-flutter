@@ -61,12 +61,17 @@
     "s_actions": "Actions",
     "s_manage": "Gérer",
     "s_setup": "Configuration",
+    "s_device": null,
+    "s_application": null,
     "s_settings": "Paramètres",
+    "l_settings_desc": null,
     "s_certificates": "Certificats",
     "s_webauthn": "WebAuthn",
     "s_slots": null,
     "s_help_and_about": "Aide et à propos",
+    "l_help_and_about_desc": null,
     "s_help_and_feedback": "Aide et retours",
+    "s_home": null,
     "s_send_feedback": "Envoyer nous un retour",
     "s_i_need_help": "J'ai besoin d'aide",
     "s_troubleshooting": "Dépannage",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": null,
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insérez votre YubiKey",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Changer les applications",
     "s_toggle_interfaces": null,
+    "l_toggle_applications_desc": null,
+    "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "Reconfiguration de la YubiKey\u2026",
     "s_config_updated": "Configuration mise à jour",
     "l_config_updated_reinsert": "Configuration mise à jour; retirez et réinsérez votre YubiKey",
@@ -645,6 +664,7 @@
     "@_factory_reset": {},
     "s_reset": "Réinitialiser",
     "s_factory_reset": "Réinitialisation",
+    "l_factory_reset_desc": null,
     "l_oath_application_reset": "L'application OATH à été réinitialisée",
     "l_fido_app_reset": "L'application FIDO à été réinitialisée",
     "l_reset_failed": "Erreur pendant la réinitialisation: {message}",
@@ -750,7 +770,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": null,
+    "s_set_label": null,
+    "s_change_label": null,
     "s_theme_color": null,
+    "s_color": null,
+    "p_set_will_add_custom_name": null,
+    "p_rename_will_change_custom_name": null,
 
     "@_eof": {}
 }

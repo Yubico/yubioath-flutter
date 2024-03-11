@@ -61,12 +61,17 @@
     "s_actions": "アクション",
     "s_manage": "管理",
     "s_setup": "セットアップ",
+    "s_device": null,
+    "s_application": null,
     "s_settings": "設定",
+    "l_settings_desc": null,
     "s_certificates": "証明書",
     "s_webauthn": "WebAuthn",
     "s_slots": null,
     "s_help_and_about": "ヘルプと概要",
+    "l_help_and_about_desc": null,
     "s_help_and_feedback": "ヘルプとフィードバック",
+    "s_home": null,
     "s_send_feedback": "フィードバックの送信",
     "s_i_need_help": "ヘルプが必要",
     "s_troubleshooting": "トラブルシューティング",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": null,
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKeyを挿入する",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "アプリケーションの切替え",
     "s_toggle_interfaces": null,
+    "l_toggle_applications_desc": null,
+    "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "YubiKeyを再構成しています\u2026",
     "s_config_updated": "構成が更新されました",
     "l_config_updated_reinsert": "設定が更新されました。YubiKeyを取り外して再挿入してください",
@@ -645,6 +664,7 @@
     "@_factory_reset": {},
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷リセット",
+    "l_factory_reset_desc": null,
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_reset_failed": "リセット実行中のエラー:{message}",
@@ -750,7 +770,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": null,
+    "s_set_label": null,
+    "s_change_label": null,
     "s_theme_color": null,
+    "s_color": null,
+    "p_set_will_add_custom_name": null,
+    "p_rename_will_change_custom_name": null,
 
     "@_eof": {}
 }

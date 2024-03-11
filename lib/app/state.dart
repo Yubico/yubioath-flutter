@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -27,7 +28,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/state.dart';
 import '../theme.dart';
 import 'features.dart' as features;
-import 'key_customization/state.dart';
 import 'logging.dart';
 import 'models.dart';
 
@@ -40,6 +40,7 @@ const officialLocales = [
 
 extension on Application {
   Feature get _feature => switch (this) {
+        Application.home => features.home,
         Application.accounts => features.oath,
         Application.webauthn => features.fido,
         Application.passkeys => features.fido,
@@ -202,7 +203,8 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
 
 final currentAppProvider =
     StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
+  final notifier = CurrentAppNotifier(
+      ref.watch(supportedAppsProvider), ref.watch(prefProvider));
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
     notifier.notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
@@ -211,16 +213,37 @@ final currentAppProvider =
 
 class CurrentAppNotifier extends StateNotifier<Application> {
   final List<Application> _supportedApps;
+  static const String _key = 'APP_STATE_LAST_APP';
+  final SharedPreferences _prefs;
 
-  CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
+  CurrentAppNotifier(this._supportedApps, this._prefs)
+      : super(_fromName(_prefs.getString(_key), _supportedApps));
 
   void setCurrentApp(Application app) {
     state = app;
+    _prefs.setString(_key, app.name);
   }
 
   void notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null ||
-        state.getAvailability(data) != Availability.unsupported) {
+    if (data == null) {
+      state = _supportedApps.first;
+      return;
+    }
+
+    String? lastAppName = _prefs.getString(_key);
+    if (lastAppName != null && lastAppName != state.name) {
+      // Try switching to saved app
+      state = Application.values.firstWhere((app) => app.name == lastAppName);
+    }
+    if (state == Application.passkeys &&
+        state.getAvailability(data) != Availability.enabled) {
+      state = Application.webauthn;
+    }
+    if (state == Application.webauthn &&
+        state.getAvailability(data) != Availability.enabled) {
+      state = Application.passkeys;
+    }
+    if (state.getAvailability(data) != Availability.unsupported) {
       // Keep current app
       return;
     }
@@ -230,6 +253,10 @@ class CurrentAppNotifier extends StateNotifier<Application> {
       orElse: () => _supportedApps.first,
     );
   }
+
+  static Application _fromName(String? name, List<Application> supportedApps) =>
+      supportedApps.firstWhere((element) => element.name == name,
+          orElse: () => supportedApps.first);
 }
 
 abstract class QrScanner {
@@ -285,3 +312,55 @@ typedef WithContext = Future<T> Function<T>(
 
 final withContextProvider = Provider<WithContext>(
     (ref) => ref.watch(contextConsumer.notifier).withContext);
+
+final keyCustomizationManagerProvider =
+    StateNotifierProvider<KeyCustomizationNotifier, Map<int, KeyCustomization>>(
+        (ref) => KeyCustomizationNotifier(ref.watch(prefProvider)));
+
+class KeyCustomizationNotifier
+    extends StateNotifier<Map<int, KeyCustomization>> {
+  static const _prefKeyCustomizations = 'KEY_CUSTOMIZATIONS';
+  final SharedPreferences _prefs;
+
+  KeyCustomizationNotifier(this._prefs)
+      : super(_readCustomizations(_prefs.getString(_prefKeyCustomizations)));
+
+  static Map<int, KeyCustomization> _readCustomizations(String? pref) {
+    if (pref == null) {
+      return {};
+    }
+
+    try {
+      final retval = <int, KeyCustomization>{};
+      for (var element in json.decode(pref)) {
+        final keyCustomization = KeyCustomization.fromJson(element);
+        retval[keyCustomization.serial] = keyCustomization;
+      }
+      return retval;
+    } catch (e) {
+      _log.error('Failure reading customizations: $e');
+      return {};
+    }
+  }
+
+  KeyCustomization? get(int serial) {
+    _log.debug('Getting key customization for $serial');
+    return state[serial];
+  }
+
+  Future<void> set({required int serial, String? name, Color? color}) async {
+    _log.debug('Setting key customization for $serial: $name, $color');
+    if (name == null && color == null) {
+      // remove this customization
+      state = {...state..remove(serial)};
+    } else {
+      state = {
+        ...state
+          ..[serial] =
+              KeyCustomization(serial: serial, name: name, color: color)
+      };
+    }
+    await _prefs.setString(
+        _prefKeyCustomizations, json.encode(state.values.toList()));
+  }
+}

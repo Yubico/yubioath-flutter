@@ -102,7 +102,7 @@ final androidAppContextHandler =
 class AndroidSubPageNotifier extends CurrentAppNotifier {
   final StateNotifierProviderRef<CurrentAppNotifier, Application> _ref;
 
-  AndroidSubPageNotifier(this._ref, super.supportedApps) {
+  AndroidSubPageNotifier(this._ref, super.supportedApps, super.prefs) {
     _ref.read(androidAppContextHandler).switchAppContext(state);
   }
 
