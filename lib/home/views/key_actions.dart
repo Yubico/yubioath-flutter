@@ -26,6 +26,7 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/reset_dialog.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../management/views/management_screen.dart';
 
@@ -33,11 +34,13 @@ Widget homeBuildActions(
     BuildContext context, YubiKeyData? deviceData, WidgetRef ref) {
   final l10n = AppLocalizations.of(context)!;
   final hasFeature = ref.watch(featureProvider);
-
-  final managementAvailability =
-      deviceData == null || !hasFeature(features.management)
-          ? Availability.unsupported
-          : Application.management.getAvailability(deviceData);
+  final managementAvailability = hasFeature(features.management) &&
+      switch (deviceData?.info.version) {
+        Version version => (version.major > 4 || // YK5 and up
+            (version.major == 4 && version.minor >= 1) || // YK4.1 and up
+            version.major == 3), // NEO,
+        null => false,
+      };
 
   return Column(
     children: [
@@ -45,7 +48,7 @@ Widget homeBuildActions(
         ActionListSection(
           l10n.s_device,
           children: [
-            if (managementAvailability == Availability.enabled)
+            if (managementAvailability)
               ActionListItem(
                 feature: features.management,
                 icon: const Icon(Symbols.construction),

@@ -86,27 +86,25 @@ class NavigationItem extends StatelessWidget {
   }
 }
 
-extension on Application {
+extension on Section {
   IconData get _icon => switch (this) {
-        Application.accounts => Symbols.supervisor_account,
-        Application.webauthn => Symbols.security_key,
-        Application.passkeys => Symbols.passkey,
-        Application.fingerprints => Symbols.fingerprint,
-        Application.slots => Symbols.touch_app,
-        Application.certificates => Symbols.approval,
-        Application.management => Symbols.construction,
-        Application.home => Symbols.home
+        Section.home => Symbols.home,
+        Section.accounts => Symbols.supervisor_account,
+        Section.securityKey => Symbols.security_key,
+        Section.passkeys => Symbols.passkey,
+        Section.fingerprints => Symbols.fingerprint,
+        Section.slots => Symbols.touch_app,
+        Section.certificates => Symbols.badge,
       };
 
   Key get _key => switch (this) {
-        Application.accounts => oathAppDrawer,
-        Application.webauthn => u2fAppDrawer,
-        Application.passkeys => fidoPasskeysAppDrawer,
-        Application.fingerprints => fidoFingerprintsAppDrawer,
-        Application.slots => otpAppDrawer,
-        Application.certificates => pivAppDrawer,
-        Application.management => managementAppDrawer,
-        Application.home => homeDrawer,
+        Section.home => homeDrawer,
+        Section.accounts => oathAppDrawer,
+        Section.securityKey => u2fAppDrawer,
+        Section.passkeys => fidoPasskeysAppDrawer,
+        Section.fingerprints => fidoFingerprintsAppDrawer,
+        Section.slots => otpAppDrawer,
+        Section.certificates => pivAppDrawer,
       };
 }
 
@@ -119,19 +117,18 @@ class NavigationContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final supportedApps = ref.watch(supportedAppsProvider);
+    final supportedSections = ref.watch(supportedSectionsProvider);
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
 
-    final availableApps = data != null
-        ? supportedApps
-            .where(
-                (app) => app.getAvailability(data) != Availability.unsupported)
+    final availableSections = data != null
+        ? supportedSections
+            .where((section) =>
+                section.getAvailability(data) != Availability.unsupported)
             .toList()
         : !isAndroid // TODO: Remove check when Home is implemented on Android
-            ? [Application.home]
-            : <Application>[];
-    availableApps.remove(Application.management);
-    final currentApp = ref.watch(currentAppProvider);
+            ? [Section.home]
+            : <Section>[];
+    final currentSection = ref.watch(currentSectionProvider);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -147,21 +144,21 @@ class NavigationContent extends ConsumerWidget {
             child: Column(
               children: [
                 // Normal YubiKey Applications
-                ...availableApps.map((app) => NavigationItem(
+                ...availableSections.map((app) => NavigationItem(
                       key: app._key,
                       title: app.getDisplayName(l10n),
-                      leading:
-                          Icon(app._icon, fill: app == currentApp ? 1.0 : 0.0),
+                      leading: Icon(app._icon,
+                          fill: app == currentSection ? 1.0 : 0.0),
                       collapsed: !extended,
-                      selected: app == currentApp,
-                      onTap: data == null && currentApp == Application.home ||
+                      selected: app == currentSection,
+                      onTap: data == null && currentSection == Section.home ||
                               data != null &&
                                   app.getAvailability(data) ==
                                       Availability.enabled
                           ? () {
                               ref
-                                  .read(currentAppProvider.notifier)
-                                  .setCurrentApp(app);
+                                  .read(currentSectionProvider.notifier)
+                                  .setCurrentSection(app);
                               if (shouldPop) {
                                 Navigator.of(context).pop();
                               }

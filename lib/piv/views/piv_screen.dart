@@ -226,7 +226,7 @@ class _CertificateListItem extends ConsumerWidget {
       leading: CircleAvatar(
         foregroundColor: colorScheme.onSecondary,
         backgroundColor: colorScheme.secondary,
-        child: const Icon(Symbols.approval),
+        child: const Icon(Symbols.badge),
       ),
       title: slot.getDisplayName(l10n),
       subtitle: certInfo != null

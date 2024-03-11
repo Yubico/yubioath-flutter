@@ -118,8 +118,8 @@ class MainPage extends ConsumerWidget {
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
-              final app = ref.watch(currentAppProvider);
-              final capabilities = app.capabilities;
+              final section = ref.watch(currentSectionProvider);
+              final capabilities = section.capabilities;
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
                 return HomeMessagePage(
@@ -131,19 +131,20 @@ class MainPage extends ConsumerWidget {
                   ),
                   header: l10n.s_yk_not_recognized,
                 );
-              } else if (app.getAvailability(data) ==
+              } else if (section.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                  title: app.getDisplayName(l10n),
+                  title: section.getDisplayName(l10n),
                   capabilities: capabilities,
                   header: l10n.s_app_not_supported,
                   message: l10n.l_app_not_supported_on_yk(capabilities
                       .map((c) => c.getDisplayName(l10n))
                       .join(',')),
                 );
-              } else if (app.getAvailability(data) != Availability.enabled) {
+              } else if (section.getAvailability(data) !=
+                  Availability.enabled) {
                 return MessagePage(
-                  title: app.getDisplayName(l10n),
+                  title: section.getDisplayName(l10n),
                   capabilities: capabilities,
                   header: l10n.s_app_disabled,
                   message: l10n.l_app_disabled_desc(capabilities
@@ -166,18 +167,14 @@ class MainPage extends ConsumerWidget {
                 );
               }
 
-              return switch (app) {
-                Application.home => HomeScreen(data),
-                Application.accounts => OathScreen(data.node.path),
-                Application.webauthn => const WebAuthnScreen(),
-                Application.passkeys => PasskeysScreen(data),
-                Application.fingerprints => FingerprintsScreen(data),
-                Application.certificates => PivScreen(data.node.path),
-                Application.slots => OtpScreen(data.node.path),
-                _ => MessagePage(
-                    header: l10n.s_app_not_supported,
-                    message: l10n.l_app_not_supported_desc,
-                  ),
+              return switch (section) {
+                Section.home => HomeScreen(data),
+                Section.accounts => OathScreen(data.node.path),
+                Section.securityKey => const WebAuthnScreen(),
+                Section.passkeys => PasskeysScreen(data),
+                Section.fingerprints => FingerprintsScreen(data),
+                Section.certificates => PivScreen(data.node.path),
+                Section.slots => OtpScreen(data.node.path),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),
