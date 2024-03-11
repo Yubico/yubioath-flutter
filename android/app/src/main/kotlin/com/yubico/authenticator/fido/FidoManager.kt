@@ -256,7 +256,7 @@ class FidoManager(
         val permissions = getPermissions(fidoSession)
 
         if (permissions != 0) {
-            val token = clientPin.getPinToken(pin, permissions, "")
+            val token = clientPin.getPinToken(pin, permissions, null)
             val credentials = getCredentials(fidoSession, clientPin, token)
             logger.debug("Creds: {}", credentials)
             fidoViewModel.updateCredentials(credentials)
@@ -385,7 +385,7 @@ class FidoManager(
 
             val permissions = getPermissions(fidoSession)
 
-            val token = clientPin.getPinToken(pinStore.getPin(), permissions, "")
+            val token = clientPin.getPinToken(pinStore.getPin(), permissions, null)
 
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, token)
 
