@@ -1,0 +1,3 @@
+class ErrorDataEmpty {
+  const ErrorDataEmpty();
+}

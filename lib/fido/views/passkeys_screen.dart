@@ -76,11 +76,11 @@ class PasskeysScreen extends ConsumerWidget {
           );
         },
         data: (fidoState) {
-          return fidoState.initialized
-              ? fidoState.unlocked
+          return fidoState == null
+              ? MessagePageNotInitialized(title: l10n.s_passkeys)
+              : fidoState.unlocked
                   ? _FidoUnlockedPage(deviceData.node, fidoState)
-                  : _FidoLockedPage(deviceData.node, fidoState)
-              : MessagePageNotInitialized(title: l10n.s_passkeys);
+                  : _FidoLockedPage(deviceData.node, fidoState);
         });
   }
 }
@@ -234,6 +234,10 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       return _buildLoadingPage(context);
     }
     final credentials = data.value;
+
+    if (credentials == null) {
+      return _buildLoadingPage(context);
+    }
 
     if (credentials.isEmpty) {
       return MessagePage(

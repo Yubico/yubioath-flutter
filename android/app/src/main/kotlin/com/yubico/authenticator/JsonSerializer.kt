@@ -20,6 +20,8 @@ import kotlinx.serialization.json.Json
 
 const val NULL = "null"
 
+const val LOADING = """{ "loading": true }"""
+
 val jsonSerializer = Json {
     // creates properties for default values
     encodeDefaults = true

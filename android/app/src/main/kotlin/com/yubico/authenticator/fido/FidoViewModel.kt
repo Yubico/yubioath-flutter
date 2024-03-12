@@ -19,28 +19,45 @@ package com.yubico.authenticator.fido
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.yubico.authenticator.ChannelData
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.Session
 
 class FidoViewModel : ViewModel() {
-    private val _sessionState = MutableLiveData<Session?>(null)
-    val sessionState: LiveData<Session?> = _sessionState
+    private val _sessionState = MutableLiveData<ChannelData<Session?>>()
+    val sessionState: LiveData<ChannelData<Session?>> = _sessionState
 
     fun setSessionState(sessionState: Session?) {
-        _sessionState.postValue(sessionState)
+        _sessionState.postValue(ChannelData(sessionState))
     }
 
-    private val _credentials = MutableLiveData<List<FidoCredential>>()
-    val credentials: LiveData<List<FidoCredential>> = _credentials
+    fun clearSessionState() {
+        _sessionState.postValue(ChannelData.empty())
+    }
+
+    fun setSessionLoadingState() {
+        _sessionState.postValue(ChannelData.loading())
+    }
+
+    private val _credentials = MutableLiveData<ChannelData<List<FidoCredential>?>>()
+    val credentials: LiveData<ChannelData<List<FidoCredential>?>> = _credentials
+
+    fun setCredentialsLoadingState() {
+        _credentials.postValue(ChannelData.loading())
+    }
 
     fun updateCredentials(credentials: List<FidoCredential>) {
-        _credentials.postValue(credentials)
+        _credentials.postValue(ChannelData(credentials))
+    }
+
+    fun clearCredentials() {
+        _credentials.postValue(ChannelData.empty())
     }
 
     fun removeCredential(rpId: String, credentialId: String) {
-        _credentials.postValue(_credentials.value?.filter {
+        _credentials.postValue(ChannelData(_credentials.value?.data?.filter {
             it.credentialId != credentialId || it.rpId != rpId
-        })
+        }))
     }
 
     private val _resetState = MutableLiveData(FidoResetState.Remove.value)

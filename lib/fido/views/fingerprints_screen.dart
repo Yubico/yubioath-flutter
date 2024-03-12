@@ -29,6 +29,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
@@ -73,9 +74,11 @@ class FingerprintsScreen extends ConsumerWidget {
           );
         },
         data: (fidoState) {
-          return fidoState.unlocked
-              ? _FidoUnlockedPage(deviceData.node, fidoState)
-              : _FidoLockedPage(deviceData.node, fidoState);
+          return fidoState == null
+              ? MessagePageNotInitialized(title: l10n.s_fingerprints)
+              : fidoState.unlocked
+                  ? _FidoUnlockedPage(deviceData.node, fidoState)
+                  : _FidoLockedPage(deviceData.node, fidoState);
         });
   }
 }

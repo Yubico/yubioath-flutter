@@ -320,10 +320,10 @@ class MainActivity : FlutterFragmentActivity() {
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
-            oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
+            oathViewModel.sessionState.streamState(this, messenger, "android.oath.sessionState"),
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
-            fidoViewModel.sessionState.streamTo(this, messenger, "android.fido.sessionState"),
-            fidoViewModel.credentials.streamTo(this, messenger, "android.fido.credentials"),
+            fidoViewModel.sessionState.streamData(this, messenger, "android.fido.sessionState"),
+            fidoViewModel.credentials.streamData(this, messenger, "android.fido.credentials"),
             fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
         )
 

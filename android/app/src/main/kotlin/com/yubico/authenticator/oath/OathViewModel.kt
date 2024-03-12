@@ -19,25 +19,36 @@ package com.yubico.authenticator.oath
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.yubico.authenticator.SessionState
+import com.yubico.authenticator.JsonSerializable
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.Credential
 import com.yubico.authenticator.oath.data.CredentialWithCode
 import com.yubico.authenticator.oath.data.Session
 
 class OathViewModel: ViewModel() {
-    private val _sessionState = MutableLiveData<Session?>()
-    val sessionState: LiveData<Session?> = _sessionState
+
+    private val _sessionState = MutableLiveData<SessionState>()
+    val sessionState: LiveData<SessionState> = _sessionState
+
+    fun currentSession() : Session? = (sessionState.value as? SessionState.Value<*>)?.data as Session?
 
     // Sets session and credentials after performing OATH reset
     // Note: we cannot use [setSessionState] because resetting OATH changes deviceId
     fun resetOathSession(sessionState: Session, credentials: Map<Credential, Code?>) {
-        _sessionState.postValue(sessionState)
+        _sessionState.postValue(SessionState.Value(sessionState))
         updateCredentials(credentials)
     }
 
     fun setSessionState(sessionState: Session?) {
-        val oldDeviceId = _sessionState.value?.deviceId
-        _sessionState.postValue(sessionState)
+        val oldDeviceId = currentSession()?.deviceId
+
+        if (sessionState == null) {
+            _sessionState.postValue(SessionState.Empty)
+        } else {
+            _sessionState.postValue(SessionState.Value(sessionState))
+        }
+
         if(oldDeviceId != sessionState?.deviceId) {
             _credentials.postValue(null)
         }
@@ -59,7 +70,7 @@ class OathViewModel: ViewModel() {
     }
 
     fun addCredential(credential: Credential, code: Code?): CredentialWithCode {
-        require(credential.deviceId == _sessionState.value?.deviceId) {
+        require(credential.deviceId == currentSession()?.deviceId) {
             "Cannot add credential for different deviceId"
         }
         return CredentialWithCode(credential, code).also {

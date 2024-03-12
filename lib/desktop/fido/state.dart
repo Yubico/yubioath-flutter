@@ -47,14 +47,14 @@ final _sessionProvider =
 );
 
 final desktopFidoState = AsyncNotifierProvider.autoDispose
-    .family<FidoStateNotifier, FidoState, DevicePath>(
+    .family<FidoStateNotifier, FidoState?, DevicePath>(
         _DesktopFidoStateNotifier.new);
 
 class _DesktopFidoStateNotifier extends FidoStateNotifier {
   late RpcNodeSession _session;
   late StateController<String?> _pinController;
 
-  FutureOr<FidoState> _build(DevicePath devicePath) async {
+  FutureOr<FidoState?> _build(DevicePath devicePath) async {
     var result = await _session.command('get');
     FidoState fidoState = FidoState.fromJson(result['data']);
     if (fidoState.hasPin && !fidoState.unlocked) {
@@ -71,7 +71,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  FutureOr<FidoState> build(DevicePath devicePath) async {
+  FutureOr<FidoState?> build(DevicePath devicePath) async {
     _session = ref.watch(_sessionProvider(devicePath));
     if (Platform.isWindows) {
       // Make sure to rebuild if isAdmin changes
@@ -269,7 +269,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 final desktopCredentialProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
+    .family<FidoCredentialsNotifier, List<FidoCredential>?, DevicePath>(
         _DesktopFidoCredentialsNotifier.new);
 
 class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {

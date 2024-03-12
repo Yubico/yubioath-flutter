@@ -32,6 +32,22 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+interface JsonSerializable {
+    fun toJson() : String
+}
+
+sealed interface SessionState {
+    data object Empty : SessionState
+    data object Loading : SessionState
+    data class Value<T : JsonSerializable>(val data: T) : SessionState
+}
+
+data class ChannelData<T>(val data: T?, val isLoading: Boolean = false) {
+    companion object {
+        fun <T> loading() = ChannelData<T>(null, true)
+        fun <T> empty() = ChannelData<T>(null)
+    }
+}
 /**
  * Observes a LiveData value, sending each change to Flutter via an EventChannel.
  */
@@ -52,6 +68,83 @@ inline fun <reified T> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, mess
 
     val observer = Observer<T> {
         sink?.success(it?.let(jsonSerializer::encodeToString) ?: NULL)
+    }
+    observe(lifecycleOwner, observer)
+
+    return Closeable {
+        removeObserver(observer)
+        channel.setStreamHandler(null)
+    }
+}
+
+/**
+ * Observes a Loadable LiveData value, sending each change to Flutter via an EventChannel.
+ */
+inline fun <reified T> LiveData<ChannelData<T>>.streamData(lifecycleOwner: LifecycleOwner, messenger: BinaryMessenger, channelName: String): Closeable {
+    val channel = EventChannel(messenger, channelName)
+    var sink: EventChannel.EventSink? = null
+
+    channel.setStreamHandler(object : EventChannel.StreamHandler {
+        override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+            sink = events
+            events.success(
+                value?.let {
+                    if (it.isLoading) LOADING
+                    else it.data?.let(jsonSerializer::encodeToString) ?: NULL
+                } ?: NULL
+            )
+        }
+
+        override fun onCancel(arguments: Any?) {
+            sink = null
+        }
+    })
+
+    val observer = Observer<ChannelData<T>> {
+        sink?.success(
+            if (it.isLoading) LOADING
+            else it.data?.let(jsonSerializer::encodeToString) ?: NULL
+        )
+    }
+    observe(lifecycleOwner, observer)
+
+    return Closeable {
+        removeObserver(observer)
+        channel.setStreamHandler(null)
+    }
+}
+
+
+fun get(state: SessionState) : String = when (state) {
+    is SessionState.Empty -> NULL
+    is SessionState.Loading -> LOADING
+    is SessionState.Value<*> -> state.data.toJson()
+}
+
+/**
+ * Observes a Loadable LiveData value, sending each change to Flutter via an EventChannel.
+ */
+inline fun <reified T : SessionState> LiveData<T>.streamState(lifecycleOwner: LifecycleOwner, messenger: BinaryMessenger, channelName: String): Closeable {
+    val channel = EventChannel(messenger, channelName)
+    var sink: EventChannel.EventSink? = null
+
+    channel.setStreamHandler(object : EventChannel.StreamHandler {
+        override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+            sink = events
+            events.success(
+                value?.let {
+                    get(it)
+                } ?: NULL
+            )
+        }
+
+        override fun onCancel(arguments: Any?) {
+            sink = null
+        }
+    })
+
+    val observer = Observer<T> {
+        sink?.success(get(it))
     }
     observe(lifecycleOwner, observer)
 

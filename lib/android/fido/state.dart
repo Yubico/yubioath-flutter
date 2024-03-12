@@ -33,17 +33,19 @@ final _log = Logger('android.fido.state');
 const _methods = MethodChannel('android.fido.methods');
 
 final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoStateNotifier, FidoState, DevicePath>(_FidoStateNotifier.new);
+    .family<FidoStateNotifier, FidoState?, DevicePath>(_FidoStateNotifier.new);
 
 class _FidoStateNotifier extends FidoStateNotifier {
   final _events = const EventChannel('android.fido.sessionState');
   late StreamSubscription _sub;
 
   @override
-  FutureOr<FidoState> build(DevicePath devicePath) async {
+  FutureOr<FidoState?> build(DevicePath devicePath) async {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
+        state = const AsyncValue.data(null);
+      } else if (json.containsKey('loading') && json['loading'] == true) {
         state = const AsyncValue.loading();
       } else {
         final fidoState = FidoState.fromJson(json);
@@ -55,7 +57,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
     ref.onDispose(_sub.cancel);
 
-    return Completer<FidoState>().future;
+    return Completer<FidoState?>().future;
   }
 
   @override
@@ -177,7 +179,7 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 final androidCredentialProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
+    .family<FidoCredentialsNotifier, List<FidoCredential>?, DevicePath>(
         _FidoCredentialsNotifier.new);
 
 class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
@@ -185,10 +187,12 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   late StreamSubscription _sub;
 
   @override
-  FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
+  FutureOr<List<FidoCredential>?> build(DevicePath devicePath) async {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
+        state = const AsyncValue.data(null);
+      } else if (json[0] is Map && json[0]['loading'] == true) {
         state = const AsyncValue.loading();
       } else {
         List<FidoCredential> newState = List.from(
@@ -200,7 +204,7 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
     });
 
     ref.onDispose(_sub.cancel);
-    return Completer<List<FidoCredential>>().future;
+    return Completer<List<FidoCredential>?>().future;
   }
 
   @override

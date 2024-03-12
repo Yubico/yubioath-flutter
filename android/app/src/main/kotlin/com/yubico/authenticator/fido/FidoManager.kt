@@ -140,7 +140,7 @@ class FidoManager(
         if (!deviceManager.isUsbKeyConnected()) {
             // for NFC connections require extra tap when switching context
             if (fidoViewModel.sessionState.value == null) {
-                fidoViewModel.setSessionState(Session.uninitialized)
+                fidoViewModel.clearSessionState()
             }
         }
 
@@ -150,8 +150,8 @@ class FidoManager(
         super.dispose()
         deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
-        fidoViewModel.setSessionState(null)
-        fidoViewModel.updateCredentials(listOf())
+        fidoViewModel.clearSessionState()
+        fidoViewModel.clearCredentials()
         coroutineScope.cancel()
     }
 
@@ -185,7 +185,7 @@ class FidoManager(
             }
 
             // Clear any cached FIDO state
-            fidoViewModel.setSessionState(null)
+            fidoViewModel.clearSessionState()
         }
 
     }
@@ -198,7 +198,7 @@ class FidoManager(
                 YubiKitFidoSession(connection as SmartCardConnection)
             }
 
-        val previousSession = fidoViewModel.sessionState.value?.info
+        val previousSession = fidoViewModel.sessionState.value?.data?.info
         val currentSession = SessionInfo(fidoSession.cachedInfo)
         logger.debug(
             "Previous session: {}, current session: {}",
@@ -253,6 +253,8 @@ class FidoManager(
         pin: CharArray
     ): String {
 
+        fidoViewModel.setSessionLoadingState()
+
         val permissions = getPermissions(fidoSession)
 
         if (permissions != 0) {
@@ -260,7 +262,6 @@ class FidoManager(
             val credentials = getCredentials(fidoSession, clientPin, token)
             logger.debug("Creds: {}", credentials)
             fidoViewModel.updateCredentials(credentials)
-
         } else {
             clientPin.getPinToken(pin, permissions, "yubico-authenticator.example.com")
         }
@@ -285,7 +286,7 @@ class FidoManager(
                 ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED
             ) {
                 pinStore.setPin(null)
-                fidoViewModel.updateCredentials(emptyList())
+                fidoViewModel.clearCredentials()
                 val pinRetriesResult = clientPin.pinRetries
                 JSONObject(
                     mapOf(
@@ -355,6 +356,9 @@ class FidoManager(
         pinUvAuthToken: ByteArray
     ): List<FidoCredential> =
         try {
+
+            fidoViewModel.setCredentialsLoadingState()
+
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, pinUvAuthToken)
             val rpIds = credMan.enumerateRps()
 
@@ -390,7 +394,7 @@ class FidoManager(
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, token)
 
             val credentialDescriptor =
-                fidoViewModel.credentials.value?.firstOrNull {
+                fidoViewModel.credentials.value?.data?.firstOrNull {
                     it.credentialId == credentialId && it.rpId == rpId
                 }?.publicKeyCredentialDescriptor
 
@@ -414,11 +418,11 @@ class FidoManager(
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {
-            fidoViewModel.setSessionState(null)
+            fidoViewModel.clearSessionState()
         }
     }
 
     override fun onTimeout() {
-        fidoViewModel.setSessionState(null)
+        fidoViewModel.clearSessionState()
     }
 }

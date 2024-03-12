@@ -23,6 +23,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../app/error_data_empty.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -59,20 +60,19 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => const MessagePage(
-            centered: true,
-            graphic: CircularProgressIndicator(),
-            delayedContent: true,
-          ),
-          error: (error, _) => AppFailurePage(
-            cause: error,
-          ),
-          data: (oathState) => oathState.initialized
-              ? oathState.locked
-                  ? _LockedView(devicePath, oathState)
-                  : _UnlockedView(devicePath, oathState)
-              : MessagePageNotInitialized(title: l10n.s_accounts),
-        );
+        loading: () => const MessagePage(
+              centered: true,
+              graphic: CircularProgressIndicator(),
+              delayedContent: true,
+            ),
+        error: (error, _) => error is ErrorDataEmpty
+            ? MessagePageNotInitialized(title: l10n.s_accounts)
+            : AppFailurePage(
+                cause: error,
+              ),
+        data: (oathState) => oathState.locked
+            ? _LockedView(devicePath, oathState)
+            : _UnlockedView(devicePath, oathState));
   }
 }
 

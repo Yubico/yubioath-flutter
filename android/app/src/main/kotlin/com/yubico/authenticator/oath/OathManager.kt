@@ -203,8 +203,8 @@ class OathManager(
 
         if (!deviceManager.isUsbKeyConnected()) {
             // for NFC connections require extra tap when switching context
-            if (oathViewModel.sessionState.value == null) {
-                oathViewModel.setSessionState(Session.uninitialized)
+            if (oathViewModel.sessionState.value is SessionState.Empty) {
+                oathViewModel.setSessionState(null)
             }
         }
     }
@@ -223,7 +223,7 @@ class OathManager(
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
-                val previousId = oathViewModel.sessionState.value?.deviceId
+                val previousId = oathViewModel.currentSession()?.deviceId
                 if (session.deviceId == previousId && device is NfcYubiKeyDevice) {
                     // Run any pending action
                     pendingAction?.let { action ->
@@ -468,7 +468,7 @@ class OathManager(
     private fun forgetPassword(): String {
         keyManager.clearAll()
         logger.debug("Cleared all keys.")
-        oathViewModel.sessionState.value?.let {
+        oathViewModel.currentSession()?.let {
             oathViewModel.setSessionState(
                 it.copy(
                     isLocked = it.isAccessKeySet,

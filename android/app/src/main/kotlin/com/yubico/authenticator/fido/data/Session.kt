@@ -86,30 +86,9 @@ data class SessionInfo(
 data class Session(
     @SerialName("info")
     val info: SessionInfo,
-    val unlocked: Boolean,
-    val initialized: Boolean
+    val unlocked: Boolean
 ) {
-    constructor(infoData: InfoData, unlocked: Boolean) : this(
-        SessionInfo(infoData), unlocked, true
+   constructor(infoData: InfoData, unlocked: Boolean) : this(
+        SessionInfo(infoData), unlocked
     )
-
-    companion object {
-        val uninitialized = Session(
-            SessionInfo(
-                Options(
-                    clientPin = false,
-                    credMgmt = false,
-                    credentialMgmtPreview = false,
-                    bioEnroll = null,
-                    alwaysUv = false
-                ),
-                aaguid = ByteArray(0),
-                minPinLength = 0,
-                forcePinChange = false
-            ),
-            unlocked = false,
-            initialized = false
-        )
-    }
-
 }
