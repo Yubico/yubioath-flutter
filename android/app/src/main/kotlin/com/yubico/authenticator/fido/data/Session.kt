@@ -16,6 +16,8 @@
 
 package com.yubico.authenticator.fido.data
 
+import com.yubico.authenticator.JsonSerializable
+import com.yubico.authenticator.jsonSerializer
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
 import kotlinx.serialization.*
 
@@ -86,30 +88,13 @@ data class SessionInfo(
 data class Session(
     @SerialName("info")
     val info: SessionInfo,
-    val unlocked: Boolean,
-    val initialized: Boolean
-) {
-    constructor(infoData: InfoData, unlocked: Boolean) : this(
-        SessionInfo(infoData), unlocked, true
+    val unlocked: Boolean
+) : JsonSerializable {
+   constructor(infoData: InfoData, unlocked: Boolean) : this(
+        SessionInfo(infoData), unlocked
     )
 
-    companion object {
-        val uninitialized = Session(
-            SessionInfo(
-                Options(
-                    clientPin = false,
-                    credMgmt = false,
-                    credentialMgmtPreview = false,
-                    bioEnroll = null,
-                    alwaysUv = false
-                ),
-                aaguid = ByteArray(0),
-                minPinLength = 0,
-                forcePinChange = false
-            ),
-            unlocked = false,
-            initialized = false
-        )
+    override fun toJson(): String {
+        return jsonSerializer.encodeToString(this)
     }
-
 }

@@ -33,6 +33,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
@@ -59,20 +60,19 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => const MessagePage(
-            centered: true,
-            graphic: CircularProgressIndicator(),
-            delayedContent: true,
-          ),
-          error: (error, _) => AppFailurePage(
-            cause: error,
-          ),
-          data: (oathState) => oathState.initialized
-              ? oathState.locked
-                  ? _LockedView(devicePath, oathState)
-                  : _UnlockedView(devicePath, oathState)
-              : MessagePageNotInitialized(title: l10n.s_accounts),
-        );
+        loading: () => const MessagePage(
+              centered: true,
+              graphic: CircularProgressIndicator(),
+              delayedContent: true,
+            ),
+        error: (error, _) => error is NoDataException
+            ? MessagePageNotInitialized(title: l10n.s_accounts)
+            : AppFailurePage(
+                cause: error,
+              ),
+        data: (oathState) => oathState.locked
+            ? _LockedView(devicePath, oathState)
+            : _UnlockedView(devicePath, oathState));
   }
 }
 

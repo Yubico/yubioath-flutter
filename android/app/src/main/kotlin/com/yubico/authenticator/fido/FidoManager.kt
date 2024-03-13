@@ -136,22 +136,14 @@ class FidoManager(
                 else -> throw NotImplementedError()
             }
         }
-
-        if (!deviceManager.isUsbKeyConnected()) {
-            // for NFC connections require extra tap when switching context
-            if (fidoViewModel.sessionState.value == null) {
-                fidoViewModel.setSessionState(Session.uninitialized)
-            }
-        }
-
     }
 
     override fun dispose() {
         super.dispose()
         deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
-        fidoViewModel.setSessionState(null)
-        fidoViewModel.updateCredentials(listOf())
+        fidoViewModel.clearSessionState()
+        fidoViewModel.updateCredentials(emptyList())
         coroutineScope.cancel()
     }
 
@@ -185,7 +177,7 @@ class FidoManager(
             }
 
             // Clear any cached FIDO state
-            fidoViewModel.setSessionState(null)
+            fidoViewModel.clearSessionState()
         }
 
     }
@@ -198,7 +190,7 @@ class FidoManager(
                 YubiKitFidoSession(connection as SmartCardConnection)
             }
 
-        val previousSession = fidoViewModel.sessionState.value?.info
+        val previousSession = fidoViewModel.currentSession()?.info
         val currentSession = SessionInfo(fidoSession.cachedInfo)
         logger.debug(
             "Previous session: {}, current session: {}",
@@ -253,6 +245,8 @@ class FidoManager(
         pin: CharArray
     ): String {
 
+        fidoViewModel.setSessionLoadingState()
+
         val permissions = getPermissions(fidoSession)
 
         if (permissions != 0) {
@@ -260,7 +254,6 @@ class FidoManager(
             val credentials = getCredentials(fidoSession, clientPin, token)
             logger.debug("Creds: {}", credentials)
             fidoViewModel.updateCredentials(credentials)
-
         } else {
             clientPin.getPinToken(pin, permissions, "yubico-authenticator.example.com")
         }
@@ -414,11 +407,11 @@ class FidoManager(
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {
-            fidoViewModel.setSessionState(null)
+            fidoViewModel.clearSessionState()
         }
     }
 
     override fun onTimeout() {
-        fidoViewModel.setSessionState(null)
+        fidoViewModel.clearSessionState()
     }
 }

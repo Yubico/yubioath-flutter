@@ -24,6 +24,7 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
@@ -44,6 +45,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
+        state = AsyncValue.error(const NoDataException(), StackTrace.current);
+      } else if (json == 'loading') {
         state = const AsyncValue.loading();
       } else {
         final fidoState = FidoState.fromJson(json);

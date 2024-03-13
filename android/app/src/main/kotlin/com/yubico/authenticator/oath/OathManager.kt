@@ -200,13 +200,6 @@ class OathManager(
                 else -> throw NotImplementedError()
             }
         }
-
-        if (!deviceManager.isUsbKeyConnected()) {
-            // for NFC connections require extra tap when switching context
-            if (oathViewModel.sessionState.value == null) {
-                oathViewModel.setSessionState(Session.uninitialized)
-            }
-        }
     }
 
     override fun dispose() {
@@ -214,7 +207,7 @@ class OathManager(
         deviceManager.removeDeviceListener(this)
         oathViewModel.credentials.removeObserver(credentialObserver)
         oathChannel.setMethodCallHandler(null)
-        oathViewModel.setSessionState(null)
+        oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
         coroutineScope.cancel()
     }
@@ -223,7 +216,7 @@ class OathManager(
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
-                val previousId = oathViewModel.sessionState.value?.deviceId
+                val previousId = oathViewModel.currentSession()?.deviceId
                 if (session.deviceId == previousId && device is NfcYubiKeyDevice) {
                     // Run any pending action
                     pendingAction?.let { action ->
@@ -325,7 +318,7 @@ class OathManager(
             }
 
             // Clear any cached OATH state
-            oathViewModel.setSessionState(null)
+            oathViewModel.clearSession()
         }
     }
 
@@ -468,7 +461,7 @@ class OathManager(
     private fun forgetPassword(): String {
         keyManager.clearAll()
         logger.debug("Cleared all keys.")
-        oathViewModel.sessionState.value?.let {
+        oathViewModel.currentSession()?.let {
             oathViewModel.setSessionState(
                 it.copy(
                     isLocked = it.isAccessKeySet,
@@ -752,10 +745,10 @@ class OathManager(
 
     override fun onDisconnected() {
         refreshJob?.cancel()
-        oathViewModel.setSessionState(null)
+        oathViewModel.clearSession()
     }
 
     override fun onTimeout() {
-        oathViewModel.setSessionState(null)
+        oathViewModel.clearSession()
     }
 }
