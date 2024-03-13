@@ -64,9 +64,9 @@ class AppFailurePage extends ConsumerWidget {
           case 'fido':
             if (Platform.isWindows &&
                 !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-              final currentApp = ref.read(currentAppProvider);
-              title = currentApp.getDisplayName(l10n);
-              capabilities = currentApp.capabilities;
+              final currentSection = ref.read(currentSectionProvider);
+              title = currentSection.getDisplayName(l10n);
+              capabilities = currentSection.capabilities;
               header = l10n.l_admin_privileges_required;
               message = l10n.p_webauthn_elevated_permissions_required;
               centered = false;

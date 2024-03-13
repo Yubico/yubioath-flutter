@@ -66,7 +66,7 @@
     "s_settings": "Ustawienia",
     "l_settings_desc": null,
     "s_certificates": "Certyfikaty",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": null,
     "s_slots": "Sloty",
     "s_help_and_about": "Pomoc i informacje",
     "l_help_and_about_desc": null,
@@ -233,6 +233,8 @@
     "s_confirm_pin": "Potwierdź PIN",
     "s_confirm_puk": "Potwierdź PUK",
     "s_unblock_pin": "Odblokuj PIN",
+    "l_pin_mismatch": null,
+    "l_puk_mismatch": null,
     "l_new_pin_len": "Nowy PIN musi mieć co najmniej {length} znaków",
     "@l_new_pin_len": {
         "placeholders": {
@@ -309,6 +311,7 @@
     "s_new_password": "Nowe hasło",
     "s_current_password": "Aktualne hasło",
     "s_confirm_password": "Potwierdź hasło",
+    "l_password_mismatch": null,
     "s_wrong_password": "Błędne hasło",
     "s_remove_password": "Usuń hasło",
     "s_password_removed": "Hasło zostało usunięte",

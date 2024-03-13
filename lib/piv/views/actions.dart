@@ -52,24 +52,26 @@ class ExportIntent extends Intent {
   const ExportIntent(this.slot);
 }
 
-Future<bool> _authenticate(
-    BuildContext context, DevicePath devicePath, PivState pivState) async {
-  return await showBlurDialog(
-        context: context,
-        builder: (context) => pivState.protectedKey
-            ? PinDialog(devicePath)
-            : AuthenticationDialog(
-                devicePath,
-                pivState,
-              ),
-      ) ??
-      false;
-}
-
-Future<bool> _authIfNeeded(
-    BuildContext context, DevicePath devicePath, PivState pivState) async {
+Future<bool> _authIfNeeded(BuildContext context, WidgetRef ref,
+    DevicePath devicePath, PivState pivState) async {
   if (pivState.needsAuth) {
-    return await _authenticate(context, devicePath, pivState);
+    if (pivState.protectedKey &&
+        pivState.metadata?.pinMetadata.defaultValue == true) {
+      final status = await ref
+          .read(pivStateProvider(devicePath).notifier)
+          .verifyPin(defaultPin);
+      return status.when(success: () => true, failure: (_) => false);
+    }
+    return await showBlurDialog(
+          context: context,
+          builder: (context) => pivState.protectedKey
+              ? PinDialog(devicePath)
+              : AuthenticationDialog(
+                  devicePath,
+                  pivState,
+                ),
+        ) ??
+        false;
   }
   return true;
 }
@@ -96,21 +98,32 @@ class PivActions extends ConsumerWidget {
         if (hasFeature(features.slotsGenerate))
           GenerateIntent:
               CallbackAction<GenerateIntent>(onInvoke: (intent) async {
-            if (!pivState.protectedKey &&
-                !await withContext((context) =>
-                    _authIfNeeded(context, devicePath, pivState))) {
+            //Verify management key and maybe PIN
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
               return false;
             }
-
+            // Verify PIN, unless already done above
             // TODO: Avoid asking for PIN if not needed?
-            final verified = await withContext((context) async =>
-                    await showBlurDialog(
-                        context: context,
-                        builder: (context) => PinDialog(devicePath))) ??
-                false;
+            if (!pivState.protectedKey) {
+              bool verified;
+              if (pivState.metadata?.pinMetadata.defaultValue == true) {
+                final status = await ref
+                    .read(pivStateProvider(devicePath).notifier)
+                    .verifyPin(defaultPin);
+                verified =
+                    status.when(success: () => true, failure: (_) => false);
+              } else {
+                verified = await withContext((context) async =>
+                        await showBlurDialog(
+                            context: context,
+                            builder: (context) => PinDialog(devicePath))) ??
+                    false;
+              }
 
-            if (!verified) {
-              return false;
+              if (!verified) {
+                return false;
+              }
             }
 
             return await withContext((context) async {
@@ -158,8 +171,8 @@ class PivActions extends ConsumerWidget {
           }),
         if (hasFeature(features.slotsImport))
           ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
-            if (!await withContext(
-                (context) => _authIfNeeded(context, devicePath, pivState))) {
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
               return false;
             }
 
@@ -243,8 +256,8 @@ class PivActions extends ConsumerWidget {
         if (hasFeature(features.slotsDelete))
           DeleteIntent<PivSlot>:
               CallbackAction<DeleteIntent<PivSlot>>(onInvoke: (intent) async {
-            if (!await withContext(
-                (context) => _authIfNeeded(context, devicePath, pivState))) {
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
               return false;
             }
 

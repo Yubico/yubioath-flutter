@@ -32,14 +32,18 @@ import '../state.dart';
 
 final _log = Logger('desktop.fido.state');
 
-final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
-  (ref, _) => null,
+final _pinProvider = StateProvider.family<String?, DevicePath>(
+  (ref, _) {
+    // Clear PIN if current device is changed
+    ref.watch(currentDeviceProvider);
+    return null;
+  },
 );
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
   (ref, devicePath) {
-    // Make sure the pinProvider is held for the duration of the session.
+    // Refresh state when PIN is changed
     ref.watch(_pinProvider(devicePath));
     return RpcNodeSession(
         ref.watch(rpcProvider).requireValue, devicePath, ['fido', 'ctap2']);

@@ -66,7 +66,7 @@
     "s_settings": "Paramètres",
     "l_settings_desc": null,
     "s_certificates": "Certificats",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": null,
     "s_slots": null,
     "s_help_and_about": "Aide et à propos",
     "l_help_and_about_desc": null,
@@ -233,6 +233,8 @@
     "s_confirm_pin": "Confirmez le PIN",
     "s_confirm_puk": "Confirmez le PUK",
     "s_unblock_pin": "Débloquer le PIN",
+    "l_pin_mismatch": null,
+    "l_puk_mismatch": null,
     "l_new_pin_len": "Le nouveau PIN doit avoir au moins {length} caractères",
     "@l_new_pin_len": {
         "placeholders": {
@@ -309,6 +311,7 @@
     "s_new_password": "Nouveau mot de passe",
     "s_current_password": "Mot de passe actuel",
     "s_confirm_password": "Confirmez le mot de passe",
+    "l_password_mismatch": null,
     "s_wrong_password": "Mauvais mot de passe",
     "s_remove_password": "Supprimer le mot de passe",
     "s_password_removed": "Mot de passe supprimé",

@@ -91,25 +91,25 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
 });
 
 class _AndroidAppContextHandler {
-  Future<void> switchAppContext(Application subPage) async {
-    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
+  Future<void> switchAppContext(Section section) async {
+    await _contextChannel.invokeMethod('setContext', {'index': section.index});
   }
 }
 
 final androidAppContextHandler =
     Provider<_AndroidAppContextHandler>((ref) => _AndroidAppContextHandler());
 
-class AndroidSubPageNotifier extends CurrentAppNotifier {
-  final StateNotifierProviderRef<CurrentAppNotifier, Application> _ref;
+class AndroidSectionNotifier extends CurrentSectionNotifier {
+  final StateNotifierProviderRef<CurrentSectionNotifier, Section> _ref;
 
-  AndroidSubPageNotifier(this._ref, super.supportedApps, super.prefs) {
+  AndroidSectionNotifier(this._ref, super._supportedSections, super.prefs) {
     _ref.read(androidAppContextHandler).switchAppContext(state);
   }
 
   @override
-  void setCurrentApp(Application app) {
-    super.setCurrentApp(app);
-    _ref.read(androidAppContextHandler).switchAppContext(app);
+  void setCurrentSection(Section section) {
+    super.setCurrentSection(section);
+    _ref.read(androidAppContextHandler).switchAppContext(section);
   }
 
   @override

@@ -35,8 +35,7 @@ abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
     bool storeKey = false,
   });
 
-  Future<PinVerificationStatus> verifyPin(
-      String pin); //TODO: Maybe return authenticated?
+  Future<PinVerificationStatus> verifyPin(String pin);
   Future<PinVerificationStatus> changePin(String pin, String newPin);
   Future<PinVerificationStatus> changePuk(String puk, String newPuk);
   Future<PinVerificationStatus> unblockPin(String puk, String newPin);

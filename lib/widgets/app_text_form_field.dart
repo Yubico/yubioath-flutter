@@ -20,6 +20,7 @@ import 'app_input_decoration.dart';
 
 /// TextFormField without autocorrect and suggestions
 class AppTextFormField extends TextFormField {
+  final AppInputDecoration? decoration;
   AppTextFormField({
     // default settings to turn off autocorrect
     super.autocorrect = false,
@@ -30,7 +31,7 @@ class AppTextFormField extends TextFormField {
     super.controller,
     super.initialValue,
     super.focusNode,
-    AppInputDecoration? decoration,
+    this.decoration,
     super.textCapitalization,
     super.textInputAction,
     super.style,
@@ -90,4 +91,13 @@ class AppTextFormField extends TextFormField {
     super.scribbleEnabled,
     super.canRequestFocus,
   }) : super(decoration: decoration);
+
+  Widget init() => Builder(
+        builder: (context) => DefaultSelectionStyle(
+          selectionColor: decoration?.errorText != null
+              ? Theme.of(context).colorScheme.error
+              : null,
+          child: this,
+        ),
+      );
 }

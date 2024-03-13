@@ -66,7 +66,7 @@
     "s_settings": "設定",
     "l_settings_desc": null,
     "s_certificates": "証明書",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": null,
     "s_slots": null,
     "s_help_and_about": "ヘルプと概要",
     "l_help_and_about_desc": null,
@@ -233,6 +233,8 @@
     "s_confirm_pin": "PINの確認",
     "s_confirm_puk": "PUKの確認",
     "s_unblock_pin": "ブロックを解除",
+    "l_pin_mismatch": null,
+    "l_puk_mismatch": null,
     "l_new_pin_len": "新しいPINは少なくとも{length}文字である必要があります",
     "@l_new_pin_len": {
         "placeholders": {
@@ -309,6 +311,7 @@
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
     "s_confirm_password": "パスワードを確認",
+    "l_password_mismatch": null,
     "s_wrong_password": "間違ったパスワード",
     "s_remove_password": "パスワードの削除",
     "s_password_removed": "パスワードが削除されました",

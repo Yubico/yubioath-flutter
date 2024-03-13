@@ -56,9 +56,9 @@ Future<Widget> initialize() async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(
+      supportedSectionsProvider.overrideWith(
         (ref) {
-          return [Application.home, Application.accounts, Application.passkeys];
+          return [Section.home, Section.accounts, Section.passkeys];
         },
       ),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
@@ -72,10 +72,10 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentAppProvider.overrideWith((ref) {
-        final notifier = AndroidSubPageNotifier(
+      currentSectionProvider.overrideWith((ref) {
+        final notifier = AndroidSectionNotifier(
           ref,
-          ref.watch(supportedAppsProvider),
+          ref.watch(supportedSectionsProvider),
           ref.watch(prefProvider),
         );
         ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,

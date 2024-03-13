@@ -48,7 +48,7 @@ extension on Capability {
   IconData get _icon => switch (this) {
         Capability.oath => Symbols.supervisor_account,
         Capability.fido2 => Symbols.passkey,
-        Capability.piv => Symbols.approval,
+        Capability.piv => Symbols.badge,
         _ => throw UnsupportedError('Icon not defined'),
       };
 }
@@ -256,10 +256,10 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       if (isAndroid) {
                         // switch current app context
                         ref
-                            .read(currentAppProvider.notifier)
-                            .setCurrentApp(switch (_application) {
-                              Capability.oath => Application.accounts,
-                              Capability.fido2 => Application.passkeys,
+                            .read(currentSectionProvider.notifier)
+                            .setCurrentSection(switch (_application) {
+                              Capability.oath => Section.accounts,
+                              Capability.fido2 => Section.passkeys,
                               _ => throw UnimplementedError(
                                   'Reset for $_application is not implemented')
                             });

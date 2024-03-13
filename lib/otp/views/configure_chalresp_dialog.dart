@@ -166,7 +166,7 @@ class _ConfigureChalrespDialogState
                   _validateSecret = false;
                 });
               },
-            ),
+            ).init(),
             FilterChip(
               label: Text(l10n.s_require_touch),
               selected: _requireTouch,
