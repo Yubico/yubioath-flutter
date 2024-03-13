@@ -23,7 +23,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/error_data_empty.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -34,6 +33,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
@@ -65,7 +65,7 @@ class OathScreen extends ConsumerWidget {
               graphic: CircularProgressIndicator(),
               delayedContent: true,
             ),
-        error: (error, _) => error is ErrorDataEmpty
+        error: (error, _) => error is NoDataException
             ? MessagePageNotInitialized(title: l10n.s_accounts)
             : AppFailurePage(
                 cause: error,

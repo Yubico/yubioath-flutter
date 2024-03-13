@@ -16,6 +16,8 @@
 
 package com.yubico.authenticator.fido.data
 
+import com.yubico.authenticator.JsonSerializable
+import com.yubico.authenticator.jsonSerializer
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
 import kotlinx.serialization.*
 
@@ -87,8 +89,12 @@ data class Session(
     @SerialName("info")
     val info: SessionInfo,
     val unlocked: Boolean
-) {
+) : JsonSerializable {
    constructor(infoData: InfoData, unlocked: Boolean) : this(
         SessionInfo(infoData), unlocked
     )
+
+    override fun toJson(): String {
+        return jsonSerializer.encodeToString(this)
+    }
 }

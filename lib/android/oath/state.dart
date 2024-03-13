@@ -24,13 +24,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/error_data_empty.dart';
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
@@ -52,8 +52,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
-        state = AsyncValue.error(const ErrorDataEmpty(), StackTrace.current);
-      } else if (json[0] is Map && json[0]['loading'] == true) {
+        state = AsyncValue.error(const NoDataException(), StackTrace.current);
+      } else if (json == 'loading') {
         state = const AsyncValue.loading();
       } else {
         final oathState = OathState.fromJson(json);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package com.yubico.authenticator.oath
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yubico.authenticator.SessionState
-import com.yubico.authenticator.JsonSerializable
+import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.Credential
 import com.yubico.authenticator.oath.data.CredentialWithCode
@@ -28,30 +27,29 @@ import com.yubico.authenticator.oath.data.Session
 
 class OathViewModel: ViewModel() {
 
-    private val _sessionState = MutableLiveData<SessionState>()
-    val sessionState: LiveData<SessionState> = _sessionState
+    private val _sessionState = MutableLiveData<ViewModelData>()
+    val sessionState: LiveData<ViewModelData> = _sessionState
 
-    fun currentSession() : Session? = (sessionState.value as? SessionState.Value<*>)?.data as Session?
+    fun currentSession() : Session? = (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
 
     // Sets session and credentials after performing OATH reset
     // Note: we cannot use [setSessionState] because resetting OATH changes deviceId
     fun resetOathSession(sessionState: Session, credentials: Map<Credential, Code?>) {
-        _sessionState.postValue(SessionState.Value(sessionState))
+        _sessionState.postValue(ViewModelData.Value(sessionState))
         updateCredentials(credentials)
     }
 
-    fun setSessionState(sessionState: Session?) {
+    fun setSessionState(sessionState: Session) {
         val oldDeviceId = currentSession()?.deviceId
-
-        if (sessionState == null) {
-            _sessionState.postValue(SessionState.Empty)
-        } else {
-            _sessionState.postValue(SessionState.Value(sessionState))
-        }
-
-        if(oldDeviceId != sessionState?.deviceId) {
+        _sessionState.postValue(ViewModelData.Value(sessionState))
+        if(oldDeviceId != sessionState.deviceId) {
             _credentials.postValue(null)
         }
+    }
+
+    fun clearSession() {
+        _sessionState.postValue(ViewModelData.Empty)
+        _credentials.postValue(null)
     }
 
     private val _credentials = MutableLiveData<List<CredentialWithCode>?>()

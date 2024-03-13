@@ -136,14 +136,6 @@ class FidoManager(
                 else -> throw NotImplementedError()
             }
         }
-
-        if (!deviceManager.isUsbKeyConnected()) {
-            // for NFC connections require extra tap when switching context
-            if (fidoViewModel.sessionState.value == null) {
-                fidoViewModel.clearSessionState()
-            }
-        }
-
     }
 
     override fun dispose() {
@@ -151,7 +143,7 @@ class FidoManager(
         deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
         fidoViewModel.clearSessionState()
-        fidoViewModel.clearCredentials()
+        fidoViewModel.updateCredentials(emptyList())
         coroutineScope.cancel()
     }
 
@@ -198,7 +190,7 @@ class FidoManager(
                 YubiKitFidoSession(connection as SmartCardConnection)
             }
 
-        val previousSession = fidoViewModel.sessionState.value?.data?.info
+        val previousSession = fidoViewModel.currentSession()?.info
         val currentSession = SessionInfo(fidoSession.cachedInfo)
         logger.debug(
             "Previous session: {}, current session: {}",
@@ -286,7 +278,7 @@ class FidoManager(
                 ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED
             ) {
                 pinStore.setPin(null)
-                fidoViewModel.clearCredentials()
+                fidoViewModel.updateCredentials(emptyList())
                 val pinRetriesResult = clientPin.pinRetries
                 JSONObject(
                     mapOf(
@@ -356,9 +348,6 @@ class FidoManager(
         pinUvAuthToken: ByteArray
     ): List<FidoCredential> =
         try {
-
-            fidoViewModel.setCredentialsLoadingState()
-
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, pinUvAuthToken)
             val rpIds = credMan.enumerateRps()
 
@@ -394,7 +383,7 @@ class FidoManager(
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, token)
 
             val credentialDescriptor =
-                fidoViewModel.credentials.value?.data?.firstOrNull {
+                fidoViewModel.credentials.value?.firstOrNull {
                     it.credentialId == credentialId && it.rpId == rpId
                 }?.publicKeyCredentialDescriptor
 

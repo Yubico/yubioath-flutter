@@ -19,45 +19,39 @@ package com.yubico.authenticator.fido
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yubico.authenticator.ChannelData
+import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.Session
 
 class FidoViewModel : ViewModel() {
-    private val _sessionState = MutableLiveData<ChannelData<Session?>>()
-    val sessionState: LiveData<ChannelData<Session?>> = _sessionState
+    private val _sessionState = MutableLiveData<ViewModelData>()
+    val sessionState: LiveData<ViewModelData> = _sessionState
 
-    fun setSessionState(sessionState: Session?) {
-        _sessionState.postValue(ChannelData(sessionState))
+    fun currentSession() : Session? = (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
+
+    fun setSessionState(sessionState: Session) {
+        _sessionState.postValue(ViewModelData.Value(sessionState))
     }
 
     fun clearSessionState() {
-        _sessionState.postValue(ChannelData.empty())
+        _sessionState.postValue(ViewModelData.Empty)
     }
 
     fun setSessionLoadingState() {
-        _sessionState.postValue(ChannelData.loading())
+        _sessionState.postValue(ViewModelData.Loading)
     }
 
-    private val _credentials = MutableLiveData<ChannelData<List<FidoCredential>?>>()
-    val credentials: LiveData<ChannelData<List<FidoCredential>?>> = _credentials
-
-    fun setCredentialsLoadingState() {
-        _credentials.postValue(ChannelData.loading())
-    }
+    private val _credentials = MutableLiveData<List<FidoCredential>>()
+    val credentials: LiveData<List<FidoCredential>> = _credentials
 
     fun updateCredentials(credentials: List<FidoCredential>) {
-        _credentials.postValue(ChannelData(credentials))
-    }
-
-    fun clearCredentials() {
-        _credentials.postValue(ChannelData.empty())
+        _credentials.postValue(credentials)
     }
 
     fun removeCredential(rpId: String, credentialId: String) {
-        _credentials.postValue(ChannelData(_credentials.value?.data?.filter {
+        _credentials.postValue(_credentials.value?.filter {
             it.credentialId != credentialId || it.rpId != rpId
-        }))
+        })
     }
 
     private val _resetState = MutableLiveData(FidoResetState.Remove.value)

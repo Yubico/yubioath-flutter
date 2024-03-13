@@ -21,11 +21,11 @@ import '../core/state.dart';
 import 'models.dart';
 
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoStateNotifier, FidoState?, DevicePath>(
+    .family<FidoStateNotifier, FidoState, DevicePath>(
   () => throw UnimplementedError(),
 );
 
-abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState?> {
+abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Stream<InteractionEvent> reset();
   Future<PinResult> setPin(String newPin, {String? oldPin});
   Future<PinResult> unlock(String pin);

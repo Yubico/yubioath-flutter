@@ -24,6 +24,7 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
@@ -33,19 +34,19 @@ final _log = Logger('android.fido.state');
 const _methods = MethodChannel('android.fido.methods');
 
 final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoStateNotifier, FidoState?, DevicePath>(_FidoStateNotifier.new);
+    .family<FidoStateNotifier, FidoState, DevicePath>(_FidoStateNotifier.new);
 
 class _FidoStateNotifier extends FidoStateNotifier {
   final _events = const EventChannel('android.fido.sessionState');
   late StreamSubscription _sub;
 
   @override
-  FutureOr<FidoState?> build(DevicePath devicePath) async {
+  FutureOr<FidoState> build(DevicePath devicePath) async {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
-        state = const AsyncValue.data(null);
-      } else if (json.containsKey('loading') && json['loading'] == true) {
+        state = AsyncValue.error(const NoDataException(), StackTrace.current);
+      } else if (json == 'loading') {
         state = const AsyncValue.loading();
       } else {
         final fidoState = FidoState.fromJson(json);
@@ -57,7 +58,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
     ref.onDispose(_sub.cancel);
 
-    return Completer<FidoState?>().future;
+    return Completer<FidoState>().future;
   }
 
   @override
@@ -191,8 +192,6 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
-        state = const AsyncValue.data(null);
-      } else if (json[0] is Map && json[0]['loading'] == true) {
         state = const AsyncValue.loading();
       } else {
         List<FidoCredential> newState = List.from(

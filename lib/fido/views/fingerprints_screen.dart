@@ -31,6 +31,7 @@ import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -45,6 +46,7 @@ import 'pin_entry_form.dart';
 
 class FingerprintsScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
+
   const FingerprintsScreen(this.deviceData, {super.key});
 
   @override
@@ -57,6 +59,9 @@ class FingerprintsScreen extends ConsumerWidget {
               builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
+          if (error is NoDataException) {
+            return MessagePageNotInitialized(title: l10n.s_fingerprints);
+          }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
               0;
@@ -74,11 +79,9 @@ class FingerprintsScreen extends ConsumerWidget {
           );
         },
         data: (fidoState) {
-          return fidoState == null
-              ? MessagePageNotInitialized(title: l10n.s_fingerprints)
-              : fidoState.unlocked
-                  ? _FidoUnlockedPage(deviceData.node, fidoState)
-                  : _FidoLockedPage(deviceData.node, fidoState);
+          return fidoState.unlocked
+              ? _FidoUnlockedPage(deviceData.node, fidoState)
+              : _FidoLockedPage(deviceData.node, fidoState);
         });
   }
 }

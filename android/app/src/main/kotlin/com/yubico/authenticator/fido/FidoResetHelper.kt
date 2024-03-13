@@ -202,7 +202,7 @@ class FidoResetHelper(
         logger.debug("Calling FIDO reset")
         fidoSession.reset(resetCommandState)
         fidoViewModel.setSessionState(Session(fidoSession.info, true))
-        fidoViewModel.clearCredentials()
+        fidoViewModel.updateCredentials(emptyList())
         pinStore.setPin(null)
     }
 

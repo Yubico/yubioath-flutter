@@ -200,13 +200,6 @@ class OathManager(
                 else -> throw NotImplementedError()
             }
         }
-
-        if (!deviceManager.isUsbKeyConnected()) {
-            // for NFC connections require extra tap when switching context
-            if (oathViewModel.sessionState.value is SessionState.Empty) {
-                oathViewModel.setSessionState(null)
-            }
-        }
     }
 
     override fun dispose() {
@@ -214,7 +207,7 @@ class OathManager(
         deviceManager.removeDeviceListener(this)
         oathViewModel.credentials.removeObserver(credentialObserver)
         oathChannel.setMethodCallHandler(null)
-        oathViewModel.setSessionState(null)
+        oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
         coroutineScope.cancel()
     }
@@ -325,7 +318,7 @@ class OathManager(
             }
 
             // Clear any cached OATH state
-            oathViewModel.setSessionState(null)
+            oathViewModel.clearSession()
         }
     }
 
@@ -752,10 +745,10 @@ class OathManager(
 
     override fun onDisconnected() {
         refreshJob?.cancel()
-        oathViewModel.setSessionState(null)
+        oathViewModel.clearSession()
     }
 
     override fun onTimeout() {
-        oathViewModel.setSessionState(null)
+        oathViewModel.clearSession()
     }
 }

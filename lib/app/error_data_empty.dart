@@ -1,3 +1,0 @@
-class ErrorDataEmpty {
-  const ErrorDataEmpty();
-}
