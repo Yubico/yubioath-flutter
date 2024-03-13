@@ -180,7 +180,7 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 final androidCredentialProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoCredentialsNotifier, List<FidoCredential>?, DevicePath>(
+    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
         _FidoCredentialsNotifier.new);
 
 class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
@@ -188,7 +188,7 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   late StreamSubscription _sub;
 
   @override
-  FutureOr<List<FidoCredential>?> build(DevicePath devicePath) async {
+  FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
@@ -203,7 +203,7 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
     });
 
     ref.onDispose(_sub.cancel);
-    return Completer<List<FidoCredential>?>().future;
+    return Completer<List<FidoCredential>>().future;
   }
 
   @override

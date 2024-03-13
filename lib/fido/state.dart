@@ -44,11 +44,11 @@ abstract class FidoFingerprintsNotifier
 }
 
 final credentialProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoCredentialsNotifier, List<FidoCredential>?, DevicePath>(
+    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
   () => throw UnimplementedError(),
 );
 
 abstract class FidoCredentialsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<FidoCredential>?, DevicePath> {
+    extends AutoDisposeFamilyAsyncNotifier<List<FidoCredential>, DevicePath> {
   Future<void> deleteCredential(FidoCredential credential);
 }

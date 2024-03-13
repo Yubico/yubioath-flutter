@@ -237,10 +237,6 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     }
     final credentials = data.value;
 
-    if (credentials == null) {
-      return _buildLoadingPage(context);
-    }
-
     if (credentials.isEmpty) {
       return MessagePage(
         title: l10n.s_passkeys,

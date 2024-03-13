@@ -269,7 +269,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 final desktopCredentialProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoCredentialsNotifier, List<FidoCredential>?, DevicePath>(
+    .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
         _DesktopFidoCredentialsNotifier.new);
 
 class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
