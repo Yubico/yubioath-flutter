@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,16 +42,6 @@ class _NavigationProvider extends StateNotifier<bool> {
 
   void toggleExpanded() {
     state = !state;
-  }
-}
-
-class _ScrolledUnderProvider extends StateNotifier<bool> {
-  _ScrolledUnderProvider() : super(false);
-
-  void toggleScrolledUnder(bool scrolledUnder) {
-    if (state != scrolledUnder) {
-      state = scrolledUnder;
-    }
   }
 }
 
@@ -103,51 +95,54 @@ class AppPage extends ConsumerStatefulWidget {
 }
 
 class _AppPageState extends ConsumerState<AppPage> {
-  final _sliverTitleProvider =
-      StateNotifierProvider<_ScrolledUnderProvider, bool>(
-          (ref) => _ScrolledUnderProvider());
-  final _navViewProvider = StateNotifierProvider<_ScrolledUnderProvider, bool>(
-      (ref) => _ScrolledUnderProvider());
-  final _detailsViewProvider =
-      StateNotifierProvider<_ScrolledUnderProvider, bool>(
-          (ref) => _ScrolledUnderProvider());
+  final _VisibilityController _sliverTitleController = _VisibilityController();
+  final _VisibilityController _navController = _VisibilityController();
+  final _VisibilityController _detailsController = _VisibilityController();
+  late _VisibilitiesController _scrolledUnderController;
 
-  bool _scrolledUnderAppBar(GlobalKey key) {
-    final currentContext = key.currentContext;
-    if (currentContext != null) {
-      final RenderBox renderBox =
-          currentContext.findRenderObject() as RenderBox;
-      final appBarHeight = MediaQuery.of(context).padding.top + kToolbarHeight;
-      final position = renderBox.localToGlobal(Offset.zero);
+  final ScrollController _sliverTitleScrollController = ScrollController();
 
-      return appBarHeight - position.dy > 0;
-    }
-    return false;
+  @override
+  void initState() {
+    super.initState();
+    _scrolledUnderController = _VisibilitiesController(
+        [_sliverTitleController, _navController, _detailsController]);
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          if (width < 400 ||
-              (isAndroid && width < 600 && width < constraints.maxHeight)) {
-            return _buildScaffold(context, true, false, false);
+  void dispose() {
+    _sliverTitleController.dispose();
+    _navController.dispose();
+    _detailsController.dispose();
+    _scrolledUnderController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        if (width < 400 ||
+            (isAndroid && width < 600 && width < constraints.maxHeight)) {
+          return _buildScaffold(context, true, false, false);
+        }
+        if (width < 800) {
+          return _buildScaffold(context, true, true, false);
+        }
+        if (width < 1000) {
+          return _buildScaffold(context, true, true, true);
+        } else {
+          // Fully expanded layout, close existing drawer if open
+          final scaffoldState = scaffoldGlobalKey.currentState;
+          if (scaffoldState?.isDrawerOpen == true) {
+            scaffoldState?.openEndDrawer();
           }
-          if (width < 800) {
-            return _buildScaffold(context, true, true, false);
-          }
-          if (width < 1000) {
-            return _buildScaffold(context, true, true, true);
-          } else {
-            // Fully expanded layout, close existing drawer if open
-            final scaffoldState = scaffoldGlobalKey.currentState;
-            if (scaffoldState?.isDrawerOpen == true) {
-              scaffoldState?.openEndDrawer();
-            }
-            return _buildScaffold(context, false, true, true);
-          }
-        },
-      );
+          return _buildScaffold(context, false, true, true);
+        }
+      },
+    );
+  }
 
   Widget _buildLogo(BuildContext context) {
     final color =
@@ -193,51 +188,73 @@ class _AppPageState extends ConsumerState<AppPage> {
     ));
   }
 
-  Widget _buildTitle(BuildContext context, bool? visible) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        AnimatedOpacity(
-          opacity: visible ?? true ? 1 : 0,
-          duration: const Duration(milliseconds: 300),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Text(
-                  widget.alternativeTitle ?? widget.title!,
-                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                        color: widget.alternativeTitle != null
-                            ? Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant
-                                .withOpacity(0.4)
-                            : Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withOpacity(0.9),
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+  void _scrollTitle(BuildContext context, _ScrollDirection direction) {
+    if (direction != _ScrollDirection.idle) {
+      if (direction == _ScrollDirection.up) {
+        final currentContext = _sliverTitleGlobalKey.currentContext;
+        if (currentContext != null) {
+          final RenderBox renderBox =
+              currentContext.findRenderObject() as RenderBox;
+          final appBarHeight = Scaffold.of(context).appBarMaxHeight!;
+          final targetHeight = renderBox.size.height;
+          final position = renderBox.localToGlobal(Offset.zero);
+          _sliverTitleScrollController.animateTo(
+              _sliverTitleScrollController.position.pixels +
+                  (targetHeight - (appBarHeight - position.dy)),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.ease);
+        }
+      } else {
+        Timer.run(() {
+          Scrollable.ensureVisible(_sliverTitleGlobalKey.currentContext!,
+              duration: const Duration(milliseconds: 300));
+        });
+      }
+    }
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    return ListenableBuilder(
+      listenable: _sliverTitleController,
+      builder: (context, child) {
+        _scrollTitle(context, _sliverTitleController.scrollDirection);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                key: _sliverTitleGlobalKey,
+                widget.alternativeTitle ?? widget.title!,
+                style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      color: widget.alternativeTitle != null
+                          ? Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withOpacity(0.4)
+                          : Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.9),
+                    ),
+                overflow: TextOverflow.ellipsis,
               ),
-              if (widget.capabilities != null &&
-                  widget.alternativeTitle == null)
-                Wrap(
-                  spacing: 4.0,
-                  runSpacing: 8.0,
-                  children: [
-                    ...widget.capabilities!.map((c) => CapabilityBadge(c))
-                  ],
-                )
-            ],
-          ),
-        )
-      ],
+            ),
+            if (widget.capabilities != null && widget.alternativeTitle == null)
+              Wrap(
+                spacing: 4.0,
+                runSpacing: 8.0,
+                children: [
+                  ...widget.capabilities!.map((c) => CapabilityBadge(c))
+                ],
+              )
+          ],
+        );
+      },
     );
   }
 
-  Widget? _buildAppBarTitle(BuildContext context, bool hasRail, bool hasManage,
-      bool fullyExpanded, bool visible) {
+  Widget? _buildAppBarTitle(
+      BuildContext context, bool hasRail, bool hasManage, bool fullyExpanded) {
     final showNavigation = ref.watch(_navigationProvider);
     EdgeInsets padding;
     if (fullyExpanded) {
@@ -253,13 +270,19 @@ class _AppPageState extends ConsumerState<AppPage> {
     }
 
     if (widget.title != null) {
-      return Padding(
-        padding: padding,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          opacity: visible ? 1 : 0,
-          child: Text(widget.alternativeTitle ?? widget.title!),
-        ),
+      return ListenableBuilder(
+        listenable: _sliverTitleController,
+        builder: (context, child) {
+          final visible = !_sliverTitleController.isVisible;
+          return Padding(
+            padding: padding,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: visible ? 1 : 0,
+              child: Text(widget.alternativeTitle ?? widget.title!),
+            ),
+          );
+        },
       );
     }
 
@@ -323,7 +346,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               child: Padding(
                 padding: const EdgeInsets.only(
                     left: 16.0, right: 16.0, bottom: 24.0),
-                child: _buildTitle(context, null),
+                child: _buildTitle(context),
               ),
             ),
           ),
@@ -344,23 +367,12 @@ class _AppPageState extends ConsumerState<AppPage> {
       ]);
     }
     if (widget.title != null) {
-      return NotificationListener<ScrollMetricsNotification>(
-        onNotification: (notification) {
-          final isSliverScrolledUnder = ref.read(_sliverTitleProvider);
-          final scrolledUnder = _scrolledUnderAppBar(_sliverTitleGlobalKey);
-          if (isSliverScrolledUnder != scrolledUnder &&
-              isSliverScrolledUnder &&
-              !scrolledUnder) {
-            Scrollable.ensureVisible(_sliverTitleGlobalKey.currentContext!,
-                duration: const Duration(milliseconds: 300));
-          }
-          ref
-              .read(_sliverTitleProvider.notifier)
-              .toggleScrolledUnder(scrolledUnder);
-
-          return false;
-        },
+      return _VisibilityListener(
+        targetKey: _sliverTitleGlobalKey,
+        controller: _sliverTitleController,
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
             SliverMainAxisGroup(
@@ -369,21 +381,14 @@ class _AppPageState extends ConsumerState<AppPage> {
                   child: ColoredBox(
                     color: Theme.of(context).colorScheme.background,
                     child: Padding(
-                        key: _sliverTitleGlobalKey,
-                        padding: const EdgeInsets.only(
-                            left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            final visible = !ref.watch(_sliverTitleProvider);
-                            return _buildTitle(context, visible);
-                          },
-                        )),
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
+                      child: _buildTitle(context),
+                    ),
                   ),
                 ),
                 if (widget.headerSliver != null)
-                  SliverToBoxAdapter(
-                    child: widget.headerSliver,
-                  )
+                  SliverToBoxAdapter(child: widget.headerSliver)
               ],
             ),
             SliverToBoxAdapter(child: safeArea)
@@ -418,13 +423,9 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasRail && (!fullyExpanded || !showNavigation))
             SizedBox(
               width: 72,
-              child: NotificationListener(
-                onNotification: (_) {
-                  ref
-                      .read(_navViewProvider.notifier)
-                      .toggleScrolledUnder(_scrolledUnderAppBar(_navKey));
-                  return false;
-                },
+              child: _VisibilityListener(
+                targetKey: _navKey,
+                controller: _navController,
                 child: SingleChildScrollView(
                   child: NavigationContent(
                     key: _navKey,
@@ -437,12 +438,9 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (fullyExpanded && showNavigation)
             SizedBox(
                 width: 280,
-                child: NotificationListener(
-                  onNotification: (_) {
-                    ref.read(_navViewProvider.notifier).toggleScrolledUnder(
-                        _scrolledUnderAppBar(_navExpandedKey));
-                    return false;
-                  },
+                child: _VisibilityListener(
+                  controller: _navController,
+                  targetKey: _navExpandedKey,
                   child: SingleChildScrollView(
                     child: NavigationContent(
                       key: _navExpandedKey,
@@ -468,12 +466,9 @@ class _AppPageState extends ConsumerState<AppPage> {
           if (hasManage &&
               (widget.detailViewBuilder != null ||
                   widget.keyActionsBuilder != null))
-            NotificationListener(
-              onNotification: (_) {
-                ref.read(_detailsViewProvider.notifier).toggleScrolledUnder(
-                    _scrolledUnderAppBar(_detailsViewGlobalKey));
-                return false;
-              },
+            _VisibilityListener(
+              controller: _detailsController,
+              targetKey: _detailsViewGlobalKey,
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -500,14 +495,13 @@ class _AppPageState extends ConsumerState<AppPage> {
       appBar: AppBar(
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Consumer(
-            builder: (context, ref, child) {
-              final visible = ref.watch(_sliverTitleProvider) ||
-                  ref.watch(_navViewProvider) ||
-                  ref.watch(_detailsViewProvider);
+          child: ListenableBuilder(
+            listenable: _scrolledUnderController,
+            builder: (context, child) {
+              final visible = _scrolledUnderController.someIsScrolledUnder;
               return AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
                 opacity: visible ? 1 : 0,
+                duration: const Duration(milliseconds: 300),
                 child: Container(
                   color: Theme.of(context).colorScheme.secondaryContainer,
                   height: 1.0,
@@ -519,15 +513,12 @@ class _AppPageState extends ConsumerState<AppPage> {
         scrolledUnderElevation: 0.0,
         leadingWidth: hasRail ? 84 : null,
         backgroundColor: Theme.of(context).colorScheme.background,
-        title: widget.title != null
-            ? Consumer(
-                builder: (context, ref, child) {
-                  final visible = ref.watch(_sliverTitleProvider);
-                  return _buildAppBarTitle(
-                      context, hasRail, hasManage, fullyExpanded, visible)!;
-                },
-              )
-            : null,
+        title: _buildAppBarTitle(
+          context,
+          hasRail,
+          hasManage,
+          fullyExpanded,
+        ),
         leading: hasRail
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -609,5 +600,131 @@ class CapabilityBadge extends StatelessWidget {
         capability.getDisplayName(l10n),
       ),
     );
+  }
+}
+
+class _VisibilityController with ChangeNotifier {
+  bool isVisible = true;
+  _ScrollDirection scrollDirection = _ScrollDirection.idle;
+
+  void setVisibility(bool visibility) {
+    if (visibility != isVisible) {
+      isVisible = visibility;
+      if (!visibility) {
+        scrollDirection = _ScrollDirection.idle;
+      }
+      notifyListeners();
+    }
+  }
+
+  void notifyScroll(_ScrollDirection direction) {
+    if (isVisible) {
+      scrollDirection = direction;
+      notifyListeners();
+    }
+  }
+}
+
+enum _ScrollDirection { idle, up, down }
+
+class _VisibilitiesController with ChangeNotifier {
+  final List<_VisibilityController> controllers;
+  bool someIsScrolledUnder = false;
+  _VisibilitiesController(this.controllers) {
+    for (var element in controllers) {
+      element.addListener(() {
+        _setScrolledUnder();
+      });
+    }
+  }
+
+  void _setScrolledUnder() {
+    final val = controllers.any((element) => !element.isVisible);
+    if (val != someIsScrolledUnder) {
+      someIsScrolledUnder = val;
+      notifyListeners();
+    }
+  }
+}
+
+class _VisibilityListener extends StatefulWidget {
+  final _VisibilityController controller;
+  final Widget child;
+  final GlobalKey targetKey;
+  const _VisibilityListener({
+    required this.controller,
+    required this.child,
+    required this.targetKey,
+  });
+
+  @override
+  State<_VisibilityListener> createState() => _VisibilityListenerState();
+}
+
+class _VisibilityListenerState extends State<_VisibilityListener> {
+  bool isMouseWheel = false;
+
+  @override
+  Widget build(BuildContext context) => Listener(
+        onPointerSignal: (event) {
+          if (event is PointerScrollEvent) {
+            if (!isMouseWheel) {
+              setState(() {
+                isMouseWheel = true;
+              });
+              Timer(const Duration(seconds: 1), () {
+                setState(() {
+                  isMouseWheel = false;
+                });
+              });
+            }
+          }
+        },
+        child: NotificationListener(
+          onNotification: (notification) {
+            if (notification is ScrollMetricsNotification ||
+                notification is ScrollUpdateNotification) {
+              widget.controller.setVisibility(
+                  !_scrolledUnderAppBar(context, widget.targetKey, false));
+            }
+
+            if (notification is ScrollEndNotification &&
+                widget.child is CustomScrollView) {
+              // Disable auto scrolling for mouse wheel
+              if (!isMouseWheel) {
+                final shouldScrollUp =
+                    _scrolledUnderAppBar(context, widget.targetKey, true);
+
+                widget.controller.notifyScroll(shouldScrollUp
+                    ? _ScrollDirection.up
+                    : _ScrollDirection.down);
+              }
+            }
+            return false;
+          },
+          child: widget.child,
+        ),
+      );
+
+  bool _scrolledUnderAppBar(
+      BuildContext context, GlobalKey key, bool checkHalfVisible) {
+    final currentContext = key.currentContext;
+    if (currentContext != null) {
+      final RenderBox renderBox =
+          currentContext.findRenderObject() as RenderBox;
+      final appBarHeight = Scaffold.of(context).appBarMaxHeight!;
+      final targetHeight = renderBox.size.height;
+      final position = renderBox.localToGlobal(Offset.zero);
+
+      if (widget.child is SingleChildScrollView) {
+        return appBarHeight - position.dy > 0;
+      } else if (checkHalfVisible) {
+        // Check if more than half of the target is scrolled under
+        return appBarHeight - position.dy > targetHeight / 2;
+      } else {
+        return appBarHeight - position.dy > targetHeight - 10;
+      }
+    }
+    return false;
   }
 }

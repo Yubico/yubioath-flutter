@@ -14,21 +14,39 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/views/message_page.dart';
 import '../../management/models.dart';
 
-class WebAuthnScreen extends StatelessWidget {
+class WebAuthnScreen extends StatefulWidget {
   const WebAuthnScreen({super.key});
 
   @override
+  State<WebAuthnScreen> createState() => _WebAuthnScreenState();
+}
+
+class _WebAuthnScreenState extends State<WebAuthnScreen> {
+  bool hide = true;
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    // We need this to avoid unwanted app switch animation
+    if (hide) {
+      Timer.run(() {
+        setState(() {
+          hide = false;
+        });
+      });
+    }
     return MessagePage(
-      title: l10n.s_security_key,
+      title: hide ? null : l10n.s_security_key,
       capabilities: const [Capability.u2f],
+      delayedContent: hide,
       header: l10n.l_ready_to_use,
       message: l10n.l_register_sk_on_websites,
     );
