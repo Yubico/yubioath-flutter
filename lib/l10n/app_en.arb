@@ -745,7 +745,7 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
 
-    "s_nfc_dialog_tap_key": "Tap and hold your key",
+    "l_nfc_dialog_tap_key": "Tap and hold your key",
     "s_nfc_dialog_operation_success": "Success",
     "s_nfc_dialog_operation_failed": "Failed",
 

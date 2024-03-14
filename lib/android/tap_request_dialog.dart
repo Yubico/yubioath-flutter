@@ -154,7 +154,7 @@ class _DialogProvider {
   String _getTitle(BuildContext context, int? titleId) {
     final l10n = AppLocalizations.of(context)!;
     return switch (_DTitle.fromId(titleId)) {
-      _DTitle.tapKey => l10n.s_nfc_dialog_tap_key,
+      _DTitle.tapKey => l10n.l_nfc_dialog_tap_key,
       _DTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
       _DTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
       _ => ''

@@ -745,7 +745,7 @@
     "l_launch_app_on_usb_off": "D'autres applications peuvent utiliser la YubiKey via USB",
     "s_allow_screenshots": "Autoriser les captures d'écrans",
 
-    "s_nfc_dialog_tap_key": "Effleurez votre YubiKey",
+    "l_nfc_dialog_tap_key": null,
     "s_nfc_dialog_operation_success": "Succès",
     "s_nfc_dialog_operation_failed": "Échec",
 
