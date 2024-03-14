@@ -207,7 +207,7 @@
     "s_unknown_device": "Unbekanntes Gerät",
     "s_unsupported_yk": "Nicht unterstützter YubiKey",
     "s_yk_not_recognized": "Geräte nicht erkannt",
-    "l_operation_failed_try_again": null,
+    "p_operation_failed_try_again": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Es ist ein Fehler aufgetreten",

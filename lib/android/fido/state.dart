@@ -150,7 +150,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
         // non pin failure
         // simulate cancellation but show an error
         await ref.read(withContextProvider)((context) async => showMessage(
-            context, ref.watch(l10nProvider).l_operation_failed_try_again));
+            context, ref.watch(l10nProvider).p_operation_failed_try_again));
         throw CancellationException();
       }
 

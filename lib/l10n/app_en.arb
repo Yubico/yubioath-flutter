@@ -207,7 +207,7 @@
     "s_unknown_device": "Unrecognized device",
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
-    "l_operation_failed_try_again": "The operation failed, please try again.",
+    "p_operation_failed_try_again": "The operation failed, please try again.",
 
     "@_general_errors": {},
     "l_error_occurred": "An error has occurred",
