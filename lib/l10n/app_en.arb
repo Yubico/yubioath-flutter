@@ -207,6 +207,7 @@
     "s_unknown_device": "Unrecognized device",
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
+    "l_operation_failed_try_again": "The operation failed, please try again.",
 
     "@_general_errors": {},
     "l_error_occurred": "An error has occurred",
@@ -744,7 +745,7 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
 
-    "s_nfc_dialog_tap_key": "Tap your key",
+    "s_nfc_dialog_tap_key": "Tap and hold your key",
     "s_nfc_dialog_operation_success": "Success",
     "s_nfc_dialog_operation_failed": "Failed",
 

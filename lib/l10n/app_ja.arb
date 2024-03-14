@@ -207,6 +207,7 @@
     "s_unknown_device": "認識されないデバイス",
     "s_unsupported_yk": "サポートされていないYubiKey",
     "s_yk_not_recognized": "デバイスが認識されない",
+    "l_operation_failed_try_again": null,
 
     "@_general_errors": {},
     "l_error_occurred": "エラーが発生しました",

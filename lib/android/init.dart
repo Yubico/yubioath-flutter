@@ -27,7 +27,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/app.dart';
 import '../app/features.dart' as features;
 import '../app/logging.dart';
-import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
@@ -56,11 +55,6 @@ Future<Widget> initialize() async {
 
   return ProviderScope(
     overrides: [
-      supportedSectionsProvider.overrideWith(
-        (ref) {
-          return [Section.home, Section.accounts, Section.passkeys];
-        },
-      ),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
       attachedDevicesProvider.overrideWith(
@@ -72,18 +66,9 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentSectionProvider.overrideWith((ref) {
-        final notifier = AndroidSectionNotifier(
-          ref,
-          ref.watch(supportedSectionsProvider),
-          ref.watch(prefProvider),
-        );
-        ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
-            (_, data) {
-          notifier.notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
-        }, fireImmediately: true);
-        return notifier;
-      }),
+      currentSectionProvider.overrideWith(
+        (ref) => androidCurrentSectionNotifier(ref),
+      ),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
       currentDeviceProvider.overrideWith(
         () => AndroidCurrentDeviceNotifier(),

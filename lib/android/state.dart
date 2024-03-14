@@ -17,14 +17,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
+
+final _log = Logger('android.state');
 
 const _contextChannel = MethodChannel('android.state.appContext');
 
@@ -90,32 +94,59 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   }
 });
 
-class _AndroidAppContextHandler {
+class AndroidAppContextHandler {
   Future<void> switchAppContext(Section section) async {
     await _contextChannel.invokeMethod('setContext', {'index': section.index});
   }
 }
 
 final androidAppContextHandler =
-    Provider<_AndroidAppContextHandler>((ref) => _AndroidAppContextHandler());
+    Provider<AndroidAppContextHandler>((ref) => AndroidAppContextHandler());
 
-class AndroidSectionNotifier extends CurrentSectionNotifier {
-  final StateNotifierProviderRef<CurrentSectionNotifier, Section> _ref;
+CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
+  final notifier =
+      AndroidCurrentSectionNotifier(ref.watch(androidAppContextHandler));
+  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
+  }, fireImmediately: true);
+  return notifier;
+}
 
-  AndroidSectionNotifier(this._ref, super._supportedSections, super.prefs) {
-    _ref.read(androidAppContextHandler).switchAppContext(state);
-  }
+class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
+  final AndroidAppContextHandler _appContextHandler;
+
+  AndroidCurrentSectionNotifier(this._appContextHandler)
+      : super(Section.accounts);
 
   @override
   void setCurrentSection(Section section) {
-    super.setCurrentSection(section);
-    _ref.read(androidAppContextHandler).switchAppContext(section);
+    state = section;
+    _log.debug('Setting current section to $section');
+    _appContextHandler.switchAppContext(state);
   }
 
-  @override
-  void notifyDeviceChanged(YubiKeyData? data) {
-    super.notifyDeviceChanged(data);
-    _ref.read(androidAppContextHandler).switchAppContext(state);
+  void _notifyDeviceChanged(YubiKeyData? data) {
+    if (data == null) {
+      _log.debug('Keeping current section because key was disconnected');
+      return;
+    }
+
+    // current section priority
+    final availableSections = [
+      Section.accounts,
+      Section.passkeys,
+      Section.home,
+    ].where(
+      (e) => e.getAvailability(data) == Availability.enabled,
+    );
+
+    if (availableSections.contains(state)) {
+      // the key supports current section
+      _log.debug('Keeping current section because new key support $state');
+      return;
+    }
+
+    setCurrentSection(availableSections.firstOrNull ?? Section.home);
   }
 }
 

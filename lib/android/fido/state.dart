@@ -22,7 +22,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
+import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
@@ -144,9 +146,15 @@ class _FidoStateNotifier extends FidoStateNotifier {
       );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled unlock FIDO operation');
+      if (decodedException is! CancellationException) {
+        // non pin failure
+        // simulate cancellation but show an error
+        await ref.read(withContextProvider)((context) async => showMessage(
+            context, ref.watch(l10nProvider).l_operation_failed_try_again));
+        throw CancellationException();
       }
+
+      _log.debug('User cancelled unlock FIDO operation');
       throw decodedException;
     }
   }

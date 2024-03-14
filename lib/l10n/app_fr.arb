@@ -207,6 +207,7 @@
     "s_unknown_device": "Appareil non reconnu",
     "s_unsupported_yk": "YubiKey non supportée",
     "s_yk_not_recognized": "Appareil non reconnu",
+    "l_operation_failed_try_again": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Une erreur est survenue",

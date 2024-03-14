@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator.fido
 
+import android.nfc.TagLostException
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainViewModel
@@ -57,6 +58,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.util.Arrays
 import java.util.concurrent.Executors
 
@@ -208,6 +210,7 @@ class FidoManager(
                 // different key
                 logger.debug("This is a different key than previous, invalidating the PIN token")
                 pinStore.setPin(null)
+                connectionHelper.cancelPending()
             }
 
             fidoViewModel.setSessionState(
@@ -245,7 +248,7 @@ class FidoManager(
         pin: CharArray
     ): String {
 
-        fidoViewModel.setSessionLoadingState()
+        //fidoViewModel.setSessionLoadingState()
 
         val permissions = getPermissions(fidoSession)
 
@@ -302,7 +305,12 @@ class FidoManager(
                 catchPinErrors(clientPin) {
                     unlockSession(fidoSession, clientPin, pin)
                 }
-
+            } catch (e: IOException) {
+                // something failed, keep the session locked
+                fidoViewModel.currentSession()?.let {
+                    fidoViewModel.setSessionState(it.copy(info = it.info, unlocked = false))
+                }
+                throw e
             } finally {
                 Arrays.fill(pin, 0.toChar())
             }

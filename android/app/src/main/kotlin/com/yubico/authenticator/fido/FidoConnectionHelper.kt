@@ -43,6 +43,13 @@ class FidoConnectionHelper(
         }
     }
 
+    fun cancelPending() {
+        pendingAction?.let { action ->
+            action.invoke(Result.failure(CancellationException()))
+            pendingAction = null
+        }
+    }
+
     suspend fun <T> useSession(
         actionDescription: FidoActionDescription,
         action: (YubiKitFidoSession) -> T
