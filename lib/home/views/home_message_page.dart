@@ -21,7 +21,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/views/message_page.dart';
-import '../../core/state.dart';
 import '../../management/models.dart';
 import 'key_actions.dart';
 
@@ -60,15 +59,13 @@ class HomeMessagePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
 
-    // TODO: Remove Android check when Home is implemented on Android
     return MessagePage(
-      title: !isAndroid ? l10n.s_home : null,
+      title: l10n.s_home,
       graphic: graphic,
       header: header,
       message: message,
       footnote: footnote,
-      keyActionsBuilder:
-          !isAndroid ? (context) => homeBuildActions(context, null, ref) : null,
+      keyActionsBuilder: (context) => homeBuildActions(context, null, ref),
       actionButtonBuilder: actionButtonBuilder,
       actionsBuilder: actionsBuilder,
       fileDropOverlay: fileDropOverlay,

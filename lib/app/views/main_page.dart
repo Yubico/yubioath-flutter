@@ -97,15 +97,14 @@ class MainPage extends ConsumerWidget {
                   icon: const Icon(Symbols.contactless),
                   onPressed: () async {
                     await openNfcSettings();
-                  })
+                  }),
+            ElevatedButton.icon(
+                label: Text(l10n.s_add_account),
+                icon: const Icon(Symbols.person_add_alt),
+                onPressed: () async {
+                  await addOathAccount(context, ref);
+                })
           ],
-          actionButtonBuilder: (context) => IconButton(
-            icon: const Icon(Symbols.person_add_alt),
-            tooltip: l10n.s_add_account,
-            onPressed: () async {
-              await addOathAccount(context, ref);
-            },
-          ),
         );
       } else {
         return HomeMessagePage(
