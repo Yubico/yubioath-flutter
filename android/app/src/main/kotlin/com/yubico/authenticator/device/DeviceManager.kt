@@ -45,7 +45,7 @@ class DeviceManager(
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
         private val logger = LoggerFactory.getLogger(DeviceManager::class.java)
 
-        fun getSupportedContexts(device: YubiKeyDevice) : ArraySet<OperationContext> {
+        fun getSupportedContexts(device: YubiKeyDevice) : ArraySet<OperationContext> = try {
 
             val operationContexts = ArraySet<OperationContext>()
 
@@ -80,7 +80,10 @@ class DeviceManager(
             }
 
             logger.debug("Device supports following contexts: {}", operationContexts)
-            return operationContexts
+            operationContexts
+        } catch(e: Exception) {
+            logger.debug("The device does not support any context. The following exception was caught: ", e)
+            ArraySet<OperationContext>()
         }
 
         fun getPreferredContext(contexts: ArraySet<OperationContext>) : OperationContext {
