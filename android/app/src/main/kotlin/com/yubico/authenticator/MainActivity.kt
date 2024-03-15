@@ -340,7 +340,8 @@ class MainActivity : FlutterFragmentActivity() {
     private fun switchContext(appContext: OperationContext) {
         // TODO: refactor this when more OperationContext are handled
         // only recreate the contextManager object if it cannot be reused
-        if ((appContext == OperationContext.Oath && contextManager is OathManager) ||
+        if (appContext == OperationContext.Home ||
+            (appContext == OperationContext.Oath && contextManager is OathManager) ||
             (appContext == OperationContext.FidoPasskeys && contextManager is FidoManager)
         ) {
             // no need to dispose this context
