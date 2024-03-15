@@ -759,19 +759,29 @@ class _VisibilityListener extends StatefulWidget {
 }
 
 class _VisibilityListenerState extends State<_VisibilityListener> {
-  bool isMouseWheel = false;
+  bool disableScroll = false;
 
   @override
   Widget build(BuildContext context) => Listener(
+        onPointerDown: (event) {
+          setState(() {
+            disableScroll = true;
+          });
+        },
+        onPointerUp: (event) {
+          setState(() {
+            disableScroll = false;
+          });
+        },
         onPointerSignal: (event) {
           if (event is PointerScrollEvent) {
-            if (!isMouseWheel) {
+            if (!disableScroll) {
               setState(() {
-                isMouseWheel = true;
+                disableScroll = true;
               });
               Timer(const Duration(seconds: 1), () {
                 setState(() {
-                  isMouseWheel = false;
+                  disableScroll = false;
                 });
               });
             }
@@ -786,7 +796,7 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
 
             if (notification is ScrollEndNotification &&
                 widget.child is CustomScrollView) {
-              // Disable auto scrolling for mouse wheel
+              // Disable auto scrolling for mouse wheel and scrollbar
               _handleScrollEnd(context);
             }
             return false;
@@ -810,7 +820,7 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
   void _handleScrollEnd(
     BuildContext context,
   ) {
-    if (!isMouseWheel) {
+    if (!disableScroll) {
       widget.controller.notifyScroll(_getSrollDirection(
           _scrolledUnderState(context, widget.targetKey, null)));
 
