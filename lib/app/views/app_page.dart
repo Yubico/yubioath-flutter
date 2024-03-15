@@ -400,7 +400,10 @@ class _AppPageState extends ConsumerState<AppPage> {
               behavior:
                   ScrollConfiguration.of(context).copyWith(scrollbars: false),
               child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
+                physics: isAndroid
+                    ? const ClampingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics())
+                    : null,
                 child: safeArea,
               ),
             ),
@@ -416,8 +419,13 @@ class _AppPageState extends ConsumerState<AppPage> {
             widget.headerSliver != null ? _headerSliverGlobalKey : null,
         subController:
             widget.headerSliver != null ? _headerSliverController : null,
+        subAnchorKey:
+            widget.headerSliver != null ? _sliverTitleWrapperGlobalKey : null,
         child: CustomScrollView(
-          physics: const ClampingScrollPhysics(),
+          physics: isAndroid
+              ? const ClampingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics())
+              : null,
           controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
@@ -461,6 +469,9 @@ class _AppPageState extends ConsumerState<AppPage> {
     }
 
     return SingleChildScrollView(
+      physics: isAndroid
+          ? const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+          : null,
       primary: false,
       child: safeArea,
     );
@@ -725,16 +736,23 @@ class _VisibilityListener extends StatefulWidget {
   final GlobalKey targetKey;
   final _VisibilityController? subController;
   final GlobalKey? subTargetKey;
-  const _VisibilityListener({
-    required this.controller,
-    required this.child,
-    required this.targetKey,
-    this.subController,
-    this.subTargetKey,
-  }) : assert(
-            !((subController != null && subTargetKey == null) ||
-                (subController == null && subTargetKey != null)),
-            'Decalring subController requires subTargetKey and vice versa');
+  final GlobalKey? subAnchorKey;
+  const _VisibilityListener(
+      {required this.controller,
+      required this.child,
+      required this.targetKey,
+      this.subController,
+      this.subTargetKey,
+      this.subAnchorKey})
+      : assert(
+          (subController == null &&
+                  subTargetKey == null &&
+                  subAnchorKey == null) ||
+              (subController != null &&
+                  subTargetKey != null &&
+                  subAnchorKey != null),
+          'Declaring   requires subTargetKey and subAnchorKey, and vice versa',
+        );
 
   @override
   State<_VisibilityListener> createState() => _VisibilityListenerState();
@@ -763,14 +781,13 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
           onNotification: (notification) {
             if (notification is ScrollMetricsNotification ||
                 notification is ScrollUpdateNotification) {
-              _handleScrollUpdate(
-                  context, widget.targetKey, widget.subTargetKey);
+              _handleScrollUpdate(context);
             }
 
             if (notification is ScrollEndNotification &&
                 widget.child is CustomScrollView) {
               // Disable auto scrolling for mouse wheel
-              _handleScrollEnd(context, widget.targetKey, widget.subTargetKey);
+              _handleScrollEnd(context);
             }
             return false;
           },
@@ -780,22 +797,18 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
 
   void _handleScrollUpdate(
     BuildContext context,
-    GlobalKey targetKey,
-    GlobalKey? subTargetKey,
   ) {
     widget.controller
-        .setVisibility(_scrolledUnderState(context, targetKey, null));
+        .setVisibility(_scrolledUnderState(context, widget.targetKey, null));
 
     if (widget.subController != null) {
-      widget.subController!.setVisibility(
-          _scrolledUnderState(context, subTargetKey!, targetKey));
+      widget.subController!.setVisibility(_scrolledUnderState(
+          context, widget.subTargetKey!, widget.subAnchorKey));
     }
   }
 
   void _handleScrollEnd(
     BuildContext context,
-    GlobalKey targetKey,
-    GlobalKey? subTargetKey,
   ) {
     if (!isMouseWheel) {
       widget.controller.notifyScroll(_getSrollDirection(
@@ -804,7 +817,7 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
       if (widget.subController != null) {
         widget.subController!.notifyScroll(_getSrollDirection(
             _scrolledUnderState(
-                context, widget.subTargetKey!, widget.targetKey)));
+                context, widget.subTargetKey!, widget.subAnchorKey)));
       }
     }
   }
