@@ -283,7 +283,6 @@ class CredentialsRpNode(RpcNode):
         self.refresh()
 
     def refresh(self):
-        self.refresh_rps()
         self._creds = {
             cred[CredentialManagement.RESULT.CREDENTIAL_ID]["id"].hex(): dict(
                 credential_id=cred[CredentialManagement.RESULT.CREDENTIAL_ID],
@@ -301,17 +300,17 @@ class CredentialsRpNode(RpcNode):
             return CredentialNode(
                 self.credman,
                 self._creds[name],
-                self.refresh,
+                self.refresh_rps,
             )
         return super().create_child(name)
 
 
 class CredentialNode(RpcNode):
-    def __init__(self, credman, credential_data, refresh):
+    def __init__(self, credman, credential_data, refresh_rps):
         super().__init__()
         self.credman = credman
         self.data = credential_data
-        self.refresh = refresh
+        self.refresh_rps = refresh_rps
 
     def get_data(self):
         return self.data
@@ -319,7 +318,7 @@ class CredentialNode(RpcNode):
     @action
     def delete(self, params, event, signal):
         self.credman.delete_cred(self.data["credential_id"])
-        self.refresh()
+        self.refresh_rps()
 
 
 class FingerprintsNode(RpcNode):
