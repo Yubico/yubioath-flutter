@@ -50,6 +50,7 @@ class _NavigationProvider extends StateNotifier<bool> {
 final _navKey = GlobalKey();
 final _navExpandedKey = GlobalKey();
 final _sliverTitleGlobalKey = GlobalKey();
+final _headerSliverGlobalKey = GlobalKey();
 final _detailsViewGlobalKey = GlobalKey();
 final _mainContentGlobalKey = GlobalKey();
 
@@ -206,7 +207,10 @@ class _AppPageState extends ConsumerState<AppPage> {
         }
       } else {
         Timer.run(() {
-          Scrollable.ensureVisible(_sliverTitleGlobalKey.currentContext!,
+          Scrollable.ensureVisible(
+              widget.headerSliver != null
+                  ? _headerSliverGlobalKey.currentContext!
+                  : _sliverTitleGlobalKey.currentContext!,
               duration: const Duration(milliseconds: 300));
         });
       }
@@ -273,7 +277,8 @@ class _AppPageState extends ConsumerState<AppPage> {
       return ListenableBuilder(
         listenable: _sliverTitleController,
         builder: (context, child) {
-          final visible = !_sliverTitleController.isVisible;
+          final visible =
+              _sliverTitleController.visibility == _Visibility.scrolledUnder;
           return Padding(
             padding: padding,
             child: AnimatedOpacity(
@@ -371,7 +376,6 @@ class _AppPageState extends ConsumerState<AppPage> {
         targetKey: _sliverTitleGlobalKey,
         controller: _sliverTitleController,
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
           controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
@@ -388,7 +392,10 @@ class _AppPageState extends ConsumerState<AppPage> {
                   ),
                 ),
                 if (widget.headerSliver != null)
-                  SliverToBoxAdapter(child: widget.headerSliver)
+                  SliverToBoxAdapter(
+                      child: Container(
+                          key: _headerSliverGlobalKey,
+                          child: widget.headerSliver))
               ],
             ),
             SliverToBoxAdapter(child: safeArea)
@@ -603,29 +610,34 @@ class CapabilityBadge extends StatelessWidget {
   }
 }
 
-class _VisibilityController with ChangeNotifier {
-  bool isVisible = true;
-  _ScrollDirection scrollDirection = _ScrollDirection.idle;
+enum _Visibility { visible, topScrolledUnder, scrolledUnder }
 
-  void setVisibility(bool visibility) {
-    if (visibility != isVisible) {
-      isVisible = visibility;
-      if (!visibility) {
-        scrollDirection = _ScrollDirection.idle;
+enum _ScrollDirection { idle, up, down }
+
+class _VisibilityController with ChangeNotifier {
+  _Visibility _visibility = _Visibility.visible;
+  _ScrollDirection _scrollDirection = _ScrollDirection.idle;
+
+  void setVisibility(_Visibility visibility) {
+    if (visibility != _visibility) {
+      _visibility = visibility;
+      if (_visibility != _Visibility.visible) {
+        _scrollDirection = _ScrollDirection.idle;
       }
       notifyListeners();
     }
   }
 
-  void notifyScroll(_ScrollDirection direction) {
-    if (isVisible) {
-      scrollDirection = direction;
+  void notifyScroll(_ScrollDirection scrollDirection) {
+    if (visibility != _Visibility.scrolledUnder) {
+      _scrollDirection = scrollDirection;
       notifyListeners();
     }
   }
-}
 
-enum _ScrollDirection { idle, up, down }
+  _ScrollDirection get scrollDirection => _scrollDirection;
+  _Visibility get visibility => _visibility;
+}
 
 class _VisibilitiesController with ChangeNotifier {
   final List<_VisibilityController> controllers;
@@ -639,7 +651,8 @@ class _VisibilitiesController with ChangeNotifier {
   }
 
   void _setScrolledUnder() {
-    final val = controllers.any((element) => !element.isVisible);
+    final val =
+        controllers.any((element) => element.visibility != _Visibility.visible);
     if (val != someIsScrolledUnder) {
       someIsScrolledUnder = val;
       notifyListeners();
@@ -685,17 +698,17 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
             if (notification is ScrollMetricsNotification ||
                 notification is ScrollUpdateNotification) {
               widget.controller.setVisibility(
-                  !_scrolledUnderAppBar(context, widget.targetKey, false));
+                  _scrolledUnderState(context, widget.targetKey));
             }
 
             if (notification is ScrollEndNotification &&
                 widget.child is CustomScrollView) {
               // Disable auto scrolling for mouse wheel
               if (!isMouseWheel) {
-                final shouldScrollUp =
-                    _scrolledUnderAppBar(context, widget.targetKey, true);
+                final halfScrolledUnder =
+                    _halfScrolledUnder(context, widget.targetKey);
 
-                widget.controller.notifyScroll(shouldScrollUp
+                widget.controller.notifyScroll(halfScrolledUnder
                     ? _ScrollDirection.up
                     : _ScrollDirection.down);
               }
@@ -706,8 +719,7 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
         ),
       );
 
-  bool _scrolledUnderAppBar(
-      BuildContext context, GlobalKey key, bool checkHalfVisible) {
+  bool _halfScrolledUnder(BuildContext context, GlobalKey key) {
     final currentContext = key.currentContext;
     if (currentContext != null) {
       final RenderBox renderBox =
@@ -716,15 +728,28 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
       final targetHeight = renderBox.size.height;
       final position = renderBox.localToGlobal(Offset.zero);
 
-      if (widget.child is SingleChildScrollView) {
-        return appBarHeight - position.dy > 0;
-      } else if (checkHalfVisible) {
-        // Check if more than half of the target is scrolled under
-        return appBarHeight - position.dy > targetHeight / 2;
-      } else {
-        return appBarHeight - position.dy > targetHeight - 10;
-      }
+      return appBarHeight - position.dy > targetHeight / 2;
     }
     return false;
+  }
+
+  _Visibility _scrolledUnderState(BuildContext context, GlobalKey key) {
+    final currentContext = key.currentContext;
+    if (currentContext != null) {
+      final RenderBox renderBox =
+          currentContext.findRenderObject() as RenderBox;
+      final appBarHeight = Scaffold.of(context).appBarMaxHeight!;
+      final targetHeight = renderBox.size.height;
+      final position = renderBox.localToGlobal(Offset.zero);
+
+      if (appBarHeight - position.dy > targetHeight - 10) {
+        return _Visibility.scrolledUnder;
+      } else if (appBarHeight - position.dy > 0) {
+        return _Visibility.topScrolledUnder;
+      } else {
+        return _Visibility.visible;
+      }
+    }
+    return _Visibility.visible;
   }
 }
