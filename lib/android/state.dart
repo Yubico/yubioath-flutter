@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,8 @@ class NfcStateNotifier extends StateNotifier<bool> {
   }
 }
 
+final androidSectionPriority = Provider<List<Section>>((ref) => []);
+
 final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
@@ -104,8 +106,8 @@ final androidAppContextHandler =
     Provider<AndroidAppContextHandler>((ref) => AndroidAppContextHandler());
 
 CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
-  final notifier =
-      AndroidCurrentSectionNotifier(ref.watch(androidAppContextHandler));
+  final notifier = AndroidCurrentSectionNotifier(
+      ref.watch(androidSectionPriority), ref.watch(androidAppContextHandler));
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
     notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
@@ -113,10 +115,13 @@ CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
 }
 
 class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
+  final List<Section> _supportedSectionsByPriority;
   final AndroidAppContextHandler _appContextHandler;
 
-  AndroidCurrentSectionNotifier(this._appContextHandler)
-      : super(Section.accounts);
+  AndroidCurrentSectionNotifier(
+    this._supportedSectionsByPriority,
+    this._appContextHandler,
+  ) : super(Section.accounts);
 
   @override
   void setCurrentSection(Section section) {
@@ -131,22 +136,17 @@ class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
       return;
     }
 
-    // current section priority
-    final availableSections = [
-      Section.accounts,
-      Section.passkeys,
-      Section.home,
-    ].where(
+    final supportedSections = _supportedSectionsByPriority.where(
       (e) => e.getAvailability(data) == Availability.enabled,
     );
 
-    if (availableSections.contains(state)) {
+    if (supportedSections.contains(state)) {
       // the key supports current section
       _log.debug('Keeping current section because new key support $state');
       return;
     }
 
-    setCurrentSection(availableSections.firstOrNull ?? Section.home);
+    setCurrentSection(supportedSections.firstOrNull ?? Section.home);
   }
 }
 

@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/app.dart';
 import '../app/features.dart' as features;
 import '../app/logging.dart';
+import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
@@ -52,6 +53,8 @@ Future<Widget> initialize() async {
   }
 
   _initLicenses();
+
+  final isArc = await getAndroidIsArc();
 
   return ProviderScope(
     overrides: [
@@ -82,6 +85,12 @@ Future<Widget> initialize() async {
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
+      supportedSectionsProvider.overrideWithValue(
+          [Section.home, Section.accounts, Section.passkeys]),
+      // this specifies the priority of sections to show when
+      // the connected YubiKey does not support current section
+      androidSectionPriority.overrideWithValue(
+          [Section.accounts, Section.passkeys, Section.home]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
@@ -102,6 +111,7 @@ Future<Widget> initialize() async {
               // Disable unimplemented feature
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
+              ..setFeature(features.fido, !isArc)
               ..setFeature(features.management, false);
           });
 

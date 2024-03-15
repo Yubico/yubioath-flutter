@@ -61,7 +61,6 @@ class DeviceManager(
                     try {
                         Ctap2Session(it)
                         operationContexts.add(OperationContext.FidoPasskeys)
-                        operationContexts.add(OperationContext.FidoFingerprints)
                     } catch (e: Throwable) { // ignored
                     }
 
