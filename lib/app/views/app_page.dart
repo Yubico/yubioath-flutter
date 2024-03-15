@@ -449,10 +449,13 @@ class _AppPageState extends ConsumerState<AppPage> {
                   controller: _navController,
                   targetKey: _navExpandedKey,
                   child: SingleChildScrollView(
-                    child: NavigationContent(
-                      key: _navExpandedKey,
-                      shouldPop: false,
-                      extended: true,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: NavigationContent(
+                        key: _navExpandedKey,
+                        shouldPop: false,
+                        extended: true,
+                      ),
                     ),
                   ),
                 )),
