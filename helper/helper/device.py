@@ -42,6 +42,7 @@ from yubikit.logging import LOG_LEVEL
 from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException, NoCardException
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
+from smartcard.CardMonitoring import CardObserver, CardMonitor
 from hashlib import sha256
 from dataclasses import asdict
 from typing import Mapping, Tuple
@@ -263,9 +264,6 @@ class AbstractDeviceNode(RpcNode):
 
 
 class UsbDeviceNode(AbstractDeviceNode):
-    def __init__(self, device, info):
-        super().__init__(device, info)
-
     def _supports_connection(self, conn_type):
         return self._device.pid.supports_connection(conn_type)
 
@@ -308,15 +306,53 @@ class UsbDeviceNode(AbstractDeviceNode):
             raise ConnectionException("fido", e)
 
 
+class _ReaderObserver(CardObserver):
+    def __init__(self, device):
+        self.device = device
+        self.card = None
+        self.data = None
+
+    def update(self, observable, actions):
+        added, removed = actions
+        for card in added:
+            if card.reader == self.device.reader.name:
+                if card != self.card:
+                    self.card = card
+                break
+        else:
+            self.card = None
+        self.data = None
+        logger.debug(f"NFC card: {self.card}")
+
+
 class ReaderDeviceNode(AbstractDeviceNode):
+    def __init__(self, device, info):
+        super().__init__(device, info)
+        self._observer = _ReaderObserver(device)
+        self._monitor = CardMonitor()
+        self._monitor.addObserver(self._observer)
+
+    def close(self):
+        self._monitor.deleteObserver(self._observer)
+        super().close()
+
     def get_data(self):
-        try:
-            with self._device.open_connection(SmartCardConnection) as conn:
-                return dict(self._read_data(conn), present=True)
-        except NoCardException:
-            return dict(present=False, status="no-card")
-        except ValueError:
-            return dict(present=False, status="unknown-device")
+        if self._observer.data is None:
+            card = self._observer.card
+            if card is None:
+                return dict(present=False, status="no-card")
+            try:
+                with self._device.open_connection(SmartCardConnection) as conn:
+                    self._observer.data = dict(self._read_data(conn), present=True)
+            except NoCardException:
+                return dict(present=False, status="no-card")
+            except ValueError:
+                self._observer.data = dict(present=False, status="unknown-device")
+        return self._observer.data
+
+    @action(closes_child=False)
+    def get(self, params, event, signal):
+        return super().get(params, event, signal)
 
     @child
     def ccid(self):
