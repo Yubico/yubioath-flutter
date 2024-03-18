@@ -115,6 +115,7 @@ class _AppPageState extends ConsumerState<AppPage> {
   @override
   void dispose() {
     _sliverTitleController.dispose();
+    _headerSliverController.dispose();
     _navController.dispose();
     _detailsController.dispose();
     _scrolledUnderController.dispose();
@@ -780,9 +781,11 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
                 disableScroll = true;
               });
               Timer(const Duration(seconds: 1), () {
-                setState(() {
-                  disableScroll = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    disableScroll = false;
+                  });
+                }
               });
             }
           }
