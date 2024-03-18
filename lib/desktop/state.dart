@@ -158,9 +158,11 @@ class _DesktopClipboard extends AppClipboard {
 
   @override
   Future<void> setText(String toClipboard, {bool isSensitive = false}) async {
-    // Wayland requires the window to be focused to copy to clipboard
+    await Clipboard.setData(ClipboardData(text: toClipboard));
+    // Wayland may require the window to be focused to copy to clipboard
     final needsFocus = Platform.isLinux &&
-        Platform.environment['XDG_SESSION_TYPE'] == 'wayland';
+        Platform.environment['XDG_SESSION_TYPE'] == 'wayland' &&
+        Platform.environment['_YA_WL_CLIPFIX'] != null;
     var hidden = false;
     try {
       if (needsFocus && !await windowManager.isFocused()) {
