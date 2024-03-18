@@ -92,7 +92,7 @@ dev_dependencies:
   json_serializable: ^6.7.1
   analyzer:
   analyzer_plugin:
-  custom_lint_builder:
+  custom_lint_builder: 0.6.4
   custom_lint:
   lint:
     path: lint
