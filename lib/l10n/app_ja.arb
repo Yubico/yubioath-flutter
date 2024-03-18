@@ -505,6 +505,10 @@
     "l_unsupported_key_type": null,
     "l_delete_certificate": "証明書を削除",
     "l_delete_certificate_desc": "YubiKeyか証明書の削除",
+    "l_delete_key": null,
+    "l_delete_key_desc": null,
+    "l_delete_certificate_or_key": null,
+    "l_delete_certificate_or_key_desc": null,
     "s_issuer": "発行者",
     "s_serial": "シリアル番号",
     "s_certificate_fingerprint": "指紋",
@@ -522,14 +526,31 @@
     },
     "l_generating_private_key": "秘密鍵を生成しています\u2026",
     "s_private_key_generated": "秘密鍵を生成しました",
+    "p_select_what_to_delete": null,
     "p_warning_delete_certificate": "警告！この操作によってYubiKeyから証明書が削除されます",
+    "p_warning_delete_key": null,
+    "p_warning_delete_certificate_and_key": null,
     "q_delete_certificate_confirm": "PIVスロット{slot}の証明書を削除しますか?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": null,
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": null,
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": "証明書が削除されました",
+    "l_key_deleted": null,
+    "l_certificate_and_key_deleted": null,
     "p_password_protected_file": "選択したファイルはパスワードで保護されています。パスワードを入力して続行します",
     "p_import_items_desc": "次のアイテムはPIVスロット{slot}にインポートされます",
     "@p_import_items_desc": {

@@ -66,5 +66,6 @@ abstract class PivSlotsNotifier
     PinPolicy pinPolicy = PinPolicy.dfault,
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   });
-  Future<void> delete(SlotId slot);
+  Future<void> deleteCertificate(SlotId slot);
+  Future<void> deleteKey(SlotId slot);
 }

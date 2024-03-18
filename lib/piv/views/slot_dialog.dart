@@ -111,7 +111,7 @@ class SlotDialog extends ConsumerWidget {
                 ActionListSection.fromMenuActions(
                   context,
                   l10n.s_actions,
-                  actions: buildSlotActions(slotData, l10n),
+                  actions: buildSlotActions(pivState, slotData, l10n),
                 ),
               ],
             ),

@@ -389,6 +389,13 @@ class SlotNode(RpcNode):
         self.certificate = certificate
         self._refresh = refresh
 
+    def _require_version(self, major, minor, micro):
+        try:
+            require_version(self.session.version, (major, minor, micro))
+            return True
+        except NotSupportedError:
+            return False
+
     def get_data(self):
         return dict(
             id=f"{int(self.slot):02x}",
@@ -400,11 +407,17 @@ class SlotNode(RpcNode):
         )
 
     @action(condition=lambda self: self.certificate)
-    def delete(self, params, event, signal):
+    def delete_certificate(self, params, event, signal):
         self.session.delete_certificate(self.slot)
         self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
         self._refresh()
         self.certificate = None
+        return dict()
+
+    @action(condition=lambda self: self.metadata and self._require_version(5, 7, 0))
+    def delete_key(self, params, event, signal):
+        self.session.delete_key(self.slot)
+        self._refresh()
         return dict()
 
     @action

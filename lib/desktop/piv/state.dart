@@ -317,8 +317,14 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   }
 
   @override
-  Future<void> delete(SlotId slot) async {
-    await _session.command('delete', target: ['slots', slot.hexId]);
+  Future<void> deleteCertificate(SlotId slot) async {
+    await _session.command('delete_certificate', target: ['slots', slot.hexId]);
+    ref.invalidateSelf();
+  }
+
+  @override
+  Future<void> deleteKey(SlotId slot) async {
+    await _session.command('delete_key', target: ['slots', slot.hexId]);
     ref.invalidateSelf();
   }
 

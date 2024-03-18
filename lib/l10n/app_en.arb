@@ -505,6 +505,10 @@
     "l_unsupported_key_type": "Unsupported key type",
     "l_delete_certificate": "Delete certificate",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
+    "l_delete_key": "Delete key",
+    "l_delete_key_desc": "Remove the key from your YubiKey",
+    "l_delete_certificate_or_key": "Delete certificate/key",
+    "l_delete_certificate_or_key_desc": "Remove the certificate or key from your YubiKey",
     "s_issuer": "Issuer",
     "s_serial": "Serial",
     "s_certificate_fingerprint": "Fingerprint",
@@ -522,14 +526,31 @@
     },
     "l_generating_private_key": "Generating private key\u2026",
     "s_private_key_generated": "Private key generated",
+    "p_select_what_to_delete": "Please select what to delete from the slot.",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
+    "p_warning_delete_key": "Warning! This action will delete the key from your YubiKey.",
+    "p_warning_delete_certificate_and_key": "Warning! This action will delete the certificate and key from your YubiKey.",
     "q_delete_certificate_confirm": "Delete the certificate in PIV slot {slot}?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": "Delete the key in PIV slot {slot}?",
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": "Delete the certificate and key in PIV slot {slot}?",
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": "Certificate deleted",
+    "l_key_deleted": "Key deleted",
+    "l_certificate_and_key_deleted": "Certificate and key deleted",
     "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
     "p_import_items_desc": "The following item(s) will be imported into PIV slot {slot}.",
     "@p_import_items_desc": {
