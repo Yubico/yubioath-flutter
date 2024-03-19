@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.fido
 
-import android.nfc.TagLostException
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainViewModel
@@ -60,19 +59,14 @@ import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.Arrays
 import java.util.concurrent.Executors
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
@@ -147,20 +141,20 @@ class FidoManager(
                     args["credentialId"] as String
                 )
 
-                "delete_fingerprint" -> deleteFingerprint(
-                    args["template_id"] as String
+                "deleteFingerprint" -> deleteFingerprint(
+                    args["templateId"] as String
                 )
 
-                "rename_fingerprint" -> renameFingerprint(
-                    args["template_id"] as String,
+                "renameFingerprint" -> renameFingerprint(
+                    args["templateId"] as String,
                     args["name"] as String
                 )
 
-                "register_fingerprint" -> registerFingerprint(
+                "registerFingerprint" -> registerFingerprint(
                     args["name"] as String?,
                 )
 
-                "register_fingerprint_cancel" -> registerFingerprintCancel()
+                "cancelRegisterFingerprint" -> cancelRegisterFingerprint()
 
                 else -> throw NotImplementedError()
             }
@@ -510,7 +504,7 @@ class FidoManager(
         }
 
     private var state : CommandState? = null
-    private fun registerFingerprintCancel(): String {
+    private fun cancelRegisterFingerprint(): String {
         state?.cancel()
         return NULL
     }

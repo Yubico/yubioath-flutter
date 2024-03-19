@@ -216,7 +216,7 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     controller.onCancel = () async {
       if (!controller.isClosed) {
         _log.debug('Cancelling fingerprint registration');
-        await _methods.invokeMethod('register_fingerprint_cancel');
+        await _methods.invokeMethod('cancelRegisterFingerprint');
         await registerFpSub.cancel();
       }
     };
@@ -224,9 +224,9 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     controller.onListen = () async {
       try {
         final registerFpResult =
-            await _methods.invokeMethod('register_fingerprint', {'name': name});
+            await _methods.invokeMethod('registerFingerprint', {'name': name});
 
-        _log.debug('Finished register_fingerprint with: $registerFpResult');
+        _log.debug('Finished registerFingerprint with: $registerFpResult');
 
         final resultJson = jsonDecode(registerFpResult);
 
@@ -260,9 +260,9 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
       Fingerprint fingerprint, String name) async {
     try {
       final renameFingerprintResponse = jsonDecode(await _methods.invokeMethod(
-        'rename_fingerprint',
+        'renameFingerprint',
         {
-          'template_id': fingerprint.templateId,
+          'templateId': fingerprint.templateId,
           'name': name,
         },
       ));
@@ -290,9 +290,9 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   Future<void> deleteFingerprint(Fingerprint fingerprint) async {
     try {
       final deleteFingerprintResponse = jsonDecode(await _methods.invokeMethod(
-        'delete_fingerprint',
+        'deleteFingerprint',
         {
-          'template_id': fingerprint.templateId,
+          'templateId': fingerprint.templateId,
         },
       ));
 
