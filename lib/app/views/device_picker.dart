@@ -131,7 +131,16 @@ class DevicePickerContent extends ConsumerWidget {
       ),
     ];
 
-    return Column(children: children);
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: !extended && children.length > 1
+            ? 13
+            : !extended
+                ? 6.5
+                : 0,
+      ),
+      child: Column(children: children),
+    );
   }
 }
 
@@ -311,7 +320,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             isDesktop && menuItems.isNotEmpty ? showMenuFn : null,
         onLongPressStart: isAndroid ? showMenuFn : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.5),
+          padding: const EdgeInsets.only(bottom: 6.5),
           child: widget.selected
               ? IconButton.filled(
                   tooltip: isDesktop ? tooltip : null,

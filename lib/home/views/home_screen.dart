@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,32 +34,49 @@ import '../../widgets/product_image.dart';
 import 'key_actions.dart';
 import 'manage_label_dialog.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
   const HomeScreen(this.deviceData, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool hide = true;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final serial = deviceData.info.serial;
+    final serial = widget.deviceData.info.serial;
     final keyCustomization = ref.watch(keyCustomizationManagerProvider)[serial];
-    final enabledCapabilities =
-        deviceData.info.config.enabledCapabilities[deviceData.node.transport] ??
-            0;
+    final enabledCapabilities = widget.deviceData.info.config
+            .enabledCapabilities[widget.deviceData.node.transport] ??
+        0;
     final primaryColor = ref.watch(defaultColorProvider);
 
+    // We need this to avoid unwanted app switch animation
+    if (hide) {
+      Timer.run(() {
+        setState(() {
+          hide = false;
+        });
+      });
+    }
+
     return AppPage(
-      title: l10n.s_home,
+      title: hide ? null : l10n.s_home,
+      delayedContent: hide,
       keyActionsBuilder: (context) =>
-          homeBuildActions(context, deviceData, ref),
+          homeBuildActions(context, widget.deviceData, ref),
       builder: (context, expanded) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _DeviceContent(deviceData, keyCustomization),
+              _DeviceContent(widget.deviceData, keyCustomization),
               const SizedBox(height: 16.0),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +98,7 @@ class HomeScreen extends ConsumerWidget {
                         if (serial != null) ...[
                           const SizedBox(height: 32.0),
                           _DeviceColor(
-                              deviceData: deviceData,
+                              deviceData: widget.deviceData,
                               initialCustomization: keyCustomization ??
                                   KeyCustomization(serial: serial))
                         ]
@@ -93,9 +112,9 @@ class HomeScreen extends ConsumerWidget {
                       child: _HeroAvatar(
                         color: keyCustomization?.color ?? primaryColor,
                         child: ProductImage(
-                          name: deviceData.name,
-                          formFactor: deviceData.info.formFactor,
-                          isNfc: deviceData.info.supportedCapabilities
+                          name: widget.deviceData.name,
+                          formFactor: widget.deviceData.info.formFactor,
+                          isNfc: widget.deviceData.info.supportedCapabilities
                               .containsKey(Transport.nfc),
                         ),
                       ),
