@@ -57,10 +57,9 @@ Future<bool> _authIfNeeded(BuildContext context, WidgetRef ref,
   if (pivState.needsAuth) {
     if (pivState.protectedKey &&
         pivState.metadata?.pinMetadata.defaultValue == true) {
-      final status = await ref
+      return await ref
           .read(pivStateProvider(devicePath).notifier)
-          .verifyPin(defaultPin);
-      return status.when(success: () => true, failure: (_) => false);
+          .verifyPin(defaultPin) is PinSuccess;
     }
     return await showBlurDialog(
           context: context,
@@ -108,11 +107,9 @@ class PivActions extends ConsumerWidget {
             if (!pivState.protectedKey) {
               bool verified;
               if (pivState.metadata?.pinMetadata.defaultValue == true) {
-                final status = await ref
+                verified = await ref
                     .read(pivStateProvider(devicePath).notifier)
-                    .verifyPin(defaultPin);
-                verified =
-                    status.when(success: () => true, failure: (_) => false);
+                    .verifyPin(defaultPin) is PinSuccess;
               } else {
                 verified = await withContext((context) async =>
                         await showBlurDialog(
