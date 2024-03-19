@@ -19,17 +19,28 @@ package com.yubico.authenticator.fido
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
 import org.json.JSONObject
 
 class FidoViewModel : ViewModel() {
-    private val _sessionState = MutableLiveData<Session?>(null)
-    val sessionState: LiveData<Session?> = _sessionState
+    private val _sessionState = MutableLiveData<ViewModelData>()
+    val sessionState: LiveData<ViewModelData> = _sessionState
 
-    fun setSessionState(sessionState: Session?) {
-        _sessionState.postValue(sessionState)
+    fun currentSession() : Session? = (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
+
+    fun setSessionState(sessionState: Session) {
+        _sessionState.postValue(ViewModelData.Value(sessionState))
+    }
+
+    fun clearSessionState() {
+        _sessionState.postValue(ViewModelData.Empty)
+    }
+
+    fun setSessionLoadingState() {
+        _sessionState.postValue(ViewModelData.Loading)
     }
 
     private val _credentials = MutableLiveData<List<FidoCredential>>()

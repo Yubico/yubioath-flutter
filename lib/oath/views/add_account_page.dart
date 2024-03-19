@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/logging.dart';
@@ -295,7 +296,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             context,
             title: l10n.l_insert_yk,
             description: l10n.s_add_account,
-            icon: const Icon(Icons.usb),
+            icon: const Icon(Symbols.usb),
             onCancel: () {
               _otpauthUri = null;
             },
@@ -378,7 +379,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             : issuerNoColon
                                 ? null
                                 : l10n.l_invalid_character_issuer,
-                        prefixIcon: const Icon(Icons.business_outlined),
+                        prefixIcon: const Icon(Symbols.business),
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -389,7 +390,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     AppTextField(
                       key: keys.nameField,
                       controller: _accountController,
@@ -406,7 +407,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             : isUnique
                                 ? null
                                 : l10n.l_name_already_exists,
-                        prefixIcon: const Icon(Icons.person_outline),
+                        prefixIcon: const Icon(Symbols.person),
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -417,7 +418,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     AppTextField(
                       key: keys.secretField,
                       controller: _secretController,
@@ -435,11 +436,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                   ? l10n.l_invalid_format_allowed_chars(
                                       Format.base32.allowedCharacters)
                                   : null,
-                          prefixIcon: const Icon(Icons.key_outlined),
+                          prefixIcon: const Icon(Symbols.key),
                           suffixIcon: IconButton(
                             icon: Icon(_isObscure
-                                ? Icons.visibility
-                                : Icons.visibility_off),
+                                ? Symbols.visibility
+                                : Symbols.visibility_off),
                             onPressed: () {
                               setState(() {
                                 _isObscure = !_isObscure;
@@ -459,7 +460,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     const SizedBox(height: 8),
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,

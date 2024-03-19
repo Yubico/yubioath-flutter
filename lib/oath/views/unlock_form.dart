@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -37,6 +38,7 @@ class UnlockForm extends ConsumerStatefulWidget {
 
 class _UnlockFormState extends ConsumerState<UnlockForm> {
   final _passwordController = TextEditingController();
+  final _passwordFocus = FocusNode();
   bool _remember = false;
   bool _passwordIsWrong = false;
   bool _isObscure = true;
@@ -50,9 +52,11 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
         .unlock(_passwordController.text, remember: _remember);
     if (!mounted) return;
     if (!success) {
+      _passwordController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _passwordController.text.length);
+      _passwordFocus.requestFocus();
       setState(() {
         _passwordIsWrong = true;
-        _passwordController.clear();
       });
     } else if (_remember && !remembered) {
       showMessage(context, AppLocalizations.of(context)!.l_remember_pw_failed);
@@ -78,6 +82,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 child: AppTextField(
                   key: keys.passwordField,
                   controller: _passwordController,
+                  focusNode: _passwordFocus,
                   autofocus: true,
                   obscureText: _isObscure,
                   autofillHints: const [AutofillHints.password],
@@ -86,10 +91,11 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     labelText: l10n.s_password,
                     errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                     helperText: '', // Prevents resizing when errorText shown
-                    prefixIcon: const Icon(Icons.password_outlined),
+                    prefixIcon: const Icon(Symbols.password),
                     suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(_isObscure
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
                       onPressed: () {
                         setState(() {
                           _isObscure = !_isObscure;
@@ -104,7 +110,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     _passwordIsWrong = false;
                   }), // Update state on change
                   onSubmitted: (_) => _submit(),
-                ),
+                ).init(),
               ),
               const SizedBox(height: 3.0),
               Column(
@@ -122,7 +128,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                               spacing: 4.0,
                               runSpacing: 8.0,
                               children: [
-                                Icon(Icons.warning_amber,
+                                Icon(Symbols.warning_amber,
                                     color:
                                         Theme.of(context).colorScheme.tertiary),
                                 Text(l10n.l_keystore_unavailable)
@@ -140,8 +146,9 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                       FilledButton.icon(
                         key: keys.unlockButton,
                         label: Text(l10n.s_unlock),
-                        icon: const Icon(Icons.lock_open),
-                        onPressed: _passwordController.text.isNotEmpty
+                        icon: const Icon(Symbols.lock_open),
+                        onPressed: _passwordController.text.isNotEmpty &&
+                                !_passwordIsWrong
                             ? _submit
                             : null,
                       ),

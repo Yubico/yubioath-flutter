@@ -61,12 +61,17 @@
     "s_actions": "アクション",
     "s_manage": "管理",
     "s_setup": "セットアップ",
+    "s_device": null,
+    "s_application": null,
     "s_settings": "設定",
+    "l_settings_desc": null,
     "s_certificates": "証明書",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": null,
     "s_slots": null,
     "s_help_and_about": "ヘルプと概要",
+    "l_help_and_about_desc": null,
     "s_help_and_feedback": "ヘルプとフィードバック",
+    "s_home": null,
     "s_send_feedback": "フィードバックの送信",
     "s_i_need_help": "ヘルプが必要",
     "s_troubleshooting": "トラブルシューティング",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": null,
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKeyを挿入する",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "アプリケーションの切替え",
     "s_toggle_interfaces": null,
+    "l_toggle_applications_desc": null,
+    "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "YubiKeyを再構成しています\u2026",
     "s_config_updated": "構成が更新されました",
     "l_config_updated_reinsert": "設定が更新されました。YubiKeyを取り外して再挿入してください",
@@ -188,6 +207,7 @@
     "s_unknown_device": "認識されないデバイス",
     "s_unsupported_yk": "サポートされていないYubiKey",
     "s_yk_not_recognized": "デバイスが認識されない",
+    "p_operation_failed_try_again": null,
 
     "@_general_errors": {},
     "l_error_occurred": "エラーが発生しました",
@@ -214,6 +234,8 @@
     "s_confirm_pin": "PINの確認",
     "s_confirm_puk": "PUKの確認",
     "s_unblock_pin": "ブロックを解除",
+    "l_pin_mismatch": null,
+    "l_puk_mismatch": null,
     "l_new_pin_len": "新しいPINは少なくとも{length}文字である必要があります",
     "@l_new_pin_len": {
         "placeholders": {
@@ -290,6 +312,7 @@
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
     "s_confirm_password": "パスワードを確認",
+    "l_password_mismatch": null,
     "s_wrong_password": "間違ったパスワード",
     "s_remove_password": "パスワードの削除",
     "s_password_removed": "パスワードが削除されました",
@@ -645,6 +668,7 @@
     "@_factory_reset": {},
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷リセット",
+    "l_factory_reset_desc": null,
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_reset_failed": "リセット実行中のエラー:{message}",
@@ -721,7 +745,7 @@
     "l_launch_app_on_usb_off": "他のアプリはUSB経由でYubiKeyを使用できます",
     "s_allow_screenshots": "スクリーンショットを許可する",
 
-    "s_nfc_dialog_tap_key": "キーをタップする",
+    "l_nfc_dialog_tap_key": null,
     "s_nfc_dialog_operation_success": "成功",
     "s_nfc_dialog_operation_failed": "失敗",
 
@@ -752,7 +776,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": null,
+    "s_set_label": null,
+    "s_change_label": null,
     "s_theme_color": null,
+    "s_color": null,
+    "p_set_will_add_custom_name": null,
+    "p_rename_will_change_custom_name": null,
 
     "@_eof": {}
 }

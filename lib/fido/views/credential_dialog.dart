@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
@@ -74,7 +75,7 @@ class CredentialDialog extends ConsumerWidget {
                             ),
                       ),
                       const SizedBox(height: 16),
-                      const Icon(Icons.person, size: 72),
+                      const Icon(Symbols.person, size: 72),
                     ],
                   ),
                 ),

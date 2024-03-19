@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,16 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+interface JsonSerializable {
+    fun toJson() : String
+}
+
+sealed interface ViewModelData {
+    data object Empty : ViewModelData
+    data object Loading : ViewModelData
+    data class Value<T : JsonSerializable>(val data: T) : ViewModelData
+}
+
 /**
  * Observes a LiveData value, sending each change to Flutter via an EventChannel.
  */
@@ -52,6 +62,48 @@ inline fun <reified T> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, mess
 
     val observer = Observer<T> {
         sink?.success(it?.let(jsonSerializer::encodeToString) ?: NULL)
+    }
+    observe(lifecycleOwner, observer)
+
+    return Closeable {
+        removeObserver(observer)
+        channel.setStreamHandler(null)
+    }
+}
+
+/**
+ * Observes a ViewModelData LiveData value, sending each change to Flutter via an EventChannel.
+ */
+@JvmName("streamViewModelData")
+inline fun <reified T : ViewModelData> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, messenger: BinaryMessenger, channelName: String): Closeable {
+    val channel = EventChannel(messenger, channelName)
+    var sink: EventChannel.EventSink? = null
+
+    val get: (ViewModelData) -> String = {
+        when (it) {
+            is ViewModelData.Empty -> NULL
+            is ViewModelData.Loading -> LOADING
+            is ViewModelData.Value<*> -> it.data.toJson()
+        }
+    }
+
+    channel.setStreamHandler(object : EventChannel.StreamHandler {
+        override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+            sink = events
+            events.success(
+                value?.let {
+                    get(it)
+                } ?: NULL
+            )
+        }
+
+        override fun onCancel(arguments: Any?) {
+            sink = null
+        }
+    })
+
+    val observer = Observer<T> {
+        sink?.success(get(it))
     }
     observe(lifecycleOwner, observer)
 

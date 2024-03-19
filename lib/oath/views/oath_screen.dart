@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -30,7 +31,9 @@ import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
@@ -55,36 +58,21 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => const MessagePage(
-            centered: true,
-            graphic: CircularProgressIndicator(),
-            delayedContent: true,
-          ),
-          error: (error, _) => AppFailurePage(
-            cause: error,
-          ),
-          data: (oathState) => oathState.initialized
-              ? oathState.locked
-                  ? _LockedView(devicePath, oathState)
-                  : _UnlockedView(devicePath, oathState)
-              : const _InsertTapView(),
-        );
-  }
-}
-
-class _InsertTapView extends ConsumerWidget {
-  const _InsertTapView();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    return MessagePage(
-      title: AppLocalizations.of(context)!.s_accounts,
-      centered: false,
-      capabilities: const [Capability.oath],
-      header: l10n.l_insert_or_tap_yk,
-    );
+    return ref.watch(oathStateProvider(devicePath)).when(
+        loading: () => const MessagePage(
+              centered: true,
+              graphic: CircularProgressIndicator(),
+              delayedContent: true,
+            ),
+        error: (error, _) => error is NoDataException
+            ? MessagePageNotInitialized(title: l10n.s_accounts)
+            : AppFailurePage(
+                cause: error,
+              ),
+        data: (oathState) => oathState.locked
+            ? _LockedView(devicePath, oathState)
+            : _UnlockedView(devicePath, oathState));
   }
 }
 
@@ -187,7 +175,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                   widget.oathState,
                 );
               },
-              avatar: const Icon(Icons.person_add_alt_1_outlined),
+              avatar: const Icon(Symbols.person_add_alt),
             )
         ],
         title: l10n.s_accounts,
@@ -430,11 +418,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           isDense: true,
                           prefixIcon: const Padding(
                             padding: EdgeInsetsDirectional.only(start: 8.0),
-                            child: Icon(Icons.search_outlined),
+                            child: Icon(Symbols.search),
                           ),
                           suffixIcon: searchController.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear),
+                                  icon: const Icon(Symbols.clear),
                                   iconSize: 16,
                                   onPressed: () {
                                     searchController.clear();
@@ -455,7 +443,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           Focus.of(context)
                               .focusInDirection(TraversalDirection.down);
                         },
-                      ),
+                      ).init(),
                     );
                   }),
                 ),

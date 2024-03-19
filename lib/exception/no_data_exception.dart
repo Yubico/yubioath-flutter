@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.fido
-
-class FidoPinStore {
-    private var pin: CharArray? = null
-
-    fun hasPin(): Boolean {
-        return pin != null
-    }
-
-    fun getPin(): CharArray {
-        return pin!!
-    }
-
-    fun setPin(newPin: CharArray?) {
-        pin?.fill(0.toChar())
-        pin = newPin?.clone()
-    }
+class NoDataException implements Exception {
+  const NoDataException();
 }

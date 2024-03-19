@@ -53,6 +53,10 @@ Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }
 
+Future<bool> getAndroidIsArc() async {
+  return await appMethodsChannel.invokeMethod('isArc');
+}
+
 Future<Color> getPrimaryColor() async {
   final value = await appMethodsChannel.invokeMethod('getPrimaryColor');
   return value != null ? Color(value) : defaultPrimaryColor;

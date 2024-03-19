@@ -17,12 +17,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../state.dart';
 
@@ -36,6 +38,7 @@ class PinDialog extends ConsumerStatefulWidget {
 
 class _PinDialogState extends ConsumerState<PinDialog> {
   final _pinController = TextEditingController();
+  final _pinFocus = FocusNode();
   bool _pinIsWrong = false;
   int _attemptsRemaining = -1;
   bool _isObscure = true;
@@ -43,6 +46,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   void dispose() {
     _pinController.dispose();
+    _pinFocus.dispose();
     super.dispose();
   }
 
@@ -57,8 +61,10 @@ class _PinDialogState extends ConsumerState<PinDialog> {
           navigator.pop(true);
         },
         failure: (attemptsRemaining) {
+          _pinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _pinController.text.length);
+          _pinFocus.requestFocus();
           setState(() {
-            _pinController.clear();
             _attemptsRemaining = attemptsRemaining;
             _pinIsWrong = true;
           });
@@ -72,12 +78,15 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final version = ref.watch(pivStateProvider(widget.devicePath)).valueOrNull;
+    final minPinLen = version?.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
+    final currentPinLen = byteLength(_pinController.text);
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _pinController.text.length >= 4 ? _submit : null,
+          onPressed: currentPinLen >= minPinLen ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -91,9 +100,12 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               autofocus: true,
               obscureText: _isObscure,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_pinController.text),
               autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
               controller: _pinController,
+              focusNode: _pinFocus,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
@@ -101,10 +113,10 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                     ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                     : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.pin_outlined),
+                prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                      _isObscure ? Symbols.visibility : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;
@@ -120,7 +132,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                 });
               },
               onSubmitted: (_) => _submit(),
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

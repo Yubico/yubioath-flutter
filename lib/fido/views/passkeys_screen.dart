@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -29,7 +30,9 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -56,6 +59,9 @@ class PasskeysScreen extends ConsumerWidget {
               builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
+          if (error is NoDataException) {
+            return MessagePageNotInitialized(title: l10n.s_passkeys);
+          }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
               0;
@@ -74,27 +80,10 @@ class PasskeysScreen extends ConsumerWidget {
           );
         },
         data: (fidoState) {
-          return fidoState.initialized
-              ? fidoState.unlocked
-                  ? _FidoUnlockedPage(deviceData.node, fidoState)
-                  : _FidoLockedPage(deviceData.node, fidoState)
-              : const _FidoInsertTapPage();
+          return fidoState.unlocked
+              ? _FidoUnlockedPage(deviceData.node, fidoState)
+              : _FidoLockedPage(deviceData.node, fidoState);
         });
-  }
-}
-
-class _FidoInsertTapPage extends ConsumerWidget {
-  const _FidoInsertTapPage();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return MessagePage(
-      title: l10n.s_passkeys,
-      centered: false,
-      capabilities: const [Capability.fido2],
-      header: l10n.l_insert_or_tap_yk,
-    );
   }
 }
 
@@ -123,10 +112,10 @@ class _FidoLockedPage extends ConsumerWidget {
                 label: Text(l10n.s_setup_fingerprints),
                 onPressed: () async {
                   ref
-                      .read(currentAppProvider.notifier)
-                      .setCurrentApp(Application.fingerprints);
+                      .read(currentSectionProvider.notifier)
+                      .setCurrentSection(Section.fingerprints);
                 },
-                avatar: const Icon(Icons.fingerprint_outlined),
+                avatar: const Icon(Symbols.fingerprint),
               ),
             if (!isBio && alwaysUv && !expanded)
               ActionChip(
@@ -136,7 +125,7 @@ class _FidoLockedPage extends ConsumerWidget {
                       context: context,
                       builder: (context) => FidoPinDialog(node.path, state));
                 },
-                avatar: const Icon(Icons.pin_outlined),
+                avatar: const Icon(Symbols.pin),
               )
           ];
         },
@@ -177,7 +166,7 @@ class _FidoLockedPage extends ConsumerWidget {
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
         title: l10n.s_passkeys,
@@ -259,10 +248,10 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                     label: Text(l10n.s_setup_fingerprints),
                     onPressed: () async {
                       ref
-                          .read(currentAppProvider.notifier)
-                          .setCurrentApp(Application.fingerprints);
+                          .read(currentSectionProvider.notifier)
+                          .setCurrentSection(Section.fingerprints);
                     },
-                    avatar: const Icon(Icons.fingerprint_outlined),
+                    avatar: const Icon(Symbols.fingerprint),
                   )
                 ];
               }
@@ -358,7 +347,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                     ),
                               ),
                               const SizedBox(height: 16),
-                              const Icon(Icons.person, size: 72),
+                              const Icon(Symbols.person, size: 72),
                             ],
                           ),
                         ),
@@ -440,7 +429,7 @@ class _CredentialListItem extends StatelessWidget {
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Icons.person),
+        child: const Icon(Symbols.person),
       ),
       title: credential.userName,
       subtitle: credential.rpId,
@@ -448,7 +437,7 @@ class _CredentialListItem extends StatelessWidget {
           ? null
           : OutlinedButton(
               onPressed: Actions.handler(context, OpenIntent(credential)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,

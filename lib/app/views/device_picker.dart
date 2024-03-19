@@ -18,23 +18,17 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
-import '../../management/views/management_screen.dart';
-import '../features.dart' as features;
-import '../key_customization/models.dart';
-import '../key_customization/state.dart';
-import '../key_customization/views/key_customization_dialog.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
 import 'keys.dart';
-import 'reset_dialog.dart';
 
 final _hiddenDevicesProvider =
     StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
@@ -83,7 +77,11 @@ class DevicePickerContent extends ConsumerWidget {
           : l10n.l_insert_yk;
 
       androidNoKeyWidget = _DeviceRow(
-        leading: const DeviceAvatar(child: Icon(Icons.usb)),
+        leading: const DeviceAvatar(
+            child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(Symbols.usb),
+        )),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -97,7 +95,11 @@ class DevicePickerContent extends ConsumerWidget {
     List<Widget> children = [
       if (showUsb)
         _DeviceRow(
-          leading: const DeviceAvatar(child: Icon(Icons.usb)),
+          leading: const DeviceAvatar(
+              child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.usb),
+          )),
           title: l10n.s_usb,
           subtitle: l10n.l_no_yk_present,
           onTap: () {
@@ -181,7 +183,7 @@ class _DeviceMenuButton extends ConsumerWidget {
         child: PopupMenuButton(
           key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
-          icon: const Icon(Icons.more_horiz_outlined),
+          icon: const Icon(Symbols.more_horiz),
           tooltip: '',
           iconColor: Theme.of(context).listTileTheme.textColor,
           itemBuilder: (context) {
@@ -267,14 +269,16 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
               horizontalTitleGap: 8,
               leading: widget.leading,
-              trailing: _DeviceMenuButton(
-                menuItems: menuItems,
-                opacity: widget.selected
-                    ? 1.0
-                    : _showContextMenu
-                        ? 0.3
-                        : 0.0,
-              ),
+              trailing: menuItems.isNotEmpty
+                  ? _DeviceMenuButton(
+                      menuItems: menuItems,
+                      opacity: widget.selected
+                          ? 1.0
+                          : _showContextMenu
+                              ? 0.3
+                              : 0.0,
+                    )
+                  : null,
               title: Text(
                 widget.title,
                 overflow: TextOverflow.fade,
@@ -312,7 +316,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
               ? IconButton.filled(
                   tooltip: isDesktop ? tooltip : null,
                   icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   onPressed: widget.onTap,
                 )
               : IconButton(
@@ -330,44 +334,9 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
   List<PopupMenuItem> _getMenuItems(
       BuildContext context, WidgetRef ref, DeviceNode? node) {
     final l10n = AppLocalizations.of(context)!;
-    final keyCustomizations = ref.watch(keyCustomizationManagerProvider);
-    final hasFeature = ref.watch(featureProvider);
     final hidden = ref.watch(_hiddenDevicesProvider);
 
-    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
-    final managementAvailability =
-        data == null || !hasFeature(features.management)
-            ? Availability.unsupported
-            : Application.management.getAvailability(data);
-
-    final serial = node is UsbYubiKeyNode
-        ? node.info?.serial
-        : data != null
-            ? data.node.path == node?.path && node != null
-                ? data.info.serial
-                : null
-            : null;
-
     return [
-      if (serial != null)
-        PopupMenuItem(
-          enabled: true,
-          onTap: () async {
-            await ref.read(withContextProvider)((context) async {
-              await _showKeyCustomizationDialog(
-                  keyCustomizations[serial] ?? KeyCustomization(serial: serial),
-                  context,
-                  node);
-            });
-          },
-          child: ListTile(
-              title: Text(l10n.s_customize_key_action),
-              leading: const Icon(Icons.palette_outlined),
-              key: yubikeyLabelColorMenuButton,
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              enabled: true),
-        ),
       if (isDesktop && hidden.isNotEmpty)
         PopupMenuItem(
           enabled: hidden.isNotEmpty,
@@ -376,7 +345,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_show_hidden_devices),
-            leading: const Icon(Icons.visibility_outlined),
+            leading: const Icon(Symbols.visibility),
             dense: true,
             contentPadding: EdgeInsets.zero,
             enabled: hidden.isNotEmpty,
@@ -389,63 +358,12 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
           },
           child: ListTile(
             title: Text(l10n.s_hide_device),
-            leading: const Icon(Icons.visibility_off_outlined),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      if (node == data?.node && managementAvailability == Availability.enabled)
-        PopupMenuItem(
-          onTap: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ManagementScreen(data),
-            );
-          },
-          child: ListTile(
-            title: Text(data!.info.version.major > 4
-                ? l10n.s_toggle_applications
-                : l10n.s_toggle_interfaces),
-            leading: const Icon(Icons.construction),
-            key: yubikeyApplicationToggleMenuButton,
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      if (data != null &&
-          node == data.node &&
-          getResetCapabilities(hasFeature).any((c) =>
-              c.value &
-                  (data.info.supportedCapabilities[node!.transport] ?? 0) !=
-              0))
-        PopupMenuItem(
-          onTap: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ResetDialog(data),
-            );
-          },
-          child: ListTile(
-            title: Text(l10n.s_factory_reset),
-            leading: const Icon(Icons.delete_forever),
-            key: yubikeyFactoryResetMenuButton,
+            leading: const Icon(Symbols.visibility_off),
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
         ),
     ];
-  }
-
-  Future<void> _showKeyCustomizationDialog(KeyCustomization keyCustomization,
-      BuildContext context, DeviceNode? node) async {
-    await showBlurDialog(
-      context: context,
-      builder: (context) => KeyCustomizationDialog(
-        node: node,
-        initialCustomization: keyCustomization,
-      ),
-      routeSettings: const RouteSettings(name: 'customize'),
-    );
   }
 }
 

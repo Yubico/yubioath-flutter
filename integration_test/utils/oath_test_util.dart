@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
@@ -219,7 +220,7 @@ extension OathFunctions on WidgetTester {
     await openAccountDialog(a);
 
     /// click the delete IconButton in the account dialog
-    var deleteIconButton = find.byIcon(Icons.delete_outline).hitTestable();
+    var deleteIconButton = find.byIcon(Symbols.delete).hitTestable();
     expect(deleteIconButton, findsOneWidget);
     await tap(deleteIconButton);
     await longWait();
@@ -252,7 +253,7 @@ extension OathFunctions on WidgetTester {
     }
 
     await openAccountDialog(a);
-    var renameIconButton = find.byIcon(Icons.edit_outlined).hitTestable();
+    var renameIconButton = find.byIcon(Symbols.edit).hitTestable();
 
     /// only newer FW supports renaming
     if (renameIconButton.evaluate().isEmpty) {

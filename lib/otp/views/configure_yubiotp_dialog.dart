@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -213,11 +214,11 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.modhex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Icons.public_outlined),
+                  prefixIcon: const Icon(Symbols.public),
                   suffixIcon: IconButton(
                     key: keys.useSerial,
                     tooltip: l10n.s_use_serial,
-                    icon: const Icon(Icons.auto_awesome_outlined),
+                    icon: const Icon(Symbols.auto_awesome),
                     onPressed: (info?.serial != null)
                         ? () async {
                             final publicId = await ref
@@ -236,7 +237,7 @@ class _ConfigureYubiOtpDialogState
                   _validatePublicIdFormat = false;
                 });
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.privateIdField,
               controller: _privateIdController,
@@ -249,11 +250,11 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generatePrivateId,
                     tooltip: l10n.s_generate_random,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh),
                     onPressed: () {
                       final random = Random.secure();
                       final key = List.generate(
@@ -273,7 +274,7 @@ class _ConfigureYubiOtpDialogState
                   _validatePrivateIdFormat = false;
                 });
               },
-            ),
+            ).init(),
             AppTextField(
               key: keys.secretField,
               controller: _secretController,
@@ -286,11 +287,11 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh),
                     onPressed: () {
                       final random = Random.secure();
                       final key = List.generate(
@@ -310,7 +311,7 @@ class _ConfigureYubiOtpDialogState
                   _validateSecretFormat = false;
                 });
               },
-            ),
+            ).init(),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,
@@ -330,7 +331,7 @@ class _ConfigureYubiOtpDialogState
                   tooltip: outputFile?.path ?? l10n.s_no_export,
                   selected: outputFile != null,
                   avatar: outputFile != null
-                      ? Icon(Icons.check,
+                      ? Icon(Symbols.check,
                           color: Theme.of(context).colorScheme.secondary)
                       : null,
                   value: _action,

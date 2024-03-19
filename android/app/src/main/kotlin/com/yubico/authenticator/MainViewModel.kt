@@ -23,15 +23,16 @@ import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 
 enum class OperationContext(val value: Int) {
-    Oath(0),
-    FidoU2f(1),
-    FidoFingerprints(2),
-    FidoPasskeys(3),
-    YubiOtp(4),
-    Piv(5),
-    OpenPgp(6),
-    HsmAuth(7),
-    Management(8),
+    Home(0),
+    Oath(1),
+    FidoU2f(2),
+    FidoFingerprints(3),
+    FidoPasskeys(4),
+    YubiOtp(5),
+    Piv(6),
+    OpenPgp(7),
+    HsmAuth(8),
+    Management(9),
     Invalid(-1);
 
     companion object {

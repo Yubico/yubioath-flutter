@@ -27,7 +27,7 @@ class WebAuthnScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return MessagePage(
-      title: l10n.s_webauthn,
+      title: l10n.s_security_key,
       capabilities: const [Capability.u2f],
       header: l10n.l_ready_to_use,
       message: l10n.l_register_sk_on_websites,

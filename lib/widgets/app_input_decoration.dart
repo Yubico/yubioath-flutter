@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class AppInputDecoration extends InputDecoration {
   final List<Widget>? suffixIcons;
@@ -67,7 +68,7 @@ class AppInputDecoration extends InputDecoration {
     final icons = [
       if (super.suffixIcon != null) super.suffixIcon!,
       if (suffixIcons != null) ...suffixIcons!,
-      if (errorText != null) const Icon(Icons.error_outlined),
+      if (errorText != null) const Icon(Symbols.error),
     ];
 
     return switch (icons.length) {

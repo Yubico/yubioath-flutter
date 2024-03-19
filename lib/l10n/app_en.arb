@@ -61,12 +61,17 @@
     "s_actions": "Actions",
     "s_manage": "Manage",
     "s_setup": "Setup",
+    "s_device": "Device",
+    "s_application": "Application",
     "s_settings": "Settings",
+    "l_settings_desc": "Change application preferences",
     "s_certificates": "Certificates",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": "Security Key",
     "s_slots": "Slots",
     "s_help_and_about": "Help and about",
+    "l_help_and_about_desc": "Troubleshoot and support",
     "s_help_and_feedback": "Help and feedback",
+    "s_home": "Home",
     "s_send_feedback": "Send us feedback",
     "s_i_need_help": "I need help",
     "s_troubleshooting": "Troubleshooting",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": "Serial number: {serial}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": "Firmware version: {version}",
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insert your YubiKey",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Toggle applications",
     "s_toggle_interfaces": "Toggle interfaces",
+    "l_toggle_applications_desc": "Enable/disable applications",
+    "l_toggle_interfaces_desc": "Enable/disable interfaces",
     "s_reconfiguring_yk": "Reconfiguring YubiKey\u2026",
     "s_config_updated": "Configuration updated",
     "l_config_updated_reinsert": "Configuration updated, remove and reinsert your YubiKey",
@@ -188,6 +207,7 @@
     "s_unknown_device": "Unrecognized device",
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
+    "p_operation_failed_try_again": "The operation failed, please try again.",
 
     "@_general_errors": {},
     "l_error_occurred": "An error has occurred",
@@ -214,6 +234,8 @@
     "s_confirm_pin": "Confirm PIN",
     "s_confirm_puk": "Confirm PUK",
     "s_unblock_pin": "Unblock PIN",
+    "l_pin_mismatch": "PINs do not match",
+    "l_puk_mismatch": "PUKs do not match",
     "l_new_pin_len": "New PIN must be at least {length} characters",
     "@l_new_pin_len": {
         "placeholders": {
@@ -290,6 +312,7 @@
     "s_new_password": "New password",
     "s_current_password": "Current password",
     "s_confirm_password": "Confirm password",
+    "l_password_mismatch": "Passwords do not match",
     "s_wrong_password": "Wrong password",
     "s_remove_password": "Remove password",
     "s_password_removed": "Password removed",
@@ -645,6 +668,7 @@
     "@_factory_reset": {},
     "s_reset": "Reset",
     "s_factory_reset": "Factory reset",
+    "l_factory_reset_desc": "Restore YubiKey defaults",
     "l_oath_application_reset": "OATH application reset",
     "l_fido_app_reset": "FIDO application reset",
     "l_reset_failed": "Error performing reset: {message}",
@@ -721,7 +745,7 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
 
-    "s_nfc_dialog_tap_key": "Tap your key",
+    "l_nfc_dialog_tap_key": "Tap and hold your key",
     "s_nfc_dialog_operation_success": "Success",
     "s_nfc_dialog_operation_failed": "Failed",
 
@@ -752,7 +776,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": "Set label/color",
+    "s_set_label": "Set label",
+    "s_change_label": "Change label",
     "s_theme_color": "Theme color",
+    "s_color": "Color",
+    "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",
+    "p_rename_will_change_custom_name": "This will change the label of your YubiKey.",
 
     "@_eof": {}
 }

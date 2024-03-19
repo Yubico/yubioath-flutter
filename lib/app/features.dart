@@ -16,10 +16,12 @@
 
 import '../core/state.dart';
 
+final home = root.feature('home');
 final oath = root.feature('oath');
 final fido = root.feature('fido');
 final piv = root.feature('piv');
 final otp = root.feature('otp');
+
 final management = root.feature('management');
 
 final fingerprints = fido.feature('fingerprints');

@@ -21,10 +21,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/state.dart';
 import '../app/views/user_interaction.dart';
-import '../widgets/custom_icons.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -149,16 +149,16 @@ class _DialogProvider {
   }
 
   Widget? _getIcon(int? icon) => switch (_DIcon.fromId(icon)) {
-        _DIcon.nfcIcon => nfcIcon,
-        _DIcon.successIcon => const Icon(Icons.check_circle),
-        _DIcon.failureIcon => const Icon(Icons.error),
+        _DIcon.nfcIcon => const Icon(Symbols.contactless),
+        _DIcon.successIcon => const Icon(Symbols.check_circle),
+        _DIcon.failureIcon => const Icon(Symbols.error),
         _ => null,
       };
 
   String _getTitle(BuildContext context, int? titleId) {
     final l10n = AppLocalizations.of(context)!;
     return switch (_DTitle.fromId(titleId)) {
-      _DTitle.tapKey => l10n.s_nfc_dialog_tap_key,
+      _DTitle.tapKey => l10n.l_nfc_dialog_tap_key,
       _DTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
       _DTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
       _ => ''

@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -158,11 +159,11 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       : _validatePassword && !passwordFormatValid
                           ? l10n.l_invalid_keyboard_character
                           : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh),
                     onPressed: () async {
                       final password = await ref
                           .read(otpStateProvider(widget.devicePath).notifier)
@@ -180,7 +181,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                   _validatePassword = false;
                 });
               },
-            ),
+            ).init(),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 4.0,

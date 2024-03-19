@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -82,7 +83,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                   runSpacing: 8.0,
                   children: [
                     ActionChip(
-                      avatar: const Icon(Icons.qr_code_scanner_outlined),
+                      avatar: const Icon(Symbols.qr_code_scanner),
                       backgroundColor:
                           Theme.of(context).colorScheme.surfaceVariant,
                       label: Text(l10n.s_qr_scan),
@@ -105,7 +106,7 @@ class _AddAccountDialogState extends ConsumerState<AddAccountDialog> {
                     ),
                     ActionChip(
                         key: addAccountManuallyButton,
-                        avatar: const Icon(Icons.edit_outlined),
+                        avatar: const Icon(Symbols.edit),
                         backgroundColor:
                             Theme.of(context).colorScheme.surfaceVariant,
                         label: Text(l10n.s_add_manually),

@@ -19,14 +19,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/state.dart';
+import '../../home/views/home_message_page.dart';
 import '../models.dart';
 import '../state.dart';
 import 'elevate_fido_buttons.dart';
-import 'message_page.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
   final DeviceNode node;
@@ -38,10 +39,9 @@ class DeviceErrorScreen extends ConsumerWidget {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-        final currentApp = ref.read(currentAppProvider);
-        return MessagePage(
-          title: currentApp.getDisplayName(l10n),
-          capabilities: currentApp.capabilities,
+        final currentSection = ref.read(currentSectionProvider);
+        return HomeMessagePage(
+          capabilities: currentSection.capabilities,
           header: l10n.l_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [
@@ -51,7 +51,7 @@ class DeviceErrorScreen extends ConsumerWidget {
         );
       }
     }
-    return MessagePage(
+    return HomeMessagePage(
       centered: true,
       graphic: Image.asset(
         'assets/product-images/generic.png',
@@ -69,16 +69,16 @@ class DeviceErrorScreen extends ConsumerWidget {
     return node.map(
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
       nfcReader: (node) => switch (error) {
-        'unknown-device' => MessagePage(
+        'unknown-device' => HomeMessagePage(
             centered: true,
             graphic: Icon(
-              Icons.help_outlined,
+              Symbols.help,
               size: 96,
               color: Theme.of(context).colorScheme.error,
             ),
             header: l10n.s_unknown_device,
           ),
-        _ => MessagePage(
+        _ => HomeMessagePage(
             centered: true,
             graphic: Image.asset(
               'assets/graphics/no-key.png',

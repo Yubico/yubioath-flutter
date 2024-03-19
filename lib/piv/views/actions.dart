@@ -20,6 +20,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -51,24 +52,26 @@ class ExportIntent extends Intent {
   const ExportIntent(this.slot);
 }
 
-Future<bool> _authenticate(
-    BuildContext context, DevicePath devicePath, PivState pivState) async {
-  return await showBlurDialog(
-        context: context,
-        builder: (context) => pivState.protectedKey
-            ? PinDialog(devicePath)
-            : AuthenticationDialog(
-                devicePath,
-                pivState,
-              ),
-      ) ??
-      false;
-}
-
-Future<bool> _authIfNeeded(
-    BuildContext context, DevicePath devicePath, PivState pivState) async {
+Future<bool> _authIfNeeded(BuildContext context, WidgetRef ref,
+    DevicePath devicePath, PivState pivState) async {
   if (pivState.needsAuth) {
-    return await _authenticate(context, devicePath, pivState);
+    if (pivState.protectedKey &&
+        pivState.metadata?.pinMetadata.defaultValue == true) {
+      final status = await ref
+          .read(pivStateProvider(devicePath).notifier)
+          .verifyPin(defaultPin);
+      return status.when(success: () => true, failure: (_) => false);
+    }
+    return await showBlurDialog(
+          context: context,
+          builder: (context) => pivState.protectedKey
+              ? PinDialog(devicePath)
+              : AuthenticationDialog(
+                  devicePath,
+                  pivState,
+                ),
+        ) ??
+        false;
   }
   return true;
 }
@@ -95,21 +98,32 @@ class PivActions extends ConsumerWidget {
         if (hasFeature(features.slotsGenerate))
           GenerateIntent:
               CallbackAction<GenerateIntent>(onInvoke: (intent) async {
-            if (!pivState.protectedKey &&
-                !await withContext((context) =>
-                    _authIfNeeded(context, devicePath, pivState))) {
+            //Verify management key and maybe PIN
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
               return false;
             }
-
+            // Verify PIN, unless already done above
             // TODO: Avoid asking for PIN if not needed?
-            final verified = await withContext((context) async =>
-                    await showBlurDialog(
-                        context: context,
-                        builder: (context) => PinDialog(devicePath))) ??
-                false;
+            if (!pivState.protectedKey) {
+              bool verified;
+              if (pivState.metadata?.pinMetadata.defaultValue == true) {
+                final status = await ref
+                    .read(pivStateProvider(devicePath).notifier)
+                    .verifyPin(defaultPin);
+                verified =
+                    status.when(success: () => true, failure: (_) => false);
+              } else {
+                verified = await withContext((context) async =>
+                        await showBlurDialog(
+                            context: context,
+                            builder: (context) => PinDialog(devicePath))) ??
+                    false;
+              }
 
-            if (!verified) {
-              return false;
+              if (!verified) {
+                return false;
+              }
             }
 
             return await withContext((context) async {
@@ -157,8 +171,8 @@ class PivActions extends ConsumerWidget {
           }),
         if (hasFeature(features.slotsImport))
           ImportIntent: CallbackAction<ImportIntent>(onInvoke: (intent) async {
-            if (!await withContext(
-                (context) => _authIfNeeded(context, devicePath, pivState))) {
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
               return false;
             }
 
@@ -242,8 +256,8 @@ class PivActions extends ConsumerWidget {
         if (hasFeature(features.slotsDelete))
           DeleteIntent<PivSlot>:
               CallbackAction<DeleteIntent<PivSlot>>(onInvoke: (intent) async {
-            if (!await withContext(
-                (context) => _authIfNeeded(context, devicePath, pivState))) {
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
               return false;
             }
 
@@ -279,7 +293,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
     ActionItem(
       key: keys.generateAction,
       feature: features.slotsGenerate,
-      icon: const Icon(Icons.add_outlined),
+      icon: const Icon(Symbols.add),
       actionStyle: ActionStyle.primary,
       title: l10n.s_generate_key,
       subtitle: l10n.l_generate_desc,
@@ -288,7 +302,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
     ActionItem(
       key: keys.importAction,
       feature: features.slotsImport,
-      icon: const Icon(Icons.file_download_outlined),
+      icon: const Icon(Symbols.file_download),
       title: l10n.l_import_file,
       subtitle: l10n.l_import_desc,
       intent: ImportIntent(slot),
@@ -297,7 +311,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
       ActionItem(
         key: keys.exportAction,
         feature: features.slotsExport,
-        icon: const Icon(Icons.file_upload_outlined),
+        icon: const Icon(Symbols.file_upload),
         title: l10n.l_export_certificate,
         subtitle: l10n.l_export_certificate_desc,
         intent: ExportIntent(slot),
@@ -306,7 +320,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         key: keys.deleteAction,
         feature: features.slotsDelete,
         actionStyle: ActionStyle.error,
-        icon: const Icon(Icons.delete_outline),
+        icon: const Icon(Symbols.delete),
         title: l10n.l_delete_certificate,
         subtitle: l10n.l_delete_certificate_desc,
         intent: DeleteIntent(slot),
@@ -315,7 +329,7 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
       ActionItem(
         key: keys.exportAction,
         feature: features.slotsExport,
-        icon: const Icon(Icons.file_upload_outlined),
+        icon: const Icon(Symbols.file_upload),
         title: l10n.l_export_public_key,
         subtitle: l10n.l_export_public_key_desc,
         intent: ExportIntent(slot),

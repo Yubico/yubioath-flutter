@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator.fido
 
+import android.nfc.TagLostException
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainViewModel
@@ -28,6 +29,7 @@ import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
+import com.yubico.authenticator.fido.data.SessionInfo
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.getDeviceInfo
@@ -135,14 +137,14 @@ class FidoManager(
                     (args["pin"] as String).toCharArray()
                 )
 
-                "set_pin" -> setPin(
+                "setPin" -> setPin(
                     (args["pin"] as String?)?.toCharArray(),
-                    (args["new_pin"] as String).toCharArray(),
+                    (args["newPin"] as String).toCharArray(),
                 )
 
-                "delete_credential" -> deleteCredential(
-                    args["rp_id"] as String,
-                    args["credential_id"] as String
+                "deleteCredential" -> deleteCredential(
+                    args["rpId"] as String,
+                    args["credentialId"] as String
                 )
 
                 "delete_fingerprint" -> deleteFingerprint(
@@ -163,20 +165,14 @@ class FidoManager(
                 else -> throw NotImplementedError()
             }
         }
-
-        if (!deviceManager.isUsbKeyConnected()) {
-            // for NFC connections require extra tap when switching context
-            if (fidoViewModel.sessionState.value == null) {
-                fidoViewModel.setSessionState(Session.uninitialized)
-            }
-        }
-
     }
 
     override fun dispose() {
         super.dispose()
         deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
+        fidoViewModel.clearSessionState()
+        fidoViewModel.updateCredentials(emptyList())
         coroutineScope.cancel()
     }
 
@@ -210,7 +206,7 @@ class FidoManager(
             }
 
             // Clear any cached FIDO state
-            fidoViewModel.setSessionState(null)
+            fidoViewModel.clearSessionState()
         }
 
     }
@@ -223,8 +219,8 @@ class FidoManager(
                 YubiKitFidoSession(connection as SmartCardConnection)
             }
 
-        val previousSession = fidoViewModel.sessionState.value?.info
-        val currentSession = fidoSession.cachedInfo
+        val previousSession = fidoViewModel.currentSession()?.info
+        val currentSession = SessionInfo(fidoSession.cachedInfo)
         logger.debug(
             "Previous session: {}, current session: {}",
             previousSession,
@@ -241,6 +237,7 @@ class FidoManager(
                 // different key
                 logger.debug("This is a different key than previous, invalidating the PIN token")
                 pinStore.setPin(null)
+                connectionHelper.cancelPending()
             }
 
             fidoViewModel.setSessionState(
@@ -278,6 +275,8 @@ class FidoManager(
         clientPin: ClientPin,
         pin: CharArray
     ): String {
+
+        //fidoViewModel.setSessionLoadingState()
 
         val pinPermissionsCM = getPinPermissionsCM(fidoSession)
         val pinPermissionsBE = getPinPermissionsBE(fidoSession)
@@ -342,7 +341,12 @@ class FidoManager(
                 catchPinErrors(clientPin) {
                     unlockSession(fidoSession, clientPin, pin)
                 }
-
+            } catch (e: IOException) {
+                // something failed, keep the session locked
+                fidoViewModel.currentSession()?.let {
+                    fidoViewModel.setSessionState(it.copy(info = it.info, unlocked = false))
+                }
+                throw e
             } finally {
                 Arrays.fill(pin, 0.toChar())
             }
@@ -416,13 +420,8 @@ class FidoManager(
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-            val token =
-                clientPin.getPinToken(
-                    pinStore.getPin(),
-                    getPinPermissionsCM(fidoSession),
-                    null
-                )
-
+            val permissions = getPinPermissionsCM(fidoSession)
+            val token = clientPin.getPinToken(pinStore.getPin(), permissions, null)
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, token)
 
             val credentialDescriptor =
@@ -593,11 +592,11 @@ class FidoManager(
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {
-            fidoViewModel.setSessionState(null)
+            fidoViewModel.clearSessionState()
         }
     }
 
     override fun onTimeout() {
-        fidoViewModel.setSessionState(null)
+        fidoViewModel.clearSessionState()
     }
 }

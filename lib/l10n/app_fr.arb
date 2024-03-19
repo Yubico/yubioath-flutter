@@ -61,12 +61,17 @@
     "s_actions": "Actions",
     "s_manage": "Gérer",
     "s_setup": "Configuration",
+    "s_device": null,
+    "s_application": null,
     "s_settings": "Paramètres",
+    "l_settings_desc": null,
     "s_certificates": "Certificats",
-    "s_webauthn": "WebAuthn",
+    "s_security_key": null,
     "s_slots": null,
     "s_help_and_about": "Aide et à propos",
+    "l_help_and_about_desc": null,
     "s_help_and_feedback": "Aide et retours",
+    "s_home": null,
     "s_send_feedback": "Envoyer nous un retour",
     "s_i_need_help": "J'ai besoin d'aide",
     "s_troubleshooting": "Dépannage",
@@ -128,6 +133,18 @@
             "version": {}
         }
     },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": null,
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insérez votre YubiKey",
@@ -154,6 +171,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Changer les applications",
     "s_toggle_interfaces": null,
+    "l_toggle_applications_desc": null,
+    "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "Reconfiguration de la YubiKey\u2026",
     "s_config_updated": "Configuration mise à jour",
     "l_config_updated_reinsert": "Configuration mise à jour; retirez et réinsérez votre YubiKey",
@@ -188,6 +207,7 @@
     "s_unknown_device": "Appareil non reconnu",
     "s_unsupported_yk": "YubiKey non supportée",
     "s_yk_not_recognized": "Appareil non reconnu",
+    "p_operation_failed_try_again": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Une erreur est survenue",
@@ -214,6 +234,8 @@
     "s_confirm_pin": "Confirmez le PIN",
     "s_confirm_puk": "Confirmez le PUK",
     "s_unblock_pin": "Débloquer le PIN",
+    "l_pin_mismatch": null,
+    "l_puk_mismatch": null,
     "l_new_pin_len": "Le nouveau PIN doit avoir au moins {length} caractères",
     "@l_new_pin_len": {
         "placeholders": {
@@ -290,6 +312,7 @@
     "s_new_password": "Nouveau mot de passe",
     "s_current_password": "Mot de passe actuel",
     "s_confirm_password": "Confirmez le mot de passe",
+    "l_password_mismatch": null,
     "s_wrong_password": "Mauvais mot de passe",
     "s_remove_password": "Supprimer le mot de passe",
     "s_password_removed": "Mot de passe supprimé",
@@ -645,6 +668,7 @@
     "@_factory_reset": {},
     "s_reset": "Réinitialiser",
     "s_factory_reset": "Réinitialisation",
+    "l_factory_reset_desc": null,
     "l_oath_application_reset": "L'application OATH à été réinitialisée",
     "l_fido_app_reset": "L'application FIDO à été réinitialisée",
     "l_reset_failed": "Erreur pendant la réinitialisation: {message}",
@@ -721,7 +745,7 @@
     "l_launch_app_on_usb_off": "D'autres applications peuvent utiliser la YubiKey via USB",
     "s_allow_screenshots": "Autoriser les captures d'écrans",
 
-    "s_nfc_dialog_tap_key": "Effleurez votre YubiKey",
+    "l_nfc_dialog_tap_key": null,
     "s_nfc_dialog_operation_success": "Succès",
     "s_nfc_dialog_operation_failed": "Échec",
 
@@ -752,7 +776,12 @@
 
     "@_key_customization": {},
     "s_customize_key_action": null,
+    "s_set_label": null,
+    "s_change_label": null,
     "s_theme_color": null,
+    "s_color": null,
+    "p_set_will_add_custom_name": null,
+    "p_rename_will_change_custom_name": null,
 
     "@_eof": {}
 }

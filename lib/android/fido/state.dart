@@ -22,9 +22,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
+import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
@@ -45,6 +48,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
+        state = AsyncValue.error(const NoDataException(), StackTrace.current);
+      } else if (json == 'loading') {
         state = const AsyncValue.loading();
       } else {
         final fidoState = FidoState.fromJson(json);
@@ -64,30 +69,28 @@ class _FidoStateNotifier extends FidoStateNotifier {
     final controller = StreamController<InteractionEvent>();
     const resetEvents = EventChannel('android.fido.reset');
 
-    final resetSub =
+    final subscription =
         resetEvents.receiveBroadcastStream().skip(1).listen((event) {
-      _log.debug('Received event: \'$event\'');
       if (event is String && event.isNotEmpty) {
-        controller.sink.add(InteractionEvent.values
-            .firstWhere((e) => '"${e.name}"' == event)); // TODO fix event form
+        controller.sink.add(
+            InteractionEvent.values.firstWhere((e) => '"${e.name}"' == event));
       }
     });
 
     controller.onCancel = () async {
       await _methods.invokeMethod('cancelReset');
       if (!controller.isClosed) {
-        await resetSub.cancel();
+        await subscription.cancel();
       }
     };
 
     controller.onListen = () async {
       try {
         await _methods.invokeMethod('reset');
-        _log.debug('Finished reset');
         await controller.sink.close();
         ref.invalidateSelf();
       } catch (e) {
-        _log.debug('Received error: \'$e\'');
+        _log.debug('Error during reset: \'$e\'');
         controller.sink.addError(e);
       }
     };
@@ -98,26 +101,28 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<PinResult> setPin(String newPin, {String? oldPin}) async {
     try {
-      final setPinResponse = jsonDecode(await _methods.invokeMethod('set_pin', {
-        'pin': oldPin,
-        'new_pin': newPin,
-      }));
-      if (setPinResponse['success'] == true) {
+      final response = jsonDecode(await _methods.invokeMethod(
+        'setPin',
+        {
+          'pin': oldPin,
+          'newPin': newPin,
+        },
+      ));
+      if (response['success'] == true) {
         _log.debug('FIDO pin set/change successful');
         return PinResult.success();
       }
 
       _log.debug('FIDO pin set/change failed');
       return PinResult.failed(
-          setPinResponse['pinRetries'], setPinResponse['authBlocked']);
+        response['pinRetries'],
+        response['authBlocked'],
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
-        _log.debug('User cancelled Set/Change FIDO PIN operation');
-      } else {
-        _log.error('Set/Change FIDO PIN operation failed.', pe);
+        _log.debug('User cancelled set/change FIDO PIN operation');
       }
-
       throw decodedException;
     }
   }
@@ -125,25 +130,32 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<PinResult> unlock(String pin) async {
     try {
-      final unlockResponse =
-          jsonDecode(await _methods.invokeMethod('unlock', {'pin': pin}));
+      final response = jsonDecode(await _methods.invokeMethod(
+        'unlock',
+        {'pin': pin},
+      ));
 
-      if (unlockResponse['success'] == true) {
+      if (response['success'] == true) {
         _log.debug('FIDO applet unlocked');
         return PinResult.success();
       }
 
       _log.debug('FIDO applet unlock failed');
       return PinResult.failed(
-          unlockResponse['pinRetries'], unlockResponse['authBlocked']);
+        response['pinRetries'],
+        response['authBlocked'],
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled unlock FIDO operation');
-      } else {
-        _log.error('Unlock FIDO operation failed.', pe);
+      if (decodedException is! CancellationException) {
+        // non pin failure
+        // simulate cancellation but show an error
+        await ref.read(withContextProvider)((context) async => showMessage(
+            context, ref.watch(l10nProvider).p_operation_failed_try_again));
+        throw CancellationException();
       }
 
+      _log.debug('User cancelled unlock FIDO operation');
       throw decodedException;
     }
   }
@@ -332,28 +344,20 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   @override
   Future<void> deleteCredential(FidoCredential credential) async {
     try {
-      final deleteCredentialResponse = jsonDecode(await _methods.invokeMethod(
-        'delete_credential',
+      await _methods.invokeMethod(
+        'deleteCredential',
         {
-          'rp_id': credential.rpId,
-          'credential_id': credential.credentialId,
+          'rpId': credential.rpId,
+          'credentialId': credential.credentialId,
         },
-      ));
-
-      if (deleteCredentialResponse['success'] == true) {
-        _log.debug('FIDO delete credential succeeded');
-      } else {
-        _log.debug('FIDO delete credential failed');
-      }
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
         _log.debug('User cancelled delete credential FIDO operation');
       } else {
-        _log.error('Delete credential FIDO operation failed.', pe);
+        throw decodedException;
       }
-
-      throw decodedException;
     }
   }
 }

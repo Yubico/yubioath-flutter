@@ -639,7 +639,6 @@ mixin _$OathState {
   bool get remembered => throw _privateConstructorUsedError;
   bool get locked => throw _privateConstructorUsedError;
   KeystoreState get keystore => throw _privateConstructorUsedError;
-  bool get initialized => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -658,8 +657,7 @@ abstract class $OathStateCopyWith<$Res> {
       bool hasKey,
       bool remembered,
       bool locked,
-      KeystoreState keystore,
-      bool initialized});
+      KeystoreState keystore});
 
   $VersionCopyWith<$Res> get version;
 }
@@ -683,7 +681,6 @@ class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
     Object? remembered = null,
     Object? locked = null,
     Object? keystore = null,
-    Object? initialized = null,
   }) {
     return _then(_value.copyWith(
       deviceId: null == deviceId
@@ -710,10 +707,6 @@ class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
           ? _value.keystore
           : keystore // ignore: cast_nullable_to_non_nullable
               as KeystoreState,
-      initialized: null == initialized
-          ? _value.initialized
-          : initialized // ignore: cast_nullable_to_non_nullable
-              as bool,
     ) as $Val);
   }
 
@@ -740,8 +733,7 @@ abstract class _$$OathStateImplCopyWith<$Res>
       bool hasKey,
       bool remembered,
       bool locked,
-      KeystoreState keystore,
-      bool initialized});
+      KeystoreState keystore});
 
   @override
   $VersionCopyWith<$Res> get version;
@@ -764,7 +756,6 @@ class __$$OathStateImplCopyWithImpl<$Res>
     Object? remembered = null,
     Object? locked = null,
     Object? keystore = null,
-    Object? initialized = null,
   }) {
     return _then(_$OathStateImpl(
       null == deviceId
@@ -791,10 +782,6 @@ class __$$OathStateImplCopyWithImpl<$Res>
           ? _value.keystore
           : keystore // ignore: cast_nullable_to_non_nullable
               as KeystoreState,
-      initialized: null == initialized
-          ? _value.initialized
-          : initialized // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -806,8 +793,7 @@ class _$OathStateImpl extends _OathState {
       {required this.hasKey,
       required this.remembered,
       required this.locked,
-      required this.keystore,
-      this.initialized = true})
+      required this.keystore})
       : super._();
 
   factory _$OathStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -825,13 +811,10 @@ class _$OathStateImpl extends _OathState {
   final bool locked;
   @override
   final KeystoreState keystore;
-  @override
-  @JsonKey()
-  final bool initialized;
 
   @override
   String toString() {
-    return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore, initialized: $initialized)';
+    return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
   }
 
   @override
@@ -847,15 +830,13 @@ class _$OathStateImpl extends _OathState {
                 other.remembered == remembered) &&
             (identical(other.locked, locked) || other.locked == locked) &&
             (identical(other.keystore, keystore) ||
-                other.keystore == keystore) &&
-            (identical(other.initialized, initialized) ||
-                other.initialized == initialized));
+                other.keystore == keystore));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, deviceId, version, hasKey,
-      remembered, locked, keystore, initialized);
+  int get hashCode => Object.hash(
+      runtimeType, deviceId, version, hasKey, remembered, locked, keystore);
 
   @JsonKey(ignore: true)
   @override
@@ -876,8 +857,7 @@ abstract class _OathState extends OathState {
       {required final bool hasKey,
       required final bool remembered,
       required final bool locked,
-      required final KeystoreState keystore,
-      final bool initialized}) = _$OathStateImpl;
+      required final KeystoreState keystore}) = _$OathStateImpl;
   _OathState._() : super._();
 
   factory _OathState.fromJson(Map<String, dynamic> json) =
@@ -895,8 +875,6 @@ abstract class _OathState extends OathState {
   bool get locked;
   @override
   KeystoreState get keystore;
-  @override
-  bool get initialized;
   @override
   @JsonKey(ignore: true)
   _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>

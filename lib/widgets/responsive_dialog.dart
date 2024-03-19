@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../core/state.dart';
 
@@ -56,7 +57,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           actions: widget.actions,
           leading: IconButton(
               tooltip: AppLocalizations.of(context)!.s_close,
-              icon: const Icon(Icons.close),
+              icon: const Icon(Symbols.close),
               onPressed: widget.allowCancel
                   ? () {
                       widget.onCancel?.call();

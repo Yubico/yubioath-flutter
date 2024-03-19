@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
@@ -24,12 +25,13 @@ import '../../core/state.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
+import '../../home/views/home_message_page.dart';
+import '../../home/views/home_screen.dart';
 import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
-import '../../widgets/custom_icons.dart';
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
@@ -82,7 +84,7 @@ class MainPage extends ConsumerWidget {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
-        return MessagePage(
+        return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,
           header: hasNfcSupport && isNfcEnabled
@@ -92,21 +94,20 @@ class MainPage extends ConsumerWidget {
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
                   label: Text(l10n.s_enable_nfc),
-                  icon: nfcIcon,
+                  icon: const Icon(Symbols.contactless),
                   onPressed: () async {
                     await openNfcSettings();
-                  })
+                  }),
+            ElevatedButton.icon(
+                label: Text(l10n.s_add_account),
+                icon: const Icon(Symbols.person_add_alt),
+                onPressed: () async {
+                  await addOathAccount(context, ref);
+                })
           ],
-          actionButtonBuilder: (context) => IconButton(
-            icon: const Icon(Icons.person_add_alt_1),
-            tooltip: l10n.s_add_account,
-            onPressed: () async {
-              await addOathAccount(context, ref);
-            },
-          ),
         );
       } else {
-        return MessagePage(
+        return HomeMessagePage(
           centered: true,
           delayedContent: false,
           graphic: noKeyImage,
@@ -116,32 +117,33 @@ class MainPage extends ConsumerWidget {
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
-              final app = ref.watch(currentAppProvider);
-              final capabilities = app.capabilities;
+              final section = ref.watch(currentSectionProvider);
+              final capabilities = section.capabilities;
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
-                return MessagePage(
+                return HomeMessagePage(
                   centered: true,
                   graphic: Icon(
-                    Icons.help_outlined,
+                    Symbols.help,
                     size: 96,
                     color: Theme.of(context).colorScheme.error,
                   ),
                   header: l10n.s_yk_not_recognized,
                 );
-              } else if (app.getAvailability(data) ==
+              } else if (section.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
-                  title: app.getDisplayName(l10n),
+                  title: section.getDisplayName(l10n),
                   capabilities: capabilities,
                   header: l10n.s_app_not_supported,
                   message: l10n.l_app_not_supported_on_yk(capabilities
                       .map((c) => c.getDisplayName(l10n))
                       .join(',')),
                 );
-              } else if (app.getAvailability(data) != Availability.enabled) {
+              } else if (section.getAvailability(data) !=
+                  Availability.enabled) {
                 return MessagePage(
-                  title: app.getDisplayName(l10n),
+                  title: section.getDisplayName(l10n),
                   capabilities: capabilities,
                   header: l10n.s_app_disabled,
                   message: l10n.l_app_disabled_desc(capabilities
@@ -158,23 +160,20 @@ class MainPage extends ConsumerWidget {
                           builder: (context) => ManagementScreen(data),
                         );
                       },
-                      avatar: const Icon(Icons.construction),
+                      avatar: const Icon(Symbols.construction),
                     )
                   ],
                 );
               }
 
-              return switch (app) {
-                Application.accounts => OathScreen(data.node.path),
-                Application.webauthn => const WebAuthnScreen(),
-                Application.passkeys => PasskeysScreen(data),
-                Application.fingerprints => FingerprintsScreen(data),
-                Application.certificates => PivScreen(data.node.path),
-                Application.slots => OtpScreen(data.node.path),
-                _ => MessagePage(
-                    header: l10n.s_app_not_supported,
-                    message: l10n.l_app_not_supported_desc,
-                  ),
+              return switch (section) {
+                Section.home => HomeScreen(data),
+                Section.accounts => OathScreen(data.node.path),
+                Section.securityKey => const WebAuthnScreen(),
+                Section.passkeys => PasskeysScreen(data),
+                Section.fingerprints => FingerprintsScreen(data),
+                Section.certificates => PivScreen(data.node.path),
+                Section.slots => OtpScreen(data.node.path),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),

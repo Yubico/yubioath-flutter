@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -38,7 +39,7 @@ Widget otpBuildActions(BuildContext context, DevicePath devicePath,
           feature: features.actionsSwap,
           title: l10n.s_swap_slots,
           subtitle: l10n.l_swap_slots_desc,
-          icon: const Icon(Icons.swap_vert_outlined),
+          icon: const Icon(Symbols.swap_vert),
           onTap: (otpState.slot1Configured || otpState.slot2Configured)
               ? (context) {
                   Navigator.of(context).popUntil((route) => route.isFirst);

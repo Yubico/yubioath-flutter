@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import 'package:flutter/material.dart';
 
 import 'app_input_decoration.dart';
@@ -86,4 +85,13 @@ class AppTextField extends TextField {
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
   }) : super(decoration: decoration);
+
+  Widget init() => Builder(
+        builder: (context) => DefaultSelectionStyle(
+          selectionColor: decoration?.errorText != null
+              ? Theme.of(context).colorScheme.error
+              : null,
+          child: this,
+        ),
+      );
 }

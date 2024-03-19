@@ -10,14 +10,12 @@ _$FidoStateImpl _$$FidoStateImplFromJson(Map<String, dynamic> json) =>
     _$FidoStateImpl(
       info: json['info'] as Map<String, dynamic>,
       unlocked: json['unlocked'] as bool,
-      initialized: json['initialized'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$$FidoStateImplToJson(_$FidoStateImpl instance) =>
     <String, dynamic>{
       'info': instance.info,
       'unlocked': instance.unlocked,
-      'initialized': instance.initialized,
     };
 
 _$FingerprintImpl _$$FingerprintImplFromJson(Map<String, dynamic> json) =>

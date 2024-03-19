@@ -17,6 +17,7 @@
 package com.yubico.authenticator.oath
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.oath.OathTestHelper.code
 import com.yubico.authenticator.oath.OathTestHelper.emptyCredentials
@@ -40,13 +41,12 @@ class ModelTest {
     private fun connectDevice(deviceId: String) {
         viewModel.setSessionState(
             Session(
-            deviceId,
-            Version(1, 2, 3),
-            isAccessKeySet = false,
-            isRemembered = false,
-            isLocked = false,
-            initialized = true
-        )
+                deviceId,
+                Version(1, 2, 3),
+                isAccessKeySet = false,
+                isRemembered = false,
+                isLocked = false
+            )
         )
     }
 
@@ -117,7 +117,7 @@ class ModelTest {
 
         viewModel.updateCredentials(m2)
 
-        assertEquals("device1", viewModel.sessionState.value?.deviceId)
+        assertEquals("device1", viewModel.currentSession()?.deviceId)
         assertEquals(3, viewModel.credentials.value!!.size)
         assertTrue(viewModel.credentials.value!!.find { it.credential == cred1 } != null)
         assertTrue(viewModel.credentials.value!!.find { it.credential == cred2 } != null)
@@ -388,9 +388,9 @@ class ModelTest {
         val deviceId = "device"
         connectDevice(deviceId)
         viewModel.updateCredentials(mapOf(totp() to code()))
-        viewModel.setSessionState(null)
+        viewModel.clearSession()
 
-        assertNull(viewModel.sessionState.value)
+        assertEquals(ViewModelData.Empty, viewModel.sessionState.value)
         assertNull(viewModel.credentials.value)
     }
 }

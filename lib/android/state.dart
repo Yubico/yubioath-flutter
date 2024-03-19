@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
+
+final _log = Logger('android.state');
 
 const _contextChannel = MethodChannel('android.state.appContext');
 
@@ -73,6 +77,8 @@ class NfcStateNotifier extends StateNotifier<bool> {
   }
 }
 
+final androidSectionPriority = Provider<List<Section>>((ref) => []);
+
 final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
@@ -90,32 +96,57 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   }
 });
 
-class _AndroidAppContextHandler {
-  Future<void> switchAppContext(Application subPage) async {
-    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
+class AndroidAppContextHandler {
+  Future<void> switchAppContext(Section section) async {
+    await _contextChannel.invokeMethod('setContext', {'index': section.index});
   }
 }
 
 final androidAppContextHandler =
-    Provider<_AndroidAppContextHandler>((ref) => _AndroidAppContextHandler());
+    Provider<AndroidAppContextHandler>((ref) => AndroidAppContextHandler());
 
-class AndroidSubPageNotifier extends CurrentAppNotifier {
-  final StateNotifierProviderRef<CurrentAppNotifier, Application> _ref;
+CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
+  final notifier = AndroidCurrentSectionNotifier(
+      ref.watch(androidSectionPriority), ref.watch(androidAppContextHandler));
+  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
+  }, fireImmediately: true);
+  return notifier;
+}
 
-  AndroidSubPageNotifier(this._ref, super.supportedApps) {
-    _ref.read(androidAppContextHandler).switchAppContext(state);
-  }
+class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
+  final List<Section> _supportedSectionsByPriority;
+  final AndroidAppContextHandler _appContextHandler;
+
+  AndroidCurrentSectionNotifier(
+    this._supportedSectionsByPriority,
+    this._appContextHandler,
+  ) : super(Section.accounts);
 
   @override
-  void setCurrentApp(Application app) {
-    super.setCurrentApp(app);
-    _ref.read(androidAppContextHandler).switchAppContext(app);
+  void setCurrentSection(Section section) {
+    state = section;
+    _log.debug('Setting current section to $section');
+    _appContextHandler.switchAppContext(state);
   }
 
-  @override
-  void notifyDeviceChanged(YubiKeyData? data) {
-    super.notifyDeviceChanged(data);
-    _ref.read(androidAppContextHandler).switchAppContext(state);
+  void _notifyDeviceChanged(YubiKeyData? data) {
+    if (data == null) {
+      _log.debug('Keeping current section because key was disconnected');
+      return;
+    }
+
+    final supportedSections = _supportedSectionsByPriority.where(
+      (e) => e.getAvailability(data) == Availability.enabled,
+    );
+
+    if (supportedSections.contains(state)) {
+      // the key supports current section
+      _log.debug('Keeping current section because new key support $state');
+      return;
+    }
+
+    setCurrentSection(supportedSections.firstOrNull ?? Section.home);
   }
 }
 

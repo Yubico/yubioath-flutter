@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../core/models.dart';
@@ -45,9 +46,9 @@ final _log = Logger('fido.views.reset_dialog');
 
 extension on Capability {
   IconData get _icon => switch (this) {
-        Capability.oath => Icons.supervisor_account_outlined,
-        Capability.fido2 => Icons.security_outlined,
-        Capability.piv => Icons.approval_outlined,
+        Capability.oath => Symbols.supervisor_account,
+        Capability.fido2 => Symbols.passkey,
+        Capability.piv => Symbols.badge,
         _ => throw UnsupportedError('Icon not defined'),
       };
 }
@@ -78,6 +79,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     super.initState();
     final nfc = widget.data.node.transport == Transport.nfc;
     _totalSteps = nfc ? 2 : 3;
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
   String _getMessage() {
@@ -249,10 +256,10 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       if (isAndroid) {
                         // switch current app context
                         ref
-                            .read(currentAppProvider.notifier)
-                            .setCurrentApp(switch (_application) {
-                              Capability.oath => Application.accounts,
-                              Capability.fido2 => Application.passkeys,
+                            .read(currentSectionProvider.notifier)
+                            .setCurrentSection(switch (_application) {
+                              Capability.oath => Section.accounts,
+                              Capability.fido2 => Section.passkeys,
                               _ => throw UnimplementedError(
                                   'Reset for $_application is not implemented')
                             });

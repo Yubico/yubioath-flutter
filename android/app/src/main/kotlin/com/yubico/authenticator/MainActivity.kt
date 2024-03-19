@@ -285,6 +285,10 @@ class MainActivity : FlutterFragmentActivity() {
                 switchContext(preferredContext)
             }
 
+            if (contextManager == null) {
+                switchContext(DeviceManager.getPreferredContext(supportedApps))
+            }
+
             contextManager?.let {
                 try {
                     it.processYubiKey(device)
@@ -336,27 +340,40 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun switchContext(appContext: OperationContext) {
-        contextManager?.dispose()
-        contextManager = when (appContext) {
-            OperationContext.Oath -> OathManager(
-                this,
-                messenger,
-                deviceManager,
-                oathViewModel,
-                dialogManager,
-                appPreferences
-            )
+        // TODO: refactor this when more OperationContext are handled
+        // only recreate the contextManager object if it cannot be reused
+        if (appContext == OperationContext.Home ||
+            (appContext == OperationContext.Oath && contextManager is OathManager) ||
+            (appContext == OperationContext.FidoPasskeys && contextManager is FidoManager)
+        ) {
+            // no need to dispose this context
+        } else {
+            contextManager?.dispose()
+            contextManager = null
+        }
 
-            OperationContext.FidoFingerprints,
-            OperationContext.FidoPasskeys -> FidoManager(
-                messenger,
-                deviceManager,
-                fidoViewModel,
-                viewModel,
-                dialogManager
-            )
+        if (contextManager == null) {
+            contextManager = when (appContext) {
+                OperationContext.Oath -> OathManager(
+                    this,
+                    messenger,
+                    deviceManager,
+                    oathViewModel,
+                    dialogManager,
+                    appPreferences
+                )
 
-            else -> null
+                OperationContext.FidoFingerprints,
+                OperationContext.FidoPasskeys -> FidoManager(
+                    messenger,
+                    deviceManager,
+                    fidoViewModel,
+                    viewModel,
+                    dialogManager
+                )
+
+                else -> null
+            }
         }
     }
 
@@ -480,6 +497,11 @@ class MainActivity : FlutterFragmentActivity() {
                     "openNfcSettings" -> {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)
+                    }
+
+                    "isArc" -> {
+                        val regex = ".+_cheets|cheets_.+".toRegex()
+                        result.success(Build.DEVICE?.matches(regex) ?: false)
                     }
                     else -> logger.warn("Unknown app method: {}", methodCall.method)
                 }

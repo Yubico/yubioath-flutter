@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class ChoiceFilterChip<T> extends StatefulWidget {
   final T value;
@@ -27,6 +28,7 @@ class ChoiceFilterChip<T> extends StatefulWidget {
   final void Function(T value)? onChanged;
   final Widget? avatar;
   final bool selected;
+  final bool? disableHover;
   const ChoiceFilterChip({
     super.key,
     required this.value,
@@ -36,6 +38,7 @@ class ChoiceFilterChip<T> extends StatefulWidget {
     this.tooltip,
     this.avatar,
     this.selected = false,
+    this.disableHover,
     this.labelBuilder,
   });
 
@@ -68,6 +71,8 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       color: Theme.of(context).colorScheme.background,
       items: widget.items
           .map((e) => PopupMenuItem<T>(
+                enabled:
+                    widget.disableHover != null ? !widget.disableHover! : true,
                 value: e,
                 height: chipBox.size.height,
                 textStyle: ChipTheme.of(context).labelStyle,
@@ -91,7 +96,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
           Padding(
             padding: const EdgeInsets.only(left: 6),
             child: Icon(
-              _showing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+              _showing ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
               color: ChipTheme.of(context).checkmarkColor,
               size: 18,
             ),

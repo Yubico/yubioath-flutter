@@ -19,6 +19,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/message.dart';
@@ -180,7 +181,7 @@ class _IconPackDescription extends ConsumerWidget {
                       },
                     );
                   },
-                  icon: const Icon(Icons.delete_outline)),
+                  icon: const Icon(Symbols.delete)),
             ],
           )
         ]);
@@ -202,7 +203,7 @@ class _ImportActionChip extends ConsumerWidget {
                 _importAction(context, ref);
               }
             : null,
-        avatar: const Icon(Icons.download_outlined),
+        avatar: const Icon(Symbols.download),
         label: Text(_label));
   }
 

@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -49,7 +50,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
 
   final pinBlocked = pivState.pinAttempts == 0;
   final pukAttempts = pivState.metadata?.pukMetadata.attemptsRemaining;
-  final alertIcon = Icon(Icons.warning_amber, color: colors.tertiary);
+  final alertIcon = Icon(Symbols.warning_amber, color: colors.tertiary);
 
   return Column(
     children: [
@@ -59,7 +60,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
           ActionListItem(
               key: keys.managePinAction,
               feature: features.actionsPin,
-              title: l10n.s_pin,
+              title: l10n.s_change_pin,
               subtitle: pinBlocked
                   ? (pukAttempts != 0
                       ? l10n.l_piv_pin_blocked
@@ -67,7 +68,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                   : usingDefaultPin
                       ? '${l10n.l_attempts_remaining(pivState.pinAttempts)}\n${l10n.l_warning_default_pin}'
                       : l10n.l_attempts_remaining(pivState.pinAttempts),
-              icon: const Icon(Icons.pin_outlined),
+              icon: const Icon(Symbols.pin),
               trailing: pinBlocked || usingDefaultPin ? alertIcon : null,
               onTap: !(pinBlocked && pukAttempts == 0)
                   ? (context) {
@@ -87,7 +88,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
           ActionListItem(
               key: keys.managePukAction,
               feature: features.actionsPuk,
-              title: l10n.s_puk,
+              title: l10n.s_change_puk,
               subtitle: pukAttempts != null
                   ? (pukAttempts == 0
                       ? l10n.l_piv_pin_puk_blocked
@@ -97,7 +98,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                   : usingDefaultPuk
                       ? l10n.l_warning_default_puk
                       : null,
-              icon: const Icon(Icons.pin_outlined),
+              icon: const Icon(Symbols.pin),
               trailing: pukAttempts == 0 || usingDefaultPuk ? alertIcon : null,
               onTap: pukAttempts != 0
                   ? (context) {
@@ -119,7 +120,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
                   : (pivState.protectedKey
                       ? l10n.l_pin_protected_key
                       : l10n.l_change_management_key),
-              icon: const Icon(Icons.key_outlined),
+              icon: const Icon(Symbols.key),
               trailing: usingDefaultMgmtKey ? alertIcon : null,
               onTap: (context) {
                 Navigator.of(context).popUntil((route) => route.isFirst);
@@ -141,7 +142,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
               leading: CircleAvatar(
                 backgroundColor: theme.secondary,
                 foregroundColor: theme.onSecondary,
-                child: const Icon(Icons.laptop),
+                child: const Icon(Symbols.laptop),
               ),
               onTap: () async {
                 Navigator.of(context).pop();

@@ -25,45 +25,38 @@ import '../core/state.dart';
 
 part 'models.freezed.dart';
 
+part 'models.g.dart';
+
 const _listEquality = ListEquality();
 
 enum Availability { enabled, disabled, unsupported }
 
-enum Application {
+enum Section {
+  home(),
   accounts([Capability.oath]),
-  webauthn([Capability.u2f]),
+  securityKey([Capability.u2f]),
   fingerprints([Capability.fido2]),
   passkeys([Capability.fido2]),
   certificates([Capability.piv]),
-  slots([Capability.otp]),
-  management();
+  slots([Capability.otp]);
 
   final List<Capability> capabilities;
 
-  const Application([this.capabilities = const []]);
+  const Section([this.capabilities = const []]);
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        Application.accounts => l10n.s_accounts,
-        Application.webauthn => l10n.s_webauthn,
-        Application.fingerprints => l10n.s_fingerprints,
-        Application.passkeys => l10n.s_passkeys,
-        Application.certificates => l10n.s_certificates,
-        Application.slots => l10n.s_slots,
-        _ => name.substring(0, 1).toUpperCase() + name.substring(1),
+        Section.home => l10n.s_home,
+        Section.accounts => l10n.s_accounts,
+        Section.securityKey => l10n.s_security_key,
+        Section.fingerprints => l10n.s_fingerprints,
+        Section.passkeys => l10n.s_passkeys,
+        Section.certificates => l10n.s_certificates,
+        Section.slots => l10n.s_slots,
       };
 
   Availability getAvailability(YubiKeyData data) {
-    if (this == Application.management) {
-      final version = data.info.version;
-      final available = (version.major > 4 || // YK5 and up
-          (version.major == 4 && version.minor >= 1) || // YK4.1 and up
-          version.major == 3); // NEO
-      // Management can't be disabled
-      return available ? Availability.enabled : Availability.unsupported;
-    }
-
     // TODO: Require credman for passkeys?
-    if (this == Application.fingerprints) {
+    if (this == Section.fingerprints) {
       if (!const {FormFactor.usbABio, FormFactor.usbCBio}
           .contains(data.info.formFactor)) {
         return Availability.unsupported;
@@ -75,8 +68,8 @@ enum Application {
     final int enabled =
         data.info.config.enabledCapabilities[data.node.transport] ?? 0;
 
-    // Don't show WebAuthn if we have FIDO2
-    if (this == Application.webauthn &&
+    // Don't show securityKey if we have FIDO2
+    if (this == Section.securityKey &&
         Capability.fido2.value & supported != 0) {
       return Availability.unsupported;
     }
@@ -154,4 +147,26 @@ class WindowState with _$WindowState {
     required bool active,
     @Default(false) bool hidden,
   }) = _WindowState;
+}
+
+@freezed
+class KeyCustomization with _$KeyCustomization {
+  factory KeyCustomization({
+    required int serial,
+    @JsonKey(includeIfNull: false) String? name,
+    @JsonKey(includeIfNull: false) @_ColorConverter() Color? color,
+  }) = _KeyCustomization;
+
+  factory KeyCustomization.fromJson(Map<String, dynamic> json) =>
+      _$KeyCustomizationFromJson(json);
+}
+
+class _ColorConverter implements JsonConverter<Color?, int?> {
+  const _ColorConverter();
+
+  @override
+  Color? fromJson(int? json) => json != null ? Color(json) : null;
+
+  @override
+  int? toJson(Color? object) => object?.value;
 }

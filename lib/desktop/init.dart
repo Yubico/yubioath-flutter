@@ -26,6 +26,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -203,6 +204,9 @@ Future<Widget> initialize(List<String> argv) async {
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(desktopDeviceDataProvider),
       ),
+      currentSectionProvider.overrideWith(
+        (ref) => desktopCurrentSectionNotifier(ref),
+      ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState.call),
       credentialListProvider
@@ -379,7 +383,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         message: l10n.l_helper_not_responding,
         actionsBuilder: (context, expanded) => [
           ActionChip(
-            avatar: const Icon(Icons.copy),
+            avatar: const Icon(Symbols.content_copy),
             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
             label: Text(l10n.s_copy_log),
             onPressed: () async {

@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -28,7 +29,9 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -43,6 +46,7 @@ import 'pin_entry_form.dart';
 
 class FingerprintsScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
+
   const FingerprintsScreen(this.deviceData, {super.key});
 
   @override
@@ -55,6 +59,9 @@ class FingerprintsScreen extends ConsumerWidget {
               builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
+          if (error is NoDataException) {
+            return MessagePageNotInitialized(title: l10n.s_fingerprints);
+          }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
               0;
@@ -102,7 +109,7 @@ class _FidoLockedPage extends ConsumerWidget {
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
         title: l10n.s_fingerprints,
@@ -131,7 +138,7 @@ class _FidoLockedPage extends ConsumerWidget {
                     context: context,
                     builder: (context) => FidoPinDialog(node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
       );
@@ -190,7 +197,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                     builder: (context) =>
                         AddFingerprintDialog(widget.node.path));
               },
-              avatar: const Icon(Icons.fingerprint_outlined),
+              avatar: const Icon(Symbols.fingerprint),
             )
         ],
         title: l10n.s_fingerprints,
@@ -278,7 +285,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 16),
-                              const Icon(Icons.fingerprint, size: 72),
+                              const Icon(Symbols.fingerprint, size: 72),
                             ],
                           ),
                         ),
@@ -356,14 +363,14 @@ class _FingerprintListItem extends StatelessWidget {
       leading: CircleAvatar(
         foregroundColor: Theme.of(context).colorScheme.onSecondary,
         backgroundColor: Theme.of(context).colorScheme.secondary,
-        child: const Icon(Icons.fingerprint),
+        child: const Icon(Symbols.fingerprint),
       ),
       title: fingerprint.label,
       trailing: expanded
           ? null
           : OutlinedButton(
               onPressed: Actions.handler(context, OpenIntent(fingerprint)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(fingerprint),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(fingerprint) : null,
