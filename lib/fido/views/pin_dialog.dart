@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -37,6 +38,7 @@ final _log = Logger('fido.views.pin_dialog');
 class FidoPinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final FidoState state;
+
   const FidoPinDialog(this.devicePath, this.state, {super.key});
 
   @override
@@ -239,6 +241,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           }
         });
       });
+    } on CancellationException catch (_) {
+      // ignored
     } catch (e) {
       _log.error('Failed to set PIN', e);
       final String errorMessage;

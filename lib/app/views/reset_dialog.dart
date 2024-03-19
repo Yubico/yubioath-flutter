@@ -81,6 +81,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     _totalSteps = nfc ? 2 : 3;
   }
 
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
   String _getMessage() {
     final l10n = AppLocalizations.of(context)!;
     final nfc = widget.data.node.transport == Transport.nfc;
@@ -247,6 +253,17 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                   onSelectionChanged: (selected) {
                     setState(() {
                       _application = selected.first;
+                      if (isAndroid) {
+                        // switch current app context
+                        ref
+                            .read(currentSectionProvider.notifier)
+                            .setCurrentSection(switch (_application) {
+                              Capability.oath => Section.accounts,
+                              Capability.fido2 => Section.passkeys,
+                              _ => throw UnimplementedError(
+                                  'Reset for $_application is not implemented')
+                            });
+                      }
                     });
                   },
                 );

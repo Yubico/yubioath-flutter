@@ -204,6 +204,9 @@ Future<Widget> initialize(List<String> argv) async {
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(desktopDeviceDataProvider),
       ),
+      currentSectionProvider.overrideWith(
+        (ref) => desktopCurrentSectionNotifier(ref),
+      ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState.call),
       credentialListProvider

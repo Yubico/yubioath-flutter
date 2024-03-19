@@ -27,12 +27,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/app.dart';
 import '../app/features.dart' as features;
 import '../app/logging.dart';
+import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
+import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import 'app_methods.dart';
+import 'fido/state.dart';
 import 'logger.dart';
 import 'management/state.dart';
 import 'oath/otp_auth_link_handler.dart';
@@ -51,6 +54,8 @@ Future<Widget> initialize() async {
 
   _initLicenses();
 
+  final isArc = await getAndroidIsArc();
+
   return ProviderScope(
     overrides: [
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
@@ -64,8 +69,9 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentSectionProvider.overrideWith((ref) => AndroidSectionNotifier(
-          ref.watch(supportedSectionsProvider), ref.watch(prefProvider))),
+      currentSectionProvider.overrideWith(
+        (ref) => androidCurrentSectionNotifier(ref),
+      ),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
       currentDeviceProvider.overrideWith(
         () => AndroidCurrentDeviceNotifier(),
@@ -79,10 +85,21 @@ Future<Widget> initialize() async {
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
+      supportedSectionsProvider.overrideWithValue(
+          [Section.home, Section.accounts, Section.passkeys]),
+      // this specifies the priority of sections to show when
+      // the connected YubiKey does not support current section
+      androidSectionPriority.overrideWithValue(
+          [Section.accounts, Section.passkeys, Section.home]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
       defaultColorProvider.overrideWithValue(await getPrimaryColor()),
+
+      // FIDO
+      fidoStateProvider.overrideWithProvider(androidFidoStateProvider.call),
+      fingerprintProvider.overrideWithProvider(androidFingerprintProvider.call),
+      credentialProvider.overrideWithProvider(androidCredentialProvider.call),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
@@ -92,10 +109,9 @@ Future<Widget> initialize() async {
               // TODO: Load feature flags from file/config?
               //..loadConfig(config)
               // Disable unimplemented feature
-              ..setFeature(features.fido, false)
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
-              ..setFeature(features.home, false)
+              ..setFeature(features.fido, !isArc)
               ..setFeature(features.management, false);
           });
 

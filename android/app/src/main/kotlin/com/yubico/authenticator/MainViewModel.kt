@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,20 @@ import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 
 enum class OperationContext(val value: Int) {
-    Home(0), Oath(1), Yubikey(2), Invalid(-1);
+    Home(0),
+    Oath(1),
+    FidoU2f(2),
+    FidoFingerprints(3),
+    FidoPasskeys(4),
+    YubiOtp(5),
+    Piv(6),
+    OpenPgp(7),
+    HsmAuth(8),
+    Management(9),
+    Invalid(-1);
 
     companion object {
-        fun getByValue(value: Int) = values().firstOrNull { it.value == value } ?: Invalid
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Invalid
     }
 }
 
@@ -35,14 +45,14 @@ class MainViewModel : ViewModel() {
     val appContext: LiveData<OperationContext> = _appContext
     fun setAppContext(appContext: OperationContext) {
         // Don't reset the context unless it actually changes
-        if(appContext != _appContext.value) {
+        if (appContext != _appContext.value) {
             _appContext.postValue(appContext)
         }
     }
 
     private val _connectedYubiKey = MutableLiveData<UsbYubiKeyDevice?>()
     val connectedYubiKey: LiveData<UsbYubiKeyDevice?> = _connectedYubiKey
-    fun setConnectedYubiKey(device: UsbYubiKeyDevice, onDisconnect: () -> Unit ) {
+    fun setConnectedYubiKey(device: UsbYubiKeyDevice, onDisconnect: () -> Unit) {
         _connectedYubiKey.postValue(device)
         device.setOnClosed {
             _connectedYubiKey.postValue(null)

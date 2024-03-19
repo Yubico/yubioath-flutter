@@ -19,7 +19,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../core/state.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_picker.dart';
@@ -125,9 +124,7 @@ class NavigationContent extends ConsumerWidget {
             .where((section) =>
                 section.getAvailability(data) != Availability.unsupported)
             .toList()
-        : !isAndroid // TODO: Remove check when Home is implemented on Android
-            ? [Section.home]
-            : <Section>[];
+        : [Section.home];
     final currentSection = ref.watch(currentSectionProvider);
 
     return Padding(

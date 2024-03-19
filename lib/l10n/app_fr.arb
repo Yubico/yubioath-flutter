@@ -207,6 +207,7 @@
     "s_unknown_device": "Appareil non reconnu",
     "s_unsupported_yk": "YubiKey non supportée",
     "s_yk_not_recognized": "Appareil non reconnu",
+    "p_operation_failed_try_again": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Une erreur est survenue",
@@ -744,7 +745,7 @@
     "l_launch_app_on_usb_off": "D'autres applications peuvent utiliser la YubiKey via USB",
     "s_allow_screenshots": "Autoriser les captures d'écrans",
 
-    "s_nfc_dialog_tap_key": "Effleurez votre YubiKey",
+    "l_nfc_dialog_tap_key": null,
     "s_nfc_dialog_operation_success": "Succès",
     "s_nfc_dialog_operation_failed": "Échec",
 
@@ -758,6 +759,12 @@
     "s_nfc_dialog_oath_calculate_code": "Action: calculer le code OATH",
     "s_nfc_dialog_oath_failure": "Échec de l'opération OATH",
     "s_nfc_dialog_oath_add_multiple_accounts": "Action: ajouter plusieurs comptes",
+
+    "s_nfc_dialog_fido_reset": null,
+    "s_nfc_dialog_fido_unlock": null,
+    "l_nfc_dialog_fido_set_pin": null,
+    "s_nfc_dialog_fido_delete_credential": null,
+    "s_nfc_dialog_fido_failure": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": null,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator
+package com.yubico.authenticator.fido.data
 
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
-const val NULL = "null"
-
-const val LOADING = "\"loading\""
-
-val jsonSerializer = Json {
-    // creates properties for default values
-    encodeDefaults = true
-}
+@Serializable
+data class FidoCredential(
+    @SerialName("rp_id")
+    val rpId: String,
+    @SerialName("credential_id")
+    val credentialId: String,
+    @SerialName("user_id")
+    val userId: String,
+    @SerialName("user_name")
+    val userName: String,
+    @Transient
+    val publicKeyCredentialDescriptor: Map<String, Any?> = emptyMap()
+)

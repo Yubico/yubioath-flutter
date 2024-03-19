@@ -105,14 +105,11 @@ class OathPair with _$OathPair {
 class OathState with _$OathState {
   const OathState._();
 
-  factory OathState(
-    String deviceId,
-    Version version, {
-    required bool hasKey,
-    required bool remembered,
-    required bool locked,
-    required KeystoreState keystore,
-  }) = _OathState;
+  factory OathState(String deviceId, Version version,
+      {required bool hasKey,
+      required bool remembered,
+      required bool locked,
+      required KeystoreState keystore}) = _OathState;
 
   int? get capacity =>
       version.isAtLeast(4) ? (version.isAtLeast(5, 7) ? 64 : 32) : null;

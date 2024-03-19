@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator
+package com.yubico.authenticator.fido
 
-import kotlinx.serialization.json.Json
+class FidoPinStore {
+    private var pin: CharArray? = null
 
-const val NULL = "null"
+    fun hasPin(): Boolean {
+        return pin != null
+    }
 
-const val LOADING = "\"loading\""
+    fun getPin(): CharArray {
+        return pin!!
+    }
 
-val jsonSerializer = Json {
-    // creates properties for default values
-    encodeDefaults = true
+    fun setPin(newPin: CharArray?) {
+        pin?.fill(0.toChar())
+        pin = newPin?.clone()
+    }
 }

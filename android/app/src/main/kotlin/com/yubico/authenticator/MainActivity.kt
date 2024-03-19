@@ -39,6 +39,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
+import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.fido.FidoManager
+import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
@@ -62,6 +65,7 @@ import java.util.concurrent.Executors
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
+    private val fidoViewModel: FidoViewModel by viewModels()
 
     private val nfcConfiguration = NfcConfiguration().timeout(2000)
 
@@ -159,6 +163,8 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onPause() {
 
+        contextManager?.onPause()
+
         appPreferences.unregisterListener(sharedPreferencesListener)
 
         if (!preserveConnectionOnPause) {
@@ -248,6 +254,8 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences.registerListener(sharedPreferencesListener)
 
         preserveConnectionOnPause = false
+
+        contextManager?.onResume()
     }
 
     override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
@@ -262,8 +270,26 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun processYubiKey(device: YubiKeyDevice) {
-        contextManager?.let {
-            lifecycleScope.launch {
+        lifecycleScope.launch {
+            // verify that current context supports connection provided by the YubiKey
+            // if not, switch to a context which supports the connection
+            val supportedApps = DeviceManager.getSupportedContexts(device)
+            logger.debug("Connected key supports: {}", supportedApps)
+            if (!supportedApps.contains(viewModel.appContext.value)) {
+                val preferredContext = DeviceManager.getPreferredContext(supportedApps)
+                logger.debug(
+                    "Current context ({}) is not supported by the key. Using preferred context {}",
+                    viewModel.appContext.value,
+                    preferredContext
+                )
+                switchContext(preferredContext)
+            }
+
+            if (contextManager == null) {
+                switchContext(DeviceManager.getPreferredContext(supportedApps))
+            }
+
+            contextManager?.let {
                 try {
                     it.processYubiKey(device)
                 } catch (e: Throwable) {
@@ -274,6 +300,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private var contextManager: AppContextManager? = null
+    private lateinit var deviceManager: DeviceManager
     private lateinit var appContext: AppContext
     private lateinit var dialogManager: DialogManager
     private lateinit var appPreferences: AppPreferences
@@ -281,13 +308,14 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
     private lateinit var appLinkMethodChannel: AppLinkMethodChannel
+    private lateinit var messenger: BinaryMessenger
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        val messenger = flutterEngine.dartExecutor.binaryMessenger
-
+        messenger = flutterEngine.dartExecutor.binaryMessenger
         flutterLog = FlutterLog(messenger)
+        deviceManager = DeviceManager(this, viewModel)
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
@@ -298,27 +326,58 @@ class MainActivity : FlutterFragmentActivity() {
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
             oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
+            fidoViewModel.sessionState.streamTo(this, messenger, "android.fido.sessionState"),
+            fidoViewModel.credentials.streamTo(this, messenger, "android.fido.credentials"),
+            fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
         )
 
         viewModel.appContext.observe(this) {
+            switchContext(it)
+            viewModel.connectedYubiKey.value?.let(::processYubiKey)
+        }
+    }
+
+    private fun switchContext(appContext: OperationContext) {
+        // TODO: refactor this when more OperationContext are handled
+        // only recreate the contextManager object if it cannot be reused
+        if (appContext == OperationContext.Home ||
+            (appContext == OperationContext.Oath && contextManager is OathManager) ||
+            (appContext == OperationContext.FidoPasskeys && contextManager is FidoManager)
+        ) {
+            // no need to dispose this context
+        } else {
             contextManager?.dispose()
-            contextManager = when (it) {
+            contextManager = null
+        }
+
+        if (contextManager == null) {
+            contextManager = when (appContext) {
                 OperationContext.Oath -> OathManager(
                     this,
                     messenger,
-                    viewModel,
+                    deviceManager,
                     oathViewModel,
                     dialogManager,
                     appPreferences
                 )
+
+                OperationContext.FidoPasskeys -> FidoManager(
+                    messenger,
+                    deviceManager,
+                    fidoViewModel,
+                    viewModel,
+                    dialogManager
+                )
+
                 else -> null
             }
-            viewModel.connectedYubiKey.value?.let(::processYubiKey)
         }
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         flutterStreams.forEach { it.close() }
+        contextManager?.dispose()
+        deviceManager.dispose()
         super.cleanUpFlutterEngine(flutterEngine)
     }
 
@@ -435,6 +494,11 @@ class MainActivity : FlutterFragmentActivity() {
                     "openNfcSettings" -> {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)
+                    }
+
+                    "isArc" -> {
+                        val regex = ".+_cheets|cheets_.+".toRegex()
+                        result.success(Build.DEVICE?.matches(regex) ?: false)
                     }
                     else -> logger.warn("Unknown app method: {}", methodCall.method)
                 }

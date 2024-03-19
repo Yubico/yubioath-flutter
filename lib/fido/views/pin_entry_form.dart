@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../keys.dart';
@@ -55,19 +56,23 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
       _pinIsWrong = false;
       _isObscure = true;
     });
-    final result = await ref
-        .read(fidoStateProvider(widget._deviceNode.path).notifier)
-        .unlock(_pinController.text);
-    result.whenOrNull(failed: (retries, authBlocked) {
-      _pinController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _pinController.text.length);
-      _pinFocus.requestFocus();
-      setState(() {
-        _pinIsWrong = true;
-        _retries = retries;
-        _blocked = authBlocked;
+    try {
+      final result = await ref
+          .read(fidoStateProvider(widget._deviceNode.path).notifier)
+          .unlock(_pinController.text);
+      result.whenOrNull(failed: (retries, authBlocked) {
+        _pinController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _pinController.text.length);
+        _pinFocus.requestFocus();
+        setState(() {
+          _pinIsWrong = true;
+          _retries = retries;
+          _blocked = authBlocked;
+        });
       });
-    });
+    } on CancellationException catch (_) {
+      // ignored
+    }
   }
 
   String? _getErrorText() {
