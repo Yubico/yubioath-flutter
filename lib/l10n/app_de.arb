@@ -505,6 +505,10 @@
     "l_unsupported_key_type": null,
     "l_delete_certificate": null,
     "l_delete_certificate_desc": null,
+    "l_delete_key": null,
+    "l_delete_key_desc": null,
+    "l_delete_certificate_or_key": null,
+    "l_delete_certificate_or_key_desc": null,
     "s_issuer": null,
     "s_serial": null,
     "s_certificate_fingerprint": null,
@@ -522,14 +526,31 @@
     },
     "l_generating_private_key": null,
     "s_private_key_generated": null,
+    "p_select_what_to_delete": null,
     "p_warning_delete_certificate": null,
+    "p_warning_delete_key": null,
+    "p_warning_delete_certificate_and_key": null,
     "q_delete_certificate_confirm": null,
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": null,
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": null,
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": null,
+    "l_key_deleted": null,
+    "l_certificate_and_key_deleted": null,
     "p_password_protected_file": null,
     "p_import_items_desc": null,
     "@p_import_items_desc": {

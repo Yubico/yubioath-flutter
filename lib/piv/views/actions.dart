@@ -263,6 +263,7 @@ class PivActions extends ConsumerWidget {
                   context: context,
                   builder: (context) => DeleteCertificateDialog(
                     devicePath,
+                    pivState,
                     intent.target,
                   ),
                 ) ??
@@ -283,9 +284,11 @@ class PivActions extends ConsumerWidget {
   }
 }
 
-List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
+List<ActionItem> buildSlotActions(
+    PivState pivState, PivSlot slot, AppLocalizations l10n) {
   final hasCert = slot.certInfo != null;
   final hasKey = slot.metadata != null;
+  final canDeleteKey = hasKey && pivState.version.isAtLeast(5, 7);
   return [
     ActionItem(
       key: keys.generateAction,
@@ -313,15 +316,6 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         subtitle: l10n.l_export_certificate_desc,
         intent: ExportIntent(slot),
       ),
-      ActionItem(
-        key: keys.deleteAction,
-        feature: features.slotsDelete,
-        actionStyle: ActionStyle.error,
-        icon: const Icon(Symbols.delete),
-        title: l10n.l_delete_certificate,
-        subtitle: l10n.l_delete_certificate_desc,
-        intent: DeleteIntent(slot),
-      ),
     ] else if (hasKey) ...[
       ActionItem(
         key: keys.exportAction,
@@ -332,5 +326,23 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         intent: ExportIntent(slot),
       ),
     ],
+    if (hasCert || canDeleteKey)
+      ActionItem(
+        key: keys.deleteAction,
+        feature: features.slotsDelete,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Symbols.delete),
+        title: hasCert && canDeleteKey
+            ? l10n.l_delete_certificate_or_key
+            : hasCert
+                ? l10n.l_delete_certificate
+                : l10n.l_delete_key,
+        subtitle: hasCert && canDeleteKey
+            ? l10n.l_delete_certificate_or_key_desc
+            : hasCert
+                ? l10n.l_delete_certificate_desc
+                : l10n.l_delete_key_desc,
+        intent: DeleteIntent(slot),
+      ),
   ];
 }

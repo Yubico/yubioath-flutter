@@ -150,7 +150,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                               ActionListSection.fromMenuActions(
                                 context,
                                 l10n.s_actions,
-                                actions: buildSlotActions(selected, l10n),
+                                actions:
+                                    buildSlotActions(pivState, selected, l10n),
                               ),
                             ],
                           )
@@ -186,6 +187,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                           if (pivSlots?.hasValue == true)
                             ...pivSlots!.value.map(
                               (e) => _CertificateListItem(
+                                pivState,
                                 e,
                                 expanded: expanded,
                                 selected: e == selected,
@@ -204,11 +206,12 @@ class _PivScreenState extends ConsumerState<PivScreen> {
 }
 
 class _CertificateListItem extends ConsumerWidget {
+  final PivState pivState;
   final PivSlot pivSlot;
   final bool expanded;
   final bool selected;
 
-  const _CertificateListItem(this.pivSlot,
+  const _CertificateListItem(this.pivState, this.pivSlot,
       {required this.expanded, required this.selected});
 
   @override
@@ -245,7 +248,7 @@ class _CertificateListItem extends ConsumerWidget {
       tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
       buildPopupActions: hasFeature(features.slots)
-          ? (context) => buildSlotActions(pivSlot, l10n)
+          ? (context) => buildSlotActions(pivState, pivSlot, l10n)
           : null,
     );
   }

@@ -399,12 +399,21 @@ class SlotNode(RpcNode):
             else None,
         )
 
-    @action(condition=lambda self: self.certificate)
+    @action(condition=lambda self: self.certificate or self.metadata)
     def delete(self, params, event, signal):
-        self.session.delete_certificate(self.slot)
-        self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+        delete_cert = params.pop("delete_cert", False)
+        delete_key = params.pop("delete_key", False)
+
+        if not delete_cert and not delete_key:
+            raise ValueError("Missing delete option")
+
+        if delete_cert:
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        if delete_key:
+            self.session.delete_key(self.slot)
         self._refresh()
-        self.certificate = None
         return dict()
 
     @action

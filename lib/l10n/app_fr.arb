@@ -505,6 +505,10 @@
     "l_unsupported_key_type": null,
     "l_delete_certificate": "Supprimer un certificat",
     "l_delete_certificate_desc": "Supprimer un certificat de votre YubiKey",
+    "l_delete_key": null,
+    "l_delete_key_desc": null,
+    "l_delete_certificate_or_key": null,
+    "l_delete_certificate_or_key_desc": null,
     "s_issuer": "Émetteur",
     "s_serial": "Série",
     "s_certificate_fingerprint": "Empreinte digitale",
@@ -522,14 +526,31 @@
     },
     "l_generating_private_key": "Génération d'une clé privée\u2026",
     "s_private_key_generated": "Clé privée générée",
+    "p_select_what_to_delete": null,
     "p_warning_delete_certificate": "Attention! Cette action supprimera le certificat de votre YubiKey.",
+    "p_warning_delete_key": null,
+    "p_warning_delete_certificate_and_key": null,
     "q_delete_certificate_confirm": "Supprimer le certficat du slot PIV {slot}?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": null,
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": null,
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": "Certificat supprimé",
+    "l_key_deleted": null,
+    "l_certificate_and_key_deleted": null,
     "p_password_protected_file": "Le fichier sélectionné est protégé par un mot de passe. Enterez le mot de passe pour continuer.",
     "p_import_items_desc": "Les éléments suivants seront importés dans le slot PIV {slot}.",
     "@p_import_items_desc": {
