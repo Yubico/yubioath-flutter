@@ -526,7 +526,7 @@
     },
     "l_generating_private_key": "Generating private key\u2026",
     "s_private_key_generated": "Private key generated",
-    "p_select_what_to_delete": "Please select what to delete from the slot.",
+    "p_select_what_to_delete": "Select what to delete from the slot.",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "p_warning_delete_key": "Warning! This action will delete the key from your YubiKey.",
     "p_warning_delete_certificate_and_key": "Warning! This action will delete the certificate and key from your YubiKey.",

@@ -71,16 +71,10 @@ class _DeleteCertificateDialogState
           onPressed: _deleteKey || _deleteCertificate
               ? () async {
                   try {
-                    if (_deleteCertificate) {
-                      await ref
-                          .read(pivSlotsProvider(widget.devicePath).notifier)
-                          .deleteCertificate(widget.pivSlot.slot);
-                    }
-                    if (_deleteKey) {
-                      await ref
-                          .read(pivSlotsProvider(widget.devicePath).notifier)
-                          .deleteKey(widget.pivSlot.slot);
-                    }
+                    await ref
+                        .read(pivSlotsProvider(widget.devicePath).notifier)
+                        .delete(widget.pivSlot.slot, _deleteCertificate,
+                            _deleteKey);
 
                     await ref.read(withContextProvider)(
                       (context) async {
