@@ -535,10 +535,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_symbols_icons
-      sha256: fee941060cb717c74d370dbcb7a735f224d1e93d705dc5b552ee40e0697d5691
+      sha256: "4410e4bb5c6e16d811340f94532c0b3161d2a0ba60b41d0fa8a603186857cabe"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2719.1"
+    version: "4.2719.3"
   menu_base:
     dependency: transitive
     description:
