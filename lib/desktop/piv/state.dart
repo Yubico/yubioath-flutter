@@ -72,24 +72,42 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (e) async {
-        final String? mgmtKey;
-        if (state.valueOrNull?.metadata?.managementKeyMetadata.defaultValue ==
-            true) {
-          mgmtKey = defaultManagementKey;
-        } else {
-          mgmtKey = ref.read(_managementKeyProvider(devicePath));
-        }
-        if (mgmtKey != null) {
-          if (await authenticate(mgmtKey)) {
-            ref.invalidateSelf();
+        try {
+          if (state.valueOrNull?.protectedKey == true) {
+            final String? pin;
+            if (state.valueOrNull?.metadata?.pinMetadata.defaultValue == true) {
+              pin = defaultPin;
+            } else {
+              pin = ref.read(_pinProvider(devicePath));
+            }
+            if (pin != null) {
+              if (await verifyPin(pin) is PinSuccess) {
+                return;
+              } else {
+                ref.read(_pinProvider(devicePath).notifier).state = null;
+              }
+            }
           } else {
-            ref.read(_managementKeyProvider(devicePath).notifier).state = null;
-            ref.invalidateSelf();
-            throw e;
+            final String? mgmtKey;
+            if (state.valueOrNull?.metadata?.managementKeyMetadata
+                    .defaultValue ==
+                true) {
+              mgmtKey = defaultManagementKey;
+            } else {
+              mgmtKey = ref.read(_managementKeyProvider(devicePath));
+            }
+            if (mgmtKey != null) {
+              if (await authenticate(mgmtKey)) {
+                return;
+              } else {
+                ref.read(_managementKeyProvider(devicePath).notifier).state =
+                    null;
+              }
+            }
           }
-        } else {
-          ref.invalidateSelf();
           throw e;
+        } finally {
+          ref.invalidateSelf();
         }
       });
     ref.onDispose(() {

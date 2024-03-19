@@ -186,8 +186,8 @@ class PinMetadata with _$PinMetadata {
 
 @freezed
 class PinVerificationStatus with _$PinVerificationStatus {
-  const factory PinVerificationStatus.success() = _PinSuccess;
-  factory PinVerificationStatus.failure(int attemptsRemaining) = _PinFailure;
+  const factory PinVerificationStatus.success() = PinSuccess;
+  factory PinVerificationStatus.failure(int attemptsRemaining) = PinFailure;
 }
 
 @freezed
