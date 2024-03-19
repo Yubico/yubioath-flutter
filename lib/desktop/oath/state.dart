@@ -295,7 +295,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
         code = OathCode.fromJson(result);
       }
       _log.debug('Calculate', jsonEncode(code));
-      if (update && mounted) {
+      if (update && mounted && state != null) {
         final creds = state!.toList();
         final i = creds.indexWhere((e) => e.credential.id == credential.id);
         state = creds..[i] = creds[i].copyWith(code: code);
