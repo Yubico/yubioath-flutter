@@ -271,22 +271,25 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun processYubiKey(device: YubiKeyDevice) {
         lifecycleScope.launch {
-            // verify that current context supports connection provided by the YubiKey
-            // if not, switch to a context which supports the connection
-            val supportedApps = DeviceManager.getSupportedContexts(device)
-            logger.debug("Connected key supports: {}", supportedApps)
-            if (!supportedApps.contains(viewModel.appContext.value)) {
-                val preferredContext = DeviceManager.getPreferredContext(supportedApps)
-                logger.debug(
-                    "Current context ({}) is not supported by the key. Using preferred context {}",
-                    viewModel.appContext.value,
-                    preferredContext
-                )
-                switchContext(preferredContext)
-            }
 
-            if (contextManager == null) {
-                switchContext(DeviceManager.getPreferredContext(supportedApps))
+            if (device is NfcYubiKeyDevice) {
+                // verify that current context supports connection provided by the YubiKey
+                // if not, switch to a context which supports the connection
+                val supportedApps = DeviceManager.getSupportedContexts(device)
+                logger.debug("Connected key supports: {}", supportedApps)
+                if (!supportedApps.contains(viewModel.appContext.value)) {
+                    val preferredContext = DeviceManager.getPreferredContext(supportedApps)
+                    logger.debug(
+                        "Current context ({}) is not supported by the key. Using preferred context {}",
+                        viewModel.appContext.value,
+                        preferredContext
+                    )
+                    switchContext(preferredContext)
+                }
+
+                if (contextManager == null) {
+                    switchContext(DeviceManager.getPreferredContext(supportedApps))
+                }
             }
 
             contextManager?.let {
