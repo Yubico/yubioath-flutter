@@ -72,6 +72,16 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final selected = _selected != null
                 ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
                 : null;
+            final normalSlots = pivSlots?.value
+                    .where((element) => !element.slot.isRetired)
+                    .toList() ??
+                [];
+            final shownRetiredSlots = pivSlots?.value
+                    .where((element) =>
+                        element.slot.isRetired &&
+                        (element.certInfo != null && element.metadata != null))
+                    .toList() ??
+                [];
             final theme = Theme.of(context);
             final textTheme = theme.textTheme;
             // This is what ListTile uses for subtitle
@@ -184,17 +194,22 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       },
                       child: Column(
                         children: [
-                          if (pivSlots?.hasValue == true)
-                            ...pivSlots!.value
-                                .where((element) => !element.slot.isRetired)
-                                .map(
-                                  (e) => _CertificateListItem(
-                                    pivState,
-                                    e,
-                                    expanded: expanded,
-                                    selected: e == selected,
-                                  ),
-                                ),
+                          ...normalSlots.map(
+                            (e) => _CertificateListItem(
+                              pivState,
+                              e,
+                              expanded: expanded,
+                              selected: e == selected,
+                            ),
+                          ),
+                          ...shownRetiredSlots.map(
+                            (e) => _CertificateListItem(
+                              pivState,
+                              e,
+                              expanded: expanded,
+                              selected: e == selected,
+                            ),
+                          )
                         ],
                       ),
                     );
@@ -231,7 +246,7 @@ class _CertificateListItem extends ConsumerWidget {
       leading: CircleAvatar(
         foregroundColor: colorScheme.onSecondary,
         backgroundColor: colorScheme.secondary,
-        child: const Icon(Symbols.badge),
+        child: Icon(slot.isRetired ? Symbols.manage_history : Symbols.badge),
       ),
       title: slot.getDisplayName(l10n),
       subtitle: certInfo != null

@@ -315,23 +315,25 @@ List<ActionItem> buildSlotActions(
   final hasKey = slot.metadata != null;
   final canDeleteOrMoveKey = hasKey && pivState.version.isAtLeast(5, 7);
   return [
-    ActionItem(
-      key: keys.generateAction,
-      feature: features.slotsGenerate,
-      icon: const Icon(Symbols.add),
-      actionStyle: ActionStyle.primary,
-      title: l10n.s_generate_key,
-      subtitle: l10n.l_generate_desc,
-      intent: GenerateIntent(slot),
-    ),
-    ActionItem(
-      key: keys.importAction,
-      feature: features.slotsImport,
-      icon: const Icon(Symbols.file_download),
-      title: l10n.l_import_file,
-      subtitle: l10n.l_import_desc,
-      intent: ImportIntent(slot),
-    ),
+    if (!slot.slot.isRetired) ...[
+      ActionItem(
+        key: keys.generateAction,
+        feature: features.slotsGenerate,
+        icon: const Icon(Symbols.add),
+        actionStyle: ActionStyle.primary,
+        title: l10n.s_generate_key,
+        subtitle: l10n.l_generate_desc,
+        intent: GenerateIntent(slot),
+      ),
+      ActionItem(
+        key: keys.importAction,
+        feature: features.slotsImport,
+        icon: const Icon(Symbols.file_download),
+        title: l10n.l_import_file,
+        subtitle: l10n.l_import_desc,
+        intent: ImportIntent(slot),
+      ),
+    ],
     if (hasCert) ...[
       ActionItem(
         key: keys.exportAction,
@@ -351,6 +353,16 @@ List<ActionItem> buildSlotActions(
         intent: ExportIntent(slot),
       ),
     ],
+    if (canDeleteOrMoveKey)
+      ActionItem(
+        key: keys.moveAction,
+        feature: features.slotsMove,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Symbols.move_item),
+        title: l10n.l_move_key,
+        subtitle: l10n.l_move_key_desc,
+        intent: MoveIntent(slot),
+      ),
     if (hasCert || canDeleteOrMoveKey)
       ActionItem(
         key: keys.deleteAction,
@@ -368,16 +380,6 @@ List<ActionItem> buildSlotActions(
                 ? l10n.l_delete_certificate_desc
                 : l10n.l_delete_key_desc,
         intent: DeleteIntent(slot),
-      ),
-    if (canDeleteOrMoveKey)
-      ActionItem(
-        key: keys.moveAction,
-        feature: features.slotsMove,
-        actionStyle: ActionStyle.error,
-        icon: const Icon(Symbols.move_item),
-        title: l10n.l_move_key,
-        subtitle: l10n.l_move_key_desc,
-        intent: MoveIntent(slot),
       ),
   ];
 }
