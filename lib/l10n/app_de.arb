@@ -422,13 +422,19 @@
     "l_ready_to_use": "Bereit zur Verwendung",
     "l_register_sk_on_websites": "Als Sicherheitsschlüssel auf Webseiten registrieren",
     "l_no_discoverable_accounts": "Keine erkennbaren Konten",
-    "l_non_passkeys_note": null,
+    "p_non_passkeys_note": null,
     "s_delete_passkey": null,
     "l_delete_passkey_desc": null,
     "s_passkey_deleted": null,
     "p_warning_delete_passkey": null,
     "s_search_passkeys": null,
-
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "Fingerabdruck: {label}",
     "@l_fingerprint": {

@@ -141,7 +141,7 @@ class _FidoLockedPage extends ConsumerWidget {
             : alwaysUv
                 ? l10n.l_pin_change_required_desc
                 : l10n.l_register_sk_on_websites,
-        footnote: isBio ? null : l10n.l_non_passkeys_note,
+        footnote: isBio ? null : l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
@@ -153,7 +153,7 @@ class _FidoLockedPage extends ConsumerWidget {
         capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
-        footnote: l10n.l_non_passkeys_note,
+        footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
@@ -241,7 +241,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
-        footnote: l10n.l_non_passkeys_note,
+        footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
@@ -255,9 +255,12 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       return _buildLoadingPage(context);
     }
     final credentials = data.value;
-
     final filteredCredentials =
         ref.watch(filteredFidoCredentialsProvider(credentials.toList()));
+
+    final remainingCreds = widget.state.remainingCreds;
+    final maxCreds =
+        remainingCreds != null ? remainingCreds + credentials.length : 25;
 
     if (credentials.isEmpty) {
       return MessagePage(
@@ -287,7 +290,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
-        footnote: l10n.l_non_passkeys_note,
+        footnote: l10n.p_non_passkeys_note,
       );
     }
 
@@ -337,7 +340,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
-        footnote: l10n.l_non_passkeys_note,
+        footnote:
+            '${l10n.p_passkeys_used(credentials.length, maxCreds)} ${l10n.p_non_passkeys_note}',
         headerSliver: Focus(
           canRequestFocus: false,
           onKeyEvent: (node, event) {

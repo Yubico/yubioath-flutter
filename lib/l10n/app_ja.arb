@@ -422,13 +422,19 @@
     "l_ready_to_use": "すぐに使用可能",
     "l_register_sk_on_websites": "Webサイトにセキュリティキーとして登録する",
     "l_no_discoverable_accounts": "パスキーは保存されていません",
-    "l_non_passkeys_note": null,
+    "p_non_passkeys_note": null,
     "s_delete_passkey": "パスキーを削除",
     "l_delete_passkey_desc": "YubiKeyからパスキーの削除",
     "s_passkey_deleted": "パスキーが削除されました",
     "p_warning_delete_passkey": "これにより、YubiKeyからパスキーが削除されます",
     "s_search_passkeys": null,
-
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "指紋:{label}",
     "@l_fingerprint": {
