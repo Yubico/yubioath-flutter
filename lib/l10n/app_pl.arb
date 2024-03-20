@@ -427,6 +427,7 @@
     "l_delete_passkey_desc": "Usuń klucz dostępu z klucza YubiKey",
     "s_passkey_deleted": "Usunięto klucz dostępu",
     "p_warning_delete_passkey": "Spowoduje to usunięcie klucza dostępu z klucza YubiKey.",
+    "s_search_passkeys": null,
 
     "@_fingerprints": {},
     "l_fingerprint": "Odcisk palca: {label}",

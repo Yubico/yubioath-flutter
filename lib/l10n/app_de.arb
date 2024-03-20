@@ -427,6 +427,7 @@
     "l_delete_passkey_desc": null,
     "s_passkey_deleted": null,
     "p_warning_delete_passkey": null,
+    "s_search_passkeys": null,
 
     "@_fingerprints": {},
     "l_fingerprint": "Fingerabdruck: {label}",

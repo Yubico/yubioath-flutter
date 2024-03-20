@@ -427,6 +427,7 @@
     "l_delete_passkey_desc": "Remove the passkey from the YubiKey",
     "s_passkey_deleted": "Passkey deleted",
     "p_warning_delete_passkey": "This will delete the passkey from your YubiKey.",
+    "s_search_passkeys": "Search passkeys",
 
     "@_fingerprints": {},
     "l_fingerprint": "Fingerprint: {label}",

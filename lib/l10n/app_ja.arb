@@ -427,6 +427,7 @@
     "l_delete_passkey_desc": "YubiKeyからパスキーの削除",
     "s_passkey_deleted": "パスキーが削除されました",
     "p_warning_delete_passkey": "これにより、YubiKeyからパスキーが削除されます",
+    "s_search_passkeys": null,
 
     "@_fingerprints": {},
     "l_fingerprint": "指紋:{label}",
