@@ -185,14 +185,16 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       child: Column(
                         children: [
                           if (pivSlots?.hasValue == true)
-                            ...pivSlots!.value.map(
-                              (e) => _CertificateListItem(
-                                pivState,
-                                e,
-                                expanded: expanded,
-                                selected: e == selected,
-                              ),
-                            ),
+                            ...pivSlots!.value
+                                .where((element) => !element.slot.isRetired)
+                                .map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                  ),
+                                ),
                         ],
                       ),
                     );
@@ -258,12 +260,52 @@ class _CertificateListItem extends ConsumerWidget {
         SlotId.signature => meatballButton9c,
         SlotId.keyManagement => meatballButton9d,
         SlotId.cardAuth => meatballButton9e,
+        SlotId.retired1 => meatballButton82,
+        SlotId.retired2 => meatballButton83,
+        SlotId.retired3 => meatballButton84,
+        SlotId.retired4 => meatballButton85,
+        SlotId.retired5 => meatballButton86,
+        SlotId.retired6 => meatballButton87,
+        SlotId.retired7 => meatballButton88,
+        SlotId.retired8 => meatballButton89,
+        SlotId.retired9 => meatballButton8a,
+        SlotId.retired10 => meatballButton8b,
+        SlotId.retired11 => meatballButton8c,
+        SlotId.retired12 => meatballButton8d,
+        SlotId.retired13 => meatballButton8e,
+        SlotId.retired14 => meatballButton8f,
+        SlotId.retired15 => meatballButton90,
+        SlotId.retired16 => meatballButton91,
+        SlotId.retired17 => meatballButton92,
+        SlotId.retired18 => meatballButton93,
+        SlotId.retired19 => meatballButton94,
+        SlotId.retired20 => meatballButton95
       };
 
   Key _getAppListItemKey(SlotId slotId) => switch (slotId) {
         SlotId.authentication => appListItem9a,
         SlotId.signature => appListItem9c,
         SlotId.keyManagement => appListItem9d,
-        SlotId.cardAuth => appListItem9e
+        SlotId.cardAuth => appListItem9e,
+        SlotId.retired1 => appListItem82,
+        SlotId.retired2 => appListItem83,
+        SlotId.retired3 => appListItem84,
+        SlotId.retired4 => appListItem85,
+        SlotId.retired5 => appListItem86,
+        SlotId.retired6 => appListItem87,
+        SlotId.retired7 => appListItem88,
+        SlotId.retired8 => appListItem89,
+        SlotId.retired9 => appListItem8a,
+        SlotId.retired10 => appListItem8b,
+        SlotId.retired11 => appListItem8c,
+        SlotId.retired12 => appListItem8d,
+        SlotId.retired13 => appListItem8e,
+        SlotId.retired14 => appListItem8f,
+        SlotId.retired15 => appListItem90,
+        SlotId.retired16 => appListItem91,
+        SlotId.retired17 => appListItem92,
+        SlotId.retired18 => appListItem93,
+        SlotId.retired19 => appListItem94,
+        SlotId.retired20 => appListItem95
       };
 }

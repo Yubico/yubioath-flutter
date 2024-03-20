@@ -416,6 +416,27 @@ class SlotNode(RpcNode):
         self._refresh()
         return dict()
 
+    @action(condition=lambda self: self.metadata)
+    def move_key(self, params, event, signal):
+        to_slot = params.pop("to_slot", None)
+        needs_overwrite = params.pop("needs_overwrite", False)
+        move_cert = params.pop("move_cert", False)
+
+        if not to_slot:
+            raise ValueError("Missing destination slot")
+
+        to_slot = SLOT(int(to_slot, base=16))
+        if needs_overwrite:
+            self.session.delete_key(to_slot)
+        self.session.move_key(self.slot, to_slot)
+        if move_cert:
+            self.session.put_certificate(to_slot, self.certificate)
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        self._refresh()
+        return dict()
+
     @action
     def import_file(self, params, event, signal):
         data = bytes.fromhex(params.pop("data"))

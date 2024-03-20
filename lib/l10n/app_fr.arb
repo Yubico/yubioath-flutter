@@ -28,6 +28,7 @@
     "s_cancel": "Annuler",
     "s_close": "Fermer",
     "s_delete": "Supprimer",
+    "s_move": null,
     "s_quit": "Quitter",
     "s_status": null,
     "s_unlock": "Déverrouiller",
@@ -509,6 +510,8 @@
     "l_delete_key_desc": null,
     "l_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": null,
+    "l_move_key": null,
+    "l_move_key_desc": null,
     "s_issuer": "Émetteur",
     "s_serial": "Série",
     "s_certificate_fingerprint": "Empreinte digitale",
@@ -551,6 +554,28 @@
     "l_certificate_deleted": "Certificat supprimé",
     "l_key_deleted": null,
     "l_certificate_and_key_deleted": null,
+    "l_include_certificate": null,
+    "l_select_destination_slot": null,
+    "q_move_key_confirm": null,
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {}
+        }
+    },
+    "q_move_key_to_slot_confirm": null,
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": null,
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
     "p_password_protected_file": "Le fichier sélectionné est protégé par un mot de passe. Enterez le mot de passe pour continuer.",
     "p_import_items_desc": "Les éléments suivants seront importés dans le slot PIV {slot}.",
     "@p_import_items_desc": {
@@ -558,6 +583,8 @@
             "slot": {}
         }
     },
+    "l_key_moved": null,
+    "l_key_and_certificate_moved": null,
     "p_subject_desc": "Un nom distinctif (DN) formaté conformément à la spécification RFC 4514.",
     "l_rfc4514_invalid": "Format RFC 4514 invalide",
     "rfc4514_examples": "Exemples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
@@ -578,6 +605,12 @@
     "@s_slot_display_name": {
         "placeholders": {
             "name": {},
+            "hexid": {}
+        }
+    },
+    "s_retired_slot_display_name": null,
+    "@s_retired_slot_display_name": {
+        "placeholders": {
             "hexid": {}
         }
     },

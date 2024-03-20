@@ -67,4 +67,6 @@ abstract class PivSlotsNotifier
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   });
   Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey);
+  Future<void> moveKey(
+      SlotId fromSlot, SlotId toSlot, bool needsOverwrite, bool moveCert);
 }

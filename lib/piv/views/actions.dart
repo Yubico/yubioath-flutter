@@ -35,6 +35,7 @@ import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';
 import 'import_file_dialog.dart';
+import 'move_key_dialog.dart';
 import 'pin_dialog.dart';
 
 class GenerateIntent extends Intent {
@@ -50,6 +51,11 @@ class ImportIntent extends Intent {
 class ExportIntent extends Intent {
   final PivSlot slot;
   const ExportIntent(this.slot);
+}
+
+class MoveIntent extends Intent {
+  final PivSlot slot;
+  const MoveIntent(this.slot);
 }
 
 Future<bool> _authIfNeeded(BuildContext context, WidgetRef ref,
@@ -270,6 +276,25 @@ class PivActions extends ConsumerWidget {
                 false);
             return deleted;
           }),
+        if (hasFeature(features.slotsMove))
+          MoveIntent: CallbackAction<MoveIntent>(onInvoke: (intent) async {
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
+              return false;
+            }
+
+            final bool? moved = await withContext((context) async =>
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => MoveKeyDialog(
+                    devicePath,
+                    pivState,
+                    intent.slot,
+                  ),
+                ) ??
+                false);
+            return moved;
+          }),
       },
       child: Builder(
         // Builder to ensure new scope for actions, they can invoke parent actions
@@ -288,7 +313,7 @@ List<ActionItem> buildSlotActions(
     PivState pivState, PivSlot slot, AppLocalizations l10n) {
   final hasCert = slot.certInfo != null;
   final hasKey = slot.metadata != null;
-  final canDeleteKey = hasKey && pivState.version.isAtLeast(5, 7);
+  final canDeleteOrMoveKey = hasKey && pivState.version.isAtLeast(5, 7);
   return [
     ActionItem(
       key: keys.generateAction,
@@ -326,23 +351,33 @@ List<ActionItem> buildSlotActions(
         intent: ExportIntent(slot),
       ),
     ],
-    if (hasCert || canDeleteKey)
+    if (hasCert || canDeleteOrMoveKey)
       ActionItem(
         key: keys.deleteAction,
         feature: features.slotsDelete,
         actionStyle: ActionStyle.error,
         icon: const Icon(Symbols.delete),
-        title: hasCert && canDeleteKey
+        title: hasCert && canDeleteOrMoveKey
             ? l10n.l_delete_certificate_or_key
             : hasCert
                 ? l10n.l_delete_certificate
                 : l10n.l_delete_key,
-        subtitle: hasCert && canDeleteKey
+        subtitle: hasCert && canDeleteOrMoveKey
             ? l10n.l_delete_certificate_or_key_desc
             : hasCert
                 ? l10n.l_delete_certificate_desc
                 : l10n.l_delete_key_desc,
         intent: DeleteIntent(slot),
+      ),
+    if (canDeleteOrMoveKey)
+      ActionItem(
+        key: keys.moveAction,
+        feature: features.slotsMove,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Symbols.move_item),
+        title: l10n.l_move_key,
+        subtitle: l10n.l_move_key_desc,
+        intent: MoveIntent(slot),
       ),
   ];
 }
