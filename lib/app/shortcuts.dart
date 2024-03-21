@@ -24,8 +24,6 @@ import 'package:window_manager/window_manager.dart';
 import '../about_page.dart';
 import '../core/state.dart';
 import '../desktop/state.dart';
-import '../fido/keys.dart';
-import '../oath/keys.dart';
 import 'message.dart';
 import 'models.dart';
 import 'state.dart';
@@ -131,17 +129,11 @@ class GlobalShortcuts extends ConsumerWidget {
             return null;
           }),
           SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
-            // If the OATH or passkeys view doesn't have focus, but is shown, find and select the search bar.
-            final accountsSearchContext = searchAccountsField.currentContext;
-            if (accountsSearchContext != null) {
-              if (!Navigator.of(accountsSearchContext).canPop()) {
-                return Actions.maybeInvoke(accountsSearchContext, intent);
-              }
-            }
-            final passkeysSearchContext = searchPasskeysField.currentContext;
-            if (passkeysSearchContext != null) {
-              if (!Navigator.of(passkeysSearchContext).canPop()) {
-                return Actions.maybeInvoke(passkeysSearchContext, intent);
+            // If the view doesn't have focus, but is shown, find and select the search bar.
+            final searchContext = searchField.currentContext;
+            if (searchContext != null) {
+              if (!Navigator.of(searchContext).canPop()) {
+                return Actions.maybeInvoke(searchContext, intent);
               }
             }
             return null;

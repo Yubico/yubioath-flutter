@@ -30,6 +30,7 @@ import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
@@ -377,7 +378,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: AppTextFormField(
-                key: keys.searchAccountsField,
+                key: searchField,
                 controller: searchController,
                 focusNode: searchFocus,
                 // Use the default style, but with a smaller font size:

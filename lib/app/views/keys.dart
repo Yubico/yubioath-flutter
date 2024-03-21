@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 
 // global keys
 final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+// This is global so we can access it from the global Ctrl+F shortcut.
+final searchField = GlobalKey();
 
 const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');

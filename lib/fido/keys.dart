@@ -21,9 +21,6 @@ const _keyAction = '$_prefix.actions';
 const _credentialAction = '$_prefix.credential.actions';
 const _fingerprintAction = '$_prefix.fingerprint.actions';
 
-// This is global so we can access it from the global Ctrl+F shortcut.
-final searchPasskeysField = GlobalKey();
-
 // Key actions
 const managePinAction = Key('$_keyAction.manage_pin');
 const addFingerprintAction = Key('$_keyAction.add_fingerprint');

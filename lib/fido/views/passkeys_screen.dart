@@ -30,6 +30,7 @@ import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
@@ -39,7 +40,6 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
-import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -367,7 +367,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: AppTextFormField(
-                key: keys.searchPasskeysField,
+                key: searchField,
                 controller: searchController,
                 focusNode: searchFocus,
                 // Use the default style, but with a smaller font size:
