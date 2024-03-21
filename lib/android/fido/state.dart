@@ -109,7 +109,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
       ));
       if (response['success'] == true) {
         _log.debug('FIDO pin set/change successful');
-        return unlock(newPin);
+        return PinResult.success();
       }
 
       _log.debug('FIDO pin set/change failed');
