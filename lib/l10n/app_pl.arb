@@ -352,6 +352,12 @@
     },
     "s_accounts": "Konta",
     "s_no_accounts": "Brak kont",
+    "l_results_for": null,
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
     "l_authenticator_get_started": "Rozpocznij korzystanie z kont OTP",
     "l_no_accounts_desc": "Dodaj konta do swojego klucza YubiKey od dowolnego dostawcy usług obsługującego OATH TOTP/HOTP",
     "s_add_account": "Dodaj konto",
@@ -419,15 +425,23 @@
         }
     },
     "s_passkeys": "Klucze dostępu",
+    "s_no_passkeys": null,
     "l_ready_to_use": "Gotowe do użycia",
     "l_register_sk_on_websites": "Zarejestruj jako klucz bezpieczeństwa na stronach internetowych",
     "l_no_discoverable_accounts": "Nie wykryto kont",
-    "l_non_passkeys_note": "Mogą istnieć inne dane uwierzytelniające, ale nie mogą być wyświetlane",
+    "p_non_passkeys_note": null,
     "s_delete_passkey": "Usuń klucz dostępu",
     "l_delete_passkey_desc": "Usuń klucz dostępu z klucza YubiKey",
     "s_passkey_deleted": "Usunięto klucz dostępu",
     "p_warning_delete_passkey": "Spowoduje to usunięcie klucza dostępu z klucza YubiKey.",
-
+    "s_search_passkeys": null,
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "Odcisk palca: {label}",
     "@l_fingerprint": {

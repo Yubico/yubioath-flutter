@@ -26,11 +26,12 @@ import '../app/state.dart';
 import '../core/state.dart';
 import 'models.dart';
 
-final searchProvider =
-    StateNotifierProvider<SearchNotifier, String>((ref) => SearchNotifier());
+final accountsSearchProvider =
+    StateNotifierProvider<AccountsSearchNotifier, String>(
+        (ref) => AccountsSearchNotifier());
 
-class SearchNotifier extends StateNotifier<String> {
-  SearchNotifier() : super('');
+class AccountsSearchNotifier extends StateNotifier<String> {
+  AccountsSearchNotifier() : super('');
 
   void setFilter(String value) {
     state = value;
@@ -184,7 +185,7 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
 final filteredCredentialsProvider = StateNotifierProvider.autoDispose
     .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>(
         (ref, full) {
-  return FilteredCredentialsNotifier(full, ref.watch(searchProvider));
+  return FilteredCredentialsNotifier(full, ref.watch(accountsSearchProvider));
 });
 
 class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {

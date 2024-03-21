@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -29,11 +30,14 @@ import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
 import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../models.dart';
@@ -137,7 +141,7 @@ class _FidoLockedPage extends ConsumerWidget {
             : alwaysUv
                 ? l10n.l_pin_change_required_desc
                 : l10n.l_register_sk_on_websites,
-        footnote: isBio ? null : l10n.l_non_passkeys_note,
+        footnote: isBio ? null : l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
@@ -149,7 +153,7 @@ class _FidoLockedPage extends ConsumerWidget {
         capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
-        footnote: l10n.l_non_passkeys_note,
+        footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
@@ -206,7 +210,29 @@ class _FidoUnlockedPage extends ConsumerStatefulWidget {
 }
 
 class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
+  late FocusNode searchFocus;
+  late TextEditingController searchController;
   FidoCredential? _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    searchFocus = FocusNode();
+    searchController =
+        TextEditingController(text: ref.read(passkeysSearchProvider));
+    searchFocus.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    searchFocus.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +248,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
-        footnote: l10n.l_non_passkeys_note,
+        footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions
             ? (context) =>
                 passkeysBuildActions(context, widget.node, widget.state)
@@ -236,6 +262,12 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       return _buildLoadingPage(context);
     }
     final credentials = data.value;
+    final filteredCredentials =
+        ref.watch(filteredFidoCredentialsProvider(credentials.toList()));
+
+    final remainingCreds = widget.state.remainingCreds;
+    final maxCreds =
+        remainingCreds != null ? remainingCreds + credentials.length : 25;
 
     if (credentials.isEmpty) {
       return MessagePage(
@@ -265,14 +297,22 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 passkeysBuildActions(context, widget.node, widget.state)
             : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
-        footnote: l10n.l_non_passkeys_note,
+        footnote: l10n.p_non_passkeys_note,
       );
     }
 
     final credential = _selected;
+    final searchText = searchController.text;
     return FidoActions(
       devicePath: widget.node.path,
       actions: (context) => {
+        SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
+          searchController.selection = TextSelection(
+              baseOffset: 0, extentOffset: searchController.text.length);
+          searchFocus.unfocus();
+          Timer.run(() => searchFocus.requestFocus());
+          return null;
+        }),
         EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
           if (_selected != null) {
             setState(() {
@@ -307,8 +347,84 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
+        alternativeTitle:
+            searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.fido2],
-        footnote: l10n.l_non_passkeys_note,
+        footnote:
+            '${l10n.p_passkeys_used(credentials.length, maxCreds)} ${l10n.p_non_passkeys_note}',
+        headerSliver: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.escape) {
+              searchController.clear();
+              ref.read(passkeysSearchProvider.notifier).setFilter('');
+              node.unfocus();
+              setState(() {});
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Builder(builder: (context) {
+            final textTheme = Theme.of(context).textTheme;
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: AppTextFormField(
+                key: searchField,
+                controller: searchController,
+                focusNode: searchFocus,
+                // Use the default style, but with a smaller font size:
+                style: textTheme.titleMedium
+                    ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                decoration: AppInputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(48),
+                    borderSide: BorderSide(
+                      width: 0,
+                      style: searchFocus.hasFocus
+                          ? BorderStyle.solid
+                          : BorderStyle.none,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                  fillColor: Theme.of(context).hoverColor,
+                  filled: true,
+                  hintText: l10n.s_search_passkeys,
+                  isDense: true,
+                  prefixIcon: const Padding(
+                    padding: EdgeInsetsDirectional.only(start: 8.0),
+                    child: Icon(Icons.search_outlined),
+                  ),
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          iconSize: 16,
+                          onPressed: () {
+                            searchController.clear();
+                            ref
+                                .read(passkeysSearchProvider.notifier)
+                                .setFilter('');
+                            setState(() {});
+                          },
+                        )
+                      : null,
+                ),
+                onChanged: (value) {
+                  ref.read(passkeysSearchProvider.notifier).setFilter(value);
+                  setState(() {});
+                },
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (value) {
+                  Focus.of(context).focusInDirection(TraversalDirection.down);
+                },
+              ),
+            );
+          }),
+        ),
         detailViewBuilder: credential != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -347,7 +463,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                     ),
                               ),
                               const SizedBox(height: 16),
-                              const Icon(Symbols.person, size: 72),
+                              const Icon(Symbols.passkey, size: 72),
                             ],
                           ),
                         ),
@@ -390,15 +506,19 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: credentials
-                  .map(
-                    (cred) => _CredentialListItem(
-                      cred,
-                      expanded: expanded,
-                      selected: _selected == cred,
-                    ),
-                  )
-                  .toList(),
+              children: [
+                if (filteredCredentials.isEmpty)
+                  Center(
+                    child: Text(l10n.s_no_passkeys),
+                  ),
+                ...filteredCredentials.map(
+                  (cred) => _CredentialListItem(
+                    cred,
+                    expanded: expanded,
+                    selected: _selected == cred,
+                  ),
+                ),
+              ],
             ),
           );
         },
@@ -423,13 +543,14 @@ class _CredentialListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AppListItem(
       credential,
       selected: selected,
       leading: CircleAvatar(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Symbols.person),
+        foregroundColor: colorScheme.onSecondary,
+        backgroundColor: colorScheme.secondary,
+        child: const Icon(Symbols.passkey),
       ),
       title: credential.userName,
       subtitle: credential.rpId,

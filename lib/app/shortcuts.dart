@@ -24,7 +24,6 @@ import 'package:window_manager/window_manager.dart';
 import '../about_page.dart';
 import '../core/state.dart';
 import '../desktop/state.dart';
-import '../oath/keys.dart';
 import 'message.dart';
 import 'models.dart';
 import 'state.dart';
@@ -130,8 +129,8 @@ class GlobalShortcuts extends ConsumerWidget {
             return null;
           }),
           SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
-            // If the OATH view doesn't have focus, but is shown, find and select the search bar.
-            final searchContext = searchAccountsField.currentContext;
+            // If the view doesn't have focus, but is shown, find and select the search bar.
+            final searchContext = searchField.currentContext;
             if (searchContext != null) {
               if (!Navigator.of(searchContext).canPop()) {
                 return Actions.maybeInvoke(searchContext, intent);

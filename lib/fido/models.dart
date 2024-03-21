@@ -40,6 +40,8 @@ class FidoState with _$FidoState {
       info['options']['credMgmt'] == true ||
       info['options']['credentialMgmtPreview'] == true;
 
+  int? get remainingCreds => info['remaining_disc_creds'];
+
   bool? get bioEnroll => info['options']['bioEnroll'];
 
   bool get alwaysUv => info['options']['alwaysUv'] == true;

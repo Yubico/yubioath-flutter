@@ -20,6 +20,18 @@ import '../app/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
+final passkeysSearchProvider =
+    StateNotifierProvider<PasskeysSearchNotifier, String>(
+        (ref) => PasskeysSearchNotifier());
+
+class PasskeysSearchNotifier extends StateNotifier<String> {
+  PasskeysSearchNotifier() : super('');
+
+  void setFilter(String value) {
+    state = value;
+  }
+}
+
 final pivStateProvider = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
   () => throw UnimplementedError(),

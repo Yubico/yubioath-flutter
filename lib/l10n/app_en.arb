@@ -352,6 +352,12 @@
     },
     "s_accounts": "Accounts",
     "s_no_accounts": "No accounts",
+    "l_results_for": "Results for \"{query}\"",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
     "l_authenticator_get_started": "Get started with OTP accounts",
     "l_no_accounts_desc": "Add accounts to your YubiKey from any service provider supporting OATH TOTP/HOTP",
     "s_add_account": "Add account",
@@ -419,15 +425,23 @@
         }
     },
     "s_passkeys": "Passkeys",
+    "s_no_passkeys": "No passkeys",
     "l_ready_to_use": "Ready to use",
     "l_register_sk_on_websites": "Register as a Security Key on websites",
     "l_no_discoverable_accounts": "No passkeys stored",
-    "l_non_passkeys_note": "Non-passkey credentials may exist, but can not be listed",
+    "p_non_passkeys_note": "Non-passkey credentials may exist, but can not be listed.",
     "s_delete_passkey": "Delete passkey",
     "l_delete_passkey_desc": "Remove the passkey from the YubiKey",
     "s_passkey_deleted": "Passkey deleted",
     "p_warning_delete_passkey": "This will delete the passkey from your YubiKey.",
-
+    "s_search_passkeys": "Search passkeys",
+    "p_passkeys_used": "{used} of {max} passkeys used.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "Fingerprint: {label}",
     "@l_fingerprint": {

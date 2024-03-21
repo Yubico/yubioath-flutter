@@ -352,6 +352,12 @@
     },
     "s_accounts": "Comptes",
     "s_no_accounts": "Aucun compte",
+    "l_results_for": null,
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
     "l_authenticator_get_started": null,
     "l_no_accounts_desc": null,
     "s_add_account": "Ajouter un compte",
@@ -419,15 +425,23 @@
         }
     },
     "s_passkeys": "Passkeys",
+    "s_no_passkeys": null,
     "l_ready_to_use": "Prêt à l'emploi",
     "l_register_sk_on_websites": "Enregistrer comme clé de sécurité sur les sites internet",
     "l_no_discoverable_accounts": "Aucune Passkey détectée",
-    "l_non_passkeys_note": null,
+    "p_non_passkeys_note": null,
     "s_delete_passkey": "Supprimer une Passkey",
     "l_delete_passkey_desc": "Supprimer la Passkey de votre YubiKey",
     "s_passkey_deleted": "Passkey supprimée",
     "p_warning_delete_passkey": "Cette action supprimera cette Passkey de votre YubiKey.",
-
+    "s_search_passkeys": null,
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "Empreinte: {label}",
     "@l_fingerprint": {
