@@ -264,7 +264,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       },
       builder: (context) => AppPage(
         title: l10n.s_accounts,
-        alternativeTitle: searchText != '' ? 'Results for "$searchText"' : null,
+        alternativeTitle:
+            searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.oath],
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(

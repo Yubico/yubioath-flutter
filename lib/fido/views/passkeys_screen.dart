@@ -295,6 +295,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     }
 
     final credential = _selected;
+    final searchText = searchController.text;
     return FidoActions(
       devicePath: widget.node.path,
       actions: (context) => {
@@ -339,6 +340,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
+        alternativeTitle:
+            searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.fido2],
         footnote:
             '${l10n.p_passkeys_used(credentials.length, maxCreds)} ${l10n.p_non_passkeys_note}',
@@ -496,15 +499,19 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: filteredCredentials
-                  .map(
-                    (cred) => _CredentialListItem(
-                      cred,
-                      expanded: expanded,
-                      selected: _selected == cred,
-                    ),
-                  )
-                  .toList(),
+              children: [
+                if (filteredCredentials.isEmpty)
+                  Center(
+                    child: Text(l10n.s_no_passkeys),
+                  ),
+                ...filteredCredentials.map(
+                  (cred) => _CredentialListItem(
+                    cred,
+                    expanded: expanded,
+                    selected: _selected == cred,
+                  ),
+                ),
+              ],
             ),
           );
         },
