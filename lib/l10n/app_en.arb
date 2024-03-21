@@ -622,6 +622,7 @@
     "s_no_export": "No export",
     "s_export": "Export",
     "l_export_configuration_file": "Export configuration to file",
+    "l_export_can_be_added_to": "Exported credential can be added to",
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Delete credential",
