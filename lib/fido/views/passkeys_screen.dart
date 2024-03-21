@@ -453,7 +453,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                     ),
                               ),
                               const SizedBox(height: 16),
-                              const Icon(Symbols.person, size: 72),
+                              const Icon(Symbols.passkey, size: 72),
                             ],
                           ),
                         ),
@@ -529,13 +529,14 @@ class _CredentialListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AppListItem(
       credential,
       selected: selected,
       leading: CircleAvatar(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Symbols.person),
+        foregroundColor: colorScheme.onSecondary,
+        backgroundColor: colorScheme.secondary,
+        child: const Icon(Symbols.passkey),
       ),
       title: credential.userName,
       subtitle: credential.rpId,
