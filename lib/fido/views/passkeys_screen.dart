@@ -223,6 +223,13 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     searchFocus.addListener(_onFocusChange);
   }
 
+  @override
+  void dispose() {
+    searchFocus.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
   void _onFocusChange() {
     setState(() {});
   }
