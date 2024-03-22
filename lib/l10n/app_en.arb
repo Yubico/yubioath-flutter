@@ -655,7 +655,12 @@
     "s_no_export": "No export",
     "s_export": "Export",
     "l_export_configuration_file": "Export configuration to file",
-    "l_exported_can_be_uploaded_at": "Exported credentials can be uploaded at",
+    "l_exported_can_be_uploaded_at": "Exported credential can be uploaded at {url}",
+    "@_export_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {}
+        }
+    },
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Delete credential",

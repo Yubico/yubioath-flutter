@@ -55,6 +55,8 @@ enum OutputActions {
       };
 }
 
+final uploadOtpUri = Uri.parse('https://upload.yubico.com');
+
 class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
@@ -109,6 +111,8 @@ class _ConfigureYubiOtpDialogState
         secretLengthValid && privateIdLengthValid && publicIdLengthValid;
 
     final outputFile = ref.read(yubiOtpOutputProvider);
+
+    _createUploadText(context, l10n);
 
     Future<bool> selectFile() async {
       final filePath = await FilePicker.platform.saveFile(
@@ -368,17 +372,7 @@ class _ConfigureYubiOtpDialogState
                 ),
               ],
             ),
-            RichText(
-              text: TextSpan(
-                text: l10n.l_exported_can_be_uploaded_at,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                children: [
-                  const TextSpan(text: ' '),
-                  _createUploadOtpLink(context)
-                ],
-              ),
-            )
+            _createUploadText(context, l10n)
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -386,6 +380,28 @@ class _ConfigureYubiOtpDialogState
                   ))
               .toList(),
         ),
+      ),
+    );
+  }
+
+  RichText _createUploadText(BuildContext context, AppLocalizations l10n) {
+    final uploadText = l10n.l_exported_can_be_uploaded_at(uploadOtpUri.host);
+    final host = uploadOtpUri.host;
+    final parts = uploadText.split(RegExp('(?=$host)|(?<=$host)'));
+
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        children: [
+          ...parts.map(
+            (e) => e == uploadOtpUri.host
+                ? _createUploadOtpLink(context)
+                : TextSpan(text: e),
+          )
+        ],
       ),
     );
   }
@@ -401,9 +417,6 @@ class _ConfigureYubiOtpDialogState
         ..onTap = () async {
           await launchUrl(uploadOtpUri, mode: LaunchMode.externalApplication);
         },
-      children: const [
-        TextSpan(text: ' ') // without this the recognizer takes over whole row
-      ],
     );
   }
 }
