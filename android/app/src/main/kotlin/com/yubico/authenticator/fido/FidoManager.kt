@@ -473,6 +473,7 @@ class FidoManager(
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
             bioEnrollment.removeEnrollment(Base64.fromUrlSafeString(templateId))
             fidoViewModel.removeFingerprint(templateId)
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
             return@useSession JSONObject(
                 mapOf(
                     "success" to true,
@@ -496,6 +497,7 @@ class FidoManager(
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
             bioEnrollment.setName(Base64.fromUrlSafeString(templateId), name)
             fidoViewModel.renameFingerprint(templateId, name)
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
             return@useSession JSONObject(
                 mapOf(
                     "success" to true,
@@ -573,6 +575,7 @@ class FidoManager(
             }
 
             fidoViewModel.addFingerprint(FidoFingerprint(Base64.toUrlSafeString(templateId), name))
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
 
             return@useSession JSONObject(
                 mapOf(
