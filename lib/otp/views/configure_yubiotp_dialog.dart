@@ -408,7 +408,6 @@ class _ConfigureYubiOtpDialogState
 
   TextSpan _createUploadOtpLink(BuildContext context) {
     final theme = Theme.of(context);
-    final uploadOtpUri = Uri.parse('https://upload.yubico.com');
     return TextSpan(
       text: uploadOtpUri.host,
       style:
