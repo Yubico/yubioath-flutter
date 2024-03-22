@@ -70,6 +70,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
     final doubleTapIntent = widget.doubleTapIntent;
     final trailing = widget.trailing;
     final hasFeature = ref.watch(featureProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Semantics(
       label: widget.semanticTitle ?? widget.title,
@@ -124,6 +125,10 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
               ListTile(
                 mouseCursor:
                     widget.tapIntent != null ? SystemMouseCursors.click : null,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(48)),
+                selectedTileColor: colorScheme.secondaryContainer,
+                selectedColor: colorScheme.onSecondaryContainer,
                 selected: widget.selected,
                 leading: widget.leading,
                 title: Text(
