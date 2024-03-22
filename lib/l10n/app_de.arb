@@ -28,6 +28,7 @@
     "s_cancel": "Abbrechen",
     "s_close": "Schließen",
     "s_delete": "Löschen",
+    "s_move": null,
     "s_quit": "Beenden",
     "s_status": null,
     "s_unlock": "Entsperren",
@@ -523,6 +524,8 @@
     "l_delete_key_desc": null,
     "l_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": null,
+    "l_move_key": null,
+    "l_move_key_desc": null,
     "s_issuer": null,
     "s_serial": null,
     "s_certificate_fingerprint": null,
@@ -565,6 +568,28 @@
     "l_certificate_deleted": null,
     "l_key_deleted": null,
     "l_certificate_and_key_deleted": null,
+    "l_include_certificate": null,
+    "l_select_destination_slot": null,
+    "q_move_key_confirm": null,
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {}
+        }
+    },
+    "q_move_key_to_slot_confirm": null,
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": null,
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
     "p_password_protected_file": null,
     "p_import_items_desc": null,
     "@p_import_items_desc": {
@@ -572,6 +597,8 @@
             "slot": {}
         }
     },
+    "l_key_moved": null,
+    "l_key_and_certificate_moved": null,
     "p_subject_desc": null,
     "l_rfc4514_invalid": null,
     "rfc4514_examples": null,
@@ -592,6 +619,12 @@
     "@s_slot_display_name": {
         "placeholders": {
             "name": {},
+            "hexid": {}
+        }
+    },
+    "s_retired_slot_display_name": null,
+    "@s_retired_slot_display_name": {
+        "placeholders": {
             "hexid": {}
         }
     },

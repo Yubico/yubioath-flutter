@@ -325,6 +325,20 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   }
 
   @override
+  Future<void> moveKey(SlotId source, SlotId destination, bool overwriteKey,
+      bool includeCertificate) async {
+    await _session.command('move_key', target: [
+      'slots',
+      source.hexId
+    ], params: {
+      'destination': destination.hexId,
+      'overwrite_key': overwriteKey,
+      'include_certificate': includeCertificate
+    });
+    ref.invalidateSelf();
+  }
+
+  @override
   Future<PivGenerateResult> generate(
     SlotId slot,
     KeyType keyType, {
