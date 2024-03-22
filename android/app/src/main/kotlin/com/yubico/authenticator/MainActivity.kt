@@ -43,6 +43,7 @@ import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.FidoManager
 import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
+import com.yubico.authenticator.management.ManagementHandler
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
@@ -312,6 +313,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var appMethodChannel: AppMethodChannel
     private lateinit var appLinkMethodChannel: AppLinkMethodChannel
     private lateinit var messenger: BinaryMessenger
+    private lateinit var managementHandler: ManagementHandler
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -324,6 +326,7 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences = AppPreferences(this)
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
+        managementHandler = ManagementHandler(messenger, deviceManager, dialogManager)
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),

@@ -13,6 +13,17 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Checkout YubiKit
+        uses: actions/checkout@v4
+        with:
+          repository: Yubico/yubikit-android
+          ref: adamve/ins_device_reset
+          path: kit
+
+      - name: Build Yubikit-android
+        run: NO_GPG_SIGN=true ./gradlew --stacktrace check test build javadocJar publishToMavenLocal
+        working-directory: ./kit
+
       - uses: actions/checkout@v4
         with:
           path: 'app'
