@@ -28,6 +28,7 @@
     "s_cancel": "Abbrechen",
     "s_close": "Schließen",
     "s_delete": "Löschen",
+    "s_move": null,
     "s_quit": "Beenden",
     "s_status": null,
     "s_unlock": "Entsperren",
@@ -352,6 +353,12 @@
     },
     "s_accounts": "Konten",
     "s_no_accounts": "Keine Konten",
+    "l_results_for": null,
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
     "l_authenticator_get_started": null,
     "l_no_accounts_desc": null,
     "s_add_account": "Konto hinzufügen",
@@ -419,15 +426,23 @@
         }
     },
     "s_passkeys": null,
+    "s_no_passkeys": null,
     "l_ready_to_use": "Bereit zur Verwendung",
     "l_register_sk_on_websites": "Als Sicherheitsschlüssel auf Webseiten registrieren",
     "l_no_discoverable_accounts": "Keine erkennbaren Konten",
-    "l_non_passkeys_note": null,
+    "p_non_passkeys_note": null,
     "s_delete_passkey": null,
     "l_delete_passkey_desc": null,
     "s_passkey_deleted": null,
     "p_warning_delete_passkey": null,
-
+    "s_search_passkeys": null,
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "Fingerabdruck: {label}",
     "@l_fingerprint": {
@@ -505,6 +520,12 @@
     "l_unsupported_key_type": null,
     "l_delete_certificate": null,
     "l_delete_certificate_desc": null,
+    "l_delete_key": null,
+    "l_delete_key_desc": null,
+    "l_delete_certificate_or_key": null,
+    "l_delete_certificate_or_key_desc": null,
+    "l_move_key": null,
+    "l_move_key_desc": null,
     "s_issuer": null,
     "s_serial": null,
     "s_certificate_fingerprint": null,
@@ -522,14 +543,53 @@
     },
     "l_generating_private_key": null,
     "s_private_key_generated": null,
+    "p_select_what_to_delete": null,
     "p_warning_delete_certificate": null,
+    "p_warning_delete_key": null,
+    "p_warning_delete_certificate_and_key": null,
     "q_delete_certificate_confirm": null,
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": null,
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": null,
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": null,
+    "l_key_deleted": null,
+    "l_certificate_and_key_deleted": null,
+    "l_include_certificate": null,
+    "l_select_destination_slot": null,
+    "q_move_key_confirm": null,
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {}
+        }
+    },
+    "q_move_key_to_slot_confirm": null,
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": null,
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
     "p_password_protected_file": null,
     "p_import_items_desc": null,
     "@p_import_items_desc": {
@@ -537,6 +597,8 @@
             "slot": {}
         }
     },
+    "l_key_moved": null,
+    "l_key_and_certificate_moved": null,
     "p_subject_desc": null,
     "l_rfc4514_invalid": null,
     "rfc4514_examples": null,
@@ -557,6 +619,12 @@
     "@s_slot_display_name": {
         "placeholders": {
             "name": {},
+            "hexid": {}
+        }
+    },
+    "s_retired_slot_display_name": null,
+    "@s_retired_slot_display_name": {
+        "placeholders": {
             "hexid": {}
         }
     },

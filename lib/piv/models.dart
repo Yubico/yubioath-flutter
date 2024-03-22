@@ -47,10 +47,31 @@ enum SlotId {
   authentication(0x9a),
   signature(0x9c),
   keyManagement(0x9d),
-  cardAuth(0x9e);
+  cardAuth(0x9e),
+  retired1(0x82, true),
+  retired2(0x83, true),
+  retired3(0x84, true),
+  retired4(0x85, true),
+  retired5(0x86, true),
+  retired6(0x87, true),
+  retired7(0x88, true),
+  retired8(0x89, true),
+  retired9(0x8a, true),
+  retired10(0x8b, true),
+  retired11(0x8c, true),
+  retired12(0x8d, true),
+  retired13(0x8e, true),
+  retired14(0x8f, true),
+  retired15(0x90, true),
+  retired16(0x91, true),
+  retired17(0x92, true),
+  retired18(0x93, true),
+  retired19(0x94, true),
+  retired20(0x95, true);
 
   final int id;
-  const SlotId(this.id);
+  final bool isRetired;
+  const SlotId(this.id, [this.isRetired = false]);
 
   String get hexId => id.toRadixString(16).padLeft(2, '0');
 
@@ -61,6 +82,7 @@ enum SlotId {
       SlotId.signature => nameFor(l10n.s_slot_9c),
       SlotId.keyManagement => nameFor(l10n.s_slot_9d),
       SlotId.cardAuth => nameFor(l10n.s_slot_9e),
+      _ => l10n.s_retired_slot_display_name(hexId)
     };
   }
 
@@ -186,8 +208,8 @@ class PinMetadata with _$PinMetadata {
 
 @freezed
 class PinVerificationStatus with _$PinVerificationStatus {
-  const factory PinVerificationStatus.success() = _PinSuccess;
-  factory PinVerificationStatus.failure(int attemptsRemaining) = _PinFailure;
+  const factory PinVerificationStatus.success() = PinSuccess;
+  factory PinVerificationStatus.failure(int attemptsRemaining) = PinFailure;
 }
 
 @freezed

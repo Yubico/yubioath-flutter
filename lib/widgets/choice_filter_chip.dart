@@ -29,6 +29,7 @@ class ChoiceFilterChip<T> extends StatefulWidget {
   final Widget? avatar;
   final bool selected;
   final bool? disableHover;
+  final BoxConstraints? menuConstraints;
   const ChoiceFilterChip({
     super.key,
     required this.value,
@@ -40,6 +41,7 @@ class ChoiceFilterChip<T> extends StatefulWidget {
     this.selected = false,
     this.disableHover,
     this.labelBuilder,
+    this.menuConstraints,
   });
 
   @override
@@ -63,6 +65,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       Offset.zero & overlay.size,
     );
     return await showMenu(
+      constraints: widget.menuConstraints,
       context: context,
       position: position,
       shape: const RoundedRectangleBorder(

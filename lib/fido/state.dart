@@ -20,6 +20,18 @@ import '../app/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
+final passkeysSearchProvider =
+    StateNotifierProvider<PasskeysSearchNotifier, String>(
+        (ref) => PasskeysSearchNotifier());
+
+class PasskeysSearchNotifier extends StateNotifier<String> {
+  PasskeysSearchNotifier() : super('');
+
+  void setFilter(String value) {
+    state = value;
+  }
+}
+
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
   () => throw UnimplementedError(),
@@ -51,4 +63,24 @@ final credentialProvider = AsyncNotifierProvider.autoDispose
 abstract class FidoCredentialsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<FidoCredential>, DevicePath> {
   Future<void> deleteCredential(FidoCredential credential);
+}
+
+final filteredFidoCredentialsProvider = StateNotifierProvider.autoDispose
+    .family<FilteredFidoCredentialsNotifier, List<FidoCredential>,
+        List<FidoCredential>>(
+  (ref, full) {
+    return FilteredFidoCredentialsNotifier(
+        full, ref.watch(passkeysSearchProvider));
+  },
+);
+
+class FilteredFidoCredentialsNotifier
+    extends StateNotifier<List<FidoCredential>> {
+  final String query;
+  FilteredFidoCredentialsNotifier(List<FidoCredential> full, this.query)
+      : super(full
+            .where((credential) =>
+                credential.rpId.toLowerCase().contains(query.toLowerCase()) ||
+                credential.userName.toLowerCase().contains(query.toLowerCase()))
+            .toList());
 }

@@ -295,7 +295,7 @@ class FidoManager(
 
         fidoViewModel.setSessionState(
             Session(
-                fidoSession.cachedInfo,
+                fidoSession.info,
                 pinStore.hasPin()
             )
         )

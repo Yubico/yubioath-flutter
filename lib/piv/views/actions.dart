@@ -35,6 +35,7 @@ import 'authentication_dialog.dart';
 import 'delete_certificate_dialog.dart';
 import 'generate_key_dialog.dart';
 import 'import_file_dialog.dart';
+import 'move_key_dialog.dart';
 import 'pin_dialog.dart';
 
 class GenerateIntent extends Intent {
@@ -52,15 +53,19 @@ class ExportIntent extends Intent {
   const ExportIntent(this.slot);
 }
 
+class MoveIntent extends Intent {
+  final PivSlot slot;
+  const MoveIntent(this.slot);
+}
+
 Future<bool> _authIfNeeded(BuildContext context, WidgetRef ref,
     DevicePath devicePath, PivState pivState) async {
   if (pivState.needsAuth) {
     if (pivState.protectedKey &&
         pivState.metadata?.pinMetadata.defaultValue == true) {
-      final status = await ref
+      return await ref
           .read(pivStateProvider(devicePath).notifier)
-          .verifyPin(defaultPin);
-      return status.when(success: () => true, failure: (_) => false);
+          .verifyPin(defaultPin) is PinSuccess;
     }
     return await showBlurDialog(
           context: context,
@@ -108,11 +113,9 @@ class PivActions extends ConsumerWidget {
             if (!pivState.protectedKey) {
               bool verified;
               if (pivState.metadata?.pinMetadata.defaultValue == true) {
-                final status = await ref
+                verified = await ref
                     .read(pivStateProvider(devicePath).notifier)
-                    .verifyPin(defaultPin);
-                verified =
-                    status.when(success: () => true, failure: (_) => false);
+                    .verifyPin(defaultPin) is PinSuccess;
               } else {
                 verified = await withContext((context) async =>
                         await showBlurDialog(
@@ -266,11 +269,31 @@ class PivActions extends ConsumerWidget {
                   context: context,
                   builder: (context) => DeleteCertificateDialog(
                     devicePath,
+                    pivState,
                     intent.target,
                   ),
                 ) ??
                 false);
             return deleted;
+          }),
+        if (hasFeature(features.slotsMove))
+          MoveIntent: CallbackAction<MoveIntent>(onInvoke: (intent) async {
+            if (!await withContext((context) =>
+                _authIfNeeded(context, ref, devicePath, pivState))) {
+              return false;
+            }
+
+            final bool? moved = await withContext((context) async =>
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) => MoveKeyDialog(
+                    devicePath,
+                    pivState,
+                    intent.slot,
+                  ),
+                ) ??
+                false);
+            return moved;
           }),
       },
       child: Builder(
@@ -286,27 +309,31 @@ class PivActions extends ConsumerWidget {
   }
 }
 
-List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
+List<ActionItem> buildSlotActions(
+    PivState pivState, PivSlot slot, AppLocalizations l10n) {
   final hasCert = slot.certInfo != null;
   final hasKey = slot.metadata != null;
+  final canDeleteOrMoveKey = hasKey && pivState.version.isAtLeast(5, 7);
   return [
-    ActionItem(
-      key: keys.generateAction,
-      feature: features.slotsGenerate,
-      icon: const Icon(Symbols.add),
-      actionStyle: ActionStyle.primary,
-      title: l10n.s_generate_key,
-      subtitle: l10n.l_generate_desc,
-      intent: GenerateIntent(slot),
-    ),
-    ActionItem(
-      key: keys.importAction,
-      feature: features.slotsImport,
-      icon: const Icon(Symbols.file_download),
-      title: l10n.l_import_file,
-      subtitle: l10n.l_import_desc,
-      intent: ImportIntent(slot),
-    ),
+    if (!slot.slot.isRetired) ...[
+      ActionItem(
+        key: keys.generateAction,
+        feature: features.slotsGenerate,
+        icon: const Icon(Symbols.add),
+        actionStyle: ActionStyle.primary,
+        title: l10n.s_generate_key,
+        subtitle: l10n.l_generate_desc,
+        intent: GenerateIntent(slot),
+      ),
+      ActionItem(
+        key: keys.importAction,
+        feature: features.slotsImport,
+        icon: const Icon(Symbols.file_download),
+        title: l10n.l_import_file,
+        subtitle: l10n.l_import_desc,
+        intent: ImportIntent(slot),
+      ),
+    ],
     if (hasCert) ...[
       ActionItem(
         key: keys.exportAction,
@@ -315,15 +342,6 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         title: l10n.l_export_certificate,
         subtitle: l10n.l_export_certificate_desc,
         intent: ExportIntent(slot),
-      ),
-      ActionItem(
-        key: keys.deleteAction,
-        feature: features.slotsDelete,
-        actionStyle: ActionStyle.error,
-        icon: const Icon(Symbols.delete),
-        title: l10n.l_delete_certificate,
-        subtitle: l10n.l_delete_certificate_desc,
-        intent: DeleteIntent(slot),
       ),
     ] else if (hasKey) ...[
       ActionItem(
@@ -335,5 +353,33 @@ List<ActionItem> buildSlotActions(PivSlot slot, AppLocalizations l10n) {
         intent: ExportIntent(slot),
       ),
     ],
+    if (canDeleteOrMoveKey)
+      ActionItem(
+        key: keys.moveAction,
+        feature: features.slotsMove,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Symbols.move_item),
+        title: l10n.l_move_key,
+        subtitle: l10n.l_move_key_desc,
+        intent: MoveIntent(slot),
+      ),
+    if (hasCert || canDeleteOrMoveKey)
+      ActionItem(
+        key: keys.deleteAction,
+        feature: features.slotsDelete,
+        actionStyle: ActionStyle.error,
+        icon: const Icon(Symbols.delete),
+        title: hasCert && canDeleteOrMoveKey
+            ? l10n.l_delete_certificate_or_key
+            : hasCert
+                ? l10n.l_delete_certificate
+                : l10n.l_delete_key,
+        subtitle: hasCert && canDeleteOrMoveKey
+            ? l10n.l_delete_certificate_or_key_desc
+            : hasCert
+                ? l10n.l_delete_certificate_desc
+                : l10n.l_delete_key_desc,
+        intent: DeleteIntent(slot),
+      ),
   ];
 }

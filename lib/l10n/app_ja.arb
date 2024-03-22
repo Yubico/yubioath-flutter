@@ -28,6 +28,7 @@
     "s_cancel": "キャンセル",
     "s_close": "閉じる",
     "s_delete": "消去",
+    "s_move": null,
     "s_quit": "終了",
     "s_status": null,
     "s_unlock": "ロック解除",
@@ -352,6 +353,12 @@
     },
     "s_accounts": "アカウント",
     "s_no_accounts": "アカウントがありません",
+    "l_results_for": null,
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
     "l_authenticator_get_started": null,
     "l_no_accounts_desc": null,
     "s_add_account": "アカウントの追加",
@@ -419,15 +426,23 @@
         }
     },
     "s_passkeys": "パスキー",
+    "s_no_passkeys": null,
     "l_ready_to_use": "すぐに使用可能",
     "l_register_sk_on_websites": "Webサイトにセキュリティキーとして登録する",
     "l_no_discoverable_accounts": "パスキーは保存されていません",
-    "l_non_passkeys_note": null,
+    "p_non_passkeys_note": null,
     "s_delete_passkey": "パスキーを削除",
     "l_delete_passkey_desc": "YubiKeyからパスキーの削除",
     "s_passkey_deleted": "パスキーが削除されました",
     "p_warning_delete_passkey": "これにより、YubiKeyからパスキーが削除されます",
-
+    "s_search_passkeys": null,
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "指紋:{label}",
     "@l_fingerprint": {
@@ -505,6 +520,12 @@
     "l_unsupported_key_type": null,
     "l_delete_certificate": "証明書を削除",
     "l_delete_certificate_desc": "YubiKeyか証明書の削除",
+    "l_delete_key": null,
+    "l_delete_key_desc": null,
+    "l_delete_certificate_or_key": null,
+    "l_delete_certificate_or_key_desc": null,
+    "l_move_key": null,
+    "l_move_key_desc": null,
     "s_issuer": "発行者",
     "s_serial": "シリアル番号",
     "s_certificate_fingerprint": "指紋",
@@ -522,14 +543,53 @@
     },
     "l_generating_private_key": "秘密鍵を生成しています\u2026",
     "s_private_key_generated": "秘密鍵を生成しました",
+    "p_select_what_to_delete": null,
     "p_warning_delete_certificate": "警告！この操作によってYubiKeyから証明書が削除されます",
+    "p_warning_delete_key": null,
+    "p_warning_delete_certificate_and_key": null,
     "q_delete_certificate_confirm": "PIVスロット{slot}の証明書を削除しますか?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": null,
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": null,
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": "証明書が削除されました",
+    "l_key_deleted": null,
+    "l_certificate_and_key_deleted": null,
+    "l_include_certificate": null,
+    "l_select_destination_slot": null,
+    "q_move_key_confirm": null,
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {}
+        }
+    },
+    "q_move_key_to_slot_confirm": null,
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": null,
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
     "p_password_protected_file": "選択したファイルはパスワードで保護されています。パスワードを入力して続行します",
     "p_import_items_desc": "次のアイテムはPIVスロット{slot}にインポートされます",
     "@p_import_items_desc": {
@@ -537,6 +597,8 @@
             "slot": {}
         }
     },
+    "l_key_moved": null,
+    "l_key_and_certificate_moved": null,
     "p_subject_desc": "RFC 4514フォーマットの識別名識別名 (DN)",
     "l_rfc4514_invalid": "無効な RFC 4514 形式です",
     "rfc4514_examples": "例:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
@@ -557,6 +619,12 @@
     "@s_slot_display_name": {
         "placeholders": {
             "name": {},
+            "hexid": {}
+        }
+    },
+    "s_retired_slot_display_name": null,
+    "@s_retired_slot_display_name": {
+        "placeholders": {
             "hexid": {}
         }
     },

@@ -53,7 +53,7 @@ class ActionListItem extends StatelessWidget {
     // };
 
     return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle!) : null,
       leading: Opacity(

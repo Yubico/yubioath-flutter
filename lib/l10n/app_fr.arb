@@ -28,6 +28,7 @@
     "s_cancel": "Annuler",
     "s_close": "Fermer",
     "s_delete": "Supprimer",
+    "s_move": null,
     "s_quit": "Quitter",
     "s_status": null,
     "s_unlock": "Déverrouiller",
@@ -352,6 +353,12 @@
     },
     "s_accounts": "Comptes",
     "s_no_accounts": "Aucun compte",
+    "l_results_for": null,
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
     "l_authenticator_get_started": null,
     "l_no_accounts_desc": null,
     "s_add_account": "Ajouter un compte",
@@ -419,15 +426,23 @@
         }
     },
     "s_passkeys": "Passkeys",
+    "s_no_passkeys": null,
     "l_ready_to_use": "Prêt à l'emploi",
     "l_register_sk_on_websites": "Enregistrer comme clé de sécurité sur les sites internet",
     "l_no_discoverable_accounts": "Aucune Passkey détectée",
-    "l_non_passkeys_note": null,
+    "p_non_passkeys_note": null,
     "s_delete_passkey": "Supprimer une Passkey",
     "l_delete_passkey_desc": "Supprimer la Passkey de votre YubiKey",
     "s_passkey_deleted": "Passkey supprimée",
     "p_warning_delete_passkey": "Cette action supprimera cette Passkey de votre YubiKey.",
-
+    "s_search_passkeys": null,
+    "p_passkeys_used": null,
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
     "@_fingerprints": {},
     "l_fingerprint": "Empreinte: {label}",
     "@l_fingerprint": {
@@ -505,6 +520,12 @@
     "l_unsupported_key_type": null,
     "l_delete_certificate": "Supprimer un certificat",
     "l_delete_certificate_desc": "Supprimer un certificat de votre YubiKey",
+    "l_delete_key": null,
+    "l_delete_key_desc": null,
+    "l_delete_certificate_or_key": null,
+    "l_delete_certificate_or_key_desc": null,
+    "l_move_key": null,
+    "l_move_key_desc": null,
     "s_issuer": "Émetteur",
     "s_serial": "Série",
     "s_certificate_fingerprint": "Empreinte digitale",
@@ -522,14 +543,53 @@
     },
     "l_generating_private_key": "Génération d'une clé privée\u2026",
     "s_private_key_generated": "Clé privée générée",
+    "p_select_what_to_delete": null,
     "p_warning_delete_certificate": "Attention! Cette action supprimera le certificat de votre YubiKey.",
+    "p_warning_delete_key": null,
+    "p_warning_delete_certificate_and_key": null,
     "q_delete_certificate_confirm": "Supprimer le certficat du slot PIV {slot}?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
             "slot": {}
         }
     },
+    "q_delete_key_confirm": null,
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": null,
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_certificate_deleted": "Certificat supprimé",
+    "l_key_deleted": null,
+    "l_certificate_and_key_deleted": null,
+    "l_include_certificate": null,
+    "l_select_destination_slot": null,
+    "q_move_key_confirm": null,
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {}
+        }
+    },
+    "q_move_key_to_slot_confirm": null,
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": null,
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
     "p_password_protected_file": "Le fichier sélectionné est protégé par un mot de passe. Enterez le mot de passe pour continuer.",
     "p_import_items_desc": "Les éléments suivants seront importés dans le slot PIV {slot}.",
     "@p_import_items_desc": {
@@ -537,6 +597,8 @@
             "slot": {}
         }
     },
+    "l_key_moved": null,
+    "l_key_and_certificate_moved": null,
     "p_subject_desc": "Un nom distinctif (DN) formaté conformément à la spécification RFC 4514.",
     "l_rfc4514_invalid": "Format RFC 4514 invalide",
     "rfc4514_examples": "Exemples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
@@ -557,6 +619,12 @@
     "@s_slot_display_name": {
         "placeholders": {
             "name": {},
+            "hexid": {}
+        }
+    },
+    "s_retired_slot_display_name": null,
+    "@s_retired_slot_display_name": {
+        "placeholders": {
             "hexid": {}
         }
     },

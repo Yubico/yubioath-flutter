@@ -399,12 +399,41 @@ class SlotNode(RpcNode):
             else None,
         )
 
-    @action(condition=lambda self: self.certificate)
+    @action(condition=lambda self: self.certificate or self.metadata)
     def delete(self, params, event, signal):
-        self.session.delete_certificate(self.slot)
-        self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+        delete_cert = params.pop("delete_cert", False)
+        delete_key = params.pop("delete_key", False)
+
+        if not delete_cert and not delete_key:
+            raise ValueError("Missing delete option")
+
+        if delete_cert:
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        if delete_key:
+            self.session.delete_key(self.slot)
         self._refresh()
-        self.certificate = None
+        return dict()
+
+    @action(condition=lambda self: self.metadata)
+    def move_key(self, params, event, signal):
+        destination = params.pop("destination")
+        overwrite_key = params.pop("overwrite_key")
+        include_certificate = params.pop("include_certificate")
+
+        if include_certificate:
+            source_object = self.session.get_object(OBJECT_ID.from_slot(self.slot))
+        destination = SLOT(int(destination, base=16))
+        if overwrite_key:
+            self.session.delete_key(destination)
+        self.session.move_key(self.slot, destination)
+        if include_certificate:
+            self.session.put_object(OBJECT_ID.from_slot(destination), source_object)
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        self._refresh()
         return dict()
 
     @action

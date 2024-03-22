@@ -20,6 +20,18 @@ import '../app/models.dart';
 import '../core/state.dart';
 import 'models.dart';
 
+final passkeysSearchProvider =
+    StateNotifierProvider<PasskeysSearchNotifier, String>(
+        (ref) => PasskeysSearchNotifier());
+
+class PasskeysSearchNotifier extends StateNotifier<String> {
+  PasskeysSearchNotifier() : super('');
+
+  void setFilter(String value) {
+    state = value;
+  }
+}
+
 final pivStateProvider = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
   () => throw UnimplementedError(),
@@ -66,5 +78,7 @@ abstract class PivSlotsNotifier
     PinPolicy pinPolicy = PinPolicy.dfault,
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   });
-  Future<void> delete(SlotId slot);
+  Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey);
+  Future<void> moveKey(SlotId source, SlotId destination, bool overwriteKey,
+      bool includeCertificate);
 }

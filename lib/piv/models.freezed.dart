@@ -211,20 +211,20 @@ mixin _$PinVerificationStatus {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PinSuccess value) success,
-    required TResult Function(_PinFailure value) failure,
+    required TResult Function(PinSuccess value) success,
+    required TResult Function(PinFailure value) failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PinSuccess value)? success,
-    TResult? Function(_PinFailure value)? failure,
+    TResult? Function(PinSuccess value)? success,
+    TResult? Function(PinFailure value)? failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PinSuccess value)? success,
-    TResult Function(_PinFailure value)? failure,
+    TResult Function(PinSuccess value)? success,
+    TResult Function(PinFailure value)? failure,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -267,7 +267,7 @@ class __$$PinSuccessImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PinSuccessImpl implements _PinSuccess {
+class _$PinSuccessImpl implements PinSuccess {
   const _$PinSuccessImpl();
 
   @override
@@ -318,8 +318,8 @@ class _$PinSuccessImpl implements _PinSuccess {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PinSuccess value) success,
-    required TResult Function(_PinFailure value) failure,
+    required TResult Function(PinSuccess value) success,
+    required TResult Function(PinFailure value) failure,
   }) {
     return success(this);
   }
@@ -327,8 +327,8 @@ class _$PinSuccessImpl implements _PinSuccess {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PinSuccess value)? success,
-    TResult? Function(_PinFailure value)? failure,
+    TResult? Function(PinSuccess value)? success,
+    TResult? Function(PinFailure value)? failure,
   }) {
     return success?.call(this);
   }
@@ -336,8 +336,8 @@ class _$PinSuccessImpl implements _PinSuccess {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PinSuccess value)? success,
-    TResult Function(_PinFailure value)? failure,
+    TResult Function(PinSuccess value)? success,
+    TResult Function(PinFailure value)? failure,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -347,8 +347,8 @@ class _$PinSuccessImpl implements _PinSuccess {
   }
 }
 
-abstract class _PinSuccess implements PinVerificationStatus {
-  const factory _PinSuccess() = _$PinSuccessImpl;
+abstract class PinSuccess implements PinVerificationStatus {
+  const factory PinSuccess() = _$PinSuccessImpl;
 }
 
 /// @nodoc
@@ -384,7 +384,7 @@ class __$$PinFailureImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PinFailureImpl implements _PinFailure {
+class _$PinFailureImpl implements PinFailure {
   _$PinFailureImpl(this.attemptsRemaining);
 
   @override
@@ -447,8 +447,8 @@ class _$PinFailureImpl implements _PinFailure {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_PinSuccess value) success,
-    required TResult Function(_PinFailure value) failure,
+    required TResult Function(PinSuccess value) success,
+    required TResult Function(PinFailure value) failure,
   }) {
     return failure(this);
   }
@@ -456,8 +456,8 @@ class _$PinFailureImpl implements _PinFailure {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_PinSuccess value)? success,
-    TResult? Function(_PinFailure value)? failure,
+    TResult? Function(PinSuccess value)? success,
+    TResult? Function(PinFailure value)? failure,
   }) {
     return failure?.call(this);
   }
@@ -465,8 +465,8 @@ class _$PinFailureImpl implements _PinFailure {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_PinSuccess value)? success,
-    TResult Function(_PinFailure value)? failure,
+    TResult Function(PinSuccess value)? success,
+    TResult Function(PinFailure value)? failure,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -476,8 +476,8 @@ class _$PinFailureImpl implements _PinFailure {
   }
 }
 
-abstract class _PinFailure implements PinVerificationStatus {
-  factory _PinFailure(final int attemptsRemaining) = _$PinFailureImpl;
+abstract class PinFailure implements PinVerificationStatus {
+  factory PinFailure(final int attemptsRemaining) = _$PinFailureImpl;
 
   int get attemptsRemaining;
   @JsonKey(ignore: true)

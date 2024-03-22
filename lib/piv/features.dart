@@ -29,3 +29,4 @@ final slotsGenerate = slots.feature('generate');
 final slotsImport = slots.feature('import');
 final slotsExport = slots.feature('export');
 final slotsDelete = slots.feature('delete');
+final slotsMove = slots.feature('move');
