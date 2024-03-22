@@ -249,7 +249,10 @@ class _CertificateListItem extends ConsumerWidget {
       leading: CircleAvatar(
         foregroundColor: colorScheme.onSecondary,
         backgroundColor: colorScheme.secondary,
-        child: Icon(slot.isRetired ? Symbols.manage_history : Symbols.badge),
+        child: Icon(
+          slot.isRetired ? Symbols.manage_history : Symbols.badge,
+          fill: selected ? 1 : 0,
+        ),
       ),
       title: slot.getDisplayName(l10n),
       subtitle: certInfo != null
