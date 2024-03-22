@@ -655,6 +655,7 @@
     "s_no_export": "Brak eksportu",
     "s_export": "Eksportuj",
     "l_export_configuration_file": "Eksportuj konfigurację do pliku",
+    "l_exported_can_be_uploaded_at": null,
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Usuń poświadczenie",

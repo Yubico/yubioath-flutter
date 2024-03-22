@@ -18,11 +18,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -365,6 +367,17 @@ class _ConfigureYubiOtpDialogState
                   },
                 ),
               ],
+            ),
+            RichText(
+              text: TextSpan(
+                text: l10n.l_exported_can_be_uploaded_at,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                children: [
+                  const TextSpan(text: ' '),
+                  _createUploadOtpLink(context)
+                ],
+              ),
             )
           ]
               .map((e) => Padding(
@@ -374,6 +387,23 @@ class _ConfigureYubiOtpDialogState
               .toList(),
         ),
       ),
+    );
+  }
+
+  TextSpan _createUploadOtpLink(BuildContext context) {
+    final theme = Theme.of(context);
+    final uploadOtpUri = Uri.parse('https://upload.yubico.com');
+    return TextSpan(
+      text: uploadOtpUri.host,
+      style:
+          theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
+      recognizer: TapGestureRecognizer()
+        ..onTap = () async {
+          await launchUrl(uploadOtpUri, mode: LaunchMode.externalApplication);
+        },
+      children: const [
+        TextSpan(text: ' ') // without this the recognizer takes over whole row
+      ],
     );
   }
 }
