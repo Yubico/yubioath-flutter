@@ -622,7 +622,7 @@
     "s_no_export": null,
     "s_export": null,
     "l_export_configuration_file": null,
-    "l_export_can_be_added_to": null,
+    "l_exported_can_be_uploaded_at": null,
 
     "@_otp_slot_actions": {},
     "s_delete_slot": null,

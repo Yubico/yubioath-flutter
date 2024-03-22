@@ -370,8 +370,8 @@ class _ConfigureYubiOtpDialogState
             ),
             RichText(
               text: TextSpan(
-                text: l10n.l_export_can_be_added_to,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                text: l10n.l_exported_can_be_uploaded_at,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 children: [
                   const TextSpan(text: ' '),
@@ -395,8 +395,8 @@ class _ConfigureYubiOtpDialogState
     final uploadOtpUri = Uri.parse('https://upload.yubico.com');
     return TextSpan(
       text: uploadOtpUri.host,
-      style: theme.textTheme.labelSmall
-          ?.copyWith(color: theme.colorScheme.primary),
+      style:
+          theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {
           await launchUrl(uploadOtpUri, mode: LaunchMode.externalApplication);
