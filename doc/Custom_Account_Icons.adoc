@@ -12,7 +12,7 @@ Once you have an icon pack on your computer or Android device and wish to use
 it, follow these steps:
 
 1. Open the Yubico Authenticator app and insert or tap your OATH-enabled YubiKey.
-2. Make sure the `Authenticator` section is chosen, where you can see your list of accounts.
+2. Make sure the `Accounts` section is chosen, where you can see your list of accounts.
 3. Press the `Configure YubiKey` button, and select `Custom icons` from the menu.
 4. Press the `Load icon pack` button, select the icon pack zip-file, and wait for it to load.
 
