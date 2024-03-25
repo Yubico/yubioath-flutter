@@ -18,11 +18,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -52,6 +54,8 @@ enum OutputActions {
         OutputActions.noOutput => l10n.l_no_export_file
       };
 }
+
+final uploadOtpUri = Uri.parse('https://upload.yubico.com');
 
 class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -107,6 +111,8 @@ class _ConfigureYubiOtpDialogState
         secretLengthValid && privateIdLengthValid && publicIdLengthValid;
 
     final outputFile = ref.read(yubiOtpOutputProvider);
+
+    _createUploadText(context, l10n);
 
     Future<bool> selectFile() async {
       final filePath = await FilePicker.platform.saveFile(
@@ -365,7 +371,8 @@ class _ConfigureYubiOtpDialogState
                   },
                 ),
               ],
-            )
+            ),
+            _createUploadText(context, l10n)
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -374,6 +381,41 @@ class _ConfigureYubiOtpDialogState
               .toList(),
         ),
       ),
+    );
+  }
+
+  RichText _createUploadText(BuildContext context, AppLocalizations l10n) {
+    final uploadText = l10n.l_exported_can_be_uploaded_at(uploadOtpUri.host);
+    final host = uploadOtpUri.host;
+    final parts = uploadText.split(RegExp('(?=$host)|(?<=$host)'));
+
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        children: [
+          ...parts.map(
+            (e) => e == uploadOtpUri.host
+                ? _createUploadOtpLink(context)
+                : TextSpan(text: e),
+          )
+        ],
+      ),
+    );
+  }
+
+  TextSpan _createUploadOtpLink(BuildContext context) {
+    final theme = Theme.of(context);
+    return TextSpan(
+      text: uploadOtpUri.host,
+      style:
+          theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
+      recognizer: TapGestureRecognizer()
+        ..onTap = () async {
+          await launchUrl(uploadOtpUri, mode: LaunchMode.externalApplication);
+        },
     );
   }
 }
