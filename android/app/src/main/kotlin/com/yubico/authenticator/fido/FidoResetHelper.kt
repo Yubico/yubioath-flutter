@@ -60,22 +60,10 @@ data class FidoRegisterFpCaptureErrorEvent(val code: Int) : FidoRegisterFpEvent(
 
 fun createCaptureEvent(remaining: Int): FidoRegisterFpCaptureEvent {
     return FidoRegisterFpCaptureEvent(remaining)
-//    return JSONObject(mapOf(
-//        "status" to "capture",
-//        "body" to JSONObject(mapOf(
-//            "remaining" to 5
-//        )).toString()
-//    ))
 }
 
 fun createCaptureErrorEvent(code: Int) : FidoRegisterFpCaptureErrorEvent {
     return FidoRegisterFpCaptureErrorEvent(code)
-//    return JSONObject(mapOf(
-//        "status" to "capture-error",
-//        "body" to JSONObject(mapOf(
-//            "code" to code
-//        )).toString()
-//    ))
 }
 
 class FidoResetHelper(
