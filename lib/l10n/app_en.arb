@@ -55,6 +55,7 @@
             "item": {}
         }
     },
+    "s_none": "<none>",
 
     "s_about": "About",
     "s_algorithm": "Algorithm",

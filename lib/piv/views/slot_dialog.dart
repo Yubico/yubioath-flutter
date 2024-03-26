@@ -87,7 +87,11 @@ class SlotDialog extends ConsumerWidget {
                             if (certInfo != null || metadata != null) ...[
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
-                                child: CertInfoTable(certInfo, metadata),
+                                child: CertInfoTable(
+                                  certInfo,
+                                  metadata,
+                                  alwaysIncludePrivate: true,
+                                ),
                               ),
                             ],
                             if (certInfo == null) ...[
