@@ -141,8 +141,11 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                         const SizedBox(height: 16),
                                         if (selected.certInfo != null ||
                                             selected.metadata != null) ...[
-                                          CertInfoTable(selected.certInfo,
-                                              selected.metadata),
+                                          CertInfoTable(
+                                            selected.certInfo,
+                                            selected.metadata,
+                                            alwaysIncludePrivate: true,
+                                          ),
                                           const SizedBox(height: 16),
                                         ],
                                         if (selected.certInfo == null)

@@ -90,8 +90,10 @@ class _InfoTable extends ConsumerWidget {
 class CertInfoTable extends ConsumerWidget {
   final CertInfo? certInfo;
   final SlotMetadata? metadata;
+  final bool alwaysIncludePrivate;
 
-  const CertInfoTable(this.certInfo, this.metadata, {super.key});
+  const CertInfoTable(this.certInfo, this.metadata,
+      {super.key, this.alwaysIncludePrivate = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -107,6 +109,8 @@ class CertInfoTable extends ConsumerWidget {
           metadata.keyType.getDisplayName(l10n),
           keys.slotMetadataKeyType
         ),
+      if (metadata == null && alwaysIncludePrivate)
+        l10n.s_private_key: (l10n.s_none, keys.slotMetadataKeyType),
       if (certInfo != null) ...{
         l10n.s_public_key: (
           certInfo.keyType?.getDisplayName(l10n) ?? l10n.s_unknown_type,
