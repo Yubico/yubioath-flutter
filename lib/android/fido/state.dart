@@ -109,11 +109,16 @@ class _FidoStateNotifier extends FidoStateNotifier {
         },
       ));
       if (response['success'] == true) {
-        _log.debug('FIDO pin set/change successful');
+        _log.debug('FIDO PIN set/change successful');
         return PinResult.success();
       }
 
-      _log.debug('FIDO pin set/change failed');
+      if (response['pinViolation'] == true) {
+        _log.debug('FIDO PIN violation');
+        return PinResult.failed(const FidoPinFailureReason.weakPin());
+      }
+
+      _log.debug('FIDO PIN set/change failed');
       return PinResult.failed(FidoPinFailureReason.invalidPin(
           response['pinRetries'], response['authBlocked']));
     } on PlatformException catch (pe) {

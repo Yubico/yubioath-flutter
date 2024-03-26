@@ -313,7 +313,8 @@ class FidoManager(
         } catch (ctapException: CtapException) {
             if (ctapException.ctapError == CtapException.ERR_PIN_INVALID ||
                 ctapException.ctapError == CtapException.ERR_PIN_BLOCKED ||
-                ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED
+                ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED ||
+                ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION
             ) {
                 pinStore.setPin(null)
                 fidoViewModel.updateCredentials(emptyList())
@@ -322,7 +323,8 @@ class FidoManager(
                     mapOf(
                         "success" to false,
                         "pinRetries" to pinRetriesResult.count,
-                        "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED)
+                        "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED),
+                        "pinViolation" to (ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION)
                     )
                 ).toString()
             } else {
