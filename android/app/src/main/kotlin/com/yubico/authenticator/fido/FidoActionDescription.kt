@@ -16,7 +16,7 @@
 
 package com.yubico.authenticator.fido
 
-const val dialogDescriptionOathIndex = 200
+const val dialogDescriptionFidoIndex = 200
 
 enum class FidoActionDescription(private val value: Int) {
     Reset(0),
@@ -29,5 +29,5 @@ enum class FidoActionDescription(private val value: Int) {
     ActionFailure(7);
 
     val id: Int
-        get() = value + dialogDescriptionOathIndex
+        get() = value + dialogDescriptionFidoIndex
 }
