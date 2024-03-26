@@ -43,7 +43,6 @@ import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.internal.Logger
-import com.yubico.yubikit.core.internal.codec.Base64
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.fido.ctap.BioEnrollment
@@ -77,6 +76,12 @@ class FidoManager(
     mainViewModel: MainViewModel,
     dialogManager: DialogManager,
 ) : AppContextManager(), DeviceListener {
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private object HexCodec {
+        fun bytesToHexString(bytes: ByteArray) : String = bytes.toHexString()
+        fun hexStringToBytes(hex: String) : ByteArray = hex.hexToByteArray()
+    }
 
     companion object {
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
@@ -451,7 +456,7 @@ class FidoManager(
 
         val enrollments: Map<ByteArray, String?> = bioEnrollment.enumerateEnrollments()
         return enrollments.map { enrollment ->
-            FidoFingerprint(Base64.toUrlSafeString(enrollment.key), enrollment.value)
+            FidoFingerprint(HexCodec.bytesToHexString(enrollment.key), enrollment.value)
         }
 
     }
@@ -471,7 +476,7 @@ class FidoManager(
 
 
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
-            bioEnrollment.removeEnrollment(Base64.fromUrlSafeString(templateId))
+            bioEnrollment.removeEnrollment(HexCodec.hexStringToBytes(templateId))
             fidoViewModel.removeFingerprint(templateId)
             fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
             return@useSession JSONObject(
@@ -495,7 +500,7 @@ class FidoManager(
                 )
 
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
-            bioEnrollment.setName(Base64.fromUrlSafeString(templateId), name)
+            bioEnrollment.setName(HexCodec.hexStringToBytes(templateId), name)
             fidoViewModel.renameFingerprint(templateId, name)
             fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
             return@useSession JSONObject(
@@ -574,13 +579,14 @@ class FidoManager(
                 Logger.debug(logger, "Set name to {}", name)
             }
 
-            fidoViewModel.addFingerprint(FidoFingerprint(Base64.toUrlSafeString(templateId), name))
+            val templateIdHexString = HexCodec.bytesToHexString(templateId)
+            fidoViewModel.addFingerprint(FidoFingerprint(templateIdHexString, name))
             fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
 
             return@useSession JSONObject(
                 mapOf(
                     "success" to true,
-                    "template_id" to Base64.toUrlSafeString(templateId),
+                    "template_id" to templateIdHexString,
                     "name" to name
                 )
             ).toString()
