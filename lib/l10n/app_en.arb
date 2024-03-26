@@ -836,7 +836,7 @@
 
     "s_nfc_dialog_fido_reset": "Action: reset FIDO application",
     "s_nfc_dialog_fido_unlock": "Action: unlock FIDO application",
-    "l_nfc_dialog_fido_set_pin": "Action: set or change FIDO application PIN",
+    "l_nfc_dialog_fido_set_pin": "Action: set or change the FIDO PIN",
     "s_nfc_dialog_fido_delete_credential": "Action: delete Passkey",
     "s_nfc_dialog_fido_delete_fingerprint": "Action: delete fingerprint",
     "s_nfc_dialog_fido_rename_fingerprint": "Action: rename fingerprint",
