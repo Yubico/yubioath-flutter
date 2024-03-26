@@ -240,8 +240,6 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
             throw RpcError(errorStatus, 'Platform error: $errorStatus', {});
           }
         }
-
-        await controller.sink.close();
       } on PlatformException catch (pe) {
         _log.debug('Received platform exception: \'$pe\'');
         final decoded = pe.decode();
@@ -249,6 +247,8 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
       } catch (e) {
         _log.debug('Received error: \'$e\'');
         controller.sink.addError(e);
+      } finally {
+        await controller.sink.close();
       }
     };
 
