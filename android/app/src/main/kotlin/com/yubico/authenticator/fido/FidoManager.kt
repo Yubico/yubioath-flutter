@@ -318,15 +318,23 @@ class FidoManager(
             ) {
                 pinStore.setPin(null)
                 fidoViewModel.updateCredentials(emptyList())
-                val pinRetriesResult = clientPin.pinRetries
-                JSONObject(
-                    mapOf(
-                        "success" to false,
-                        "pinRetries" to pinRetriesResult.count,
-                        "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED),
-                        "pinViolation" to (ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION)
-                    )
-                ).toString()
+
+                if (ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION) {
+                    JSONObject(
+                        mapOf(
+                            "success" to false,
+                            "pinViolation" to true
+                        )
+                    ).toString()
+                } else {
+                    JSONObject(
+                        mapOf(
+                            "success" to false,
+                            "pinRetries" to clientPin.pinRetries.count,
+                            "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED),
+                        )
+                    ).toString()
+                }
             } else {
                 throw ctapException
             }
