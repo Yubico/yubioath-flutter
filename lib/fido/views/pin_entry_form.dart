@@ -60,15 +60,20 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
       final result = await ref
           .read(fidoStateProvider(widget._deviceNode.path).notifier)
           .unlock(_pinController.text);
-      result.whenOrNull(failed: (retries, authBlocked) {
-        _pinController.selection = TextSelection(
-            baseOffset: 0, extentOffset: _pinController.text.length);
-        _pinFocus.requestFocus();
-        setState(() {
-          _pinIsWrong = true;
-          _retries = retries;
-          _blocked = authBlocked;
-        });
+      result.whenOrNull(failed: (reason) {
+        reason.maybeWhen(
+          invalidPin: (retries, authBlocked) {
+            _pinController.selection = TextSelection(
+                baseOffset: 0, extentOffset: _pinController.text.length);
+            _pinFocus.requestFocus();
+            setState(() {
+              _pinIsWrong = true;
+              _retries = retries;
+              _blocked = authBlocked;
+            });
+          },
+          orElse: () {},
+        );
       });
     } on CancellationException catch (_) {
       // ignored

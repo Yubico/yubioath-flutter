@@ -106,14 +106,19 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     if (_usesStoredKey) {
       final status = (await notifier.verifyPin(_currentController.text)).when(
         success: () => true,
-        failure: (attemptsRemaining) {
-          _currentController.selection = TextSelection(
-              baseOffset: 0, extentOffset: _currentController.text.length);
-          _currentFocus.requestFocus();
-          setState(() {
-            _attemptsRemaining = attemptsRemaining;
-            _currentIsWrong = true;
-          });
+        failure: (reason) {
+          reason.maybeWhen(
+            invalidPin: (attemptsRemaining) {
+              _currentController.selection = TextSelection(
+                  baseOffset: 0, extentOffset: _currentController.text.length);
+              _currentFocus.requestFocus();
+              setState(() {
+                _attemptsRemaining = attemptsRemaining;
+                _currentIsWrong = true;
+              });
+            },
+            orElse: () {},
+          );
           return false;
         },
       );

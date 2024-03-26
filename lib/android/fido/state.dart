@@ -114,10 +114,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
       }
 
       _log.debug('FIDO pin set/change failed');
-      return PinResult.failed(
-        response['pinRetries'],
-        response['authBlocked'],
-      );
+      return PinResult.failed(FidoPinFailureReason.invalidPin(
+          response['pinRetries'], response['authBlocked']));
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
@@ -141,10 +139,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
       }
 
       _log.debug('FIDO applet unlock failed');
-      return PinResult.failed(
-        response['pinRetries'],
-        response['authBlocked'],
-      );
+      return PinResult.failed(FidoPinFailureReason.invalidPin(
+          response['pinRetries'], response['authBlocked']));
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is! CancellationException) {

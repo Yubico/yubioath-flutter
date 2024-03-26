@@ -47,6 +47,11 @@ class PinValidationException(RpcException):
         )
 
 
+class PinPolicyException(RpcException):
+    def __init__(self):
+        super().__init__("pin-policy", "Pin does not meet policy requirements")
+
+
 class InactivityException(RpcException):
     def __init__(self):
         super().__init__(
@@ -76,6 +81,8 @@ def _handle_pin_error(e, client_pin):
         raise PinValidationException(
             pin_retries, e.code == CtapError.ERR.PIN_AUTH_BLOCKED
         )
+    if e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+        raise PinPolicyException()
     raise e
 
 

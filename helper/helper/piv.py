@@ -73,11 +73,25 @@ class InvalidPinException(RpcException):
         )
 
 
+class PinComplexityException(RpcException):
+    def __init__(self):
+        super().__init__("pin-complexity", "Pin does not meet complexity requirements")
+
+
 @unique
 class GENERATE_TYPE(str, Enum):
     PUBLIC_KEY = "publicKey"
     CSR = "csr"
     CERTIFICATE = "certificate"
+
+
+def _handle_pin_puk_error(e):
+    if isinstance(e, ApduError):
+        if e.sw == SW.CONDITIONS_NOT_SATISFIED:
+            raise PinComplexityException()
+    if isinstance(e, InvalidPinError):
+        raise InvalidPinException(cause=e)
+    raise e
 
 
 class PivNode(RpcNode):
@@ -208,21 +222,30 @@ class PivNode(RpcNode):
     def change_pin(self, params, event, signal):
         old_pin = params.pop("pin")
         new_pin = params.pop("new_pin")
-        pivman_change_pin(self.session, old_pin, new_pin)
+        try:
+            pivman_change_pin(self.session, old_pin, new_pin)
+        except Exception as e:
+            _handle_pin_puk_error(e)
         return dict()
 
     @action
     def change_puk(self, params, event, signal):
         old_puk = params.pop("puk")
         new_puk = params.pop("new_puk")
-        self.session.change_puk(old_puk, new_puk)
+        try:
+            self.session.change_puk(old_puk, new_puk)
+        except Exception as e:
+            _handle_pin_puk_error(e)
         return dict()
 
     @action
     def unblock_pin(self, params, event, signal):
         puk = params.pop("puk")
         new_pin = params.pop("new_pin")
-        self.session.unblock_pin(puk, new_pin)
+        try:
+            self.session.unblock_pin(puk, new_pin)
+        except Exception as e:
+            _handle_pin_puk_error(e)
         return dict()
 
     @action

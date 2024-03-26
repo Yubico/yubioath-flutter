@@ -193,19 +193,19 @@ mixin _$PinVerificationStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int attemptsRemaining) failure,
+    required TResult Function(PivPinFailureReason reason) failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int attemptsRemaining)? failure,
+    TResult? Function(PivPinFailureReason reason)? failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int attemptsRemaining)? failure,
+    TResult Function(PivPinFailureReason reason)? failure,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -288,7 +288,7 @@ class _$PinSuccessImpl implements PinSuccess {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int attemptsRemaining) failure,
+    required TResult Function(PivPinFailureReason reason) failure,
   }) {
     return success();
   }
@@ -297,7 +297,7 @@ class _$PinSuccessImpl implements PinSuccess {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int attemptsRemaining)? failure,
+    TResult? Function(PivPinFailureReason reason)? failure,
   }) {
     return success?.call();
   }
@@ -306,7 +306,7 @@ class _$PinSuccessImpl implements PinSuccess {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int attemptsRemaining)? failure,
+    TResult Function(PivPinFailureReason reason)? failure,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -357,7 +357,9 @@ abstract class _$$PinFailureImplCopyWith<$Res> {
           _$PinFailureImpl value, $Res Function(_$PinFailureImpl) then) =
       __$$PinFailureImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({int attemptsRemaining});
+  $Res call({PivPinFailureReason reason});
+
+  $PivPinFailureReasonCopyWith<$Res> get reason;
 }
 
 /// @nodoc
@@ -371,28 +373,36 @@ class __$$PinFailureImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? attemptsRemaining = null,
+    Object? reason = null,
   }) {
     return _then(_$PinFailureImpl(
-      null == attemptsRemaining
-          ? _value.attemptsRemaining
-          : attemptsRemaining // ignore: cast_nullable_to_non_nullable
-              as int,
+      null == reason
+          ? _value.reason
+          : reason // ignore: cast_nullable_to_non_nullable
+              as PivPinFailureReason,
     ));
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $PivPinFailureReasonCopyWith<$Res> get reason {
+    return $PivPinFailureReasonCopyWith<$Res>(_value.reason, (value) {
+      return _then(_value.copyWith(reason: value));
+    });
   }
 }
 
 /// @nodoc
 
 class _$PinFailureImpl implements PinFailure {
-  _$PinFailureImpl(this.attemptsRemaining);
+  _$PinFailureImpl(this.reason);
 
   @override
-  final int attemptsRemaining;
+  final PivPinFailureReason reason;
 
   @override
   String toString() {
-    return 'PinVerificationStatus.failure(attemptsRemaining: $attemptsRemaining)';
+    return 'PinVerificationStatus.failure(reason: $reason)';
   }
 
   @override
@@ -400,12 +410,11 @@ class _$PinFailureImpl implements PinFailure {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinFailureImpl &&
-            (identical(other.attemptsRemaining, attemptsRemaining) ||
-                other.attemptsRemaining == attemptsRemaining));
+            (identical(other.reason, reason) || other.reason == reason));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, attemptsRemaining);
+  int get hashCode => Object.hash(runtimeType, reason);
 
   @JsonKey(ignore: true)
   @override
@@ -417,29 +426,29 @@ class _$PinFailureImpl implements PinFailure {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int attemptsRemaining) failure,
+    required TResult Function(PivPinFailureReason reason) failure,
   }) {
-    return failure(attemptsRemaining);
+    return failure(reason);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int attemptsRemaining)? failure,
+    TResult? Function(PivPinFailureReason reason)? failure,
   }) {
-    return failure?.call(attemptsRemaining);
+    return failure?.call(reason);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int attemptsRemaining)? failure,
+    TResult Function(PivPinFailureReason reason)? failure,
     required TResult orElse(),
   }) {
     if (failure != null) {
-      return failure(attemptsRemaining);
+      return failure(reason);
     }
     return orElse();
   }
@@ -477,12 +486,308 @@ class _$PinFailureImpl implements PinFailure {
 }
 
 abstract class PinFailure implements PinVerificationStatus {
-  factory PinFailure(final int attemptsRemaining) = _$PinFailureImpl;
+  factory PinFailure(final PivPinFailureReason reason) = _$PinFailureImpl;
 
-  int get attemptsRemaining;
+  PivPinFailureReason get reason;
   @JsonKey(ignore: true)
   _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$PivPinFailureReason {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int attemptsRemaining) invalidPin,
+    required TResult Function() weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int attemptsRemaining)? invalidPin,
+    TResult? Function()? weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int attemptsRemaining)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(PivInvalidPin value) invalidPin,
+    required TResult Function(PivWeakPin value) weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(PivInvalidPin value)? invalidPin,
+    TResult? Function(PivWeakPin value)? weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(PivInvalidPin value)? invalidPin,
+    TResult Function(PivWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PivPinFailureReasonCopyWith<$Res> {
+  factory $PivPinFailureReasonCopyWith(
+          PivPinFailureReason value, $Res Function(PivPinFailureReason) then) =
+      _$PivPinFailureReasonCopyWithImpl<$Res, PivPinFailureReason>;
+}
+
+/// @nodoc
+class _$PivPinFailureReasonCopyWithImpl<$Res, $Val extends PivPinFailureReason>
+    implements $PivPinFailureReasonCopyWith<$Res> {
+  _$PivPinFailureReasonCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$PivInvalidPinImplCopyWith<$Res> {
+  factory _$$PivInvalidPinImplCopyWith(
+          _$PivInvalidPinImpl value, $Res Function(_$PivInvalidPinImpl) then) =
+      __$$PivInvalidPinImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int attemptsRemaining});
+}
+
+/// @nodoc
+class __$$PivInvalidPinImplCopyWithImpl<$Res>
+    extends _$PivPinFailureReasonCopyWithImpl<$Res, _$PivInvalidPinImpl>
+    implements _$$PivInvalidPinImplCopyWith<$Res> {
+  __$$PivInvalidPinImplCopyWithImpl(
+      _$PivInvalidPinImpl _value, $Res Function(_$PivInvalidPinImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? attemptsRemaining = null,
+  }) {
+    return _then(_$PivInvalidPinImpl(
+      null == attemptsRemaining
+          ? _value.attemptsRemaining
+          : attemptsRemaining // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$PivInvalidPinImpl implements PivInvalidPin {
+  _$PivInvalidPinImpl(this.attemptsRemaining);
+
+  @override
+  final int attemptsRemaining;
+
+  @override
+  String toString() {
+    return 'PivPinFailureReason.invalidPin(attemptsRemaining: $attemptsRemaining)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PivInvalidPinImpl &&
+            (identical(other.attemptsRemaining, attemptsRemaining) ||
+                other.attemptsRemaining == attemptsRemaining));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, attemptsRemaining);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PivInvalidPinImplCopyWith<_$PivInvalidPinImpl> get copyWith =>
+      __$$PivInvalidPinImplCopyWithImpl<_$PivInvalidPinImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int attemptsRemaining) invalidPin,
+    required TResult Function() weakPin,
+  }) {
+    return invalidPin(attemptsRemaining);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int attemptsRemaining)? invalidPin,
+    TResult? Function()? weakPin,
+  }) {
+    return invalidPin?.call(attemptsRemaining);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int attemptsRemaining)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) {
+    if (invalidPin != null) {
+      return invalidPin(attemptsRemaining);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(PivInvalidPin value) invalidPin,
+    required TResult Function(PivWeakPin value) weakPin,
+  }) {
+    return invalidPin(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(PivInvalidPin value)? invalidPin,
+    TResult? Function(PivWeakPin value)? weakPin,
+  }) {
+    return invalidPin?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(PivInvalidPin value)? invalidPin,
+    TResult Function(PivWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) {
+    if (invalidPin != null) {
+      return invalidPin(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class PivInvalidPin implements PivPinFailureReason {
+  factory PivInvalidPin(final int attemptsRemaining) = _$PivInvalidPinImpl;
+
+  int get attemptsRemaining;
+  @JsonKey(ignore: true)
+  _$$PivInvalidPinImplCopyWith<_$PivInvalidPinImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$PivWeakPinImplCopyWith<$Res> {
+  factory _$$PivWeakPinImplCopyWith(
+          _$PivWeakPinImpl value, $Res Function(_$PivWeakPinImpl) then) =
+      __$$PivWeakPinImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$PivWeakPinImplCopyWithImpl<$Res>
+    extends _$PivPinFailureReasonCopyWithImpl<$Res, _$PivWeakPinImpl>
+    implements _$$PivWeakPinImplCopyWith<$Res> {
+  __$$PivWeakPinImplCopyWithImpl(
+      _$PivWeakPinImpl _value, $Res Function(_$PivWeakPinImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$PivWeakPinImpl implements PivWeakPin {
+  const _$PivWeakPinImpl();
+
+  @override
+  String toString() {
+    return 'PivPinFailureReason.weakPin()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$PivWeakPinImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int attemptsRemaining) invalidPin,
+    required TResult Function() weakPin,
+  }) {
+    return weakPin();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int attemptsRemaining)? invalidPin,
+    TResult? Function()? weakPin,
+  }) {
+    return weakPin?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int attemptsRemaining)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) {
+    if (weakPin != null) {
+      return weakPin();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(PivInvalidPin value) invalidPin,
+    required TResult Function(PivWeakPin value) weakPin,
+  }) {
+    return weakPin(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(PivInvalidPin value)? invalidPin,
+    TResult? Function(PivWeakPin value)? weakPin,
+  }) {
+    return weakPin?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(PivInvalidPin value)? invalidPin,
+    TResult Function(PivWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) {
+    if (weakPin != null) {
+      return weakPin(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class PivWeakPin implements PivPinFailureReason {
+  const factory PivWeakPin() = _$PivWeakPinImpl;
 }
 
 ManagementKeyMetadata _$ManagementKeyMetadataFromJson(

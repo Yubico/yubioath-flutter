@@ -252,6 +252,18 @@
             "message": {}
         }
     },
+    "l_set_puk_failed": "Failed to set PUK: {message}",
+    "@l_set_puk_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_unblock_pin_failed": "Failed to unblock PIN: {message}",
+    "@l_unblock_pin_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_attempts_remaining": "{retries} attempt(s) remaining",
     "@l_attempts_remaining": {
         "placeholders": {
@@ -288,12 +300,34 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_complexity_active": "Enter your new PIN. A PIN must be at least {length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
+    "@p_enter_new_fido2_pin_complexity_active": {
+        "placeholders": {
+            "length": {},
+            "unique_characters": {},
+            "common_pin": {}
+        }
+    },
+    "p_pin_policy_failure": "New PIN doesn't meet policy requirements.",
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
     "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be 6-8 characters.",
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_complexity_active": "Enter a new {name} to set. Must be 6-8 characters, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
+    "@p_enter_new_piv_pin_puk_complexity_active": {
+        "placeholders": {
+            "name": {},
+            "common": {}
+        }
+    },
+    "p_pin_puk_complexity_failure": "New {name} doesn't meet complexity requirements.",
+    "@p_pin_puk_complexity_failure": {
         "placeholders": {
             "name": {}
         }

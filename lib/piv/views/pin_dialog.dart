@@ -60,14 +60,19 @@ class _PinDialogState extends ConsumerState<PinDialog> {
         success: () {
           navigator.pop(true);
         },
-        failure: (attemptsRemaining) {
-          _pinController.selection = TextSelection(
-              baseOffset: 0, extentOffset: _pinController.text.length);
-          _pinFocus.requestFocus();
-          setState(() {
-            _attemptsRemaining = attemptsRemaining;
-            _pinIsWrong = true;
-          });
+        failure: (reason) {
+          reason.maybeWhen(
+            invalidPin: (attemptsRemaining) {
+              _pinController.selection = TextSelection(
+                  baseOffset: 0, extentOffset: _pinController.text.length);
+              _pinFocus.requestFocus();
+              setState(() {
+                _attemptsRemaining = attemptsRemaining;
+                _pinIsWrong = true;
+              });
+            },
+            orElse: () {},
+          );
         },
       );
     } on CancellationException catch (_) {
