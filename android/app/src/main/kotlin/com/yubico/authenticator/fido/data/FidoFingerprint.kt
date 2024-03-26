@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.fido
+package com.yubico.authenticator.fido.data
 
-const val dialogDescriptionFidoIndex = 200
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-enum class FidoActionDescription(private val value: Int) {
-    Reset(0),
-    Unlock(1),
-    SetPin(2),
-    DeleteCredential(3),
-    DeleteFingerprint(4),
-    RenameFingerprint(5),
-    RegisterFingerprint(6),
-    ActionFailure(7);
-
-    val id: Int
-        get() = value + dialogDescriptionFidoIndex
-}
+@Serializable
+data class FidoFingerprint(
+    @SerialName("template_id")
+    val templateId: String,
+    @SerialName("name")
+    val name: String?
+)

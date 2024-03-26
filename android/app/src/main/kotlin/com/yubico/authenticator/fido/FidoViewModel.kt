@@ -21,7 +21,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.fido.data.FidoCredential
+import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
+import org.json.JSONObject
 
 class FidoViewModel : ViewModel() {
     private val _sessionState = MutableLiveData<ViewModelData>()
@@ -59,5 +61,37 @@ class FidoViewModel : ViewModel() {
 
     fun updateResetState(resetState: FidoResetState) {
         _resetState.postValue(resetState.value)
+    }
+
+    private val _fingerprints = MutableLiveData<List<FidoFingerprint>>()
+    val fingerprints: LiveData<List<FidoFingerprint>> = _fingerprints
+
+    fun updateFingerprints(fingerprints: List<FidoFingerprint>) {
+        _fingerprints.postValue(fingerprints)
+    }
+
+    fun addFingerprint(fingerprint: FidoFingerprint) {
+        _fingerprints.postValue(_fingerprints.value?.plus(fingerprint))
+    }
+
+    fun removeFingerprint(templateId: String) {
+        _fingerprints.postValue(_fingerprints.value?.filter {
+            it.templateId != templateId
+        })
+    }
+
+    fun renameFingerprint(templateId: String, name: String) {
+        _fingerprints.postValue(_fingerprints.value?.map {
+            if (it.templateId == templateId) {
+                FidoFingerprint(templateId, name)
+            } else it
+        })
+    }
+
+    private val _registerFingerprint = MutableLiveData<FidoRegisterFpEvent>()
+    val registerFingerprint: LiveData<FidoRegisterFpEvent> = _registerFingerprint
+
+    fun updateRegisterFpState(registerFpState: FidoRegisterFpEvent) {
+        _registerFingerprint.postValue(registerFpState)
     }
 }

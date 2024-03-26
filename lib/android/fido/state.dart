@@ -25,6 +25,7 @@ import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
@@ -165,14 +166,91 @@ final androidFingerprintProvider = AsyncNotifierProvider.autoDispose
         _FidoFingerprintsNotifier.new);
 
 class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
+  final _events = const EventChannel('android.fido.fingerprints');
+  late StreamSubscription _sub;
+
   @override
   FutureOr<List<Fingerprint>> build(DevicePath devicePath) async {
-    return [];
+    _sub = _events.receiveBroadcastStream().listen((event) {
+      final json = jsonDecode(event);
+      if (json == null) {
+        state = const AsyncValue.loading();
+      } else {
+        List<Fingerprint> newState = List.from(
+            (json as List).map((e) => Fingerprint.fromJson(e)).toList());
+        state = AsyncValue.data(newState);
+      }
+    }, onError: (err, stackTrace) {
+      state = AsyncValue.error(err, stackTrace);
+    });
+
+    ref.onDispose(_sub.cancel);
+    return Completer<List<Fingerprint>>().future;
   }
 
   @override
   Stream<FingerprintEvent> registerFingerprint({String? name}) {
     final controller = StreamController<FingerprintEvent>();
+    const registerEvents = EventChannel('android.fido.registerFp');
+
+    final registerFpSub =
+        registerEvents.receiveBroadcastStream().skip(1).listen((event) {
+      if (controller.isClosed) {
+        _log.debug('Controller already closed, ignoring: $event');
+      }
+      _log.debug('Received register fingerprint event: $event');
+      if (event is String && event.isNotEmpty) {
+        final e = jsonDecode(event);
+        _log.debug('Received register fingerprint event: $e');
+
+        final status = e['status'];
+
+        controller.sink.add(switch (status) {
+          'capture' => FingerprintEvent.capture(e['remaining']),
+          'capture-error' => FingerprintEvent.error(e['code']),
+          final other => throw UnimplementedError(other)
+        });
+      }
+    });
+
+    controller.onCancel = () async {
+      if (!controller.isClosed) {
+        _log.debug('Cancelling fingerprint registration');
+        await _methods.invokeMethod('cancelRegisterFingerprint');
+        await registerFpSub.cancel();
+      }
+    };
+
+    controller.onListen = () async {
+      try {
+        final registerFpResult =
+            await _methods.invokeMethod('registerFingerprint', {'name': name});
+
+        _log.debug('Finished registerFingerprint with: $registerFpResult');
+
+        final resultJson = jsonDecode(registerFpResult);
+
+        if (resultJson['success'] == true) {
+          controller.sink
+              .add(FingerprintEvent.complete(Fingerprint.fromJson(resultJson)));
+        } else {
+          // TODO abstract platform errors
+          final errorStatus = resultJson['status'];
+          if (errorStatus != 'user-cancelled') {
+            throw RpcError(errorStatus, 'Platform error: $errorStatus', {});
+          }
+        }
+      } on PlatformException catch (pe) {
+        _log.debug('Received platform exception: \'$pe\'');
+        final decoded = pe.decode();
+        controller.sink.addError(decoded);
+      } catch (e) {
+        _log.debug('Received error: \'$e\'');
+        controller.sink.addError(e);
+      } finally {
+        await controller.sink.close();
+      }
+    };
 
     return controller.stream;
   }
@@ -180,11 +258,60 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   @override
   Future<Fingerprint> renameFingerprint(
       Fingerprint fingerprint, String name) async {
-    return fingerprint;
+    try {
+      final renameFingerprintResponse = jsonDecode(await _methods.invokeMethod(
+        'renameFingerprint',
+        {
+          'templateId': fingerprint.templateId,
+          'name': name,
+        },
+      ));
+
+      if (renameFingerprintResponse['success'] == true) {
+        _log.debug('FIDO rename fingerprint succeeded');
+        return Fingerprint(fingerprint.templateId, name);
+      } else {
+        _log.debug('FIDO rename fingerprint failed');
+        return fingerprint;
+      }
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled rename fingerprint FIDO operation');
+      } else {
+        _log.error('Rename fingerprint FIDO operation failed.', pe);
+      }
+
+      throw decodedException;
+    }
   }
 
   @override
-  Future<void> deleteFingerprint(Fingerprint fingerprint) async {}
+  Future<void> deleteFingerprint(Fingerprint fingerprint) async {
+    try {
+      final deleteFingerprintResponse = jsonDecode(await _methods.invokeMethod(
+        'deleteFingerprint',
+        {
+          'templateId': fingerprint.templateId,
+        },
+      ));
+
+      if (deleteFingerprintResponse['success'] == true) {
+        _log.debug('FIDO delete fingerprint succeeded');
+      } else {
+        _log.debug('FIDO delete fingerprint failed');
+      }
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled delete fingerprint FIDO operation');
+      } else {
+        _log.error('Delete fingerprint FIDO operation failed.', pe);
+      }
+
+      throw decodedException;
+    }
+  }
 }
 
 final androidCredentialProvider = AsyncNotifierProvider.autoDispose

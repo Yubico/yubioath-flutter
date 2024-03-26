@@ -16,16 +16,17 @@
 
 package com.yubico.authenticator.fido
 
-import android.nfc.TagLostException
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
+import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.SessionInfo
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
@@ -38,13 +39,17 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyConnection
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.application.ApplicationNotAvailableException
+import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.fido.FidoConnection
+import com.yubico.yubikit.core.internal.Logger
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.fido.ctap.BioEnrollment
 import com.yubico.yubikit.fido.ctap.ClientPin
 import com.yubico.yubikit.fido.ctap.CredentialManagement
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
+import com.yubico.yubikit.fido.ctap.FingerprintBioEnrollment
 import com.yubico.yubikit.fido.ctap.PinUvAuthDummyProtocol
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocol
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV1
@@ -71,6 +76,12 @@ class FidoManager(
     mainViewModel: MainViewModel,
     dialogManager: DialogManager,
 ) : AppContextManager(), DeviceListener {
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private object HexCodec {
+        fun bytesToHexString(bytes: ByteArray) : String = bytes.toHexString()
+        fun hexStringToBytes(hex: String) : ByteArray = hex.hexToByteArray()
+    }
 
     companion object {
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
@@ -134,6 +145,21 @@ class FidoManager(
                     args["rpId"] as String,
                     args["credentialId"] as String
                 )
+
+                "deleteFingerprint" -> deleteFingerprint(
+                    args["templateId"] as String
+                )
+
+                "renameFingerprint" -> renameFingerprint(
+                    args["templateId"] as String,
+                    args["name"] as String
+                )
+
+                "registerFingerprint" -> registerFingerprint(
+                    args["name"] as String?,
+                )
+
+                "cancelRegisterFingerprint" -> cancelRegisterFingerprint()
 
                 else -> throw NotImplementedError()
             }
@@ -215,8 +241,7 @@ class FidoManager(
 
             fidoViewModel.setSessionState(
                 Session(
-                    fidoSession.cachedInfo,
-                    pinStore.hasPin()
+                    fidoSession.cachedInfo, pinStore.hasPin()
                 )
             )
 
@@ -234,12 +259,14 @@ class FidoManager(
         }
     }
 
-    private fun getPermissions(fidoSession: YubiKitFidoSession): Int {
-        // TODO: Add bio Enrollment permissions if supported
+    private fun getPinPermissionsCM(fidoSession: YubiKitFidoSession): Int {
         return if (CredentialManagement.isSupported(fidoSession.cachedInfo))
-            ClientPin.PIN_PERMISSION_CM
-        else
-            0
+            ClientPin.PIN_PERMISSION_CM else 0
+    }
+
+    private fun getPinPermissionsBE(fidoSession: YubiKitFidoSession): Int {
+        return if (BioEnrollment.isSupported(fidoSession.cachedInfo))
+            ClientPin.PIN_PERMISSION_BE else 0
     }
 
     private fun unlockSession(
@@ -250,13 +277,21 @@ class FidoManager(
 
         //fidoViewModel.setSessionLoadingState()
 
-        val permissions = getPermissions(fidoSession)
+        val pinPermissionsCM = getPinPermissionsCM(fidoSession)
+        val pinPermissionsBE = getPinPermissionsBE(fidoSession)
+        val permissions = pinPermissionsCM or pinPermissionsBE
 
         if (permissions != 0) {
             val token = clientPin.getPinToken(pin, permissions, null)
             val credentials = getCredentials(fidoSession, clientPin, token)
             logger.debug("Creds: {}", credentials)
             fidoViewModel.updateCredentials(credentials)
+
+            if (pinPermissionsBE != 0) {
+                val fingerprints = getFingerprints(fidoSession, clientPin, token)
+                logger.debug("Fingerprints: {}", fingerprints)
+                fidoViewModel.updateFingerprints(fingerprints)
+            }
         } else {
             clientPin.getPinToken(pin, permissions, "yubico-authenticator.example.com")
         }
@@ -384,10 +419,8 @@ class FidoManager(
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-            val permissions = getPermissions(fidoSession)
-
+            val permissions = getPinPermissionsCM(fidoSession)
             val token = clientPin.getPinToken(pinStore.getPin(), permissions, null)
-
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, token)
 
             val credentialDescriptor =
@@ -412,6 +445,153 @@ class FidoManager(
                 )
             ).toString()
         }
+
+    private fun getFingerprints(
+        fidoSession: YubiKitFidoSession,
+        clientPin: ClientPin,
+        pinUvAuthToken: ByteArray
+    ): List<FidoFingerprint> {
+        val bioEnrollment =
+            FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, pinUvAuthToken)
+
+        val enrollments: Map<ByteArray, String?> = bioEnrollment.enumerateEnrollments()
+        return enrollments.map { enrollment ->
+            FidoFingerprint(HexCodec.bytesToHexString(enrollment.key), enrollment.value)
+        }
+
+    }
+
+    private suspend fun deleteFingerprint(templateId: String): String =
+        connectionHelper.useSession(FidoActionDescription.DeleteFingerprint) { fidoSession ->
+
+            val clientPin =
+                ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
+
+            val token =
+                clientPin.getPinToken(
+                    pinStore.getPin(),
+                    getPinPermissionsBE(fidoSession),
+                    null
+                )
+
+
+            val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
+            bioEnrollment.removeEnrollment(HexCodec.hexStringToBytes(templateId))
+            fidoViewModel.removeFingerprint(templateId)
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
+            return@useSession JSONObject(
+                mapOf(
+                    "success" to true,
+                )
+            ).toString()
+        }
+
+    private suspend fun renameFingerprint(templateId: String, name: String): String =
+        connectionHelper.useSession(FidoActionDescription.RenameFingerprint) { fidoSession ->
+
+            val clientPin =
+                ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
+
+            val token =
+                clientPin.getPinToken(
+                    pinStore.getPin(),
+                    getPinPermissionsBE(fidoSession),
+                    null
+                )
+
+            val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
+            bioEnrollment.setName(HexCodec.hexStringToBytes(templateId), name)
+            fidoViewModel.renameFingerprint(templateId, name)
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
+            return@useSession JSONObject(
+                mapOf(
+                    "success" to true,
+                )
+            ).toString()
+        }
+
+    private var state : CommandState? = null
+    private fun cancelRegisterFingerprint(): String {
+        state?.cancel()
+        return NULL
+    }
+
+    private suspend fun registerFingerprint(name: String?): String =
+        connectionHelper.useSession(FidoActionDescription.RegisterFingerprint) { fidoSession ->
+            state?.cancel()
+            state = CommandState()
+            val clientPin =
+                ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
+
+            val token =
+                clientPin.getPinToken(
+                    pinStore.getPin(),
+                    getPinPermissionsBE(fidoSession),
+                    null
+                )
+
+            val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
+
+            val fingerprintEnrollmentContext = bioEnrollment.enroll(null)
+            var templateId: ByteArray? = null
+            while (templateId == null) {
+                try {
+                    templateId = fingerprintEnrollmentContext.capture(state)
+                    fidoViewModel.updateRegisterFpState(
+                        createCaptureEvent(fingerprintEnrollmentContext.remaining!!)
+                    )
+                } catch (captureError: FingerprintBioEnrollment.CaptureError) {
+                    fidoViewModel.updateRegisterFpState(createCaptureErrorEvent(captureError.code))
+                } catch (ctapException: CtapException) {
+                    when (ctapException.ctapError) {
+                        CtapException.ERR_KEEPALIVE_CANCEL -> {
+                            fingerprintEnrollmentContext.cancel()
+                            return@useSession JSONObject(
+                                mapOf(
+                                    "success" to false,
+                                    "status" to "user-cancelled"
+                                )
+                            ).toString()
+                        }
+                        CtapException.ERR_USER_ACTION_TIMEOUT -> {
+                            fingerprintEnrollmentContext.cancel()
+                            return@useSession JSONObject(
+                                mapOf(
+                                    "success" to false,
+                                    "status" to "user-action-timeout"
+                                )
+                            ).toString()
+                        }
+                        else -> throw ctapException
+                    }
+                } catch (io: IOException) {
+                    return@useSession JSONObject(
+                        mapOf(
+                            "success" to false,
+                            "status" to "connection-error"
+                        )
+                    ).toString()
+                }
+            }
+
+            if (!name.isNullOrBlank()) {
+                bioEnrollment.setName(templateId, name)
+                Logger.debug(logger, "Set name to {}", name)
+            }
+
+            val templateIdHexString = HexCodec.bytesToHexString(templateId)
+            fidoViewModel.addFingerprint(FidoFingerprint(templateIdHexString, name))
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
+
+            return@useSession JSONObject(
+                mapOf(
+                    "success" to true,
+                    "template_id" to templateIdHexString,
+                    "name" to name
+                )
+            ).toString()
+        }
+
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {

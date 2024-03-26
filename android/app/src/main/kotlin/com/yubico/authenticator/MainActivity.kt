@@ -334,7 +334,9 @@ class MainActivity : FlutterFragmentActivity() {
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
             fidoViewModel.sessionState.streamTo(this, messenger, "android.fido.sessionState"),
             fidoViewModel.credentials.streamTo(this, messenger, "android.fido.credentials"),
+            fidoViewModel.fingerprints.streamTo(this, messenger, "android.fido.fingerprints"),
             fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
+            fidoViewModel.registerFingerprint.streamTo(this, messenger, "android.fido.registerFp"),
         )
 
         viewModel.appContext.observe(this) {
@@ -348,7 +350,10 @@ class MainActivity : FlutterFragmentActivity() {
         // only recreate the contextManager object if it cannot be reused
         if (appContext == OperationContext.Home ||
             (appContext == OperationContext.Oath && contextManager is OathManager) ||
-            (appContext == OperationContext.FidoPasskeys && contextManager is FidoManager)
+            (appContext in listOf(
+                OperationContext.FidoPasskeys,
+                OperationContext.FidoFingerprints
+            ) && contextManager is FidoManager)
         ) {
             // no need to dispose this context
         } else {
@@ -367,6 +372,7 @@ class MainActivity : FlutterFragmentActivity() {
                     appPreferences
                 )
 
+                OperationContext.FidoFingerprints,
                 OperationContext.FidoPasskeys -> FidoManager(
                     messenger,
                     deviceManager,
