@@ -308,7 +308,6 @@
             "common_pin": {}
         }
     },
-    "p_pin_policy_failure": null,
     "s_pin_required": "PIN requis",
     "p_pin_required_desc": "L'action que vous allez faire demande d'entrer le code PIN du PIV.",
     "l_piv_pin_blocked": "Vous êtes bloqué, utilisez le code PUK pour réinitialiser",

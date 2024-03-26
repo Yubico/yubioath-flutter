@@ -308,7 +308,6 @@
             "common_pin": {}
         }
     },
-    "p_pin_policy_failure": null,
     "s_pin_required": "PINが必要",
     "p_pin_required_desc": "実行しようとしている操作には、PIV PINの入力が必要です",
     "l_piv_pin_blocked": "ブロックされています。PUK を使用してリセットしてください",

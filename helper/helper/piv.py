@@ -20,6 +20,7 @@ from .base import (
     ChildResetException,
     TimeoutException,
     AuthRequiredException,
+    PinComplexityException,
 )
 from yubikit.core import NotSupportedError, BadResponseError, InvalidPinError
 from yubikit.core.smartcard import ApduError, SW
@@ -71,11 +72,6 @@ class InvalidPinException(RpcException):
             "Wrong PIN",
             dict(attempts_remaining=cause.attempts_remaining),
         )
-
-
-class PinComplexityException(RpcException):
-    def __init__(self):
-        super().__init__("pin-complexity", "Pin does not meet complexity requirements")
 
 
 @unique

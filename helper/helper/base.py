@@ -75,6 +75,11 @@ class AuthRequiredException(RpcException):
         super().__init__("auth-required", "Authentication is required")
 
 
+class PinComplexityException(RpcException):
+    def __init__(self):
+        super().__init__("pin-complexity", "PIN does not meet complexity requirements")
+
+
 class ChildResetException(Exception):
     def __init__(self, message):
         self.message = message

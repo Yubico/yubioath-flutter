@@ -308,7 +308,6 @@
             "common_pin": {}
         }
     },
-    "p_pin_policy_failure": "New PIN doesn't meet policy requirements.",
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",

@@ -19,6 +19,7 @@ from .base import (
     RpcException,
     TimeoutException,
     AuthRequiredException,
+    PinComplexityException,
 )
 from fido2.ctap import CtapError
 from fido2.ctap2 import Ctap2, ClientPin
@@ -45,11 +46,6 @@ class PinValidationException(RpcException):
             "Authentication is required",
             dict(retries=retries, auth_blocked=auth_blocked),
         )
-
-
-class PinPolicyException(RpcException):
-    def __init__(self):
-        super().__init__("pin-policy", "Pin does not meet policy requirements")
 
 
 class InactivityException(RpcException):
@@ -82,7 +78,7 @@ def _handle_pin_error(e, client_pin):
             pin_retries, e.code == CtapError.ERR.PIN_AUTH_BLOCKED
         )
     if e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
-        raise PinPolicyException()
+        raise PinComplexityException()
     raise e
 
 

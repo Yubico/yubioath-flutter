@@ -308,7 +308,6 @@
             "common_pin": {}
         }
     },
-    "p_pin_policy_failure": null,
     "s_pin_required": null,
     "p_pin_required_desc": null,
     "l_piv_pin_blocked": null,

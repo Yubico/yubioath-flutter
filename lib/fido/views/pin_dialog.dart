@@ -265,7 +265,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   baseOffset: 0, extentOffset: _newPinController.text.length);
               _newPinFocus.requestFocus();
               setState(() {
-                _newPinError = l10n.p_pin_policy_failure;
+                _newPinError = l10n.p_pin_puk_complexity_failure(l10n.s_pin);
                 _newIsWrong = true;
               });
             },

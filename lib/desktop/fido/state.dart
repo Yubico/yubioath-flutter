@@ -156,7 +156,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
         return PinResult.failed(FidoPinFailureReason.invalidPin(
             e.body['retries'], e.body['auth_blocked']));
       }
-      if (e.status == 'pin-policy') {
+      if (e.status == 'pin-complexity') {
         return PinResult.failed(const FidoPinFailureReason.weakPin());
       }
       rethrow;
