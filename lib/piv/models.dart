@@ -75,15 +75,18 @@ enum SlotId {
 
   String get hexId => id.toRadixString(16).padLeft(2, '0');
 
-  String getDisplayName(AppLocalizations l10n) {
-    String nameFor(String name) => l10n.s_slot_display_name(name, hexId);
+  String getSlotName(AppLocalizations l10n) {
     return switch (this) {
-      SlotId.authentication => nameFor(l10n.s_slot_9a),
-      SlotId.signature => nameFor(l10n.s_slot_9c),
-      SlotId.keyManagement => nameFor(l10n.s_slot_9d),
-      SlotId.cardAuth => nameFor(l10n.s_slot_9e),
-      _ => l10n.s_retired_slot_display_name(hexId)
+      SlotId.authentication => l10n.s_slot_9a,
+      SlotId.signature => l10n.s_slot_9c,
+      SlotId.keyManagement => l10n.s_slot_9d,
+      SlotId.cardAuth => l10n.s_slot_9e,
+      _ => l10n.s_retired_slot
     };
+  }
+
+  String getDisplayName(AppLocalizations l10n) {
+    return l10n.s_slot_display_name(getSlotName(l10n), hexId);
   }
 
   factory SlotId.fromJson(int value) =>

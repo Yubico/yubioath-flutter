@@ -249,12 +249,9 @@ class _CertificateListItem extends ConsumerWidget {
       leading: CircleAvatar(
         foregroundColor: colorScheme.onSecondary,
         backgroundColor: colorScheme.secondary,
-        child: Icon(
-          slot.isRetired ? Symbols.manage_history : Symbols.badge,
-          fill: selected ? 1 : 0,
-        ),
+        child: Text(pivSlot.slot.hexId),
       ),
-      title: slot.getDisplayName(l10n),
+      title: slot.getSlotName(l10n),
       subtitle: certInfo != null
           // Simplify subtitle by stripping "CN=", etc.
           ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
