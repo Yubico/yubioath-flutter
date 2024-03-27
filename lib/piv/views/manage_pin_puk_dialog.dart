@@ -319,7 +319,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 enabled: currentPinLen >= _minPinLen && newPinLen >= 6,
                 errorText:
                     newPinLen == _confirmPin.length && newPin != _confirmPin
-                        ? (widget.target == ManageTarget.pin
+                        ? (widget.target == ManageTarget.pin ||
+                                widget.target == ManageTarget.unblock
                             ? l10n.l_pin_mismatch
                             : l10n.l_puk_mismatch)
                         : null,
