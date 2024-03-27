@@ -185,7 +185,15 @@ class DevicesNode(RpcNode):
 
     def __call__(self, *args, **kwargs):
         with self._get_state:
-            return super().__call__(*args, **kwargs)
+            try:
+                return super().__call__(*args, **kwargs)
+            except ConnectionException as e:
+                raise ChildResetException(f"{e}")
+
+    def close(self):
+        self._list_state = 0
+        self._device_mapping = {}
+        super().close()
 
     @action(closes_child=False)
     def scan(self, *ignored):
