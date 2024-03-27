@@ -25,6 +25,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'access_code_dialog.dart';
 
 class DeleteSlotDialog extends ConsumerWidget {
   final DevicePath devicePath;
@@ -40,25 +41,34 @@ class DeleteSlotDialog extends ConsumerWidget {
         TextButton(
           key: keys.deleteButton,
           onPressed: () async {
+            final otpStateNotifier =
+                ref.read(otpStateProvider(devicePath).notifier);
+            bool deleteSucceeded = false;
             try {
-              await ref
-                  .read(otpStateProvider(devicePath).notifier)
-                  .deleteSlot(otpSlot.slot);
-              await ref.read(withContextProvider)((context) async {
-                Navigator.of(context).pop(true);
-                showMessage(context, l10n.l_slot_deleted);
-              });
+              await otpStateNotifier.deleteSlot(otpSlot.slot);
+              deleteSucceeded = true;
             } catch (e) {
+              // Access code required
               await ref.read(withContextProvider)((context) async {
-                Navigator.of(context).pop(true);
-                showMessage(
-                  context,
-                  l10n.p_otp_slot_configuration_error(
-                      otpSlot.slot.getDisplayName(l10n)),
-                  duration: const Duration(seconds: 4),
-                );
+                final result = await showBlurDialog(
+                    context: context,
+                    builder: (context) => AccessCodeDialog(
+                          devicePath: devicePath,
+                          otpSlot: otpSlot,
+                          action: (accessCode) async {
+                            await otpStateNotifier.deleteSlot(otpSlot.slot,
+                                accessCode: accessCode);
+                          },
+                        ));
+                deleteSucceeded = result ?? false;
               });
             }
+            await ref.read(withContextProvider)((context) async {
+              Navigator.of(context).pop(true);
+              if (deleteSucceeded) {
+                showMessage(context, l10n.l_slot_deleted);
+              }
+            });
           },
           child: Text(l10n.s_delete),
         )

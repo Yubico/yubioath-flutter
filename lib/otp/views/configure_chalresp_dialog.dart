@@ -34,6 +34,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'access_code_dialog.dart';
 import 'overwrite_confirm_dialog.dart';
 
 final _log = Logger('otp.view.configure_chalresp_dialog');
@@ -91,30 +92,45 @@ class _ConfigureChalrespDialogState
 
                   final otpNotifier =
                       ref.read(otpStateProvider(widget.devicePath).notifier);
+                  final configuration = SlotConfiguration.chalresp(
+                      key: secret,
+                      options: SlotConfigurationOptions(
+                          requireTouch: _requireTouch));
+
+                  bool configurationSucceded = false;
                   try {
                     await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: SlotConfiguration.chalresp(
-                            key: secret,
-                            options: SlotConfigurationOptions(
-                                requireTouch: _requireTouch)));
+                        configuration: configuration);
+                    configurationSucceded = true;
+                  } catch (e) {
+                    _log.error('Failed to program credential', e);
+                    // Access code required
                     await ref.read(withContextProvider)((context) async {
-                      Navigator.of(context).pop();
+                      final result = await showBlurDialog(
+                          context: context,
+                          builder: (context) => AccessCodeDialog(
+                                devicePath: widget.devicePath,
+                                otpSlot: widget.otpSlot,
+                                action: (accessCode) async {
+                                  await otpNotifier.configureSlot(
+                                      widget.otpSlot.slot,
+                                      configuration: configuration,
+                                      accessCode: accessCode);
+                                },
+                              ));
+                      configurationSucceded = result ?? false;
+                    });
+                  }
+
+                  await ref.read(withContextProvider)((context) async {
+                    Navigator.of(context).pop();
+                    if (configurationSucceded) {
                       showMessage(
                           context,
                           l10n.l_slot_credential_configured(
                               l10n.s_challenge_response));
-                    });
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    await ref.read(withContextProvider)((context) async {
-                      showMessage(
-                        context,
-                        l10n.p_otp_slot_configuration_error(
-                            widget.otpSlot.slot.getDisplayName(l10n)),
-                        duration: const Duration(seconds: 4),
-                      );
-                    });
-                  }
+                    }
+                  });
                 }
               : null,
           child: Text(l10n.s_save),

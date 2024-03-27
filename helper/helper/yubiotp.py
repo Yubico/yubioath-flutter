@@ -65,7 +65,10 @@ class YubiOtpNode(RpcNode):
 
     @action
     def swap(self, params, event, signal):
-        self.session.swap_slots()
+        try:
+            self.session.swap_slots()
+        except CommandError:
+            raise ValueError(_FAIL_MSG)
         return dict()
 
     @child
@@ -148,7 +151,9 @@ class SlotNode(RpcNode):
     @action(condition=lambda self: self._maybe_configured(self.slot))
     def delete(self, params, event, signal):
         try:
-            self.session.delete_slot(self.slot, params.pop("cur_acc_code", None))
+            access_code = params.pop("curr_acc_code", None)
+            access_code = bytes.fromhex(access_code) if access_code else None
+            self.session.delete_slot(self.slot, access_code)
         except CommandError:
             raise ValueError(_FAIL_MSG)
 
@@ -218,6 +223,8 @@ class SlotNode(RpcNode):
     def put(self, params, event, signal):
         type = params.pop("type")
         options = params.pop("options", {})
+        access_code = params.pop("curr_acc_code", None)
+        access_code = bytes.fromhex(access_code) if access_code else None
         args = params
 
         config = self._get_config(type, **args)
@@ -226,8 +233,8 @@ class SlotNode(RpcNode):
             self.session.put_configuration(
                 self.slot,
                 config,
-                params.pop("acc_code", None),
-                params.pop("cur_acc_code", None),
+                access_code,
+                access_code,
             )
             return dict()
         except CommandError:

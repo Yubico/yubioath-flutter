@@ -117,16 +117,21 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
   }
 
   @override
-  Future<void> deleteSlot(SlotId slot) async {
-    await _session.command('delete', target: [..._subpath, slot.id]);
+  Future<void> deleteSlot(SlotId slot, {String? accessCode}) async {
+    await _session.command('delete',
+        target: [..._subpath, slot.id],
+        params: accessCode != null ? {'curr_acc_code': accessCode} : null);
     ref.invalidateSelf();
   }
 
   @override
   Future<void> configureSlot(SlotId slot,
-      {required SlotConfiguration configuration}) async {
+      {required SlotConfiguration configuration, String? accessCode}) async {
     await _session.command('put',
-        target: [..._subpath, slot.id], params: configuration.toJson());
+        target: [..._subpath, slot.id],
+        params: accessCode != null
+            ? {...configuration.toJson(), 'curr_acc_code': accessCode}
+            : configuration.toJson());
     ref.invalidateSelf();
   }
 }
