@@ -656,16 +656,11 @@
             "hexid": {}
         }
     },
-    "s_retired_slot_display_name": null,
-    "@s_retired_slot_display_name": {
-        "placeholders": {
-            "hexid": {}
-        }
-    },
     "s_slot_9a": null,
     "s_slot_9c": null,
     "s_slot_9d": null,
     "s_slot_9e": null,
+    "s_retired_slot": null,
 
     "@_otp_slots": {},
     "s_otp_slot_one": null,

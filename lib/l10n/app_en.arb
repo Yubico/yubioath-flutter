@@ -656,16 +656,11 @@
             "hexid": {}
         }
     },
-    "s_retired_slot_display_name": "Retired Key Management ({hexid})",
-    "@s_retired_slot_display_name": {
-        "placeholders": {
-            "hexid": {}
-        }
-    },
     "s_slot_9a": "Authentication",
     "s_slot_9c": "Digital Signature",
     "s_slot_9d": "Key Management",
     "s_slot_9e": "Card Authentication",
+    "s_retired_slot": "Retired Key Management",
 
     "@_otp_slots": {},
     "s_otp_slot_one": "Short touch",
