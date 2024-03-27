@@ -209,7 +209,14 @@ class PinMetadata with _$PinMetadata {
 @freezed
 class PinVerificationStatus with _$PinVerificationStatus {
   const factory PinVerificationStatus.success() = PinSuccess;
-  factory PinVerificationStatus.failure(int attemptsRemaining) = PinFailure;
+  factory PinVerificationStatus.failure(PivPinFailureReason reason) =
+      PinFailure;
+}
+
+@freezed
+class PivPinFailureReason with _$PivPinFailureReason {
+  factory PivPinFailureReason.invalidPin(int attemptsRemaining) = PivInvalidPin;
+  const factory PivPinFailureReason.weakPin() = PivWeakPin;
 }
 
 @freezed

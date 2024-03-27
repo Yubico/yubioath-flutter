@@ -19,6 +19,7 @@ from .base import (
     RpcException,
     TimeoutException,
     AuthRequiredException,
+    PinComplexityException,
 )
 from fido2.ctap import CtapError
 from fido2.ctap2 import Ctap2, ClientPin
@@ -76,6 +77,8 @@ def _handle_pin_error(e, client_pin):
         raise PinValidationException(
             pin_retries, e.code == CtapError.ERR.PIN_AUTH_BLOCKED
         )
+    if e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+        raise PinComplexityException()
     raise e
 
 

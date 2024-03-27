@@ -86,7 +86,8 @@ class DeviceInfo with _$DeviceInfo {
       Map<Transport, int> supportedCapabilities,
       bool isLocked,
       bool isFips,
-      bool isSky) = _DeviceInfo;
+      bool isSky,
+      bool pinComplexity) = _DeviceInfo;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);

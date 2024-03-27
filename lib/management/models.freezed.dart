@@ -245,6 +245,7 @@ mixin _$DeviceInfo {
   bool get isLocked => throw _privateConstructorUsedError;
   bool get isFips => throw _privateConstructorUsedError;
   bool get isSky => throw _privateConstructorUsedError;
+  bool get pinComplexity => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -266,7 +267,8 @@ abstract class $DeviceInfoCopyWith<$Res> {
       Map<Transport, int> supportedCapabilities,
       bool isLocked,
       bool isFips,
-      bool isSky});
+      bool isSky,
+      bool pinComplexity});
 
   $DeviceConfigCopyWith<$Res> get config;
   $VersionCopyWith<$Res> get version;
@@ -293,6 +295,7 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
     Object? isLocked = null,
     Object? isFips = null,
     Object? isSky = null,
+    Object? pinComplexity = null,
   }) {
     return _then(_value.copyWith(
       config: null == config
@@ -326,6 +329,10 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
       isSky: null == isSky
           ? _value.isSky
           : isSky // ignore: cast_nullable_to_non_nullable
+              as bool,
+      pinComplexity: null == pinComplexity
+          ? _value.pinComplexity
+          : pinComplexity // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -363,7 +370,8 @@ abstract class _$$DeviceInfoImplCopyWith<$Res>
       Map<Transport, int> supportedCapabilities,
       bool isLocked,
       bool isFips,
-      bool isSky});
+      bool isSky,
+      bool pinComplexity});
 
   @override
   $DeviceConfigCopyWith<$Res> get config;
@@ -390,6 +398,7 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
     Object? isLocked = null,
     Object? isFips = null,
     Object? isSky = null,
+    Object? pinComplexity = null,
   }) {
     return _then(_$DeviceInfoImpl(
       null == config
@@ -424,6 +433,10 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
           ? _value.isSky
           : isSky // ignore: cast_nullable_to_non_nullable
               as bool,
+      null == pinComplexity
+          ? _value.pinComplexity
+          : pinComplexity // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -439,7 +452,8 @@ class _$DeviceInfoImpl implements _DeviceInfo {
       final Map<Transport, int> supportedCapabilities,
       this.isLocked,
       this.isFips,
-      this.isSky)
+      this.isSky,
+      this.pinComplexity)
       : _supportedCapabilities = supportedCapabilities;
 
   factory _$DeviceInfoImpl.fromJson(Map<String, dynamic> json) =>
@@ -468,10 +482,12 @@ class _$DeviceInfoImpl implements _DeviceInfo {
   final bool isFips;
   @override
   final bool isSky;
+  @override
+  final bool pinComplexity;
 
   @override
   String toString() {
-    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky)';
+    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity)';
   }
 
   @override
@@ -489,7 +505,9 @@ class _$DeviceInfoImpl implements _DeviceInfo {
             (identical(other.isLocked, isLocked) ||
                 other.isLocked == isLocked) &&
             (identical(other.isFips, isFips) || other.isFips == isFips) &&
-            (identical(other.isSky, isSky) || other.isSky == isSky));
+            (identical(other.isSky, isSky) || other.isSky == isSky) &&
+            (identical(other.pinComplexity, pinComplexity) ||
+                other.pinComplexity == pinComplexity));
   }
 
   @JsonKey(ignore: true)
@@ -503,7 +521,8 @@ class _$DeviceInfoImpl implements _DeviceInfo {
       const DeepCollectionEquality().hash(_supportedCapabilities),
       isLocked,
       isFips,
-      isSky);
+      isSky,
+      pinComplexity);
 
   @JsonKey(ignore: true)
   @override
@@ -528,7 +547,8 @@ abstract class _DeviceInfo implements DeviceInfo {
       final Map<Transport, int> supportedCapabilities,
       final bool isLocked,
       final bool isFips,
-      final bool isSky) = _$DeviceInfoImpl;
+      final bool isSky,
+      final bool pinComplexity) = _$DeviceInfoImpl;
 
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =
       _$DeviceInfoImpl.fromJson;
@@ -549,6 +569,8 @@ abstract class _DeviceInfo implements DeviceInfo {
   bool get isFips;
   @override
   bool get isSky;
+  @override
+  bool get pinComplexity;
   @override
   @JsonKey(ignore: true)
   _$$DeviceInfoImplCopyWith<_$DeviceInfoImpl> get copyWith =>

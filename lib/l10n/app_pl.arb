@@ -252,6 +252,18 @@
             "message": {}
         }
     },
+    "l_set_puk_failed": null,
+    "@l_set_puk_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_unblock_pin_failed": null,
+    "@l_unblock_pin_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_attempts_remaining": "Pozostało prób: {retries}",
     "@l_attempts_remaining": {
         "placeholders": {
@@ -288,12 +300,33 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_complexity_active": null,
+    "@p_enter_new_fido2_pin_complexity_active": {
+        "placeholders": {
+            "length": {},
+            "unique_characters": {},
+            "common_pin": {}
+        }
+    },
     "s_pin_required": "Wymagany PIN",
     "p_pin_required_desc": "Czynność, którą zamierzasz wykonać, wymaga wprowadzenia kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano, użyj PUK, aby zresetować",
     "l_piv_pin_puk_blocked": "Zablokowano, konieczny reset do ustawień fabrycznych",
     "p_enter_new_piv_pin_puk": "Wprowadź nową {name} do ustawienia. Musi składać się z 6-8 znaków.",
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_complexity_active": null,
+    "@p_enter_new_piv_pin_puk_complexity_active": {
+        "placeholders": {
+            "name": {},
+            "common": {}
+        }
+    },
+    "p_pin_puk_complexity_failure": null,
+    "@p_pin_puk_complexity_failure": {
         "placeholders": {
             "name": {}
         }

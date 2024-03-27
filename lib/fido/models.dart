@@ -52,7 +52,14 @@ class FidoState with _$FidoState {
 @freezed
 class PinResult with _$PinResult {
   factory PinResult.success() = _PinSuccess;
-  factory PinResult.failed(int retries, bool authBlocked) = _PinFailure;
+  factory PinResult.failed(FidoPinFailureReason reason) = _PinFailure;
+}
+
+@freezed
+class FidoPinFailureReason with _$FidoPinFailureReason {
+  factory FidoPinFailureReason.invalidPin(int retries, bool authBlocked) =
+      FidoInvalidPin;
+  const factory FidoPinFailureReason.weakPin() = FidoWeakPin;
 }
 
 @freezed

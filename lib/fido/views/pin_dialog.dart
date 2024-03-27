@@ -48,7 +48,8 @@ class FidoPinDialog extends ConsumerStatefulWidget {
 class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   final _currentPinController = TextEditingController();
   final _currentPinFocus = FocusNode();
-  String _newPin = '';
+  final _newPinController = TextEditingController();
+  final _newPinFocus = FocusNode();
   String _confirmPin = '';
   String? _currentPinError;
   String? _newPinError;
@@ -63,6 +64,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   void dispose() {
     _currentPinController.dispose();
     _currentPinFocus.dispose();
+    _newPinController.dispose();
+    _newPinFocus.dispose();
     super.dispose();
   }
 
@@ -77,8 +80,13 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
         : (widget.state.forcePinChange ? 4 : widget.state.minPinLength);
     final currentPinLenOk =
         _currentPinController.text.length >= currentMinPinLen;
-    final newPinLenOk = _newPin.length >= minPinLength;
-    final isValid = currentPinLenOk && newPinLenOk && _newPin == _confirmPin;
+    final newPinLenOk = _newPinController.text.length >= minPinLength;
+    final isValid =
+        currentPinLenOk && newPinLenOk && _newPinController.text == _confirmPin;
+
+    final hasPinComplexity =
+        ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
+            false;
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
@@ -130,11 +138,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 },
               ).init(),
             ],
-            Text(l10n.p_enter_new_fido2_pin(minPinLength)),
+            Text(hasPinComplexity
+                ? l10n.p_enter_new_fido2_pin_complexity_active(
+                    minPinLength, 2, '123456')
+                : l10n.p_enter_new_fido2_pin(minPinLength)),
             // TODO: Set max characters based on UTF-8 bytes
             AppTextFormField(
               key: newPin,
-              initialValue: _newPin,
+              controller: _newPinController,
+              focusNode: _newPinFocus,
               autofocus: !hasPin,
               obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.password],
@@ -160,7 +172,6 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               onChanged: (value) {
                 setState(() {
                   _newIsWrong = false;
-                  _newPin = value;
                 });
               },
             ).init(),
@@ -186,10 +197,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
                 ),
                 enabled: !_isBlocked && currentPinLenOk && newPinLenOk,
-                errorText: _newPin.length == _confirmPin.length &&
-                        _newPin != _confirmPin
-                    ? l10n.l_pin_mismatch
-                    : null,
+                errorText:
+                    _newPinController.text.length == _confirmPin.length &&
+                            _newPinController.text != _confirmPin
+                        ? l10n.l_pin_mismatch
+                        : null,
                 helperText: '', // Prevents resizing when errorText shown
               ),
               onChanged: (value) {
@@ -219,28 +231,47 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final oldPin = _currentPinController.text.isNotEmpty
         ? _currentPinController.text
         : null;
+    final newPin = _newPinController.text;
     try {
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
-          .setPin(_newPin, oldPin: oldPin);
-      result.when(success: () {
-        Navigator.of(context).pop(true);
-        showMessage(context, l10n.s_pin_set);
-      }, failed: (retries, authBlocked) {
-        setState(() {
-          _currentPinController.selection = TextSelection(
-              baseOffset: 0, extentOffset: _currentPinController.text.length);
-          _currentPinFocus.requestFocus();
-          if (authBlocked) {
-            _currentPinError = l10n.l_pin_soft_locked;
-            _currentIsWrong = true;
-            _isBlocked = true;
-          } else {
-            _currentPinError = l10n.l_wrong_pin_attempts_remaining(retries);
-            _currentIsWrong = true;
-          }
-        });
-      });
+          .setPin(newPin, oldPin: oldPin);
+      result.whenOrNull(
+        success: () {
+          Navigator.of(context).pop(true);
+          showMessage(context, l10n.s_pin_set);
+        },
+        failed: (reason) {
+          reason.when(
+            invalidPin: (retries, authBlocked) {
+              _currentPinController.selection = TextSelection(
+                  baseOffset: 0,
+                  extentOffset: _currentPinController.text.length);
+              _currentPinFocus.requestFocus();
+              setState(() {
+                if (authBlocked) {
+                  _currentPinError = l10n.l_pin_soft_locked;
+                  _currentIsWrong = true;
+                  _isBlocked = true;
+                } else {
+                  _currentPinError =
+                      l10n.l_wrong_pin_attempts_remaining(retries);
+                  _currentIsWrong = true;
+                }
+              });
+            },
+            weakPin: () {
+              _newPinController.selection = TextSelection(
+                  baseOffset: 0, extentOffset: _newPinController.text.length);
+              _newPinFocus.requestFocus();
+              setState(() {
+                _newPinError = l10n.p_pin_puk_complexity_failure(l10n.s_pin);
+                _newIsWrong = true;
+              });
+            },
+          );
+        },
+      );
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {

@@ -18,5 +18,6 @@ val UnknownDevice = Info(
     name = "Unrecognized device",
     isNfc = false,
     usbPid = null,
+    pinComplexity = false,
     supportedCapabilities = Capabilities()
 )

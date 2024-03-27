@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-yubikey-manager = "^5.2"
+yubikey-manager = "^5.4"
 mss = "^9.0.1"
 Pillow = "^10.2.0"
 zxing-cpp = "^2.2.0"

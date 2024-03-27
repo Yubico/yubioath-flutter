@@ -21,6 +21,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -46,10 +47,13 @@ class ManagePinPukDialog extends ConsumerStatefulWidget {
 class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   final _currentPinController = TextEditingController();
   final _currentPinFocus = FocusNode();
-  String _newPin = '';
+  final _newPinController = TextEditingController();
+  final _newPinFocus = FocusNode();
   String _confirmPin = '';
   bool _pinIsBlocked = false;
   bool _currentIsWrong = false;
+  bool _newIsWrong = false;
+  String? _newPinError;
   int _attemptsRemaining = -1;
   bool _isObscureCurrent = true;
   bool _isObscureNew = true;
@@ -80,23 +84,26 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   void dispose() {
     _currentPinController.dispose();
     _currentPinFocus.dispose();
+    _newPinController.dispose();
+    _newPinFocus.dispose();
     super.dispose();
   }
 
   _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
+    final l10n = AppLocalizations.of(context)!;
+
     final result = await switch (widget.target) {
       ManageTarget.pin =>
-        notifier.changePin(_currentPinController.text, _newPin),
+        notifier.changePin(_currentPinController.text, _newPinController.text),
       ManageTarget.puk =>
-        notifier.changePuk(_currentPinController.text, _newPin),
+        notifier.changePuk(_currentPinController.text, _newPinController.text),
       ManageTarget.unblock =>
-        notifier.unblockPin(_currentPinController.text, _newPin),
+        notifier.unblockPin(_currentPinController.text, _newPinController.text),
     };
 
     result.when(success: () {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
       Navigator.of(context).pop();
       showMessage(
           context,
@@ -104,17 +111,31 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             ManageTarget.puk => l10n.s_puk_set,
             _ => l10n.s_pin_set,
           });
-    }, failure: (attemptsRemaining) {
-      _currentPinController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _currentPinController.text.length);
-      _currentPinFocus.requestFocus();
-      setState(() {
-        _attemptsRemaining = attemptsRemaining;
-        _currentIsWrong = true;
-        if (_attemptsRemaining == 0) {
-          _pinIsBlocked = true;
-        }
-      });
+    }, failure: (reason) {
+      reason.when(
+        invalidPin: (attemptsRemaining) {
+          _currentPinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _currentPinController.text.length);
+          _currentPinFocus.requestFocus();
+          setState(() {
+            _attemptsRemaining = attemptsRemaining;
+            _currentIsWrong = true;
+            if (_attemptsRemaining == 0) {
+              _pinIsBlocked = true;
+            }
+          });
+        },
+        weakPin: () {
+          _newPinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _newPinController.text.length);
+          _newPinFocus.requestFocus();
+          setState(() {
+            _newPinError = l10n.p_pin_puk_complexity_failure(
+                widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin);
+            _newIsWrong = true;
+          });
+        },
+      );
     });
   }
 
@@ -123,10 +144,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final l10n = AppLocalizations.of(context)!;
     final currentPin = _currentPinController.text;
     final currentPinLen = byteLength(currentPin);
-    final newPinLen = byteLength(_newPin);
+    final newPin = _newPinController.text;
+    final newPinLen = byteLength(newPin);
     final isValid = !_currentIsWrong &&
-        _newPin.isNotEmpty &&
-        _newPin == _confirmPin &&
+        newPin.isNotEmpty &&
+        newPin == _confirmPin &&
         currentPin.isNotEmpty;
 
     final titleText = switch (widget.target) {
@@ -139,6 +161,10 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         widget.target == ManageTarget.pin && _defaultPinUsed;
     final showDefaultPukUsed =
         widget.target != ManageTarget.pin && _defaultPukUsed;
+
+    final hasPinComplexity =
+        ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
+            false;
 
     return ResponsiveDialog(
       title: Text(titleText),
@@ -213,21 +239,29 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 });
               },
             ).init(),
-            Text(l10n.p_enter_new_piv_pin_puk(
-                widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
+            Text(hasPinComplexity
+                ? l10n.p_enter_new_piv_pin_puk_complexity_active(
+                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                    '123456')
+                : l10n.p_enter_new_piv_pin_puk(widget.target == ManageTarget.puk
+                    ? l10n.s_puk
+                    : l10n.s_pin)),
             AppTextField(
               key: keys.newPinPukField,
               autofocus: showDefaultPinUsed || showDefaultPukUsed,
               obscureText: _isObscureNew,
+              controller: _newPinController,
+              focusNode: _newPinFocus,
               maxLength: 8,
               inputFormatters: [limitBytesLength(8)],
-              buildCounter: buildByteCounterFor(_newPin),
+              buildCounter: buildByteCounterFor(newPin),
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
+                errorText: _newIsWrong ? _newPinError : null,
                 prefixIcon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureNew
@@ -247,7 +281,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _newPin = value;
+                  _newIsWrong = false;
                 });
               },
               onSubmitted: (_) {
@@ -284,8 +318,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 ),
                 enabled: currentPinLen >= _minPinLen && newPinLen >= 6,
                 errorText:
-                    newPinLen == _confirmPin.length && _newPin != _confirmPin
-                        ? (widget.target == ManageTarget.pin
+                    newPinLen == _confirmPin.length && newPin != _confirmPin
+                        ? (widget.target == ManageTarget.pin ||
+                                widget.target == ManageTarget.unblock
                             ? l10n.l_pin_mismatch
                             : l10n.l_puk_mismatch)
                         : null,

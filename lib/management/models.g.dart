@@ -42,6 +42,7 @@ _$DeviceInfoImpl _$$DeviceInfoImplFromJson(Map<String, dynamic> json) =>
       json['is_locked'] as bool,
       json['is_fips'] as bool,
       json['is_sky'] as bool,
+      json['pin_complexity'] as bool,
     );
 
 Map<String, dynamic> _$$DeviceInfoImplToJson(_$DeviceInfoImpl instance) =>
@@ -55,6 +56,7 @@ Map<String, dynamic> _$$DeviceInfoImplToJson(_$DeviceInfoImpl instance) =>
       'is_locked': instance.isLocked,
       'is_fips': instance.isFips,
       'is_sky': instance.isSky,
+      'pin_complexity': instance.pinComplexity,
     };
 
 const _$FormFactorEnumMap = {

@@ -153,7 +153,11 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       return unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+        return PinResult.failed(FidoPinFailureReason.invalidPin(
+            e.body['retries'], e.body['auth_blocked']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinResult.failed(const FidoPinFailureReason.weakPin());
       }
       rethrow;
     }
@@ -172,7 +176,8 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
         _pinController.state = null;
-        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+        return PinResult.failed(FidoPinFailureReason.invalidPin(
+            e.body['retries'], e.body['auth_blocked']));
       }
       rethrow;
     }

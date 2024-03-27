@@ -233,7 +233,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinVerificationStatus.failure(
+            const PivPinFailureReason.weakPin());
       }
       rethrow;
     } finally {
@@ -251,7 +256,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinVerificationStatus.failure(
+            const PivPinFailureReason.weakPin());
       }
       rethrow;
     } finally {
@@ -286,7 +296,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinVerificationStatus.failure(
+            const PivPinFailureReason.weakPin());
       }
       rethrow;
     } finally {

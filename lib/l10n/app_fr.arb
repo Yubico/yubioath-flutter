@@ -252,6 +252,18 @@
             "message": {}
         }
     },
+    "l_set_puk_failed": null,
+    "@l_set_puk_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_unblock_pin_failed": null,
+    "@l_unblock_pin_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "l_attempts_remaining": "Nombre de tentative(s) restante(s) : {retries}",
     "@l_attempts_remaining": {
         "placeholders": {
@@ -288,12 +300,33 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_complexity_active": null,
+    "@p_enter_new_fido2_pin_complexity_active": {
+        "placeholders": {
+            "length": {},
+            "unique_characters": {},
+            "common_pin": {}
+        }
+    },
     "s_pin_required": "PIN requis",
     "p_pin_required_desc": "L'action que vous allez faire demande d'entrer le code PIN du PIV.",
     "l_piv_pin_blocked": "Vous êtes bloqué, utilisez le code PUK pour réinitialiser",
     "l_piv_pin_puk_blocked": "Bloqué, réinitialisation nécesssaire",
     "p_enter_new_piv_pin_puk": "Entrez un nouveau {name} entre 6 et 8 caractères.",
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_complexity_active": null,
+    "@p_enter_new_piv_pin_puk_complexity_active": {
+        "placeholders": {
+            "name": {},
+            "common": {}
+        }
+    },
+    "p_pin_puk_complexity_failure": null,
+    "@p_pin_puk_complexity_failure": {
         "placeholders": {
             "name": {}
         }

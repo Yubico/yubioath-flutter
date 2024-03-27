@@ -74,6 +74,7 @@ class SkyHelper(private val compatUtil: CompatUtil) {
             name = (device.usbDevice.productName ?: "Yubico Security Key"),
             isNfc = false,
             usbPid = pid.value,
+            pinComplexity = false,
             supportedCapabilities = Capabilities(usb = 0)
         )
     }

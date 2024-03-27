@@ -184,19 +184,19 @@ mixin _$PinResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int retries, bool authBlocked) failed,
+    required TResult Function(FidoPinFailureReason reason) failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int retries, bool authBlocked)? failed,
+    TResult? Function(FidoPinFailureReason reason)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -277,7 +277,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int retries, bool authBlocked) failed,
+    required TResult Function(FidoPinFailureReason reason) failed,
   }) {
     return success();
   }
@@ -286,7 +286,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int retries, bool authBlocked)? failed,
+    TResult? Function(FidoPinFailureReason reason)? failed,
   }) {
     return success?.call();
   }
@@ -295,7 +295,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -346,7 +346,9 @@ abstract class _$$PinFailureImplCopyWith<$Res> {
           _$PinFailureImpl value, $Res Function(_$PinFailureImpl) then) =
       __$$PinFailureImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({int retries, bool authBlocked});
+  $Res call({FidoPinFailureReason reason});
+
+  $FidoPinFailureReasonCopyWith<$Res> get reason;
 }
 
 /// @nodoc
@@ -360,35 +362,36 @@ class __$$PinFailureImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retries = null,
-    Object? authBlocked = null,
+    Object? reason = null,
   }) {
     return _then(_$PinFailureImpl(
-      null == retries
-          ? _value.retries
-          : retries // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == authBlocked
-          ? _value.authBlocked
-          : authBlocked // ignore: cast_nullable_to_non_nullable
-              as bool,
+      null == reason
+          ? _value.reason
+          : reason // ignore: cast_nullable_to_non_nullable
+              as FidoPinFailureReason,
     ));
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $FidoPinFailureReasonCopyWith<$Res> get reason {
+    return $FidoPinFailureReasonCopyWith<$Res>(_value.reason, (value) {
+      return _then(_value.copyWith(reason: value));
+    });
   }
 }
 
 /// @nodoc
 
 class _$PinFailureImpl implements _PinFailure {
-  _$PinFailureImpl(this.retries, this.authBlocked);
+  _$PinFailureImpl(this.reason);
 
   @override
-  final int retries;
-  @override
-  final bool authBlocked;
+  final FidoPinFailureReason reason;
 
   @override
   String toString() {
-    return 'PinResult.failed(retries: $retries, authBlocked: $authBlocked)';
+    return 'PinResult.failed(reason: $reason)';
   }
 
   @override
@@ -396,13 +399,11 @@ class _$PinFailureImpl implements _PinFailure {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinFailureImpl &&
-            (identical(other.retries, retries) || other.retries == retries) &&
-            (identical(other.authBlocked, authBlocked) ||
-                other.authBlocked == authBlocked));
+            (identical(other.reason, reason) || other.reason == reason));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, retries, authBlocked);
+  int get hashCode => Object.hash(runtimeType, reason);
 
   @JsonKey(ignore: true)
   @override
@@ -414,29 +415,29 @@ class _$PinFailureImpl implements _PinFailure {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int retries, bool authBlocked) failed,
+    required TResult Function(FidoPinFailureReason reason) failed,
   }) {
-    return failed(retries, authBlocked);
+    return failed(reason);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int retries, bool authBlocked)? failed,
+    TResult? Function(FidoPinFailureReason reason)? failed,
   }) {
-    return failed?.call(retries, authBlocked);
+    return failed?.call(reason);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
   }) {
     if (failed != null) {
-      return failed(retries, authBlocked);
+      return failed(reason);
     }
     return orElse();
   }
@@ -474,14 +475,320 @@ class _$PinFailureImpl implements _PinFailure {
 }
 
 abstract class _PinFailure implements PinResult {
-  factory _PinFailure(final int retries, final bool authBlocked) =
-      _$PinFailureImpl;
+  factory _PinFailure(final FidoPinFailureReason reason) = _$PinFailureImpl;
+
+  FidoPinFailureReason get reason;
+  @JsonKey(ignore: true)
+  _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$FidoPinFailureReason {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int retries, bool authBlocked) invalidPin,
+    required TResult Function() weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int retries, bool authBlocked)? invalidPin,
+    TResult? Function()? weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int retries, bool authBlocked)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FidoInvalidPin value) invalidPin,
+    required TResult Function(FidoWeakPin value) weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FidoInvalidPin value)? invalidPin,
+    TResult? Function(FidoWeakPin value)? weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FidoInvalidPin value)? invalidPin,
+    TResult Function(FidoWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $FidoPinFailureReasonCopyWith<$Res> {
+  factory $FidoPinFailureReasonCopyWith(FidoPinFailureReason value,
+          $Res Function(FidoPinFailureReason) then) =
+      _$FidoPinFailureReasonCopyWithImpl<$Res, FidoPinFailureReason>;
+}
+
+/// @nodoc
+class _$FidoPinFailureReasonCopyWithImpl<$Res,
+        $Val extends FidoPinFailureReason>
+    implements $FidoPinFailureReasonCopyWith<$Res> {
+  _$FidoPinFailureReasonCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$FidoInvalidPinImplCopyWith<$Res> {
+  factory _$$FidoInvalidPinImplCopyWith(_$FidoInvalidPinImpl value,
+          $Res Function(_$FidoInvalidPinImpl) then) =
+      __$$FidoInvalidPinImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int retries, bool authBlocked});
+}
+
+/// @nodoc
+class __$$FidoInvalidPinImplCopyWithImpl<$Res>
+    extends _$FidoPinFailureReasonCopyWithImpl<$Res, _$FidoInvalidPinImpl>
+    implements _$$FidoInvalidPinImplCopyWith<$Res> {
+  __$$FidoInvalidPinImplCopyWithImpl(
+      _$FidoInvalidPinImpl _value, $Res Function(_$FidoInvalidPinImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? retries = null,
+    Object? authBlocked = null,
+  }) {
+    return _then(_$FidoInvalidPinImpl(
+      null == retries
+          ? _value.retries
+          : retries // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == authBlocked
+          ? _value.authBlocked
+          : authBlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$FidoInvalidPinImpl implements FidoInvalidPin {
+  _$FidoInvalidPinImpl(this.retries, this.authBlocked);
+
+  @override
+  final int retries;
+  @override
+  final bool authBlocked;
+
+  @override
+  String toString() {
+    return 'FidoPinFailureReason.invalidPin(retries: $retries, authBlocked: $authBlocked)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FidoInvalidPinImpl &&
+            (identical(other.retries, retries) || other.retries == retries) &&
+            (identical(other.authBlocked, authBlocked) ||
+                other.authBlocked == authBlocked));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, retries, authBlocked);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FidoInvalidPinImplCopyWith<_$FidoInvalidPinImpl> get copyWith =>
+      __$$FidoInvalidPinImplCopyWithImpl<_$FidoInvalidPinImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int retries, bool authBlocked) invalidPin,
+    required TResult Function() weakPin,
+  }) {
+    return invalidPin(retries, authBlocked);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int retries, bool authBlocked)? invalidPin,
+    TResult? Function()? weakPin,
+  }) {
+    return invalidPin?.call(retries, authBlocked);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int retries, bool authBlocked)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) {
+    if (invalidPin != null) {
+      return invalidPin(retries, authBlocked);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FidoInvalidPin value) invalidPin,
+    required TResult Function(FidoWeakPin value) weakPin,
+  }) {
+    return invalidPin(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FidoInvalidPin value)? invalidPin,
+    TResult? Function(FidoWeakPin value)? weakPin,
+  }) {
+    return invalidPin?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FidoInvalidPin value)? invalidPin,
+    TResult Function(FidoWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) {
+    if (invalidPin != null) {
+      return invalidPin(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class FidoInvalidPin implements FidoPinFailureReason {
+  factory FidoInvalidPin(final int retries, final bool authBlocked) =
+      _$FidoInvalidPinImpl;
 
   int get retries;
   bool get authBlocked;
   @JsonKey(ignore: true)
-  _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
+  _$$FidoInvalidPinImplCopyWith<_$FidoInvalidPinImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$FidoWeakPinImplCopyWith<$Res> {
+  factory _$$FidoWeakPinImplCopyWith(
+          _$FidoWeakPinImpl value, $Res Function(_$FidoWeakPinImpl) then) =
+      __$$FidoWeakPinImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$FidoWeakPinImplCopyWithImpl<$Res>
+    extends _$FidoPinFailureReasonCopyWithImpl<$Res, _$FidoWeakPinImpl>
+    implements _$$FidoWeakPinImplCopyWith<$Res> {
+  __$$FidoWeakPinImplCopyWithImpl(
+      _$FidoWeakPinImpl _value, $Res Function(_$FidoWeakPinImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$FidoWeakPinImpl implements FidoWeakPin {
+  const _$FidoWeakPinImpl();
+
+  @override
+  String toString() {
+    return 'FidoPinFailureReason.weakPin()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$FidoWeakPinImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int retries, bool authBlocked) invalidPin,
+    required TResult Function() weakPin,
+  }) {
+    return weakPin();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int retries, bool authBlocked)? invalidPin,
+    TResult? Function()? weakPin,
+  }) {
+    return weakPin?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int retries, bool authBlocked)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) {
+    if (weakPin != null) {
+      return weakPin();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FidoInvalidPin value) invalidPin,
+    required TResult Function(FidoWeakPin value) weakPin,
+  }) {
+    return weakPin(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FidoInvalidPin value)? invalidPin,
+    TResult? Function(FidoWeakPin value)? weakPin,
+  }) {
+    return weakPin?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FidoInvalidPin value)? invalidPin,
+    TResult Function(FidoWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) {
+    if (weakPin != null) {
+      return weakPin(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class FidoWeakPin implements FidoPinFailureReason {
+  const factory FidoWeakPin() = _$FidoWeakPinImpl;
 }
 
 Fingerprint _$FingerprintFromJson(Map<String, dynamic> json) {
