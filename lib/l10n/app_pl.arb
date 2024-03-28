@@ -734,6 +734,19 @@
             "slot": {}
         }
     },
+    "p_otp_swap_error": null,
+    "l_wrong_access_code": null,
+
+    "@_otp_access_code": {},
+    "s_access_code": null,
+    "s_show_access_code": null,
+    "s_hide_access_code": null,
+    "p_enter_access_code": null,
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
 
 
     "@_permissions": {},

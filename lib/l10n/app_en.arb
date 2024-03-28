@@ -734,6 +734,19 @@
             "slot": {}
         }
     },
+    "p_otp_swap_error": "Failed to swap slots! Make sure the YubiKey does not have restrictive access.",
+    "l_wrong_access_code": "Wrong access code",
+
+    "@_otp_access_code": {},
+    "s_access_code": "Access code",
+    "s_show_access_code": "Show access code",
+    "s_hide_access_code": "Hide access code",
+    "p_enter_access_code": "Enter access code for slot {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
 
 
     "@_permissions": {},

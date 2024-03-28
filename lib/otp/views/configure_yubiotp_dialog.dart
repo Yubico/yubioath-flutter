@@ -39,6 +39,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'access_code_dialog.dart';
 import 'overwrite_confirm_dialog.dart';
 
 final _log = Logger('otp.view.configure_yubiotp_dialog');
@@ -153,14 +154,39 @@ class _ConfigureYubiOtpDialogState
 
                   final otpNotifier =
                       ref.read(otpStateProvider(widget.devicePath).notifier);
+                  final configuration = SlotConfiguration.yubiotp(
+                      publicId: publicId,
+                      privateId: privateId,
+                      key: secret,
+                      options:
+                          SlotConfigurationOptions(appendCr: _appendEnter));
+
+                  bool configurationSucceded = false;
                   try {
                     await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: SlotConfiguration.yubiotp(
-                            publicId: publicId,
-                            privateId: privateId,
-                            key: secret,
-                            options: SlotConfigurationOptions(
-                                appendCr: _appendEnter)));
+                        configuration: configuration);
+                    configurationSucceded = true;
+                  } catch (e) {
+                    _log.error('Failed to program credential', e);
+                    // Access code required
+                    await ref.read(withContextProvider)((context) async {
+                      final result = await showBlurDialog(
+                          context: context,
+                          builder: (context) => AccessCodeDialog(
+                                devicePath: widget.devicePath,
+                                otpSlot: widget.otpSlot,
+                                action: (accessCode) async {
+                                  await otpNotifier.configureSlot(
+                                      widget.otpSlot.slot,
+                                      configuration: configuration,
+                                      accessCode: accessCode);
+                                },
+                              ));
+                      configurationSucceded = result ?? false;
+                    });
+                  }
+
+                  if (configurationSucceded) {
                     if (outputFile != null) {
                       final csv = await otpNotifier.formatYubiOtpCsv(
                           info!.serial!, publicId, privateId, secret);
@@ -169,8 +195,10 @@ class _ConfigureYubiOtpDialogState
                           '$csv${Platform.lineTerminator}',
                           mode: FileMode.append);
                     }
-                    await ref.read(withContextProvider)((context) async {
-                      Navigator.of(context).pop();
+                  }
+                  await ref.read(withContextProvider)((context) async {
+                    Navigator.of(context).pop();
+                    if (configurationSucceded) {
                       showMessage(
                           context,
                           outputFile != null
@@ -179,24 +207,8 @@ class _ConfigureYubiOtpDialogState
                                   outputFile.uri.pathSegments.last)
                               : l10n.l_slot_credential_configured(
                                   l10n.s_capability_otp));
-                    });
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    await ref.read(withContextProvider)((context) async {
-                      final String errorMessage;
-                      if (e is PathNotFoundException) {
-                        errorMessage = '${e.message} ${e.path.toString()}';
-                      } else {
-                        errorMessage = l10n.p_otp_slot_configuration_error(
-                            widget.otpSlot.slot.getDisplayName(l10n));
-                      }
-                      showMessage(
-                        context,
-                        errorMessage,
-                        duration: const Duration(seconds: 4),
-                      );
-                    });
-                  }
+                    }
+                  });
                 }
               : null,
           child: Text(l10n.s_save),

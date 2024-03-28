@@ -38,11 +38,20 @@ class SwapSlotsDialog extends ConsumerWidget {
         TextButton(
             key: swapButton,
             onPressed: () async {
-              await ref.read(otpStateProvider(devicePath).notifier).swapSlots();
-              await ref.read(withContextProvider)((context) async {
-                Navigator.of(context).pop();
-                showMessage(context, l10n.l_slots_swapped);
-              });
+              try {
+                await ref
+                    .read(otpStateProvider(devicePath).notifier)
+                    .swapSlots();
+                await ref.read(withContextProvider)((context) async {
+                  Navigator.of(context).pop();
+                  showMessage(context, l10n.l_slots_swapped);
+                });
+              } catch (e) {
+                await ref.read(withContextProvider)((context) async {
+                  Navigator.of(context).pop();
+                  showMessage(context, l10n.p_otp_swap_error);
+                });
+              }
             },
             child: Text(l10n.s_swap))
       ],
