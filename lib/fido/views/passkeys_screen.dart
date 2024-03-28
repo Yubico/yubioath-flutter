@@ -525,8 +525,8 @@ class _CredentialListItem extends StatelessWidget {
         backgroundColor: colorScheme.secondary,
         child: const Icon(Symbols.passkey),
       ),
-      title: credential.userName,
-      subtitle: credential.rpId,
+      title: credential.rpId,
+      subtitle: credential.userName,
       trailing: expanded
           ? null
           : OutlinedButton(
