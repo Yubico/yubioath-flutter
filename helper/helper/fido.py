@@ -288,6 +288,7 @@ class CredentialsRpNode(RpcNode):
                 credential_id=cred[CredentialManagement.RESULT.CREDENTIAL_ID],
                 user_id=cred[CredentialManagement.RESULT.USER]["id"],
                 user_name=cred[CredentialManagement.RESULT.USER]["name"],
+                display_name=cred[CredentialManagement.RESULT.USER]["displayName"],
             )
             for cred in self.credman.enumerate_creds(self.data["rp_id_hash"])
         }

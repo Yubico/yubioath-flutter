@@ -420,6 +420,11 @@
     "l_calculate_code_desc": null,
 
     "@_fido_credentials": {},
+    "s_rp_id": null,
+    "s_user_id": null,
+    "s_credential_id": null,
+    "s_display_name": null,
+    "s_user_name": null,
     "l_passkey": null,
     "@l_passkey": {
         "placeholders": {

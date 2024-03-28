@@ -44,6 +44,7 @@ import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
 import 'credential_dialog.dart';
+import 'credential_info_view.dart';
 import 'key_actions.dart';
 import 'pin_dialog.dart';
 import 'pin_entry_form.dart';
@@ -437,35 +438,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                         color: Theme.of(context).hoverColor,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
-                          // TODO: Reuse from credential_dialog
-                          child: Column(
-                            children: [
-                              Text(
-                                credential.userName,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                credential.rpId,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                // This is what ListTile uses for subtitle
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
-                              ),
-                              const SizedBox(height: 16),
-                              const Icon(Symbols.passkey, size: 72),
-                            ],
-                          ),
+                          child: CredentialInfoTable(credential),
                         ),
                       ),
                     ),

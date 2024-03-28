@@ -420,6 +420,11 @@
     "l_calculate_code_desc": "YubiKey から新しいコードの取得",
 
     "@_fido_credentials": {},
+    "s_rp_id": null,
+    "s_user_id": null,
+    "s_credential_id": null,
+    "s_display_name": null,
+    "s_user_name": null,
     "l_passkey": "パスキー: {label}",
     "@l_passkey": {
         "placeholders": {
