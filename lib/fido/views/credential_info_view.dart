@@ -34,10 +34,11 @@ class CredentialInfoTable extends ConsumerWidget {
     final credential = this.credential;
     return InfoTable({
       l10n.s_rp_id: (credential.rpId, keys.credentialInfoRpId),
-      l10n.s_display_name: (
-        credential.userName,
-        keys.credentialInfoDisplayName
-      ),
+      if (credential.displayName != null)
+        l10n.s_display_name: (
+          credential.displayName!,
+          keys.credentialInfoDisplayName
+        ),
       l10n.s_user_name: (credential.userName, keys.credentialInfoUserName),
       l10n.s_user_id: (credential.userId, keys.credentialInfoUserId),
       l10n.s_credential_id: (

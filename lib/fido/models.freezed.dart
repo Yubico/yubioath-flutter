@@ -1451,7 +1451,7 @@ mixin _$FidoCredential {
   String get credentialId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
-  String get displayName => throw _privateConstructorUsedError;
+  String? get displayName => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -1470,7 +1470,7 @@ abstract class $FidoCredentialCopyWith<$Res> {
       String credentialId,
       String userId,
       String userName,
-      String displayName});
+      String? displayName});
 }
 
 /// @nodoc
@@ -1490,7 +1490,7 @@ class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
     Object? credentialId = null,
     Object? userId = null,
     Object? userName = null,
-    Object? displayName = null,
+    Object? displayName = freezed,
   }) {
     return _then(_value.copyWith(
       rpId: null == rpId
@@ -1509,10 +1509,10 @@ class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
-      displayName: null == displayName
+      displayName: freezed == displayName
           ? _value.displayName
           : displayName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ) as $Val);
   }
 }
@@ -1530,7 +1530,7 @@ abstract class _$$FidoCredentialImplCopyWith<$Res>
       String credentialId,
       String userId,
       String userName,
-      String displayName});
+      String? displayName});
 }
 
 /// @nodoc
@@ -1548,7 +1548,7 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
     Object? credentialId = null,
     Object? userId = null,
     Object? userName = null,
-    Object? displayName = null,
+    Object? displayName = freezed,
   }) {
     return _then(_$FidoCredentialImpl(
       rpId: null == rpId
@@ -1567,10 +1567,10 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
-      displayName: null == displayName
+      displayName: freezed == displayName
           ? _value.displayName
           : displayName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
@@ -1583,7 +1583,7 @@ class _$FidoCredentialImpl implements _FidoCredential {
       required this.credentialId,
       required this.userId,
       required this.userName,
-      required this.displayName});
+      this.displayName});
 
   factory _$FidoCredentialImpl.fromJson(Map<String, dynamic> json) =>
       _$$FidoCredentialImplFromJson(json);
@@ -1597,7 +1597,7 @@ class _$FidoCredentialImpl implements _FidoCredential {
   @override
   final String userName;
   @override
-  final String displayName;
+  final String? displayName;
 
   @override
   String toString() {
@@ -1645,7 +1645,7 @@ abstract class _FidoCredential implements FidoCredential {
       required final String credentialId,
       required final String userId,
       required final String userName,
-      required final String displayName}) = _$FidoCredentialImpl;
+      final String? displayName}) = _$FidoCredentialImpl;
 
   factory _FidoCredential.fromJson(Map<String, dynamic> json) =
       _$FidoCredentialImpl.fromJson;
@@ -1659,7 +1659,7 @@ abstract class _FidoCredential implements FidoCredential {
   @override
   String get userName;
   @override
-  String get displayName;
+  String? get displayName;
   @override
   @JsonKey(ignore: true)
   _$$FidoCredentialImplCopyWith<_$FidoCredentialImpl> get copyWith =>
