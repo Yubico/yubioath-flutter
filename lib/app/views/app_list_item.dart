@@ -131,12 +131,26 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                 selectedColor: colorScheme.onSecondaryContainer,
                 selected: widget.selected,
                 leading: widget.leading,
-                title: Text(
-                  widget.title,
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
-                ),
+                title: subtitle == null
+                    // We use SizedBox to fill entire space
+                    ? SizedBox(
+                        height: 48,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            widget.title,
+                            overflow: TextOverflow.fade,
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        widget.title,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
                 subtitle: subtitle != null
                     ? Text(
                         subtitle,
