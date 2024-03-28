@@ -316,7 +316,8 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
             rpId: rpId,
             credentialId: e.key,
             userId: e.value['user_id'],
-            userName: e.value['user_name']));
+            userName: e.value['user_name'],
+            displayName: e.value['display_name']));
       }
     }
     return List.unmodifiable(creds);

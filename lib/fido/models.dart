@@ -87,6 +87,7 @@ class FidoCredential with _$FidoCredential {
     required String credentialId,
     required String userId,
     required String userName,
+    required String displayName,
   }) = _FidoCredential;
 
   factory FidoCredential.fromJson(Map<String, dynamic> json) =>

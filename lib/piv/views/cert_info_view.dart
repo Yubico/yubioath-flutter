@@ -19,73 +19,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../app/message.dart';
 import '../../app/state.dart';
-import '../../widgets/tooltip_if_truncated.dart';
+import '../../widgets/info_table.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
-
-class _InfoTable extends ConsumerWidget {
-  final Map<String, (String, Key)> values;
-
-  const _InfoTable(this.values);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
-    // This is what ListTile uses for subtitle
-    final subtitleStyle = textTheme.bodyMedium!.copyWith(
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-    );
-    final clipboard = ref.watch(clipboardProvider);
-    final withContext = ref.watch(withContextProvider);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: values.keys
-              .map((title) => Text(
-                    title,
-                    textAlign: TextAlign.right,
-                  ))
-              .toList(),
-        ),
-        const SizedBox(width: 8),
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: values.entries.map((e) {
-              final title = e.key;
-              final (value, key) = e.value;
-              return GestureDetector(
-                onDoubleTap: () async {
-                  await clipboard.setText(value);
-                  if (!clipboard.platformGivesFeedback()) {
-                    await withContext((context) async {
-                      showMessage(
-                          context, l10n.p_target_copied_clipboard(title));
-                    });
-                  }
-                },
-                child: TooltipIfTruncated(
-                  key: key,
-                  text: value,
-                  style: subtitleStyle,
-                  tooltip: value.replaceAllMapped(
-                      RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class CertInfoTable extends ConsumerWidget {
   final CertInfo? certInfo;
@@ -103,7 +40,7 @@ class CertInfoTable extends ConsumerWidget {
 
     final certInfo = this.certInfo;
     final metadata = this.metadata;
-    return _InfoTable({
+    return InfoTable({
       if (metadata != null)
         l10n.s_private_key: (
           metadata.keyType.getDisplayName(l10n),

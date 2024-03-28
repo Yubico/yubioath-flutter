@@ -11,6 +11,7 @@ import '../../core/state.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import 'actions.dart';
+import 'credential_info_view.dart';
 
 class CredentialDialog extends ConsumerWidget {
   final FidoCredential credential;
@@ -55,27 +56,15 @@ class CredentialDialog extends ConsumerWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 48, bottom: 32),
+                  padding: const EdgeInsets.only(
+                      top: 48, bottom: 32, left: 16, right: 16),
                   child: Column(
                     children: [
-                      Text(
-                        credential.userName,
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
+                      const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Icon(Symbols.passkey, size: 72),
                       ),
-                      Text(
-                        credential.rpId,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        // This is what ListTile uses for subtitle
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color:
-                                  Theme.of(context).textTheme.bodySmall!.color,
-                            ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Icon(Symbols.passkey, size: 72),
+                      CredentialInfoTable(credential),
                     ],
                   ),
                 ),

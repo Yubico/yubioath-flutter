@@ -411,7 +411,8 @@ class FidoManager(
                         (credentialData.credentialId["id"] as ByteArray).asString(),
                         (credentialData.user["id"] as ByteArray).asString(),
                         credentialData.user["name"] as String,
-                        publicKeyCredentialDescriptor = credentialData.credentialId
+                        publicKeyCredentialDescriptor = credentialData.credentialId,
+                        displayName = credentialData.user["displayName"] as String,
                     )
                 }
             }.reduceOrNull { credentials, credentialList ->

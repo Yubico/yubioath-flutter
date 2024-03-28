@@ -453,6 +453,11 @@
     "l_calculate_code_desc": "Get a new code from your YubiKey",
 
     "@_fido_credentials": {},
+    "s_rp_id": "RP ID",
+    "s_user_id": "User ID",
+    "s_credential_id": "Credential ID",
+    "s_display_name": "Display Name",
+    "s_user_name": "User Name",
     "l_passkey": "Passkey: {label}",
     "@l_passkey": {
         "placeholders": {

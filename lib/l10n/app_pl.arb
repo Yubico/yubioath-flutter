@@ -453,6 +453,11 @@
     "l_calculate_code_desc": "Uzyskaj nowy kod z klucza YubiKey",
 
     "@_fido_credentials": {},
+    "s_rp_id": null,
+    "s_user_id": null,
+    "s_credential_id": null,
+    "s_display_name": null,
+    "s_user_name": null,
     "l_passkey": "Klucz dostępu: {label}",
     "@l_passkey": {
         "placeholders": {

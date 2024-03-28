@@ -20,6 +20,7 @@ const _prefix = 'fido.keys';
 const _keyAction = '$_prefix.actions';
 const _credentialAction = '$_prefix.credential.actions';
 const _fingerprintAction = '$_prefix.fingerprint.actions';
+const _credentialInfo = '$_prefix.credential.info';
 
 // Key actions
 const managePinAction = Key('$_keyAction.manage_pin');
@@ -49,3 +50,10 @@ const pinPukField = Key('$_prefix.pin_puk');
 const newPinPukField = Key('$_prefix.new_pin_puk');
 const confirmPinPukField = Key('$_prefix.confirm_pin_puk');
 const subjectField = Key('$_prefix.subject');
+
+// CredentialInfoView body keys
+const credentialInfoRpId = Key('$_credentialInfo.rpId');
+const credentialInfoDisplayName = Key('$_credentialInfo.displayName');
+const credentialInfoUserId = Key('$_credentialInfo.userId');
+const credentialInfoUserName = Key('$_credentialInfo.userName');
+const credentialInfoCredentialId = Key('$_credentialInfo.credentialId');
