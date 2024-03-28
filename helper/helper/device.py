@@ -62,11 +62,15 @@ def _is_admin():
 
 
 class ConnectionException(RpcException):
-    def __init__(self, connection, exc_type):
+    def __init__(self, device, connection, exc_type):
         super().__init__(
             "connection-error",
             f"Error connecting to {connection} interface",
-            dict(connection=connection, exc_type=type(exc_type).__name__),
+            dict(
+                device=device,
+                connection=connection,
+                exc_type=type(exc_type).__name__,
+            ),
         )
 
 
@@ -182,12 +186,22 @@ class DevicesNode(RpcNode):
         self._list_state = 0
         self._devices = {}
         self._device_mapping = {}
+        self._failing_connection = {}
+        self._retries = 0
 
     def __call__(self, *args, **kwargs):
         with self._get_state:
             try:
                 return super().__call__(*args, **kwargs)
             except ConnectionException as e:
+                if self._failing_connection == e.body:
+                    self._retries += 1
+                else:
+                    self._failing_connection = e.body
+                    self._retries = 0
+                if self._retries > 2:
+                    raise
+                logger.debug("Connection failed, attempt to recover", exc_info=True)
                 raise ChildResetException(f"{e}")
 
     def close(self):
@@ -295,7 +309,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(SmartCardConnection)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("ccid", e)
+            raise ConnectionException(self._device.fingerprint, "ccid", e)
 
     @child(condition=lambda self: self._supports_connection(OtpConnection))
     def otp(self):
@@ -303,7 +317,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(OtpConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("otp", e)
+            raise ConnectionException(self._device.fingerprint, "otp", e)
 
     @child(condition=lambda self: self._supports_connection(FidoConnection))
     def fido(self):
@@ -311,7 +325,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(FidoConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("fido", e)
+            raise ConnectionException(self._device.fingerprint, "fido", e)
 
 
 class _ReaderObserver(CardObserver):
@@ -370,7 +384,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
             return ConnectionNode(self._device, connection, info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("ccid", e)
+            raise ConnectionException(self._device.fingerprint, "ccid", e)
 
     @child
     def fido(self):
@@ -381,7 +395,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
             return ConnectionNode(self._device, connection, info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("fido", e)
+            raise ConnectionException(self._device.fingerprint, "fido", e)
 
 
 class ConnectionNode(RpcNode):
