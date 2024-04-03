@@ -55,8 +55,8 @@ class _CapabilityForm extends StatelessWidget {
         ? management_keys.usbCapabilityKeyPrefix
         : management_keys.nfcCapabilityKeyPrefix;
     return Wrap(
-      spacing: 8,
-      runSpacing: 16,
+      spacing: 4.0,
+      runSpacing: 8.0,
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
@@ -90,8 +90,8 @@ class _ModeForm extends StatelessWidget {
       Align(
           alignment: Alignment.topLeft,
           child: Wrap(
-              spacing: 8,
-              runSpacing: 16,
+              spacing: 4.0,
+              runSpacing: 8.0,
               children: UsbInterface.values
                   .map((iface) => FilterChip(
                         label: Text(iface.name.toUpperCase()),
