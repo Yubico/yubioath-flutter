@@ -40,6 +40,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.FidoManager
 import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
@@ -47,11 +48,13 @@ import com.yubico.authenticator.management.ManagementHandler
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
+import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
+import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -273,24 +276,36 @@ class MainActivity : FlutterFragmentActivity() {
     private fun processYubiKey(device: YubiKeyDevice) {
         lifecycleScope.launch {
 
-            if (device is NfcYubiKeyDevice) {
-                // verify that current context supports connection provided by the YubiKey
-                // if not, switch to a context which supports the connection
-                val supportedApps = DeviceManager.getSupportedContexts(device)
-                logger.debug("Connected key supports: {}", supportedApps)
-                if (!supportedApps.contains(viewModel.appContext.value)) {
-                    val preferredContext = DeviceManager.getPreferredContext(supportedApps)
-                    logger.debug(
-                        "Current context ({}) is not supported by the key. Using preferred context {}",
-                        viewModel.appContext.value,
-                        preferredContext
-                    )
-                    switchContext(preferredContext)
-                }
+            val deviceInfo = try {
+                getDeviceInfo(device)
+            } catch (e: IllegalArgumentException) {
+                logger.debug("Device was not recognized")
+                UnknownDevice.copy(isNfc = device.transport == Transport.NFC)
+            } catch (e: Exception) {
+                logger.error("Failure getting device info", e)
+                null
+            }
 
-                if (contextManager == null) {
-                    switchContext(DeviceManager.getPreferredContext(supportedApps))
-                }
+            deviceManager.setDeviceInfo(deviceInfo)
+
+            if (deviceInfo == null) {
+                return@launch
+            }
+
+            val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
+            logger.debug("Connected key supports: {}", supportedContexts)
+            if (!supportedContexts.contains(viewModel.appContext.value)) {
+                val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
+                logger.debug(
+                    "Current context ({}) is not supported by the key. Using preferred context {}",
+                    viewModel.appContext.value,
+                    preferredContext
+                )
+                switchContext(preferredContext)
+            }
+
+            if (contextManager == null) {
+                switchContext(DeviceManager.getPreferredContext(supportedContexts))
             }
 
             contextManager?.let {
