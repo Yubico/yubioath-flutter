@@ -152,7 +152,6 @@ final primaryColorProvider = Provider<Color>((ref) {
   final data = ref.watch(currentDeviceDataProvider).valueOrNull;
   final defaultColor = ref.watch(defaultColorProvider);
   if (data != null) {
-    // A device was connected, use custom color if available
     final serial = data.info.serial;
     if (serial != null) {
       final customization = ref.watch(keyCustomizationManagerProvider)[serial];
@@ -167,7 +166,6 @@ final primaryColorProvider = Provider<Color>((ref) {
     }
   }
 
-  // a device was disconnected or is not customizable
   final lastUsedColor = prefs.getInt(prefLastUsedColor);
   return lastUsedColor != null ? Color(lastUsedColor) : defaultColor;
 });
