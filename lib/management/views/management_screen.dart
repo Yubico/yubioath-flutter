@@ -129,7 +129,7 @@ class _CapabilitiesForm extends StatelessWidget {
           ListTile(
             leading: const Icon(Symbols.usb),
             title: Text(l10n.s_usb),
-            contentPadding: const EdgeInsets.only(bottom: 8),
+            contentPadding: const EdgeInsets.only(bottom: 4),
           ),
           _CapabilityForm(
             type: _CapabilityType.usb,
@@ -143,12 +143,12 @@ class _CapabilitiesForm extends StatelessWidget {
         if (nfcCapabilities != 0) ...[
           if (usbCapabilities != 0)
             const Padding(
-              padding: EdgeInsets.only(top: 12, bottom: 12),
+              padding: EdgeInsets.only(top: 8, bottom: 8),
             ),
           ListTile(
             leading: const Icon(Symbols.contactless),
             title: Text(l10n.s_nfc),
-            contentPadding: const EdgeInsets.only(bottom: 8),
+            contentPadding: const EdgeInsets.only(bottom: 4),
           ),
           _CapabilityForm(
             type: _CapabilityType.nfc,
@@ -434,7 +434,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 if (info.isLocked)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18.0)
-                        .copyWith(top: 28),
+                        .copyWith(top: 20),
                     child: _buildLockCodeForm(context),
                   ),
                 Padding(
