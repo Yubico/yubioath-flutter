@@ -173,6 +173,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "アプリケーションの切替え",
     "s_toggle_interfaces": null,
+    "p_toggle_applications_desc": null,
+    "p_toggle_interfaces_desc": null,
     "l_toggle_applications_desc": null,
     "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "YubiKeyを再構成しています\u2026",
@@ -195,6 +197,12 @@
     },
     "s_fido_disabled": "FIDO2が無効になっています",
     "l_webauthn_req_fido2": "WebAuthnでは、YubiKeyでFIDO2アプリケーションを有効にする必要があります",
+    "s_lock_code": null,
+    "l_wrong_lock_code": null,
+    "s_show_lock_code": null,
+    "s_hide_lock_code": null,
+    "p_lock_code_required_desc": null,
+
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "ヘルパープロセスが応答していません",

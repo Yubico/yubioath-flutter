@@ -173,6 +173,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Toggle applications",
     "s_toggle_interfaces": "Toggle interfaces",
+    "p_toggle_applications_desc": "Independently enable or disable applications over available transports.",
+    "p_toggle_interfaces_desc": "Independently enable or disable USB interfaces.",
     "l_toggle_applications_desc": "Enable/disable applications",
     "l_toggle_interfaces_desc": "Enable/disable interfaces",
     "s_reconfiguring_yk": "Reconfiguring YubiKey\u2026",
@@ -195,6 +197,12 @@
     },
     "s_fido_disabled": "FIDO2 disabled",
     "l_webauthn_req_fido2": "WebAuthn requires the FIDO2 application to be enabled on your YubiKey",
+    "s_lock_code": "Lock code",
+    "l_wrong_lock_code": "Wrong lock code",
+    "s_show_lock_code": "Show lock code",
+    "s_hide_lock_code": "Hide lock code",
+    "p_lock_code_required_desc": "The action you are about to perform requires the configuration lock code to be entered.",
+
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "The Helper process isn't responding",

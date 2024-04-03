@@ -213,7 +213,8 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
       }
       rethrow;
     } finally {

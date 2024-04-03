@@ -23,6 +23,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../core/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -176,6 +178,13 @@ class ManagementScreen extends ConsumerStatefulWidget {
 class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   late Map<Transport, int> _enabled;
   late int _interfaces;
+  final _lockCodeController = TextEditingController();
+  final _lockCodeFocus = FocusNode();
+  bool _lockCodeIsWrong = false;
+  String _lockCodeError = '';
+  bool _isObscure = true;
+  final lockCodeLength = 32;
+  bool _configuring = false;
 
   @override
   void initState() {
@@ -183,6 +192,60 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     _enabled = widget.deviceData.info.config.enabledCapabilities;
     _interfaces = UsbInterface.forCapabilities(
         widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0);
+  }
+
+  @override
+  void dispose() {
+    _lockCodeController.dispose();
+    _lockCodeFocus.dispose();
+    super.dispose();
+  }
+
+  Widget _buildLockCodeForm(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.p_lock_code_required_desc),
+        AppTextField(
+          obscureText: _isObscure,
+          maxLength: lockCodeLength,
+          autofillHints: const [AutofillHints.password],
+          controller: _lockCodeController,
+          focusNode: _lockCodeFocus,
+          decoration: AppInputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: l10n.s_lock_code,
+            errorText: _lockCodeIsWrong ? _lockCodeError : null,
+            errorMaxLines: 3,
+            prefixIcon: const Icon(Symbols.pin),
+            suffixIcon: IconButton(
+              icon: Icon(
+                  _isObscure ? Symbols.visibility : Symbols.visibility_off),
+              onPressed: () {
+                setState(() {
+                  _isObscure = !_isObscure;
+                });
+              },
+              tooltip:
+                  _isObscure ? l10n.s_show_lock_code : l10n.s_hide_lock_code,
+            ),
+          ),
+          textInputAction: TextInputAction.next,
+          onChanged: (value) {
+            setState(() {
+              _lockCodeIsWrong = false;
+            });
+          },
+          onSubmitted: (_) => _submitForm,
+        ).init()
+      ]
+          .map((e) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: e,
+              ))
+          .toList(),
+    );
   }
 
   Widget _buildCapabilitiesForm(
@@ -200,6 +263,20 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   void _submitCapabilitiesForm() async {
     final l10n = AppLocalizations.of(context)!;
+    final isLocked = widget.deviceData.info.isLocked;
+
+    if (isLocked && !Format.hex.isValid(_lockCodeController.text)) {
+      _lockCodeController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _lockCodeController.text.length);
+      _lockCodeFocus.requestFocus();
+      setState(() {
+        _lockCodeError =
+            l10n.l_invalid_format_allowed_chars(Format.hex.allowedCharacters);
+        _lockCodeIsWrong = true;
+      });
+      return;
+    }
+
     final bool reboot;
     if (widget.deviceData.node is UsbYubiKeyNode) {
       // Reboot if USB device descriptor is changed.
@@ -215,6 +292,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
     Function()? close;
     try {
+      setState(() {
+        _configuring = true;
+      });
       if (reboot) {
         // This will take longer, show a message
         close = showMessage(
@@ -226,13 +306,24 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       await ref
           .read(managementStateProvider(widget.deviceData.node.path).notifier)
           .writeConfig(
-            widget.deviceData.info.config
-                .copyWith(enabledCapabilities: _enabled),
-            reboot: reboot,
-          );
+              widget.deviceData.info.config
+                  .copyWith(enabledCapabilities: _enabled),
+              reboot: reboot,
+              currentLockCode: _lockCodeController.text);
       if (!mounted) return;
       if (!reboot) Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
+    } catch (_) {
+      if (isLocked) {
+        _lockCodeController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _lockCodeController.text.length);
+        _lockCodeFocus.requestFocus();
+        setState(() {
+          _lockCodeIsWrong = true;
+          _configuring = false;
+          _lockCodeError = l10n.l_wrong_lock_code;
+        });
+      }
     } finally {
       close?.call();
     }
@@ -250,6 +341,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   void _submitModeForm() async {
     final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _configuring = true;
+    });
     await ref
         .read(managementStateProvider(widget.deviceData.node.path).notifier)
         .setMode(interfaces: _interfaces);
@@ -312,8 +406,22 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                               .enabledCapabilities[Transport.usb] ??
                           0);
             }
+            if (info.isLocked) {
+              final lockCode = _lockCodeController.text.replaceAll(' ', '');
+              canSave = canSave &&
+                  lockCode.length == lockCodeLength &&
+                  !_lockCodeIsWrong;
+            }
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8),
+                  child: Text(hasConfig
+                      ? l10n.p_toggle_applications_desc
+                      : l10n.p_toggle_interfaces_desc),
+                ),
                 hasConfig
                     ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -322,7 +430,27 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     : Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 18.0),
                         child: _buildModeForm(context, ref, info),
-                      )
+                      ),
+                if (info.isLocked)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0)
+                        .copyWith(top: 28),
+                    child: _buildLockCodeForm(context),
+                  ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: info.isLocked ? 4.0 : 24.0,
+                      bottom: 4,
+                      left: 18.0,
+                      right: 18.0),
+                  child: Visibility(
+                    visible: _configuring,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: const LinearProgressIndicator(),
+                  ),
+                ),
               ],
             );
           },
