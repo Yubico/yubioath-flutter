@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 
 import '../../core/state.dart';
 import '../../management/models.dart';
@@ -432,15 +431,20 @@ class _AppPageState extends ConsumerState<AppPage> {
           slivers: [
             SliverMainAxisGroup(
               slivers: [
-                SliverPinnedHeader(
-                  child: ColoredBox(
-                    color: Theme.of(context).colorScheme.background,
-                    child: Padding(
-                      key: _sliverTitleWrapperGlobalKey,
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
-                      child: _buildTitle(context),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverTitleDelegate(
+                    child: ColoredBox(
+                      color: Theme.of(context).colorScheme.background,
+                      child: Padding(
+                        key: _sliverTitleWrapperGlobalKey,
+                        padding: const EdgeInsets.only(
+                            left: 16.0, right: 16.0, bottom: 12.0, top: 4.0),
+                        child: _buildTitle(context),
+                      ),
                     ),
+                    // The height will always be 60.0 with the current configuration
+                    height: 60.0,
                   ),
                 ),
                 if (widget.headerSliver != null)
@@ -879,4 +883,27 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
       return _Visibility.visible;
     }
   }
+}
+
+class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
+  _SliverTitleDelegate({
+    required this.height,
+    required this.child,
+  });
+  final double height;
+  final Widget child;
+
+  @override
+  double get minExtent => height;
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(_SliverTitleDelegate oldDelegate) => true;
 }
