@@ -152,7 +152,6 @@ final primaryColorProvider = Provider<Color>((ref) {
   final data = ref.watch(currentDeviceDataProvider).valueOrNull;
   final defaultColor = ref.watch(defaultColorProvider);
   if (data != null) {
-    // We have a device, use its color, or the default color
     final serial = data.info.serial;
     if (serial != null) {
       final customization = ref.watch(keyCustomizationManagerProvider)[serial];
@@ -165,16 +164,10 @@ final primaryColorProvider = Provider<Color>((ref) {
         return defaultColor;
       }
     }
-  } else {
-    // We don't have a device, use the last used color, if saved
-    final lastUsedColor = prefs.getInt(prefLastUsedColor);
-    if (lastUsedColor != null) {
-      return Color(lastUsedColor);
-    }
   }
 
-  // Default color if nothing else
-  return defaultColor;
+  final lastUsedColor = prefs.getInt(prefLastUsedColor);
+  return lastUsedColor != null ? Color(lastUsedColor) : defaultColor;
 });
 
 // Override with platform implementation
