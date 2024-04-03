@@ -311,7 +311,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               reboot: reboot,
               currentLockCode: _lockCodeController.text);
       if (!mounted) return;
-      if (!reboot) Navigator.pop(context);
+      Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
     } catch (_) {
       if (isLocked) {
