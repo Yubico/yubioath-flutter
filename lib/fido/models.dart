@@ -27,7 +27,8 @@ class FidoState with _$FidoState {
 
   factory FidoState(
       {required Map<String, dynamic> info,
-      required bool unlocked}) = _FidoState;
+      required bool unlocked,
+      int? pinRetries}) = _FidoState;
 
   factory FidoState.fromJson(Map<String, dynamic> json) =>
       _$FidoStateFromJson(json);
@@ -47,6 +48,8 @@ class FidoState with _$FidoState {
   bool get alwaysUv => info['options']['alwaysUv'] == true;
 
   bool get forcePinChange => info['force_pin_change'] == true;
+
+  bool get pinBlocked => pinRetries == 0;
 }
 
 @freezed
