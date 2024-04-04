@@ -100,9 +100,6 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       {String currentLockCode = '',
       String newLockCode = '',
       bool reboot = false}) async {
-    if (reboot) {
-      state = const AsyncValue.loading();
-    }
     await _session.command('configure', target: _subpath, params: {
       ...config.toJson(),
       'cur_lock_code': currentLockCode,

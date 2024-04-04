@@ -173,6 +173,8 @@
     "@_app_configuration": {},
     "s_toggle_applications": "Przełączanie funkcji",
     "s_toggle_interfaces": "Przełącz interfejsy",
+    "p_toggle_applications_desc": null,
+    "p_toggle_interfaces_desc": null,
     "l_toggle_applications_desc": null,
     "l_toggle_interfaces_desc": null,
     "s_reconfiguring_yk": "Rekonfigurowanie YubiKey\u2026",
@@ -195,6 +197,12 @@
     },
     "s_fido_disabled": "FIDO2 wyłączone",
     "l_webauthn_req_fido2": "WebAuthn wymaga włączenia funkcji FIDO2 w kluczu YubiKey",
+    "s_lock_code": null,
+    "l_wrong_lock_code": null,
+    "s_show_lock_code": null,
+    "s_hide_lock_code": null,
+    "p_lock_code_required_desc": null,
+
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "Proces pomocnika nie odpowiada",
