@@ -23,7 +23,6 @@ import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
-import org.json.JSONObject
 
 class FidoViewModel : ViewModel() {
     private val _sessionState = MutableLiveData<ViewModelData>()
@@ -37,10 +36,6 @@ class FidoViewModel : ViewModel() {
 
     fun clearSessionState() {
         _sessionState.postValue(ViewModelData.Empty)
-    }
-
-    fun setSessionLoadingState() {
-        _sessionState.postValue(ViewModelData.Loading)
     }
 
     private val _credentials = MutableLiveData<List<FidoCredential>>()

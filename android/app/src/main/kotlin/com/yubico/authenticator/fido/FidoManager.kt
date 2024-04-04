@@ -112,6 +112,8 @@ class FidoManager(
 
     private val pinStore = FidoPinStore()
 
+    private var pinRetries : Int? = null
+
     private val resetHelper =
         FidoResetHelper(deviceManager, fidoViewModel, mainViewModel, connectionHelper, pinStore)
 
@@ -124,6 +126,8 @@ class FidoManager(
     }
 
     init {
+        pinRetries = null
+
         deviceManager.addDeviceListener(this)
 
         fidoChannel.setHandler(coroutineScope) { method, args ->
@@ -239,10 +243,14 @@ class FidoManager(
                 connectionHelper.cancelPending()
             }
 
+            val infoData = fidoSession.cachedInfo
+            val clientPin =
+                ClientPin(fidoSession, getPreferredPinUvAuthProtocol(infoData))
+
+            pinRetries = if (infoData.options["clientPin"] == true) clientPin.pinRetries.count else null
+
             fidoViewModel.setSessionState(
-                Session(
-                    fidoSession.cachedInfo, pinStore.hasPin()
-                )
+                Session(infoData, pinStore.hasPin(), pinRetries)
             )
 
             // Update deviceInfo since the deviceId has changed
@@ -275,8 +283,6 @@ class FidoManager(
         pin: CharArray
     ): String {
 
-        //fidoViewModel.setSessionLoadingState()
-
         val pinPermissionsCM = getPinPermissionsCM(fidoSession)
         val pinPermissionsBE = getPinPermissionsBE(fidoSession)
         val permissions = pinPermissionsCM or pinPermissionsBE
@@ -298,16 +304,23 @@ class FidoManager(
 
         pinStore.setPin(pin)
 
+        pinRetries = clientPin.pinRetries.count
+
         fidoViewModel.setSessionState(
             Session(
                 fidoSession.info,
-                pinStore.hasPin()
+                pinStore.hasPin(),
+                pinRetries
             )
         )
         return JSONObject(mapOf("success" to true)).toString()
     }
 
-    private fun catchPinErrors(clientPin: ClientPin, block: () -> String): String =
+    private fun catchPinErrors(
+        fidoSession: YubiKitFidoSession,
+        clientPin: ClientPin,
+        block: () -> String
+    ): String =
         try {
             block()
         } catch (ctapException: CtapException) {
@@ -318,6 +331,15 @@ class FidoManager(
             ) {
                 pinStore.setPin(null)
                 fidoViewModel.updateCredentials(emptyList())
+                pinRetries = clientPin.pinRetries.count
+
+                fidoViewModel.setSessionState(
+                    Session(
+                        fidoSession.info,
+                        pinStore.hasPin(),
+                        pinRetries
+                    )
+                )
 
                 if (ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION) {
                     JSONObject(
@@ -330,7 +352,7 @@ class FidoManager(
                     JSONObject(
                         mapOf(
                             "success" to false,
-                            "pinRetries" to clientPin.pinRetries.count,
+                            "pinRetries" to pinRetries,
                             "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED),
                         )
                     ).toString()
@@ -347,7 +369,7 @@ class FidoManager(
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-                catchPinErrors(clientPin) {
+                catchPinErrors(fidoSession, clientPin) {
                     unlockSession(fidoSession, clientPin, pin)
                 }
             } catch (e: IOException) {
@@ -383,7 +405,7 @@ class FidoManager(
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-                catchPinErrors(clientPin) {
+                catchPinErrors(fidoSession, clientPin) {
                     setOrChangePin(fidoSession, clientPin, pin, newPin)
                     unlockSession(fidoSession, clientPin, newPin)
                 }
@@ -489,7 +511,7 @@ class FidoManager(
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
             bioEnrollment.removeEnrollment(HexCodec.hexStringToBytes(templateId))
             fidoViewModel.removeFingerprint(templateId)
-            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin(), pinRetries))
             return@useSession JSONObject(
                 mapOf(
                     "success" to true,
@@ -513,7 +535,7 @@ class FidoManager(
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
             bioEnrollment.setName(HexCodec.hexStringToBytes(templateId), name)
             fidoViewModel.renameFingerprint(templateId, name)
-            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin(), pinRetries))
             return@useSession JSONObject(
                 mapOf(
                     "success" to true,
@@ -592,7 +614,7 @@ class FidoManager(
 
             val templateIdHexString = HexCodec.bytesToHexString(templateId)
             fidoViewModel.addFingerprint(FidoFingerprint(templateIdHexString, name))
-            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin()))
+            fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin(), pinRetries))
 
             return@useSession JSONObject(
                 mapOf(

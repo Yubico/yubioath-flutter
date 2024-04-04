@@ -86,12 +86,13 @@ data class SessionInfo(
 
 @Serializable
 data class Session(
-    @SerialName("info")
     val info: SessionInfo,
-    val unlocked: Boolean
+    val unlocked: Boolean,
+    @SerialName("pin_retries")
+    val pinRetries: Int?
 ) : JsonSerializable {
-   constructor(infoData: InfoData, unlocked: Boolean) : this(
-        SessionInfo(infoData), unlocked
+   constructor(infoData: InfoData, unlocked: Boolean, pinRetries: Int?) : this(
+        SessionInfo(infoData), unlocked, pinRetries
     )
 
     override fun toJson(): String {
