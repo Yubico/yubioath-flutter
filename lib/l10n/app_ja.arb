@@ -295,6 +295,7 @@
     "l_fido_pin_protection_optional": "任意FIDO PINによる保護",
     "l_enter_fido2_pin": "YubiKeyのFIDO2 PINを入力してください",
     "l_pin_blocked_reset": "PINはブロックされています。FIDOアプリケーションを出荷時設定にリセットしてください",
+    "l_pin_blocked": null,
     "l_set_pin_first": "最初にPINが必要です",
     "l_unlock_pin_first": "最初にPINでロックを解除してください",
     "l_pin_soft_locked": "YubiKeyを取り外して再挿入するまで、PINはブロックされています",

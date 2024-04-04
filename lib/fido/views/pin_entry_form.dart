@@ -82,7 +82,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context)!;
-    if (_retries == 0) {
+    if (widget._state.pinBlocked || _retries == 0) {
       return l10n.l_pin_blocked_reset;
     }
     if (_blocked) {
@@ -98,6 +98,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final noFingerprints = widget._state.bioEnroll == false;
+    final authBlocked = widget._state.pinBlocked;
+    final pinRetries = widget._state.pinRetries;
     return Padding(
       padding: const EdgeInsets.only(left: 18.0, right: 18, top: 8),
       child: Column(
@@ -113,12 +115,14 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               autofillHints: const [AutofillHints.password],
               controller: _pinController,
               focusNode: _pinFocus,
-              enabled: !_blocked && (_retries ?? 1) > 0,
+              enabled: !authBlocked && !_blocked && (_retries ?? 1) > 0,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
-                helperText: '', // Prevents dialog resizing
-                errorText: _pinIsWrong ? _getErrorText() : null,
+                helperText: pinRetries != null && pinRetries <= 3
+                    ? l10n.l_attempts_remaining(pinRetries)
+                    : '', // Prevents dialog resizing
+                errorText: _pinIsWrong || authBlocked ? _getErrorText() : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
