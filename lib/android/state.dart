@@ -121,7 +121,7 @@ class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
   AndroidCurrentSectionNotifier(
     this._supportedSectionsByPriority,
     this._appContextHandler,
-  ) : super(Section.accounts);
+  ) : super(Section.home);
 
   @override
   void setCurrentSection(Section section) {
