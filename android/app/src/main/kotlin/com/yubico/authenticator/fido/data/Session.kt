@@ -53,13 +53,16 @@ data class SessionInfo(
     @SerialName("min_pin_length")
     val minPinLength: Int,
     @SerialName("force_pin_change")
-    val forcePinChange: Boolean
+    val forcePinChange: Boolean,
+    @SerialName("remaining_disc_creds")
+    val remainingDiscoverableCredentials: Int?
 ) {
     constructor(infoData: InfoData) : this(
         Options(infoData),
         infoData.aaguid,
         infoData.minPinLength,
-        infoData.forcePinChange
+        infoData.forcePinChange,
+        infoData.remainingDiscoverableCredentials
     )
 
     override fun equals(other: Any?): Boolean {
@@ -71,7 +74,10 @@ data class SessionInfo(
         if (options != other.options) return false
         if (!aaguid.contentEquals(other.aaguid)) return false
         if (minPinLength != other.minPinLength) return false
-        return forcePinChange == other.forcePinChange
+        if (forcePinChange != other.forcePinChange) return false
+        if (remainingDiscoverableCredentials != other.remainingDiscoverableCredentials) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -79,6 +85,7 @@ data class SessionInfo(
         result = 31 * result + aaguid.contentHashCode()
         result = 31 * result + minPinLength
         result = 31 * result + forcePinChange.hashCode()
+        result = 31 * result + (remainingDiscoverableCredentials ?: 0)
         return result
     }
 
