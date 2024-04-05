@@ -31,7 +31,7 @@ data class FidoCredential(
     @SerialName("user_name")
     val userName: String,
     @SerialName("display_name")
-    val displayName: String,
+    val displayName: String?,
     @Transient
     val publicKeyCredentialDescriptor: Map<String, Any?> = emptyMap()
 )
