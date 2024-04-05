@@ -153,6 +153,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       return unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
+        ref.invalidateSelf();
         return PinResult.failed(FidoPinFailureReason.invalidPin(
             e.body['retries'], e.body['auth_blocked']));
       }
@@ -176,6 +177,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
         _pinController.state = null;
+        ref.invalidateSelf();
         return PinResult.failed(FidoPinFailureReason.invalidPin(
             e.body['retries'], e.body['auth_blocked']));
       }

@@ -88,7 +88,6 @@ class Ctap2Node(RpcNode):
         self.ctap = Ctap2(connection)
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
-        self._auth_blocked = False
         self._token = None
 
     def get_data(self):
@@ -96,7 +95,6 @@ class Ctap2Node(RpcNode):
         logger.debug(f"Info: {self._info}")
         data = dict(
             info=asdict(self._info),
-            auth_blocked=self._auth_blocked,
             unlocked=self._token is not None,
         )
         if self._info.options.get("clientPin"):
@@ -190,7 +188,6 @@ class Ctap2Node(RpcNode):
             if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
                 raise InactivityException()
         self._info = self.ctap.get_info()
-        self._auth_blocked = False
         self._token = None
         return dict()
 

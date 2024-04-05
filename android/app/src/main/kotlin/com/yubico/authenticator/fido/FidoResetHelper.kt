@@ -221,7 +221,7 @@ class FidoResetHelper(
     private fun doReset(fidoSession: YubiKitFidoSession) {
         logger.debug("Calling FIDO reset")
         fidoSession.reset(resetCommandState)
-        fidoViewModel.setSessionState(Session(fidoSession.info, true))
+        fidoViewModel.setSessionState(Session(fidoSession.info, true, null))
         fidoViewModel.updateCredentials(emptyList())
         pinStore.setPin(null)
     }

@@ -48,6 +48,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
   final l10n = AppLocalizations.of(context)!;
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
+  final authBlocked = state.pinBlocked;
 
   return Column(
     children: [
@@ -86,25 +87,34 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
         l10n.s_manage,
         children: [
           ActionListItem(
-              key: keys.managePinAction,
-              feature: features.actionsPin,
-              icon: const Icon(Symbols.pin),
-              title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
-              subtitle: state.hasPin
-                  ? (state.forcePinChange
-                      ? l10n.s_pin_change_required
-                      : l10n.s_fido_pin_protection)
-                  : l10n.s_fido_pin_protection,
-              trailing: state.alwaysUv && !state.hasPin || state.forcePinChange
-                  ? Icon(Symbols.warning_amber, color: colors.tertiary)
-                  : null,
-              onTap: (context) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => FidoPinDialog(node.path, state),
-                );
-              }),
+            key: keys.managePinAction,
+            feature: features.actionsPin,
+            icon: const Icon(Symbols.pin),
+            title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
+            subtitle: authBlocked
+                ? l10n.l_pin_blocked
+                : state.hasPin
+                    ? (state.forcePinChange
+                        ? l10n.s_pin_change_required
+                        : state.pinRetries != null
+                            ? l10n.l_attempts_remaining(state.pinRetries!)
+                            : l10n.s_fido_pin_protection)
+                    : l10n.s_fido_pin_protection,
+            trailing: authBlocked ||
+                    state.alwaysUv && !state.hasPin ||
+                    state.forcePinChange
+                ? Icon(Symbols.warning_amber, color: colors.tertiary)
+                : null,
+            onTap: !authBlocked
+                ? (context) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    showBlurDialog(
+                      context: context,
+                      builder: (context) => FidoPinDialog(node.path, state),
+                    );
+                  }
+                : null,
+          ),
         ],
       )
     ],

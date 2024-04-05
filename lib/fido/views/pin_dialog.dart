@@ -87,6 +87,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final hasPinComplexity =
         ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
             false;
+    final pinRetries = ref.watch(fidoStateProvider(widget.devicePath)
+        .select((s) => s.whenOrNull(data: (state) => state.pinRetries)));
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
@@ -115,6 +117,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   enabled: !_isBlocked,
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_pin,
+                  helperText: pinRetries != null && pinRetries <= 3
+                      ? l10n.l_attempts_remaining(pinRetries)
+                      : '', // Prevents dialog resizing
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Symbols.pin),
@@ -249,8 +254,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   extentOffset: _currentPinController.text.length);
               _currentPinFocus.requestFocus();
               setState(() {
-                if (authBlocked) {
-                  _currentPinError = l10n.l_pin_soft_locked;
+                if (authBlocked || retries == 0) {
+                  _currentPinError = retries == 0
+                      ? l10n.l_pin_blocked_reset
+                      : l10n.l_pin_soft_locked;
                   _currentIsWrong = true;
                   _isBlocked = true;
                 } else {
