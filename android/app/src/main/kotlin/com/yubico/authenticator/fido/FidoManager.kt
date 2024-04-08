@@ -192,21 +192,7 @@ class FidoManager(
             }
         } catch (e: Exception) {
             // something went wrong, try to get DeviceInfo from any available connection type
-            logger.error("Failure when processing YubiKey", e)
-            if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
-                val deviceInfo = try {
-                    getDeviceInfo(device)
-                } catch (e: IllegalArgumentException) {
-                    logger.debug("Device was not recognized")
-                    UnknownDevice.copy(isNfc = device.transport == Transport.NFC)
-                } catch (e: Exception) {
-                    logger.error("Failure getting device info", e)
-                    null
-                }
-
-                logger.debug("Setting device info: {}", deviceInfo)
-                deviceManager.setDeviceInfo(deviceInfo)
-            }
+            logger.error("Failure when processing YubiKey: ", e)
 
             // Clear any cached FIDO state
             fidoViewModel.clearSessionState()
@@ -251,18 +237,6 @@ class FidoManager(
 
             fidoViewModel.setSessionState(
                 Session(infoData, pinStore.hasPin(), pinRetries)
-            )
-
-            // Update deviceInfo since the deviceId has changed
-            val pid = (device as? UsbYubiKeyDevice)?.pid
-            val deviceInfo = DeviceUtil.readInfo(connection, pid)
-            deviceManager.setDeviceInfo(
-                Info(
-                    name = DeviceUtil.getName(deviceInfo, pid?.type),
-                    isNfc = device.transport == Transport.NFC,
-                    usbPid = pid?.value,
-                    deviceInfo = deviceInfo
-                )
             )
         }
     }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2024 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.yubico.authenticator.device
 
 import androidx.collection.ArraySet
@@ -8,10 +24,7 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.OperationContext
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.fido.FidoConnection
-import com.yubico.yubikit.core.smartcard.SmartCardConnection
-import com.yubico.yubikit.fido.ctap.Ctap2Session
-import com.yubico.yubikit.oath.OathSession
+import com.yubico.yubikit.management.Capability
 import org.slf4j.LoggerFactory
 
 interface DeviceListener {
@@ -45,49 +58,36 @@ class DeviceManager(
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
         private val logger = LoggerFactory.getLogger(DeviceManager::class.java)
 
-        fun getSupportedContexts(device: YubiKeyDevice) : ArraySet<OperationContext> = try {
+        private val capabilityContextMap = mapOf(
+            Capability.OATH to listOf(OperationContext.Oath),
+            Capability.FIDO2 to listOf(
+                OperationContext.FidoFingerprints,
+                OperationContext.FidoPasskeys
+            )
+        )
 
+        fun getSupportedContexts(deviceInfo: Info): ArraySet<OperationContext> {
             val operationContexts = ArraySet<OperationContext>()
 
-            if (device.supportsConnection(SmartCardConnection::class.java)) {
-                // try which apps are available
-                device.openConnection(SmartCardConnection::class.java).use {
-                    try {
-                        OathSession(it)
-                        operationContexts.add(OperationContext.Oath)
-                    } catch (e: Throwable) { // ignored
-                    }
+            val capabilities = (
+                    if (deviceInfo.isNfc)
+                        deviceInfo.config.enabledCapabilities.nfc else
+                        deviceInfo.config.enabledCapabilities.usb
+                    ) ?: 0
 
-                    try {
-                        Ctap2Session(it)
-                        operationContexts.add(OperationContext.FidoPasskeys)
-                    } catch (e: Throwable) { // ignored
-                    }
-
-                }
-            }
-
-            if (device.supportsConnection(FidoConnection::class.java)) {
-                device.openConnection(FidoConnection::class.java).use {
-                    try {
-                        Ctap2Session(it)
-                        operationContexts.add(OperationContext.FidoPasskeys)
-                        operationContexts.add(OperationContext.FidoFingerprints)
-                    } catch (e: Throwable) { // ignored
-                    }
+            capabilityContextMap.forEach { entry ->
+                if (capabilities and entry.key.bit == entry.key.bit) {
+                    operationContexts.addAll(entry.value)
                 }
             }
 
             logger.debug("Device supports following contexts: {}", operationContexts)
-            operationContexts
-        } catch(e: Exception) {
-            logger.debug("The device does not support any context. The following exception was caught: ", e)
-            ArraySet<OperationContext>()
+            return operationContexts
         }
 
-        fun getPreferredContext(contexts: ArraySet<OperationContext>) : OperationContext {
+        fun getPreferredContext(contexts: ArraySet<OperationContext>): OperationContext {
             // custom sort
-            for(context in contexts) {
+            for (context in contexts) {
                 if (context == OperationContext.Oath) {
                     return context
                 } else if (context == OperationContext.FidoPasskeys) {

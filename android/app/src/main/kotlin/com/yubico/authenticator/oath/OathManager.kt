@@ -282,18 +282,6 @@ class OathManager(
                             return@withConnection
                         }
                     }
-
-                    // Update deviceInfo since the deviceId has changed
-                    val pid = (device as? UsbYubiKeyDevice)?.pid
-                    val deviceInfo = DeviceUtil.readInfo(connection, pid)
-                    deviceManager.setDeviceInfo(
-                        Info(
-                            name = DeviceUtil.getName(deviceInfo, pid?.type),
-                            isNfc = device.transport == Transport.NFC,
-                            usbPid = pid?.value,
-                            deviceInfo = deviceInfo
-                        )
-                    )
                 }
             }
             logger.debug(
@@ -301,21 +289,7 @@ class OathManager(
             )
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
-            logger.error("Failed to connect to CCID", e)
-            if (device.transport == Transport.USB || e is ApplicationNotAvailableException) {
-                val deviceInfo = try {
-                    getDeviceInfo(device)
-                } catch (e: IllegalArgumentException) {
-                    logger.debug("Device was not recognized")
-                    UnknownDevice.copy(isNfc = device.transport == Transport.NFC)
-                } catch (e: Exception) {
-                    logger.error("Failure getting device info", e)
-                    null
-                }
-
-                logger.debug("Setting device info: {}", deviceInfo)
-                deviceManager.setDeviceInfo(deviceInfo)
-            }
+            logger.error("Failed to connect to CCID: ", e)
 
             // Clear any cached OATH state
             oathViewModel.clearSession()
