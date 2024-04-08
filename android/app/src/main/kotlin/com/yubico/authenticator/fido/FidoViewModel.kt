@@ -38,10 +38,10 @@ class FidoViewModel : ViewModel() {
         _sessionState.postValue(ViewModelData.Empty)
     }
 
-    private val _credentials = MutableLiveData<List<FidoCredential>>()
-    val credentials: LiveData<List<FidoCredential>> = _credentials
+    private val _credentials = MutableLiveData<List<FidoCredential>?>()
+    val credentials: LiveData<List<FidoCredential>?> = _credentials
 
-    fun updateCredentials(credentials: List<FidoCredential>) {
+    fun updateCredentials(credentials: List<FidoCredential>?) {
         _credentials.postValue(credentials)
     }
 
