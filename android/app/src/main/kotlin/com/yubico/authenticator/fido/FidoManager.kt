@@ -175,7 +175,7 @@ class FidoManager(
         deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
         fidoViewModel.clearSessionState()
-        fidoViewModel.updateCredentials(emptyList())
+        fidoViewModel.updateCredentials(null)
         coroutineScope.cancel()
     }
 
@@ -261,19 +261,11 @@ class FidoManager(
         val pinPermissionsBE = getPinPermissionsBE(fidoSession)
         val permissions = pinPermissionsCM or pinPermissionsBE
 
-        if (permissions != 0) {
-            val token = clientPin.getPinToken(pin, permissions, null)
-            val credentials = getCredentials(fidoSession, clientPin, token)
-            logger.debug("Creds: {}", credentials)
-            fidoViewModel.updateCredentials(credentials)
-
-            if (pinPermissionsBE != 0) {
-                val fingerprints = getFingerprints(fidoSession, clientPin, token)
-                logger.debug("Fingerprints: {}", fingerprints)
-                fidoViewModel.updateFingerprints(fingerprints)
-            }
+        val token = if (permissions != 0) {
+            clientPin.getPinToken(pin, permissions, null)
         } else {
             clientPin.getPinToken(pin, permissions, "yubico-authenticator.example.com")
+            null
         }
 
         pinStore.setPin(pin)
@@ -287,6 +279,19 @@ class FidoManager(
                 pinRetries
             )
         )
+
+        token?.let {
+            val credentials = getCredentials(fidoSession, clientPin, token)
+            logger.debug("Creds: {}", credentials)
+            fidoViewModel.updateCredentials(credentials)
+
+            if (pinPermissionsBE != 0) {
+                val fingerprints = getFingerprints(fidoSession, clientPin, token)
+                logger.debug("Fingerprints: {}", fingerprints)
+                fidoViewModel.updateFingerprints(fingerprints)
+            }
+        }
+
         return JSONObject(mapOf("success" to true)).toString()
     }
 
@@ -304,7 +309,7 @@ class FidoManager(
                 ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION
             ) {
                 pinStore.setPin(null)
-                fidoViewModel.updateCredentials(emptyList())
+                fidoViewModel.updateCredentials(null)
                 pinRetries = clientPin.pinRetries.count
 
                 fidoViewModel.setSessionState(
@@ -397,6 +402,7 @@ class FidoManager(
         pinUvAuthToken: ByteArray
     ): List<FidoCredential> =
         try {
+            fidoViewModel.updateCredentials(null)
             val credMan = CredentialManagement(fidoSession, clientPin.pinUvAuth, pinUvAuthToken)
             val rpIds = credMan.enumerateRps()
 
