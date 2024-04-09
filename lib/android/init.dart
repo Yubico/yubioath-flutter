@@ -54,8 +54,6 @@ Future<Widget> initialize() async {
 
   _initLicenses();
 
-  final isArc = await getAndroidIsArc();
-
   return ProviderScope(
     overrides: [
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
@@ -115,7 +113,6 @@ Future<Widget> initialize() async {
               // Disable unimplemented feature
               ..setFeature(features.piv, false)
               ..setFeature(features.otp, false)
-              ..setFeature(features.fido, !isArc)
               ..setFeature(features.management, false);
           });
 

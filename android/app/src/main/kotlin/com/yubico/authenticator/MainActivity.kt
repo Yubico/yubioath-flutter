@@ -523,10 +523,6 @@ class MainActivity : FlutterFragmentActivity() {
                         result.success(true)
                     }
 
-                    "isArc" -> {
-                        val regex = ".+_cheets|cheets_.+".toRegex()
-                        result.success(Build.DEVICE?.matches(regex) ?: false)
-                    }
                     else -> logger.warn("Unknown app method: {}", methodCall.method)
                 }
             }
