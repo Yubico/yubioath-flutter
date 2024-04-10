@@ -122,6 +122,8 @@ class _OverlayPainter extends CustomPainter {
           style: TextStyle(
             fontSize: iconSize,
             fontFamily: icon.fontFamily,
+            fontVariations: const [FontVariation('FILL', 1)],
+            package: icon.fontPackage,
             color: color.withAlpha(240),
           ));
       iconPainter.layout();
