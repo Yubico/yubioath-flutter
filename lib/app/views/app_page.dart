@@ -172,11 +172,8 @@ class _AppPageState extends ConsumerState<AppPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: DrawerButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  child: CloseButton(
+                      color: Theme.of(context).colorScheme.onSurface),
                 ),
                 _buildLogo(context),
                 const SizedBox(width: 48),
