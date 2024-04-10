@@ -51,12 +51,19 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
     _focus.dispose();
   }
 
+  String _getCancelText(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return widget.onCancel == null && widget.actions.isEmpty
+        ? l10n.s_close
+        : l10n.s_cancel;
+  }
+
   Widget _buildFullscreen(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: widget.title,
           actions: widget.actions,
           leading: IconButton(
-              tooltip: AppLocalizations.of(context)!.s_close,
+              tooltip: _getCancelText(context),
               icon: const Icon(Symbols.close),
               onPressed: widget.allowCancel
                   ? () {
@@ -72,10 +79,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       );
 
   Widget _buildDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final cancelText = widget.onCancel == null && widget.actions.isEmpty
-        ? l10n.s_close
-        : l10n.s_cancel;
     return PopScope(
       canPop: widget.allowCancel,
       child: AlertDialog(
@@ -94,7 +97,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
                     Navigator.of(context).pop();
                   }
                 : null,
-            child: Text(cancelText),
+            child: Text(_getCancelText(context)),
           ),
           ...widget.actions
         ],
