@@ -130,9 +130,16 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             ? () {
                 _currentStep = -1;
                 _subscription?.cancel();
+                if (isAndroid) {
+                  _resetSection();
+                }
               }
             : null,
-        _ => null,
+        _ => isAndroid && _application != null
+            ? () {
+                _resetSection();
+              }
+            : null,
       },
       actions: [
         if (_currentStep < _totalSteps)
@@ -310,5 +317,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         ),
       ),
     );
+  }
+
+  void _resetSection() {
+    ref.read(currentSectionProvider.notifier).setCurrentSection(Section.home);
   }
 }
