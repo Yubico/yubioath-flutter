@@ -146,49 +146,53 @@ class _DeviceContent extends ConsumerWidget {
     final label = initialCustomization?.name;
     String displayName = label != null ? '$label ($name)' : name;
 
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        Row(
+          children: [
+            Flexible(
+              child: Text(
                 displayName,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(
-                height: 12,
-              ),
-              if (serial != null)
-                Text(
-                  l10n.l_serial_number(serial),
-                  style: Theme.of(context).textTheme.titleSmall?.apply(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
+            if (serial != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: IconButton(
+                  icon: const Icon(Symbols.edit),
+                  onPressed: () async {
+                    await ref.read(withContextProvider)((context) async {
+                      await _showManageLabelDialog(
+                        initialCustomization ??
+                            KeyCustomization(serial: serial),
+                        context,
+                      );
+                    });
+                  },
                 ),
-              Text(
-                l10n.l_firmware_version(version),
-                style: Theme.of(context).textTheme.titleSmall?.apply(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-            ],
-          ),
+              )
+          ],
+        ),
+        const SizedBox(
+          height: 12,
         ),
         if (serial != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: IconButton(
-              icon: const Icon(Symbols.edit),
-              onPressed: () async {
-                await ref.read(withContextProvider)((context) async {
-                  await _showManageLabelDialog(
-                    initialCustomization ?? KeyCustomization(serial: serial),
-                    context,
-                  );
-                });
-              },
-            ),
-          )
+          Text(
+            l10n.l_serial_number(serial),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        Text(
+          l10n.l_firmware_version(version),
+          style: Theme.of(context)
+              .textTheme
+              .titleSmall
+              ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
       ],
     );
   }
