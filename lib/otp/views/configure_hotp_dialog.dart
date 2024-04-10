@@ -148,11 +148,11 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_secret_key,
                   helperText: '', // Prevents resizing when errorText shown
-                  errorText: _validateSecret && !secretLengthValid
-                      ? l10n.s_invalid_length
-                      : _validateSecret && !secretFormatValid
-                          ? l10n.l_invalid_format_allowed_chars(
-                              Format.base32.allowedCharacters)
+                  errorText: _validateSecret && !secretFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.base32.allowedCharacters)
+                      : _validateSecret && !secretLengthValid
+                          ? l10n.s_invalid_length
                           : null,
                   prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
