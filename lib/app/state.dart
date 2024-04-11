@@ -36,6 +36,8 @@ final _log = Logger('app.state');
 // Officially supported translations
 const officialLocales = [
   Locale('en', ''),
+  Locale('fr', ''),
+  Locale('ja', ''),
 ];
 
 extension on Section {

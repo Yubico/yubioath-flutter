@@ -18,7 +18,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../core/state.dart';
 
-void launchFeedbackUrl() => _launchUrl(isAndroid
+void launchDocumentationUrl() => _launchUrl(isAndroid
     ? 'https://yubi.co/ya-feedback-android'
     : 'https://yubi.co/ya-feedback-desktop');
 

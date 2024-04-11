@@ -118,25 +118,21 @@ class AboutPage extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextButton(
+                  onPressed: launchDocumentationUrl,
                   child: Text(
-                    key: feedbackButton,
-                    l10n.s_send_feedback,
+                    key: userGuideButton,
+                    l10n.s_user_guide,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
-                  onPressed: () {
-                    launchFeedbackUrl();
-                  },
                 ),
                 TextButton(
+                  onPressed: launchHelpUrl,
                   child: Text(
                     l10n.s_i_need_help,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
-                  onPressed: () {
-                    launchHelpUrl();
-                  },
                 ),
               ],
             ),
