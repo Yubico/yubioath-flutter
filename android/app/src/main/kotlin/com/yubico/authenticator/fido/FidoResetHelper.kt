@@ -16,6 +16,8 @@
 
 package com.yubico.authenticator.fido
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
@@ -29,14 +31,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.util.Timer
-import java.util.TimerTask
 import java.util.concurrent.Executors
-import kotlin.concurrent.schedule
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -67,6 +66,7 @@ fun createCaptureErrorEvent(code: Int) : FidoRegisterFpCaptureErrorEvent {
 }
 
 class FidoResetHelper(
+    private val lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
     private val fidoViewModel: FidoViewModel,
     private val mainViewModel: MainViewModel,
@@ -81,8 +81,21 @@ class FidoResetHelper(
     private var resetCommandState: CommandState? = null
     private var cancelReset: Boolean = false
 
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onStop(owner: LifecycleOwner) {
+            super.onStop(owner)
+            if (inProgress) {
+                logger.debug("Cancelling ongoing reset")
+                cancelReset()
+            }
+        }
+    }
+
     suspend fun reset(): String {
         try {
+            withContext(Dispatchers.Main) {
+                lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+            }
             deviceManager.clearDeviceInfoOnDisconnect = false
             inProgress = true
             fidoViewModel.updateResetState(FidoResetState.Remove)
@@ -96,6 +109,9 @@ class FidoResetHelper(
         } catch (e: CancellationException) {
             logger.debug("FIDO reset cancelled")
         } finally {
+            withContext(Dispatchers.Main) {
+                lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+            }
             inProgress = false
             deviceManager.clearDeviceInfoOnDisconnect = true
         }
@@ -107,21 +123,6 @@ class FidoResetHelper(
         resetCommandState?.cancel()
         inProgress = false
         return NULL
-    }
-
-    private var cancellationTimer: TimerTask? = null
-    fun onPause() {
-        cancellationTimer?.cancel()
-        cancellationTimer = Timer().schedule(300) {
-            // the timer has not been cancelled at this point,
-            // the application is in PAUSED state longer than 300ms
-            // cancel ongoing reset
-            cancelReset()
-        }
-    }
-
-    fun onResume() {
-        cancellationTimer?.cancel()
     }
 
     private suspend fun waitForUsbDisconnect() = suspendCoroutine { continuation ->
@@ -165,8 +166,12 @@ class FidoResetHelper(
                 connectionHelper.useSessionUsb(usbYubiKeyDevice) { fidoSession ->
                     resetCommandState = CommandState()
                     try {
-                        doReset(fidoSession)
-                        continuation.resume(Unit)
+                        if (cancelReset) {
+                            continuation.resumeWithException(CancellationException())
+                        } else {
+                            doReset(fidoSession)
+                            continuation.resume(Unit)
+                        }
                     } catch (e: CtapException) {
                         when (e.ctapError) {
                             CtapException.ERR_KEEPALIVE_CANCEL -> {

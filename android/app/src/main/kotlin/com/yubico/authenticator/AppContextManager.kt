@@ -27,6 +27,4 @@ abstract class AppContextManager {
     open fun dispose() {}
 
     open fun onPause() {}
-
-    open fun onResume() {}
 }

@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator.fido
 
+import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainViewModel
@@ -23,22 +24,16 @@ import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.device.Info
-import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.FidoFingerprint
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.SessionInfo
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
-import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
-import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
-import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyConnection
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.fido.FidoConnection
@@ -54,7 +49,6 @@ import com.yubico.yubikit.fido.ctap.PinUvAuthDummyProtocol
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocol
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV1
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV2
-import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
@@ -71,6 +65,7 @@ typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
 class FidoManager(
     messenger: BinaryMessenger,
+    lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
     private val fidoViewModel: FidoViewModel,
     mainViewModel: MainViewModel,
@@ -115,15 +110,14 @@ class FidoManager(
     private var pinRetries : Int? = null
 
     private val resetHelper =
-        FidoResetHelper(deviceManager, fidoViewModel, mainViewModel, connectionHelper, pinStore)
-
-    override fun onPause() {
-        resetHelper.onPause()
-    }
-
-    override fun onResume() {
-        resetHelper.onResume()
-    }
+        FidoResetHelper(
+            lifecycleOwner,
+            deviceManager,
+            fidoViewModel,
+            mainViewModel,
+            connectionHelper,
+            pinStore
+        )
 
     init {
         pinRetries = null
@@ -227,6 +221,10 @@ class FidoManager(
                 logger.debug("This is a different key than previous, invalidating the PIN token")
                 pinStore.setPin(null)
                 connectionHelper.cancelPending()
+                if (resetHelper.inProgress) {
+                    logger.debug("Cannot reset this key")
+                    resetHelper.cancelReset()
+                }
             }
 
             val infoData = fidoSession.cachedInfo
