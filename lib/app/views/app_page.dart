@@ -139,7 +139,7 @@ class _AppPageState extends ConsumerState<AppPage> {
           // Fully expanded layout, close existing drawer if open
           final scaffoldState = scaffoldGlobalKey.currentState;
           if (scaffoldState?.isDrawerOpen == true) {
-            scaffoldState?.openEndDrawer();
+            scaffoldState?.closeDrawer();
           }
           return _buildScaffold(context, false, true, true);
         }
@@ -481,6 +481,7 @@ class _AppPageState extends ConsumerState<AppPage> {
 
   Scaffold _buildScaffold(
       BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
+    final l10n = AppLocalizations.of(context)!;
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
     final showNavigation = ref.watch(_navigationProvider);
     var body = _buildMainContent(context, hasManage);
@@ -605,14 +606,23 @@ class _AppPageState extends ConsumerState<AppPage> {
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: DrawerButton(
+                    child: IconButton(
+                      icon: const Icon(Symbols.menu),
+                      tooltip: showNavigation
+                          ? (fullyExpanded
+                              ? l10n.s_collapse_navigation
+                              : MaterialLocalizations.of(context)
+                                  .openAppDrawerTooltip)
+                          : l10n.s_expand_navigation,
                       onPressed: fullyExpanded
                           ? () {
                               ref
                                   .read(_navigationProvider.notifier)
                                   .toggleExpanded();
                             }
-                          : null,
+                          : () {
+                              scaffoldGlobalKey.currentState?.openDrawer();
+                            },
                     ),
                   )),
                   const SizedBox(width: 12),
@@ -644,7 +654,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                       )
                     : const Icon(Symbols.more_vert),
                 iconSize: 24,
-                tooltip: AppLocalizations.of(context)!.s_configure_yk,
+                tooltip: l10n.s_configure_yk,
                 padding: const EdgeInsets.all(12),
               ),
             ),

@@ -43,6 +43,8 @@
     "s_details": null,
     "s_show_window": "Afficher la fenêtre",
     "s_hide_window": "Masquer la fenêtre",
+    "s_expand_navigation": null,
+    "s_collapse_navigation": null,
     "q_rename_target": "Renommer {label}?",
     "@q_rename_target": {
         "placeholders": {

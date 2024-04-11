@@ -43,6 +43,8 @@
     "s_details": null,
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを表示しない",
+    "s_expand_navigation": null,
+    "s_collapse_navigation": null,
     "q_rename_target": "{label}の名前を変更しますか?",
     "@q_rename_target": {
         "placeholders": {
