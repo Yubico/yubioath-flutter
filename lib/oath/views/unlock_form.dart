@@ -21,6 +21,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../keys.dart' as keys;
@@ -47,19 +48,24 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
     setState(() {
       _passwordIsWrong = false;
     });
-    final (success, remembered) = await ref
-        .read(oathStateProvider(widget._devicePath).notifier)
-        .unlock(_passwordController.text, remember: _remember);
-    if (!mounted) return;
-    if (!success) {
-      _passwordController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _passwordController.text.length);
-      _passwordFocus.requestFocus();
-      setState(() {
-        _passwordIsWrong = true;
-      });
-    } else if (_remember && !remembered) {
-      showMessage(context, AppLocalizations.of(context)!.l_remember_pw_failed);
+    try {
+      final (success, remembered) = await ref
+          .read(oathStateProvider(widget._devicePath).notifier)
+          .unlock(_passwordController.text, remember: _remember);
+      if (!mounted) return;
+      if (!success) {
+        _passwordController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _passwordController.text.length);
+        _passwordFocus.requestFocus();
+        setState(() {
+          _passwordIsWrong = true;
+        });
+      } else if (_remember && !remembered) {
+        showMessage(
+            context, AppLocalizations.of(context)!.l_remember_pw_failed);
+      }
+    } on CancellationException catch (_) {
+      // ignored
     }
   }
 

@@ -92,8 +92,13 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       final remembered = unlockResponse['remembered'] == true;
 
       return (unlocked, remembered);
-    } on PlatformException catch (e) {
-      _log.debug('Calling unlock failed with exception: $e');
+    } on PlatformException catch (pe) {
+      final decoded = pe.decode();
+      if (decoded is CancellationException) {
+        _log.debug('Unlock OATH cancelled');
+        throw decoded;
+      }
+      _log.debug('Calling unlock failed with exception: $pe');
       return (false, false);
     }
   }
