@@ -79,7 +79,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final shownRetiredSlots = pivSlots?.value
                     .where((element) =>
                         element.slot.isRetired &&
-                        (element.certInfo != null && element.metadata != null))
+                        (element.certInfo != null || element.metadata != null))
                     .toList() ??
                 [];
             final theme = Theme.of(context);
