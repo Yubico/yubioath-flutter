@@ -150,11 +150,11 @@ class _ConfigureChalrespDialogState
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_secret_key,
-                  errorText: _validateSecret && !secretLengthValid
-                      ? l10n.s_invalid_length
-                      : _validateSecret && !secretFormatValid
-                          ? l10n.l_invalid_format_allowed_chars(
-                              Format.hex.allowedCharacters)
+                  errorText: _validateSecret && !secretFormatValid
+                      ? l10n.l_invalid_format_allowed_chars(
+                          Format.hex.allowedCharacters)
+                      : _validateSecret && !secretLengthValid
+                          ? l10n.s_invalid_length
                           : null,
                   prefixIcon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
