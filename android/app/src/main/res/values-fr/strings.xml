@@ -1,2 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources />
+<resources>
+    <string name="p_ndef_set_otp">Code OTP copié de la YubiKey dans le presse-papiers.</string>
+    <string name="p_ndef_set_password">Mot de passe copié de la YubiKey dans le presse-papiers.</string>
+    <string name="p_ndef_parse_failure">Impossible d'analyser le code OTP de la YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Presse-papiers inaccessible lors de la tentative de copie du code OTP depuis la YubiKey.</string>
+</resources>
