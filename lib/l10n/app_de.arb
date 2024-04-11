@@ -43,6 +43,8 @@
     "s_details": null,
     "s_show_window": "Fenster anzeigen",
     "s_hide_window": "Fenster verstecken",
+    "s_expand_navigation": null,
+    "s_collapse_navigation": null,
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {
         "placeholders": {

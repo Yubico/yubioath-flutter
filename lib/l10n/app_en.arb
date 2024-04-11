@@ -43,6 +43,8 @@
     "s_details": "Details",
     "s_show_window": "Show window",
     "s_hide_window": "Hide window",
+    "s_expand_navigation": "Expand navigation",
+    "s_collapse_navigation": "Collapse navigation",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {
