@@ -306,7 +306,7 @@ class OathManager(
         return useOathSessionNfc(OathActionDescription.AddAccount) { session ->
             // We need to check for duplicates here since we haven't yet read the credentials
             if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
-                throw Exception("A credential with this ID already exists!")
+                throw IllegalArgumentException()
             }
 
             val credential = session.putCredential(credentialData, requireTouch)
