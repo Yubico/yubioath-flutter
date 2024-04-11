@@ -2,38 +2,27 @@
 
 image:splash.png[]
 
-Store your unique credential on a hardware-backed security key and take it
-wherever you go from mobile to desktop. No more storing sensitive secrets on
-your mobile phone, leaving your account vulnerable to takeovers. With the
-Yubico Authenticator you can raise the bar for security.
-
-* The Yubico Authenticator will work with any USB or NFC-enabled YubiKeys
-
-The Yubico Authenticator securely generates a code used to verify your identity
-as you are logging into various services. No connectivity needed!
+Manage your YubiKey and access one-time passwords with this full-featured
+companion app to the YubiKey.
 
 === Features include
-* Secure - Hardware-backed strong two-factor authentication with secret stored
-  on the YubiKey, not on your phone or computer
-* Portable - Get the same set of codes across our other Yubico Authenticator
-  apps for desktops as well as for all leading mobile platforms
-* Flexible - Support for time-based and counter-based code generation
-* USB or NFC usage - Insert the YubiKey into the USB port, or use the YubiKey
-  with NFC with a mobile phone that is NFC-enabled or a desktop NFC reader to
-  store your credential on the YubiKey
-* Easy Setup - QR codes available from the services you wish to protect with
-  strong authentication
-* User Presence - Require a touch on the YubiKey sensor to generate new codes
-  for sensitive accounts
-* Compatible - Secure all the services currently compatible with other
-  Authenticator apps
-* Versatile - Support for multiple work and personal accounts
+* Display information about your YubiKey such as serial number, firmware version,
+  and supported capabilities
+* Manage and access OATH one-time passwords stored securely on your YubiKey
+* Configure PIN, fingerprints, and manage passkeys for WebAuthn/FIDO
+* Configure PIN/PUK/Management key, and manage private keys and certificates for PIV
+* Provision Yubico OTP, static passwords, and other YubiKey slot-based credentials
+* Configure enabled features, and factory reset YubiKey data
+* Compatible with any USB or NFC-enabled YubiKey
+
+Store your unique credential on a hardware-backed security key and take it
+wherever you go from mobile to desktop. No more storing sensitive secrets on
+your mobile phone, leaving your accounts vulnerable to takeovers. With the
+YubiKey and Yubico Authenticator you can raise the bar for security. No
+connectivity needed!
 
 Experience security the modern way with the Yubico Authenticator.
 Visit https://yubico.com to learn more.
-
-NOTE: Yubico Authenticator 6 uses a new codebase built using the Flutter
-framework. The previous Qt codebase can be found in the `legacy` branch.
 
 === Supported platforms
 
