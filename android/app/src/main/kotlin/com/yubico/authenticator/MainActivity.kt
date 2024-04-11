@@ -258,8 +258,6 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences.registerListener(sharedPreferencesListener)
 
         preserveConnectionOnPause = false
-
-        contextManager?.onResume()
     }
 
     override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
@@ -390,6 +388,7 @@ class MainActivity : FlutterFragmentActivity() {
                 OperationContext.FidoFingerprints,
                 OperationContext.FidoPasskeys -> FidoManager(
                     messenger,
+                    this,
                     deviceManager,
                     fidoViewModel,
                     viewModel,
