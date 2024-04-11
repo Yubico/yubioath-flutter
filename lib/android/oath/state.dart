@@ -29,6 +29,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
+import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
@@ -91,8 +92,13 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       final remembered = unlockResponse['remembered'] == true;
 
       return (unlocked, remembered);
-    } on PlatformException catch (e) {
-      _log.debug('Calling unlock failed with exception: $e');
+    } on PlatformException catch (pe) {
+      final decoded = pe.decode();
+      if (decoded is CancellationException) {
+        _log.debug('Unlock OATH cancelled');
+        throw decoded;
+      }
+      _log.debug('Calling unlock failed with exception: $pe');
       return (false, false);
     }
   }
@@ -130,6 +136,29 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
+// Converts Platform exception during Add Account operation
+// Returns CancellationException for situations we don't want to show a Toast
+Exception _decodeAddAccountException(PlatformException platformException) {
+  final decodedException = platformException.decode();
+
+  // Auth required, the app will show Unlock dialog
+  if (decodedException is ApduException && decodedException.sw == 0x6982) {
+    _log.error('Add account failed: Auth required');
+    return CancellationException();
+  }
+
+  // Thrown in native code when the account already exists on the YubiKey
+  // The entry dialog will show an error message and that is why we convert
+  // this to CancellationException to avoid showing a Toast
+  if (platformException.code == 'IllegalArgumentException') {
+    _log.error('Add account failed: Account already exists');
+    return CancellationException();
+  }
+
+  // original exception
+  return decodedException;
+}
+
 final addCredentialToAnyProvider =
     Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
           try {
@@ -142,8 +171,7 @@ final addCredentialToAnyProvider =
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
-            _log.error('Failed to add account.', pe);
-            throw pe.decode();
+            throw _decodeAddAccountException(pe);
           }
         });
 
@@ -267,8 +295,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
-      _log.error('Failed to add account.', pe);
-      throw pe.decode();
+      throw _decodeAddAccountException(pe);
     }
   }
 
