@@ -189,7 +189,6 @@
             "app": {}
         }
     },
-    "l_app_not_supported_desc": "This application is not supported",
     "s_app_disabled": "Application disabled",
     "l_app_disabled_desc": "Enable the '{app}' application on your YubiKey to access",
     "@l_app_disabled_desc": {
@@ -248,28 +247,10 @@
     "s_unblock_pin": "Unblock PIN",
     "l_pin_mismatch": "PINs do not match",
     "l_puk_mismatch": "PUKs do not match",
-    "l_new_pin_len": "New PIN must be at least {length} characters",
-    "@l_new_pin_len": {
-        "placeholders": {
-            "length": {}
-        }
-    },
     "s_pin_set": "PIN set",
     "s_puk_set": "PUK set",
     "l_set_pin_failed": "Failed to set PIN: {message}",
     "@l_set_pin_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_set_puk_failed": "Failed to set PUK: {message}",
-    "@l_set_puk_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_unblock_pin_failed": "Failed to unblock PIN: {message}",
-    "@l_unblock_pin_failed": {
         "placeholders": {
             "message": {}
         }
@@ -294,7 +275,6 @@
     },
     "s_fido_pin_protection": "FIDO PIN protection",
     "s_pin_change_required": "PIN change required",
-    "l_fido_pin_protection_optional": "Optional FIDO PIN protection",
     "l_enter_fido2_pin": "Enter the FIDO2 PIN for your YubiKey",
     "l_pin_blocked_reset": "PIN is blocked; factory reset the FIDO application",
     "l_pin_blocked": "PIN is blocked",
@@ -591,7 +571,6 @@
             "slot": {}
         }
     },
-    "l_generating_private_key": "Generating private key\u2026",
     "s_private_key_generated": "Private key generated",
     "p_select_what_to_delete": "Select what to delete from the slot.",
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
@@ -739,12 +718,6 @@
     "l_append_enter_desc": "Append an Enter keystroke after emitting the OTP",
 
     "@_otp_errors": {},
-    "p_otp_slot_configuration_error": "Failed to modify {slot}! Make sure the YubiKey does not have restrictive access.",
-    "@p_otp_slot_configuration_error": {
-        "placeholders": {
-            "slot": {}
-        }
-    },
     "p_otp_swap_error": "Failed to swap slots! Make sure the YubiKey does not have restrictive access.",
     "l_wrong_access_code": "Wrong access code",
 
@@ -907,10 +880,8 @@
     "p_ndef_set_clip_failure": "Failed to access clipboard when trying to copy OTP code from YubiKey.",
 
     "@_key_customization": {},
-    "s_customize_key_action": "Set label/color",
     "s_set_label": "Set label",
     "s_change_label": "Change label",
-    "s_theme_color": "Theme color",
     "s_color": "Color",
     "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",
     "p_rename_will_change_custom_name": "This will change the label of your YubiKey.",

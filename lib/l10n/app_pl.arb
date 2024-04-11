@@ -189,7 +189,6 @@
             "app": {}
         }
     },
-    "l_app_not_supported_desc": "Ta funkcja nie jest obsługiwana",
     "s_app_disabled": "Wyłączona funkcja",
     "l_app_disabled_desc": "Włącz funkcję '{app}' w kluczu YubiKey, aby uzyskać dostęp",
     "@l_app_disabled_desc": {
@@ -248,28 +247,10 @@
     "s_unblock_pin": "Odblokuj PIN",
     "l_pin_mismatch": null,
     "l_puk_mismatch": null,
-    "l_new_pin_len": "Nowy PIN musi mieć co najmniej {length} znaków",
-    "@l_new_pin_len": {
-        "placeholders": {
-            "length": {}
-        }
-    },
     "s_pin_set": "PIN ustawiony",
     "s_puk_set": "PUK ustawiony",
     "l_set_pin_failed": "Nie udało się ustawić kodu PIN: {message}",
     "@l_set_pin_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_set_puk_failed": null,
-    "@l_set_puk_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_unblock_pin_failed": null,
-    "@l_unblock_pin_failed": {
         "placeholders": {
             "message": {}
         }
@@ -294,7 +275,6 @@
     },
     "s_fido_pin_protection": "Ochrona FIDO kodem PIN",
     "s_pin_change_required": "Wymagana zmiana PINu",
-    "l_fido_pin_protection_optional": "Opcjonalna ochrona FIDO kodem PIN",
     "l_enter_fido2_pin": "Wprowadź kod PIN FIDO2 klucza YubiKey",
     "l_pin_blocked_reset": "PIN jest zablokowany; przywróć ustawienia fabryczne funkcji FIDO",
     "l_pin_blocked": null,
@@ -591,7 +571,6 @@
             "slot": {}
         }
     },
-    "l_generating_private_key": "Generowanie prywatnego klucza\u2026",
     "s_private_key_generated": "Wygenerowano klucz prywatny",
     "p_select_what_to_delete": null,
     "p_warning_delete_certificate": "Uwaga! Ta czynność spowoduje usunięcie certyfikatu z klucza YubiKey.",
@@ -739,12 +718,6 @@
     "l_append_enter_desc": "Dołącz naciśnięcie klawisza Enter po wysłaniu OTP",
 
     "@_otp_errors": {},
-    "p_otp_slot_configuration_error": "Nie udało się zmodyfikować {slot}! Upewnij się, że klucz YubiKey nie ma ograniczonego dostępu.",
-    "@p_otp_slot_configuration_error": {
-        "placeholders": {
-            "slot": {}
-        }
-    },
     "p_otp_swap_error": null,
     "l_wrong_access_code": null,
 
@@ -907,10 +880,8 @@
     "p_ndef_set_clip_failure": "Błąd kopiowania OTP do schowka.",
 
     "@_key_customization": {},
-    "s_customize_key_action": "Dostosuj klucz",
     "s_set_label": null,
     "s_change_label": null,
-    "s_theme_color": "Kolor motywu",
     "s_color": null,
     "p_set_will_add_custom_name": null,
     "p_rename_will_change_custom_name": null,

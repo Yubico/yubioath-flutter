@@ -189,7 +189,6 @@
             "app": {}
         }
     },
-    "l_app_not_supported_desc": "このアプリケーションはサポートされていません",
     "s_app_disabled": "アプリケーションが無効です",
     "l_app_disabled_desc": "アクセスするにはYubiKeyで{app}アプリケーションを有効にしてください",
     "@l_app_disabled_desc": {
@@ -248,28 +247,10 @@
     "s_unblock_pin": "PINをブロック解除",
     "l_pin_mismatch": null,
     "l_puk_mismatch": null,
-    "l_new_pin_len": "新しいPINは{length}文字以上にする必要があります",
-    "@l_new_pin_len": {
-        "placeholders": {
-            "length": {}
-        }
-    },
     "s_pin_set": "PINが設定されました",
     "s_puk_set": "PUKが設定されました",
     "l_set_pin_failed": "PINを設定できませんでした：{message}",
     "@l_set_pin_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_set_puk_failed": null,
-    "@l_set_puk_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_unblock_pin_failed": null,
-    "@l_unblock_pin_failed": {
         "placeholders": {
             "message": {}
         }
@@ -294,7 +275,6 @@
     },
     "s_fido_pin_protection": "FIDO PIN保護",
     "s_pin_change_required": "PINの変更が必要",
-    "l_fido_pin_protection_optional": "オプションのFIDO PIN保護",
     "l_enter_fido2_pin": "YubiKeyのFIDO2 PINを入力してください",
     "l_pin_blocked_reset": "PINがブロックされています。FIDOアプリケーションを工場出荷時の状態にリセットしてください",
     "l_pin_blocked": null,
@@ -591,7 +571,6 @@
             "slot": {}
         }
     },
-    "l_generating_private_key": "秘密鍵を生成しています\u2026",
     "s_private_key_generated": "秘密鍵が生成されました",
     "p_select_what_to_delete": null,
     "p_warning_delete_certificate": "警告！このアクションにより、YubiKeyから証明書が削除されます。",
@@ -739,12 +718,6 @@
     "l_append_enter_desc": "OTPを発行した後にEnterキーストロークを追加します",
 
     "@_otp_errors": {},
-    "p_otp_slot_configuration_error": "{slot}を変更できませんでした！YubiKeyに制限付きアクセスがないことを確認してください。",
-    "@p_otp_slot_configuration_error": {
-        "placeholders": {
-            "slot": {}
-        }
-    },
     "p_otp_swap_error": null,
     "l_wrong_access_code": null,
 
@@ -907,10 +880,8 @@
     "p_ndef_set_clip_failure": "YubiKeyからのOTPコードのコピー試行時にクリップボードにアクセスできませんでした。",
 
     "@_key_customization": {},
-    "s_customize_key_action": "ラベル/色を設定",
     "s_set_label": null,
     "s_change_label": null,
-    "s_theme_color": "テーマの色",
     "s_color": null,
     "p_set_will_add_custom_name": null,
     "p_rename_will_change_custom_name": null,
