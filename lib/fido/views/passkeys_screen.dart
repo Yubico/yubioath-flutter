@@ -263,7 +263,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
 
     final data = ref.watch(credentialProvider(widget.node.path)).asData;
     if (data == null) {
-      return _buildLoadingPage(context);
+      return _buildLoadingPage(l10n, context);
     }
     final credentials = data.value;
     final filteredCredentials =
@@ -502,7 +502,10 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     );
   }
 
-  Widget _buildLoadingPage(BuildContext context) => AppPage(
+  Widget _buildLoadingPage(AppLocalizations l10n, BuildContext context) =>
+      AppPage(
+        title: l10n.s_passkeys,
+        capabilities: const [Capability.fido2],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
