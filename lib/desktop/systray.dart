@@ -22,9 +22,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
+import 'package:logging/logging.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/shortcuts.dart';
 import '../app/state.dart';
@@ -34,6 +36,8 @@ import '../oath/state.dart';
 import '../oath/views/utils.dart';
 import 'oath/state.dart';
 import 'state.dart';
+
+final _log = Logger('systray');
 
 final _favoriteAccounts =
     Provider.autoDispose<(DevicePath?, List<OathCredential>)>(
@@ -104,12 +108,16 @@ String _getIcon() {
 
 class _Systray extends TrayListener {
   final Ref _ref;
+  late final String? _cliboardBinary;
   int _lastClick = 0;
   AppLocalizations _l10n;
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
   bool _isHidden = false;
+
   _Systray(this._ref) : _l10n = _ref.read(l10nProvider) {
+    _cliboardBinary =
+        Platform.isLinux ? Platform.environment['_YA_TRAY_CLIPBOARD'] : null;
     _init();
   }
 
@@ -187,9 +195,18 @@ class _Systray extends TrayListener {
                 onClick: (_) async {
                   final code = await _calculateCode(_devicePath, e, _ref);
                   if (code != null) {
-                    await _ref
-                        .read(clipboardProvider)
-                        .setText(code.value, isSensitive: true);
+                    if (_cliboardBinary != null) {
+                      // Copy to clipboard via another executable, which can be needed for Wayland
+                      _log.debug(
+                          'Using custom binary to copy to clipboard: $_cliboardBinary');
+                      final process = await Process.start(_cliboardBinary!, []);
+                      process.stdin.writeln(code.value);
+                      await process.stdin.close();
+                    } else {
+                      await _ref
+                          .read(clipboardProvider)
+                          .setText(code.value, isSensitive: true);
+                    }
                     final notification = LocalNotification(
                       title: _l10n.s_code_copied,
                       body: _l10n.p_target_copied_clipboard(label),
