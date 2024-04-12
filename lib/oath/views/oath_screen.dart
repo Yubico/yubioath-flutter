@@ -67,7 +67,10 @@ class OathScreen extends ConsumerWidget {
               delayedContent: true,
             ),
         error: (error, _) => error is NoDataException
-            ? MessagePageNotInitialized(title: l10n.s_accounts)
+            ? MessagePageNotInitialized(
+                title: l10n.s_accounts,
+                capabilities: const [Capability.oath],
+              )
             : AppFailurePage(
                 cause: error,
               ),

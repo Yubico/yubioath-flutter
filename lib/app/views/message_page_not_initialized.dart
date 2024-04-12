@@ -6,11 +6,15 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import 'message_page.dart';
 
 class MessagePageNotInitialized extends ConsumerWidget {
   final String title;
-  const MessagePageNotInitialized({super.key, required this.title});
+  final List<Capability>? capabilities;
+
+  const MessagePageNotInitialized(
+      {super.key, required this.title, required this.capabilities});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +31,9 @@ class MessagePageNotInitialized extends ConsumerWidget {
       var isNfcEnabled = ref.watch(androidNfcStateProvider);
       return MessagePage(
         title: title,
+        capabilities: capabilities,
         centered: true,
+        delayedContent: true,
         graphic: noKeyImage,
         header: hasNfcSupport && isNfcEnabled
             ? l10n.l_insert_or_tap_yk
@@ -45,6 +51,7 @@ class MessagePageNotInitialized extends ConsumerWidget {
     } else {
       return MessagePage(
         title: title,
+        capabilities: capabilities,
         centered: true,
         delayedContent: false,
         graphic: noKeyImage,

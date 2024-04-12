@@ -65,7 +65,10 @@ class PasskeysScreen extends ConsumerWidget {
             ),
         error: (error, _) {
           if (error is NoDataException) {
-            return MessagePageNotInitialized(title: l10n.s_passkeys);
+            return MessagePageNotInitialized(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
+            );
           }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
