@@ -5,8 +5,10 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
+import '../state.dart';
 import 'message_page.dart';
 
 class MessagePageNotInitialized extends ConsumerWidget {
@@ -29,11 +31,14 @@ class MessagePageNotInitialized extends ConsumerWidget {
     if (isAndroid) {
       var hasNfcSupport = ref.watch(androidNfcSupportProvider);
       var isNfcEnabled = ref.watch(androidNfcStateProvider);
+      var isUsbYubiKey =
+          ref.watch(attachedDevicesProvider).firstOrNull?.transport ==
+              Transport.usb;
       return MessagePage(
         title: title,
         capabilities: capabilities,
         centered: true,
-        delayedContent: true,
+        delayedContent: isUsbYubiKey,
         graphic: noKeyImage,
         header: hasNfcSupport && isNfcEnabled
             ? l10n.l_insert_or_tap_yk
