@@ -35,21 +35,22 @@ void main() {
   });
   group('Settings', () {
     appTestKeyless('Click through all Themes', (WidgetTester tester) async {
-      var settingDrawerButton = find.byKey(settingDrawerIcon).hitTestable();
-      await tester.tap(settingDrawerButton);
-      await tester.longWait();
+      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+      await tester.shortWait();
+      await tester.tap(find.byKey(settingDrawerIcon).hitTestable());
+      await tester.shortWait();
       await tester.tap(find.byKey(themeModeSetting));
-      await tester.longWait();
+      await tester.shortWait();
       await tester
           .tap(find.byKey(themeModeOption(ThemeMode.light)).hitTestable());
       await tester.longWait();
       await tester.tap(find.byKey(themeModeSetting));
-      await tester.longWait();
+      await tester.shortWait();
       await tester
           .tap(find.byKey(themeModeOption(ThemeMode.dark)).hitTestable());
       await tester.longWait();
       await tester.tap(find.byKey(themeModeSetting));
-      await tester.longWait();
+      await tester.shortWait();
       await tester
           .tap(find.byKey(themeModeOption(ThemeMode.system)).hitTestable());
       await tester.longWait();
@@ -59,6 +60,8 @@ void main() {
     var helpDrawerButton = find.byKey(helpDrawerIcon).hitTestable();
 
     appTestKeyless('Check Licenses view', (WidgetTester tester) async {
+      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+      await tester.shortWait();
       await tester.tap(helpDrawerButton);
       await tester.shortWait();
       var licensesButtonText = find.byKey(licensesButton).hitTestable();
@@ -69,8 +72,10 @@ void main() {
     });
     group('Opening of URLs', () {
       appTestKeyless('TOS link', (WidgetTester tester) async {
+        await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+        await tester.shortWait();
         await tester.tap(helpDrawerButton);
-        await tester.longWait();
+        await tester.shortWait();
         if (isAndroid) {
           expect(find.byKey(tosButton).hitTestable(), findsOneWidget);
         } else {
@@ -79,8 +84,10 @@ void main() {
         }
       });
       appTestKeyless('Privacy link', (WidgetTester tester) async {
+        await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+        await tester.shortWait();
         await tester.tap(helpDrawerButton);
-        await tester.longWait();
+        await tester.shortWait();
         if (isAndroid) {
           expect(find.byKey(privacyButton).hitTestable(), findsOneWidget);
         } else {
@@ -89,8 +96,10 @@ void main() {
         }
       });
       appTestKeyless('Feedback link', (WidgetTester tester) async {
+        await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+        await tester.shortWait();
         await tester.tap(helpDrawerButton);
-        await tester.longWait();
+        await tester.shortWait();
         if (isAndroid) {
           expect(find.byKey(feedbackButton).hitTestable(), findsOneWidget);
         } else {
@@ -99,6 +108,8 @@ void main() {
         }
       });
       appTestKeyless('Help link', (WidgetTester tester) async {
+        await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+        await tester.shortWait();
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         if (isAndroid) {
@@ -112,14 +123,18 @@ void main() {
     group('Troubleshooting', () {
       appTestKeyless('Diagnostics Button', skip: isAndroid,
           (WidgetTester tester) async {
+        await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+        await tester.shortWait();
         await tester.tap(helpDrawerButton);
-        await tester.longWait();
+        await tester.shortWait();
         await tester.tap(find.byKey(diagnosticsChip).hitTestable());
         await tester.longWait();
       });
       appTestKeyless('Log button', (WidgetTester tester) async {
+        await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+        await tester.shortWait();
         await tester.tap(helpDrawerButton);
-        await tester.longWait();
+        await tester.shortWait();
         await tester.tap(find.byKey(logChip).hitTestable());
         await tester.longWait();
       });
