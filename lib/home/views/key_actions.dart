@@ -25,6 +25,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/reset_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
@@ -97,6 +98,7 @@ Widget homeBuildActions(
       ActionListSection(l10n.s_application, children: [
         ActionListItem(
           icon: const Icon(Symbols.settings),
+          key: settingDrawerIcon,
           title: l10n.s_settings,
           subtitle: l10n.l_settings_desc,
           actionStyle: ActionStyle.primary,
@@ -107,6 +109,7 @@ Widget homeBuildActions(
         ),
         ActionListItem(
           icon: const Icon(Symbols.help),
+          key: helpDrawerIcon,
           title: l10n.s_help_and_about,
           subtitle: l10n.l_help_and_about_desc,
           actionStyle: ActionStyle.primary,
