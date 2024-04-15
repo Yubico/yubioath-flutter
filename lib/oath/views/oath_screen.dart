@@ -61,9 +61,11 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
-        loading: () => const MessagePage(
+        loading: () => MessagePage(
+              title: AppLocalizations.of(context)!.s_accounts,
+              capabilities: const [Capability.oath],
               centered: true,
-              graphic: CircularProgressIndicator(),
+              graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) => error is NoDataException
