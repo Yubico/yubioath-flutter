@@ -278,6 +278,7 @@ class PivState with _$PivState {
   bool get protectedKey => derivedKey || storedKey;
   bool get needsAuth =>
       !authenticated && metadata?.managementKeyMetadata.defaultValue != true;
+  bool get supportsMetadata => version.isAtLeast(5, 3);
 
   factory PivState.fromJson(Map<String, dynamic> json) =>
       _$PivStateFromJson(json);
