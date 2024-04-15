@@ -58,9 +58,11 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(pivStateProvider(widget.devicePath)).when(
-          loading: () => const MessagePage(
+          loading: () => MessagePage(
+            title: l10n.s_certificates,
+            capabilities: const [Capability.piv],
             centered: true,
-            graphic: CircularProgressIndicator(),
+            graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
