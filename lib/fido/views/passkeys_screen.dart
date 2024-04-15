@@ -59,6 +59,8 @@ class PasskeysScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
