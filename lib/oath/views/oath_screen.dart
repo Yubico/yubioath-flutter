@@ -204,6 +204,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == null) {
       return AppPage(
+        title: AppLocalizations.of(context)!.s_accounts,
+        capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),

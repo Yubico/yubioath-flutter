@@ -54,6 +54,8 @@ class FingerprintsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
+              title: l10n.s_fingerprints,
+              capabilities: const [Capability.fido2],
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
@@ -344,6 +346,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
+        title: AppLocalizations.of(context)!.s_fingerprints,
+        capabilities: const [Capability.fido2],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
