@@ -484,6 +484,8 @@ class _AppPageState extends ConsumerState<AppPage> {
     final l10n = AppLocalizations.of(context)!;
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
     final showNavigation = ref.watch(_navigationProvider);
+    final hasDetailsOrKeyActions =
+        widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
     if (widget.onFileDropped != null) {
@@ -543,9 +545,9 @@ class _AppPageState extends ConsumerState<AppPage> {
               body
             ]),
           )),
-          if (hasManage &&
-              (widget.detailViewBuilder != null ||
-                  widget.keyActionsBuilder != null))
+          if (!hasDetailsOrKeyActions)
+            const SizedBox(width: 336), // simulate column
+          if (hasManage && hasDetailsOrKeyActions)
             _VisibilityListener(
               controller: _detailsController,
               targetKey: _detailsViewGlobalKey,
