@@ -545,7 +545,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               body
             ]),
           )),
-          if (!hasDetailsOrKeyActions)
+          if (hasManage && !hasDetailsOrKeyActions)
             const SizedBox(width: 336), // simulate column
           if (hasManage && hasDetailsOrKeyActions)
             _VisibilityListener(
