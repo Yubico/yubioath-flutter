@@ -547,9 +547,11 @@ class _AppPageState extends ConsumerState<AppPage> {
           )),
           if (hasManage &&
               !hasDetailsOrKeyActions &&
+              widget.capabilities != null &&
               widget.capabilities?.first != Capability.u2f)
-            // Add a placeholder for the Manage/Details column, but not for
-            // the "Security Key" because it does not have any actions/details.
+            // Add a placeholder for the Manage/Details column. Exceptions are:
+            // - the "Security Key" because it does not have any actions/details.
+            // - pages without Capabilities
             const SizedBox(width: 336), // simulate column
           if (hasManage && hasDetailsOrKeyActions)
             _VisibilityListener(
