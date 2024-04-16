@@ -75,6 +75,8 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
   @override
   Widget build(BuildContext context) {
     Widget? icon = widget.controller.icon;
+    final theme = Theme.of(context);
+
     return AlertDialog(
       scrollable: true,
       content: SizedBox(
@@ -93,11 +95,15 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
               ),
             Text(
               widget.controller.title,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: theme.textTheme.titleLarge,
+              textAlign: TextAlign.center,
             ),
             Text(
               widget.controller.description,
               textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               softWrap: true,
             ),
           ],
