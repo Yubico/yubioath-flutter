@@ -66,15 +66,19 @@ class AccountIcon extends ConsumerWidget {
         fit: BoxFit.fill,
         loader: IconFileLoader(ref, file),
         placeholderBuilder: (BuildContext _) {
-          return DelayedVisibility(
-            delay: const Duration(milliseconds: 10),
-            child: Stack(alignment: Alignment.center, children: [
-              Opacity(
-                opacity: 0.5,
-                child: defaultWidget,
-              ),
-              const CircularProgressIndicator(),
-            ]),
+          return SizedBox(
+            width: _width,
+            height: _height,
+            child: DelayedVisibility(
+              delay: const Duration(milliseconds: 10),
+              child: Stack(alignment: Alignment.center, children: [
+                Opacity(
+                  opacity: 0.5,
+                  child: defaultWidget,
+                ),
+                const CircularProgressIndicator(),
+              ]),
+            ),
           );
         });
   }

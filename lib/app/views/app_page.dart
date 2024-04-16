@@ -384,7 +384,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    left: 16.0, right: 16.0, bottom: 24.0),
+                    left: 16.0, right: 16.0, bottom: 24.0, top: 4.0),
                 child: _buildTitle(context),
               ),
             ),
@@ -484,6 +484,8 @@ class _AppPageState extends ConsumerState<AppPage> {
     final l10n = AppLocalizations.of(context)!;
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
     final showNavigation = ref.watch(_navigationProvider);
+    final hasDetailsOrKeyActions =
+        widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
     if (widget.onFileDropped != null) {
@@ -544,8 +546,14 @@ class _AppPageState extends ConsumerState<AppPage> {
             ]),
           )),
           if (hasManage &&
-              (widget.detailViewBuilder != null ||
-                  widget.keyActionsBuilder != null))
+              !hasDetailsOrKeyActions &&
+              widget.capabilities != null &&
+              widget.capabilities?.first != Capability.u2f)
+            // Add a placeholder for the Manage/Details column. Exceptions are:
+            // - the "Security Key" because it does not have any actions/details.
+            // - pages without Capabilities
+            const SizedBox(width: 336), // simulate column
+          if (hasManage && hasDetailsOrKeyActions)
             _VisibilityListener(
               controller: _detailsController,
               targetKey: _detailsViewGlobalKey,

@@ -57,9 +57,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
-        loading: () => const MessagePage(
+        loading: () => MessagePage(
+              title: l10n.s_slots,
+              capabilities: const [Capability.otp],
               centered: true,
-              graphic: CircularProgressIndicator(),
+              graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) => AppFailurePage(cause: error),

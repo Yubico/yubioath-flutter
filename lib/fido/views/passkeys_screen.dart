@@ -59,13 +59,18 @@ class PasskeysScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
           if (error is NoDataException) {
-            return MessagePageNotInitialized(title: l10n.s_passkeys);
+            return MessagePageNotInitialized(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
+            );
           }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
@@ -500,6 +505,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
+        title: AppLocalizations.of(context)!.s_passkeys,
+        capabilities: const [Capability.fido2],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),

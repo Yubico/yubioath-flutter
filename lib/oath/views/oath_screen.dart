@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,18 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
-        loading: () => const MessagePage(
+        loading: () => MessagePage(
+              title: AppLocalizations.of(context)!.s_accounts,
+              capabilities: const [Capability.oath],
               centered: true,
-              graphic: CircularProgressIndicator(),
+              graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) => error is NoDataException
-            ? MessagePageNotInitialized(title: l10n.s_accounts)
+            ? MessagePageNotInitialized(
+                title: l10n.s_accounts,
+                capabilities: const [Capability.oath],
+              )
             : AppFailurePage(
                 cause: error,
               ),
@@ -201,6 +206,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == null) {
       return AppPage(
+        title: AppLocalizations.of(context)!.s_accounts,
+        capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
