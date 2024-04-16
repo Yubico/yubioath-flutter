@@ -75,7 +75,9 @@ https://developers.yubico.com/yubikey-manager/Device_Permissions.html[here].
 For some configurations running Wayland, copying an OTP to clipboard only works
 when the app has focus. If you are unable to reliably copy to clipboard from
 the systray icon, you can use a separate binary which take the payload to stdin
-by defining the environment variable `_YA_TRAY_CLIPBOARD`.
+by defining the environment variable `_YA_TRAY_CLIPBOARD`. Note that this must
+be an absolute path to a binary owned by root:root, and should not be
+world-writable.
 For example: `_YA_TRAY_CLIPBOARD=/usr/bin/wl-copy`.
 
 NOTE: Only use a trusted binary, OTPs will be sent to this when copied to clipboard from the systray!
