@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../models.dart';
 
 class ActionListItem extends StatelessWidget {
@@ -51,15 +52,25 @@ class ActionListItem extends StatelessWidget {
     //   ActionStyle.primary => (theme.onPrimary, theme.primary),
     //   ActionStyle.error => (theme.onError, theme.error),
     // };
+    final theme = Theme.of(context);
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      title: TooltipIfTruncated(
+        text: title,
+        style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
+      ),
+      subtitle: subtitle != null
+          ? TooltipIfTruncated(
+              text: subtitle!,
+              style: TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
+              maxLines: 2,
+            )
+          : null,
       leading: Opacity(
         opacity: onTap != null ? 1.0 : 0.4,
         child: CircleAvatar(
-          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+          foregroundColor: theme.colorScheme.onSurfaceVariant,
           backgroundColor: Colors.transparent,
           child: icon,
         ),
