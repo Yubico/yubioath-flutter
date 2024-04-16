@@ -291,6 +291,21 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
+  double _getTitleHeight(BuildContext context) {
+    final Size size = (TextPainter(
+            text: TextSpan(
+                text: widget.title,
+                style: Theme.of(context)
+                    .textTheme
+                    .displaySmall), // Same style as title
+            maxLines: 1,
+            textScaler: MediaQuery.textScalerOf(context),
+            textDirection: TextDirection.ltr)
+          ..layout())
+        .size;
+    return size.height;
+  }
+
   Widget? _buildAppBarTitle(
       BuildContext context, bool hasRail, bool hasManage, bool fullyExpanded) {
     final showNavigation = ref.watch(_navigationProvider);
@@ -390,7 +405,8 @@ class _AppPageState extends ConsumerState<AppPage> {
             ),
           ),
         Positioned.fill(
-          top: widget.title != null ? 68.0 : 0,
+          // Header height = title height + vertical padding
+          top: widget.title != null ? _getTitleHeight(context) + 24 : 0,
           child: Align(
             alignment: Alignment.center,
             child: ScrollConfiguration(
@@ -440,8 +456,8 @@ class _AppPageState extends ConsumerState<AppPage> {
                         child: _buildTitle(context),
                       ),
                     ),
-                    // The height will always be 60.0 with the current configuration
-                    height: 60.0,
+                    // Header height = title height + vertical padding
+                    height: _getTitleHeight(context) + 16,
                   ),
                 ),
                 if (widget.headerSliver != null)
