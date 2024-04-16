@@ -22,9 +22,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
+import 'package:logging/logging.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/shortcuts.dart';
 import '../app/state.dart';
@@ -34,6 +36,8 @@ import '../oath/state.dart';
 import '../oath/views/utils.dart';
 import 'oath/state.dart';
 import 'state.dart';
+
+final _log = Logger('systray');
 
 final _favoriteAccounts =
     Provider.autoDispose<(DevicePath?, List<OathCredential>)>(
@@ -104,21 +108,55 @@ String _getIcon() {
 
 class _Systray extends TrayListener {
   final Ref _ref;
+  String? _clipboardBinary;
   int _lastClick = 0;
   AppLocalizations _l10n;
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
   bool _isHidden = false;
+
   _Systray(this._ref) : _l10n = _ref.read(l10nProvider) {
     _init();
   }
 
   Future<void> _init() async {
+    unawaited(_initClipboardBinary());
     await trayManager.setIcon(_getIcon(), isTemplate: true);
     await _updateContextMenu();
 
     // Doesn't seem to work on Linux
     trayManager.addListener(this);
+  }
+
+  Future<void> _initClipboardBinary() async {
+    final clipboardPath = Platform.environment['_YA_TRAY_CLIPBOARD'];
+    if (clipboardPath != null && Platform.isLinux) {
+      final file = File(clipboardPath);
+      if (!(await file.exists())) {
+        _log.warning(
+            'Not using custom binary for clipboard: $clipboardPath. File not found.');
+        return;
+      }
+      final resolved = await file.resolveSymbolicLinks();
+      final result = await Process.run('ls', ['-nd', '--', resolved],
+          environment: {'LC_ALL': 'C'});
+      if (result.exitCode == 0) {
+        final output = result.stdout as String;
+        //Eg. "-rwxr-xr-x 1 0 0 52384 Oct  7  2019 /usr/bin/wl-copy"
+        final isFile = output[0] == '-';
+        final noWorldWrite = output[8] == '-';
+        final parts = output.split(RegExp(r'\s+'));
+        final rootOwner = parts[2] == '0';
+        final rootGroup = parts[3] == '0';
+        //Ensure file, owned by root:root, not world writable
+        if (isFile && noWorldWrite && rootOwner && rootGroup) {
+          _clipboardBinary = resolved;
+        } else {
+          _log.warning('Not using custom binary for clipboard: $clipboardPath');
+          _log.debug('Refusing to use custom clipboard binary: $output');
+        }
+      }
+    }
   }
 
   void dispose() {
@@ -187,9 +225,19 @@ class _Systray extends TrayListener {
                 onClick: (_) async {
                   final code = await _calculateCode(_devicePath, e, _ref);
                   if (code != null) {
-                    await _ref
-                        .read(clipboardProvider)
-                        .setText(code.value, isSensitive: true);
+                    if (_clipboardBinary != null) {
+                      // Copy to clipboard via another executable, which can be needed for Wayland
+                      _log.debug(
+                          'Using custom binary to copy to clipboard: $_clipboardBinary');
+                      final process =
+                          await Process.start(_clipboardBinary!, []);
+                      process.stdin.writeln(code.value);
+                      await process.stdin.close();
+                    } else {
+                      await _ref
+                          .read(clipboardProvider)
+                          .setText(code.value, isSensitive: true);
+                    }
                     final notification = LocalNotification(
                       title: _l10n.s_code_copied,
                       body: _l10n.p_target_copied_clipboard(label),
