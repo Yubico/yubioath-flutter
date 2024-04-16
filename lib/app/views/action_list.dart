@@ -65,6 +65,7 @@ class ActionListItem extends StatelessWidget {
               text: subtitle!,
               style: TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
               maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             )
           : null,
       leading: Opacity(
