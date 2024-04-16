@@ -45,6 +45,12 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   bool _isObscure = true;
 
   @override
+  void initState() {
+    super.initState();
+    _pinFocus.requestFocus();
+  }
+
+  @override
   void dispose() {
     _pinController.dispose();
     _pinFocus.dispose();

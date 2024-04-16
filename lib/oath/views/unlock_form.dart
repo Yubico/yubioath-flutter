@@ -44,6 +44,19 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
   bool _passwordIsWrong = false;
   bool _isObscure = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _passwordFocus.requestFocus();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
     setState(() {
       _passwordIsWrong = false;
