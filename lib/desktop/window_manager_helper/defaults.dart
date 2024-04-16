@@ -18,7 +18,7 @@ import 'dart:ui';
 
 class WindowDefaults {
   static const minWidth = 300.0;
-  static const minHeight = 375.0;
+  static const minHeight = 400.0;
   static const minSize = Size(minWidth, minHeight);
   static const bounds = Rect.fromLTWH(10.0, 10.0, 1100.0, 700.0);
 }

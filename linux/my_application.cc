@@ -49,7 +49,7 @@ static void my_application_activate(GApplication* application) {
 
   gtk_window_set_default_size(window, 1100, 700);
   // Sets the minimum window size, should match desktop/window_manager_helper/defaults.dart
-  gtk_widget_set_size_request(GTK_WIDGET(window), 300, 375);
+  gtk_widget_set_size_request(GTK_WIDGET(window), 300, 400);
   gtk_widget_realize(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
