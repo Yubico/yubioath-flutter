@@ -120,7 +120,7 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
 }
 
 /// Opens a modal dialog informing the user to take some action.
-/// The dialog content can be updated programatically via the returned
+/// The dialog content can be updated programmatically via the returned
 /// [UserInteractionController].
 ///
 /// An optional [onCancel] function can be provided to allow the user to cancel

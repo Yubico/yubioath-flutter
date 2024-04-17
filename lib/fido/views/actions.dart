@@ -111,7 +111,7 @@ List<ActionItem> buildFingerprintActions(
     Fingerprint fingerprint, AppLocalizations l10n) {
   return [
     ActionItem(
-      key: keys.editFingerintAction,
+      key: keys.editFingerprintAction,
       feature: features.fingerprintsEdit,
       icon: const Icon(Symbols.edit),
       title: l10n.s_rename_fp,
