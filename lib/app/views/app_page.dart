@@ -859,18 +859,18 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
     BuildContext context,
   ) {
     if (!disableScroll) {
-      widget.controller.notifyScroll(_getSrollDirection(
+      widget.controller.notifyScroll(_getScrollDirection(
           _scrolledUnderState(context, widget.targetKey, null)));
 
       if (widget.subController != null) {
-        widget.subController!.notifyScroll(_getSrollDirection(
+        widget.subController!.notifyScroll(_getScrollDirection(
             _scrolledUnderState(
                 context, widget.subTargetKey!, widget.subAnchorKey)));
       }
     }
   }
 
-  _ScrollDirection _getSrollDirection(_Visibility visibility) {
+  _ScrollDirection _getScrollDirection(_Visibility visibility) {
     if (visibility == _Visibility.halfScrolledUnder) {
       return _ScrollDirection.up;
     } else if (visibility == _Visibility.topScrolledUnder) {

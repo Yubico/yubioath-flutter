@@ -38,7 +38,7 @@ const editCredentialAction = Key('$_credentialAction.edit');
 const deleteCredentialAction = Key('$_credentialAction.delete');
 
 // Fingerprint actions
-const editFingerintAction = Key('$_fingerprintAction.edit');
+const editFingerprintAction = Key('$_fingerprintAction.edit');
 const deleteFingerprintAction = Key('$_fingerprintAction.delete');
 
 const saveButton = Key('$_prefix.save');

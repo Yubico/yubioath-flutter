@@ -102,7 +102,7 @@ class _ConfigureYubiOtpDialogState
 
     final privateId = _privateIdController.text;
     final privateIdLengthValid = privateId.length == privateIdLength;
-    final privatedIdFormatValid = Format.hex.isValid(privateId);
+    final privateIdFormatValid = Format.hex.isValid(privateId);
 
     final publicId = _publicIdController.text;
     final publicIdLengthValid = publicId.length == publicIdLength;
@@ -139,11 +139,11 @@ class _ConfigureYubiOtpDialogState
               ? () async {
                   if (!secretFormatValid ||
                       !publicIdFormatValid ||
-                      !privatedIdFormatValid) {
+                      !privateIdFormatValid) {
                     setState(() {
                       _validateSecretFormat = !secretFormatValid;
                       _validatePublicIdFormat = !publicIdFormatValid;
-                      _validatePrivateIdFormat = !privatedIdFormatValid;
+                      _validatePrivateIdFormat = !privateIdFormatValid;
                     });
                     return;
                   }
@@ -161,11 +161,11 @@ class _ConfigureYubiOtpDialogState
                       options:
                           SlotConfigurationOptions(appendCr: _appendEnter));
 
-                  bool configurationSucceded = false;
+                  bool configurationSucceeded = false;
                   try {
                     await otpNotifier.configureSlot(widget.otpSlot.slot,
                         configuration: configuration);
-                    configurationSucceded = true;
+                    configurationSucceeded = true;
                   } catch (e) {
                     _log.error('Failed to program credential', e);
                     // Access code required
@@ -182,11 +182,11 @@ class _ConfigureYubiOtpDialogState
                                       accessCode: accessCode);
                                 },
                               ));
-                      configurationSucceded = result ?? false;
+                      configurationSucceeded = result ?? false;
                     });
                   }
 
-                  if (configurationSucceded) {
+                  if (configurationSucceeded) {
                     if (outputFile != null) {
                       final csv = await otpNotifier.formatYubiOtpCsv(
                           info!.serial!, publicId, privateId, secret);
@@ -198,7 +198,7 @@ class _ConfigureYubiOtpDialogState
                   }
                   await ref.read(withContextProvider)((context) async {
                     Navigator.of(context).pop();
-                    if (configurationSucceded) {
+                    if (configurationSucceeded) {
                       showMessage(
                           context,
                           outputFile != null
@@ -264,7 +264,7 @@ class _ConfigureYubiOtpDialogState
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_private_id,
-                  errorText: _validatePrivateIdFormat && !privatedIdFormatValid
+                  errorText: _validatePrivateIdFormat && !privateIdFormatValid
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,

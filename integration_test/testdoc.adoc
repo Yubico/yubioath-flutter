@@ -15,7 +15,7 @@ the flutter test framework.
 
 To run the tests you need to specify the serial number of a Yubikey which the tests are able to run
 on (OBS this key will be reset by running the tests, so don't use one of your personal keys). This
-either be defined as an anvironment variable on execution, or in a CSV-file with serial numbers:
+either be defined as an environment variable on execution, or in a CSV-file with serial numbers:
 
     $ /yubioath-flutter/integration_test/test_res/resources/approved_serial_numbers.csv
 
