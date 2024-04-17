@@ -58,14 +58,17 @@ class WindowManagerHelperWindows {
 
     final primaryDisplay = await screenRetriever.getPrimaryDisplay();
     final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
-    final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor) ?? 1.0;
+    final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor);
+    final hasSavedScaleFactor = savedScaleFactor != null;
 
-    final savedBounds = Rect.fromLTWH(
-      bounds.left,
-      bounds.top,
-      bounds.width / savedScaleFactor * primaryScaleFactor,
-      bounds.height / savedScaleFactor * primaryScaleFactor,
-    );
+    var height = hasSavedScaleFactor
+        ? bounds.height / savedScaleFactor * primaryScaleFactor
+        : bounds.height;
+    var width = hasSavedScaleFactor
+        ? bounds.width / savedScaleFactor * primaryScaleFactor
+        : bounds.width;
+
+    final savedBounds = Rect.fromLTWH(bounds.left, bounds.top, width, height);
 
     final configChanged = await _displayConfigurationChanged(prefs);
     final windowRect =
