@@ -402,6 +402,7 @@ class _ConfigureYubiOtpDialogState
     final parts = uploadText.split(RegExp('(?=$host)|(?<=$host)'));
 
     return RichText(
+      textScaler: MediaQuery.textScalerOf(context),
       text: TextSpan(
         style: Theme.of(context)
             .textTheme
