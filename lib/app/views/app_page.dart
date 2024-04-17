@@ -708,7 +708,7 @@ class CapabilityBadge extends StatelessWidget {
       backgroundColor: colorScheme.secondaryContainer,
       textColor: colorScheme.onSecondaryContainer,
       padding: const EdgeInsets.symmetric(horizontal: 6),
-      largeSize: 20,
+      largeSize: MediaQuery.of(context).textScaler.scale(20),
       label: Text(
         capability.getDisplayName(l10n),
       ),
