@@ -90,7 +90,8 @@ class SlotDialog extends ConsumerWidget {
                                 child: CertInfoTable(
                                   certInfo,
                                   metadata,
-                                  alwaysIncludePrivate: true,
+                                  alwaysIncludePrivate:
+                                      pivState.supportsMetadata,
                                 ),
                               ),
                             ],

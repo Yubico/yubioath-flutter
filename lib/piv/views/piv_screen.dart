@@ -146,7 +146,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                           CertInfoTable(
                                             selected.certInfo,
                                             selected.metadata,
-                                            alwaysIncludePrivate: true,
+                                            alwaysIncludePrivate:
+                                                pivState.supportsMetadata,
                                           ),
                                           const SizedBox(height: 16),
                                         ],
