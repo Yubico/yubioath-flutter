@@ -40,7 +40,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.fido.FidoManager
 import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
@@ -54,7 +53,6 @@ import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
-import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -273,17 +271,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun processYubiKey(device: YubiKeyDevice) {
         lifecycleScope.launch {
-
-            val deviceInfo = try {
-                getDeviceInfo(device)
-            } catch (e: IllegalArgumentException) {
-                logger.debug("Device was not recognized")
-                UnknownDevice.copy(isNfc = device.transport == Transport.NFC)
-            } catch (e: Exception) {
-                logger.error("Failure getting device info", e)
-                null
-            }
-
+            val deviceInfo = getDeviceInfo(device)
             deviceManager.setDeviceInfo(deviceInfo)
 
             if (deviceInfo == null) {

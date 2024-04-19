@@ -141,7 +141,9 @@ class _DeviceContent extends ConsumerWidget {
 
     final name = deviceData.name;
     final serial = deviceData.info.serial;
-    final version = deviceData.info.version;
+    final version = deviceData.info.version == const Version(0, 0, 0)
+        ? 'unknown'
+        : deviceData.info.version;
 
     final label = initialCustomization?.name;
     String displayName = label != null ? '$label ($name)' : name;
