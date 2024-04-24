@@ -74,6 +74,7 @@ suspend fun getDeviceInfo(device: YubiKeyDevice): Info? {
             }
         } catch (e: Exception) {
             // no smart card connectivity
+            logger.error("Failure getting device info", e)
             return null
         }
     }
