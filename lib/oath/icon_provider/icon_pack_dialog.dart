@@ -183,9 +183,9 @@ class _IconPackDescription extends ConsumerWidget {
                       },
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Symbols.delete,
-                    size: MediaQuery.of(context).textScaler.scale(16),
+                    size: 20.0,
                   )),
             ],
           )
@@ -208,9 +208,8 @@ class _ImportActionChip extends ConsumerWidget {
                 _importAction(context, ref);
               }
             : null,
-        avatar: Icon(
+        avatar: const Icon(
           Symbols.download,
-          size: MediaQuery.of(context).textScaler.scale(16),
         ),
         label: Text(_label));
   }
