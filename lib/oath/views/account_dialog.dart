@@ -27,6 +27,7 @@ import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
@@ -132,26 +133,25 @@ class AccountDialog extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        Text(
-                          helper.title,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                          softWrap: true,
-                          textAlign: TextAlign.center,
+                        TooltipIfTruncated(
+                          text: helper.title,
+                          style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.fontSize),
                         ),
                         if (subtitle != null)
-                          Text(
-                            subtitle,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
+                          TooltipIfTruncated(
+                            text: subtitle,
                             // This is what ListTile uses for subtitle
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
                                 .copyWith(
                                   color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                           ),
                       ],

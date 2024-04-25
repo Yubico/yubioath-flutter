@@ -71,39 +71,37 @@ class SlotDialog extends ConsumerWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 48, bottom: 16),
+                  padding: const EdgeInsets.only(top: 48, bottom: 32),
                   child: Column(
                     children: [
-                      Text(
-                        pivSlot.getDisplayName(l10n),
-                        style: textTheme.headlineSmall,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                      ),
                       Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          pivSlot.getDisplayName(l10n),
+                          style: textTheme.headlineSmall,
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
                           children: [
                             if (certInfo != null || metadata != null) ...[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: CertInfoTable(
-                                  certInfo,
-                                  metadata,
-                                  alwaysIncludePrivate:
-                                      pivState.supportsMetadata,
-                                ),
+                              CertInfoTable(
+                                certInfo,
+                                metadata,
+                                alwaysIncludePrivate: pivState.supportsMetadata,
                               ),
+                              if (certInfo == null) const SizedBox(height: 16),
                             ],
                             if (certInfo == null) ...[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Text(
-                                  l10n.l_no_certificate,
-                                  softWrap: true,
-                                  textAlign: TextAlign.center,
-                                  style: subtitleStyle,
-                                ),
+                              Text(
+                                l10n.l_no_certificate,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                style: subtitleStyle,
                               ),
                             ],
                           ],
@@ -112,7 +110,6 @@ class SlotDialog extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
                 ActionListSection.fromMenuActions(
                   context,
                   l10n.s_actions,

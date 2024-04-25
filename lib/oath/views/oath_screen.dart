@@ -40,6 +40,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -303,50 +304,46 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                         elevation: 0.0,
                         color: Theme.of(context).hoverColor,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
                           child: Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    IconTheme(
-                                      data: IconTheme.of(context)
-                                          .copyWith(size: 24),
-                                      child: helper.buildCodeIcon(),
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    DefaultTextStyle.merge(
-                                      style: const TextStyle(fontSize: 28),
-                                      child: helper.buildCodeLabel(),
-                                    ),
-                                  ],
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconTheme(
+                                    data: IconTheme.of(context)
+                                        .copyWith(size: 24),
+                                    child: helper.buildCodeIcon(),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  DefaultTextStyle.merge(
+                                    style: const TextStyle(fontSize: 28),
+                                    child: helper.buildCodeLabel(),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                helper.title,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
+                              const SizedBox(height: 16),
+                              TooltipIfTruncated(
+                                text: helper.title,
+                                style: TextStyle(
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.fontSize),
                               ),
                               if (subtitle != null)
-                                Text(
-                                  subtitle,
-                                  softWrap: true,
-                                  textAlign: TextAlign.center,
+                                TooltipIfTruncated(
+                                  text: subtitle,
                                   // This is what ListTile uses for subtitle
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium!
                                       .copyWith(
                                         color: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .color,
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                 ),
                             ],

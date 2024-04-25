@@ -81,7 +81,11 @@ class FingerprintDialog extends ConsumerWidget {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
-                      const Icon(Symbols.fingerprint, size: 72),
+                      Icon(
+                        Symbols.fingerprint,
+                        size: 100,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ],
                   ),
                 ),
