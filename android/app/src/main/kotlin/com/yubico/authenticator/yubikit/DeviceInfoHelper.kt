@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,24 @@ package com.yubico.authenticator.yubikit
 
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.compatUtil
+import com.yubico.authenticator.device.unknownDeviceWithCapability
+import com.yubico.authenticator.device.unknownFido2DeviceInfo
+import com.yubico.authenticator.device.unknownOathDeviceInfo
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
+import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.otp.OtpConnection
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
+import com.yubico.yubikit.fido.ctap.Ctap2Session
 import com.yubico.yubikit.management.DeviceInfo
+import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.support.DeviceUtil
 
 import org.slf4j.LoggerFactory
 
-suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
+suspend fun getDeviceInfo(device: YubiKeyDevice): Info? {
     val pid = (device as? UsbYubiKeyDevice)?.pid
     val logger = LoggerFactory.getLogger("getDeviceInfo")
 
@@ -45,8 +51,32 @@ suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
         logger.debug("FIDO connection not available: {}", t.message)
         return SkyHelper(compatUtil).getDeviceInfo(device)
     }.getOrElse {
-        logger.debug("Failed to recognize device: {}", it.message)
-        throw it
+        // this is not a YubiKey
+        logger.debug("Probing unknown device")
+        try {
+            device.openConnection(SmartCardConnection::class.java).use { smartCardConnection ->
+                try {
+                    // if OATH session is available use it
+                    OathSession(smartCardConnection)
+                    logger.debug("Device supports OATH")
+                    return unknownOathDeviceInfo(device.transport)
+                } catch (applicationNotAvailable: ApplicationNotAvailableException) {
+                    try {
+                        // probe for CTAP2 availability
+                        Ctap2Session(smartCardConnection)
+                        logger.debug("Device supports FIDO2")
+                        return unknownFido2DeviceInfo(device.transport)
+                    } catch (applicationNotAvailable: ApplicationNotAvailableException) {
+                        logger.debug("Device not recognized")
+                        return unknownDeviceWithCapability(device.transport)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // no smart card connectivity
+            logger.error("Failure getting device info", e)
+            return null
+        }
     }
 
     val name = DeviceUtil.getName(deviceInfo, pid?.type)

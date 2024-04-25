@@ -105,21 +105,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
                   ),
-                  Flexible(
-                    flex: 6,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 200),
-                      child: _HeroAvatar(
-                        color: keyCustomization?.color ?? primaryColor,
-                        child: ProductImage(
-                          name: widget.deviceData.name,
-                          formFactor: widget.deviceData.info.formFactor,
-                          isNfc: widget.deviceData.info.supportedCapabilities
-                              .containsKey(Transport.nfc),
+                  if (widget.deviceData.info.version != const Version(0, 0, 0))
+                    Flexible(
+                      flex: 6,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 200),
+                        child: _HeroAvatar(
+                          color: keyCustomization?.color ?? primaryColor,
+                          child: ProductImage(
+                            name: widget.deviceData.name,
+                            formFactor: widget.deviceData.info.formFactor,
+                            isNfc: widget.deviceData.info.supportedCapabilities
+                                .containsKey(Transport.nfc),
+                          ),
                         ),
                       ),
-                    ),
-                  )
+                    )
                 ],
               )
             ],
@@ -186,13 +187,14 @@ class _DeviceContent extends ConsumerWidget {
                 .titleSmall
                 ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
-        Text(
-          l10n.l_firmware_version(version),
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall
-              ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
+        if (version != const Version(0, 0, 0))
+          Text(
+            l10n.l_firmware_version(version),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
       ],
     );
   }
