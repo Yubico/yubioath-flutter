@@ -831,7 +831,7 @@
     "s_nfc_dialog_fido_reset": "アクション: FIDOアプリケーションをリセット",
     "s_nfc_dialog_fido_unlock": "アクション：FIDOアプリケーションのロックを解除する",
     "l_nfc_dialog_fido_set_pin": "アクション：FIDOのPINの設定または変更",
-    "s_nfc_dialog_fido_delete_credential": "Action: delete Passkey",
+    "s_nfc_dialog_fido_delete_credential": "アクション: パスキーを削除",
     "s_nfc_dialog_fido_delete_fingerprint": "アクション: 指紋の削除",
     "s_nfc_dialog_fido_rename_fingerprint": "アクション: 指紋の名前を変更する",
     "s_nfc_dialog_fido_failure": "FIDO操作に失敗しました",
