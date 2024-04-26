@@ -131,7 +131,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                   elevation: 0.0,
                                   color: Theme.of(context).hoverColor,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(16),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 24),
                                     child: Column(
                                       children: [
                                         Text(
@@ -149,7 +150,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                             alwaysIncludePrivate:
                                                 pivState.supportsMetadata,
                                           ),
-                                          const SizedBox(height: 16),
+                                          if (selected.certInfo == null)
+                                            const SizedBox(height: 16)
                                         ],
                                         if (selected.certInfo == null)
                                           Text(

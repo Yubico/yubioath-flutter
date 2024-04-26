@@ -109,7 +109,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                       elevation: 0.0,
                                       color: Theme.of(context).hoverColor,
                                       child: Padding(
-                                        padding: const EdgeInsets.all(16),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 24, horizontal: 16.0),
                                         // TODO: Reuse from fingerprint_dialog
                                         child: Column(
                                           children: [
@@ -128,9 +129,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                               size: 100.0,
                                             ),
                                             const SizedBox(height: 8),
-                                            Text(selected.isConfigured
-                                                ? l10n.l_otp_slot_configured
-                                                : l10n.l_otp_slot_empty)
+                                            Text(
+                                              selected.isConfigured
+                                                  ? l10n.l_otp_slot_configured
+                                                  : l10n.l_otp_slot_empty,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                            )
                                           ],
                                         ),
                                       ),

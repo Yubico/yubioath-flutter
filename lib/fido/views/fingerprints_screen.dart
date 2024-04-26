@@ -278,7 +278,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                         elevation: 0.0,
                         color: Theme.of(context).hoverColor,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
                           // TODO: Reuse from fingerprint_dialog
                           child: Column(
                             children: [
