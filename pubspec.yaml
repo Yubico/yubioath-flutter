@@ -47,7 +47,7 @@ dependencies:
   collection: ^1.17.2
   shared_preferences: ^2.2.2
   flutter_riverpod: ^2.5.1
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   freezed_annotation: ^2.4.1
   window_manager:
     git:
