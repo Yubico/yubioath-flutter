@@ -76,7 +76,7 @@
     "l_help_and_about_desc": null,
     "s_help_and_feedback": "Hilfe und Feedback",
     "s_home": null,
-    "s_send_feedback": "Senden Sie uns Feedback",
+    "s_user_guide": null,
     "s_i_need_help": "Ich brauche Hilfe",
     "s_troubleshooting": "Problembehebung",
     "s_terms_of_use": "Nutzungsbedingungen",
@@ -189,7 +189,6 @@
             "app": {}
         }
     },
-    "l_app_not_supported_desc": "Diese Anwendung wird nicht unterstützt",
     "s_app_disabled": "Anwendung deaktiviert",
     "l_app_disabled_desc": "Aktivieren Sie die Anwendung '{app}' auf Ihrem YubiKey für Zugriff",
     "@l_app_disabled_desc": {
@@ -248,28 +247,10 @@
     "s_unblock_pin": null,
     "l_pin_mismatch": null,
     "l_puk_mismatch": null,
-    "l_new_pin_len": "Neue PIN muss mindestens {length} Zeichen lang sein",
-    "@l_new_pin_len": {
-        "placeholders": {
-            "length": {}
-        }
-    },
     "s_pin_set": "PIN gesetzt",
     "s_puk_set": null,
     "l_set_pin_failed": "PIN konnte nicht gesetzt werden: {message}",
     "@l_set_pin_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_set_puk_failed": null,
-    "@l_set_puk_failed": {
-        "placeholders": {
-            "message": {}
-        }
-    },
-    "l_unblock_pin_failed": null,
-    "@l_unblock_pin_failed": {
         "placeholders": {
             "message": {}
         }
@@ -294,7 +275,6 @@
     },
     "s_fido_pin_protection": "FIDO PIN Schutz",
     "s_pin_change_required": null,
-    "l_fido_pin_protection_optional": "Optionaler FIDO PIN Schutz",
     "l_enter_fido2_pin": "Geben Sie die FIDO2 PIN für Ihren YubiKey ein",
     "l_pin_blocked_reset": "PIN ist blockiert; setzen Sie die FIDO Anwendung auf Werkseinstellung zurück",
     "l_pin_blocked": null,
@@ -591,7 +571,6 @@
             "slot": {}
         }
     },
-    "l_generating_private_key": null,
     "s_private_key_generated": null,
     "p_select_what_to_delete": null,
     "p_warning_delete_certificate": null,
@@ -739,12 +718,6 @@
     "l_append_enter_desc": null,
 
     "@_otp_errors": {},
-    "p_otp_slot_configuration_error": null,
-    "@p_otp_slot_configuration_error": {
-        "placeholders": {
-            "slot": {}
-        }
-    },
     "p_otp_swap_error": null,
     "l_wrong_access_code": null,
 
@@ -907,10 +880,8 @@
     "p_ndef_set_clip_failure": null,
 
     "@_key_customization": {},
-    "s_customize_key_action": null,
     "s_set_label": null,
     "s_change_label": null,
-    "s_theme_color": null,
     "s_color": null,
     "p_set_will_add_custom_name": null,
     "p_rename_will_change_custom_name": null,
