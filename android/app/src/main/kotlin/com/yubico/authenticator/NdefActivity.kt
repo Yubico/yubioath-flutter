@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator
 
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NdefMessage
@@ -101,13 +102,30 @@ class NdefActivity : Activity() {
         val context = if (appPreferences.communityTranslationsEnabled)
             this
         else {
-            // always use 'us' locale
             val configuration = resources.configuration
-            configuration.setLocale(Locale.US)
+            configuration.setLocale(getLocale())
             createConfigurationContext(configuration)
         }
         Toast.makeText(context, value, length).show()
     }
+
+    private fun getLocale() : Locale =
+        compatUtil.from(Build.VERSION_CODES.N) {
+            getLocaleN()
+        }.otherwise {
+            @Suppress("deprecation")
+            resources.configuration.locale
+        }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private fun getLocaleN() : Locale =
+        resources.configuration.locales.getFirstMatch(
+            arrayOf(
+                Locale.JAPAN.toLanguageTag(),
+                Locale.FRANCE.toLanguageTag(),
+                Locale.US.toLanguageTag(),
+            )
+        ) ?: Locale.US
 
     private fun parseOtpFromIntent(): OtpSlotValue {
         val parcelable = intent.parcelableArrayExtra<NdefMessage>(NfcAdapter.EXTRA_NDEF_MESSAGES)
