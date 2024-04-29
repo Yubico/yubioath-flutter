@@ -1,4 +1,4 @@
-$version="6.4.1-dev.0"
+$version="7.0.0"
 
 echo "Clean-up of old files"
 rm *.msi
