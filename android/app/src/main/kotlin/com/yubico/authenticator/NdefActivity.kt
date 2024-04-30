@@ -39,6 +39,10 @@ class NdefActivity : Activity() {
 
     private val logger = LoggerFactory.getLogger(NdefActivity::class.java)
 
+    companion object {
+        private val officialLocalization = arrayOf(Locale.JAPAN, Locale.FRANCE, Locale.US)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appPreferences = AppPreferences(this)
@@ -114,17 +118,15 @@ class NdefActivity : Activity() {
             getLocaleN()
         }.otherwise {
             @Suppress("deprecation")
-            resources.configuration.locale
+            officialLocalization.firstOrNull {
+                it == resources.configuration.locale
+            } ?: Locale.US
         }
 
     @TargetApi(Build.VERSION_CODES.N)
     private fun getLocaleN() : Locale =
         resources.configuration.locales.getFirstMatch(
-            arrayOf(
-                Locale.JAPAN.toLanguageTag(),
-                Locale.FRANCE.toLanguageTag(),
-                Locale.US.toLanguageTag(),
-            )
+            officialLocalization.map { it.toLanguageTag() }.toTypedArray()
         ) ?: Locale.US
 
     private fun parseOtpFromIntent(): OtpSlotValue {
