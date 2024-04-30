@@ -34,9 +34,6 @@ if [ "$OS" = "macos" ]; then
 		rm -rf $HELPER
 		mkdir -p $HELPER
 
-		# Needed to build zxing-cpp properly
-		export CMAKE_OSX_ARCHITECTURES="arm64;x86_64"
-
 		# Export exact versions
 		poetry export --without-hashes > $HELPER/requirements.txt
 		grep cryptography $HELPER/requirements.txt > $HELPER/cryptography.txt
