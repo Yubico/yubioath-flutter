@@ -38,8 +38,13 @@ jobs:
     - name: Build the Helper
       run: ./build-helper.sh
 
+    - name: Tar the helper
+      run: |
+        mkdir deploy
+        tar -czf deploy/helper.tar.gz -C build/macos/ "helper"
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: helper-macos
-        path: build/macos/
+        path: deploy/
