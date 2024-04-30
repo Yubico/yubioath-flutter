@@ -28,17 +28,7 @@ jobs:
       with:
         podfile-path: macos/Podfile.lock
 
-    - name: Cache helper
-      id: cache-helper
-      uses: actions/cache@v4
-      with:
-        path: |
-          build/macos/helper
-          assets/licenses/helper.json
-        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
-
     - name: Install dependencies
-      if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         brew update
         brew install swig
@@ -46,56 +36,10 @@ jobs:
         pip install poetry
 
     - name: Build the Helper
-      if: steps.cache-helper.outputs.cache-hit != 'true'
       run: ./build-helper.sh
-
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        architecture: 'x64'
-        flutter-version: ${{ env.FLUTTER }}
-    - run: flutter config --enable-macos-desktop
-    - run: flutter --version
-
-    - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
-      run: |
-        pip install pre-commit
-        pre-commit run --all-files
-        flutter test
-
-    - name: Build the app
-      run: |
-        export VERSION_NAME=`./set-version.py | head -n 1 | sed 's/-.*$//g'`
-        flutter build macos --build-name=$VERSION_NAME
-
-    - name: Check generated files
-      run: git diff --exit-code
-
-    - name: Create dmg
-      run: |
-        brew install create-dmg
-        mkdir source_folder
-        cp -R build/macos/Build/Products/Release/"Yubico Authenticator.app" source_folder
-        cp resources/icons/dmg-background.png .
-        sh create-dmg.sh
-
-    - name: Rename and archive app bundle
-      run: |
-        export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-        mkdir deploy
-        mv yubioath-desktop.dmg deploy
-        tar -czf deploy/yubioath-desktop-${REF}.app.tar.gz -C build/macos/Build/Products/Release "Yubico Authenticator.app"
-        mv create-dmg.sh deploy
-        mv resources/icons/dmg-background.png deploy
-        mv macos/helper.entitlements deploy
-        mv macos/helper-sandbox.entitlements deploy
-        mv macos/Runner/Release.entitlements deploy
-        mv macos/release-macos.sh deploy
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: yubioath-desktop-macos
-        path: deploy
+        name: helper-macos
+        path: build/macos/
