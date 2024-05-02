@@ -17,6 +17,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
@@ -25,13 +26,18 @@ import '../features.dart' as features;
 import '../models.dart';
 import 'account_helper.dart';
 import 'account_icon.dart';
+import 'actions.dart';
 
 class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
   final bool expanded;
   final bool selected;
+  final bool pinned;
   const AccountView(this.credential,
-      {super.key, required this.expanded, required this.selected});
+      {super.key,
+      required this.expanded,
+      required this.selected,
+      this.pinned = false});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
@@ -116,6 +122,95 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ? CopyIntent<OathCredential>(credential)
           : null,
       buildPopupActions: (_) => helper.buildActions(),
+      borderRadius: widget.pinned ? BorderRadius.circular(16) : null,
+      itemBuilder: widget.pinned
+          ? (context) {
+              return ListTile(
+                mouseCursor: !(isDesktop && !widget.expanded)
+                    ? SystemMouseCursors.click
+                    : null,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                selectedTileColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
+                selectedColor:
+                    Theme.of(context).colorScheme.onSecondaryContainer,
+                selected: widget.selected,
+                tileColor: Theme.of(context).hoverColor,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                title: Column(
+                  children: [
+                    Row(
+                      children: [
+                        AccountIcon(
+                            issuer: credential.issuer,
+                            defaultWidget: circleAvatar),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                helper.title,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface),
+                                overflow: TextOverflow.fade,
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                              if (subtitle != null) ...[
+                                const SizedBox(height: 2.0),
+                                Text(
+                                  subtitle,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant),
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                )
+                              ]
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        helper.code != null
+                            ? FilledButton.tonalIcon(
+                                icon: helper.buildCodeIcon(),
+                                label: helper.buildCodeLabel(),
+                                style: buttonStyle,
+                                onPressed: Actions.handler(context, openIntent),
+                              )
+                            : FilledButton.tonal(
+                                style: buttonStyle,
+                                onPressed: Actions.handler(context, openIntent),
+                                child: helper.buildCodeIcon()),
+                        IconButton(
+                          onPressed: Actions.handler(
+                              context, TogglePinIntent(credential)),
+                          icon: const Icon(Symbols.push_pin, fill: 1),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              );
+            }
+          : null,
     );
   }
 }
