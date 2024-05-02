@@ -34,7 +34,7 @@ class AccountList extends ConsumerWidget {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         int itemsPerRow = 1;
-        if (width <= 500) {
+        if (width <= 420) {
           // single column
           itemsPerRow = 1;
         } else if (width <= 620) {
