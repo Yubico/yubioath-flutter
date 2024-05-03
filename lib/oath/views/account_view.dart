@@ -188,6 +188,15 @@ class _AccountViewState extends ConsumerState<AccountView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        IconButton(
+                          onPressed: Actions.handler(
+                              context, TogglePinIntent(credential)),
+                          icon: Icon(
+                            Symbols.push_pin,
+                            fill: 1,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
                         helper.code != null
                             ? FilledButton.tonalIcon(
                                 icon: helper.buildCodeIcon(),
@@ -199,11 +208,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                 style: buttonStyle,
                                 onPressed: Actions.handler(context, openIntent),
                                 child: helper.buildCodeIcon()),
-                        IconButton(
-                          onPressed: Actions.handler(
-                              context, TogglePinIntent(credential)),
-                          icon: const Icon(Symbols.push_pin, fill: 1),
-                        )
                       ],
                     )
                   ],
