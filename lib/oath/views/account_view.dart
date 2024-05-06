@@ -16,6 +16,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -192,10 +193,14 @@ class _AccountViewState extends ConsumerState<AccountView> {
                           onPressed: Actions.handler(
                               context, TogglePinIntent(credential)),
                           icon: Icon(
-                            Symbols.push_pin,
-                            fill: 1,
-                            color: Colors.grey.shade600,
+                            Symbols.keep_off,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer
+                                .withOpacity(0.4),
                           ),
+                          tooltip:
+                              AppLocalizations.of(context)!.s_unpin_account,
                         ),
                         helper.code != null
                             ? FilledButton.tonalIcon(
