@@ -16,15 +16,9 @@
 
 import 'package:url_launcher/url_launcher.dart';
 
-import '../core/state.dart';
+void launchDocumentationUrl() => _launchUrl('https://yubi.co/ya-documentation');
 
-void launchFeedbackUrl() => _launchUrl(isAndroid
-    ? 'https://yubi.co/ya-feedback-android'
-    : 'https://yubi.co/ya-feedback-desktop');
-
-void launchHelpUrl() => _launchUrl(isAndroid
-    ? 'https://yubi.co/ya-help-android'
-    : 'https://yubi.co/ya-help-desktop');
+void launchHelpUrl() => _launchUrl('https://yubi.co/ya-support');
 
 void launchTermsUrl() => _launchUrl('https://yubi.co/terms');
 

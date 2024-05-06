@@ -92,9 +92,9 @@ void main() {
         await tester.tap(helpDrawerButton);
         await tester.longWait();
         if (isAndroid) {
-          expect(find.byKey(feedbackButton).hitTestable(), findsOneWidget);
+          expect(find.byKey(userGuideButton).hitTestable(), findsOneWidget);
         } else {
-          await tester.tap(find.byKey(feedbackButton).hitTestable());
+          await tester.tap(find.byKey(userGuideButton).hitTestable());
           await tester.longWait();
         }
       });
