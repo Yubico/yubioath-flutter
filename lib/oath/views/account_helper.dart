@@ -89,10 +89,7 @@ class AccountHelper {
             ActionItem(
               key: keys.togglePinAction,
               feature: features.accountsPin,
-              icon: Icon(
-                Symbols.push_pin,
-                fill: pinned ? 1 : 0,
-              ),
+              icon: Icon(pinned ? Symbols.keep_off : Symbols.keep),
               title: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               subtitle: l10n.l_pin_account_desc,
               intent: TogglePinIntent(credential),
