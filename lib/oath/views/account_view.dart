@@ -16,9 +16,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
@@ -27,7 +25,6 @@ import '../features.dart' as features;
 import '../models.dart';
 import 'account_helper.dart';
 import 'account_icon.dart';
-import 'actions.dart';
 
 class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
@@ -164,8 +161,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                 maxLines: 1,
                                 softWrap: false,
                               ),
-                              if (subtitle != null) ...[
-                                const SizedBox(height: 2.0),
+                              if (subtitle != null)
                                 Text(
                                   subtitle,
                                   style: Theme.of(context)
@@ -179,7 +175,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                   maxLines: 1,
                                   softWrap: false,
                                 )
-                              ]
                             ],
                           ),
                         )
@@ -187,21 +182,21 @@ class _AccountViewState extends ConsumerState<AccountView> {
                     ),
                     const SizedBox(height: 8.0),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        IconButton(
-                          onPressed: Actions.handler(
-                              context, TogglePinIntent(credential)),
-                          icon: Icon(
-                            Symbols.keep_off,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer
-                                .withOpacity(0.4),
-                          ),
-                          tooltip:
-                              AppLocalizations.of(context)!.s_unpin_account,
-                        ),
+                        // IconButton(
+                        //   onPressed: Actions.handler(
+                        //       context, TogglePinIntent(credential)),
+                        //   icon: Icon(
+                        //     Symbols.keep_off,
+                        //     color: Theme.of(context)
+                        //         .colorScheme
+                        //         .onSecondaryContainer
+                        //         .withOpacity(0.4),
+                        //   ),
+                        //   tooltip:
+                        //       AppLocalizations.of(context)!.s_unpin_account,
+                        // ),
                         helper.code != null
                             ? FilledButton.tonalIcon(
                                 icon: helper.buildCodeIcon(),
