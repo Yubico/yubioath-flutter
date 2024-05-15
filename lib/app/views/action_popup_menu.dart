@@ -30,6 +30,7 @@ Future showPopupMenu(BuildContext context, Offset globalPosition,
         globalPosition.dx,
         0,
       ),
+      popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
       items: actions.map((e) => _buildMenuItem(context, e)).toList(),
     );
 
