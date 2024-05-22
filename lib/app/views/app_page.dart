@@ -504,6 +504,12 @@ class _AppPageState extends ConsumerState<AppPage> {
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
+    var navigationText = showNavigation
+        ? (fullyExpanded
+            ? l10n.s_collapse_navigation
+            : MaterialLocalizations.of(context).openAppDrawerTooltip)
+        : l10n.s_expand_navigation;
+
     if (widget.onFileDropped != null) {
       body = FileDropTarget(
         onFileDropped: widget.onFileDropped!,
@@ -631,13 +637,8 @@ class _AppPageState extends ConsumerState<AppPage> {
                       child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: IconButton(
-                      icon: const Icon(Symbols.menu),
-                      tooltip: showNavigation
-                          ? (fullyExpanded
-                              ? l10n.s_collapse_navigation
-                              : MaterialLocalizations.of(context)
-                                  .openAppDrawerTooltip)
-                          : l10n.s_expand_navigation,
+                      icon: Icon(Symbols.menu, semanticLabel: navigationText),
+                      tooltip: navigationText,
                       onPressed: fullyExpanded
                           ? () {
                               ref
@@ -673,10 +674,12 @@ class _AppPageState extends ConsumerState<AppPage> {
                   );
                 },
                 icon: widget.keyActionsBadge
-                    ? const Badge(
-                        child: Icon(Symbols.more_vert),
+                    ? Badge(
+                        child: Icon(Symbols.more_vert,
+                            semanticLabel: l10n.s_configure_yk),
                       )
-                    : const Icon(Symbols.more_vert),
+                    : Icon(Symbols.more_vert,
+                        semanticLabel: l10n.s_configure_yk),
                 iconSize: 24,
                 tooltip: l10n.s_configure_yk,
                 padding: const EdgeInsets.all(12),
