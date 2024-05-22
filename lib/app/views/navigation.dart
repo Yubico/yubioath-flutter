@@ -148,7 +148,8 @@ class NavigationContent extends ConsumerWidget {
                       leading: Icon(
                         app._icon,
                         fill: app == currentSection ? 1.0 : 0.0,
-                        semanticLabel: app.getDisplayName(l10n),
+                        semanticLabel:
+                            !extended ? app.getDisplayName(l10n) : null,
                       ),
                       collapsed: !extended,
                       selected: app == currentSection,
