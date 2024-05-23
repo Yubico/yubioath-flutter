@@ -48,7 +48,7 @@ extension on Capability {
   IconData get _icon => switch (this) {
         Capability.oath => Symbols.supervisor_account,
         Capability.fido2 => Symbols.passkey,
-        Capability.piv => Symbols.badge,
+        Capability.piv => Symbols.id_card,
         _ => throw UnsupportedError('Icon not defined'),
       };
 }

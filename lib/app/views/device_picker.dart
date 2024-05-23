@@ -189,6 +189,7 @@ class _DeviceMenuButton extends ConsumerWidget {
           itemBuilder: (context) {
             return menuItems;
           },
+          popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
         ),
       ),
     );

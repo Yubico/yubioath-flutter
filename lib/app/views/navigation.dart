@@ -93,7 +93,7 @@ extension on Section {
         Section.passkeys => Symbols.passkey,
         Section.fingerprints => Symbols.fingerprint,
         Section.slots => Symbols.touch_app,
-        Section.certificates => Symbols.badge,
+        Section.certificates => Symbols.id_card,
       };
 
   Key get _key => switch (this) {

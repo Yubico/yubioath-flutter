@@ -72,6 +72,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
       color: Theme.of(context).colorScheme.background,
+      popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
       items: widget.items
           .map((e) => PopupMenuItem<T>(
                 enabled:
