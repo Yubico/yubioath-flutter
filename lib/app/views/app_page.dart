@@ -652,7 +652,15 @@ class _AppPageState extends ConsumerState<AppPage> {
                   const SizedBox(width: 12),
                 ],
               )
-            : null,
+            : Builder(
+                builder: (context) {
+                  // Need to wrap with builder to get Scaffold context
+                  return IconButton(
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    icon: const Icon(Symbols.menu),
+                  );
+                },
+              ),
         actions: [
           if (widget.actionButtonBuilder == null &&
               (widget.keyActionsBuilder != null && !hasManage))
