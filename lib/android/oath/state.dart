@@ -207,10 +207,8 @@ final addCredentialsToAnyProvider = Provider(
 final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
-    var notifier = _AndroidCredentialListNotifier(
-      ref.watch(withContextProvider),
-      ref.watch(currentDeviceProvider)?.transport == Transport.usb,
-    );
+    var notifier =
+        _AndroidCredentialListNotifier(ref.watch(withContextProvider), ref);
     return notifier;
   },
 );
@@ -218,22 +216,15 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
 class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final _events = const EventChannel('android.oath.credentials');
   final WithContext _withContext;
-  final bool _isUsbAttached;
+  final Ref _ref;
   late StreamSubscription _sub;
 
-  _AndroidCredentialListNotifier(this._withContext, this._isUsbAttached)
-      : super() {
+  _AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       List<OathPair>? newState = json != null
           ? List.from((json as List).map((e) => OathPair.fromJson(e)).toList())
           : null;
-      if (state != null && newState == null) {
-        // If we go from non-null to null this means we should stop listening to
-        // avoid receiving a message for a different notifier as there is only
-        // one channel.
-        _sub.cancel();
-      }
       state = newState;
     });
   }
@@ -249,7 +240,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     // Prompt for touch if needed
     UserInteractionController? controller;
     Timer? touchTimer;
-    if (_isUsbAttached) {
+    if (_ref.read(currentDeviceProvider)?.transport == Transport.usb) {
       void triggerTouchPrompt() async {
         controller = await _withContext(
           (context) async {
