@@ -145,8 +145,12 @@ class NavigationContent extends ConsumerWidget {
                 ...availableSections.map((app) => NavigationItem(
                       key: app._key,
                       title: app.getDisplayName(l10n),
-                      leading: Icon(app._icon,
-                          fill: app == currentSection ? 1.0 : 0.0),
+                      leading: Icon(
+                        app._icon,
+                        fill: app == currentSection ? 1.0 : 0.0,
+                        semanticLabel:
+                            !extended ? app.getDisplayName(l10n) : null,
+                      ),
                       collapsed: !extended,
                       selected: app == currentSection,
                       onTap: data == null && currentSection == Section.home ||

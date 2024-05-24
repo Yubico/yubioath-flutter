@@ -285,8 +285,11 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
                 overflow: TextOverflow.fade,
                 softWrap: false,
               ),
-              subtitle: Text(widget.subtitle,
-                  overflow: TextOverflow.fade, softWrap: false),
+              subtitle: Text(
+                widget.subtitle,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
               dense: true,
               onTap: widget.onTap,
             ),
@@ -314,19 +317,23 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
           child: widget.selected
-              ? IconButton.filled(
-                  tooltip: isDesktop ? tooltip : null,
-                  icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onTap,
-                )
-              : IconButton(
-                  tooltip: isDesktop ? tooltip : null,
-                  icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onTap,
-                  color: colorScheme.secondary,
-                ),
+              ? Semantics(
+                  label: tooltip,
+                  child: IconButton.filled(
+                    tooltip: isDesktop ? tooltip : null,
+                    icon: widget.leading,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    onPressed: widget.onTap,
+                  ))
+              : Semantics(
+                  label: tooltip,
+                  child: IconButton(
+                    tooltip: isDesktop ? tooltip : null,
+                    icon: widget.leading,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    onPressed: widget.onTap,
+                    color: colorScheme.secondary,
+                  )),
         ),
       );
     }
