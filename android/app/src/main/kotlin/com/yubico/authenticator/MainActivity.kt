@@ -109,7 +109,7 @@ class MainActivity : FlutterFragmentActivity() {
             yubikit.startNfcDiscovery(
                 nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
                 this,
-                ::processYubiKey
+                ::launchProcessYubiKey
             )
             hasNfc = true
         } catch (e: NfcNotAvailable) {
@@ -131,7 +131,7 @@ class MainActivity : FlutterFragmentActivity() {
                 logger.debug("YubiKey was disconnected, stopping usb discovery")
                 stopUsbDiscovery()
             }
-            processYubiKey(device)
+            launchProcessYubiKey(device)
         }
     }
 
@@ -214,7 +214,7 @@ class MainActivity : FlutterFragmentActivity() {
                 val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
                 lifecycleScope.launch {
                     try {
-                        contextManager?.processYubiKey(device)
+                        processYubiKey(device)
                         device.remove {
                             executor.shutdown()
                             startNfcDiscovery()
@@ -269,38 +269,43 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
-    private fun processYubiKey(device: YubiKeyDevice) {
+    private suspend fun processYubiKey(device: YubiKeyDevice) {
+        val deviceInfo = getDeviceInfo(device)
+        deviceManager.setDeviceInfo(deviceInfo)
+
+        if (deviceInfo == null) {
+            logger.debug("Device info is null")
+            return
+        }
+
+        val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
+        logger.debug("Connected key supports: {}", supportedContexts)
+        if (!supportedContexts.contains(viewModel.appContext.value)) {
+            val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
+            logger.debug(
+                "Current context ({}) is not supported by the key. Using preferred context {}",
+                viewModel.appContext.value,
+                preferredContext
+            )
+            switchContext(preferredContext)
+        }
+
+        if (contextManager == null) {
+            switchContext(DeviceManager.getPreferredContext(supportedContexts))
+        }
+
+        contextManager?.let {
+            try {
+                it.processYubiKey(device)
+            } catch (e: Throwable) {
+                logger.error("Error processing YubiKey in AppContextManager", e)
+            }
+        }
+    }
+
+    private fun launchProcessYubiKey(device: YubiKeyDevice) {
         lifecycleScope.launch {
-            val deviceInfo = getDeviceInfo(device)
-            deviceManager.setDeviceInfo(deviceInfo)
-
-            if (deviceInfo == null) {
-                return@launch
-            }
-
-            val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
-            logger.debug("Connected key supports: {}", supportedContexts)
-            if (!supportedContexts.contains(viewModel.appContext.value)) {
-                val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
-                logger.debug(
-                    "Current context ({}) is not supported by the key. Using preferred context {}",
-                    viewModel.appContext.value,
-                    preferredContext
-                )
-                switchContext(preferredContext)
-            }
-
-            if (contextManager == null) {
-                switchContext(DeviceManager.getPreferredContext(supportedContexts))
-            }
-
-            contextManager?.let {
-                try {
-                    it.processYubiKey(device)
-                } catch (e: Throwable) {
-                    logger.error("Error processing YubiKey in AppContextManager", e)
-                }
-            }
+            processYubiKey(device)
         }
     }
 
@@ -342,7 +347,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.appContext.observe(this) {
             switchContext(it)
-            viewModel.connectedYubiKey.value?.let(::processYubiKey)
+            viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
         }
     }
 
