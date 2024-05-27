@@ -108,9 +108,13 @@ class MainActivity : FlutterFragmentActivity() {
             logger.debug("Starting nfc discovery")
             yubikit.startNfcDiscovery(
                 nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-                this,
-                ::launchProcessYubiKey
-            )
+                this
+            ) { nfcYubiKeyDevice ->
+                if (!deviceManager.isUsbKeyConnected()) {
+                    launchProcessYubiKey(nfcYubiKeyDevice)
+                }
+            }
+
             hasNfc = true
         } catch (e: NfcNotAvailable) {
             hasNfc = false
