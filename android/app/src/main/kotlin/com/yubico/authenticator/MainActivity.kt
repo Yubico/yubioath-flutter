@@ -278,7 +278,6 @@ class MainActivity : FlutterFragmentActivity() {
         deviceManager.setDeviceInfo(deviceInfo)
 
         if (deviceInfo == null) {
-            logger.debug("Device info is null")
             return
         }
 

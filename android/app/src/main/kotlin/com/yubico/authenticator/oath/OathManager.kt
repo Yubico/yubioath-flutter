@@ -135,12 +135,10 @@ class OathManager(
 
                 refreshJob = coroutineScope.launch {
                     val delayMs = earliest - now
-                    logger.debug("XXX Will execute refresh in {}ms", delayMs)
+                    logger.debug("Will execute refresh in {}ms", delayMs)
                     if (delayMs > 0) {
                         delay(delayMs)
                     }
-                    logger.debug("XXX {}ms later will refresh!", delayMs)
-                    ensureActive()
                     val currentState = lifecycleOwner.lifecycle.currentState
                     if (currentState.isAtLeast(Lifecycle.State.STARTED)) {
                         requestRefresh()
