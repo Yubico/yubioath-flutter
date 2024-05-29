@@ -54,7 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final enabledCapabilities = widget.deviceData.info.config
             .enabledCapabilities[widget.deviceData.node.transport] ??
         0;
-    final primaryColor = ref.watch(defaultColorProvider);
+    final primaryColor = ref.watch(primaryColorProvider);
 
     // We need this to avoid unwanted app switch animation
     if (hide) {
@@ -219,19 +219,14 @@ class _DeviceColor extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final primaryColor = ref.watch(defaultColorProvider);
-    final defaultColor =
-        (isAndroid && ref.read(androidSdkVersionProvider) >= 31)
-            ? theme.colorScheme.onSurface
-            : primaryColor;
+    final defaultColor = ref.watch(defaultColorProvider);
     final customColor = initialCustomization.color;
 
     return ChoiceFilterChip<Color?>(
       disableHover: true,
       value: customColor,
       items: const [null],
-      selected: customColor != null && customColor != defaultColor,
+      selected: customColor != null && customColor.value != defaultColor.value,
       itemBuilder: (e) => Wrap(
         alignment: WrapAlignment.center,
         runSpacing: 8,
@@ -250,32 +245,31 @@ class _DeviceColor extends ConsumerWidget {
               Colors.lightGreen
           ].map((e) => _ColorButton(
                 color: e,
-                isSelected: customColor == e,
+                isSelected: customColor?.value == e.value,
                 onPressed: () {
                   _updateColor(e, ref);
                   Navigator.of(context).pop();
                 },
               )),
 
-          // remove color button
+          // "use default color" button
           RawMaterialButton(
             onPressed: () {
               _updateColor(null, ref);
               Navigator.of(context).pop();
             },
             constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-            fillColor: (isAndroid && ref.read(androidSdkVersionProvider) >= 31)
-                ? theme.colorScheme.onSurface
-                : primaryColor,
+            fillColor: defaultColor,
             hoverColor: Colors.black12,
             shape: const CircleBorder(),
-            child: Icon(
-              Symbols.cancel,
-              size: 16,
-              color: customColor == null
-                  ? theme.colorScheme.onSurface
-                  : theme.colorScheme.surface.withOpacity(0.2),
-            ),
+            child: Icon(customColor == null ? Symbols.circle : Symbols.clear,
+                fill: 1,
+                size: 16,
+                weight: 700,
+                opticalSize: 20,
+                color: defaultColor.computeLuminance() > 0.7
+                    ? Colors.grey // for bright colors
+                    : Colors.white),
           ),
         ],
       ),

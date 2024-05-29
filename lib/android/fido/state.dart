@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -177,8 +178,10 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
       if (json == null) {
         state = const AsyncValue.loading();
       } else {
-        List<Fingerprint> newState = List.from(
-            (json as List).map((e) => Fingerprint.fromJson(e)).toList());
+        List<Fingerprint> newState = List.from((json as List)
+            .map((e) => Fingerprint.fromJson(e))
+            .sortedBy<String>((f) => f.label.toLowerCase())
+            .toList());
         state = AsyncValue.data(newState);
       }
     }, onError: (err, stackTrace) {
