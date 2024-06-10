@@ -33,13 +33,14 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.NdefUtils
 import com.yubico.yubikit.oath.OathSession
-import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import java.util.Timer
 import java.util.concurrent.Executors
+import kotlin.concurrent.schedule
 
 
 typealias ResourceId = Int
@@ -114,6 +115,12 @@ class NdefActivity : Activity() {
         }
     }
 
+    data class WidgetContent(
+        val issuer: String?,
+        val accountName: String,
+        val code: String
+    )
+
     private fun updateWidget() {
 
         // Handle existing tag when launched from NDEF
@@ -128,40 +135,55 @@ class NdefActivity : Activity() {
             // TODO implement properly
             GlobalScope.launch {
                 device.openConnection(SmartCardConnection::class.java).use {
-
-                    val deviceInfo = DeviceUtil.readInfo(it, null)
-                    val name = DeviceUtil.getName(deviceInfo, null)
-
                     val session = OathSession(it)
-                    val firstCred = session.credentials[0]
-
-                    val code = session.calculateCode(firstCred)
-
-                    AppWidget.latestCode = code.value
-                    AppWidget.latestIssuer = firstCred.issuer ?: ""
-                    AppWidget.latestAccountName = firstCred.accountName
-
-                    val updateWidgetIntent = Intent(
-                        this@NdefActivity,
-                        AppWidget::class.java
-                    )
-                    updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-
-                    val ids: IntArray = AppWidgetManager.getInstance(application)
-                        .getAppWidgetIds(
-                            android.content.ComponentName(
-                                application,
-                                AppWidget::class.java
-                            )
+                    val widgetContent = if (session.credentials.isEmpty()) {
+                        null
+                    } else {
+                        val firstCred = session.credentials[0]
+                        val code = session.calculateCode(firstCred)
+                        WidgetContent(
+                            firstCred.issuer,
+                            firstCred.accountName,
+                            code.value
                         )
+                    }
 
-                    updateWidgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                    sendBroadcast(updateWidgetIntent)
+                    updateWidgetContent(widgetContent)
+
+                    Timer("Clear widget", false).schedule(8 * 1000) {
+                        updateWidgetContent(null)
+                    }
                 }
-
-
             }
         }
+    }
+
+    private fun updateWidgetContent(widgetContent: WidgetContent?) {
+        if (widgetContent != null) {
+            AppWidget.hasCode = true
+            AppWidget.latestCode = widgetContent.code
+            AppWidget.latestIssuer = widgetContent.issuer ?: ""
+            AppWidget.latestAccountName = widgetContent.accountName
+        } else {
+            AppWidget.hasCode = false
+        }
+
+        val updateWidgetIntent = Intent(
+            this@NdefActivity,
+            AppWidget::class.java
+        )
+        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+
+        val ids: IntArray = AppWidgetManager.getInstance(application)
+            .getAppWidgetIds(
+                android.content.ComponentName(
+                    application,
+                    AppWidget::class.java
+                )
+            )
+
+        updateWidgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        sendBroadcast(updateWidgetIntent)
     }
 
     private fun showToast(value: ResourceId, length: Int) {

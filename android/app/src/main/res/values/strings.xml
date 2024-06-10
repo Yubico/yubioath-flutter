@@ -8,4 +8,8 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">Show account codes from a YubiKey</string>
+    <string name="appwidget_issuer_text">Issuer</string>
+    <string name="appwidget_account_text">Account</string>
+    <string name="appwidget_yubikey">YubiKey</string>
+    <string name="appwidget_tap_your_yubikey_text">Tap your YubiKey</string>
 </resources>

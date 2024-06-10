@@ -1,43 +1,95 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.Android.AppWidget.Container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:theme="@style/Theme.Android.AppWidgetContainer">
 
-    <TextView
-        android:id="@+id/appwidget_text"
+    <LinearLayout
+        android:id="@+id/appwidget_tap_key_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:drawableStart="@drawable/baseline_schedule_24"
-        android:drawableTint="@color/widget_fg"
-        android:drawablePadding="8dp"
-        android:textColor="@color/widget_fg"
-        tools:text="123 456"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-    <TextView
-        android:id="@+id/issuer_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/appwidget_text"
-        android:contentDescription="Issuer"
-        android:text="Issuer"
-        android:textColor="@color/widget_fg"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/appwidget_yubikey"
+            android:foregroundGravity="top"
+            android:maxHeight="45dp"
+            android:src="@mipmap/widget_key"
+            android:tint="@color/widget_fg" />
 
-    <TextView
-        android:id="@+id/account_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/issuer_text"
-        android:textColor="@color/widget_fg"
-        android:contentDescription="Account"
-        android:text="Account"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/appwidget_tap_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-condensed-light"
+            android:text="@string/appwidget_tap_your_yubikey_text"
+            android:textAlignment="center"
+            android:textColor="@color/widget_fg"
+            android:textSize="12sp"
+            tools:text="@string/appwidget_tap_your_yubikey_text" />
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/appwidget_code_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="4dp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/appwidget_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableStart="@drawable/baseline_schedule_24"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/widget_fg"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/widget_fg"
+                android:textSize="24sp"
+                tools:text="123 456" />
+
+            <TextView
+                android:id="@+id/issuer_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/appwidget_issuer_text"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/appwidget_issuer_text"
+                android:textColor="@color/widget_fg"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/account_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/appwidget_account_text"
+                android:fontFamily="sans-serif-condensed-light"
+                android:text="@string/appwidget_account_text"
+                android:textColor="@color/widget_fg"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
