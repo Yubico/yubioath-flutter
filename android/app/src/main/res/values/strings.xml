@@ -5,4 +5,7 @@
     <string name="p_ndef_set_password">Successfully copied password from YubiKey to clipboard.</string>
     <string name="p_ndef_parse_failure">Failed to parse OTP code from YubiKey.</string>
     <string name="p_ndef_set_clip_failure">Failed to access clipboard when trying to copy OTP code from YubiKey.</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">Show account codes from a YubiKey</string>
 </resources>

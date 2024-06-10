@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.yubico.authenticator
 
 import android.annotation.TargetApi
 import android.app.Activity
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
@@ -26,10 +27,19 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import com.yubico.authenticator.ndef.KeyboardLayout
+import com.yubico.authenticator.widget.AppWidget
+import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
+import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.NdefUtils
+import com.yubico.yubikit.oath.OathSession
+import com.yubico.yubikit.support.DeviceUtil
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import java.util.concurrent.Executors
 
 
 typealias ResourceId = Int
@@ -96,9 +106,61 @@ class NdefActivity : Activity() {
                     )
                 }
                 startActivity(mainAppIntent)
+            } else {
+                updateWidget()
             }
 
             finishAndRemoveTask()
+        }
+    }
+
+    private fun updateWidget() {
+
+        // Handle existing tag when launched from NDEF
+        val tag = intent.parcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+        if (tag != null) {
+            val nfcConfiguration = NfcConfiguration().timeout(2000)
+            intent.removeExtra(NfcAdapter.EXTRA_TAG)
+
+            val executor = Executors.newSingleThreadExecutor()
+            val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
+
+            // TODO implement properly
+            GlobalScope.launch {
+                device.openConnection(SmartCardConnection::class.java).use {
+
+                    val deviceInfo = DeviceUtil.readInfo(it, null)
+                    val name = DeviceUtil.getName(deviceInfo, null)
+
+                    val session = OathSession(it)
+                    val firstCred = session.credentials[0]
+
+                    val code = session.calculateCode(firstCred)
+
+                    AppWidget.latestCode = code.value
+                    AppWidget.latestIssuer = firstCred.issuer ?: ""
+                    AppWidget.latestAccountName = firstCred.accountName
+
+                    val updateWidgetIntent = Intent(
+                        this@NdefActivity,
+                        AppWidget::class.java
+                    )
+                    updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+
+                    val ids: IntArray = AppWidgetManager.getInstance(application)
+                        .getAppWidgetIds(
+                            android.content.ComponentName(
+                                application,
+                                AppWidget::class.java
+                            )
+                        )
+
+                    updateWidgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                    sendBroadcast(updateWidgetIntent)
+                }
+
+
+            }
         }
     }
 

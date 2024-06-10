@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="yubico_green">#9aca3c</color>
+    <color name="widget_fg">@color/material_dynamic_primary60</color>
 </resources>
