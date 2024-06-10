@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="yubico_green">#9aca3c</color>
-    <color name="widget_fg">@color/material_dynamic_primary60</color>
+    <color name="widget_primary">@color/material_dynamic_primary40</color>
+    <color name="widget_secondary">@color/material_dynamic_secondary40</color>
 </resources>

@@ -23,7 +23,7 @@
             android:foregroundGravity="top"
             android:maxHeight="45dp"
             android:src="@mipmap/widget_key"
-            android:tint="@color/widget_fg" />
+            android:tint="@color/widget_primary" />
 
         <TextView
             android:id="@+id/appwidget_tap_text"
@@ -31,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif-condensed-light"
+            android:fontFamily="sans-serif"
             android:text="@string/appwidget_tap_your_yubikey_text"
             android:textAlignment="center"
-            android:textColor="@color/widget_fg"
+            android:textColor="@color/widget_secondary"
             android:textSize="12sp"
             tools:text="@string/appwidget_tap_your_yubikey_text" />
     </LinearLayout>
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="4dp"
+            android:paddingStart="4dp"
             android:visibility="visible">
 
             <TextView
@@ -60,11 +60,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:drawableStart="@drawable/baseline_schedule_24"
-                android:drawablePadding="8dp"
-                android:drawableTint="@color/widget_fg"
-                android:fontFamily="sans-serif-light"
-                android:textColor="@color/widget_fg"
+                android:layout_marginBottom="4dp"
+                android:drawableEnd="@drawable/baseline_schedule_24"
+                android:drawablePadding="0dp"
+                android:drawableTint="@color/widget_primary"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/widget_primary"
                 android:textSize="24sp"
                 tools:text="123 456" />
 
@@ -76,7 +77,7 @@
                 android:contentDescription="@string/appwidget_issuer_text"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/appwidget_issuer_text"
-                android:textColor="@color/widget_fg"
+                android:textColor="@color/widget_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -86,9 +87,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/appwidget_account_text"
-                android:fontFamily="sans-serif-condensed-light"
+                android:fontFamily="sans-serif"
                 android:text="@string/appwidget_account_text"
-                android:textColor="@color/widget_fg"
+                android:textColor="@color/widget_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
