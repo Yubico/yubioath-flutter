@@ -1,95 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.Android.AppWidget.Container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:theme="@style/Theme.Android.AppWidgetContainer">
 
-    <LinearLayout
-        android:id="@+id/appwidget_tap_key_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="visible">
+    <include
+        layout="@layout/app_widget_tap_key"
+        android:visibility="visible" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/appwidget_yubikey"
-            android:foregroundGravity="top"
-            android:maxHeight="45dp"
-            android:src="@mipmap/widget_key"
-            android:tint="@color/widget_primary" />
+    <include
+        layout="@layout/app_widget_account"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/appwidget_tap_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
-            android:text="@string/appwidget_tap_your_yubikey_text"
-            android:textAlignment="center"
-            android:textColor="@color/widget_secondary"
-            android:textSize="@dimen/widget_text_size"
-            tools:text="@string/appwidget_tap_your_yubikey_text" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/appwidget_code_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingStart="4dp">
-
-            <TextView
-                android:id="@+id/appwidget_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginBottom="4dp"
-                android:drawableEnd="@drawable/baseline_schedule_24"
-                android:drawablePadding="0dp"
-                android:drawableTint="@color/widget_primary"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/widget_primary"
-                android:textSize="@dimen/widget_code_text_size"
-                tools:text="123 456" />
-
-            <TextView
-                android:id="@+id/issuer_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/appwidget_issuer_text"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/appwidget_issuer_text"
-                android:textColor="@color/widget_secondary"
-                android:textSize="@dimen/widget_text_size"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/account_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/appwidget_account_text"
-                android:fontFamily="sans-serif"
-                android:text="@string/appwidget_account_text"
-                android:textColor="@color/widget_secondary"
-                android:textSize="@dimen/widget_text_size" />
-        </LinearLayout>
-    </LinearLayout>
 </LinearLayout>

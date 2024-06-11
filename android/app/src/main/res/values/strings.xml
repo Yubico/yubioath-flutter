@@ -12,4 +12,5 @@
     <string name="appwidget_account_text">Account</string>
     <string name="appwidget_yubikey">YubiKey</string>
     <string name="appwidget_tap_your_yubikey_text">Tap your YubiKey</string>
+    <string name="appwidget_copy_button_text">Copy button</string>
 </resources>
