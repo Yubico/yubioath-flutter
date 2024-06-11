@@ -116,6 +116,8 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.yubico.authenticator.widget.AppWidget.OPEN_APP"/>
+                <action android:name="com.yubico.authenticator.widget.AppWidget.COPY_CODE"/>
             </intent-filter>
 
             <meta-data
