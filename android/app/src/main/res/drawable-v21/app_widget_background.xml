@@ -6,5 +6,5 @@ appWidgetRadius attribute value
     android:shape="rectangle">
 
     <corners android:radius="?attr/appWidgetRadius" />
-    <solid android:color="@color/widget_surface" />
+    <solid android:color="@android:color/transparent" />
 </shape>

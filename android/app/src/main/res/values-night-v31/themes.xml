@@ -5,6 +5,6 @@
     -->
     <style name="Theme.Android.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault.DayNight">
         <item name="appWidgetRadius">18dp</item>
-        <item name="appWidgetInnerRadius">8dp</item>
+        <item name="appWidgetInnerRadius">18dp</item>
     </style>
 </resources>

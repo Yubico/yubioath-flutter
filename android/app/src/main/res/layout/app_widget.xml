@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/widget_surface"
+    android:gravity="center"
+    android:background="@drawable/app_widget_background"
     android:theme="@style/Theme.Android.AppWidgetContainer">
 
     <include

@@ -150,7 +150,7 @@ class NdefActivity : Activity() {
 
                     updateWidgetContent(widgetContent)
 
-                    Timer("Clear widget", false).schedule(8 * 1000) {
+                    Timer("Clear widget", false).schedule(5 * 1000) {
                         updateWidgetContent(null)
                     }
                 }

@@ -2,9 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/appwidget_tap_key_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="140dp"
+    android:layout_height="wrap_content"
     android:gravity="center"
+    android:layout_gravity="center"
+    android:background="@drawable/app_widget_inner_view_background"
+    android:paddingTop="16dp"
+    android:paddingBottom="12dp"
     android:orientation="vertical">
 
     <ImageView
@@ -14,7 +18,7 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/appwidget_yubikey"
         android:foregroundGravity="top"
-        android:maxHeight="45dp"
+        android:maxHeight="40dp"
         android:src="@mipmap/widget_key"
         android:tint="@color/widget_primary" />
 
@@ -23,11 +27,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="sans-serif"
         android:text="@string/appwidget_tap_your_yubikey_text"
         android:textAlignment="center"
         android:textColor="@color/widget_secondary"
         android:textSize="@dimen/widget_text_size"
+        android:singleLine="true"
         tools:text="@string/appwidget_tap_your_yubikey_text" />
 </LinearLayout>
