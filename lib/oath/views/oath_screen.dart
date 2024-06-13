@@ -464,6 +464,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           });
                         },
                         child: IconButton(
+                          tooltip: l10n.s_list_layout,
                           onPressed: () {
                             ref
                                 .read(pinnedLayoutProvider.notifier)
@@ -494,20 +495,19 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           });
                         },
                         child: IconButton(
+                          tooltip: l10n.s_grid_layout,
                           onPressed: () {
                             ref
                                 .read(pinnedLayoutProvider.notifier)
                                 .setLayout(FlexLayout.grid);
                             ref
                                 .read(layoutProvider.notifier)
-                                .setLayout(FlexLayout.list);
+                                .setLayout(FlexLayout.grid);
                           },
-                          icon: Icon(
-                            Symbols.vertical_split,
-                            color: mixedView
-                                ? Theme.of(context).colorScheme.primary
-                                : null,
-                          ),
+                          icon: Icon(Symbols.grid_view,
+                              color: gridView
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null),
                         ),
                       ),
                       MouseRegion(
@@ -524,20 +524,23 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           });
                         },
                         child: IconButton(
+                          tooltip: l10n.s_mixed_layout,
                           onPressed: () {
                             ref
                                 .read(pinnedLayoutProvider.notifier)
                                 .setLayout(FlexLayout.grid);
                             ref
                                 .read(layoutProvider.notifier)
-                                .setLayout(FlexLayout.grid);
+                                .setLayout(FlexLayout.list);
                           },
-                          icon: Icon(Symbols.grid_view,
-                              color: gridView
-                                  ? Theme.of(context).colorScheme.primary
-                                  : null),
+                          icon: Icon(
+                            Symbols.vertical_split,
+                            color: mixedView
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
                         ),
-                      )
+                      ),
                     ]
                   ],
                 ),
