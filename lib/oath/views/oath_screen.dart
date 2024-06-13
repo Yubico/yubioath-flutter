@@ -217,16 +217,6 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       );
     }
 
-    final pinnedLayout = ref.watch(pinnedLayoutProvider);
-    final layout = ref.watch(layoutProvider);
-
-    final mixedView =
-        pinnedLayout == FlexLayout.grid && layout == FlexLayout.list;
-    final listView =
-        pinnedLayout == FlexLayout.list && layout == FlexLayout.list;
-    final gridView =
-        pinnedLayout == FlexLayout.grid && layout == FlexLayout.grid;
-
     return OathActions(
       devicePath: widget.devicePath,
       actions: (context) => {
@@ -390,170 +380,208 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           },
           child: Builder(builder: (context) {
             final textTheme = Theme.of(context).textTheme;
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: AppTextFormField(
-                key: searchField,
-                controller: searchController,
-                canRequestFocus: _canRequestFocus,
-                focusNode: searchFocus,
-                // Use the default style, but with a smaller font size:
-                style: textTheme.titleMedium
-                    ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-                decoration: AppInputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(48),
-                    borderSide: BorderSide(
-                      width: 0,
-                      style: searchFocus.hasFocus
-                          ? BorderStyle.solid
-                          : BorderStyle.none,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.all(16),
-                  fillColor: Theme.of(context).hoverColor,
-                  filled: true,
-                  hintText: l10n.s_search_accounts,
-                  isDense: true,
-                  prefixIcon: const Padding(
-                    padding: EdgeInsetsDirectional.only(start: 8.0),
-                    child: Icon(Icons.search_outlined),
-                  ),
-                  suffixIcons: [
-                    if (searchController.text.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.clear),
-                        iconSize: 16,
-                        onPressed: () {
-                          searchController.clear();
-                          ref
-                              .read(accountsSearchProvider.notifier)
-                              .setFilter('');
-                          setState(() {});
-                        },
+            return Consumer(
+              builder: (context, ref, child) {
+                final pinnedLayout = ref.watch(pinnedLayoutProvider);
+                final layout = ref.watch(layoutProvider);
+
+                final mixedView = pinnedLayout == FlexLayout.grid &&
+                    layout == FlexLayout.list;
+                final listView = pinnedLayout == FlexLayout.list &&
+                    layout == FlexLayout.list;
+                final gridView = pinnedLayout == FlexLayout.grid &&
+                    layout == FlexLayout.grid;
+
+                final credentials = ref.watch(filteredCredentialsProvider(
+                    ref.watch(credentialListProvider(widget.devicePath)) ??
+                        []));
+                final favorites = ref.watch(favoritesProvider);
+                final pinnedCreds = credentials
+                    .where((entry) => favorites.contains(entry.credential.id));
+                ref.listen(favoritesProvider, (prev, next) {
+                  final newPinnedCreds = credentials
+                      .where((entry) => next.contains(entry.credential.id));
+                  if (newPinnedCreds.isEmpty) {
+                    // reset to list view
+                    ref
+                        .read(pinnedLayoutProvider.notifier)
+                        .setLayout(FlexLayout.list);
+                    ref
+                        .read(layoutProvider.notifier)
+                        .setLayout(FlexLayout.list);
+                  }
+                });
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: AppTextFormField(
+                    key: searchField,
+                    controller: searchController,
+                    canRequestFocus: _canRequestFocus,
+                    focusNode: searchFocus,
+                    // Use the default style, but with a smaller font size:
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                    decoration: AppInputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(48),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: searchFocus.hasFocus
+                              ? BorderStyle.solid
+                              : BorderStyle.none,
+                        ),
                       ),
-                    if (searchController.text.isEmpty) ...[
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            // need this to maintain consistent distance
-                            // between icons
-                            padding: const EdgeInsets.only(left: 17.0),
-                            child: Container(
-                              color: Theme.of(context).colorScheme.background,
-                              width: 1,
-                              height: 40,
+                      contentPadding: const EdgeInsets.all(16),
+                      fillColor: Theme.of(context).hoverColor,
+                      filled: true,
+                      hintText: l10n.s_search_accounts,
+                      isDense: true,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsetsDirectional.only(start: 8.0),
+                        child: Icon(Icons.search_outlined),
+                      ),
+                      suffixIcons: [
+                        if (searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            iconSize: 16,
+                            onPressed: () {
+                              searchController.clear();
+                              ref
+                                  .read(accountsSearchProvider.notifier)
+                                  .setFilter('');
+                              setState(() {});
+                            },
+                          ),
+                        if (searchController.text.isEmpty) ...[
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                // need this to maintain consistent distance
+                                // between icons
+                                padding: const EdgeInsets.only(left: 17.0),
+                                child: Container(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                  width: 1,
+                                  height: 40,
+                                ),
+                              ),
+                            ],
+                          ),
+                          MouseRegion(
+                            onEnter: (event) {
+                              if (!searchFocus.hasFocus) {
+                                setState(() {
+                                  _canRequestFocus = false;
+                                });
+                              }
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                _canRequestFocus = true;
+                              });
+                            },
+                            child: IconButton(
+                              tooltip: l10n.s_list_layout,
+                              onPressed: () {
+                                ref
+                                    .read(pinnedLayoutProvider.notifier)
+                                    .setLayout(FlexLayout.list);
+                                ref
+                                    .read(layoutProvider.notifier)
+                                    .setLayout(FlexLayout.list);
+                              },
+                              icon: Icon(
+                                Symbols.list,
+                                color: listView
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                      MouseRegion(
-                        onEnter: (event) {
-                          if (!searchFocus.hasFocus) {
-                            setState(() {
-                              _canRequestFocus = false;
-                            });
-                          }
-                        },
-                        onExit: (event) {
-                          setState(() {
-                            _canRequestFocus = true;
-                          });
-                        },
-                        child: IconButton(
-                          tooltip: l10n.s_list_layout,
-                          onPressed: () {
-                            ref
-                                .read(pinnedLayoutProvider.notifier)
-                                .setLayout(FlexLayout.list);
-                            ref
-                                .read(layoutProvider.notifier)
-                                .setLayout(FlexLayout.list);
-                          },
-                          icon: Icon(
-                            Symbols.list,
-                            color: listView
-                                ? Theme.of(context).colorScheme.primary
-                                : null,
+                          MouseRegion(
+                            onEnter: (event) {
+                              if (!searchFocus.hasFocus) {
+                                setState(() {
+                                  _canRequestFocus = false;
+                                });
+                              }
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                _canRequestFocus = true;
+                              });
+                            },
+                            child: IconButton(
+                              tooltip: l10n.s_grid_layout,
+                              onPressed: () {
+                                ref
+                                    .read(pinnedLayoutProvider.notifier)
+                                    .setLayout(FlexLayout.grid);
+                                ref
+                                    .read(layoutProvider.notifier)
+                                    .setLayout(FlexLayout.grid);
+                              },
+                              icon: Icon(Symbols.grid_view,
+                                  color: gridView
+                                      ? Theme.of(context).colorScheme.primary
+                                      : null),
+                            ),
                           ),
-                        ),
-                      ),
-                      MouseRegion(
-                        onEnter: (event) {
-                          if (!searchFocus.hasFocus) {
-                            setState(() {
-                              _canRequestFocus = false;
-                            });
-                          }
-                        },
-                        onExit: (event) {
-                          setState(() {
-                            _canRequestFocus = true;
-                          });
-                        },
-                        child: IconButton(
-                          tooltip: l10n.s_grid_layout,
-                          onPressed: () {
-                            ref
-                                .read(pinnedLayoutProvider.notifier)
-                                .setLayout(FlexLayout.grid);
-                            ref
-                                .read(layoutProvider.notifier)
-                                .setLayout(FlexLayout.grid);
-                          },
-                          icon: Icon(Symbols.grid_view,
-                              color: gridView
-                                  ? Theme.of(context).colorScheme.primary
-                                  : null),
-                        ),
-                      ),
-                      MouseRegion(
-                        onEnter: (event) {
-                          if (!searchFocus.hasFocus) {
-                            setState(() {
-                              _canRequestFocus = false;
-                            });
-                          }
-                        },
-                        onExit: (event) {
-                          setState(() {
-                            _canRequestFocus = true;
-                          });
-                        },
-                        child: IconButton(
-                          tooltip: l10n.s_mixed_layout,
-                          onPressed: () {
-                            ref
-                                .read(pinnedLayoutProvider.notifier)
-                                .setLayout(FlexLayout.grid);
-                            ref
-                                .read(layoutProvider.notifier)
-                                .setLayout(FlexLayout.list);
-                          },
-                          icon: Icon(
-                            Symbols.vertical_split,
-                            color: mixedView
-                                ? Theme.of(context).colorScheme.primary
-                                : null,
-                          ),
-                        ),
-                      ),
-                    ]
-                  ],
-                ),
+                          if (pinnedCreds.isNotEmpty)
+                            MouseRegion(
+                              onEnter: (event) {
+                                if (!searchFocus.hasFocus) {
+                                  setState(() {
+                                    _canRequestFocus = false;
+                                  });
+                                }
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  _canRequestFocus = true;
+                                });
+                              },
+                              child: IconButton(
+                                tooltip: l10n.s_mixed_layout,
+                                onPressed: () {
+                                  ref
+                                      .read(pinnedLayoutProvider.notifier)
+                                      .setLayout(FlexLayout.grid);
+                                  ref
+                                      .read(layoutProvider.notifier)
+                                      .setLayout(FlexLayout.list);
+                                },
+                                icon: Icon(
+                                  Symbols.vertical_split,
+                                  color: mixedView
+                                      ? Theme.of(context).colorScheme.primary
+                                      : null,
+                                ),
+                              ),
+                            ),
+                        ]
+                      ],
+                    ),
 
-                onChanged: (value) {
-                  ref.read(accountsSearchProvider.notifier).setFilter(value);
-                  setState(() {});
-                },
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (value) {
-                  Focus.of(context).focusInDirection(TraversalDirection.down);
-                },
-              ).init(),
+                    onChanged: (value) {
+                      ref
+                          .read(accountsSearchProvider.notifier)
+                          .setFilter(value);
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (value) {
+                      Focus.of(context)
+                          .focusInDirection(TraversalDirection.down);
+                    },
+                  ).init(),
+                );
+              },
             );
           }),
         ),
