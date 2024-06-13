@@ -443,7 +443,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               setState(() {});
                             },
                           ),
-                        if (searchController.text.isEmpty) ...[
+                        if (searchController.text.isEmpty &&
+                            !searchFocus.hasFocus) ...[
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -456,7 +457,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                   color:
                                       Theme.of(context).colorScheme.background,
                                   width: 1,
-                                  height: 40,
+                                  height: 45,
                                 ),
                               ),
                             ],
