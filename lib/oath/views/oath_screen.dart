@@ -39,6 +39,7 @@ import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
+import '../../widgets/flex_box.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
@@ -123,6 +124,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
   OathCredential? _selected;
+  bool _canRequestFocus = true;
 
   @override
   void initState() {
@@ -214,6 +216,16 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         builder: (context, _) => const CircularProgressIndicator(),
       );
     }
+
+    final pinnedLayout = ref.watch(pinnedLayoutProvider);
+    final layout = ref.watch(layoutProvider);
+
+    final mixedView =
+        pinnedLayout == FlexLayout.grid && layout == FlexLayout.list;
+    final listView =
+        pinnedLayout == FlexLayout.list && layout == FlexLayout.list;
+    final gridView =
+        pinnedLayout == FlexLayout.grid && layout == FlexLayout.grid;
 
     return OathActions(
       devicePath: widget.devicePath,
@@ -384,6 +396,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               child: AppTextFormField(
                 key: searchField,
                 controller: searchController,
+                canRequestFocus: _canRequestFocus,
                 focusNode: searchFocus,
                 // Use the default style, but with a smaller font size:
                 style: textTheme.titleMedium
@@ -407,20 +420,128 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                     padding: EdgeInsetsDirectional.only(start: 8.0),
                     child: Icon(Icons.search_outlined),
                   ),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          iconSize: 16,
+                  suffixIcons: [
+                    if (searchController.text.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        iconSize: 16,
+                        onPressed: () {
+                          searchController.clear();
+                          ref
+                              .read(accountsSearchProvider.notifier)
+                              .setFilter('');
+                          setState(() {});
+                        },
+                      ),
+                    if (searchController.text.isEmpty) ...[
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            // need this to maintain consistent distance
+                            // between icons
+                            padding: const EdgeInsets.only(left: 17.0),
+                            child: Container(
+                              color: Theme.of(context).colorScheme.background,
+                              width: 1,
+                              height: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                      MouseRegion(
+                        onEnter: (event) {
+                          if (!searchFocus.hasFocus) {
+                            setState(() {
+                              _canRequestFocus = false;
+                            });
+                          }
+                        },
+                        onExit: (event) {
+                          setState(() {
+                            _canRequestFocus = true;
+                          });
+                        },
+                        child: IconButton(
                           onPressed: () {
-                            searchController.clear();
                             ref
-                                .read(accountsSearchProvider.notifier)
-                                .setFilter('');
-                            setState(() {});
+                                .read(pinnedLayoutProvider.notifier)
+                                .setLayout(FlexLayout.list);
+                            ref
+                                .read(layoutProvider.notifier)
+                                .setLayout(FlexLayout.list);
                           },
-                        )
-                      : null,
+                          icon: Icon(
+                            Symbols.list,
+                            color: listView
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
+                        ),
+                      ),
+                      MouseRegion(
+                        onEnter: (event) {
+                          if (!searchFocus.hasFocus) {
+                            setState(() {
+                              _canRequestFocus = false;
+                            });
+                          }
+                        },
+                        onExit: (event) {
+                          setState(() {
+                            _canRequestFocus = true;
+                          });
+                        },
+                        child: IconButton(
+                          onPressed: () {
+                            ref
+                                .read(pinnedLayoutProvider.notifier)
+                                .setLayout(FlexLayout.grid);
+                            ref
+                                .read(layoutProvider.notifier)
+                                .setLayout(FlexLayout.list);
+                          },
+                          icon: Icon(
+                            Symbols.vertical_split,
+                            color: mixedView
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
+                        ),
+                      ),
+                      MouseRegion(
+                        onEnter: (event) {
+                          if (!searchFocus.hasFocus) {
+                            setState(() {
+                              _canRequestFocus = false;
+                            });
+                          }
+                        },
+                        onExit: (event) {
+                          setState(() {
+                            _canRequestFocus = true;
+                          });
+                        },
+                        child: IconButton(
+                          onPressed: () {
+                            ref
+                                .read(pinnedLayoutProvider.notifier)
+                                .setLayout(FlexLayout.grid);
+                            ref
+                                .read(layoutProvider.notifier)
+                                .setLayout(FlexLayout.grid);
+                          },
+                          icon: Icon(Symbols.grid_view,
+                              color: gridView
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null),
+                        ),
+                      )
+                    ]
+                  ],
                 ),
+
                 onChanged: (value) {
                   ref.read(accountsSearchProvider.notifier).setFilter(value);
                   setState(() {});

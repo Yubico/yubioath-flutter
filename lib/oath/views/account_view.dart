@@ -30,12 +30,12 @@ class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
   final bool expanded;
   final bool selected;
-  final bool pinned;
+  final bool large;
   const AccountView(this.credential,
       {super.key,
       required this.expanded,
       required this.selected,
-      this.pinned = false});
+      this.large = false});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
@@ -120,8 +120,8 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ? CopyIntent<OathCredential>(credential)
           : null,
       buildPopupActions: (_) => helper.buildActions(),
-      borderRadius: widget.pinned ? BorderRadius.circular(16) : null,
-      itemBuilder: widget.pinned
+      borderRadius: widget.large ? BorderRadius.circular(16) : null,
+      itemBuilder: widget.large
           ? (context) {
               return ListTile(
                 mouseCursor: !(isDesktop && !widget.expanded)
@@ -184,19 +184,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // IconButton(
-                        //   onPressed: Actions.handler(
-                        //       context, TogglePinIntent(credential)),
-                        //   icon: Icon(
-                        //     Symbols.keep_off,
-                        //     color: Theme.of(context)
-                        //         .colorScheme
-                        //         .onSecondaryContainer
-                        //         .withOpacity(0.4),
-                        //   ),
-                        //   tooltip:
-                        //       AppLocalizations.of(context)!.s_unpin_account,
-                        // ),
                         helper.code != null
                             ? FilledButton.tonalIcon(
                                 icon: helper.buildCodeIcon(),

@@ -24,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
+import '../widgets/flex_box.dart';
 import 'models.dart';
 
 final accountsSearchProvider =
@@ -35,6 +36,23 @@ class AccountsSearchNotifier extends StateNotifier<String> {
 
   void setFilter(String value) {
     state = value;
+  }
+}
+
+final pinnedLayoutProvider = StateNotifierProvider<LayoutNotifier, FlexLayout>(
+  (ref) => LayoutNotifier(initialLayout: FlexLayout.grid),
+);
+
+final layoutProvider = StateNotifierProvider<LayoutNotifier, FlexLayout>(
+  (ref) => LayoutNotifier(),
+);
+
+class LayoutNotifier extends StateNotifier<FlexLayout> {
+  final FlexLayout initialLayout;
+  LayoutNotifier({this.initialLayout = FlexLayout.list}) : super(initialLayout);
+
+  void setLayout(FlexLayout layout) {
+    state = layout;
   }
 }
 
