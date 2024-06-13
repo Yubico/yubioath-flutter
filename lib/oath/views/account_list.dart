@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../widgets/flex_box.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_view.dart';
@@ -28,77 +29,6 @@ class AccountList extends ConsumerWidget {
   final OathCredential? selected;
   const AccountList(this.accounts,
       {super.key, required this.expanded, this.selected});
-
-  Widget _buildPinnedAccountList(List<OathPair> pinnedCreds) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        int itemsPerRow = 1;
-        if (width <= 420) {
-          // single column
-          itemsPerRow = 1;
-        } else if (width <= 620) {
-          // 2 column
-          itemsPerRow = 2;
-        } else {
-          // 3 column
-          itemsPerRow = 3;
-        }
-
-        List<List<OathPair>> chunks = [];
-        final numChunks = (pinnedCreds.length / itemsPerRow).ceil();
-        for (int i = 0; i < numChunks; i++) {
-          final index = i * itemsPerRow;
-          int endIndex = index + itemsPerRow;
-
-          if (endIndex > pinnedCreds.length) {
-            endIndex = pinnedCreds.length;
-          }
-
-          chunks.add(pinnedCreds.sublist(index, endIndex));
-        }
-        return Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16, bottom: 8.0),
-          child: Column(
-            children: [
-              ...chunks.map(
-                (c) => Row(
-                  children: [
-                    for (final entry in c) ...[
-                      Flexible(
-                        child: AccountView(
-                          entry.credential,
-                          expanded: expanded,
-                          selected: entry.credential == selected,
-                          pinned: true,
-                        ),
-                      ),
-                      if (itemsPerRow != 1 && c.indexOf(entry) != c.length - 1)
-                        const SizedBox(width: 8),
-                    ],
-                    if (c.length < itemsPerRow) ...[
-                      // Prevents resizing when an account is unpinned
-                      SizedBox(width: 8 * (itemsPerRow - c.length).toDouble()),
-                      Spacer(
-                        flex: itemsPerRow - c.length,
-                      )
-                    ]
-                  ],
-                ),
-              )
-            ]
-                .map(
-                  (e) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: e,
-                  ),
-                )
-                .toList(),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,6 +46,9 @@ class AccountList extends ConsumerWidget {
     final creds =
         credentials.where((entry) => !favorites.contains(entry.credential.id));
 
+    final pinnedLayout = ref.watch(pinnedLayoutProvider);
+    final layout = ref.watch(layoutProvider);
+
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
       child: Padding(
@@ -123,12 +56,42 @@ class AccountList extends ConsumerWidget {
         child: Column(
           children: [
             if (pinnedCreds.isNotEmpty)
-              _buildPinnedAccountList(pinnedCreds.toList()),
-            ...creds.map(
-              (entry) => AccountView(
-                entry.credential,
-                expanded: expanded,
-                selected: entry.credential == selected,
+              Padding(
+                padding: pinnedLayout == FlexLayout.grid
+                    ? const EdgeInsets.only(left: 16.0, right: 16)
+                    : const EdgeInsets.all(0),
+                child: FlexBox<OathPair>(
+                  items: pinnedCreds.toList(),
+                  itemBuilder: (value) => AccountView(
+                    value.credential,
+                    expanded: expanded,
+                    selected: value.credential == selected,
+                    large: pinnedLayout == FlexLayout.grid,
+                  ),
+                  layout: pinnedLayout,
+                ),
+              ),
+            if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
+              const SizedBox(height: 32),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: Divider(
+            //     color: Theme.of(context).colorScheme.secondaryContainer,
+            //   ),
+            // ),
+            Padding(
+              padding: layout == FlexLayout.grid
+                  ? const EdgeInsets.only(left: 16.0, right: 16)
+                  : const EdgeInsets.all(0),
+              child: FlexBox<OathPair>(
+                items: creds.toList(),
+                itemBuilder: (value) => AccountView(
+                  value.credential,
+                  expanded: expanded,
+                  selected: value.credential == selected,
+                  large: layout == FlexLayout.grid,
+                ),
+                layout: layout,
               ),
             ),
           ],
