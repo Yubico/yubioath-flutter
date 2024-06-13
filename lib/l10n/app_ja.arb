@@ -121,6 +121,11 @@
     "s_light_mode": "ライトモード",
     "s_dark_mode": "ダークモード",
 
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+
     "@_yubikey_selection": {},
     "s_select_to_scan": "選択してスキャン",
     "s_hide_device": "デバイスを非表示",
