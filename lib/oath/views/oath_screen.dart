@@ -385,32 +385,21 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 final pinnedLayout = ref.watch(pinnedLayoutProvider);
                 final layout = ref.watch(layoutProvider);
 
-                final mixedView = pinnedLayout == FlexLayout.grid &&
-                    layout == FlexLayout.list;
-                final listView = pinnedLayout == FlexLayout.list &&
-                    layout == FlexLayout.list;
-                final gridView = pinnedLayout == FlexLayout.grid &&
-                    layout == FlexLayout.grid;
-
                 final credentials = ref.watch(filteredCredentialsProvider(
                     ref.watch(credentialListProvider(widget.devicePath)) ??
                         []));
                 final favorites = ref.watch(favoritesProvider);
                 final pinnedCreds = credentials
                     .where((entry) => favorites.contains(entry.credential.id));
-                ref.listen(favoritesProvider, (prev, next) {
-                  final newPinnedCreds = credentials
-                      .where((entry) => next.contains(entry.credential.id));
-                  if (newPinnedCreds.isEmpty) {
-                    // reset to list view
-                    ref
-                        .read(pinnedLayoutProvider.notifier)
-                        .setLayout(FlexLayout.list);
-                    ref
-                        .read(layoutProvider.notifier)
-                        .setLayout(FlexLayout.list);
-                  }
-                });
+
+                final mixedView = pinnedLayout == FlexLayout.grid &&
+                    layout == FlexLayout.list;
+                final listView =
+                    (pinnedLayout == FlexLayout.list || pinnedCreds.isEmpty) &&
+                        layout == FlexLayout.list;
+                final gridView = pinnedLayout == FlexLayout.grid &&
+                    layout == FlexLayout.grid;
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
