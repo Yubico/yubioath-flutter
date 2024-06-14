@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
+import '../widgets/flex_box.dart';
 
 bool get isDesktop => const [
       TargetPlatform.windows,
@@ -119,3 +120,22 @@ final featureProvider = Provider<FeatureProvider>((ref) {
 
   return isEnabled;
 });
+
+class LayoutNotifier extends StateNotifier<FlexLayout> {
+  final String _key;
+  final SharedPreferences _prefs;
+  final FlexLayout initialLayout;
+  LayoutNotifier(this._key, this._prefs, [this.initialLayout = FlexLayout.list])
+      : super(_fromName(_prefs.getString(_key), initialLayout));
+
+  void setLayout(FlexLayout layout) {
+    state = layout;
+    _prefs.setString(_key, layout.name);
+  }
+
+  static FlexLayout _fromName(String? name, FlexLayout initialLayout) =>
+      FlexLayout.values.firstWhere(
+        (element) => element.name == name,
+        orElse: () => initialLayout,
+      );
+}
