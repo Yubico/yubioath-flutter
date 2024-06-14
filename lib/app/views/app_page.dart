@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/state.dart';
 import '../../management/models.dart';
@@ -34,18 +35,23 @@ import 'keys.dart';
 import 'navigation.dart';
 
 final _navigationVisibilityProvider =
-    StateNotifierProvider<_VisibilityNotifier, bool>(
-        (ref) => _VisibilityNotifier());
+    StateNotifierProvider<_VisibilityNotifier, bool>((ref) =>
+        _VisibilityNotifier('NAVIGATION_VISIBILITY', ref.watch(prefProvider)));
 
 final _detailViewVisibilityProvider =
-    StateNotifierProvider<_VisibilityNotifier, bool>(
-        (ref) => _VisibilityNotifier());
+    StateNotifierProvider<_VisibilityNotifier, bool>((ref) =>
+        _VisibilityNotifier('DETAIL_VIEW_VISIBILITY', ref.watch(prefProvider)));
 
 class _VisibilityNotifier extends StateNotifier<bool> {
-  _VisibilityNotifier() : super(true);
+  final String _key;
+  final SharedPreferences _prefs;
+  _VisibilityNotifier(this._key, this._prefs)
+      : super(_prefs.getBool(_key) ?? true);
 
   void toggleExpanded() {
-    state = !state;
+    final newValue = !state;
+    state = newValue;
+    _prefs.setBool(_key, newValue);
   }
 }
 
@@ -693,8 +699,8 @@ class _AppPageState extends ConsumerState<AppPage> {
                 ),
               ),
             if (widget.actionButtonBuilder == null &&
-                (widget.keyActionsBuilder != null && !hasManage ||
-                    !showDetailView))
+                (widget.keyActionsBuilder != null &&
+                    (!hasManage || !showDetailView)))
               Padding(
                 padding: const EdgeInsets.only(left: 4),
                 child: IconButton(
