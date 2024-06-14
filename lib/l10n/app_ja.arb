@@ -45,6 +45,8 @@
     "s_hide_window": "ウィンドウを非表示",
     "s_expand_navigation": "ナビゲーションを展開",
     "s_collapse_navigation": "ナビゲーションを閉じる",
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
