@@ -45,6 +45,8 @@
     "s_hide_window": "Masquer fenêtre",
     "s_expand_navigation": "Développer la navigation",
     "s_collapse_navigation": "Réduire la navigation",
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "Renommer {label}\u00a0?",
     "@q_rename_target": {
         "placeholders": {

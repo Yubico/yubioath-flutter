@@ -72,7 +72,7 @@ class AccountList extends ConsumerWidget {
                 ),
               ),
             if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
             //   child: Divider(

@@ -28,11 +28,15 @@ class FlexBox<T> extends StatelessWidget {
       } else if (width < 1200) {
         // 4 column
         itemsPerRow = 4;
-      } else if (width < 1600) {
+      } else if (width < 1500) {
         // 5 column
         itemsPerRow = 5;
-      } else {
+      } else if (width < 1800) {
         itemsPerRow = 6;
+      } else if (width < 2000) {
+        itemsPerRow = 7;
+      } else {
+        itemsPerRow = 8;
       }
     }
     return itemsPerRow;

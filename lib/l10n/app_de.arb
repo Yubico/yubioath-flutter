@@ -45,6 +45,8 @@
     "s_hide_window": "Fenster verstecken",
     "s_expand_navigation": null,
     "s_collapse_navigation": null,
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {
         "placeholders": {
