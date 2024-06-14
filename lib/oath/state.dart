@@ -39,33 +39,15 @@ class AccountsSearchNotifier extends StateNotifier<String> {
   }
 }
 
-final pinnedLayoutProvider = StateNotifierProvider<LayoutNotifier, FlexLayout>(
+final oathPinnedLayoutProvider =
+    StateNotifierProvider<LayoutNotifier, FlexLayout>(
   (ref) => LayoutNotifier(
       'OATH_STATE_LAYOUT_PINNED', ref.watch(prefProvider), FlexLayout.grid),
 );
 
-final layoutProvider = StateNotifierProvider<LayoutNotifier, FlexLayout>(
+final oathLayoutProvider = StateNotifierProvider<LayoutNotifier, FlexLayout>(
   (ref) => LayoutNotifier('OATH_STATE_LAYOUT', ref.watch(prefProvider)),
 );
-
-class LayoutNotifier extends StateNotifier<FlexLayout> {
-  final String _key;
-  final SharedPreferences _prefs;
-  final FlexLayout initialLayout;
-  LayoutNotifier(this._key, this._prefs, [this.initialLayout = FlexLayout.list])
-      : super(_fromName(_prefs.getString(_key), initialLayout));
-
-  void setLayout(FlexLayout layout) {
-    state = layout;
-    _prefs.setString(_key, layout.name);
-  }
-
-  static FlexLayout _fromName(String? name, FlexLayout initialLayout) =>
-      FlexLayout.values.firstWhere(
-        (element) => element.name == name,
-        orElse: () => initialLayout,
-      );
-}
 
 final oathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(

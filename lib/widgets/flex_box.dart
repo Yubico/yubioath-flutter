@@ -6,11 +6,13 @@ class FlexBox<T> extends StatelessWidget {
   final List<T> items;
   final Widget Function(T value) itemBuilder;
   final FlexLayout layout;
+  final double? runSpacing;
   const FlexBox({
     super.key,
     required this.items,
     required this.itemBuilder,
     this.layout = FlexLayout.list,
+    this.runSpacing,
   });
 
   int getItemsPerRow(double width) {
@@ -69,8 +71,10 @@ class FlexBox<T> extends StatelessWidget {
         return Column(
           children: [
             for (final c in chunks) ...[
-              if (chunks.indexOf(c) > 0 && layout == FlexLayout.grid)
-                const SizedBox(height: 8.0),
+              if (chunks.indexOf(c) > 0 &&
+                  layout == FlexLayout.grid &&
+                  runSpacing != null)
+                SizedBox(height: runSpacing),
               Row(
                 children: [
                   for (final entry in c) ...[

@@ -46,8 +46,8 @@ class AccountList extends ConsumerWidget {
     final creds =
         credentials.where((entry) => !favorites.contains(entry.credential.id));
 
-    final pinnedLayout = ref.watch(pinnedLayoutProvider);
-    final layout = ref.watch(layoutProvider);
+    final pinnedLayout = ref.watch(oathPinnedLayoutProvider);
+    final layout = ref.watch(oathLayoutProvider);
 
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
@@ -69,6 +69,7 @@ class AccountList extends ConsumerWidget {
                     large: pinnedLayout == FlexLayout.grid,
                   ),
                   layout: pinnedLayout,
+                  runSpacing: 8.0,
                 ),
               ),
             if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
@@ -92,6 +93,7 @@ class AccountList extends ConsumerWidget {
                   large: layout == FlexLayout.grid,
                 ),
                 layout: layout,
+                runSpacing: 8.0,
               ),
             ),
           ],

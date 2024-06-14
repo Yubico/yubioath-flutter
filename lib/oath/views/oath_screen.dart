@@ -382,8 +382,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             final textTheme = Theme.of(context).textTheme;
             return Consumer(
               builder: (context, ref, child) {
-                final pinnedLayout = ref.watch(pinnedLayoutProvider);
-                final layout = ref.watch(layoutProvider);
+                final pinnedLayout = ref.watch(oathPinnedLayoutProvider);
+                final layout = ref.watch(oathLayoutProvider);
 
                 final credentials = ref.watch(filteredCredentialsProvider(
                     ref.watch(credentialListProvider(widget.devicePath)) ??
@@ -479,10 +479,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               tooltip: l10n.s_list_layout,
                               onPressed: () {
                                 ref
-                                    .read(pinnedLayoutProvider.notifier)
+                                    .read(oathPinnedLayoutProvider.notifier)
                                     .setLayout(FlexLayout.list);
                                 ref
-                                    .read(layoutProvider.notifier)
+                                    .read(oathLayoutProvider.notifier)
                                     .setLayout(FlexLayout.list);
                               },
                               icon: Icon(
@@ -510,10 +510,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               tooltip: l10n.s_grid_layout,
                               onPressed: () {
                                 ref
-                                    .read(pinnedLayoutProvider.notifier)
+                                    .read(oathPinnedLayoutProvider.notifier)
                                     .setLayout(FlexLayout.grid);
                                 ref
-                                    .read(layoutProvider.notifier)
+                                    .read(oathLayoutProvider.notifier)
                                     .setLayout(FlexLayout.grid);
                               },
                               icon: Icon(Symbols.grid_view,
@@ -540,10 +540,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                 tooltip: l10n.s_mixed_layout,
                                 onPressed: () {
                                   ref
-                                      .read(pinnedLayoutProvider.notifier)
+                                      .read(oathPinnedLayoutProvider.notifier)
                                       .setLayout(FlexLayout.grid);
                                   ref
-                                      .read(layoutProvider.notifier)
+                                      .read(oathLayoutProvider.notifier)
                                       .setLayout(FlexLayout.list);
                                 },
                                 icon: Icon(
