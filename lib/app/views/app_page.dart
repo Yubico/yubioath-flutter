@@ -33,11 +33,16 @@ import 'fs_dialog.dart';
 import 'keys.dart';
 import 'navigation.dart';
 
-final _navigationProvider = StateNotifierProvider<_NavigationProvider, bool>(
-    (ref) => _NavigationProvider());
+final _navigationVisibilityProvider =
+    StateNotifierProvider<_VisibilityNotifier, bool>(
+        (ref) => _VisibilityNotifier());
 
-class _NavigationProvider extends StateNotifier<bool> {
-  _NavigationProvider() : super(true);
+final _detailViewVisibilityProvider =
+    StateNotifierProvider<_VisibilityNotifier, bool>(
+        (ref) => _VisibilityNotifier());
+
+class _VisibilityNotifier extends StateNotifier<bool> {
+  _VisibilityNotifier() : super(true);
 
   void toggleExpanded() {
     state = !state;
@@ -308,7 +313,7 @@ class _AppPageState extends ConsumerState<AppPage> {
 
   Widget? _buildAppBarTitle(
       BuildContext context, bool hasRail, bool hasManage, bool fullyExpanded) {
-    final showNavigation = ref.watch(_navigationProvider);
+    final showNavigation = ref.watch(_navigationVisibilityProvider);
     EdgeInsets padding;
     if (fullyExpanded) {
       padding = EdgeInsets.only(left: showNavigation ? 280 : 72, right: 320);
@@ -344,14 +349,16 @@ class _AppPageState extends ConsumerState<AppPage> {
   }
 
   Widget _buildMainContent(BuildContext context, bool expanded) {
-    final actions = widget.actionsBuilder?.call(context, expanded) ?? [];
+    final showDetailView = ref.watch(_detailViewVisibilityProvider);
+    final actions =
+        widget.actionsBuilder?.call(context, expanded && showDetailView) ?? [];
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: widget.centered
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
-        widget.builder(context, expanded),
+        widget.builder(context, expanded && showDetailView),
         if (actions.isNotEmpty)
           Align(
             alignment:
@@ -499,7 +506,8 @@ class _AppPageState extends ConsumerState<AppPage> {
       BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
     final l10n = AppLocalizations.of(context)!;
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
-    final showNavigation = ref.watch(_navigationProvider);
+    final showNavigation = ref.watch(_navigationVisibilityProvider);
+    final showDetailView = ref.watch(_detailViewVisibilityProvider);
     final hasDetailsOrKeyActions =
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
@@ -569,7 +577,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               // - the "Security Key" because it does not have any actions/details.
               // - pages without Capabilities
               const SizedBox(width: 336), // simulate column
-            if (hasManage && hasDetailsOrKeyActions)
+            if (hasManage && hasDetailsOrKeyActions && showDetailView)
               _VisibilityListener(
                 controller: _detailsController,
                 targetKey: _detailsViewGlobalKey,
@@ -642,7 +650,8 @@ class _AppPageState extends ConsumerState<AppPage> {
                         onPressed: fullyExpanded
                             ? () {
                                 ref
-                                    .read(_navigationProvider.notifier)
+                                    .read(
+                                        _navigationVisibilityProvider.notifier)
                                     .toggleExpanded();
                               }
                             : () {
@@ -663,8 +672,29 @@ class _AppPageState extends ConsumerState<AppPage> {
                   },
                 ),
           actions: [
+            if (hasManage &&
+                (widget.keyActionsBuilder != null ||
+                    widget.detailViewBuilder != null))
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: IconButton(
+                  key: toggleDetailViewIconButtonKey,
+                  onPressed: () {
+                    ref
+                        .read(_detailViewVisibilityProvider.notifier)
+                        .toggleExpanded();
+                  },
+                  icon: const Icon(Symbols.view_sidebar),
+                  iconSize: 24,
+                  tooltip: showDetailView
+                      ? l10n.s_collapse_sidebar
+                      : l10n.s_expand_sidebar,
+                  padding: const EdgeInsets.all(12),
+                ),
+              ),
             if (widget.actionButtonBuilder == null &&
-                (widget.keyActionsBuilder != null && !hasManage))
+                (widget.keyActionsBuilder != null && !hasManage ||
+                    !showDetailView))
               Padding(
                 padding: const EdgeInsets.only(left: 4),
                 child: IconButton(
