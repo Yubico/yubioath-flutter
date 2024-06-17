@@ -5,17 +5,19 @@ enum FlexLayout { grid, list }
 class FlexBox<T> extends StatelessWidget {
   final List<T> items;
   final Widget Function(T value) itemBuilder;
+  final int Function(double width)? getItemsPerRow;
   final FlexLayout layout;
   final double? runSpacing;
   const FlexBox({
     super.key,
     required this.items,
     required this.itemBuilder,
+    this.getItemsPerRow,
     this.layout = FlexLayout.list,
     this.runSpacing,
   });
 
-  int getItemsPerRow(double width) {
+  int _getItemsPerRow(double width) {
     int itemsPerRow = 1;
     if (layout == FlexLayout.grid) {
       if (width <= 420) {
@@ -34,10 +36,13 @@ class FlexBox<T> extends StatelessWidget {
         // 5 column
         itemsPerRow = 5;
       } else if (width < 1800) {
+        // 6 column
         itemsPerRow = 6;
       } else if (width < 2000) {
+        // 7 column
         itemsPerRow = 7;
       } else {
+        // 8 column
         itemsPerRow = 8;
       }
     }
@@ -65,7 +70,9 @@ class FlexBox<T> extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final itemsPerRow = getItemsPerRow(width);
+        final itemsPerRow = layout == FlexLayout.grid
+            ? getItemsPerRow?.call(width) ?? _getItemsPerRow(width)
+            : 1;
         final chunks = getChunks(itemsPerRow);
 
         return Column(
