@@ -589,6 +589,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                         selected: _selected == cred,
                       ),
                       layout: layout,
+                      getItemsPerRow: _getItemsPerRow,
                     )
                   ],
                 );
@@ -598,6 +599,36 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         },
       ),
     );
+  }
+
+  int _getItemsPerRow(double width) {
+    int itemsPerRow = 1;
+    if (width <= 600) {
+      // single column
+      itemsPerRow = 1;
+    } else if (width <= 900) {
+      // 2 column
+      itemsPerRow = 2;
+    } else if (width < 1300) {
+      // 3 column
+      itemsPerRow = 3;
+    } else if (width < 1500) {
+      // 4 column
+      itemsPerRow = 4;
+    } else if (width < 1700) {
+      // 5 column
+      itemsPerRow = 5;
+    } else if (width < 1900) {
+      // 6 column
+      itemsPerRow = 6;
+    } else if (width < 2100) {
+      // 7 column
+      itemsPerRow = 7;
+    } else {
+      // 8 column
+      itemsPerRow = 8;
+    }
+    return itemsPerRow;
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
