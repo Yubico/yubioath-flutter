@@ -291,6 +291,13 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_max_length": null,
+    "@p_enter_new_fido2_pin_max_length": {
+        "placeholders": {
+            "min_length": {},
+            "max_length": {}
+        }
+    },
     "p_enter_new_fido2_pin_complexity_active": "Saisissez votre nouveau code PIN. Le code PIN doit être composé d'au moins {length} caractères, contenir au moins {unique_characters} caractères uniques et ne pas être un code PIN couramment utilisé, comme \"{common_pin}\". Il peut contenir des lettres, des chiffres et des caractères spéciaux.",
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {

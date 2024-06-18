@@ -291,6 +291,13 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_max_length": null,
+    "@p_enter_new_fido2_pin_max_length": {
+        "placeholders": {
+            "min_length": {},
+            "max_length": {}
+        }
+    },
     "p_enter_new_fido2_pin_complexity_active": null,
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {

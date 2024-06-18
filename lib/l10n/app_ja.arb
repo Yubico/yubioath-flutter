@@ -291,6 +291,13 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_max_length": null,
+    "@p_enter_new_fido2_pin_max_length": {
+        "placeholders": {
+            "min_length": {},
+            "max_length": {}
+        }
+    },
     "p_enter_new_fido2_pin_complexity_active": "新しいPINを入力します。PINは少なくとも{length} 文字以上で、少なくとも{unique_characters} ユニークな文字を含み、「{common_pin}」のようなよく使われるPINであってはなりません。文字、数字、特殊文字を含むことができます。",
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {

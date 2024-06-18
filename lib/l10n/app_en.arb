@@ -291,6 +291,13 @@
             "length": {}
         }
     },
+    "p_enter_new_fido2_pin_max_length": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
+    "@p_enter_new_fido2_pin_max_length": {
+        "placeholders": {
+            "min_length": {},
+            "max_length": {}
+        }
+    },
     "p_enter_new_fido2_pin_complexity_active": "Enter your new PIN. A PIN must be at least {length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {
