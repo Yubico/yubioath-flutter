@@ -5,11 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:20.04
-      env:
-        DEBIAN_FRONTEND: noninteractive
+    runs-on: tla-arm64-ubuntu-runner-01
 
     steps:
     - uses: actions/checkout@v4
