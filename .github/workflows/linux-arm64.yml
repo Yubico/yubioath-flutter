@@ -72,7 +72,7 @@ jobs:
 
     - uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        channel: 'main'
         flutter-version: ${{ env.FLUTTER }}
 
     - name: Configure Flutter
