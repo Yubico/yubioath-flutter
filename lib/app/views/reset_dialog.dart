@@ -114,7 +114,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
     final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
         .contains(widget.data.info.formFactor);
-    final globalReset = isBio && (supported & Capability.piv.value) != 0;
+    final globalReset = isBio && (enabled & Capability.piv.value) != 0;
     final l10n = AppLocalizations.of(context)!;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);

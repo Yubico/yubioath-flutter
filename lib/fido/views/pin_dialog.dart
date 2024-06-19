@@ -92,10 +92,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
         .select((s) => s.whenOrNull(data: (state) => state.pinRetries)));
 
     final isBio = widget.state.bioEnroll != null;
-    final supported =
-        deviceData?.info.supportedCapabilities[deviceData.node.transport] ?? 0;
+    final enabled = deviceData
+            ?.info.config.enabledCapabilities[deviceData.node.transport] ??
+        0;
     final maxPinLength =
-        isBio && (supported & Capability.piv.value) != 0 ? 8 : null;
+        isBio && (enabled & Capability.piv.value) != 0 ? 8 : null;
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),

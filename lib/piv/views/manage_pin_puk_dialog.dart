@@ -22,6 +22,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -162,9 +163,10 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final showDefaultPukUsed =
         widget.target != ManageTarget.pin && _defaultPukUsed;
 
-    final hasPinComplexity =
-        ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
-            false;
+    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
+    final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
+        .contains(deviceData?.info.formFactor);
 
     return ResponsiveDialog(
       title: Text(titleText),
@@ -206,7 +208,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     ? l10n.s_current_pin
                     : l10n.s_current_puk,
                 errorText: _pinIsBlocked
-                    ? (widget.target == ManageTarget.pin
+                    ? (widget.target == ManageTarget.pin && !isBio
                         ? l10n.l_piv_pin_blocked
                         : l10n.l_piv_pin_puk_blocked)
                     : (_currentIsWrong
