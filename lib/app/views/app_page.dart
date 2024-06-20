@@ -678,26 +678,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                   },
                 ),
           actions: [
-            if (hasManage &&
-                (widget.keyActionsBuilder != null ||
-                    widget.detailViewBuilder != null))
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: IconButton(
-                  key: toggleDetailViewIconButtonKey,
-                  onPressed: () {
-                    ref
-                        .read(_detailViewVisibilityProvider.notifier)
-                        .toggleExpanded();
-                  },
-                  icon: const Icon(Symbols.view_sidebar),
-                  iconSize: 24,
-                  tooltip: showDetailView
-                      ? l10n.s_collapse_sidebar
-                      : l10n.s_expand_sidebar,
-                  padding: const EdgeInsets.all(12),
-                ),
-              ),
             if (widget.actionButtonBuilder == null &&
                 (widget.keyActionsBuilder != null &&
                     (!hasManage || !showDetailView)))
@@ -726,6 +706,26 @@ class _AppPageState extends ConsumerState<AppPage> {
                           semanticLabel: l10n.s_configure_yk),
                   iconSize: 24,
                   tooltip: l10n.s_configure_yk,
+                  padding: const EdgeInsets.all(12),
+                ),
+              ),
+            if (hasManage &&
+                (widget.keyActionsBuilder != null ||
+                    widget.detailViewBuilder != null))
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: IconButton(
+                  key: toggleDetailViewIconButtonKey,
+                  onPressed: () {
+                    ref
+                        .read(_detailViewVisibilityProvider.notifier)
+                        .toggleExpanded();
+                  },
+                  icon: const Icon(Symbols.view_sidebar),
+                  iconSize: 24,
+                  tooltip: showDetailView
+                      ? l10n.s_collapse_sidebar
+                      : l10n.s_expand_sidebar,
                   padding: const EdgeInsets.all(12),
                 ),
               ),
