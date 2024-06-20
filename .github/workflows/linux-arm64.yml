@@ -105,13 +105,13 @@ jobs:
     - name: Embedd appindicator
       run: |
         patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libtray_manager_plugin.so
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/arm64/release/bundle/lib/
+        cp -L /usr/lib/arm64-linux-gnu/libayatana-appindicator3.so.1 build/linux/arm64/release/bundle/lib/
         patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libayatana-appindicator3.so.1
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/arm64/release/bundle/lib/
+        cp -L /usr/lib/arm64-linux-gnu/libayatana-indicator3.so.7 build/linux/arm64/release/bundle/lib/
         patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libayatana-indicator3.so.7
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-glib.so.4 build/linux/arm64/release/bundle/lib/
+        cp -L /usr/lib/arm64-linux-gnu/libdbusmenu-glib.so.4 build/linux/arm64/release/bundle/lib/
         patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libdbusmenu-glib.so.4
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/arm64/release/bundle/lib/
+        cp -L /usr/lib/arm64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/arm64/release/bundle/lib/
         patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libdbusmenu-gtk3.so.4
 
     - name: Rename and archive app
