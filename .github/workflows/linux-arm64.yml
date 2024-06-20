@@ -15,32 +15,32 @@ jobs:
     - name: Read variables from repo
       run: cat .github/workflows/env >> $GITHUB_ENV
 
-#    - name: Install dependencies
-#      run: |
-#        export PYVER_MINOR=${PYVER%.*}
-#        echo "PYVER_MINOR: $PYVER_MINOR"
-#        sudo apt-get update
-#        sudo apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
-#        sudo add-apt-repository -y ppa:git-core/ppa
-#        sudo add-apt-repository -y ppa:deadsnakes/ppa
-#        sudo apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
-#        git config --global --add safe.directory "$GITHUB_WORKSPACE"
-#        sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python
-#        sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
-#        PYVER_TEMP=`/usr/local/bin/python --version`
-#        export PYVERINST=${PYVER_TEMP#* }
-#        echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
-#        echo "Installed python version: $PYVERINST"
-#        python -m ensurepip --user
-#        python -m pip install -U pip pipx
-#
-#    - name: Verify Python version
-#      if: ${{ env.PYVERINST != env.PYVER }}
-#      run: |
-#        echo "Python version not compatible"
-#        echo "Installed python version: $PYVERINST"
-#        echo "Expected: $PYVER"
-#        exit 1
+    - name: Install dependencies
+      run: |
+        export PYVER_MINOR=${PYVER%.*}
+        echo "PYVER_MINOR: $PYVER_MINOR"
+        sudo apt-get update
+        sudo apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
+        sudo add-apt-repository -y ppa:git-core/ppa
+        sudo add-apt-repository -y ppa:deadsnakes/ppa
+        sudo apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python
+        sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
+        PYVER_TEMP=`/usr/local/bin/python --version`
+        export PYVERINST=${PYVER_TEMP#* }
+        echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
+        echo "Installed python version: $PYVERINST"
+        python -m ensurepip --user
+        python -m pip install -U pip pipx
+
+    - name: Verify Python version
+      if: ${{ env.PYVERINST != env.PYVER }}
+      run: |
+        echo "Python version not compatible"
+        echo "Installed python version: $PYVERINST"
+        echo "Expected: $PYVER"
+        exit 1
 
     - uses: actions/checkout@v4
 
