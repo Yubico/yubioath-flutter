@@ -69,7 +69,7 @@ jobs:
     - name: Install missing environment dependencies
       run: |
         sudo apt-get install -qq unzip libayatana-appindicator3-1 libayatana-indicator3-7 
-        libdbusmenu-glib4 libdbusmenu-gtk3-4
+        libdbusmenu-glib-dev libdbusmenu-gtk3-4
 
 
     - name: Install Flutter dependencies
