@@ -66,6 +66,10 @@ jobs:
         pipx install poetry
         ./build-helper.sh
 
+    - name: Install missing environment dependencies
+      run: |
+        sudo apt-get install -qq unzip
+
     - name: Install Flutter dependencies
       run: |
         sudo apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
