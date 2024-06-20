@@ -77,6 +77,8 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'main'
+        # for weird reasons, arm64 only works on main
+        # https://github.com/subosito/flutter-action/issues/268
         flutter-version: ${{ env.FLUTTER }}
 
     - name: Configure Flutter
