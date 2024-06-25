@@ -285,23 +285,18 @@
     "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to unblock it with the PUK or reset the YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
     "p_enter_current_puk_or_reset": "Enter your current PUK. If you don't know your PUK, you'll need to reset the YubiKey.",
-    "p_enter_new_fido2_pin": "Enter your new PIN. A PIN must be at least {length} characters long and may contain letters, numbers and special characters.",
+    "p_enter_new_fido2_pin": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
     "@p_enter_new_fido2_pin": {
-        "placeholders": {
-            "length": {}
-        }
-    },
-    "p_enter_new_fido2_pin_max_length": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
-    "@p_enter_new_fido2_pin_max_length": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Enter your new PIN. A PIN must be at least {length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
+    "p_enter_new_fido2_pin_complexity_active": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {
-            "length": {},
+            "min_length": {},
+            "max_length": {},
             "unique_characters": {},
             "common_pin": {}
         }
@@ -310,16 +305,18 @@
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
-    "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be 6-8 characters.",
+    "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be at least {length} characters long.",
     "@p_enter_new_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {},
+            "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "Enter a new {name} to set. Must be 6-8 characters, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
+    "p_enter_new_piv_pin_puk_complexity_active": "Enter a new {name} to set. Must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
     "@p_enter_new_piv_pin_puk_complexity_active": {
         "placeholders": {
             "name": {},
+            "length": {},
             "common": {}
         }
     },
