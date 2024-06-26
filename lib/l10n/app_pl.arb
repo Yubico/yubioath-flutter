@@ -285,16 +285,18 @@
     "p_enter_current_pin_or_reset": "Wprowadź aktualny kod PIN. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Wprowadź aktualny PIN. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
     "p_enter_current_puk_or_reset": "Wprowadź aktualny kod PUK. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
-    "p_enter_new_fido2_pin": "Wprowadź nowy kod PIN. Musi zawierać co najmniej {length} znaków. Może zawierać litery, cyfry i znaki specjalne.",
+    "p_enter_new_fido2_pin": null,
     "@p_enter_new_fido2_pin": {
         "placeholders": {
-            "length": {}
+            "min_length": {},
+            "max_length": {}
         }
     },
     "p_enter_new_fido2_pin_complexity_active": null,
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {
-            "length": {},
+            "min_length": {},
+            "max_length": {},
             "unique_characters": {},
             "common_pin": {}
         }
@@ -303,16 +305,18 @@
     "p_pin_required_desc": "Czynność, którą zamierzasz wykonać, wymaga wprowadzenia kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano, użyj PUK, aby zresetować",
     "l_piv_pin_puk_blocked": "Zablokowano, konieczny reset do ustawień fabrycznych",
-    "p_enter_new_piv_pin_puk": "Wprowadź nową {name} do ustawienia. Musi składać się z 6-8 znaków.",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {},
+            "length": {}
         }
     },
     "p_enter_new_piv_pin_puk_complexity_active": null,
     "@p_enter_new_piv_pin_puk_complexity_active": {
         "placeholders": {
             "name": {},
+            "length": {},
             "common": {}
         }
     },

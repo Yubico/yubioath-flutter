@@ -26,9 +26,11 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
@@ -84,11 +86,18 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final isValid =
         currentPinLenOk && newPinLenOk && _newPinController.text == _confirmPin;
 
-    final hasPinComplexity =
-        ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
-            false;
+    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+
+    final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final pinRetries = ref.watch(fidoStateProvider(widget.devicePath)
         .select((s) => s.whenOrNull(data: (state) => state.pinRetries)));
+
+    final isBio = widget.state.bioEnroll != null;
+    final enabled = deviceData
+            ?.info.config.enabledCapabilities[deviceData.node.transport] ??
+        0;
+    final maxPinLength =
+        isBio && (enabled & Capability.piv.value) != 0 ? 8 : 63;
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
@@ -110,6 +119,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 key: currentPin,
                 controller: _currentPinController,
                 focusNode: _currentPinFocus,
+                maxLength: maxPinLength,
+                inputFormatters: [limitBytesLength(maxPinLength)],
+                buildCounter: buildByteCounterFor(_currentPinController.text),
                 autofocus: true,
                 obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
@@ -145,13 +157,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             ],
             Text(hasPinComplexity
                 ? l10n.p_enter_new_fido2_pin_complexity_active(
-                    minPinLength, 2, '123456')
-                : l10n.p_enter_new_fido2_pin(minPinLength)),
-            // TODO: Set max characters based on UTF-8 bytes
+                    minPinLength, maxPinLength, 2, '123456')
+                : l10n.p_enter_new_fido2_pin(minPinLength, maxPinLength)),
             AppTextFormField(
               key: newPin,
               controller: _newPinController,
               focusNode: _newPinFocus,
+              maxLength: maxPinLength,
+              inputFormatters: [limitBytesLength(maxPinLength)],
+              buildCounter: buildByteCounterFor(_newPinController.text),
               autofocus: !hasPin,
               obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.password],
@@ -183,6 +197,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             AppTextFormField(
               key: confirmPin,
               initialValue: _confirmPin,
+              maxLength: maxPinLength,
+              inputFormatters: [limitBytesLength(maxPinLength)],
+              buildCounter: buildByteCounterFor(_confirmPin),
               obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.password],
               decoration: AppInputDecoration(

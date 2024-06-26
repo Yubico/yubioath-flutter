@@ -75,7 +75,8 @@ class SkyHelper(private val compatUtil: CompatUtil) {
             isNfc = false,
             usbPid = pid.value,
             pinComplexity = false,
-            supportedCapabilities = Capabilities(usb = 0)
+            supportedCapabilities = Capabilities(usb = 0),
+            fipsCapable = 0
         )
     }
 

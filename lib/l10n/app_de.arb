@@ -285,16 +285,18 @@
     "p_enter_current_pin_or_reset": "Geben Sie Ihre aktuelle PIN ein. Wenn Sie die PIN nicht wissen, müssen Sie den YubiKey zurücksetzen.",
     "p_enter_current_pin_or_reset_no_puk": null,
     "p_enter_current_puk_or_reset": null,
-    "p_enter_new_fido2_pin": "Geben Sie Ihre neue PIN ein. Eine PIN muss mindestens {length} Zeichen lang sein und kann Buchstaben, Ziffern und spezielle Zeichen enthalten.",
+    "p_enter_new_fido2_pin": null,
     "@p_enter_new_fido2_pin": {
         "placeholders": {
-            "length": {}
+            "min_length": {},
+            "max_length": {}
         }
     },
     "p_enter_new_fido2_pin_complexity_active": null,
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {
-            "length": {},
+            "min_length": {},
+            "max_length": {},
             "unique_characters": {},
             "common_pin": {}
         }
@@ -306,13 +308,15 @@
     "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {},
+            "length": {}
         }
     },
     "p_enter_new_piv_pin_puk_complexity_active": null,
     "@p_enter_new_piv_pin_puk_complexity_active": {
         "placeholders": {
             "name": {},
+            "length": {},
             "common": {}
         }
     },
