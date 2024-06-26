@@ -77,9 +77,9 @@ class OathNode(RpcNode):
                 logger.warning("Failed to unwrap access key", exc_info=True)
         return None
 
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = OathSession(connection)
+        self.session = OathSession(connection, scp_params)
         self._key_verifier = None
 
         if self.session.locked:

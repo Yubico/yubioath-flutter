@@ -28,10 +28,10 @@ logger = logging.getLogger(__name__)
 
 
 class ManagementNode(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
         self._connection_type: Type[Connection] = type(connection)
-        self.session = ManagementSession(connection)
+        self.session = ManagementSession(connection, scp_params)
 
     def get_data(self):
         try:
