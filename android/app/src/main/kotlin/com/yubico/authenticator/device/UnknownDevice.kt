@@ -21,7 +21,8 @@ val UnknownDevice = Info(
     isNfc = false,
     usbPid = null,
     pinComplexity = false,
-    supportedCapabilities = Capabilities()
+    supportedCapabilities = Capabilities(),
+    fipsCapable = 0
 )
 
 fun unknownDeviceWithCapability(transport: Transport, bit: Int = 0) : Info {

@@ -53,6 +53,8 @@ data class Info(
     val pinComplexity: Boolean,
     @SerialName("supported_capabilities")
     val supportedCapabilities: Capabilities,
+    @SerialName("fips_capable")
+    val fipsCapable: Int,
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
@@ -69,6 +71,7 @@ data class Info(
         supportedCapabilities = Capabilities(
             nfc = deviceInfo.capabilitiesFor(Transport.NFC),
             usb = deviceInfo.capabilitiesFor(Transport.USB),
-        )
+        ),
+        fipsCapable = deviceInfo.fipsCapable
     )
 }
