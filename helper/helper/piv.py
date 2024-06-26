@@ -91,9 +91,9 @@ def _handle_pin_puk_error(e):
 
 
 class PivNode(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = PivSession(connection)
+        self.session = PivSession(connection, scp_params)
         self._pivman_data = get_pivman_data(self.session)
         self._authenticated = False
 
