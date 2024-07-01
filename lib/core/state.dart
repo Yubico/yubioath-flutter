@@ -124,18 +124,16 @@ final featureProvider = Provider<FeatureProvider>((ref) {
 class LayoutNotifier extends StateNotifier<FlexLayout> {
   final String _key;
   final SharedPreferences _prefs;
-  final FlexLayout initialLayout;
-  LayoutNotifier(this._key, this._prefs, [this.initialLayout = FlexLayout.list])
-      : super(_fromName(_prefs.getString(_key), initialLayout));
+  LayoutNotifier(this._key, this._prefs)
+      : super(_fromName(_prefs.getString(_key)));
 
   void setLayout(FlexLayout layout) {
     state = layout;
     _prefs.setString(_key, layout.name);
   }
 
-  static FlexLayout _fromName(String? name, FlexLayout initialLayout) =>
-      FlexLayout.values.firstWhere(
+  static FlexLayout _fromName(String? name) => FlexLayout.values.firstWhere(
         (element) => element.name == name,
-        orElse: () => initialLayout,
+        orElse: () => FlexLayout.list,
       );
 }

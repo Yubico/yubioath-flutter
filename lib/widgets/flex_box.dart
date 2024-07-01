@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
-enum FlexLayout { grid, list }
+enum FlexLayout {
+  grid,
+  list;
+
+  IconData get icon => switch (this) {
+        FlexLayout.list => Symbols.list,
+        FlexLayout.grid => Symbols.grid_view
+      };
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        FlexLayout.list => l10n.s_list_layout,
+        FlexLayout.grid => l10n.s_grid_layout
+      };
+}
 
 class FlexBox<T> extends StatelessWidget {
   final List<T> items;

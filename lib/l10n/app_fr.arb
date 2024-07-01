@@ -127,6 +127,7 @@
     "s_list_layout": null,
     "s_grid_layout": null,
     "s_mixed_layout": null,
+    "s_select_layout": null,
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Sélectionner pour scanner",
