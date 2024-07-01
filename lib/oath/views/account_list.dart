@@ -46,8 +46,13 @@ class AccountList extends ConsumerWidget {
     final creds =
         credentials.where((entry) => !favorites.contains(entry.credential.id));
 
-    final pinnedLayout = ref.watch(oathPinnedLayoutProvider);
-    final layout = ref.watch(oathLayoutProvider);
+    final oathLayout = ref.watch(oathLayoutProvider);
+    final pinnedLayout =
+        (oathLayout == OathLayout.grid || oathLayout == OathLayout.mixed)
+            ? FlexLayout.grid
+            : FlexLayout.list;
+    final normalLayout =
+        oathLayout == OathLayout.grid ? FlexLayout.grid : FlexLayout.list;
 
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
@@ -81,7 +86,7 @@ class AccountList extends ConsumerWidget {
             //   ),
             // ),
             Padding(
-              padding: layout == FlexLayout.grid
+              padding: normalLayout == FlexLayout.grid
                   ? const EdgeInsets.only(left: 16.0, right: 16)
                   : const EdgeInsets.all(0),
               child: FlexBox<OathPair>(
@@ -90,9 +95,9 @@ class AccountList extends ConsumerWidget {
                   value.credential,
                   expanded: expanded,
                   selected: value.credential == selected,
-                  large: layout == FlexLayout.grid,
+                  large: normalLayout == FlexLayout.grid,
                 ),
-                layout: layout,
+                layout: normalLayout,
                 runSpacing: 8.0,
               ),
             ),

@@ -127,6 +127,7 @@
     "s_list_layout": "List layout",
     "s_grid_layout": "Grid layout",
     "s_mixed_layout": "Mixed layout",
+    "s_select_layout": "Select layout",
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Select to scan",

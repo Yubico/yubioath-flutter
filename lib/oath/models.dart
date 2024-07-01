@@ -258,3 +258,5 @@ class CredentialData with _$CredentialData {
         },
       );
 }
+
+enum OathLayout { list, grid, mixed }

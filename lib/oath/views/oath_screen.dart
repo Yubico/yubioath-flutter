@@ -39,7 +39,6 @@ import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
-import '../../widgets/flex_box.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
@@ -53,6 +52,19 @@ import 'actions.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
+
+extension on OathLayout {
+  IconData get _icon => switch (this) {
+        OathLayout.list => Symbols.list,
+        OathLayout.grid => Symbols.grid_view,
+        OathLayout.mixed => Symbols.vertical_split
+      };
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OathLayout.list => l10n.s_list_layout,
+        OathLayout.grid => l10n.s_grid_layout,
+        OathLayout.mixed => l10n.s_mixed_layout
+      };
+}
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
@@ -378,13 +390,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             }
             return KeyEventResult.ignored;
           },
-          child: Builder(builder: (context) {
+          child: LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth;
             final textTheme = Theme.of(context).textTheme;
             return Consumer(
               builder: (context, ref, child) {
-                final pinnedLayout = ref.watch(oathPinnedLayoutProvider);
-                final layout = ref.watch(oathLayoutProvider);
-
                 final credentials = ref.watch(filteredCredentialsProvider(
                     ref.watch(credentialListProvider(widget.devicePath)) ??
                         []));
@@ -392,13 +402,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 final pinnedCreds = credentials
                     .where((entry) => favorites.contains(entry.credential.id));
 
-                final mixedView = pinnedLayout == FlexLayout.grid &&
-                    layout == FlexLayout.list;
-                final listView =
-                    (pinnedLayout == FlexLayout.list || pinnedCreds.isEmpty) &&
-                        layout == FlexLayout.list;
-                final gridView = pinnedLayout == FlexLayout.grid &&
-                    layout == FlexLayout.grid;
+                final availableLayouts = pinnedCreds.isNotEmpty
+                    ? OathLayout.values
+                    : OathLayout.values
+                        .where((element) => element != OathLayout.mixed);
+                final oathLayout = ref.watch(oathLayoutProvider);
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(
@@ -462,67 +470,38 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               ),
                             ],
                           ),
-                          MouseRegion(
-                            onEnter: (event) {
-                              if (!searchFocus.hasFocus) {
-                                setState(() {
-                                  _canRequestFocus = false;
-                                });
-                              }
-                            },
-                            onExit: (event) {
-                              setState(() {
-                                _canRequestFocus = true;
-                              });
-                            },
-                            child: IconButton(
-                              tooltip: l10n.s_list_layout,
-                              onPressed: () {
-                                ref
-                                    .read(oathPinnedLayoutProvider.notifier)
-                                    .setLayout(FlexLayout.list);
-                                ref
-                                    .read(oathLayoutProvider.notifier)
-                                    .setLayout(FlexLayout.list);
-                              },
-                              icon: Icon(
-                                Symbols.list,
-                                color: listView
-                                    ? Theme.of(context).colorScheme.primary
-                                    : null,
+                          if (width >= 380)
+                            ...availableLayouts.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(oathLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e._icon,
+                                    color: e == oathLayout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                          MouseRegion(
-                            onEnter: (event) {
-                              if (!searchFocus.hasFocus) {
-                                setState(() {
-                                  _canRequestFocus = false;
-                                });
-                              }
-                            },
-                            onExit: (event) {
-                              setState(() {
-                                _canRequestFocus = true;
-                              });
-                            },
-                            child: IconButton(
-                              tooltip: l10n.s_grid_layout,
-                              onPressed: () {
-                                ref
-                                    .read(oathPinnedLayoutProvider.notifier)
-                                    .setLayout(FlexLayout.grid);
-                                ref
-                                    .read(oathLayoutProvider.notifier)
-                                    .setLayout(FlexLayout.grid);
-                              },
-                              icon: Icon(Symbols.grid_view,
-                                  color: gridView
-                                      ? Theme.of(context).colorScheme.primary
-                                      : null),
-                            ),
-                          ),
-                          if (pinnedCreds.isNotEmpty)
+                          if (width < 380)
                             MouseRegion(
                               onEnter: (event) {
                                 if (!searchFocus.hasFocus) {
@@ -536,24 +515,45 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                   _canRequestFocus = true;
                                 });
                               },
-                              child: IconButton(
-                                tooltip: l10n.s_mixed_layout,
-                                onPressed: () {
-                                  ref
-                                      .read(oathPinnedLayoutProvider.notifier)
-                                      .setLayout(FlexLayout.grid);
-                                  ref
-                                      .read(oathLayoutProvider.notifier)
-                                      .setLayout(FlexLayout.list);
-                                },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: 'Select layout',
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
                                 icon: Icon(
-                                  Symbols.vertical_split,
-                                  color: mixedView
-                                      ? Theme.of(context).colorScheme.primary
-                                      : null,
+                                  oathLayout._icon,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
+                                itemBuilder: (context) => [
+                                  ...availableLayouts.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e._icon,
+                                              color: e == oathLayout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(oathLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
                               ),
-                            ),
+                            )
                         ]
                       ],
                     ),
