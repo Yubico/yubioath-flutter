@@ -24,7 +24,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
-import '../widgets/flex_box.dart';
 import 'models.dart';
 
 final accountsSearchProvider =
@@ -39,15 +38,44 @@ class AccountsSearchNotifier extends StateNotifier<String> {
   }
 }
 
-final oathPinnedLayoutProvider =
-    StateNotifierProvider<LayoutNotifier, FlexLayout>(
-  (ref) => LayoutNotifier(
-      'OATH_STATE_LAYOUT_PINNED', ref.watch(prefProvider), FlexLayout.grid),
-);
+final oathLayoutProvider =
+    StateNotifierProvider.autoDispose<OathLayoutNotfier, OathLayout>((ref) {
+  final device = ref.watch(currentDeviceProvider);
+  List<OathPair> credentials = device != null
+      ? ref.read(filteredCredentialsProvider(
+          ref.read(credentialListProvider(device.path)) ?? []))
+      : [];
+  final favorites = ref.watch(favoritesProvider);
+  final pinnedCreds =
+      credentials.where((entry) => favorites.contains(entry.credential.id));
+  return OathLayoutNotfier(
+      'OATH_STATE_LAYOUT', ref.watch(prefProvider), pinnedCreds.isNotEmpty);
+});
 
-final oathLayoutProvider = StateNotifierProvider<LayoutNotifier, FlexLayout>(
-  (ref) => LayoutNotifier('OATH_STATE_LAYOUT', ref.watch(prefProvider)),
-);
+class OathLayoutNotfier extends StateNotifier<OathLayout> {
+  final String _key;
+  final SharedPreferences _prefs;
+  OathLayoutNotfier(this._key, this._prefs, bool _hasPinned)
+      : super(_fromName(_prefs.getString(_key), _hasPinned));
+
+  void setLayout(OathLayout layout) {
+    state = layout;
+    _prefs.setString(_key, layout.name);
+  }
+
+  static OathLayout _fromName(String? name, bool hasPinned) {
+    final layout = OathLayout.values.firstWhere(
+      (element) => element.name == name,
+      orElse: () => OathLayout.list,
+    );
+    // Default to list view if current key does not have
+    // pinned credentials
+    if (layout == OathLayout.mixed && !hasPinned) {
+      return OathLayout.list;
+    }
+    return layout;
+  }
+}
 
 final oathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
