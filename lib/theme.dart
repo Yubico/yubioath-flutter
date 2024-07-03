@@ -30,7 +30,7 @@ class AppTheme {
         Brightness.dark => ColorScheme.fromSeed(
             seedColor: primaryColor,
             brightness: brightness,
-            background: const Color(0xff282828),
+            surface: const Color(0xff282828),
             onSurface: const Color(0xeeffffff),
             onSurfaceVariant: const Color(0xaaffffff),
           ),
@@ -78,6 +78,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       fontFamily: 'Roboto',
+      scaffoldBackgroundColor: colorScheme.surface,
       appBarTheme: const AppBarTheme(
         color: Colors.transparent,
       ),
@@ -102,13 +103,3 @@ class AppTheme {
     );
   }
 }
-
-/* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
-/// This fixes the issue with FilterChip resizing vertically on toggle.
-BorderSide? _chipBorder(Color color) =>
-    MaterialStateBorderSide.resolveWith((states) => BorderSide(
-        width: 1,
-        color: states.contains(MaterialState.selected)
-            ? Colors.transparent
-            : color));
-*/
