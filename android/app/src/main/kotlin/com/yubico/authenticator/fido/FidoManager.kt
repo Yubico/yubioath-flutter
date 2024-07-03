@@ -210,7 +210,7 @@ class FidoManager(
             currentSession
         )
 
-        val sameDevice = currentSession.equals(previousSession)
+        val sameDevice = currentSession == previousSession
 
         if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
             connectionHelper.invokePending(fidoSession)

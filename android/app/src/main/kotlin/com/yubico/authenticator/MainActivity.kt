@@ -231,7 +231,7 @@ class MainActivity : FlutterFragmentActivity() {
                 startNfcDiscovery()
             }
 
-            val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+            val usbManager = getSystemService(USB_SERVICE) as UsbManager
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
                 val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
                 if (device != null) {
@@ -495,7 +495,7 @@ class MainActivity : FlutterFragmentActivity() {
                     }
                     "hasCamera" -> {
                         val cameraService =
-                            getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                            getSystemService(CAMERA_SERVICE) as CameraManager
                         result.success(
                             cameraService.cameraIdList.any {
                                 cameraService.getCameraCharacteristics(it)

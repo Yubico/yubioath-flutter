@@ -26,7 +26,6 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
@@ -43,13 +42,11 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
-import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.AppId
 import com.yubico.yubikit.core.smartcard.SW
@@ -57,7 +54,6 @@ import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.oath.CredentialData
-import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
@@ -268,7 +264,7 @@ class OathManager(
                         try {
                             SmartCardProtocol(connection).select(AppId.OTP)
                         } catch (e: Exception) {
-                            logger.error("Failed to recognize this OATH device.")
+                            logger.error("Failed to recognize this OATH device.", e)
                             // we know this is NFC device and it supports OATH
                             val oathCapabilities = Capabilities(nfc = 0x20)
                             deviceManager.setDeviceInfo(

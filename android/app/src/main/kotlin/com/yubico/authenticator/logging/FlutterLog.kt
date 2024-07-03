@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class FlutterLog(messenger: BinaryMessenger) {
     }
 
     private fun logLevelFromArgument(argValue: String?): Log.LogLevel? =
-        Log.LogLevel.values().firstOrNull { it.name == argValue?.uppercase() }
+        Log.LogLevel.entries.firstOrNull { it.name == argValue?.uppercase() }
 
     private fun loggerError(message: String) {
         log(Log.LogLevel.ERROR,"FlutterLog", message, null)
