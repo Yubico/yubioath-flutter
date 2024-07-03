@@ -427,7 +427,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 onFieldSubmitted: (value) {
                   Focus.of(context).focusInDirection(TraversalDirection.down);
                 },
-              ),
+              ).init(),
             );
           }),
         ),

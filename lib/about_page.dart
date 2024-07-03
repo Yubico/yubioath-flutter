@@ -155,7 +155,6 @@ class AboutPage extends ConsumerWidget {
               ActionChip(
                 key: diagnosticsChip,
                 avatar: const Icon(Symbols.bug_report),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
@@ -188,7 +187,6 @@ class AboutPage extends ConsumerWidget {
               FilterChip(
                 key: screenshotChip,
                 label: Text(l10n.s_allow_screenshots),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {
                   ref
@@ -236,7 +234,6 @@ class LoggingPanel extends ConsumerWidget {
         ActionChip(
           key: logChip,
           avatar: const Icon(Symbols.content_copy),
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           label: Text(l10n.s_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');

@@ -358,13 +358,7 @@ class _HeroAvatar extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.all(12),
-      child: Theme(
-        // Give the avatar a transparent background
-        data: theme.copyWith(
-            colorScheme:
-                theme.colorScheme.copyWith(surfaceVariant: Colors.transparent)),
-        child: child,
-      ),
+      child: child,
     );
   }
 }

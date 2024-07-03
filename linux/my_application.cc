@@ -50,7 +50,6 @@ static void my_application_activate(GApplication* application) {
   gtk_window_set_default_size(window, 1100, 700);
   // Sets the minimum window size, should match desktop/window_manager_helper/defaults.dart
   gtk_widget_set_size_request(GTK_WIDGET(window), 300, 0);
-  gtk_widget_realize(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
@@ -59,8 +58,11 @@ static void my_application_activate(GApplication* application) {
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
+  // Registering plugins requires the window to be shown. We hide it immediately after, and it is never visible.
+  gtk_widget_show(GTK_WIDGET(window));
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
-
+  gtk_widget_hide(GTK_WIDGET(window));
+  
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }
 

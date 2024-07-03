@@ -25,68 +25,81 @@ class AppTheme {
         Brightness.dark => getDarkTheme(primaryColor),
       };
 
-  static ThemeData getLightTheme(Color primaryColor) => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.light,
-          seedColor: primaryColor,
-          onSurface: const Color(0xbb000000),
-          onSurfaceVariant: const Color(0x99000000),
-        ),
-        fontFamily: 'Roboto',
-        appBarTheme: const AppBarTheme(
-          color: Colors.transparent,
-        ),
-        listTileTheme: const ListTileThemeData(
-          // For alignment under menu button
-          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-          visualDensity: VisualDensity.compact,
-        ),
-        tooltipTheme: const TooltipThemeData(
-          waitDuration: Duration(milliseconds: 500),
-          textStyle: TextStyle(color: Color(0xff3c3c3c)),
-          decoration: BoxDecoration(
-            color: Color(0xffe2e2e6),
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+  static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) =>
+      switch (brightness) {
+        Brightness.dark => ColorScheme.fromSeed(
+            seedColor: primaryColor,
+            brightness: brightness,
+            surface: const Color(0xff282828),
+            onSurface: const Color(0xeeffffff),
+            onSurfaceVariant: const Color(0xaaffffff),
           ),
-        ),
-      );
+        Brightness.light => ColorScheme.fromSeed(
+            seedColor: primaryColor,
+            brightness: brightness,
+            onSurface: const Color(0xbb000000),
+            onSurfaceVariant: const Color(0x99000000),
+          )
+      };
 
-  static ThemeData getDarkTheme(Color primaryColor) => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.dark,
-          seedColor: primaryColor,
-          background: const Color(0xff282828),
-          onSurface: const Color(0xeeffffff),
-          onSurfaceVariant: const Color(0xaaffffff),
+  static ThemeData getLightTheme(Color primaryColor) {
+    final colorScheme = _colorScheme(Brightness.light, primaryColor);
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      fontFamily: 'Roboto',
+      appBarTheme: const AppBarTheme(
+        color: Colors.transparent,
+      ),
+      listTileTheme: const ListTileThemeData(
+        // For alignment under menu button
+        contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+        visualDensity: VisualDensity.compact,
+      ),
+      tooltipTheme: const TooltipThemeData(
+        waitDuration: Duration(milliseconds: 500),
+        textStyle: TextStyle(color: Color(0xff3c3c3c)),
+        decoration: BoxDecoration(
+          color: Color(0xffe2e2e6),
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),
-        fontFamily: 'Roboto',
-        appBarTheme: const AppBarTheme(
-          color: Colors.transparent,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        labelStyle:
+            TextStyle(fontFamily: 'Roboto', color: colorScheme.onSurface),
+      ),
+    );
+  }
+
+  static ThemeData getDarkTheme(Color primaryColor) {
+    final colorScheme = _colorScheme(Brightness.dark, primaryColor);
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      fontFamily: 'Roboto',
+      scaffoldBackgroundColor: colorScheme.surface,
+      appBarTheme: const AppBarTheme(
+        color: Colors.transparent,
+      ),
+      listTileTheme: const ListTileThemeData(
+        // For alignment under menu button
+        contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+        visualDensity: VisualDensity.compact,
+      ),
+      tooltipTheme: const TooltipThemeData(
+        waitDuration: Duration(milliseconds: 500),
+        textStyle: TextStyle(color: Color(0xffE2E2E6)),
+        decoration: BoxDecoration(
+          color: Color(0xff3c3c3c),
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),
-        listTileTheme: const ListTileThemeData(
-          // For alignment under menu button
-          contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-          visualDensity: VisualDensity.compact,
-        ),
-        tooltipTheme: const TooltipThemeData(
-          waitDuration: Duration(milliseconds: 500),
-          textStyle: TextStyle(color: Color(0xffE2E2E6)),
-          decoration: BoxDecoration(
-            color: Color(0xff3c3c3c),
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          ),
-        ),
-      );
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        labelStyle:
+            TextStyle(fontFamily: 'Roboto', color: colorScheme.onSurface),
+      ),
+    );
+  }
 }
-
-/* TODO: Remove this. It is left here as a reference as we adjust styles to work with Flutter 3.7.
-/// This fixes the issue with FilterChip resizing vertically on toggle.
-BorderSide? _chipBorder(Color color) =>
-    MaterialStateBorderSide.resolveWith((states) => BorderSide(
-        width: 1,
-        color: states.contains(MaterialState.selected)
-            ? Colors.transparent
-            : color));
-*/

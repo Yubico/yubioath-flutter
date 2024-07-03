@@ -448,7 +448,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                   pinned: true,
                   delegate: _SliverTitleDelegate(
                     child: ColoredBox(
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                       child: Padding(
                         key: _sliverTitleWrapperGlobalKey,
                         padding: const EdgeInsets.only(
@@ -622,7 +622,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         ),
         scrolledUnderElevation: 0.0,
         leadingWidth: hasRail ? 84 : null,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: _buildAppBarTitle(
           context,
           hasRail,

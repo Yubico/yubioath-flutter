@@ -71,7 +71,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
       items: widget.items
           .map((e) => PopupMenuItem<T>(
@@ -91,7 +91,6 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
     return FilterChip(
       tooltip: widget.tooltip,
       avatar: widget.avatar,
-      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
       labelPadding: const EdgeInsets.only(left: 4),
       label: Row(
         mainAxisSize: MainAxisSize.min,
@@ -102,7 +101,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
             child: Icon(
               _showing ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
               color: ChipTheme.of(context).checkmarkColor,
-              size: 18,
+              size: 16,
             ),
           ),
         ],
