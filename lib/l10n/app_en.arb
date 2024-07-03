@@ -796,7 +796,7 @@
     "p_warning_piv_reset": "Warning! All data stored for PIV will be irrevocably deleted from your YubiKey.",
     "p_warning_piv_reset_desc": "This includes private keys and certificates. Your PIN, PUK, and management key will be reset to their factory default values.",
     "p_warning_global_reset": "Warning! This will irrevocably delete all saved data, including credentials, from your YubiKey.",
-    "p_warning_global_reset_desc": "Factory reset the applications on your YubiKey. PIN will be reset to its factorey default value, and registered fingerprints will be removed. Any keys, certificates, or other credentials will all be permanently removed.",
+    "p_warning_global_reset_desc": "Factory reset the applications on your YubiKey. PIN will be reset to its factory default value, and registered fingerprints will be removed. Any keys, certificates, or other credentials will all be permanently removed.",
 
     "@_copy_to_clipboard": {},
     "l_copy_to_clipboard": "Copy to clipboard",

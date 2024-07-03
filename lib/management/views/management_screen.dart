@@ -61,7 +61,6 @@ class _CapabilityForm extends StatelessWidget {
           .where((c) => capabilities & c.value != 0)
           .map((c) => FilterChip(
                 label: Text(c.getDisplayName(l10n)),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 key: Key('$keyPrefix.${c.name}'),
                 selected: enabled & c.value != 0,
                 onSelected: (_) {

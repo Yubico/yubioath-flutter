@@ -80,7 +80,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
     final helper = AccountHelper(context, ref, credential);
     final subtitle = helper.subtitle;
     final circleAvatar = CircleAvatar(
-      foregroundColor: Theme.of(context).colorScheme.background,
+      foregroundColor: Theme.of(context).colorScheme.surface,
       backgroundColor: _iconColor(400),
       child: Text(
         (credential.issuer ?? credential.name).characters.first.toUpperCase(),

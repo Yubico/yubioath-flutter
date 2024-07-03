@@ -221,8 +221,6 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                   ),
                   if (_generateType == GenerateType.certificate)
                     FilterChip(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceVariant,
                       label: Text(dateFormatter.format(_validTo)),
                       onSelected: _generating
                           ? null
