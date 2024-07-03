@@ -57,7 +57,8 @@ class UseRecommendedWidget extends DartLintRule {
   ) {
     context.registry.addInstanceCreationExpression((node) {
       if (node.constructorName.toString() == discouraged) {
-        reporter.atNode(node.constructorName, code);
+        // ignore: deprecated_member_use
+        reporter.reportErrorForNode(code, node.constructorName);
       }
     });
   }
@@ -89,7 +90,8 @@ class CallInitAfterCreation extends DartLintRule {
             return;
           }
         }
-        reporter.atNode(node.constructorName, code);
+        // ignore: deprecated_member_use
+        reporter.reportErrorForNode(code, node.constructorName);
       }
     });
   }
