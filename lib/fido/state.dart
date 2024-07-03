@@ -41,6 +41,7 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Stream<InteractionEvent> reset();
   Future<PinResult> setPin(String newPin, {String? oldPin});
   Future<PinResult> unlock(String pin);
+  Future<void> enableEnterpriseAttestation();
 }
 
 final fingerprintProvider = AsyncNotifierProvider.autoDispose
