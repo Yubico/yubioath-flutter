@@ -429,7 +429,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 onFieldSubmitted: (value) {
                   Focus.of(context).focusInDirection(TraversalDirection.down);
                 },
-              ),
+              ).init(),
             );
           }),
         ),
