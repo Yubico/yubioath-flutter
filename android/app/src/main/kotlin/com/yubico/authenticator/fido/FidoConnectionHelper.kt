@@ -19,7 +19,6 @@ package com.yubico.authenticator.fido
 import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
-import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.withConnection
