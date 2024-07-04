@@ -33,6 +33,9 @@ class AccountList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final labelStyle =
+        theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary);
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
@@ -59,8 +62,13 @@ class AccountList extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (pinnedCreds.isNotEmpty)
+            if (pinnedCreds.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                child: Text(l10n.s_pinned, style: labelStyle),
+              ),
               Padding(
                 padding: pinnedLayout == FlexLayout.grid
                     ? const EdgeInsets.only(left: 16.0, right: 16)
@@ -77,14 +85,17 @@ class AccountList extends ConsumerWidget {
                   runSpacing: 8.0,
                 ),
               ),
-            if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
+            ],
+            if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
               const SizedBox(height: 24),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: Divider(
-            //     color: Theme.of(context).colorScheme.secondaryContainer,
-            //   ),
-            // ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                child: Text(
+                  l10n.s_accounts,
+                  style: labelStyle,
+                ),
+              ),
+            ],
             Padding(
               padding: normalLayout == FlexLayout.grid
                   ? const EdgeInsets.only(left: 16.0, right: 16)

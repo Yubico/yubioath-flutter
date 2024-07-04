@@ -418,6 +418,7 @@
     "s_pin_account": "Konto anpinnen",
     "s_unpin_account": "Konto nicht mehr anpinnen",
     "s_no_pinned_accounts": "Keine angepinnten Konten",
+    "s_pinned": null,
     "l_pin_account_desc": null,
     "s_rename_account": "Konto umbenennen",
     "l_rename_account_desc": null,

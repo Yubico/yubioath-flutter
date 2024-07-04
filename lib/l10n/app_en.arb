@@ -418,6 +418,7 @@
     "s_pin_account": "Pin account",
     "s_unpin_account": "Unpin account",
     "s_no_pinned_accounts": "No pinned accounts",
+    "s_pinned": "Pinned",
     "l_pin_account_desc": "Keep your important accounts together",
     "s_rename_account": "Rename account",
     "l_rename_account_desc": "Edit the issuer/name of the account",
