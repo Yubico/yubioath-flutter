@@ -3,8 +3,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 enum FlexLayout {
-  grid,
-  list;
+  list,
+  grid;
 
   IconData get icon => switch (this) {
         FlexLayout.list => Symbols.list,
