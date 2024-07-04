@@ -438,8 +438,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                 // between icons
                                 padding: const EdgeInsets.only(left: 17.0),
                                 child: Container(
-                                  color:
-                                      Theme.of(context).colorScheme.background,
+                                  color: Theme.of(context).colorScheme.surface,
                                   width: 1,
                                   height: 45,
                                 ),
