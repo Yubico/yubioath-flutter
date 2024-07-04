@@ -428,23 +428,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                           ),
                         if (searchController.text.isEmpty &&
                             !searchFocus.hasFocus &&
-                            showLayoutOptions) ...[
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                // need this to maintain consistent distance
-                                // between icons
-                                padding: const EdgeInsets.only(left: 17.0),
-                                child: Container(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  width: 1,
-                                  height: 45,
-                                ),
-                              ),
-                            ],
-                          ),
+                            showLayoutOptions)
                           ...FlexLayout.values.map(
                             (e) => MouseRegion(
                               onEnter: (event) {
@@ -475,7 +459,6 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                               ),
                             ),
                           ),
-                        ]
                       ],
                     ),
                     onChanged: (value) {

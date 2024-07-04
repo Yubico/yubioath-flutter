@@ -454,23 +454,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           ),
                         if (searchController.text.isEmpty &&
                             !searchFocus.hasFocus) ...[
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                // need this to maintain consistent distance
-                                // between icons
-                                padding: const EdgeInsets.only(left: 17.0),
-                                child: Container(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  width: 1,
-                                  height: 45,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (width >= 380)
+                          if (width >= 450)
                             ...availableLayouts.map(
                               (e) => MouseRegion(
                                 onEnter: (event) {
@@ -497,11 +481,12 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                     color: e == oathLayout
                                         ? Theme.of(context).colorScheme.primary
                                         : null,
+                                    fill: e == oathLayout ? 1 : 0,
                                   ),
                                 ),
                               ),
                             ),
-                          if (width < 380)
+                          if (width < 450)
                             MouseRegion(
                               onEnter: (event) {
                                 if (!searchFocus.hasFocus) {
@@ -523,6 +508,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                 icon: Icon(
                                   oathLayout._icon,
                                   color: Theme.of(context).colorScheme.primary,
+                                  fill: 1,
                                 ),
                                 itemBuilder: (context) => [
                                   ...availableLayouts.map(
