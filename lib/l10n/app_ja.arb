@@ -418,6 +418,7 @@
     "s_pin_account": "アカウントをピン留めする",
     "s_unpin_account": "アカウントのピン留めを解除",
     "s_no_pinned_accounts": "ピン留めされたアカウントはありません",
+    "s_pinned": null,
     "l_pin_account_desc": "重要なアカウントをまとめて保持",
     "s_rename_account": "アカウント名を変更",
     "l_rename_account_desc": "アカウントの発行者/名前を編集",

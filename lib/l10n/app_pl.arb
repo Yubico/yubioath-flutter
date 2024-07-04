@@ -418,6 +418,7 @@
     "s_pin_account": "Przypnij konto",
     "s_unpin_account": "Odepnij konto",
     "s_no_pinned_accounts": "Brak przypiętych kont",
+    "s_pinned": null,
     "l_pin_account_desc": "Przechowuj ważne konta razem",
     "s_rename_account": "Zmień nazwę konta",
     "l_rename_account_desc": "Edytuj wydawcę/nazwę konta",

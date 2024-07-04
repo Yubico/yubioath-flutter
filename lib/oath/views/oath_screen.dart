@@ -481,7 +481,6 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                     color: e == oathLayout
                                         ? Theme.of(context).colorScheme.primary
                                         : null,
-                                    fill: e == oathLayout ? 1 : 0,
                                   ),
                                 ),
                               ),
@@ -508,7 +507,6 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                 icon: Icon(
                                   oathLayout._icon,
                                   color: Theme.of(context).colorScheme.primary,
-                                  fill: 1,
                                 ),
                                 itemBuilder: (context) => [
                                   ...availableLayouts.map(
