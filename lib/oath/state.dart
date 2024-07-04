@@ -48,30 +48,38 @@ final oathLayoutProvider =
   final favorites = ref.watch(favoritesProvider);
   final pinnedCreds =
       credentials.where((entry) => favorites.contains(entry.credential.id));
-  return OathLayoutNotfier(
-      'OATH_STATE_LAYOUT', ref.watch(prefProvider), pinnedCreds.isNotEmpty);
+  return OathLayoutNotfier('OATH_STATE_LAYOUT', ref.watch(prefProvider),
+      credentials, pinnedCreds.toList());
 });
 
 class OathLayoutNotfier extends StateNotifier<OathLayout> {
   final String _key;
   final SharedPreferences _prefs;
-  OathLayoutNotfier(this._key, this._prefs, bool _hasPinned)
-      : super(_fromName(_prefs.getString(_key), _hasPinned));
+  OathLayoutNotfier(this._key, this._prefs, List<OathPair> credentials,
+      List<OathPair> pinnedCredentials)
+      : super(
+            _fromName(_prefs.getString(_key), credentials, pinnedCredentials));
 
   void setLayout(OathLayout layout) {
     state = layout;
     _prefs.setString(_key, layout.name);
   }
 
-  static OathLayout _fromName(String? name, bool hasPinned) {
+  static OathLayout _fromName(String? name, List<OathPair> credentials,
+      List<OathPair> pinnedCredentials) {
     final layout = OathLayout.values.firstWhere(
       (element) => element.name == name,
       orElse: () => OathLayout.list,
     );
     // Default to list view if current key does not have
     // pinned credentials
-    if (layout == OathLayout.mixed && !hasPinned) {
-      return OathLayout.list;
+    if (layout == OathLayout.mixed) {
+      if (pinnedCredentials.isEmpty) {
+        return OathLayout.list;
+      }
+      if (pinnedCredentials.length == credentials.length) {
+        return OathLayout.grid;
+      }
     }
     return layout;
   }

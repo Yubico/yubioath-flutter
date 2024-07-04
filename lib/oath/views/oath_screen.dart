@@ -402,10 +402,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 final pinnedCreds = credentials
                     .where((entry) => favorites.contains(entry.credential.id));
 
-                final availableLayouts = pinnedCreds.isNotEmpty
+                final availableLayouts = pinnedCreds.isEmpty ||
+                        pinnedCreds.length == credentials.length
                     ? OathLayout.values
-                    : OathLayout.values
-                        .where((element) => element != OathLayout.mixed);
+                        .where((element) => element != OathLayout.mixed)
+                    : OathLayout.values;
                 final oathLayout = ref.watch(oathLayoutProvider);
 
                 return Padding(
@@ -462,8 +463,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                 // between icons
                                 padding: const EdgeInsets.only(left: 17.0),
                                 child: Container(
-                                  color:
-                                      Theme.of(context).colorScheme.background,
+                                  color: Theme.of(context).colorScheme.surface,
                                   width: 1,
                                   height: 45,
                                 ),
