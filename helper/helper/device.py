@@ -357,6 +357,18 @@ class ReaderDeviceNode(AbstractDeviceNode):
         self._monitor = CardMonitor()
         self._monitor.addObserver(self._observer)
 
+    def __call__(self, *args, **kwargs):
+        result = super().__call__(*args, **kwargs)
+
+        # Clear DeviceInfo cache on configure command
+        if ("configure", ["ccid", "management"]) == args[:2]:
+            self._observer.data = None
+            # Make sure any child node is re-opened after this,
+            # as enabled applications may have changed
+            super().close()
+
+        return result
+
     def close(self):
         self._monitor.deleteObserver(self._observer)
         super().close()
@@ -439,7 +451,7 @@ class ConnectionNode(RpcNode):
             self._info = read_info(self._connection, self._device.pid)
         return dict(version=self._info.version, serial=self._info.serial)
 
-    def _init_child_node(self, child_cls):
+    def _init_child_node(self, child_cls, capability=CAPABILITY(0)):
         return child_cls(self._connection)
 
     @child(
@@ -454,14 +466,14 @@ class ConnectionNode(RpcNode):
         and CAPABILITY.OATH in self.capabilities
     )
     def oath(self):
-        return self._init_child_node(OathNode)
+        return self._init_child_node(OathNode, CAPABILITY.OATH)
 
     @child(
         condition=lambda self: isinstance(self._connection, SmartCardConnection)
         and CAPABILITY.PIV in self.capabilities
     )
     def piv(self):
-        return self._init_child_node(PivNode)
+        return self._init_child_node(PivNode, CAPABILITY.PIV)
 
     @child(
         condition=lambda self: isinstance(self._connection, FidoConnection)
@@ -492,6 +504,7 @@ class ScpConnectionNode(ConnectionNode):
     def __init__(self, device, connection, info):
         super().__init__(device, connection, info)
 
+        self.fips_capable = info.fips_capable
         self.scp_params = None
         try:
             scp = SecurityDomainSession(connection)
@@ -507,5 +520,7 @@ class ScpConnectionNode(ConnectionNode):
         except NotSupportedError:
             pass
 
-    def _init_child_node(self, child_cls):
-        return child_cls(self._connection, self.scp_params)
+    def _init_child_node(self, child_cls, capability=CAPABILITY(0)):
+        if capability in self.fips_capable:
+            return child_cls(self._connection, self.scp_params)
+        return child_cls(self._connection)
