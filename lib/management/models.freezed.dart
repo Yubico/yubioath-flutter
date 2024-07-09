@@ -247,6 +247,7 @@ mixin _$DeviceInfo {
   bool get isSky => throw _privateConstructorUsedError;
   bool get pinComplexity => throw _privateConstructorUsedError;
   int get fipsCapable => throw _privateConstructorUsedError;
+  int get fipsApproved => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -270,7 +271,8 @@ abstract class $DeviceInfoCopyWith<$Res> {
       bool isFips,
       bool isSky,
       bool pinComplexity,
-      int fipsCapable});
+      int fipsCapable,
+      int fipsApproved});
 
   $DeviceConfigCopyWith<$Res> get config;
   $VersionCopyWith<$Res> get version;
@@ -299,6 +301,7 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
     Object? isSky = null,
     Object? pinComplexity = null,
     Object? fipsCapable = null,
+    Object? fipsApproved = null,
   }) {
     return _then(_value.copyWith(
       config: null == config
@@ -341,6 +344,10 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
           ? _value.fipsCapable
           : fipsCapable // ignore: cast_nullable_to_non_nullable
               as int,
+      fipsApproved: null == fipsApproved
+          ? _value.fipsApproved
+          : fipsApproved // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 
@@ -379,7 +386,8 @@ abstract class _$$DeviceInfoImplCopyWith<$Res>
       bool isFips,
       bool isSky,
       bool pinComplexity,
-      int fipsCapable});
+      int fipsCapable,
+      int fipsApproved});
 
   @override
   $DeviceConfigCopyWith<$Res> get config;
@@ -408,6 +416,7 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
     Object? isSky = null,
     Object? pinComplexity = null,
     Object? fipsCapable = null,
+    Object? fipsApproved = null,
   }) {
     return _then(_$DeviceInfoImpl(
       null == config
@@ -450,13 +459,17 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
           ? _value.fipsCapable
           : fipsCapable // ignore: cast_nullable_to_non_nullable
               as int,
+      null == fipsApproved
+          ? _value.fipsApproved
+          : fipsApproved // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$DeviceInfoImpl implements _DeviceInfo {
+class _$DeviceInfoImpl extends _DeviceInfo {
   _$DeviceInfoImpl(
       this.config,
       this.serial,
@@ -467,8 +480,10 @@ class _$DeviceInfoImpl implements _DeviceInfo {
       this.isFips,
       this.isSky,
       this.pinComplexity,
-      this.fipsCapable)
-      : _supportedCapabilities = supportedCapabilities;
+      this.fipsCapable,
+      this.fipsApproved)
+      : _supportedCapabilities = supportedCapabilities,
+        super._();
 
   factory _$DeviceInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeviceInfoImplFromJson(json);
@@ -500,10 +515,12 @@ class _$DeviceInfoImpl implements _DeviceInfo {
   final bool pinComplexity;
   @override
   final int fipsCapable;
+  @override
+  final int fipsApproved;
 
   @override
   String toString() {
-    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable)';
+    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved)';
   }
 
   @override
@@ -525,7 +542,9 @@ class _$DeviceInfoImpl implements _DeviceInfo {
             (identical(other.pinComplexity, pinComplexity) ||
                 other.pinComplexity == pinComplexity) &&
             (identical(other.fipsCapable, fipsCapable) ||
-                other.fipsCapable == fipsCapable));
+                other.fipsCapable == fipsCapable) &&
+            (identical(other.fipsApproved, fipsApproved) ||
+                other.fipsApproved == fipsApproved));
   }
 
   @JsonKey(ignore: true)
@@ -541,7 +560,8 @@ class _$DeviceInfoImpl implements _DeviceInfo {
       isFips,
       isSky,
       pinComplexity,
-      fipsCapable);
+      fipsCapable,
+      fipsApproved);
 
   @JsonKey(ignore: true)
   @override
@@ -557,7 +577,7 @@ class _$DeviceInfoImpl implements _DeviceInfo {
   }
 }
 
-abstract class _DeviceInfo implements DeviceInfo {
+abstract class _DeviceInfo extends DeviceInfo {
   factory _DeviceInfo(
       final DeviceConfig config,
       final int? serial,
@@ -568,7 +588,9 @@ abstract class _DeviceInfo implements DeviceInfo {
       final bool isFips,
       final bool isSky,
       final bool pinComplexity,
-      final int fipsCapable) = _$DeviceInfoImpl;
+      final int fipsCapable,
+      final int fipsApproved) = _$DeviceInfoImpl;
+  _DeviceInfo._() : super._();
 
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =
       _$DeviceInfoImpl.fromJson;
@@ -593,6 +615,8 @@ abstract class _DeviceInfo implements DeviceInfo {
   bool get pinComplexity;
   @override
   int get fipsCapable;
+  @override
+  int get fipsApproved;
   @override
   @JsonKey(ignore: true)
   _$$DeviceInfoImplCopyWith<_$DeviceInfoImpl> get copyWith =>

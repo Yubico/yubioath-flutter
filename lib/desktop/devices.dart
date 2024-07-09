@@ -224,12 +224,9 @@ final _desktopDeviceDataProvider =
     ref.watch(rpcProvider).valueOrNull,
     ref.watch(currentDeviceProvider),
   );
-  if (notifier._deviceNode is NfcReaderNode) {
-    // If this is an NFC reader, listen on WindowState.
-    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-      notifier._notifyWindowState(windowState);
-    }, fireImmediately: true);
-  }
+  ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+    notifier._notifyWindowState(windowState);
+  }, fireImmediately: true);
   return notifier;
 });
 
@@ -259,7 +256,11 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
 
   void _notifyWindowState(WindowState windowState) {
     if (windowState.active) {
-      _pollCard();
+      if (_deviceNode is UsbYubiKeyNode?) {
+        _pollUsb();
+      } else {
+        _pollCard();
+      }
     } else {
       _pollTimer?.cancel();
       // TODO: Should we clear the key here?
@@ -275,11 +276,27 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     super.dispose();
   }
 
+  void _pollUsb() async {
+    _pollTimer?.cancel();
+    final node = _deviceNode!;
+    var result = await _rpc?.command('get', node.path.segments);
+    if (mounted && result != null) {
+      final newState = YubiKeyData(node, result['data']['name'],
+          DeviceInfo.fromJson(result['data']['info']));
+      if (state.valueOrNull != newState) {
+        _log.info('Configuration change in current USB device');
+        state = AsyncValue.data(newState);
+      }
+    }
+    if (mounted) {
+      _pollTimer = Timer(_usbPollDelay, _pollUsb);
+    }
+  }
+
   void _pollCard() async {
     _pollTimer?.cancel();
     final node = _deviceNode!;
     try {
-      _log.debug('Polling for NFC device changes...');
       var result = await _rpc?.command('get', node.path.segments);
       if (mounted && result != null) {
         if (result['data']['present']) {
@@ -289,9 +306,8 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
           if (oldState != null && oldState != newState) {
             // Ensure state is cleared
             state = const AsyncValue.loading();
-          } else {
-            state = AsyncValue.data(newState);
           }
+          state = AsyncValue.data(newState);
         } else {
           final status = result['data']['status'];
           // Only update if status is not changed
