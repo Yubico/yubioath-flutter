@@ -224,9 +224,11 @@ final _desktopDeviceDataProvider =
     ref.watch(rpcProvider).valueOrNull,
     ref.watch(currentDeviceProvider),
   );
-  ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-    notifier._notifyWindowState(windowState);
-  }, fireImmediately: true);
+  if (notifier._deviceNode is NfcReaderNode) {
+    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+      notifier._notifyWindowState(windowState);
+    }, fireImmediately: true);
+  }
   return notifier;
 });
 
@@ -240,6 +242,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   final RpcSession? _rpc;
   final DeviceNode? _deviceNode;
   Timer? _pollTimer;
+  StreamSubscription? _flagSubscription;
 
   CurrentDeviceDataNotifier(this._rpc, this._deviceNode)
       : super(const AsyncValue.loading()) {
@@ -252,15 +255,27 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
         state = AsyncValue.error('device-inaccessible', StackTrace.current);
       }
     }
+    _flagSubscription = _rpc?.flags.listen(
+      (flag) {
+        if (flag == 'device_info') {
+          _pollDevice();
+        }
+      },
+    );
+  }
+
+  void _pollDevice() {
+    switch (_deviceNode) {
+      case UsbYubiKeyNode _:
+        _refreshUsb();
+      case NfcReaderNode _:
+        _pollCard();
+    }
   }
 
   void _notifyWindowState(WindowState windowState) {
     if (windowState.active) {
-      if (_deviceNode is UsbYubiKeyNode?) {
-        _pollUsb();
-      } else {
-        _pollCard();
-      }
+      _pollCard();
     } else {
       _pollTimer?.cancel();
       // TODO: Should we clear the key here?
@@ -272,12 +287,12 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
 
   @override
   void dispose() {
+    _flagSubscription?.cancel();
     _pollTimer?.cancel();
     super.dispose();
   }
 
-  void _pollUsb() async {
-    _pollTimer?.cancel();
+  void _refreshUsb() async {
     final node = _deviceNode!;
     var result = await _rpc?.command('get', node.path.segments);
     if (mounted && result != null) {
@@ -287,9 +302,6 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
         _log.info('Configuration change in current USB device');
         state = AsyncValue.data(newState);
       }
-    }
-    if (mounted) {
-      _pollTimer = Timer(_usbPollDelay, _pollUsb);
     }
   }
 
@@ -303,11 +315,13 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
           final oldState = state.valueOrNull;
           final newState = YubiKeyData(node, result['data']['name'],
               DeviceInfo.fromJson(result['data']['info']));
-          if (oldState != null && oldState != newState) {
-            // Ensure state is cleared
-            state = const AsyncValue.loading();
+          if (oldState != newState) {
+            if (oldState != null) {
+              // Ensure state is cleared
+              state = const AsyncValue.loading();
+            }
+            state = AsyncValue.data(newState);
           }
-          state = AsyncValue.data(newState);
         } else {
           final status = result['data']['status'];
           // Only update if status is not changed
