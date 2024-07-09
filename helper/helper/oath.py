@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -193,7 +194,7 @@ class OathNode(RpcNode):
         self.session.set_key(key)
         self._set_key_verifier(key)
         remember &= self._remember_key(key if remember else None)
-        return dict(remembered=remember)
+        return RpcResponse(dict(remembered=remember), ["device_info"])
 
     @action(condition=lambda self: self.session.has_key)
     def unset_key(self, params, event, signal):
@@ -207,7 +208,7 @@ class OathNode(RpcNode):
         self.session.reset()
         self._key_verifier = None
         self._remember_key(None)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @child
     def accounts(self):

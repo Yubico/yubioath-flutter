@@ -258,12 +258,24 @@ class AbstractDeviceNode(RpcNode):
         super().__init__()
         self._device = device
         self._info = info
+        self._data = None
 
     def __call__(self, *args, **kwargs):
         try:
-            return super().__call__(*args, **kwargs)
+            response = super().__call__(*args, **kwargs)
+            if "device_info" in response.side_effects:
+                # Clear DeviceInfo cache
+                self._info = None
+                self._data = None
+                # Make sure any child node is re-opened after this,
+                # as enabled applications may have changed
+                super().close()
+
+            return response
+
         except (SmartcardException, OSError):
             logger.exception("Device error")
+
             self._child = None
             name = self._child_name
             self._child_name = None
@@ -275,6 +287,14 @@ class AbstractDeviceNode(RpcNode):
         except (SmartcardException, OSError):
             logger.exception(f"Unable to create child {name}")
             raise NoSuchNodeException(name)
+
+    def get_data(self):
+        if not self._data:
+            self._data = self._refresh_data()
+        return self._data
+
+    def _refresh_data(self):
+        ...
 
     def _read_data(self, conn):
         pid = self._device.pid
@@ -296,7 +316,7 @@ class UsbDeviceNode(AbstractDeviceNode):
         connection = self._device.open_connection(conn_type)
         return ConnectionNode(self._device, connection, self._info)
 
-    def get_data(self):
+    def _refresh_data(self):
         for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
             if self._supports_connection(conn_type):
                 try:
@@ -335,7 +355,7 @@ class _ReaderObserver(CardObserver):
     def __init__(self, device):
         self.device = device
         self.card = None
-        self.data = None
+        self.needs_refresh = True
 
     def update(self, observable, actions):
         added, removed = actions
@@ -346,7 +366,7 @@ class _ReaderObserver(CardObserver):
                 break
         else:
             self.card = None
-        self.data = None
+        self.needs_refresh = True
         logger.debug(f"NFC card: {self.card}")
 
 
@@ -357,35 +377,29 @@ class ReaderDeviceNode(AbstractDeviceNode):
         self._monitor = CardMonitor()
         self._monitor.addObserver(self._observer)
 
-    def __call__(self, *args, **kwargs):
-        result = super().__call__(*args, **kwargs)
-
-        # Clear DeviceInfo cache on configure command
-        if ("configure", ["ccid", "management"]) == args[:2]:
-            self._observer.data = None
-            # Make sure any child node is re-opened after this,
-            # as enabled applications may have changed
-            super().close()
-
-        return result
-
     def close(self):
         self._monitor.deleteObserver(self._observer)
         super().close()
 
     def get_data(self):
-        if self._observer.data is None:
-            card = self._observer.card
-            if card is None:
-                return dict(present=False, status="no-card")
-            try:
-                with self._device.open_connection(SmartCardConnection) as conn:
-                    self._observer.data = dict(self._read_data(conn), present=True)
-            except NoCardException:
-                return dict(present=False, status="no-card")
-            except ValueError:
-                self._observer.data = dict(present=False, status="unknown-device")
-        return self._observer.data
+        if self._observer.needs_refresh:
+            self._data = None
+        return super().get_data()
+
+    def _refresh_data(self):
+        card = self._observer.card
+        if card is None:
+            return dict(present=False, status="no-card")
+        try:
+            with self._device.open_connection(SmartCardConnection) as conn:
+                data = dict(self._read_data(conn), present=True)
+            self._observer.needs_refresh = False
+            return data
+        except NoCardException:
+            return dict(present=False, status="no-card")
+        except ValueError:
+            self._observer.needs_refresh = False
+            return dict(present=False, status="unknown-device")
 
     @action(closes_child=False)
     def get(self, params, event, signal):
