@@ -98,8 +98,8 @@ class DeviceInfo with _$DeviceInfo {
 
   /// Gets the tuple fipsCapable, fipsApproved for the given capability.
   (bool fipsCapable, bool fipsApproved) getFipsStatus(Capability capability) {
-    final capable = fipsCapable & Capability.oath.value != 0;
-    final approved = capable && fipsApproved & Capability.oath.value != 0;
+    final capable = fipsCapable & capability.value != 0;
+    final approved = capable && fipsApproved & capability.value != 0;
     return (capable, approved);
   }
 }
