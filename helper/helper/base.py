@@ -28,9 +28,9 @@ decode_bytes = bytes.fromhex
 
 
 class RpcResponse:
-    def __init__(self, body, side_effects=None):
+    def __init__(self, body, flags=None):
         self.body = body
-        self.side_effects = side_effects or []
+        self.flags = flags or []
 
 
 class RpcException(Exception):

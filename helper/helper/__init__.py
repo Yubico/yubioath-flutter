@@ -89,7 +89,7 @@ def process(
         send(dict(kind="signal", status=status, body=body))
 
     def success(response: RpcResponse):
-        send(dict(kind="success", body=response.body, flags=response.side_effects))
+        send(dict(kind="success", body=response.body, flags=response.flags))
 
     event = Event()
     cmd_queue: Queue = Queue(1)

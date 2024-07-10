@@ -263,7 +263,7 @@ class AbstractDeviceNode(RpcNode):
     def __call__(self, *args, **kwargs):
         try:
             response = super().__call__(*args, **kwargs)
-            if "device_info" in response.side_effects:
+            if "device_info" in response.flags:
                 # Clear DeviceInfo cache
                 self._info = None
                 self._data = None
