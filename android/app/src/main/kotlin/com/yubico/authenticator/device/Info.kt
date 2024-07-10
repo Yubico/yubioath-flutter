@@ -21,7 +21,7 @@ import com.yubico.yubikit.management.DeviceInfo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-private fun DeviceInfo.capabilitiesFor(transport: Transport) : Int? =
+private fun DeviceInfo.capabilitiesFor(transport: Transport): Int? =
     when {
         hasTransport(transport) -> getSupportedCapabilities(transport)
         else -> null
@@ -30,7 +30,7 @@ private fun DeviceInfo.capabilitiesFor(transport: Transport) : Int? =
 @Serializable
 data class Info(
     @SerialName("config")
-    val config : Config,
+    val config: Config,
     @SerialName("serial")
     val serialNumber: Int?,
     @SerialName("version")
@@ -55,11 +55,17 @@ data class Info(
     val supportedCapabilities: Capabilities,
     @SerialName("fips_capable")
     val fipsCapable: Int,
+    @SerialName("fips_approved")
+    val fipsApproved: Int,
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
         serialNumber = deviceInfo.serialNumber,
-        version = Version(deviceInfo.version.major, deviceInfo.version.minor, deviceInfo.version.micro),
+        version = Version(
+            deviceInfo.version.major,
+            deviceInfo.version.minor,
+            deviceInfo.version.micro
+        ),
         formFactor = deviceInfo.formFactor.value,
         isLocked = deviceInfo.isLocked,
         isSky = deviceInfo.isSky,
@@ -72,6 +78,7 @@ data class Info(
             nfc = deviceInfo.capabilitiesFor(Transport.NFC),
             usb = deviceInfo.capabilitiesFor(Transport.USB),
         ),
-        fipsCapable = deviceInfo.fipsCapable
+        fipsCapable = deviceInfo.fipsCapable,
+        fipsApproved = deviceInfo.fipsApproved
     )
 }

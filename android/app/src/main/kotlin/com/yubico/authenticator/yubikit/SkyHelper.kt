@@ -76,7 +76,8 @@ class SkyHelper(private val compatUtil: CompatUtil) {
             usbPid = pid.value,
             pinComplexity = false,
             supportedCapabilities = Capabilities(usb = 0),
-            fipsCapable = 0
+            fipsCapable = 0,
+            fipsApproved = 0
         )
     }
 
