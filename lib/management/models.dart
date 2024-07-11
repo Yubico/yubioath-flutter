@@ -90,9 +90,9 @@ class DeviceInfo with _$DeviceInfo {
       bool isFips,
       bool isSky,
       bool pinComplexity,
-      int resetBlocked,
       int fipsCapable,
-      int fipsApproved) = _DeviceInfo;
+      int fipsApproved,
+      int resetBlocked) = _DeviceInfo;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
