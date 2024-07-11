@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcNode, action
+from .base import RpcResponse, RpcNode, action
 from yubikit.core import require_version, NotSupportedError, TRANSPORT, Connection
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
@@ -90,7 +90,7 @@ class ManagementNode(RpcNode):
         if reboot:
             enabled = config.enabled_capabilities.get(TRANSPORT.USB)
             self._await_reboot(serial, enabled)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @action
     def set_mode(self, params, event, signal):
@@ -106,4 +106,4 @@ class ManagementNode(RpcNode):
     )
     def device_reset(self, params, event, signal):
         self.session.device_reset()
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
