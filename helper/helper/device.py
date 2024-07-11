@@ -32,7 +32,13 @@ from ykman.device import scan_devices, list_all_devices
 from ykman.diagnostics import get_diagnostics
 from ykman.logging import set_log_level
 from yubikit.core import TRANSPORT, NotSupportedError
-from yubikit.core.smartcard import SmartCardConnection, ApduError, SW
+from yubikit.core.smartcard import (
+    SmartCardConnection,
+    ApduError,
+    SW,
+    SmartCardProtocol,
+    ApplicationNotAvailableError,
+)
 from yubikit.core.smartcard.scp import Scp11KeyParams
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
@@ -370,6 +376,9 @@ class _ReaderObserver(CardObserver):
         logger.debug(f"NFC card: {self.card}")
 
 
+RESTRICTED_NDEF = bytes.fromhex("001fd1011b5504") + b"yubico.com/getting-started"
+
+
 class ReaderDeviceNode(AbstractDeviceNode):
     def __init__(self, device, info):
         super().__init__(device, info)
@@ -392,14 +401,27 @@ class ReaderDeviceNode(AbstractDeviceNode):
             return dict(present=False, status="no-card")
         try:
             with self._device.open_connection(SmartCardConnection) as conn:
-                data = dict(self._read_data(conn), present=True)
+                try:
+                    data = dict(self._read_data(conn), present=True)
+                except ValueError:
+                    # Unknown device, maybe NFC restricted
+                    try:
+                        p = SmartCardProtocol(conn)
+                        p.select(bytes.fromhex("D2760000850101"))
+                        p.send_apdu(0, 0xA4, 0x00, 0x0C, bytes.fromhex("E104"))
+                        ndef = p.send_apdu(0, 0xB0, 0, 0)
+                    except (ApduError, ApplicationNotAvailableError):
+                        ndef = None
+
+                    if ndef == RESTRICTED_NDEF:
+                        data = dict(present=False, status="restricted-nfc")
+                    else:
+                        data = dict(present=False, status="unknown-device")
+
             self._observer.needs_refresh = False
             return data
         except NoCardException:
             return dict(present=False, status="no-card")
-        except ValueError:
-            self._observer.needs_refresh = False
-            return dict(present=False, status="unknown-device")
 
     @action(closes_child=False)
     def get(self, params, event, signal):
