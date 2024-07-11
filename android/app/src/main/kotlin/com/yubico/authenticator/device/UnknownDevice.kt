@@ -23,7 +23,8 @@ val UnknownDevice = Info(
     pinComplexity = false,
     supportedCapabilities = Capabilities(),
     fipsCapable = 0,
-    fipsApproved = 0
+    fipsApproved = 0,
+    resetBlocked = 0
 )
 
 fun unknownDeviceWithCapability(transport: Transport, bit: Int = 0) : Info {

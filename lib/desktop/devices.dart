@@ -224,10 +224,12 @@ final _desktopDeviceDataProvider =
     ref.watch(rpcProvider).valueOrNull,
     ref.watch(currentDeviceProvider),
   );
-  if (notifier._deviceNode is NfcReaderNode) {
-    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-      notifier._notifyWindowState(windowState);
-    }, fireImmediately: true);
+  ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+    notifier._notifyWindowState(windowState);
+  });
+  if (notifier._deviceNode is NfcReaderNode &&
+      ref.read(windowStateProvider).active) {
+    notifier._pollCard();
   }
   return notifier;
 });
@@ -275,7 +277,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
 
   void _notifyWindowState(WindowState windowState) {
     if (windowState.active) {
-      _pollCard();
+      _pollDevice();
     } else {
       _pollTimer?.cancel();
       // TODO: Should we clear the key here?

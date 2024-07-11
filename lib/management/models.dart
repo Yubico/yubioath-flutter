@@ -90,6 +90,7 @@ class DeviceInfo with _$DeviceInfo {
       bool isFips,
       bool isSky,
       bool pinComplexity,
+      int resetBlocked,
       int fipsCapable,
       int fipsApproved) = _DeviceInfo;
 

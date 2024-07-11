@@ -57,6 +57,8 @@ data class Info(
     val fipsCapable: Int,
     @SerialName("fips_approved")
     val fipsApproved: Int,
+    @SerialName("reset_blocked")
+    val resetBlocked: Int,
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
@@ -79,6 +81,7 @@ data class Info(
             usb = deviceInfo.capabilitiesFor(Transport.USB),
         ),
         fipsCapable = deviceInfo.fipsCapable,
-        fipsApproved = deviceInfo.fipsApproved
+        fipsApproved = deviceInfo.fipsApproved,
+        resetBlocked = deviceInfo.resetBlocked,
     )
 }

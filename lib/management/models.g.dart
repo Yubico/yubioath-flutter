@@ -45,6 +45,7 @@ _$DeviceInfoImpl _$$DeviceInfoImplFromJson(Map<String, dynamic> json) =>
       json['is_fips'] as bool,
       json['is_sky'] as bool,
       json['pin_complexity'] as bool,
+      (json['reset_blocked'] as num).toInt(),
       (json['fips_capable'] as num).toInt(),
       (json['fips_approved'] as num).toInt(),
     );
@@ -61,6 +62,7 @@ Map<String, dynamic> _$$DeviceInfoImplToJson(_$DeviceInfoImpl instance) =>
       'is_fips': instance.isFips,
       'is_sky': instance.isSky,
       'pin_complexity': instance.pinComplexity,
+      'reset_blocked': instance.resetBlocked,
       'fips_capable': instance.fipsCapable,
       'fips_approved': instance.fipsApproved,
     };
