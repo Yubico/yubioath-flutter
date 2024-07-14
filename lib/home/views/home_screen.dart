@@ -95,6 +95,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .map((c) => CapabilityBadge(c))
                               .toList(),
                         ),
+                        // TODO: Make pretty
+                        if (widget.deviceData.info.fipsCapable != 0)
+                          Wrap(
+                            spacing: 4,
+                            runSpacing: 8,
+                            children: Capability.values
+                                .where((c) =>
+                                    widget.deviceData.info.fipsApproved &
+                                        c.value !=
+                                    0)
+                                .map((c) => CapabilityBadge(c))
+                                .toList(),
+                          ),
                         if (serial != null) ...[
                           const SizedBox(height: 32.0),
                           _DeviceColor(
