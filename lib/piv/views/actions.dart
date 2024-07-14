@@ -310,7 +310,15 @@ class PivActions extends ConsumerWidget {
 }
 
 List<ActionItem> buildSlotActions(
-    PivState pivState, PivSlot slot, AppLocalizations l10n) {
+    PivState pivState, PivSlot slot, bool fipsUnready, AppLocalizations l10n) {
+  if (fipsUnready) {
+    return [
+      ActionItem(
+          icon: const Icon(Symbols.add),
+          title: 'Provision slot',
+          subtitle: 'Change from default PIN/PUK/Management key first'),
+    ];
+  }
   final hasCert = slot.certInfo != null;
   final hasKey = slot.metadata != null;
   final canDeleteOrMoveKey = hasKey && pivState.version.isAtLeast(5, 7);

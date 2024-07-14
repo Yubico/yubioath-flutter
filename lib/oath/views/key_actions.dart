@@ -23,6 +23,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
+import '../../management/models.dart';
 import '../features.dart' as features;
 import '../icon_provider/icon_pack_dialog.dart';
 import '../keys.dart' as keys;
@@ -39,6 +40,28 @@ Widget oathBuildActions(
 }) {
   final l10n = AppLocalizations.of(context)!;
   final capacity = oathState.capacity;
+  final (fipsCapable, fipsApproved) = ref
+          .watch(currentDeviceDataProvider)
+          .valueOrNull
+          ?.info
+          .getFipsStatus(Capability.oath) ??
+      (false, false);
+
+  final String? subtitle;
+  final bool enabled;
+  if (used == null) {
+    subtitle = l10n.l_unlock_first;
+    enabled = false;
+  } else if (fipsCapable & !fipsApproved) {
+    subtitle = 'Set a password first'; // TODO: Replace with l10n
+    enabled = false;
+  } else if (capacity != null) {
+    subtitle = l10n.l_accounts_used(used, capacity);
+    enabled = capacity > used;
+  } else {
+    subtitle = null;
+    enabled = true;
+  }
 
   return Column(
     children: [
@@ -47,14 +70,10 @@ Widget oathBuildActions(
             feature: features.actionsAdd,
             key: keys.addAccountAction,
             title: l10n.s_add_account,
-            subtitle: used == null
-                ? l10n.l_unlock_first
-                : (capacity != null
-                    ? l10n.l_accounts_used(used, capacity)
-                    : null),
+            subtitle: subtitle,
             actionStyle: ActionStyle.primary,
             icon: const Icon(Symbols.person_add_alt),
-            onTap: used != null && (capacity == null || capacity > used)
+            onTap: enabled
                 ? (context) async {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                     await addOathAccount(context, ref, devicePath, oathState);
