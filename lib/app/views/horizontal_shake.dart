@@ -59,9 +59,7 @@ class _HorizontalShakeState extends State<HorizontalShake>
       }
     });
 
-    _animation =
-        Tween<double>(begin: 0, end: widget.shakeAmount)
-            .animate(
+    _animation = Tween<double>(begin: 0, end: widget.shakeAmount).animate(
       CurvedAnimation(parent: _controller, curve: Curves.ease),
     );
 
