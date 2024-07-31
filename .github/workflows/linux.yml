@@ -12,7 +12,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         sparse-checkout: .github/workflows/env
 
@@ -30,10 +30,13 @@ jobs:
         apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         ln -s `which python$PYVER_MINOR` /usr/local/bin/python
+        ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
         PYVER_TEMP=`/usr/local/bin/python --version`
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
+        python -m ensurepip --user
+        python -m pip install -U pip pipx
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
@@ -43,7 +46,7 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Check app versions
       run: |
@@ -52,28 +55,19 @@ jobs:
 
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           build/linux/helper
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
 
-    - name: Install helper dependencies
-      if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        apt-get install -qq swig libpcsclite-dev build-essential cmake
-        python -m ensurepip --user
-        python -m pip install -U pip pipx
-        # pipx ensurepath
-        echo "export PATH=$PATH:$HOME/.local/bin" >> ~/.bashrc
-        . ~/.bashrc  # Needed to ensure poetry on PATH
-        pipx install poetry
-
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
-        . ~/.bashrc  # Needed to ensure poetry on PATH
+        apt-get install -qq swig libpcsclite-dev build-essential cmake
+        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pipx/poetry on PATH
+        pipx install poetry
         ./build-helper.sh
 
     - name: Install Flutter dependencies
@@ -87,14 +81,18 @@ jobs:
 
     - name: Configure Flutter
       run: |
-        git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-$FLUTTER-x64
+        git config --global --add safe.directory $FLUTTER_ROOT
         flutter config --enable-linux-desktop
         flutter --version
 
-    - name: Run tests
+    - name: Run lints/tests
+      env:
+        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
+        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
+        pipx install pre-commit
+        pre-commit run --all-files
         flutter test
-        flutter analyze
 
     - name: Build the app
       run: flutter build linux
@@ -123,7 +121,7 @@ jobs:
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: yubioath-desktop-linux
         path: deploy

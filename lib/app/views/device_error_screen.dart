@@ -17,17 +17,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../desktop/state.dart';
-import '../message.dart';
+import '../../home/views/home_message_page.dart';
 import '../models.dart';
 import '../state.dart';
-import 'device_avatar.dart';
-import 'graphics.dart';
-import 'message_page.dart';
+import 'elevate_fido_buttons.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
   final DeviceNode node;
@@ -39,36 +39,27 @@ class DeviceErrorScreen extends ConsumerWidget {
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-        return MessagePage(
-          graphic: noPermission,
+        final currentSection = ref.read(currentSectionProvider);
+        return HomeMessagePage(
+          capabilities: currentSection.capabilities,
+          header: l10n.l_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
-          actions: [
-            ElevatedButton.icon(
-              label: Text(l10n.s_unlock),
-              icon: const Icon(Icons.lock_open),
-              onPressed: () async {
-                final closeMessage = showMessage(
-                    context, l10n.l_elevating_permissions,
-                    duration: const Duration(seconds: 30));
-                try {
-                  if (await ref.read(rpcProvider).requireValue.elevate()) {
-                    ref.invalidate(rpcProvider);
-                  } else {
-                    await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, l10n.s_permission_denied));
-                  }
-                } finally {
-                  closeMessage();
-                }
-              },
-            ),
+          actionsBuilder: (context, expanded) => [
+            const ElevateFidoButtons(),
           ],
+          footnote: isMicrosoftStore ? l10n.l_ms_store_permission_note : null,
         );
       }
     }
-    return MessagePage(
-      graphic: const DeviceAvatar(child: Icon(Icons.usb_off)),
-      message: l10n.l_yk_no_access,
+    return HomeMessagePage(
+      centered: true,
+      graphic: Image.asset(
+        'assets/product-images/generic.png',
+        filterQuality: FilterQuality.medium,
+        scale: 3,
+        color: Theme.of(context).colorScheme.error,
+      ),
+      header: l10n.l_yk_no_access,
     );
   }
 
@@ -77,12 +68,26 @@ class DeviceErrorScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return node.map(
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
-      nfcReader: (node) {
-        final message = switch (error) {
-          'unknown-device' => l10n.s_unknown_device,
-          _ => l10n.l_place_on_nfc_reader,
-        };
-        return MessagePage(message: message);
+      nfcReader: (node) => switch (error) {
+        'unknown-device' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.help,
+              size: 96,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            header: l10n.s_unknown_device,
+          ),
+        _ => HomeMessagePage(
+            centered: true,
+            graphic: Image.asset(
+              'assets/graphics/no-key.png',
+              filterQuality: FilterQuality.medium,
+              scale: 2,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            header: l10n.l_place_on_nfc_reader,
+          ),
       },
     );
   }

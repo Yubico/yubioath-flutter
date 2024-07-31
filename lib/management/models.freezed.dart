@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 DeviceConfig _$DeviceConfigFromJson(Map<String, dynamic> json) {
   return _DeviceConfig.fromJson(json);
@@ -85,11 +85,11 @@ class _$DeviceConfigCopyWithImpl<$Res, $Val extends DeviceConfig>
 }
 
 /// @nodoc
-abstract class _$$_DeviceConfigCopyWith<$Res>
+abstract class _$$DeviceConfigImplCopyWith<$Res>
     implements $DeviceConfigCopyWith<$Res> {
-  factory _$$_DeviceConfigCopyWith(
-          _$_DeviceConfig value, $Res Function(_$_DeviceConfig) then) =
-      __$$_DeviceConfigCopyWithImpl<$Res>;
+  factory _$$DeviceConfigImplCopyWith(
+          _$DeviceConfigImpl value, $Res Function(_$DeviceConfigImpl) then) =
+      __$$DeviceConfigImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -100,11 +100,11 @@ abstract class _$$_DeviceConfigCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_DeviceConfigCopyWithImpl<$Res>
-    extends _$DeviceConfigCopyWithImpl<$Res, _$_DeviceConfig>
-    implements _$$_DeviceConfigCopyWith<$Res> {
-  __$$_DeviceConfigCopyWithImpl(
-      _$_DeviceConfig _value, $Res Function(_$_DeviceConfig) _then)
+class __$$DeviceConfigImplCopyWithImpl<$Res>
+    extends _$DeviceConfigCopyWithImpl<$Res, _$DeviceConfigImpl>
+    implements _$$DeviceConfigImplCopyWith<$Res> {
+  __$$DeviceConfigImplCopyWithImpl(
+      _$DeviceConfigImpl _value, $Res Function(_$DeviceConfigImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -115,7 +115,7 @@ class __$$_DeviceConfigCopyWithImpl<$Res>
     Object? challengeResponseTimeout = freezed,
     Object? deviceFlags = freezed,
   }) {
-    return _then(_$_DeviceConfig(
+    return _then(_$DeviceConfigImpl(
       null == enabledCapabilities
           ? _value._enabledCapabilities
           : enabledCapabilities // ignore: cast_nullable_to_non_nullable
@@ -138,13 +138,13 @@ class __$$_DeviceConfigCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_DeviceConfig implements _DeviceConfig {
-  _$_DeviceConfig(final Map<Transport, int> enabledCapabilities,
+class _$DeviceConfigImpl implements _DeviceConfig {
+  _$DeviceConfigImpl(final Map<Transport, int> enabledCapabilities,
       this.autoEjectTimeout, this.challengeResponseTimeout, this.deviceFlags)
       : _enabledCapabilities = enabledCapabilities;
 
-  factory _$_DeviceConfig.fromJson(Map<String, dynamic> json) =>
-      _$$_DeviceConfigFromJson(json);
+  factory _$DeviceConfigImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DeviceConfigImplFromJson(json);
 
   final Map<Transport, int> _enabledCapabilities;
   @override
@@ -168,10 +168,10 @@ class _$_DeviceConfig implements _DeviceConfig {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_DeviceConfig &&
+            other is _$DeviceConfigImpl &&
             const DeepCollectionEquality()
                 .equals(other._enabledCapabilities, _enabledCapabilities) &&
             (identical(other.autoEjectTimeout, autoEjectTimeout) ||
@@ -195,12 +195,12 @@ class _$_DeviceConfig implements _DeviceConfig {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_DeviceConfigCopyWith<_$_DeviceConfig> get copyWith =>
-      __$$_DeviceConfigCopyWithImpl<_$_DeviceConfig>(this, _$identity);
+  _$$DeviceConfigImplCopyWith<_$DeviceConfigImpl> get copyWith =>
+      __$$DeviceConfigImplCopyWithImpl<_$DeviceConfigImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DeviceConfigToJson(
+    return _$$DeviceConfigImplToJson(
       this,
     );
   }
@@ -211,10 +211,10 @@ abstract class _DeviceConfig implements DeviceConfig {
       final Map<Transport, int> enabledCapabilities,
       final int? autoEjectTimeout,
       final int? challengeResponseTimeout,
-      final int? deviceFlags) = _$_DeviceConfig;
+      final int? deviceFlags) = _$DeviceConfigImpl;
 
   factory _DeviceConfig.fromJson(Map<String, dynamic> json) =
-      _$_DeviceConfig.fromJson;
+      _$DeviceConfigImpl.fromJson;
 
   @override
   Map<Transport, int> get enabledCapabilities;
@@ -226,7 +226,7 @@ abstract class _DeviceConfig implements DeviceConfig {
   int? get deviceFlags;
   @override
   @JsonKey(ignore: true)
-  _$$_DeviceConfigCopyWith<_$_DeviceConfig> get copyWith =>
+  _$$DeviceConfigImplCopyWith<_$DeviceConfigImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -245,6 +245,8 @@ mixin _$DeviceInfo {
   bool get isLocked => throw _privateConstructorUsedError;
   bool get isFips => throw _privateConstructorUsedError;
   bool get isSky => throw _privateConstructorUsedError;
+  bool get pinComplexity => throw _privateConstructorUsedError;
+  int get fipsCapable => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -266,7 +268,9 @@ abstract class $DeviceInfoCopyWith<$Res> {
       Map<Transport, int> supportedCapabilities,
       bool isLocked,
       bool isFips,
-      bool isSky});
+      bool isSky,
+      bool pinComplexity,
+      int fipsCapable});
 
   $DeviceConfigCopyWith<$Res> get config;
   $VersionCopyWith<$Res> get version;
@@ -293,6 +297,8 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
     Object? isLocked = null,
     Object? isFips = null,
     Object? isSky = null,
+    Object? pinComplexity = null,
+    Object? fipsCapable = null,
   }) {
     return _then(_value.copyWith(
       config: null == config
@@ -327,6 +333,14 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
           ? _value.isSky
           : isSky // ignore: cast_nullable_to_non_nullable
               as bool,
+      pinComplexity: null == pinComplexity
+          ? _value.pinComplexity
+          : pinComplexity // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fipsCapable: null == fipsCapable
+          ? _value.fipsCapable
+          : fipsCapable // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 
@@ -348,11 +362,11 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
 }
 
 /// @nodoc
-abstract class _$$_DeviceInfoCopyWith<$Res>
+abstract class _$$DeviceInfoImplCopyWith<$Res>
     implements $DeviceInfoCopyWith<$Res> {
-  factory _$$_DeviceInfoCopyWith(
-          _$_DeviceInfo value, $Res Function(_$_DeviceInfo) then) =
-      __$$_DeviceInfoCopyWithImpl<$Res>;
+  factory _$$DeviceInfoImplCopyWith(
+          _$DeviceInfoImpl value, $Res Function(_$DeviceInfoImpl) then) =
+      __$$DeviceInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -363,7 +377,9 @@ abstract class _$$_DeviceInfoCopyWith<$Res>
       Map<Transport, int> supportedCapabilities,
       bool isLocked,
       bool isFips,
-      bool isSky});
+      bool isSky,
+      bool pinComplexity,
+      int fipsCapable});
 
   @override
   $DeviceConfigCopyWith<$Res> get config;
@@ -372,11 +388,11 @@ abstract class _$$_DeviceInfoCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_DeviceInfoCopyWithImpl<$Res>
-    extends _$DeviceInfoCopyWithImpl<$Res, _$_DeviceInfo>
-    implements _$$_DeviceInfoCopyWith<$Res> {
-  __$$_DeviceInfoCopyWithImpl(
-      _$_DeviceInfo _value, $Res Function(_$_DeviceInfo) _then)
+class __$$DeviceInfoImplCopyWithImpl<$Res>
+    extends _$DeviceInfoCopyWithImpl<$Res, _$DeviceInfoImpl>
+    implements _$$DeviceInfoImplCopyWith<$Res> {
+  __$$DeviceInfoImplCopyWithImpl(
+      _$DeviceInfoImpl _value, $Res Function(_$DeviceInfoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -390,8 +406,10 @@ class __$$_DeviceInfoCopyWithImpl<$Res>
     Object? isLocked = null,
     Object? isFips = null,
     Object? isSky = null,
+    Object? pinComplexity = null,
+    Object? fipsCapable = null,
   }) {
-    return _then(_$_DeviceInfo(
+    return _then(_$DeviceInfoImpl(
       null == config
           ? _value.config
           : config // ignore: cast_nullable_to_non_nullable
@@ -424,14 +442,22 @@ class __$$_DeviceInfoCopyWithImpl<$Res>
           ? _value.isSky
           : isSky // ignore: cast_nullable_to_non_nullable
               as bool,
+      null == pinComplexity
+          ? _value.pinComplexity
+          : pinComplexity // ignore: cast_nullable_to_non_nullable
+              as bool,
+      null == fipsCapable
+          ? _value.fipsCapable
+          : fipsCapable // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$_DeviceInfo implements _DeviceInfo {
-  _$_DeviceInfo(
+class _$DeviceInfoImpl implements _DeviceInfo {
+  _$DeviceInfoImpl(
       this.config,
       this.serial,
       this.version,
@@ -439,11 +465,13 @@ class _$_DeviceInfo implements _DeviceInfo {
       final Map<Transport, int> supportedCapabilities,
       this.isLocked,
       this.isFips,
-      this.isSky)
+      this.isSky,
+      this.pinComplexity,
+      this.fipsCapable)
       : _supportedCapabilities = supportedCapabilities;
 
-  factory _$_DeviceInfo.fromJson(Map<String, dynamic> json) =>
-      _$$_DeviceInfoFromJson(json);
+  factory _$DeviceInfoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DeviceInfoImplFromJson(json);
 
   @override
   final DeviceConfig config;
@@ -468,17 +496,21 @@ class _$_DeviceInfo implements _DeviceInfo {
   final bool isFips;
   @override
   final bool isSky;
+  @override
+  final bool pinComplexity;
+  @override
+  final int fipsCapable;
 
   @override
   String toString() {
-    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky)';
+    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_DeviceInfo &&
+            other is _$DeviceInfoImpl &&
             (identical(other.config, config) || other.config == config) &&
             (identical(other.serial, serial) || other.serial == serial) &&
             (identical(other.version, version) || other.version == version) &&
@@ -489,7 +521,11 @@ class _$_DeviceInfo implements _DeviceInfo {
             (identical(other.isLocked, isLocked) ||
                 other.isLocked == isLocked) &&
             (identical(other.isFips, isFips) || other.isFips == isFips) &&
-            (identical(other.isSky, isSky) || other.isSky == isSky));
+            (identical(other.isSky, isSky) || other.isSky == isSky) &&
+            (identical(other.pinComplexity, pinComplexity) ||
+                other.pinComplexity == pinComplexity) &&
+            (identical(other.fipsCapable, fipsCapable) ||
+                other.fipsCapable == fipsCapable));
   }
 
   @JsonKey(ignore: true)
@@ -503,17 +539,19 @@ class _$_DeviceInfo implements _DeviceInfo {
       const DeepCollectionEquality().hash(_supportedCapabilities),
       isLocked,
       isFips,
-      isSky);
+      isSky,
+      pinComplexity,
+      fipsCapable);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_DeviceInfoCopyWith<_$_DeviceInfo> get copyWith =>
-      __$$_DeviceInfoCopyWithImpl<_$_DeviceInfo>(this, _$identity);
+  _$$DeviceInfoImplCopyWith<_$DeviceInfoImpl> get copyWith =>
+      __$$DeviceInfoImplCopyWithImpl<_$DeviceInfoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DeviceInfoToJson(
+    return _$$DeviceInfoImplToJson(
       this,
     );
   }
@@ -528,10 +566,12 @@ abstract class _DeviceInfo implements DeviceInfo {
       final Map<Transport, int> supportedCapabilities,
       final bool isLocked,
       final bool isFips,
-      final bool isSky) = _$_DeviceInfo;
+      final bool isSky,
+      final bool pinComplexity,
+      final int fipsCapable) = _$DeviceInfoImpl;
 
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =
-      _$_DeviceInfo.fromJson;
+      _$DeviceInfoImpl.fromJson;
 
   @override
   DeviceConfig get config;
@@ -550,7 +590,11 @@ abstract class _DeviceInfo implements DeviceInfo {
   @override
   bool get isSky;
   @override
+  bool get pinComplexity;
+  @override
+  int get fipsCapable;
+  @override
   @JsonKey(ignore: true)
-  _$$_DeviceInfoCopyWith<_$_DeviceInfo> get copyWith =>
+  _$$DeviceInfoImplCopyWith<_$DeviceInfoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

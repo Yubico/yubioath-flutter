@@ -42,6 +42,7 @@ from yubikit.logging import LOG_LEVEL
 from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException, NoCardException
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
+from smartcard.CardMonitoring import CardObserver, CardMonitor
 from hashlib import sha256
 from dataclasses import asdict
 from typing import Mapping, Tuple
@@ -61,11 +62,15 @@ def _is_admin():
 
 
 class ConnectionException(RpcException):
-    def __init__(self, connection, exc_type):
+    def __init__(self, device, connection, exc_type):
         super().__init__(
             "connection-error",
             f"Error connecting to {connection} interface",
-            dict(connection=connection, exc_type=type(exc_type).__name__),
+            dict(
+                device=device,
+                connection=connection,
+                exc_type=type(exc_type).__name__,
+            ),
         )
 
 
@@ -181,10 +186,28 @@ class DevicesNode(RpcNode):
         self._list_state = 0
         self._devices = {}
         self._device_mapping = {}
+        self._failing_connection = {}
+        self._retries = 0
 
     def __call__(self, *args, **kwargs):
         with self._get_state:
-            return super().__call__(*args, **kwargs)
+            try:
+                return super().__call__(*args, **kwargs)
+            except ConnectionException as e:
+                if self._failing_connection == e.body:
+                    self._retries += 1
+                else:
+                    self._failing_connection = e.body
+                    self._retries = 0
+                if self._retries > 2:
+                    raise
+                logger.debug("Connection failed, attempt to recover", exc_info=True)
+                raise ChildResetException(f"{e}")
+
+    def close(self):
+        self._list_state = 0
+        self._device_mapping = {}
+        super().close()
 
     @action(closes_child=False)
     def scan(self, *ignored):
@@ -263,9 +286,6 @@ class AbstractDeviceNode(RpcNode):
 
 
 class UsbDeviceNode(AbstractDeviceNode):
-    def __init__(self, device, info):
-        super().__init__(device, info)
-
     def _supports_connection(self, conn_type):
         return self._device.pid.supports_connection(conn_type)
 
@@ -289,7 +309,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(SmartCardConnection)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("ccid", e)
+            raise ConnectionException(self._device.fingerprint, "ccid", e)
 
     @child(condition=lambda self: self._supports_connection(OtpConnection))
     def otp(self):
@@ -297,7 +317,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(OtpConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("otp", e)
+            raise ConnectionException(self._device.fingerprint, "otp", e)
 
     @child(condition=lambda self: self._supports_connection(FidoConnection))
     def fido(self):
@@ -305,18 +325,56 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(FidoConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("fido", e)
+            raise ConnectionException(self._device.fingerprint, "fido", e)
+
+
+class _ReaderObserver(CardObserver):
+    def __init__(self, device):
+        self.device = device
+        self.card = None
+        self.data = None
+
+    def update(self, observable, actions):
+        added, removed = actions
+        for card in added:
+            if card.reader == self.device.reader.name:
+                if card != self.card:
+                    self.card = card
+                break
+        else:
+            self.card = None
+        self.data = None
+        logger.debug(f"NFC card: {self.card}")
 
 
 class ReaderDeviceNode(AbstractDeviceNode):
+    def __init__(self, device, info):
+        super().__init__(device, info)
+        self._observer = _ReaderObserver(device)
+        self._monitor = CardMonitor()
+        self._monitor.addObserver(self._observer)
+
+    def close(self):
+        self._monitor.deleteObserver(self._observer)
+        super().close()
+
     def get_data(self):
-        try:
-            with self._device.open_connection(SmartCardConnection) as conn:
-                return dict(self._read_data(conn), present=True)
-        except NoCardException:
-            return dict(present=False, status="no-card")
-        except ValueError:
-            return dict(present=False, status="unknown-device")
+        if self._observer.data is None:
+            card = self._observer.card
+            if card is None:
+                return dict(present=False, status="no-card")
+            try:
+                with self._device.open_connection(SmartCardConnection) as conn:
+                    self._observer.data = dict(self._read_data(conn), present=True)
+            except NoCardException:
+                return dict(present=False, status="no-card")
+            except ValueError:
+                self._observer.data = dict(present=False, status="unknown-device")
+        return self._observer.data
+
+    @action(closes_child=False)
+    def get(self, params, event, signal):
+        return super().get(params, event, signal)
 
     @child
     def ccid(self):
@@ -326,7 +384,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
             return ConnectionNode(self._device, connection, info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("ccid", e)
+            raise ConnectionException(self._device.fingerprint, "ccid", e)
 
     @child
     def fido(self):
@@ -337,7 +395,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
             return ConnectionNode(self._device, connection, info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("fido", e)
+            raise ConnectionException(self._device.fingerprint, "fido", e)
 
 
 class ConnectionNode(RpcNode):
@@ -413,7 +471,9 @@ class ConnectionNode(RpcNode):
             or (  # SmartCardConnection can be used over NFC, or on 5.3 and later.
                 isinstance(self._connection, SmartCardConnection)
                 and (
-                    self._transport == TRANSPORT.NFC or self._info.version >= (5, 3, 0)
+                    self._transport == TRANSPORT.NFC
+                    or self._info.version >= (5, 3, 0)
+                    or self._info.version[0] == 3
                 )
             )
         )

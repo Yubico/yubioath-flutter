@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../models.dart';
 
 class ActionListItem extends StatelessWidget {
@@ -43,24 +44,35 @@ class ActionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme =
-        ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+    // final theme =
+    //     ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
 
-    final (foreground, background) = switch (actionStyle) {
-      ActionStyle.normal => (theme.onSecondary, theme.secondary),
-      ActionStyle.primary => (theme.onPrimary, theme.primary),
-      ActionStyle.error => (theme.onError, theme.error),
-    };
+    // final (foreground, background) = switch (actionStyle) {
+    //   ActionStyle.normal => (theme.onSecondary, theme.secondary),
+    //   ActionStyle.primary => (theme.onPrimary, theme.primary),
+    //   ActionStyle.error => (theme.onError, theme.error),
+    // };
+    final theme = Theme.of(context);
 
     return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+      title: TooltipIfTruncated(
+        text: title,
+        style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
+      ),
+      subtitle: subtitle != null
+          ? TooltipIfTruncated(
+              text: subtitle!,
+              style: TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            )
+          : null,
       leading: Opacity(
         opacity: onTap != null ? 1.0 : 0.4,
         child: CircleAvatar(
-          foregroundColor: foreground,
-          backgroundColor: background,
+          foregroundColor: theme.colorScheme.onSurfaceVariant,
+          backgroundColor: Colors.transparent,
           child: icon,
         ),
       ),
@@ -113,7 +125,6 @@ class ActionListSection extends ConsumerWidget {
       child: Column(children: [
         ListTitle(
           title,
-          textStyle: Theme.of(context).textTheme.bodyLarge,
         ),
         ...enabledChildren,
       ]),

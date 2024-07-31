@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">OTP zostało skopiowane do schowka.</string>
+    <string name="p_ndef_set_password">Hasło statyczne zostało skopiowane do schowka.</string>
+    <string name="p_ndef_parse_failure">Błąd czytania OTP z YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Błąd kopiowania OTP do schowka.</string>
+</resources>

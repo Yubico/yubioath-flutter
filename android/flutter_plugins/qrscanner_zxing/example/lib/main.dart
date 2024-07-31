@@ -26,7 +26,7 @@ void main() {
 }
 
 class QRCodeScannerExampleApp extends StatelessWidget {
-  const QRCodeScannerExampleApp({Key? key}) : super(key: key);
+  const QRCodeScannerExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class QRCodeScannerExampleApp extends StatelessWidget {
 }
 
 class AppHomePage extends StatelessWidget {
-  const AppHomePage({Key? key, required this.title}) : super(key: key);
+  const AppHomePage({super.key, required this.title});
   final String title;
 
   @override
@@ -104,7 +104,7 @@ class AppHomePage extends StatelessWidget {
 }
 
 class QRScannerPage extends StatefulWidget {
-  const QRScannerPage({Key? key}) : super(key: key);
+  const QRScannerPage({super.key});
 
   @override
   QRScannerPageState createState() => QRScannerPageState();

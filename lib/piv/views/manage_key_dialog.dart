@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,23 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_field.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'pin_dialog.dart';
 
 class ManageKeyDialog extends ConsumerStatefulWidget {
@@ -44,24 +49,35 @@ class ManageKeyDialog extends ConsumerStatefulWidget {
 class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   late bool _hasMetadata;
   late bool _defaultKeyUsed;
+  late bool _defaultPinUsed;
   late bool _usesStoredKey;
   late bool _storeKey;
   bool _currentIsWrong = false;
+  bool _currentInvalidFormat = false;
+  bool _newInvalidFormat = false;
   int _attemptsRemaining = -1;
-  ManagementKeyType _keyType = ManagementKeyType.tdes;
+  late ManagementKeyType _keyType;
   final _currentController = TextEditingController();
+  final _currentFocus = FocusNode();
   final _keyController = TextEditingController();
+  bool _isObscure = true;
 
   @override
   void initState() {
     super.initState();
 
     _hasMetadata = widget.pivState.metadata != null;
+    _keyType = widget.pivState.metadata?.managementKeyMetadata.keyType ??
+        defaultManagementKeyType;
     _defaultKeyUsed =
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
+    _defaultPinUsed =
+        widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
     _usesStoredKey = widget.pivState.protectedKey;
     if (!_usesStoredKey && _defaultKeyUsed) {
       _currentController.text = defaultManagementKey;
+    } else if (_usesStoredKey && _defaultPinUsed) {
+      _currentController.text = defaultPin;
     }
     _storeKey = _usesStoredKey;
   }
@@ -70,19 +86,39 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   void dispose() {
     _keyController.dispose();
     _currentController.dispose();
+    _currentFocus.dispose();
     super.dispose();
   }
 
   _submit() async {
+    final currentValidFormat =
+        _usesStoredKey || Format.hex.isValid(_currentController.text);
+    final newValidFormat = Format.hex.isValid(_keyController.text);
+    if (!currentValidFormat || !newValidFormat) {
+      setState(() {
+        _currentInvalidFormat = !currentValidFormat;
+        _newInvalidFormat = !newValidFormat;
+      });
+      return;
+    }
+
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     if (_usesStoredKey) {
       final status = (await notifier.verifyPin(_currentController.text)).when(
         success: () => true,
-        failure: (attemptsRemaining) {
-          setState(() {
-            _attemptsRemaining = attemptsRemaining;
-            _currentIsWrong = true;
-          });
+        failure: (reason) {
+          reason.maybeWhen(
+            invalidPin: (attemptsRemaining) {
+              _currentController.selection = TextSelection(
+                  baseOffset: 0, extentOffset: _currentController.text.length);
+              _currentFocus.requestFocus();
+              setState(() {
+                _attemptsRemaining = attemptsRemaining;
+                _currentIsWrong = true;
+              });
+            },
+            orElse: () {},
+          );
           return false;
         },
       );
@@ -91,6 +127,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       }
     } else {
       if (!await notifier.authenticate(_currentController.text)) {
+        _currentController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _currentController.text.length);
+        _currentFocus.requestFocus();
         setState(() {
           _currentIsWrong = true;
         });
@@ -99,15 +138,19 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     }
 
     if (_storeKey && !_usesStoredKey) {
-      final withContext = ref.read(withContextProvider);
-      final verified = await withContext((context) async =>
-              await showBlurDialog(
-                  context: context,
-                  builder: (context) => PinDialog(widget.path))) ??
-          false;
+      if (_defaultPinUsed) {
+        await notifier.verifyPin(defaultPin);
+      } else {
+        final withContext = ref.read(withContextProvider);
+        final verified = await withContext((context) async =>
+                await showBlurDialog(
+                    context: context,
+                    builder: (context) => PinDialog(widget.path))) ??
+            false;
 
-      if (!verified) {
-        return;
+        if (!verified) {
+          return;
+        }
       }
     }
 
@@ -126,11 +169,10 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final l10n = AppLocalizations.of(context)!;
     final currentType =
         widget.pivState.metadata?.managementKeyMetadata.keyType ??
-            ManagementKeyType.tdes;
+            defaultManagementKeyType;
     final hexLength = _keyType.keyLength * 2;
-    final protected = widget.pivState.protectedKey;
     final currentKeyOrPin = _currentController.text;
-    final currentLenOk = protected
+    final currentLenOk = _usesStoredKey
         ? currentKeyOrPin.length >= 4
         : currentKeyOrPin.length == currentType.keyLength * 2;
     final newLenOk = _keyController.text.length == hexLength;
@@ -139,7 +181,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       title: Text(l10n.l_change_management_key),
       actions: [
         TextButton(
-          onPressed: currentLenOk && newLenOk ? _submit : null,
+          onPressed:
+              !_currentIsWrong && currentLenOk && newLenOk ? _submit : null,
           key: keys.saveButton,
           child: Text(l10n.s_save),
         )
@@ -150,51 +193,72 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.p_change_management_key_desc),
-            if (protected)
-              TextField(
+            if (_usesStoredKey)
+              AppTextField(
                 autofocus: true,
-                obscureText: true,
+                obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
                 key: keys.pinPukField,
                 maxLength: 8,
+                inputFormatters: [limitBytesLength(8)],
+                buildCounter: buildByteCounterFor(_currentController.text),
                 controller: _currentController,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_pin,
-                    prefixIcon: const Icon(Icons.pin_outlined),
-                    errorText: _currentIsWrong
-                        ? l10n
-                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                        : null,
-                    errorMaxLines: 3),
+                focusNode: _currentFocus,
+                readOnly: _defaultPinUsed,
+                decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_pin,
+                  helperText: _defaultPinUsed ? l10n.l_default_pin_used : null,
+                  errorText: _currentIsWrong
+                      ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                      : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Symbols.pin),
+                  suffixIcon: IconButton(
+                      icon: Icon(_isObscure
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin),
+                ),
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
+                    _currentInvalidFormat = false;
                   });
                 },
-              ),
-            if (!protected)
-              TextFormField(
+              ).init(),
+            if (!_usesStoredKey)
+              AppTextFormField(
                 key: keys.managementKeyField,
                 autofocus: !_defaultKeyUsed,
                 autofillHints: const [AutofillHints.password],
                 controller: _currentController,
+                focusNode: _currentFocus,
                 readOnly: _defaultKeyUsed,
                 maxLength: !_defaultKeyUsed ? currentType.keyLength * 2 : null,
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_management_key,
-                  prefixIcon: const Icon(Icons.key_outlined),
-                  errorText: _currentIsWrong ? l10n.l_wrong_key : null,
-                  errorMaxLines: 3,
                   helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
+                  errorText: _currentIsWrong
+                      ? l10n.l_wrong_key
+                      : _currentInvalidFormat
+                          ? l10n.l_invalid_format_allowed_chars(
+                              Format.hex.allowedCharacters)
+                          : null,
+                  errorMaxLines: 3,
+                  prefixIcon: const Icon(Symbols.key),
                   suffixIcon: _hasMetadata
                       ? null
                       : IconButton(
-                          icon: Icon(_defaultKeyUsed
-                              ? Icons.auto_awesome
-                              : Icons.auto_awesome_outlined),
+                          icon: Icon(Symbols.auto_awesome,
+                              fill: _defaultKeyUsed ? 1.0 : 0.0),
                           tooltip: l10n.s_use_default,
                           onPressed: () {
                             setState(() {
@@ -208,34 +272,31 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                           },
                         ),
                 ),
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(
-                      RegExp('[a-f0-9]', caseSensitive: false))
-                ],
                 textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
                   });
                 },
-              ),
-            TextField(
+              ).init(),
+            AppTextField(
               key: keys.newPinPukField,
               autofocus: _defaultKeyUsed,
               autofillHints: const [AutofillHints.newPassword],
               maxLength: hexLength,
               controller: _keyController,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp('[a-f0-9]', caseSensitive: false))
-              ],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_management_key,
-                prefixIcon: const Icon(Icons.key_outlined),
+                errorText: _newInvalidFormat
+                    ? l10n.l_invalid_format_allowed_chars(
+                        Format.hex.allowedCharacters)
+                    : null,
                 enabled: currentLenOk,
+                prefixIcon: const Icon(Symbols.key),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.refresh),
+                  key: keys.managementKeyRefresh,
+                  icon: const Icon(Symbols.refresh),
                   tooltip: l10n.s_generate_random,
                   onPressed: currentLenOk
                       ? () {
@@ -248,6 +309,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                   .padLeft(2, '0')).join();
                           setState(() {
                             _keyController.text = key;
+                            _newInvalidFormat = false;
                           });
                         }
                       : null,
@@ -264,7 +326,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
             Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 4.0,
@@ -274,7 +336,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     ChoiceFilterChip<ManagementKeyType>(
                       items: ManagementKeyType.values,
                       value: _keyType,
-                      selected: _keyType != defaultManagementKeyType,
+                      selected: _keyType != currentType,
                       itemBuilder: (value) => Text(value.getDisplayName(l10n)),
                       onChanged: (value) {
                         setState(() {
@@ -283,6 +345,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       },
                     ),
                   FilterChip(
+                    key: keys.pinLockManagementKeyChip,
                     label: Text(l10n.s_protect_key),
                     selected: _storeKey,
                     onSelected: (value) {

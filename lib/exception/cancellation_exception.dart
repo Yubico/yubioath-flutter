@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-class CancellationException implements Exception {
-
-}
+class CancellationException implements Exception {}

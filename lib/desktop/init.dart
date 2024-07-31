@@ -26,6 +26,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -33,7 +34,6 @@ import 'package:window_manager/window_manager.dart';
 import '../app/app.dart';
 import '../app/logging.dart';
 import '../app/message.dart';
-import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
@@ -42,12 +42,14 @@ import '../core/state.dart';
 import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import '../otp/state.dart';
 import '../piv/state.dart';
 import '../version.dart';
 import 'devices.dart';
 import 'fido/state.dart';
 import 'management/state.dart';
 import 'oath/state.dart';
+import 'otp/state.dart';
 import 'piv/state.dart';
 import 'qr_scanner.dart';
 import 'rpc.dart';
@@ -139,10 +141,8 @@ Future<Widget> initialize(List<String> argv) async {
   _log.debug('Using saved window bounds (or defaults): $bounds');
 
   unawaited(windowManager
-      .waitUntilReadyToShow(WindowOptions(
-    minimumSize: WindowDefaults.minSize,
-    skipTaskbar: isHidden,
-  ))
+      .waitUntilReadyToShow(
+          const WindowOptions(minimumSize: WindowDefaults.minSize))
       .then((_) async {
     await windowManagerHelper.setBounds(bounds);
 
@@ -184,12 +184,6 @@ Future<Widget> initialize(List<String> argv) async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(implementedApps([
-        Application.oath,
-        Application.fido,
-        Application.piv,
-        Application.management,
-      ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
@@ -210,22 +204,27 @@ Future<Widget> initialize(List<String> argv) async {
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(desktopDeviceDataProvider),
       ),
+      currentSectionProvider.overrideWith(
+        (ref) => desktopCurrentSectionNotifier(ref),
+      ),
       // OATH
-      oathStateProvider.overrideWithProvider(desktopOathState),
+      oathStateProvider.overrideWithProvider(desktopOathState.call),
       credentialListProvider
-          .overrideWithProvider(desktopOathCredentialListProvider),
+          .overrideWithProvider(desktopOathCredentialListProvider.call),
       qrScannerProvider.overrideWith(
         (ref) => ref.watch(desktopQrScannerProvider),
       ),
       // Management
-      managementStateProvider.overrideWithProvider(desktopManagementState),
+      managementStateProvider.overrideWithProvider(desktopManagementState.call),
       // FIDO
-      fidoStateProvider.overrideWithProvider(desktopFidoState),
-      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider),
-      credentialProvider.overrideWithProvider(desktopCredentialProvider),
+      fidoStateProvider.overrideWithProvider(desktopFidoState.call),
+      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider.call),
+      credentialProvider.overrideWithProvider(desktopCredentialProvider.call),
       // PIV
-      pivStateProvider.overrideWithProvider(desktopPivState),
-      pivSlotsProvider.overrideWithProvider(desktopPivSlots),
+      pivStateProvider.overrideWithProvider(desktopPivState.call),
+      pivSlotsProvider.overrideWithProvider(desktopPivSlots.call),
+      // OTP
+      otpStateProvider.overrideWithProvider(desktopOtpState.call)
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
@@ -238,17 +237,18 @@ Future<Widget> initialize(List<String> argv) async {
           // Load feature flags, if they exist
           featureFile.exists().then(
             (exists) async {
+              final featureFlag = ref.read(featureFlagProvider.notifier);
               if (exists) {
                 try {
                   final featureConfig =
                       jsonDecode(await featureFile.readAsString());
-                  ref
-                      .read(featureFlagProvider.notifier)
-                      .loadConfig(featureConfig);
+                  featureFlag.loadConfig(featureConfig);
                 } catch (error) {
                   _log.error('Failed to parse feature flags', error);
                 }
               }
+              // Hardcode features here:
+              // featureFlag.setFeature(feature, false);
             },
           );
 
@@ -340,13 +340,12 @@ void _initLicenses() async {
 }
 
 bool _getIsHidden(ArgResults args, SharedPreferences prefs) {
+  bool isHidden = false;
   if (args[_hidden] || args[_shown]) {
-    final isHidden = args[_hidden] && !args[_shown];
-    prefs.setBool(windowHidden, isHidden);
-    return isHidden;
-  } else {
-    return prefs.getBool(windowHidden) ?? false;
+    isHidden = args[_hidden] && !args[_shown];
   }
+  prefs.setBool(windowHidden, isHidden);
+  return isHidden;
 }
 
 class _HelperWaiter extends ConsumerStatefulWidget {
@@ -379,11 +378,12 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
     if (slow) {
       final l10n = AppLocalizations.of(context)!;
       return MessagePage(
+        centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
-        actions: [
+        actionsBuilder: (context, expanded) => [
           ActionChip(
-            avatar: const Icon(Icons.copy),
+            avatar: const Icon(Symbols.content_copy),
             label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
@@ -406,6 +406,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
       );
     } else {
       return const MessagePage(
+        centered: true,
         delayedContent: true,
         graphic: CircularProgressIndicator(),
       );

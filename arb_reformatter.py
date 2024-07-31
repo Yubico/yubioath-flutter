@@ -5,24 +5,33 @@ import os
 
 
 def read_file_lines(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         return file.readlines()
 
 
 def read_file_json(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         return json.load(file)
 
 
 def write_to_file(file_path, text):
-    with open(file_path, 'w', encoding='utf-8') as file:
+    with open(file_path, "r", encoding="utf-8") as file:
+        if file.read() == text:
+            return False
+
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(text)
+    return True
+
 
 # Translation table for unicode characters we want to keep in escaped form.
-trans = str.maketrans({
-    '\u00a0': r"\u00a0", # No-Break Space (NBSP)
-    '\u2026': r"\u2026"  # Horizontal Ellipsis
-})
+trans = str.maketrans(
+    {
+        "\u00a0": r"\u00a0",  # No-Break Space (NBSP)
+        "\u2026": r"\u2026",  # Horizontal Ellipsis
+    }
+)
+
 
 # Move keys in target into same order as in source.
 # Keys not present in source are removed from target.
@@ -68,16 +77,16 @@ def update_arb_file(source_path, target_path, language_code):
         if line.strip() == "":
             target_lines.insert(i, "")
 
-    write_to_file(target_path, "\n".join(target_lines).strip() + "\n")
+    return write_to_file(target_path, "\n".join(target_lines).strip() + "\n")
 
 
 if __name__ == "__main__":
-    source_file_path = 'lib/l10n/app_en.arb'
-    target_directory = 'lib/l10n'
+    source_file_path = "lib/l10n/app_en.arb"
+    target_directory = "lib/l10n"
 
     for file_name in os.listdir(target_directory):
-        if file_name.startswith('app_') and file_name.endswith('.arb'):
+        if file_name.startswith("app_") and file_name.endswith(".arb"):
             target_file_path = os.path.join(target_directory, file_name)
-            language_code = file_name.split('_')[1].split('.')[0]
-            update_arb_file(source_file_path, target_file_path, language_code)
-            print(f'File updated: {file_name}')
+            language_code = file_name.split("_")[1].split(".")[0]
+            if update_arb_file(source_file_path, target_file_path, language_code):
+                print(f"File updated: {file_name}")

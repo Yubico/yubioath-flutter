@@ -19,16 +19,19 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/exception/cancellation_exception.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
+import '../../exception/apdu_exception.dart';
+import '../../exception/cancellation_exception.dart';
+import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
@@ -50,6 +53,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       if (json == null) {
+        state = AsyncValue.error(const NoDataException(), StackTrace.current);
+      } else if (json == 'loading') {
         state = const AsyncValue.loading();
       } else {
         final oathState = OathState.fromJson(json);
@@ -67,6 +72,9 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> reset() async {
     try {
+      // await ref
+      //     .read(androidAppContextHandler)
+      //     .switchAppContext(Application.accounts);
       await _methods.invokeMethod('reset');
     } catch (e) {
       _log.debug('Calling reset failed with exception: $e');
@@ -84,8 +92,13 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       final remembered = unlockResponse['remembered'] == true;
 
       return (unlocked, remembered);
-    } on PlatformException catch (e) {
-      _log.debug('Calling unlock failed with exception: $e');
+    } on PlatformException catch (pe) {
+      final decoded = pe.decode();
+      if (decoded is CancellationException) {
+        _log.debug('Unlock OATH cancelled');
+        throw decoded;
+      }
+      _log.debug('Calling unlock failed with exception: $pe');
       return (false, false);
     }
   }
@@ -123,6 +136,29 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
+// Converts Platform exception during Add Account operation
+// Returns CancellationException for situations we don't want to show a Toast
+Exception _decodeAddAccountException(PlatformException platformException) {
+  final decodedException = platformException.decode();
+
+  // Auth required, the app will show Unlock dialog
+  if (decodedException is ApduException && decodedException.sw == 0x6982) {
+    _log.error('Add account failed: Auth required');
+    return CancellationException();
+  }
+
+  // Thrown in native code when the account already exists on the YubiKey
+  // The entry dialog will show an error message and that is why we convert
+  // this to CancellationException to avoid showing a Toast
+  if (platformException.code == 'IllegalArgumentException') {
+    _log.error('Add account failed: Account already exists');
+    return CancellationException();
+  }
+
+  // original exception
+  return decodedException;
+}
+
 final addCredentialToAnyProvider =
     Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
           try {
@@ -135,8 +171,7 @@ final addCredentialToAnyProvider =
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
-            _log.error('Failed to add account.', pe);
-            throw pe.decode();
+            throw _decodeAddAccountException(pe);
           }
         });
 
@@ -172,10 +207,8 @@ final addCredentialsToAnyProvider = Provider(
 final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
   (ref, devicePath) {
-    var notifier = _AndroidCredentialListNotifier(
-      ref.watch(withContextProvider),
-      ref.watch(currentDeviceProvider)?.transport == Transport.usb,
-    );
+    var notifier =
+        _AndroidCredentialListNotifier(ref.watch(withContextProvider), ref);
     return notifier;
   },
 );
@@ -183,22 +216,15 @@ final androidCredentialListProvider = StateNotifierProvider.autoDispose
 class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final _events = const EventChannel('android.oath.credentials');
   final WithContext _withContext;
-  final bool _isUsbAttached;
+  final Ref _ref;
   late StreamSubscription _sub;
 
-  _AndroidCredentialListNotifier(this._withContext, this._isUsbAttached)
-      : super() {
+  _AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       List<OathPair>? newState = json != null
           ? List.from((json as List).map((e) => OathPair.fromJson(e)).toList())
           : null;
-      if (state != null && newState == null) {
-        // If we go from non-null to null this means we should stop listening to
-        // avoid receiving a message for a different notifier as there is only
-        // one channel.
-        _sub.cancel();
-      }
       state = newState;
     });
   }
@@ -214,14 +240,14 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     // Prompt for touch if needed
     UserInteractionController? controller;
     Timer? touchTimer;
-    if (_isUsbAttached) {
+    if (_ref.read(currentDeviceProvider)?.transport == Transport.usb) {
       void triggerTouchPrompt() async {
         controller = await _withContext(
           (context) async {
             final l10n = AppLocalizations.of(context)!;
             return promptUserInteraction(
               context,
-              icon: const Icon(Icons.touch_app),
+              icon: const Icon(Symbols.touch_app),
               title: l10n.s_touch_required,
               description: l10n.l_touch_button_now,
             );
@@ -260,8 +286,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
-      _log.error('Failed to add account.', pe);
-      throw pe.decode();
+      throw _decodeAddAccountException(pe);
     }
   }
 

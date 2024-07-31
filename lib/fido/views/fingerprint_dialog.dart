@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/fs_dialog.dart';
 import '../../core/state.dart';
-import '../models.dart';
 import '../features.dart' as features;
+import '../models.dart';
 import 'actions.dart';
-import 'delete_fingerprint_dialog.dart';
-import 'rename_fingerprint_dialog.dart';
 
 class FingerprintDialog extends ConsumerWidget {
   final Fingerprint fingerprint;
@@ -30,82 +29,73 @@ class FingerprintDialog extends ConsumerWidget {
 
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
-    return Actions(
-      actions: {
+    return FidoActions(
+      devicePath: node.path,
+      actions: (context) => {
         if (hasFeature(features.fingerprintsEdit))
-          EditIntent: CallbackAction<EditIntent>(onInvoke: (_) async {
-            final withContext = ref.read(withContextProvider);
-            final Fingerprint? renamed =
-                await withContext((context) async => await showBlurDialog(
-                      context: context,
-                      builder: (context) => RenameFingerprintDialog(
-                        node.path,
-                        fingerprint,
-                      ),
-                    ));
-            if (renamed != null) {
+          EditIntent<Fingerprint>:
+              CallbackAction<EditIntent<Fingerprint>>(onInvoke: (intent) async {
+            final renamed =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            if (renamed is Fingerprint) {
               // Replace the dialog with the renamed credential
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
                 await showBlurDialog(
                   context: context,
-                  builder: (context) {
-                    return FingerprintDialog(renamed);
-                  },
+                  builder: (context) => FingerprintDialog(renamed),
                 );
               });
             }
             return renamed;
           }),
         if (hasFeature(features.fingerprintsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (_) async {
-            final withContext = ref.read(withContextProvider);
-            final bool? deleted =
-                await ref.read(withContextProvider)((context) async =>
-                    await showBlurDialog(
-                      context: context,
-                      builder: (context) => DeleteFingerprintDialog(
-                        node.path,
-                        fingerprint,
-                      ),
-                    ) ??
-                    false);
-
-            // Pop the account dialog if deleted
+          DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
+              onInvoke: (intent) async {
+            final deleted =
+                await (Actions.invoke(context, intent) as Future<dynamic>?);
+            // Pop the fingerprint dialog if deleted
             if (deleted == true) {
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
               });
             }
             return deleted;
           }),
       },
-      child: FocusScope(
-        autofocus: true,
-        child: FsDialog(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 48, bottom: 32),
-                child: Column(
-                  children: [
-                    Text(
-                      fingerprint.label,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    const Icon(Icons.fingerprint, size: 72),
-                  ],
+      builder: (context) => ItemShortcuts(
+        item: fingerprint,
+        child: FocusScope(
+          autofocus: true,
+          child: FsDialog(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 48, bottom: 32),
+                  child: Column(
+                    children: [
+                      Text(
+                        fingerprint.label,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Icon(
+                        Symbols.fingerprint,
+                        size: 100,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              ActionListSection.fromMenuActions(
-                context,
-                l10n.s_actions,
-                actions: buildFingerprintActions(l10n),
-              ),
-            ],
+                ActionListSection.fromMenuActions(
+                  context,
+                  l10n.s_actions,
+                  actions: buildFingerprintActions(fingerprint, l10n),
+                ),
+              ],
+            ),
           ),
         ),
       ),

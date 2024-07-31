@@ -2,7 +2,7 @@
 This document describes how to build and package Yubico Authenticator from
 source.
 
-NOTE: Yubico Authenticator 6 uses a new codebase built using the Flutter
+NOTE: Yubico Authenticator 6+ uses a new codebase built using the Flutter
 framework. The previous Qt codebase can be found in the `legacy` branch.
 
 === Requirements
@@ -45,7 +45,7 @@ Make sure the http://www.swig.org/[swig] executable is in your PATH.
 
     $ sudo apt install swig libu2f-udev pcscd libpcsclite-dev
 
-==== Linux (RPM-based distributons)
+==== Linux (RPM-based distributions)
 
     # Tested on Fedora 34
     $ sudo dnf install pcsc-lite-devel python3-devel swig
@@ -90,7 +90,7 @@ These do not require a YubiKey, and are relatively quick to run.
 The integration tests are slower but cover more end-to-end functionality. The
 require an attached YubiKey to run, and will make modifications to the data
 stored on that YubiKey. For instructions on running these tests, see
-link:Integration_Tests.adoc[these instructions].
+link:../integration_test/testdoc.adoc[these instructions].
 
 
 === Packaging for MacOS

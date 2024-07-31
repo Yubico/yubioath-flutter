@@ -18,11 +18,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/android/views/nfc/fade_in_out.dart';
-import 'package:yubico_authenticator/app/views/horizontal_shake.dart';
 
+import '../../../app/views/horizontal_shake.dart';
 import '../../../theme.dart';
+import '../../state.dart';
+import 'fade_in_out.dart';
 
 /// Default icon for [NfcActivityWidget]
 class NfcActivityIcon extends StatelessWidget {
@@ -52,7 +52,7 @@ class NfcActivityIcon extends StatelessWidget {
                   child: const Opacity(
                     opacity: 0.6,
                     child: _NfcIcon(
-                      color: accentGreen,
+                      color: defaultPrimaryColor,
                     ),
                   ),
                 ),

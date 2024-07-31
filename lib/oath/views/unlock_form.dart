@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../models.dart';
+import '../../exception/cancellation_exception.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_field.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
 import '../state.dart';
 
 class UnlockForm extends ConsumerStatefulWidget {
@@ -35,25 +39,46 @@ class UnlockForm extends ConsumerStatefulWidget {
 
 class _UnlockFormState extends ConsumerState<UnlockForm> {
   final _passwordController = TextEditingController();
+  final _passwordFocus = FocusNode();
   bool _remember = false;
   bool _passwordIsWrong = false;
   bool _isObscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordFocus.requestFocus();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
 
   void _submit() async {
     setState(() {
       _passwordIsWrong = false;
     });
-    final (success, remembered) = await ref
-        .read(oathStateProvider(widget._devicePath).notifier)
-        .unlock(_passwordController.text, remember: _remember);
-    if (!mounted) return;
-    if (!success) {
-      setState(() {
-        _passwordIsWrong = true;
-        _passwordController.clear();
-      });
-    } else if (_remember && !remembered) {
-      showMessage(context, AppLocalizations.of(context)!.l_remember_pw_failed);
+    try {
+      final (success, remembered) = await ref
+          .read(oathStateProvider(widget._devicePath).notifier)
+          .unlock(_passwordController.text, remember: _remember);
+      if (!mounted) return;
+      if (!success) {
+        _passwordController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _passwordController.text.length);
+        _passwordFocus.requestFocus();
+        setState(() {
+          _passwordIsWrong = true;
+        });
+      } else if (_remember && !remembered) {
+        showMessage(
+            context, AppLocalizations.of(context)!.l_remember_pw_failed);
+      }
+    } on CancellationException catch (_) {
+      // ignored
     }
   }
 
@@ -64,77 +89,93 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+          padding: const EdgeInsets.only(left: 18.0, right: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 l10n.l_enter_oath_pw,
               ),
-              const SizedBox(height: 16.0),
-              TextField(
-                key: keys.passwordField,
-                controller: _passwordController,
-                autofocus: true,
-                obscureText: _isObscure,
-                autofillHints: const [AutofillHints.password],
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_password,
-                  errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
-                  helperText: '', // Prevents resizing when errorText shown
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off,
-                      color: IconTheme.of(context).color,
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
+                child: AppTextField(
+                  key: keys.passwordField,
+                  controller: _passwordController,
+                  focusNode: _passwordFocus,
+                  autofocus: true,
+                  obscureText: _isObscure,
+                  autofillHints: const [AutofillHints.password],
+                  decoration: AppInputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: l10n.s_password,
+                    errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
+                    helperText: '', // Prevents resizing when errorText shown
+                    prefixIcon: const Icon(Symbols.password),
+                    suffixIcon: IconButton(
+                      icon: Icon(_isObscure
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip: _isObscure
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                    tooltip: _isObscure
-                        ? l10n.s_show_password
-                        : l10n.s_hide_password,
                   ),
-                ),
-                onChanged: (_) => setState(() {
-                  _passwordIsWrong = false;
-                }), // Update state on change
-                onSubmitted: (_) => _submit(),
+                  onChanged: (_) => setState(() {
+                    _passwordIsWrong = false;
+                  }), // Update state on change
+                  onSubmitted: (_) => _submit(),
+                ).init(),
+              ),
+              const SizedBox(height: 3.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    children: [
+                      keystoreFailed
+                          ? Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 4.0,
+                              runSpacing: 8.0,
+                              children: [
+                                Icon(Symbols.warning_amber,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
+                                Text(l10n.l_keystore_unavailable)
+                              ],
+                            )
+                          : FilterChip(
+                              label: Text(l10n.s_remember_password),
+                              selected: _remember,
+                              onSelected: (value) {
+                                setState(() {
+                                  _remember = value;
+                                });
+                              },
+                            ),
+                      FilledButton.icon(
+                        key: keys.unlockButton,
+                        label: Text(l10n.s_unlock),
+                        icon: const Icon(Symbols.lock_open),
+                        onPressed: _passwordController.text.isNotEmpty &&
+                                !_passwordIsWrong
+                            ? _submit
+                            : null,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
-          ),
-        ),
-        keystoreFailed
-            ? ListTile(
-                leading: const Icon(Icons.warning_amber_rounded),
-                title: Text(l10n.l_keystore_unavailable),
-                dense: true,
-                minLeadingWidth: 0,
-              )
-            : CheckboxListTile(
-                title: Text(l10n.s_remember_password),
-                dense: true,
-                controlAffinity: ListTileControlAffinity.leading,
-                value: _remember,
-                onChanged: (value) {
-                  setState(() {
-                    _remember = value ?? false;
-                  });
-                },
-              ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              key: keys.unlockButton,
-              label: Text(l10n.s_unlock),
-              icon: const Icon(Icons.lock_open),
-              onPressed: _passwordController.text.isNotEmpty ? _submit : null,
-            ),
           ),
         ),
       ],

@@ -20,6 +20,7 @@ from .base import (
     ChildResetException,
     TimeoutException,
     AuthRequiredException,
+    PinComplexityException,
 )
 from yubikit.core import NotSupportedError, BadResponseError, InvalidPinError
 from yubikit.core.smartcard import ApduError, SW
@@ -75,8 +76,18 @@ class InvalidPinException(RpcException):
 
 @unique
 class GENERATE_TYPE(str, Enum):
+    PUBLIC_KEY = "publicKey"
     CSR = "csr"
     CERTIFICATE = "certificate"
+
+
+def _handle_pin_puk_error(e):
+    if isinstance(e, ApduError):
+        if e.sw == SW.CONDITIONS_NOT_SATISFIED:
+            raise PinComplexityException()
+    if isinstance(e, InvalidPinError):
+        raise InvalidPinException(cause=e)
+    raise e
 
 
 class PivNode(RpcNode):
@@ -166,6 +177,7 @@ class PivNode(RpcNode):
         key = None
 
         if self._pivman_data.has_derived_key:
+            assert self._pivman_data.salt  # nosec
             key = derive_management_key(pin, self._pivman_data.salt)
         elif self._pivman_data.has_stored_key:
             pivman_prot = get_pivman_protected_data(self.session)
@@ -206,21 +218,30 @@ class PivNode(RpcNode):
     def change_pin(self, params, event, signal):
         old_pin = params.pop("pin")
         new_pin = params.pop("new_pin")
-        pivman_change_pin(self.session, old_pin, new_pin)
+        try:
+            pivman_change_pin(self.session, old_pin, new_pin)
+        except Exception as e:
+            _handle_pin_puk_error(e)
         return dict()
 
     @action
     def change_puk(self, params, event, signal):
         old_puk = params.pop("puk")
         new_puk = params.pop("new_puk")
-        self.session.change_puk(old_puk, new_puk)
+        try:
+            self.session.change_puk(old_puk, new_puk)
+        except Exception as e:
+            _handle_pin_puk_error(e)
         return dict()
 
     @action
     def unblock_pin(self, params, event, signal):
         puk = params.pop("puk")
         new_pin = params.pop("new_pin")
-        self.session.unblock_pin(puk, new_pin)
+        try:
+            self.session.unblock_pin(puk, new_pin)
+        except Exception as e:
+            _handle_pin_puk_error(e)
         return dict()
 
     @action
@@ -296,12 +317,25 @@ def _choose_cert(certs):
 def _get_cert_info(cert):
     if cert is None:
         return None
+    try:  # Prefer timezone-aware variant (cryptography >= 42)
+        not_before = cert.not_valid_before_utc
+        not_after = cert.not_valid_after_utc
+    except AttributeError:
+        not_before = cert.not_valid_before
+        not_after = cert.not_valid_after
+
+    try:
+        key_type = KEY_TYPE.from_public_key(cert.public_key())
+    except ValueError:
+        key_type = None
+
     return dict(
+        key_type=key_type,
         subject=cert.subject.rfc4514_string(),
         issuer=cert.issuer.rfc4514_string(),
         serial=hex(cert.serial_number)[2:],
-        not_valid_before=cert.not_valid_before.isoformat(),
-        not_valid_after=cert.not_valid_after.isoformat(),
+        not_valid_before=not_before.isoformat(),
+        not_valid_after=not_after.isoformat(),
         fingerprint=cert.fingerprint(hashes.SHA256()),
     )
 
@@ -340,7 +374,7 @@ class SlotsNode(RpcNode):
             f"{int(slot):02x}": dict(
                 slot=int(slot),
                 name=slot.name,
-                has_key=metadata is not None if self._has_metadata else None,
+                metadata=_metadata_dict(metadata),
                 cert_info=_get_cert_info(cert),
             )
             for slot, (metadata, cert) in self._slots.items()
@@ -352,6 +386,17 @@ class SlotsNode(RpcNode):
             metadata, certificate = self._slots[slot]
             return SlotNode(self.session, slot, metadata, certificate, self.refresh)
         return super().create_child(name)
+
+
+def _metadata_dict(metadata):
+    if not metadata:
+        return None
+    data = asdict(metadata)
+    data["public_key"] = metadata.public_key.public_bytes(
+        encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+    ).decode()
+    del data["public_key_encoded"]
+    return data
 
 
 class SlotNode(RpcNode):
@@ -367,18 +412,47 @@ class SlotNode(RpcNode):
         return dict(
             id=f"{int(self.slot):02x}",
             name=self.slot.name,
-            metadata=asdict(self.metadata) if self.metadata else None,
+            metadata=_metadata_dict(self.metadata),
             certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
             if self.certificate
             else None,
         )
 
-    @action(condition=lambda self: self.certificate)
+    @action(condition=lambda self: self.certificate or self.metadata)
     def delete(self, params, event, signal):
-        self.session.delete_certificate(self.slot)
-        self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+        delete_cert = params.pop("delete_cert", False)
+        delete_key = params.pop("delete_key", False)
+
+        if not delete_cert and not delete_key:
+            raise ValueError("Missing delete option")
+
+        if delete_cert:
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        if delete_key:
+            self.session.delete_key(self.slot)
         self._refresh()
-        self.certificate = None
+        return dict()
+
+    @action(condition=lambda self: self.metadata)
+    def move_key(self, params, event, signal):
+        destination = params.pop("destination")
+        overwrite_key = params.pop("overwrite_key")
+        include_certificate = params.pop("include_certificate")
+
+        if include_certificate:
+            source_object = self.session.get_object(OBJECT_ID.from_slot(self.slot))
+        destination = SLOT(int(destination, base=16))
+        if overwrite_key:
+            self.session.delete_key(destination)
+        self.session.move_key(self.slot, destination)
+        if include_certificate:
+            self.session.put_object(OBJECT_ID.from_slot(destination), source_object)
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        self._refresh()
         return dict()
 
     @action
@@ -417,7 +491,7 @@ class SlotNode(RpcNode):
         self._refresh()
 
         return dict(
-            metadata=asdict(metadata) if metadata else None,
+            metadata=_metadata_dict(metadata),
             public_key=private_key.public_key()
             .public_bytes(
                 encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
@@ -442,6 +516,9 @@ class SlotNode(RpcNode):
         public_key = self.session.generate_key(
             self.slot, key_type, pin_policy, touch_policy
         )
+        public_key_pem = public_key.public_bytes(
+            encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+        ).decode()
 
         if pin_policy != PIN_POLICY.NEVER:
             # TODO: Check if verified?
@@ -451,14 +528,17 @@ class SlotNode(RpcNode):
         if touch_policy in (TOUCH_POLICY.ALWAYS, TOUCH_POLICY.CACHED):
             signal("touch")
 
-        if generate_type == GENERATE_TYPE.CSR:
-            result = generate_csr(self.session, self.slot, public_key, subject)
+        if generate_type == GENERATE_TYPE.PUBLIC_KEY:
+            result = public_key_pem
+        elif generate_type == GENERATE_TYPE.CSR:
+            csr = generate_csr(self.session, self.slot, public_key, subject)
+            result = csr.public_bytes(encoding=Encoding.PEM).decode()
         elif generate_type == GENERATE_TYPE.CERTIFICATE:
             now = datetime.datetime.utcnow()
             then = now + datetime.timedelta(days=365)
             valid_from = params.pop("valid_from", now.strftime(_date_format))
             valid_to = params.pop("valid_to", then.strftime(_date_format))
-            result = generate_self_signed_certificate(
+            cert = generate_self_signed_certificate(
                 self.session,
                 self.slot,
                 public_key,
@@ -466,16 +546,12 @@ class SlotNode(RpcNode):
                 datetime.datetime.strptime(valid_from, _date_format),
                 datetime.datetime.strptime(valid_to, _date_format),
             )
-            self.session.put_certificate(self.slot, result)
+            result = cert.public_bytes(encoding=Encoding.PEM).decode()
+            self.session.put_certificate(self.slot, cert)
             self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
         else:
-            raise ValueError("Unsupported GENERATE_TYPE")
+            raise ValueError(f"Unsupported GENERATE_TYPE: {generate_type}")
 
         self._refresh()
 
-        return dict(
-            public_key=public_key.public_bytes(
-                encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
-            ).decode(),
-            result=result.public_bytes(encoding=Encoding.PEM).decode(),
-        )
+        return dict(public_key=public_key_pem, result=result)

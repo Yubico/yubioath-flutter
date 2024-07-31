@@ -17,17 +17,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/app_methods.dart';
-import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../android/views/nfc/main_page_nfc_activity_widget.dart';
 import '../../core/state.dart';
-import '../../exception/cancellation_exception.dart';
-import '../../fido/views/fido_screen.dart';
+import '../../fido/views/fingerprints_screen.dart';
+import '../../fido/views/passkeys_screen.dart';
+import '../../fido/views/webauthn_page.dart';
+import '../../home/views/home_message_page.dart';
+import '../../home/views/home_screen.dart';
+import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../oath/views/utils.dart';
+import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
-import '../../widgets/custom_icons.dart';
+import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
@@ -69,88 +75,106 @@ class MainPage extends ConsumerWidget {
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final noKeyImage = Image.asset(
-      isDarkTheme
-          ? 'assets/graphics/no-key_dark.png'
-          : 'assets/graphics/no-key.png',
+      'assets/graphics/no-key.png',
       filterQuality: FilterQuality.medium,
       scale: 2,
+      color: Theme.of(context).colorScheme.primary,
     );
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
-        return MessagePage(
+        return HomeMessagePage(
+          centered: true,
           graphic: MainPageNfcActivityWidget(noKeyImage),
-          message: hasNfcSupport && isNfcEnabled
+          header: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
-          actions: [
+          actionsBuilder: (context, expanded) => [
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
                   label: Text(l10n.s_enable_nfc),
-                  icon: nfcIcon,
+                  icon: const Icon(Symbols.contactless),
                   onPressed: () async {
                     await openNfcSettings();
-                  })
+                  }),
+            ElevatedButton.icon(
+                label: Text(l10n.s_add_account),
+                icon: const Icon(Symbols.person_add_alt),
+                onPressed: () async {
+                  await addOathAccount(context, ref);
+                })
           ],
-          actionButtonBuilder: (context) => IconButton(
-            icon: const Icon(Icons.person_add_alt_1),
-            tooltip: l10n.s_add_account,
-            onPressed: () async {
-              final withContext = ref.read(withContextProvider);
-              final qrScanner = ref.read(qrScannerProvider);
-              if (qrScanner != null) {
-                try {
-                  final qrData = await qrScanner.scanQr();
-                  await AndroidQrScanner.handleScannedData(
-                      qrData, withContext, qrScanner, l10n);
-                } on CancellationException catch (_) {
-                  // ignored - user cancelled
-                  return;
-                }
-              }
-            },
-          ),
         );
       } else {
-        return MessagePage(
-          delayedContent: true,
+        return HomeMessagePage(
+          centered: true,
+          delayedContent: false,
           graphic: noKeyImage,
-          message: l10n.l_insert_yk,
+          header: l10n.l_insert_yk,
         );
       }
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
-              final app = ref.watch(currentAppProvider);
+              final section = ref.watch(currentSectionProvider);
+              final capabilities = section.capabilities;
               if (data.info.supportedCapabilities.isEmpty &&
                   data.name == 'Unrecognized device') {
-                return MessagePage(
+                return HomeMessagePage(
+                  centered: true,
+                  graphic: Icon(
+                    Symbols.help,
+                    size: 96,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   header: l10n.s_yk_not_recognized,
                 );
-              } else if (app.getAvailability(data) ==
+              } else if (section.getAvailability(data) ==
                   Availability.unsupported) {
                 return MessagePage(
+                  title: section.getDisplayName(l10n),
+                  capabilities: capabilities,
                   header: l10n.s_app_not_supported,
-                  message: l10n.l_app_not_supported_on_yk(app.name),
+                  message: l10n.l_app_not_supported_on_yk(capabilities
+                      .map((c) => c.getDisplayName(l10n))
+                      .join(',')),
                 );
-              } else if (app.getAvailability(data) != Availability.enabled) {
+              } else if (section.getAvailability(data) !=
+                  Availability.enabled) {
                 return MessagePage(
+                  title: section.getDisplayName(l10n),
+                  capabilities: capabilities,
                   header: l10n.s_app_disabled,
-                  message: l10n.l_app_disabled_desc(app.name),
+                  message: l10n.l_app_disabled_desc(capabilities
+                      .map((c) => c.getDisplayName(l10n))
+                      .join(',')),
+                  actionsBuilder: (context, expanded) => [
+                    ActionChip(
+                      label: Text(data.info.version.major > 4
+                          ? l10n.s_toggle_applications
+                          : l10n.s_toggle_interfaces),
+                      onPressed: () async {
+                        await showBlurDialog(
+                          context: context,
+                          builder: (context) => ManagementScreen(data),
+                        );
+                      },
+                      avatar: const Icon(Symbols.construction),
+                    )
+                  ],
                 );
               }
 
-              return switch (app) {
-                Application.oath => OathScreen(data.node.path),
-                Application.fido => FidoScreen(data),
-                Application.piv => PivScreen(data.node.path),
-                _ => MessagePage(
-                    header: l10n.s_app_not_supported,
-                    message: l10n.l_app_not_supported_desc,
-                  ),
+              return switch (section) {
+                Section.home => HomeScreen(data),
+                Section.accounts => OathScreen(data.node.path),
+                Section.securityKey => const WebAuthnScreen(),
+                Section.passkeys => PasskeysScreen(data),
+                Section.fingerprints => FingerprintsScreen(data),
+                Section.certificates => PivScreen(data.node.path),
+                Section.slots => OtpScreen(data.node.path),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),

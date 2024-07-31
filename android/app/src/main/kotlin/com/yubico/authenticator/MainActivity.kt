@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,13 +43,19 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.DynamicColors
+import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.fido.FidoManager
+import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
+import com.yubico.authenticator.management.ManagementHandler
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
 import com.yubico.authenticator.yubikit.NfcActivityDispatcher
 import com.yubico.authenticator.yubikit.NfcActivityListener
 import com.yubico.authenticator.yubikit.NfcActivityState
+import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -72,8 +78,9 @@ import java.util.concurrent.Executors
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val oathViewModel: OathViewModel by viewModels()
+    private val fidoViewModel: FidoViewModel by viewModels()
 
-    private val nfcConfiguration = NfcConfiguration()
+    private val nfcConfiguration = NfcConfiguration().timeout(2000)
 
     private var hasNfc: Boolean = false
 
@@ -129,9 +136,13 @@ class MainActivity : FlutterFragmentActivity() {
             logger.debug("Starting nfc discovery")
             yubikit.startNfcDiscovery(
                 nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-                this,
-                ::processYubiKey
-            )
+                this
+            ) { nfcYubiKeyDevice ->
+                if (!deviceManager.isUsbKeyConnected()) {
+                    launchProcessYubiKey(nfcYubiKeyDevice)
+                }
+            }
+
             hasNfc = true
         } catch (e: NfcNotAvailable) {
             hasNfc = false
@@ -152,7 +163,7 @@ class MainActivity : FlutterFragmentActivity() {
                 logger.debug("YubiKey was disconnected, stopping usb discovery")
                 stopUsbDiscovery()
             }
-            processYubiKey(device)
+            launchProcessYubiKey(device)
         }
     }
 
@@ -185,6 +196,8 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     override fun onPause() {
+
+        contextManager?.onPause()
 
         appPreferences.unregisterListener(sharedPreferencesListener)
 
@@ -233,7 +246,7 @@ class MainActivity : FlutterFragmentActivity() {
                 val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
                 lifecycleScope.launch {
                     try {
-                        contextManager?.processYubiKey(device)
+                        processYubiKey(device)
                         device.remove {
                             executor.shutdown()
                             startNfcDiscovery()
@@ -246,7 +259,7 @@ class MainActivity : FlutterFragmentActivity() {
                 startNfcDiscovery()
             }
 
-            val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+            val usbManager = getSystemService(USB_SERVICE) as UsbManager
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
                 val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
                 if (device != null) {
@@ -288,24 +301,53 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
-    private fun processYubiKey(device: YubiKeyDevice) {
+    private suspend fun processYubiKey(device: YubiKeyDevice) {
+        val deviceInfo = getDeviceInfo(device)
+        deviceManager.setDeviceInfo(deviceInfo)
+
+        if (deviceInfo == null) {
+            return
+        }
+
+        val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
+        logger.debug("Connected key supports: {}", supportedContexts)
+        if (!supportedContexts.contains(viewModel.appContext.value)) {
+            val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
+            logger.debug(
+                "Current context ({}) is not supported by the key. Using preferred context {}",
+                viewModel.appContext.value,
+                preferredContext
+            )
+            switchContext(preferredContext)
+        }
+
+        if (contextManager == null) {
+            switchContext(DeviceManager.getPreferredContext(supportedContexts))
+        }
+
         contextManager?.let {
-            lifecycleScope.launch {
-                try {
-                    it.processYubiKey(device)
-                    if (device is NfcYubiKeyDevice) {
-                        device.remove {
-                            appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
-                        }
+            try {
+                it.processYubiKey(device)
+                if (device is NfcYubiKeyDevice) {
+                    device.remove {
+                        appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
                     }
-                } catch (e: Throwable) {
-                    logger.error("Error processing YubiKey in AppContextManager", e)
                 }
+            } catch (e: Throwable) {
+                logger.error("Error processing YubiKey in AppContextManager", e)
+
             }
         }
     }
 
+    private fun launchProcessYubiKey(device: YubiKeyDevice) {
+        lifecycleScope.launch {
+            processYubiKey(device)
+        }
+    }
+
     private var contextManager: AppContextManager? = null
+    private lateinit var deviceManager: DeviceManager
     private lateinit var appContext: AppContext
     private lateinit var dialogManager: DialogManager
     private lateinit var appPreferences: AppPreferences
@@ -313,18 +355,21 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
     private lateinit var appLinkMethodChannel: AppLinkMethodChannel
+    private lateinit var messenger: BinaryMessenger
+    private lateinit var managementHandler: ManagementHandler
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        val messenger = flutterEngine.dartExecutor.binaryMessenger
-
+        messenger = flutterEngine.dartExecutor.binaryMessenger
         flutterLog = FlutterLog(messenger)
+        deviceManager = DeviceManager(this, viewModel)
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
+        managementHandler = ManagementHandler(messenger, deviceManager, dialogManager)
 
         nfcActivityListener.appMethodChannel = appMethodChannel
 
@@ -332,29 +377,67 @@ class MainActivity : FlutterFragmentActivity() {
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
             oathViewModel.sessionState.streamTo(this, messenger, "android.oath.sessionState"),
             oathViewModel.credentials.streamTo(this, messenger, "android.oath.credentials"),
+            fidoViewModel.sessionState.streamTo(this, messenger, "android.fido.sessionState"),
+            fidoViewModel.credentials.streamTo(this, messenger, "android.fido.credentials"),
+            fidoViewModel.fingerprints.streamTo(this, messenger, "android.fido.fingerprints"),
+            fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
+            fidoViewModel.registerFingerprint.streamTo(this, messenger, "android.fido.registerFp"),
         )
 
         viewModel.appContext.observe(this) {
+            switchContext(it)
+            viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
+        }
+    }
+
+    private fun switchContext(appContext: OperationContext) {
+        // TODO: refactor this when more OperationContext are handled
+        // only recreate the contextManager object if it cannot be reused
+        if (appContext == OperationContext.Home ||
+            (appContext == OperationContext.Oath && contextManager is OathManager) ||
+            (appContext in listOf(
+                OperationContext.FidoPasskeys,
+                OperationContext.FidoFingerprints
+            ) && contextManager is FidoManager)
+        ) {
+            // no need to dispose this context
+        } else {
             contextManager?.dispose()
-            contextManager = when (it) {
+            contextManager = null
+        }
+
+        if (contextManager == null) {
+            contextManager = when (appContext) {
                 OperationContext.Oath -> OathManager(
                     this,
                     messenger,
-                    viewModel,
+                    deviceManager,
                     oathViewModel,
                     dialogManager,
                     appPreferences,
                     nfcActivityListener
                 )
+
+                OperationContext.FidoFingerprints,
+                OperationContext.FidoPasskeys -> FidoManager(
+                    messenger,
+                    this,
+                    deviceManager,
+                    fidoViewModel,
+                    viewModel,
+                    dialogManager
+                )
+
                 else -> null
             }
-            viewModel.connectedYubiKey.value?.let(::processYubiKey)
         }
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         nfcActivityListener.appMethodChannel = null
         flutterStreams.forEach { it.close() }
+        contextManager?.dispose()
+        deviceManager.dispose()
         super.cleanUpFlutterEngine(flutterEngine)
     }
 
@@ -420,6 +503,11 @@ class MainActivity : FlutterFragmentActivity() {
                             methodCall.arguments as Boolean,
                         )
                     )
+
+                    "getPrimaryColor" -> result.success(
+                        getPrimaryColor(this@MainActivity)
+                    )
+
                     "getAndroidSdkVersion" -> result.success(
                         Build.VERSION.SDK_INT
                     )
@@ -445,7 +533,7 @@ class MainActivity : FlutterFragmentActivity() {
                     }
                     "hasCamera" -> {
                         val cameraService =
-                            getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                            getSystemService(CAMERA_SERVICE) as CameraManager
                         result.success(
                             cameraService.cameraIdList.any {
                                 cameraService.getCameraCharacteristics(it)
@@ -467,6 +555,7 @@ class MainActivity : FlutterFragmentActivity() {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)
                     }
+
                     else -> logger.warn("Unknown app method: {}", methodCall.method)
                 }
             }
@@ -502,6 +591,30 @@ class MainActivity : FlutterFragmentActivity() {
         return FLAG_SECURE != (window.attributes.flags and FLAG_SECURE)
     }
 
+    private fun getPrimaryColor(context: Context): Int? {
+        if (DynamicColors.isDynamicColorAvailable()) {
+            val dynamicColorContext = DynamicColors.wrapContextIfAvailable(
+                context,
+                com.google.android.material.R.style.ThemeOverlay_Material3_DynamicColors_DayNight
+            )
+
+            val typedArray = dynamicColorContext.obtainStyledAttributes(
+                intArrayOf(
+                    android.R.attr.colorPrimary,
+                )
+            )
+            try {
+                return if (typedArray.hasValue(0))
+                    typedArray.getColor(0, 0)
+                else
+                    null
+            } finally {
+                typedArray.recycle()
+            }
+        }
+        return null
+    }
+
     @SuppressLint("SourceLockedOrientationActivity")
     private fun forcePortraitOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -511,5 +624,5 @@ class MainActivity : FlutterFragmentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
-    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only);
+    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only)
 }

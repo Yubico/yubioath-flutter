@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
+import '../../management/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../state.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
+import '../state.dart';
 
 enum ManageTarget { pin, puk, unblock }
 
 class ManagePinPukDialog extends ConsumerStatefulWidget {
   final DevicePath path;
+  final PivState pivState;
   final ManageTarget target;
-  const ManagePinPukDialog(this.path,
+  const ManagePinPukDialog(this.path, this.pivState,
       {super.key, this.target = ManageTarget.pin});
 
   @override
@@ -38,23 +46,62 @@ class ManagePinPukDialog extends ConsumerStatefulWidget {
 }
 
 class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
-  String _currentPin = '';
-  String _newPin = '';
+  final _currentPinController = TextEditingController();
+  final _currentPinFocus = FocusNode();
+  final _newPinController = TextEditingController();
+  final _newPinFocus = FocusNode();
   String _confirmPin = '';
+  bool _pinIsBlocked = false;
   bool _currentIsWrong = false;
+  bool _newIsWrong = false;
+  String? _newPinError;
   int _attemptsRemaining = -1;
+  bool _isObscureCurrent = true;
+  bool _isObscureNew = true;
+  bool _isObscureConfirm = true;
+  late final bool _defaultPinUsed;
+  late final bool _defaultPukUsed;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _defaultPinUsed =
+        widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
+    _defaultPukUsed =
+        widget.pivState.metadata?.pukMetadata.defaultValue ?? false;
+    if (widget.target == ManageTarget.pin && _defaultPinUsed) {
+      _currentPinController.text = defaultPin;
+    }
+    if (widget.target != ManageTarget.pin && _defaultPukUsed) {
+      _currentPinController.text = defaultPuk;
+    }
+  }
+
+  @override
+  void dispose() {
+    _currentPinController.dispose();
+    _currentPinFocus.dispose();
+    _newPinController.dispose();
+    _newPinFocus.dispose();
+    super.dispose();
+  }
 
   _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
+    final l10n = AppLocalizations.of(context)!;
+
     final result = await switch (widget.target) {
-      ManageTarget.pin => notifier.changePin(_currentPin, _newPin),
-      ManageTarget.puk => notifier.changePuk(_currentPin, _newPin),
-      ManageTarget.unblock => notifier.unblockPin(_currentPin, _newPin),
+      ManageTarget.pin =>
+        notifier.changePin(_currentPinController.text, _newPinController.text),
+      ManageTarget.puk =>
+        notifier.changePuk(_currentPinController.text, _newPinController.text),
+      ManageTarget.unblock =>
+        notifier.unblockPin(_currentPinController.text, _newPinController.text),
     };
 
     result.when(success: () {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
       Navigator.of(context).pop();
       showMessage(
           context,
@@ -62,26 +109,72 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             ManageTarget.puk => l10n.s_puk_set,
             _ => l10n.s_pin_set,
           });
-    }, failure: (attemptsRemaining) {
-      setState(() {
-        _attemptsRemaining = attemptsRemaining;
-        _currentIsWrong = true;
-        _currentPin = '';
-      });
+    }, failure: (reason) {
+      reason.when(
+        invalidPin: (attemptsRemaining) {
+          _currentPinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _currentPinController.text.length);
+          _currentPinFocus.requestFocus();
+          setState(() {
+            _attemptsRemaining = attemptsRemaining;
+            _currentIsWrong = true;
+            if (_attemptsRemaining == 0) {
+              _pinIsBlocked = true;
+            }
+          });
+        },
+        weakPin: () {
+          _newPinController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _newPinController.text.length);
+          _newPinFocus.requestFocus();
+          setState(() {
+            _newPinError = l10n.p_pin_puk_complexity_failure(
+                widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin);
+            _newIsWrong = true;
+          });
+        },
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isValid =
-        _newPin.isNotEmpty && _newPin == _confirmPin && _currentPin.isNotEmpty;
+    final currentPin = _currentPinController.text;
+    final currentPinLen = byteLength(currentPin);
+    final newPin = _newPinController.text;
+    final newPinLen = byteLength(newPin);
+    final isValid = !_currentIsWrong &&
+        newPin.isNotEmpty &&
+        newPin == _confirmPin &&
+        currentPin.isNotEmpty;
 
     final titleText = switch (widget.target) {
       ManageTarget.pin => l10n.s_change_pin,
       ManageTarget.puk => l10n.s_change_puk,
       ManageTarget.unblock => l10n.s_unblock_pin,
     };
+
+    final showDefaultPinUsed =
+        widget.target == ManageTarget.pin && _defaultPinUsed;
+    final showDefaultPukUsed =
+        widget.target != ManageTarget.pin && _defaultPukUsed;
+
+    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
+    final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
+        .contains(deviceData?.info.formFactor);
+
+    final fipsCapable = deviceData?.info.fipsCapable ?? 0;
+    final isFipsCapable = fipsCapable & Capability.piv.value != 0;
+
+    // Old YubiKeys allowed a 4 digit PIN
+    final currentMinPinLen = isFipsCapable
+        ? 8
+        : widget.pivState.version.isAtLeast(4, 3, 1)
+            ? 6
+            : 4;
+    final newMinPinLen = currentMinPinLen > 4 ? currentMinPinLen : 6;
 
     return ResponsiveDialog(
       title: Text(titleText),
@@ -97,58 +190,110 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //TODO fix string
             Text(widget.target == ManageTarget.pin
                 ? l10n.p_enter_current_pin_or_reset
                 : l10n.p_enter_current_puk_or_reset),
-            TextField(
-              autofocus: true,
-              obscureText: true,
+            AppTextField(
+              autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
+              obscureText: _isObscureCurrent,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(currentPin),
               autofillHints: const [AutofillHints.password],
               key: keys.pinPukField,
-              decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: widget.target == ManageTarget.pin
-                      ? l10n.s_current_pin
-                      : l10n.s_current_puk,
-                  prefixIcon: const Icon(Icons.password_outlined),
-                  errorText: _currentIsWrong
-                      ? (widget.target == ManageTarget.pin
-                          ? l10n.l_wrong_pin_attempts_remaining(
-                              _attemptsRemaining)
-                          : l10n.l_wrong_puk_attempts_remaining(
-                              _attemptsRemaining))
-                      : null,
-                  errorMaxLines: 3),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  _currentIsWrong = false;
-                  _currentPin = value;
-                });
-              },
-            ),
-            Text(l10n.p_enter_new_piv_pin_puk(
-                widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin)),
-            TextField(
-              key: keys.newPinPukField,
-              obscureText: true,
-              maxLength: 8,
-              autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              readOnly: showDefaultPinUsed || showDefaultPukUsed,
+              controller: _currentPinController,
+              focusNode: _currentPinFocus,
+              enabled: !_pinIsBlocked,
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: widget.target == ManageTarget.puk
-                    ? l10n.s_new_puk
-                    : l10n.s_new_pin,
-                prefixIcon: const Icon(Icons.password_outlined),
-                // Old YubiKeys allowed a 4 digit PIN
-                enabled: _currentPin.length >= 4,
+                helperText: showDefaultPinUsed
+                    ? l10n.l_default_pin_used
+                    : showDefaultPukUsed
+                        ? l10n.l_default_puk_used
+                        : null,
+                labelText: widget.target == ManageTarget.pin
+                    ? l10n.s_current_pin
+                    : l10n.s_current_puk,
+                errorText: _pinIsBlocked
+                    ? (widget.target == ManageTarget.pin && !isBio
+                        ? l10n.l_piv_pin_blocked
+                        : l10n.l_piv_pin_puk_blocked)
+                    : (_currentIsWrong
+                        ? (widget.target == ManageTarget.pin
+                            ? l10n.l_wrong_pin_attempts_remaining(
+                                _attemptsRemaining)
+                            : l10n.l_wrong_puk_attempts_remaining(
+                                _attemptsRemaining))
+                        : null),
+                errorMaxLines: 3,
+                prefixIcon: const Icon(Symbols.password),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureCurrent
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureCurrent = !_isObscureCurrent;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureCurrent ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
-                  _newPin = value;
+                  _currentIsWrong = false;
+                });
+              },
+            ).init(),
+            Text(hasPinComplexity
+                ? l10n.p_enter_new_piv_pin_puk_complexity_active(
+                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                    newMinPinLen,
+                    '123456')
+                : l10n.p_enter_new_piv_pin_puk(
+                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                    newMinPinLen)),
+            AppTextField(
+              key: keys.newPinPukField,
+              autofocus: showDefaultPinUsed || showDefaultPukUsed,
+              obscureText: _isObscureNew,
+              controller: _newPinController,
+              focusNode: _newPinFocus,
+              maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(newPin),
+              autofillHints: const [AutofillHints.newPassword],
+              decoration: AppInputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: widget.target == ManageTarget.puk
+                    ? l10n.s_new_puk
+                    : l10n.s_new_pin,
+                errorText: _newIsWrong ? _newPinError : null,
+                prefixIcon: const Icon(Symbols.password),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureNew
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureNew = !_isObscureNew;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
+                enabled: currentPinLen >= currentMinPinLen ||
+                    (isFipsCapable && showDefaultPinUsed),
+              ),
+              textInputAction: TextInputAction.next,
+              onChanged: (value) {
+                setState(() {
+                  _newIsWrong = false;
                 });
               },
               onSubmitted: (_) {
@@ -156,19 +301,42 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _submit();
                 }
               },
-            ),
-            TextField(
+            ).init(),
+            AppTextField(
               key: keys.confirmPinPukField,
-              obscureText: true,
+              obscureText: _isObscureConfirm,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_confirmPin),
               autofillHints: const [AutofillHints.newPassword],
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_confirm_puk
                     : l10n.s_confirm_pin,
-                prefixIcon: const Icon(Icons.password_outlined),
-                enabled: _currentPin.length >= 4 && _newPin.length >= 6,
+                prefixIcon: const Icon(Symbols.password),
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscureConfirm
+                      ? Symbols.visibility
+                      : Symbols.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isObscureConfirm = !_isObscureConfirm;
+                    });
+                  },
+                  tooltip: widget.target == ManageTarget.pin
+                      ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
+                      : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
+                ),
+                enabled: newPinLen >= newMinPinLen,
+                errorText:
+                    newPinLen == _confirmPin.length && newPin != _confirmPin
+                        ? (widget.target == ManageTarget.pin ||
+                                widget.target == ManageTarget.unblock
+                            ? l10n.l_pin_mismatch
+                            : l10n.l_puk_mismatch)
+                        : null,
+                helperText: '', // Prevents resizing when errorText shown
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {
@@ -181,7 +349,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

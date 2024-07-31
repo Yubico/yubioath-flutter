@@ -18,10 +18,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # This field is updated by running ./set-version.py <version>
 # DO NOT MANUALLY EDIT THIS!
-version: 6.3.1-dev.0+60301
+version: 7.0.2-dev.0+70002
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.4.3 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -34,7 +34,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.1
+  intl: ^0.19.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -44,53 +44,64 @@ dependencies:
   args: ^2.4.2
   async: ^2.8.2
   logging: ^1.2.0
-  collection: ^1.16.0
-  shared_preferences: ^2.1.2
-  flutter_riverpod: ^2.3.10
+  collection: ^1.17.2
+  shared_preferences: ^2.2.2
+  flutter_riverpod: ^2.5.1
   json_annotation: ^4.8.1
-  freezed_annotation: ^2.2.0
-  window_manager: ^0.3.2
+  freezed_annotation: ^2.4.1
+  window_manager:
+    git:
+      url: https://github.com/fdennis/window_manager.git
+      ref: 2272d45bcf46d7e2b452a038906fbc85df3ce83d
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   screen_retriever: ^0.1.6
   desktop_drop: ^0.4.4
-  url_launcher: ^6.1.7
-  path_provider: ^2.1.0
-  vector_graphics: ^1.1.7
-  vector_graphics_compiler: ^1.1.7
+  url_launcher: ^6.2.1
+  path_provider: ^2.1.1
+  vector_graphics: ^1.1.9+1
+  vector_graphics_compiler: ^1.1.9+1
   path: ^1.8.2
-  file_picker: ^5.3.2
-  archive: ^3.3.8
+  file_picker: ^8.0.0+1
+  archive: ^3.4.9
   crypto: ^3.0.2
   tray_manager: ^0.2.0
   local_notifier: ^0.1.5
   io: ^1.0.4
   base32: ^2.1.3
   convert: ^3.1.1
+  material_symbols_icons: ^4.2719.3
 
 dev_dependencies:
   integration_test:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  test_res:
+    path: integration_test/test_res
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.1
+  flutter_lints: ^4.0.0
 
-  build_runner: ^2.4.5
-  freezed: ^2.4.2
-  json_serializable: ^6.7.0
+  build_runner: ^2.4.8
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
+  analyzer:
+  analyzer_plugin:
+  custom_lint_builder:
+  custom_lint:
+  lint:
+    path: lint
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -143,3 +154,5 @@ flutter:
           weight: 300
         - asset: assets/fonts/Roboto-Thin.ttf
           weight: 100
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700

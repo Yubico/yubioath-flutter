@@ -19,28 +19,34 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
+import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
-import '../message.dart';
+import '../../management/models.dart';
 import '../state.dart';
-import 'graphics.dart';
+import 'elevate_fido_buttons.dart';
 import 'message_page.dart';
 
 class AppFailurePage extends ConsumerWidget {
-  final Widget? title;
   final Object cause;
-  const AppFailurePage({this.title, required this.cause, super.key}) : super();
+  const AppFailurePage({required this.cause, super.key}) : super();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final reason = cause;
 
-    Widget? graphic = const Icon(Icons.error);
-    String? header = l10n.l_error_occured;
+    Widget? graphic = Icon(Symbols.error,
+        size: 96, color: Theme.of(context).colorScheme.error);
+    String? header = l10n.l_error_occurred;
     String? message = reason.toString();
+    String? title;
+    bool centered = true;
+    List<Capability>? capabilities;
     List<Widget> actions = [];
+    String? footnote;
 
     if (reason is RpcError) {
       if (reason.status == 'connection-error') {
@@ -58,36 +64,19 @@ class AppFailurePage extends ConsumerWidget {
           case 'fido':
             if (Platform.isWindows &&
                 !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-              graphic = noPermission;
-              header = null;
+              final currentSection = ref.read(currentSectionProvider);
+              title = currentSection.getDisplayName(l10n);
+              capabilities = currentSection.capabilities;
+              header = l10n.l_admin_privileges_required;
               message = l10n.p_webauthn_elevated_permissions_required;
+              centered = false;
+              graphic = null;
               actions = [
-                ElevatedButton.icon(
-                  label: Text(l10n.s_unlock),
-                  icon: const Icon(Icons.lock_open),
-                  onPressed: () async {
-                    final closeMessage = showMessage(
-                        context, l10n.l_elevating_permissions,
-                        duration: const Duration(seconds: 30));
-                    try {
-                      if (await ref.read(rpcProvider).requireValue.elevate()) {
-                        ref.invalidate(rpcProvider);
-                      } else {
-                        await ref.read(withContextProvider)(
-                          (context) async {
-                            showMessage(
-                              context,
-                              l10n.s_permission_denied,
-                            );
-                          },
-                        );
-                      }
-                    } finally {
-                      closeMessage();
-                    }
-                  },
-                ),
+                const ElevateFidoButtons(),
               ];
+              if (isMicrosoftStore) {
+                footnote = l10n.l_ms_store_permission_note;
+              }
             }
             break;
           default:
@@ -98,11 +87,14 @@ class AppFailurePage extends ConsumerWidget {
     }
 
     return MessagePage(
+      centered: centered,
       title: title,
+      capabilities: capabilities,
       graphic: graphic,
       header: header,
       message: message,
-      actions: actions,
+      footnote: footnote,
+      actionsBuilder: (context, expanded) => actions,
     );
   }
 }

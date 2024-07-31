@@ -107,17 +107,15 @@ internal class QRScannerView(
     }
 
     private fun requestPermissions(activity: Activity) {
-        coroutineScope.launch {
-            methodChannel.invokeMethod(
-                "beforePermissionsRequest", null
-            )
+        methodChannel.invokeMethod(
+            "beforePermissionsRequest", null
+        )
 
-            ActivityCompat.requestPermissions(
-                activity,
-                PERMISSIONS_TO_REQUEST,
-                PERMISSION_REQUEST_CODE
-            )
-        }
+        ActivityCompat.requestPermissions(
+            activity,
+            PERMISSIONS_TO_REQUEST,
+            PERMISSION_REQUEST_CODE
+        )
     }
 
     private val qrScannerView = View.inflate(context, R.layout.qr_scanner_view, null)

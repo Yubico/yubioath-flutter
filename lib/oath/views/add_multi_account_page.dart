@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
-import 'package:yubico_authenticator/exception/apdu_exception.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
-import '../../app/models.dart';
-import '../../core/models.dart';
-import '../../desktop/models.dart';
-import '../../widgets/responsive_dialog.dart';
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../models.dart';
-import '../../app/state.dart';
-import '../../core/state.dart';
-import '../state.dart';
+import '../../app/logging.dart';
 import '../../app/message.dart';
-
+import '../../app/models.dart';
+import '../../app/state.dart';
+import '../../core/models.dart';
+import '../../core/state.dart';
+import '../../desktop/models.dart';
+import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../widgets/responsive_dialog.dart';
+import '../models.dart';
+import '../state.dart';
 import 'rename_account_dialog.dart';
 
 final _log = Logger('oath.views.list_screen');
@@ -103,9 +102,8 @@ class _OathAddMultiAccountPageState
                                     });
                                   }
                                 : null,
-                            icon: Icon(touch
-                                ? Icons.touch_app
-                                : Icons.touch_app_outlined)),
+                            icon: Icon(Symbols.touch_app,
+                                fill: touch ? 1.0 : 0.0)),
                       ),
                     Semantics(
                       label: l10n.s_rename_account,
@@ -121,7 +119,7 @@ class _OathAddMultiAccountPageState
                               (context) async => await showBlurDialog(
                                     context: context,
                                     builder: (context) => RenameAccountDialog(
-                                      device: node!,
+                                      devicePath: node!.path,
                                       issuer: cred.issuer,
                                       name: cred.name,
                                       oathType: cred.oathType,
@@ -150,7 +148,7 @@ class _OathAddMultiAccountPageState
                         },
                         icon: IconTheme(
                             data: IconTheme.of(context),
-                            child: const Icon(Icons.edit_outlined)),
+                            child: const Icon(Symbols.edit)),
                       ),
                     ),
                   ]),
@@ -189,7 +187,7 @@ class _OathAddMultiAccountPageState
             )
           ]
               .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: e,
                   ))
               .toList(),
@@ -224,7 +222,7 @@ class _OathAddMultiAccountPageState
     if (widget.state != null) {
       final credsToAdd =
           _credStates.values.where((element) => element.$1).length;
-      final capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
+      final capacity = widget.state!.capacity;
       return (credsToAdd > 0) &&
           (capacity == null || (_numCreds! + credsToAdd <= capacity));
     } else {

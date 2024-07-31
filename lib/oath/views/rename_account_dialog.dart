@@ -18,25 +18,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../desktop/models.dart';
+import '../../exception/cancellation_exception.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'utils.dart';
 
 final _log = Logger('oath.view.rename_account_dialog');
 
 class RenameAccountDialog extends ConsumerStatefulWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final String? issuer;
   final String name;
   final OathType oathType;
@@ -45,7 +48,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
   final Future<dynamic> Function(String? issuer, String name) rename;
 
   const RenameAccountDialog({
-    required this.device,
+    required this.devicePath,
     required this.issuer,
     required this.name,
     required this.oathType,
@@ -61,11 +64,11 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 
   factory RenameAccountDialog.forOathCredential(
       WidgetRef ref,
-      DeviceNode device,
+      DevicePath devicePath,
       OathCredential credential,
       List<(String? issuer, String name)> existing) {
     return RenameAccountDialog(
-      device: device,
+      devicePath: devicePath,
       issuer: credential.issuer,
       name: credential.name,
       oathType: credential.oathType,
@@ -76,7 +79,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
         try {
           // Rename credentials
           final renamed = await ref
-              .read(credentialListProvider(device.path).notifier)
+              .read(credentialListProvider(devicePath).notifier)
               .renameAccount(credential, issuer, name);
 
           // Update favorite
@@ -171,18 +174,18 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 ? '${widget.issuer} (${widget.name})'
                 : widget.name)),
             Text(l10n.p_rename_will_change_account_displayed),
-            TextFormField(
+            AppTextFormField(
               initialValue: _issuer,
               enabled: issuerRemaining > 0,
               maxLength: issuerRemaining > 0 ? issuerRemaining : null,
               buildCounter: buildByteCounterFor(_issuer),
               inputFormatters: [limitBytesLength(issuerRemaining)],
               key: keys.issuerField,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
-                prefixIcon: const Icon(Icons.business_outlined),
+                prefixIcon: const Icon(Symbols.business),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -190,14 +193,14 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                   _issuer = value.trim();
                 });
               },
-            ),
-            TextFormField(
+            ).init(),
+            AppTextFormField(
               initialValue: _name,
               maxLength: nameRemaining,
               inputFormatters: [limitBytesLength(nameRemaining)],
               buildCounter: buildByteCounterFor(_name),
               key: keys.nameField,
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_account_name,
                 helperText: '', // Prevents dialog resizing when disabled
@@ -206,7 +209,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                     : !isUnique
                         ? l10n.l_name_already_exists
                         : null,
-                prefixIcon: const Icon(Icons.people_alt_outlined),
+                prefixIcon: const Icon(Symbols.people_alt),
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {
@@ -219,7 +222,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

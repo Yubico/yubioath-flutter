@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
+import '../../core/state.dart';
+import '../../desktop/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart';
 import '../models.dart';
+import 'add_account_dialog.dart';
 import 'add_account_page.dart';
 import 'add_multi_account_page.dart';
 
@@ -94,6 +103,78 @@ Future<void> handleUri(
       context: context,
       builder: (context) => OathAddMultiAccountPage(devicePath, state, creds,
           key: migrateAccountAction),
+    );
+  }
+}
+
+const maxQrFileSize = 5 * 1024 * 1024;
+
+Future<String?> handleQrFile(File file, BuildContext context,
+    WithContext withContext, QrScanner qrScanner) async {
+  final l10n = AppLocalizations.of(context)!;
+  if (await file.length() > maxQrFileSize) {
+    await withContext((context) async {
+      showMessage(
+          context,
+          l10n.l_qr_not_read(
+              l10n.l_qr_file_too_large('${maxQrFileSize / (1024 * 1024)} MB')));
+    });
+    return null;
+  }
+
+  final fileData = await file.readAsBytes();
+  final b64Image = base64Encode(fileData);
+
+  try {
+    final qrData = await qrScanner.scanQr(b64Image);
+    if (qrData == null) {
+      await withContext((context) async {
+        showMessage(context, l10n.l_qr_not_found);
+      });
+      return null;
+    }
+    return qrData;
+  } catch (e) {
+    final String errorMessage;
+    if (e is RpcError) {
+      if (e.status == 'invalid-image') {
+        errorMessage = l10n.l_qr_invalid_image_file;
+      } else {
+        errorMessage = e.message;
+      }
+    } else {
+      errorMessage = e.toString();
+    }
+    await withContext((context) async {
+      showMessage(context, l10n.l_qr_not_read(errorMessage));
+    });
+    return null;
+  }
+}
+
+Future<void> addOathAccount(BuildContext context, WidgetRef ref,
+    [DevicePath? devicePath, OathState? oathState]) async {
+  if (isAndroid) {
+    final l10n = AppLocalizations.of(context)!;
+    final withContext = ref.read(withContextProvider);
+    final qrScanner = ref.read(qrScannerProvider);
+    if (qrScanner != null) {
+      try {
+        final qrData = await qrScanner.scanQr();
+        await AndroidQrScanner.handleScannedData(
+            qrData, withContext, qrScanner, l10n);
+      } on CancellationException catch (_) {
+        //ignored - user cancelled
+        return;
+      }
+    } else {
+      // no QR scanner - enter data manually
+      await AndroidQrScanner.showAccountManualEntryDialog(withContext, l10n);
+    }
+  } else {
+    await showBlurDialog(
+      context: context,
+      builder: (context) => AddAccountDialog(devicePath, oathState),
     );
   }
 }

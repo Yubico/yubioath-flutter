@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../../management/models.dart';
 import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
-  final Widget? title;
+  final String? title;
   final Widget? graphic;
   final String? header;
   final String? message;
-  final List<Widget> actions;
+  final String? footnote;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
+  final List<Widget> Function(BuildContext context, bool expanded)?
+      actionsBuilder;
+  final Widget? fileDropOverlay;
+  final Function(File file)? onFileDropped;
+  final List<Capability>? capabilities;
   final bool keyActionsBadge;
+  final bool centered;
 
   const MessagePage({
     super.key,
@@ -35,36 +44,66 @@ class MessagePage extends StatelessWidget {
     this.graphic,
     this.header,
     this.message,
-    this.actions = const [],
+    this.footnote,
     this.keyActionsBuilder,
     this.actionButtonBuilder,
+    this.actionsBuilder,
+    this.fileDropOverlay,
+    this.onFileDropped,
     this.delayedContent = false,
     this.keyActionsBadge = false,
+    this.capabilities,
+    this.centered = false,
   });
 
   @override
   Widget build(BuildContext context) => AppPage(
         title: title,
-        centered: true,
-        actions: actions,
+        capabilities: capabilities,
+        footnote: footnote,
+        centered: centered,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
+        fileDropOverlay: fileDropOverlay,
+        onFileDropped: onFileDropped,
         actionButtonBuilder: actionButtonBuilder,
+        actionsBuilder: actionsBuilder,
         delayedContent: delayedContent,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              if (graphic != null) graphic!,
-              if (header != null)
-                Text(header!,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 12.0),
-              if (message != null) ...[
-                Text(message!, textAlign: TextAlign.center),
+        builder: (context, _) => Padding(
+          padding: EdgeInsets.only(
+              left: 16.0,
+              top: 0.0,
+              right: 16.0,
+              bottom: centered && actionsBuilder == null ? 96 : 0),
+          child: SizedBox(
+            width: centered ? 250 : 350,
+            child: Column(
+              crossAxisAlignment: centered
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
+              children: [
+                if (graphic != null) ...[
+                  graphic!,
+                  const SizedBox(height: 16.0)
+                ],
+                if (header != null)
+                  Text(header!,
+                      textAlign: centered ? TextAlign.center : TextAlign.left,
+                      style: Theme.of(context).textTheme.titleLarge),
+                if (message != null) ...[
+                  const SizedBox(height: 12.0),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: Text(message!,
+                        textAlign: centered ? TextAlign.center : TextAlign.left,
+                        style: Theme.of(context).textTheme.titleSmall?.apply(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );

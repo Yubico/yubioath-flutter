@@ -6,36 +6,40 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$Success _$$SuccessFromJson(Map<String, dynamic> json) => _$Success(
+_$SuccessImpl _$$SuccessImplFromJson(Map<String, dynamic> json) =>
+    _$SuccessImpl(
       json['body'] as Map<String, dynamic>,
       $type: json['kind'] as String?,
     );
 
-Map<String, dynamic> _$$SuccessToJson(_$Success instance) => <String, dynamic>{
+Map<String, dynamic> _$$SuccessImplToJson(_$SuccessImpl instance) =>
+    <String, dynamic>{
       'body': instance.body,
       'kind': instance.$type,
     };
 
-_$Signal _$$SignalFromJson(Map<String, dynamic> json) => _$Signal(
+_$SignalImpl _$$SignalImplFromJson(Map<String, dynamic> json) => _$SignalImpl(
       json['status'] as String,
       json['body'] as Map<String, dynamic>,
       $type: json['kind'] as String?,
     );
 
-Map<String, dynamic> _$$SignalToJson(_$Signal instance) => <String, dynamic>{
+Map<String, dynamic> _$$SignalImplToJson(_$SignalImpl instance) =>
+    <String, dynamic>{
       'status': instance.status,
       'body': instance.body,
       'kind': instance.$type,
     };
 
-_$RpcError _$$RpcErrorFromJson(Map<String, dynamic> json) => _$RpcError(
+_$RpcErrorImpl _$$RpcErrorImplFromJson(Map<String, dynamic> json) =>
+    _$RpcErrorImpl(
       json['status'] as String,
       json['message'] as String,
       json['body'] as Map<String, dynamic>,
       $type: json['kind'] as String?,
     );
 
-Map<String, dynamic> _$$RpcErrorToJson(_$RpcError instance) =>
+Map<String, dynamic> _$$RpcErrorImplToJson(_$RpcErrorImpl instance) =>
     <String, dynamic>{
       'status': instance.status,
       'message': instance.message,
@@ -43,12 +47,13 @@ Map<String, dynamic> _$$RpcErrorToJson(_$RpcError instance) =>
       'kind': instance.$type,
     };
 
-_$_RpcState _$$_RpcStateFromJson(Map<String, dynamic> json) => _$_RpcState(
+_$RpcStateImpl _$$RpcStateImplFromJson(Map<String, dynamic> json) =>
+    _$RpcStateImpl(
       json['version'] as String,
       json['is_admin'] as bool,
     );
 
-Map<String, dynamic> _$$_RpcStateToJson(_$_RpcState instance) =>
+Map<String, dynamic> _$$RpcStateImplToJson(_$RpcStateImpl instance) =>
     <String, dynamic>{
       'version': instance.version,
       'is_admin': instance.isAdmin,

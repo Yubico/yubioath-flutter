@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,23 +57,39 @@ enum _DialogDescription {
   oathCalculateCode,
   oathActionFailure,
   oathAddMultipleAccounts,
+  // FIDO descriptions
+  fidoResetApplet,
+  fidoUnlockSession,
+  fidoSetPin,
+  fidoDeleteCredential,
+  fidoDeleteFingerprint,
+  fidoRenameFingerprint,
+  fidoActionFailure,
+  // Others
   invalid;
 
   static const int dialogDescriptionOathIndex = 100;
+  static const int dialogDescriptionFidoIndex = 200;
 
   static _DialogDescription fromId(int? id) =>
       const {
-        dialogDescriptionOathIndex + 0: _DialogDescription.oathResetApplet,
-        dialogDescriptionOathIndex + 1: _DialogDescription.oathUnlockSession,
-        dialogDescriptionOathIndex + 2: _DialogDescription.oathSetPassword,
-        dialogDescriptionOathIndex + 3: _DialogDescription.oathUnsetPassword,
-        dialogDescriptionOathIndex + 4: _DialogDescription.oathAddAccount,
-        dialogDescriptionOathIndex + 5: _DialogDescription.oathRenameAccount,
-        dialogDescriptionOathIndex + 6: _DialogDescription.oathDeleteAccount,
-        dialogDescriptionOathIndex + 7: _DialogDescription.oathCalculateCode,
-        dialogDescriptionOathIndex + 8: _DialogDescription.oathActionFailure,
-        dialogDescriptionOathIndex + 9:
-            _DialogDescription.oathAddMultipleAccounts
+        dialogDescriptionOathIndex + 0: oathResetApplet,
+        dialogDescriptionOathIndex + 1: oathUnlockSession,
+        dialogDescriptionOathIndex + 2: oathSetPassword,
+        dialogDescriptionOathIndex + 3: oathUnsetPassword,
+        dialogDescriptionOathIndex + 4: oathAddAccount,
+        dialogDescriptionOathIndex + 5: oathRenameAccount,
+        dialogDescriptionOathIndex + 6: oathDeleteAccount,
+        dialogDescriptionOathIndex + 7: oathCalculateCode,
+        dialogDescriptionOathIndex + 8: oathActionFailure,
+        dialogDescriptionOathIndex + 9: oathAddMultipleAccounts,
+        dialogDescriptionFidoIndex + 0: fidoResetApplet,
+        dialogDescriptionFidoIndex + 1: fidoUnlockSession,
+        dialogDescriptionFidoIndex + 2: fidoSetPin,
+        dialogDescriptionFidoIndex + 3: fidoDeleteCredential,
+        dialogDescriptionFidoIndex + 4: fidoDeleteFingerprint,
+        dialogDescriptionFidoIndex + 5: fidoRenameFingerprint,
+        dialogDescriptionFidoIndex + 6: fidoActionFailure,
       }[id] ??
       _DialogDescription.invalid;
 }
@@ -119,7 +135,7 @@ class _DialogProvider {
   String _getTitle(BuildContext context, int? titleId) {
     final l10n = AppLocalizations.of(context)!;
     return switch (_DialogTitle.fromId(titleId)) {
-      _DialogTitle.tapKey => l10n.s_nfc_dialog_tap_key,
+      _DialogTitle.tapKey => l10n.l_nfc_dialog_tap_key,
       _DialogTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
       _DialogTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
       _ => ''
@@ -144,7 +160,17 @@ class _DialogProvider {
       _DialogDescription.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
       _DialogDescription.oathAddMultipleAccounts =>
         l10n.s_nfc_dialog_oath_add_multiple_accounts,
-      _ => ' '
+      _DialogDescription.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
+      _DialogDescription.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
+      _DialogDescription.fidoSetPin => l10n.l_nfc_dialog_fido_set_pin,
+      _DialogDescription.fidoDeleteCredential =>
+        l10n.s_nfc_dialog_fido_delete_credential,
+      _DialogDescription.fidoDeleteFingerprint =>
+        l10n.s_nfc_dialog_fido_delete_fingerprint,
+      _DialogDescription.fidoRenameFingerprint =>
+        l10n.s_nfc_dialog_fido_rename_fingerprint,
+      _DialogDescription.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
+      _ => ''
     };
   }
 

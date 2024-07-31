@@ -18,12 +18,12 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
-import 'package:yubico_authenticator/management/models.dart';
 
+import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../management/models.dart';
 import '../../management/state.dart';
 import '../rpc.dart';
 import '../state.dart';
@@ -100,9 +100,6 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       {String currentLockCode = '',
       String newLockCode = '',
       bool reboot = false}) async {
-    if (reboot) {
-      state = const AsyncValue.loading();
-    }
     await _session.command('configure', target: _subpath, params: {
       ...config.toJson(),
       'cur_lock_code': currentLockCode,
@@ -110,5 +107,10 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
       'reboot': reboot,
     });
     ref.read(attachedDevicesProvider.notifier).refresh();
+  }
+
+  @override
+  Future<void> deviceReset() async {
+    await _session.command('device_reset', target: ['ccid', 'management']);
   }
 }

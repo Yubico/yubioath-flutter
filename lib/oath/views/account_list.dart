@@ -18,14 +18,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../widgets/list_title.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_view.dart';
 
 class AccountList extends ConsumerWidget {
   final List<OathPair> accounts;
-  const AccountList(this.accounts, {super.key});
+  final bool expanded;
+  final OathCredential? selected;
+  const AccountList(this.accounts,
+      {super.key, required this.expanded, this.selected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,16 +49,25 @@ class AccountList extends ConsumerWidget {
       policy: WidgetOrderTraversalPolicy(),
       child: Column(
         children: [
-          if (pinnedCreds.isNotEmpty) ListTitle(l10n.s_pinned),
           ...pinnedCreds.map(
             (entry) => AccountView(
               entry.credential,
+              expanded: expanded,
+              selected: entry.credential == selected,
             ),
           ),
-          if (creds.isNotEmpty) ListTitle(l10n.s_accounts),
+          if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+              ),
+            ),
           ...creds.map(
             (entry) => AccountView(
               entry.credential,
+              expanded: expanded,
+              selected: entry.credential == selected,
             ),
           ),
         ],

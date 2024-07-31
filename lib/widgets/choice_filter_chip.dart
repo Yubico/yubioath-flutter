@@ -17,24 +17,31 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class ChoiceFilterChip<T> extends StatefulWidget {
   final T value;
   final List<T> items;
+  final String? tooltip;
   final Widget Function(T value) itemBuilder;
   final Widget Function(T value)? labelBuilder;
   final void Function(T value)? onChanged;
   final Widget? avatar;
   final bool selected;
+  final bool? disableHover;
+  final BoxConstraints? menuConstraints;
   const ChoiceFilterChip({
     super.key,
     required this.value,
     required this.items,
     required this.itemBuilder,
     required this.onChanged,
+    this.tooltip,
     this.avatar,
     this.selected = false,
+    this.disableHover,
     this.labelBuilder,
+    this.menuConstraints,
   });
 
   @override
@@ -57,16 +64,19 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       ),
       Offset.zero & overlay.size,
     );
-
     return await showMenu(
+      constraints: widget.menuConstraints,
       context: context,
       position: position,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
       items: widget.items
           .map((e) => PopupMenuItem<T>(
+                enabled:
+                    widget.disableHover != null ? !widget.disableHover! : true,
                 value: e,
                 height: chipBox.size.height,
                 textStyle: ChipTheme.of(context).labelStyle,
@@ -79,6 +89,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
+      tooltip: widget.tooltip,
       avatar: widget.avatar,
       labelPadding: const EdgeInsets.only(left: 4),
       label: Row(
@@ -88,9 +99,9 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
           Padding(
             padding: const EdgeInsets.only(left: 6),
             child: Icon(
-              _showing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+              _showing ? Symbols.arrow_drop_up : Symbols.arrow_drop_down,
               color: ChipTheme.of(context).checkmarkColor,
-              size: 18,
+              size: 16,
             ),
           ),
         ],

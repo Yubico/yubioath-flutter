@@ -19,8 +19,8 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/models.dart';
@@ -31,9 +31,8 @@ import 'state.dart';
 
 const _usbPollDelay = Duration(milliseconds: 500);
 
-const _nfcPollDelay = Duration(milliseconds: 2500);
-const _nfcAttachPollDelay = Duration(seconds: 1);
-const _nfcDetachPollDelay = Duration(seconds: 5);
+const _nfcPollReadersDelay = Duration(milliseconds: 2500);
+const _nfcPollCardDelay = Duration(seconds: 1);
 
 final _log = Logger('desktop.devices');
 
@@ -197,7 +196,7 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
     }
 
     if (mounted) {
-      _pollTimer = Timer(_nfcPollDelay, _pollReaders);
+      _pollTimer = Timer(_nfcPollReadersDelay, _pollReaders);
     }
   }
 }
@@ -260,7 +259,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
 
   void _notifyWindowState(WindowState windowState) {
     if (windowState.active) {
-      _pollReader();
+      _pollCard();
     } else {
       _pollTimer?.cancel();
       // TODO: Should we clear the key here?
@@ -276,16 +275,23 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     super.dispose();
   }
 
-  void _pollReader() async {
+  void _pollCard() async {
     _pollTimer?.cancel();
     final node = _deviceNode!;
     try {
-      _log.debug('Polling for USB device changes...');
+      _log.debug('Polling for NFC device changes...');
       var result = await _rpc?.command('get', node.path.segments);
       if (mounted && result != null) {
         if (result['data']['present']) {
-          state = AsyncValue.data(YubiKeyData(node, result['data']['name'],
-              DeviceInfo.fromJson(result['data']['info'])));
+          final oldState = state.valueOrNull;
+          final newState = YubiKeyData(node, result['data']['name'],
+              DeviceInfo.fromJson(result['data']['info']));
+          if (oldState != null && oldState != newState) {
+            // Ensure state is cleared
+            state = const AsyncValue.loading();
+          } else {
+            state = AsyncValue.data(newState);
+          }
         } else {
           final status = result['data']['status'];
           // Only update if status is not changed
@@ -298,9 +304,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
       _log.error('Error polling NFC', jsonEncode(e));
     }
     if (mounted) {
-      _pollTimer = Timer(
-          state is AsyncData ? _nfcDetachPollDelay : _nfcAttachPollDelay,
-          _pollReader);
+      _pollTimer = Timer(_nfcPollCardDelay, _pollCard);
     }
   }
 }

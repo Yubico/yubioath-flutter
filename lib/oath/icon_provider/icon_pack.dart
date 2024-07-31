@@ -61,7 +61,8 @@ class IconPack {
         element.issuer.any((element) => element == issuer.toUpperCase()));
 
     final issuerImageFile = matching.isNotEmpty
-        ? File(join(directory.path, getLocalIconFileName(matching.first.filename)))
+        ? File(
+            join(directory.path, getLocalIconFileName(matching.first.filename)))
         : null;
 
     if (issuerImageFile != null && !issuerImageFile.existsSync()) {

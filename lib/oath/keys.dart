@@ -20,16 +20,14 @@ const _prefix = 'oath.keys';
 const _keyAction = '$_prefix.actions';
 const _accountAction = '$_prefix.account.actions';
 
-// This is global so we can access it from the global Ctrl+F shortcut.
-final searchAccountsField = GlobalKey();
-
 // Key actions
 const setOrManagePasswordAction =
     Key('$_keyAction.action.set_or_manage_password');
 const addAccountAction = Key('$_keyAction.add_account');
 const migrateAccountAction = Key('$_keyAction.migrate_account');
-const resetAction = Key('$_keyAction.reset');
+const resetButton = Key('$_keyAction.reset_button');
 const customIconsAction = Key('$_keyAction.custom_icons');
+const addAccountManuallyButton = Key('$_keyAction.add_account_manually');
 
 // Credential actions
 const copyAction = Key('$_accountAction.copy');
@@ -53,3 +51,24 @@ const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
 const savePasswordButton = Key('$_prefix.save_password');
 const removePasswordButton = Key('$_prefix.remove_password');
+
+// Filter Chips
+const requireTouchFilterChip = Key('$_prefix.require_touch_filter_chip');
+const oathTypeFilterChip = Key('$_prefix.oath_type_filter_chip');
+const oathTypeTotpFilterValue = Key('$_prefix.oath_type_totp_filter_value');
+const oathTypeHotpFilterValue = Key('$_prefix.oath_type_hotp_filter_value');
+const hashAlgorithmFilterChip = Key('$_prefix.hash_algorithm_filter_chip');
+const hashAlgorithmSha1FilterValue =
+    Key('$_prefix.hash_algorithm_sha1_filter_value');
+const hashAlgorithmSha256FilterValue =
+    Key('$_prefix.hash_algorithm_sha256_filter_value');
+const hashAlgorithmSha512FilterValue =
+    Key('$_prefix.hash_algorithm_sha512_filter_value');
+const digitsFilterChip = Key('$_prefix.digits_filter_chip');
+const digits6FilterValue = Key('$_prefix.digits_6_filter_value');
+const digits8FilterValue = Key('$_prefix.digits_8_filter_value');
+const periodFilterChip = Key('$_prefix.period_filter_chip');
+const period30Value = Key('$_prefix.period_30_filter_value');
+const period20Value = Key('$_prefix.period_20_filter_value');
+const period45Value = Key('$_prefix.period_45_filter_value');
+const period60Value = Key('$_prefix.period_60_filter_value');

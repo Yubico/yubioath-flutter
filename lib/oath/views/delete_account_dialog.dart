@@ -23,15 +23,15 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
-import '../keys.dart' as keys;
 import 'utils.dart';
 
 class DeleteAccountDialog extends ConsumerWidget {
-  final DeviceNode device;
+  final DevicePath devicePath;
   final OathCredential credential;
-  const DeleteAccountDialog(this.device, this.credential, {super.key});
+  const DeleteAccountDialog(this.devicePath, this.credential, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +44,7 @@ class DeleteAccountDialog extends ConsumerWidget {
           onPressed: () async {
             try {
               await ref
-                  .read(credentialListProvider(device.path).notifier)
+                  .read(credentialListProvider(devicePath).notifier)
                   .deleteAccount(credential);
               await ref.read(withContextProvider)(
                 (context) async {
@@ -64,10 +64,15 @@ class DeleteAccountDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_warning_delete_account),
+            Text(
+              l10n.p_warning_delete_account,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
             Text(
               l10n.p_warning_disable_credential,
-              style: Theme.of(context).textTheme.bodyLarge,
             ),
             Text(l10n.l_account(getTextName(credential))),
           ]

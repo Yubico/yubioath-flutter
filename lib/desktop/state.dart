@@ -97,7 +97,6 @@ class DesktopWindowStateNotifier extends StateNotifier<WindowState>
     } else {
       await windowManager.show();
     }
-    await windowManager.setSkipTaskbar(hidden);
     await _prefs.setBool(windowHidden, hidden);
     state = state.copyWith(hidden: hidden);
   }
@@ -159,9 +158,11 @@ class _DesktopClipboard extends AppClipboard {
 
   @override
   Future<void> setText(String toClipboard, {bool isSensitive = false}) async {
-    // Wayland requires the window to be focused to copy to clipboard
+    await Clipboard.setData(ClipboardData(text: toClipboard));
+    // Wayland may require the window to be focused to copy to clipboard
     final needsFocus = Platform.isLinux &&
-        Platform.environment['XDG_SESSION_TYPE'] == 'wayland';
+        Platform.environment['XDG_SESSION_TYPE'] == 'wayland' &&
+        Platform.environment['_YA_WL_CLIPFIX'] != null;
     var hidden = false;
     try {
       if (needsFocus && !await windowManager.isFocused()) {
@@ -216,4 +217,62 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
     state = device;
     ref.read(prefProvider).setString(_lastDevice, device?.path.key ?? '');
   }
+}
+
+CurrentSectionNotifier desktopCurrentSectionNotifier(Ref ref) {
+  final notifier = DesktopCurrentSectionNotifier(
+      ref.watch(supportedSectionsProvider), ref.watch(prefProvider));
+  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
+  }, fireImmediately: true);
+  return notifier;
+}
+
+class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
+  final List<Section> _supportedSections;
+  static const String _key = 'APP_STATE_LAST_SECTION';
+  final SharedPreferences _prefs;
+
+  DesktopCurrentSectionNotifier(this._supportedSections, this._prefs)
+      : super(_fromName(_prefs.getString(_key), _supportedSections));
+
+  @override
+  void setCurrentSection(Section section) {
+    state = section;
+    _prefs.setString(_key, section.name);
+  }
+
+  void _notifyDeviceChanged(YubiKeyData? data) {
+    if (data == null) {
+      state = _supportedSections.first;
+      return;
+    }
+
+    String? lastAppName = _prefs.getString(_key);
+    if (lastAppName != null && lastAppName != state.name) {
+      // Try switching to saved app
+      state = Section.values.firstWhere((app) => app.name == lastAppName);
+    }
+    if (state == Section.passkeys &&
+        state.getAvailability(data) != Availability.enabled) {
+      state = Section.securityKey;
+    }
+    if (state == Section.securityKey &&
+        state.getAvailability(data) != Availability.enabled) {
+      state = Section.passkeys;
+    }
+    if (state.getAvailability(data) != Availability.unsupported) {
+      // Keep current app
+      return;
+    }
+
+    state = _supportedSections.firstWhere(
+      (app) => app.getAvailability(data) == Availability.enabled,
+      orElse: () => _supportedSections.first,
+    );
+  }
+
+  static Section _fromName(String? name, List<Section> supportedSections) =>
+      supportedSections.firstWhere((element) => element.name == name,
+          orElse: () => supportedSections.first);
 }

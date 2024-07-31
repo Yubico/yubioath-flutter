@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">OTPコードがYubiKeyからクリップボードに正常にコピーされました。</string>
+    <string name="p_ndef_set_password">パスワードがYubiKeyからクリップボードに正常にコピーされました。</string>
+    <string name="p_ndef_parse_failure">YubiKeyからのOTPコードを解析できませんでした。</string>
+    <string name="p_ndef_set_clip_failure">YubiKeyからのOTPコードのコピー試行時にクリップボードにアクセスできませんでした。</string>
+</resources>

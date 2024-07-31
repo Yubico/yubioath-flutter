@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,48 +15,51 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
 import '../core/state.dart';
-import 'models.dart';
+import '../theme.dart';
 import 'features.dart' as features;
+import 'logging.dart';
+import 'models.dart';
 
 final _log = Logger('app.state');
 
 // Officially supported translations
 const officialLocales = [
   Locale('en', ''),
+  Locale('fr', ''),
+  Locale('ja', ''),
 ];
 
-// Override this to alter the set of supported apps.
-final supportedAppsProvider =
-    Provider<List<Application>>(implementedApps(Application.values));
-
-extension on Application {
+extension on Section {
   Feature get _feature => switch (this) {
-        Application.oath => features.oath,
-        Application.fido => features.fido,
-        Application.otp => features.otp,
-        Application.piv => features.piv,
-        Application.management => features.management,
-        Application.openpgp => features.openpgp,
-        Application.hsmauth => features.oath,
+        Section.home => features.home,
+        Section.accounts => features.oath,
+        Section.securityKey => features.fido,
+        Section.passkeys => features.fido,
+        Section.fingerprints => features.fingerprints,
+        Section.slots => features.otp,
+        Section.certificates => features.piv,
       };
 }
 
-List<Application> Function(Ref) implementedApps(List<Application> apps) =>
-    (ref) {
-      final hasFeature = ref.watch(featureProvider);
-      return apps.where((app) => hasFeature(app._feature)).toList();
-    };
+final supportedSectionsProvider = Provider<List<Section>>(
+  (ref) {
+    final hasFeature = ref.watch(featureProvider);
+    return Section.values
+        .where((section) => hasFeature(section._feature))
+        .toList();
+  },
+);
 
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(
@@ -117,8 +120,12 @@ final l10nProvider = Provider<AppLocalizations>(
 );
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
-  (ref) => ThemeModeNotifier(
-      ref.watch(prefProvider), ref.read(supportedThemesProvider)),
+  (ref) {
+    // initialize the keyCustomizationManager
+    ref.read(keyCustomizationManagerProvider);
+    return ThemeModeNotifier(
+        ref.watch(prefProvider), ref.read(supportedThemesProvider));
+  },
 );
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
@@ -138,6 +145,32 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
       supportedThemes.firstWhere((element) => element.name == name,
           orElse: () => supportedThemes.first);
 }
+
+final defaultColorProvider = Provider<Color>((ref) => defaultPrimaryColor);
+
+final primaryColorProvider = Provider<Color>((ref) {
+  const prefLastUsedColor = 'LAST_USED_COLOR';
+  final prefs = ref.watch(prefProvider);
+  final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+  final defaultColor = ref.watch(defaultColorProvider);
+  if (data != null) {
+    final serial = data.info.serial;
+    if (serial != null) {
+      final customization = ref.watch(keyCustomizationManagerProvider)[serial];
+      final deviceColor = customization?.color;
+      if (deviceColor != null) {
+        prefs.setInt(prefLastUsedColor, deviceColor.value);
+        return deviceColor;
+      } else {
+        prefs.remove(prefLastUsedColor);
+        return defaultColor;
+      }
+    }
+  }
+
+  final lastUsedColor = prefs.getInt(prefLastUsedColor);
+  return lastUsedColor != null ? Color(lastUsedColor) : defaultColor;
+});
 
 // Override with platform implementation
 final attachedDevicesProvider =
@@ -164,36 +197,14 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
   setCurrentDevice(DeviceNode? device);
 }
 
-final currentAppProvider =
-    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
-  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
-  }, fireImmediately: true);
-  return notifier;
-});
+final currentSectionProvider =
+    StateNotifierProvider<CurrentSectionNotifier, Section>(
+        (ref) => throw UnimplementedError());
 
-class CurrentAppNotifier extends StateNotifier<Application> {
-  final List<Application> _supportedApps;
+abstract class CurrentSectionNotifier extends StateNotifier<Section> {
+  CurrentSectionNotifier(super.initial);
 
-  CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
-
-  void setCurrentApp(Application app) {
-    state = app;
-  }
-
-  void _notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null ||
-        state.getAvailability(data) != Availability.unsupported) {
-      // Keep current app
-      return;
-    }
-
-    state = _supportedApps.firstWhere(
-      (app) => app.getAvailability(data) == Availability.enabled,
-      orElse: () => _supportedApps.first,
-    );
-  }
+  setCurrentSection(Section section);
 }
 
 abstract class QrScanner {
@@ -249,3 +260,55 @@ typedef WithContext = Future<T> Function<T>(
 
 final withContextProvider = Provider<WithContext>(
     (ref) => ref.watch(contextConsumer.notifier).withContext);
+
+final keyCustomizationManagerProvider =
+    StateNotifierProvider<KeyCustomizationNotifier, Map<int, KeyCustomization>>(
+        (ref) => KeyCustomizationNotifier(ref.watch(prefProvider)));
+
+class KeyCustomizationNotifier
+    extends StateNotifier<Map<int, KeyCustomization>> {
+  static const _prefKeyCustomizations = 'KEY_CUSTOMIZATIONS';
+  final SharedPreferences _prefs;
+
+  KeyCustomizationNotifier(this._prefs)
+      : super(_readCustomizations(_prefs.getString(_prefKeyCustomizations)));
+
+  static Map<int, KeyCustomization> _readCustomizations(String? pref) {
+    if (pref == null) {
+      return {};
+    }
+
+    try {
+      final retval = <int, KeyCustomization>{};
+      for (var element in json.decode(pref)) {
+        final keyCustomization = KeyCustomization.fromJson(element);
+        retval[keyCustomization.serial] = keyCustomization;
+      }
+      return retval;
+    } catch (e) {
+      _log.error('Failure reading customizations: $e');
+      return {};
+    }
+  }
+
+  KeyCustomization? get(int serial) {
+    _log.debug('Getting key customization for $serial');
+    return state[serial];
+  }
+
+  Future<void> set({required int serial, String? name, Color? color}) async {
+    _log.debug('Setting key customization for $serial: $name, $color');
+    if (name == null && color == null) {
+      // remove this customization
+      state = {...state..remove(serial)};
+    } else {
+      state = {
+        ...state
+          ..[serial] =
+              KeyCustomization(serial: serial, name: name, color: color)
+      };
+    }
+    await _prefs.setString(
+        _prefKeyCustomizations, json.encode(state.values.toList()));
+  }
+}

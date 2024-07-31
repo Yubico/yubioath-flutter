@@ -18,9 +18,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/shortcuts.dart';
 import '../../app/state.dart';
-import '../../app/views/fs_dialog.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/fs_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -44,7 +45,7 @@ class SlotDialog extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(
-      color: textTheme.bodySmall!.color,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
 
     final pivState = ref.watch(pivStateProvider(node.path)).valueOrNull;
@@ -58,52 +59,64 @@ class SlotDialog extends ConsumerWidget {
     }
 
     final certInfo = slotData.certInfo;
-    return registerPivActions(
-      node.path,
-      pivState,
-      slotData,
-      ref: ref,
-      builder: (context) => FocusScope(
-        autofocus: true,
-        child: FsDialog(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 48, bottom: 16),
-                child: Column(
-                  children: [
-                    Text(
-                      pivSlot.getDisplayName(l10n),
-                      style: textTheme.headlineSmall,
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                    ),
-                    if (certInfo != null) ...[
+    final metadata = slotData.metadata;
+    return PivActions(
+      devicePath: node.path,
+      pivState: pivState,
+      builder: (context) => ItemShortcuts(
+        item: slotData,
+        child: FocusScope(
+          autofocus: true,
+          child: FsDialog(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 48, bottom: 32),
+                  child: Column(
+                    children: [
                       Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: CertInfoTable(certInfo),
-                      ),
-                    ] else ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          l10n.l_no_certificate,
+                          pivSlot.getDisplayName(l10n),
+                          style: textTheme.headlineSmall,
                           softWrap: true,
                           textAlign: TextAlign.center,
-                          style: subtitleStyle,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 16.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            if (certInfo != null || metadata != null) ...[
+                              CertInfoTable(
+                                certInfo,
+                                metadata,
+                                alwaysIncludePrivate: pivState.supportsMetadata,
+                              ),
+                              if (certInfo == null) const SizedBox(height: 16),
+                            ],
+                            if (certInfo == null) ...[
+                              Text(
+                                l10n.l_no_certificate,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                style: subtitleStyle,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              ActionListSection.fromMenuActions(
-                context,
-                l10n.s_actions,
-                actions: buildSlotActions(certInfo != null, l10n),
-              ),
-            ],
+                ActionListSection.fromMenuActions(
+                  context,
+                  l10n.s_actions,
+                  actions: buildSlotActions(pivState, slotData, l10n),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2023 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
+import '../../app/models.dart';
 import '../../desktop/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 import '../state.dart';
-import '../../app/models.dart';
 
 class RenameFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -89,15 +92,15 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           children: [
             Text(l10n.q_rename_target(widget.fingerprint.label)),
             Text(l10n.p_will_change_label_fp),
-            TextFormField(
+            AppTextFormField(
               initialValue: _label,
               maxLength: 15,
               inputFormatters: [limitBytesLength(15)],
               buildCounter: buildByteCounterFor(_label),
-              decoration: InputDecoration(
+              decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: l10n.s_label,
-                prefixIcon: const Icon(Icons.fingerprint_outlined),
+                labelText: l10n.s_name,
+                prefixIcon: const Icon(Symbols.fingerprint),
               ),
               onChanged: (value) {
                 setState(() {
@@ -109,7 +112,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
                   _submit();
                 }
               },
-            ),
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

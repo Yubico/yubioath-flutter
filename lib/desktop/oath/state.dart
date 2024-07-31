@@ -19,9 +19,10 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
@@ -207,6 +208,7 @@ extension on OathCredential {
 }
 
 const String _steamCharTable = '23456789BCDFGHJKMNPQRTVWXY';
+
 String _formatSteam(String response) {
   final offset = int.parse(response.substring(response.length - 1), radix: 16);
   var number =
@@ -225,6 +227,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
+
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
       : super();
 
@@ -263,7 +266,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
               final l10n = AppLocalizations.of(context)!;
               return promptUserInteraction(
                 context,
-                icon: const Icon(Icons.touch_app),
+                icon: const Icon(Symbols.touch_app),
                 title: l10n.s_touch_required,
                 description: l10n.l_touch_button_now,
                 headless: headless,
@@ -292,7 +295,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
         code = OathCode.fromJson(result);
       }
       _log.debug('Calculate', jsonEncode(code));
-      if (update && mounted) {
+      if (update && mounted && state != null) {
         final creds = state!.toList();
         final i = creds.indexWhere((e) => e.credential.id == credential.id);
         state = creds..[i] = creds[i].copyWith(code: code);

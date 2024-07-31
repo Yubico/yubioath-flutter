@@ -14,76 +14,215 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../management/models.dart';
 import '../../widgets/list_title.dart';
+import '../features.dart' as features;
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
-import '../features.dart' as features;
 import 'actions.dart';
+import 'cert_info_view.dart';
 import 'key_actions.dart';
 import 'slot_dialog.dart';
 
-class PivScreen extends ConsumerWidget {
+class PivScreen extends ConsumerStatefulWidget {
   final DevicePath devicePath;
 
-  const PivScreen(this.devicePath, {super.key});
+  PivScreen(this.devicePath) : super(key: ObjectKey(devicePath));
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _PivScreenState();
+}
+
+class _PivScreenState extends ConsumerState<PivScreen> {
+  SlotId? _selected;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
-    return ref.watch(pivStateProvider(devicePath)).when(
+    return ref.watch(pivStateProvider(widget.devicePath)).when(
           loading: () => MessagePage(
-            title: Text(l10n.s_piv),
+            title: l10n.s_certificates,
+            capabilities: const [Capability.piv],
+            centered: true,
             graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
-            title: Text(l10n.s_piv),
             cause: error,
           ),
           data: (pivState) {
-            final pivSlots = ref.watch(pivSlotsProvider(devicePath)).asData;
-            return AppPage(
-              title: Text(l10n.s_piv),
-              keyActionsBuilder: hasFeature(features.actions)
-                  ? (context) =>
-                      pivBuildActions(context, devicePath, pivState, ref)
-                  : null,
-              child: Column(
-                children: [
-                  ListTitle(l10n.s_certificates),
-                  if (pivSlots?.hasValue == true)
-                    ...pivSlots!.value.map((e) => registerPivActions(
-                          devicePath,
-                          pivState,
-                          e,
-                          ref: ref,
-                          actions: {
-                            OpenIntent:
-                                CallbackAction<OpenIntent>(onInvoke: (_) async {
-                              await showBlurDialog(
-                                context: context,
-                                barrierColor: Colors.transparent,
-                                builder: (context) => SlotDialog(e.slot),
-                              );
-                              return null;
-                            }),
-                          },
-                          builder: (context) => _CertificateListItem(e),
-                        )),
-                ],
+            final pivSlots =
+                ref.watch(pivSlotsProvider(widget.devicePath)).asData;
+            final selected = _selected != null
+                ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
+                : null;
+            final normalSlots = pivSlots?.value
+                    .where((element) => !element.slot.isRetired)
+                    .toList() ??
+                [];
+            final shownRetiredSlots = pivSlots?.value
+                    .where((element) =>
+                        element.slot.isRetired &&
+                        (element.certInfo != null || element.metadata != null))
+                    .toList() ??
+                [];
+            final theme = Theme.of(context);
+            final textTheme = theme.textTheme;
+            // This is what ListTile uses for subtitle
+            final subtitleStyle = textTheme.bodyMedium!.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            );
+            return PivActions(
+              devicePath: widget.devicePath,
+              pivState: pivState,
+              builder: (context) => Actions(
+                actions: {
+                  EscapeIntent:
+                      CallbackAction<EscapeIntent>(onInvoke: (intent) {
+                    if (selected != null) {
+                      setState(() {
+                        _selected = null;
+                      });
+                    } else {
+                      Actions.invoke(context, intent);
+                    }
+                    return false;
+                  }),
+                  OpenIntent<PivSlot>: CallbackAction<OpenIntent<PivSlot>>(
+                    onInvoke: (intent) async {
+                      await showBlurDialog(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        builder: (context) => SlotDialog(intent.target.slot),
+                      );
+                      return null;
+                    },
+                  ),
+                },
+                child: AppPage(
+                  title: l10n.s_certificates,
+                  capabilities: const [Capability.piv],
+                  detailViewBuilder: selected != null
+                      ? (context) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ListTitle(l10n.s_details),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: Card(
+                                  elevation: 0.0,
+                                  color: Theme.of(context).hoverColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 24),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          selected.slot.getDisplayName(l10n),
+                                          style: textTheme.headlineSmall,
+                                          softWrap: true,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        if (selected.certInfo != null ||
+                                            selected.metadata != null) ...[
+                                          CertInfoTable(
+                                            selected.certInfo,
+                                            selected.metadata,
+                                            alwaysIncludePrivate:
+                                                pivState.supportsMetadata,
+                                          ),
+                                          if (selected.certInfo == null)
+                                            const SizedBox(height: 16)
+                                        ],
+                                        if (selected.certInfo == null)
+                                          Text(
+                                            l10n.l_no_certificate,
+                                            softWrap: true,
+                                            textAlign: TextAlign.center,
+                                            style: subtitleStyle,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              ActionListSection.fromMenuActions(
+                                context,
+                                l10n.s_actions,
+                                actions:
+                                    buildSlotActions(pivState, selected, l10n),
+                              ),
+                            ],
+                          )
+                      : null,
+                  keyActionsBuilder: hasFeature(features.actions)
+                      ? (context) => pivBuildActions(
+                          context, widget.devicePath, pivState, ref)
+                      : null,
+                  keyActionsBadge: pivShowActionsNotifier(pivState),
+                  builder: (context, expanded) {
+                    // De-select if window is resized to be non-expanded.
+                    if (!expanded && _selected != null) {
+                      Timer.run(() {
+                        setState(() {
+                          _selected = null;
+                        });
+                      });
+                    }
+                    return Actions(
+                      actions: {
+                        if (expanded)
+                          OpenIntent<PivSlot>:
+                              CallbackAction<OpenIntent<PivSlot>>(
+                                  onInvoke: (intent) async {
+                            setState(() {
+                              _selected = intent.target.slot;
+                            });
+                            return null;
+                          }),
+                      },
+                      child: Column(
+                        children: [
+                          ...normalSlots.map(
+                            (e) => _CertificateListItem(
+                              pivState,
+                              e,
+                              expanded: expanded,
+                              selected: e == selected,
+                            ),
+                          ),
+                          ...shownRetiredSlots.map(
+                            (e) => _CertificateListItem(
+                              pivState,
+                              e,
+                              expanded: expanded,
+                              selected: e == selected,
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             );
           },
@@ -92,8 +231,13 @@ class PivScreen extends ConsumerWidget {
 }
 
 class _CertificateListItem extends ConsumerWidget {
+  final PivState pivState;
   final PivSlot pivSlot;
-  const _CertificateListItem(this.pivSlot);
+  final bool expanded;
+  final bool selected;
+
+  const _CertificateListItem(this.pivState, this.pivSlot,
+      {required this.expanded, required this.selected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,28 +247,88 @@ class _CertificateListItem extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final hasFeature = ref.watch(featureProvider);
 
-    return Semantics(
-        label: slot.getDisplayName(l10n),
-        child: AppListItem(
-          leading: CircleAvatar(
-            foregroundColor: colorScheme.onSecondary,
-            backgroundColor: colorScheme.secondary,
-            child: const Icon(Icons.approval),
-          ),
-          title: slot.getDisplayName(l10n),
-          subtitle: certInfo != null
-              // Simplify subtitle by stripping "CN=", etc.
-              ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
-              : pivSlot.hasKey == true
-                  ? l10n.l_key_no_certificate
-                  : l10n.l_no_certificate,
-          trailing: OutlinedButton(
-            onPressed: Actions.handler(context, const OpenIntent()),
-            child: const Icon(Icons.more_horiz),
-          ),
-          buildPopupActions: hasFeature(features.slots)
-              ? (context) => buildSlotActions(certInfo != null, l10n)
-              : null,
-        ));
+    return AppListItem(
+      pivSlot,
+      selected: selected,
+      key: _getAppListItemKey(slot),
+      leading: CircleAvatar(
+        foregroundColor: colorScheme.onSecondary,
+        backgroundColor: colorScheme.secondary,
+        child: Text(pivSlot.slot.hexId),
+      ),
+      title: slot.getSlotName(l10n),
+      subtitle: certInfo != null
+          // Simplify subtitle by stripping "CN=", etc.
+          ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
+          : pivSlot.metadata != null
+              ? l10n.l_key_no_certificate
+              : l10n.l_no_certificate,
+      trailing: expanded
+          ? null
+          : OutlinedButton(
+              key: _getMeatballKey(slot),
+              onPressed: Actions.handler(context, OpenIntent(pivSlot)),
+              child: const Icon(Symbols.more_horiz),
+            ),
+      tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
+      doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
+      buildPopupActions: hasFeature(features.slots)
+          ? (context) => buildSlotActions(pivState, pivSlot, l10n)
+          : null,
+    );
   }
+
+  Key _getMeatballKey(SlotId slotId) => switch (slotId) {
+        SlotId.authentication => meatballButton9a,
+        SlotId.signature => meatballButton9c,
+        SlotId.keyManagement => meatballButton9d,
+        SlotId.cardAuth => meatballButton9e,
+        SlotId.retired1 => meatballButton82,
+        SlotId.retired2 => meatballButton83,
+        SlotId.retired3 => meatballButton84,
+        SlotId.retired4 => meatballButton85,
+        SlotId.retired5 => meatballButton86,
+        SlotId.retired6 => meatballButton87,
+        SlotId.retired7 => meatballButton88,
+        SlotId.retired8 => meatballButton89,
+        SlotId.retired9 => meatballButton8a,
+        SlotId.retired10 => meatballButton8b,
+        SlotId.retired11 => meatballButton8c,
+        SlotId.retired12 => meatballButton8d,
+        SlotId.retired13 => meatballButton8e,
+        SlotId.retired14 => meatballButton8f,
+        SlotId.retired15 => meatballButton90,
+        SlotId.retired16 => meatballButton91,
+        SlotId.retired17 => meatballButton92,
+        SlotId.retired18 => meatballButton93,
+        SlotId.retired19 => meatballButton94,
+        SlotId.retired20 => meatballButton95
+      };
+
+  Key _getAppListItemKey(SlotId slotId) => switch (slotId) {
+        SlotId.authentication => appListItem9a,
+        SlotId.signature => appListItem9c,
+        SlotId.keyManagement => appListItem9d,
+        SlotId.cardAuth => appListItem9e,
+        SlotId.retired1 => appListItem82,
+        SlotId.retired2 => appListItem83,
+        SlotId.retired3 => appListItem84,
+        SlotId.retired4 => appListItem85,
+        SlotId.retired5 => appListItem86,
+        SlotId.retired6 => appListItem87,
+        SlotId.retired7 => appListItem88,
+        SlotId.retired8 => appListItem89,
+        SlotId.retired9 => appListItem8a,
+        SlotId.retired10 => appListItem8b,
+        SlotId.retired11 => appListItem8c,
+        SlotId.retired12 => appListItem8d,
+        SlotId.retired13 => appListItem8e,
+        SlotId.retired14 => appListItem8f,
+        SlotId.retired15 => appListItem90,
+        SlotId.retired16 => appListItem91,
+        SlotId.retired17 => appListItem92,
+        SlotId.retired18 => appListItem93,
+        SlotId.retired19 => appListItem94,
+        SlotId.retired20 => appListItem95
+      };
 }

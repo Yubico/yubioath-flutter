@@ -18,9 +18,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
@@ -71,24 +72,42 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (e) async {
-        final String? mgmtKey;
-        if (state.valueOrNull?.metadata?.managementKeyMetadata.defaultValue ==
-            true) {
-          mgmtKey = defaultManagementKey;
-        } else {
-          mgmtKey = ref.read(_managementKeyProvider(devicePath));
-        }
-        if (mgmtKey != null) {
-          if (await authenticate(mgmtKey)) {
-            ref.invalidateSelf();
+        try {
+          if (state.valueOrNull?.protectedKey == true) {
+            final String? pin;
+            if (state.valueOrNull?.metadata?.pinMetadata.defaultValue == true) {
+              pin = defaultPin;
+            } else {
+              pin = ref.read(_pinProvider(devicePath));
+            }
+            if (pin != null) {
+              if (await verifyPin(pin) is PinSuccess) {
+                return;
+              } else {
+                ref.read(_pinProvider(devicePath).notifier).state = null;
+              }
+            }
           } else {
-            ref.read(_managementKeyProvider(devicePath).notifier).state = null;
-            ref.invalidateSelf();
-            throw e;
+            final String? mgmtKey;
+            if (state.valueOrNull?.metadata?.managementKeyMetadata
+                    .defaultValue ==
+                true) {
+              mgmtKey = defaultManagementKey;
+            } else {
+              mgmtKey = ref.read(_managementKeyProvider(devicePath));
+            }
+            if (mgmtKey != null) {
+              if (await authenticate(mgmtKey)) {
+                return;
+              } else {
+                ref.read(_managementKeyProvider(devicePath).notifier).state =
+                    null;
+              }
+            }
           }
-        } else {
-          ref.invalidateSelf();
           throw e;
+        } finally {
+          ref.invalidateSelf();
         }
       });
     ref.onDispose(() {
@@ -126,7 +145,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
               final l10n = AppLocalizations.of(context)!;
               return promptUserInteraction(
                 context,
-                icon: const Icon(Icons.touch_app),
+                icon: const Icon(Symbols.touch_app),
                 title: l10n.s_touch_required,
                 description: l10n.l_touch_button_now,
               );
@@ -174,7 +193,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
                 final l10n = AppLocalizations.of(context)!;
                 return promptUserInteraction(
                   context,
-                  icon: const Icon(Icons.touch_app),
+                  icon: const Icon(Symbols.touch_app),
                   title: l10n.s_touch_required,
                   description: l10n.l_touch_button_now,
                 );
@@ -194,7 +213,8 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
       }
       rethrow;
     } finally {
@@ -214,7 +234,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinVerificationStatus.failure(
+            const PivPinFailureReason.weakPin());
       }
       rethrow;
     } finally {
@@ -232,7 +257,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinVerificationStatus.failure(
+            const PivPinFailureReason.weakPin());
       }
       rethrow;
     } finally {
@@ -267,7 +297,12 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(e.body['attempts_remaining']);
+        return PinVerificationStatus.failure(
+            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinVerificationStatus.failure(
+            const PivPinFailureReason.weakPin());
       }
       rethrow;
     } finally {
@@ -298,8 +333,24 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   }
 
   @override
-  Future<void> delete(SlotId slot) async {
-    await _session.command('delete', target: ['slots', slot.hexId]);
+  Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey) async {
+    await _session.command('delete',
+        target: ['slots', slot.hexId],
+        params: {'delete_cert': deleteCert, 'delete_key': deleteKey});
+    ref.invalidateSelf();
+  }
+
+  @override
+  Future<void> moveKey(SlotId source, SlotId destination, bool overwriteKey,
+      bool includeCertificate) async {
+    await _session.command('move_key', target: [
+      'slots',
+      source.hexId
+    ], params: {
+      'destination': destination.hexId,
+      'overwrite_key': overwriteKey,
+      'include_certificate': includeCertificate
+    });
     ref.invalidateSelf();
   }
 
@@ -324,7 +375,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
               final l10n = AppLocalizations.of(context)!;
               return promptUserInteraction(
                 context,
-                icon: const Icon(Icons.touch_app),
+                icon: const Icon(Symbols.touch_app),
                 title: l10n.s_touch_required,
                 description: l10n.l_touch_button_now,
               );
@@ -334,6 +385,12 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
       });
 
       final (type, subject, validFrom, validTo) = parameters.when(
+        publicKey: () => (
+          GenerateType.publicKey,
+          null,
+          null,
+          null,
+        ),
         certificate: (subject, validFrom, validTo) => (
           GenerateType.certificate,
           subject,

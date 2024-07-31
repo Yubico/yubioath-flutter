@@ -8,12 +8,12 @@ jobs:
 
     steps:
       - name: set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: 'app'
 
@@ -63,7 +63,7 @@ jobs:
         run: android/scripts/collect-artifacts.sh ${GITHUB_REF}
         working-directory: ./app
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: yubico-authenticator-android
           path: app/artifacts/*

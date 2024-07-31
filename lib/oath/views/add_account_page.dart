@@ -15,14 +15,13 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/logging.dart';
@@ -30,12 +29,16 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
-import '../../exception/apdu_exception.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
+import '../../exception/apdu_exception.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
+import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -48,14 +51,12 @@ import 'utils.dart';
 
 final _log = Logger('oath.view.add_account_page');
 
-final _secretFormatterPattern =
-    RegExp('[abcdefghijklmnopqrstuvwxyz234567 ]', caseSensitive: false);
-
 class OathAddAccountPage extends ConsumerStatefulWidget {
   final DevicePath? devicePath;
   final OathState? state;
   final List<OathCredential>? credentials;
   final CredentialData? credentialData;
+
   const OathAddAccountPage(
     this.devicePath,
     this.state, {
@@ -81,7 +82,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _digits = defaultDigits;
   int _counter = defaultCounter;
-  bool _validateSecretLength = false;
+  bool _validateSecret = false;
   bool _dataLoaded = false;
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
@@ -233,6 +234,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
+    final secretFormatValid = Format.base32.isValid(secret);
 
     // is this credentials name/issuer pair different from all other?
     final isUnique = _credentials
@@ -269,7 +271,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     }
 
     void submit() async {
-      if (secretLengthValid) {
+      if (secretLengthValid && secretFormatValid) {
         final cred = CredentialData(
           issuer: issuerText.isEmpty ? null : issuerText,
           name: nameText,
@@ -294,7 +296,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             context,
             title: l10n.l_insert_yk,
             description: l10n.s_add_account,
-            icon: const Icon(Icons.usb),
+            icon: const Icon(Symbols.usb),
             onCancel: () {
               _otpauthUri = null;
             },
@@ -302,46 +304,50 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
         }
       } else {
         setState(() {
-          _validateSecretLength = true;
+          _validateSecret = true;
         });
       }
     }
 
-    return ResponsiveDialog(
-      title: Text(l10n.s_add_account),
-      actions: [
-        TextButton(
-          onPressed: isValid ? submit : null,
-          child: Text(l10n.s_save, key: keys.saveButton),
-        ),
-      ],
-      child: FileDropTarget(
-        onFileDropped: (fileData) async {
-          final qrScanner = ref.read(qrScannerProvider);
-          if (qrScanner != null) {
-            final b64Image = base64Encode(fileData);
-            final otpauth = await qrScanner.scanQr(b64Image);
-            if (otpauth == null) {
-              if (!mounted) return;
-              showMessage(context, l10n.l_qr_not_found);
-            } else {
+    return FileDropTarget(
+      onFileDropped: (file) async {
+        final qrScanner = ref.read(qrScannerProvider);
+        final withContext = ref.read(withContextProvider);
+        if (qrScanner != null) {
+          final qrData =
+              await handleQrFile(file, context, withContext, qrScanner);
+          if (qrData != null) {
+            await withContext((context) async {
+              List<CredentialData> creds;
               try {
-                final data = CredentialData.fromOtpauth(Uri.parse(otpauth));
-                _loadCredentialData(data);
-              } catch (e) {
-                final String errorMessage;
-                // TODO: Make this cleaner than importing desktop specific RpcError.
-                if (e is RpcError) {
-                  errorMessage = e.message;
-                } else {
-                  errorMessage = e.toString();
-                }
-                if (!mounted) return;
-                showMessage(context, errorMessage);
+                creds = CredentialData.fromUri(Uri.parse(qrData));
+              } catch (_) {
+                showMessage(context, l10n.l_invalid_qr);
+                return;
               }
-            }
+              if (creds.length == 1) {
+                _loadCredentialData(creds[0]);
+              } else {
+                Navigator.of(context).pop();
+                await handleUri(context, widget.credentials, qrData,
+                    widget.devicePath, widget.state, l10n);
+              }
+            });
           }
-        },
+        }
+      },
+      overlay: FileDropOverlay(
+        title: l10n.s_add_account,
+        subtitle: l10n.l_drop_qr_description,
+      ),
+      child: ResponsiveDialog(
+        title: Text(l10n.s_add_account),
+        actions: [
+          TextButton(
+            onPressed: isValid ? submit : null,
+            child: Text(l10n.s_save, key: keys.saveButton),
+          ),
+        ],
         child: isLocked
             ? Padding(
                 padding: const EdgeInsets.symmetric(vertical: 18),
@@ -353,7 +359,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
+                    AppTextField(
                       key: keys.issuerField,
                       controller: _issuerController,
                       autofocus: widget.credentialData == null,
@@ -363,17 +369,17 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         limitBytesLength(issuerRemaining),
                       ],
                       buildCounter: buildByteCounterFor(issuerText),
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
                         helperText:
                             '', // Prevents dialog resizing when disabled
-                        prefixIcon: const Icon(Icons.business_outlined),
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
                             : issuerNoColon
                                 ? null
                                 : l10n.l_invalid_character_issuer,
+                        prefixIcon: const Icon(Symbols.business),
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -384,24 +390,24 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
-                    TextField(
+                    ).init(),
+                    AppTextField(
                       key: keys.nameField,
                       controller: _accountController,
                       maxLength: nameMaxLength,
                       buildCounter: buildByteCounterFor(nameText),
                       inputFormatters: [limitBytesLength(nameRemaining)],
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
-                        prefixIcon: const Icon(Icons.person_outline),
                         labelText: l10n.s_account_name,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '',
+                        // Prevents dialog resizing when disabled
                         errorText: (byteLength(nameText) > nameMaxLength)
                             ? '' // needs empty string to render as error
                             : isUnique
                                 ? null
                                 : l10n.l_name_already_exists,
+                        prefixIcon: const Icon(Symbols.person),
                       ),
                       textInputAction: TextInputAction.next,
                       onChanged: (value) {
@@ -412,8 +418,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
-                    TextField(
+                    ).init(),
+                    AppTextField(
                       key: keys.secretField,
                       controller: _secretController,
                       obscureText: _isObscure,
@@ -421,18 +427,20 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       // would hint to use saved passwords for this field
                       autofillHints:
                           isAndroid ? [] : const [AutofillHints.password],
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(
-                            _secretFormatterPattern)
-                      ],
-                      decoration: InputDecoration(
+                      decoration: AppInputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: l10n.s_secret_key,
+                          errorText: _validateSecret && !secretLengthValid
+                              ? l10n.s_invalid_length
+                              : _validateSecret && !secretFormatValid
+                                  ? l10n.l_invalid_format_allowed_chars(
+                                      Format.base32.allowedCharacters)
+                                  : null,
+                          prefixIcon: const Icon(Symbols.key),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscure
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: IconTheme.of(context).color,
-                            ),
+                            icon: Icon(_isObscure
+                                ? Symbols.visibility
+                                : Symbols.visibility_off),
                             onPressed: () {
                               setState(() {
                                 _isObscure = !_isObscure;
@@ -441,24 +449,18 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             tooltip: _isObscure
                                 ? l10n.s_show_secret_key
                                 : l10n.s_hide_secret_key,
-                          ),
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.key_outlined),
-                          labelText: l10n.s_secret_key,
-                          errorText: _validateSecretLength && !secretLengthValid
-                              ? l10n.s_invalid_length
-                              : null),
+                          )),
                       readOnly: _dataLoaded,
                       textInputAction: TextInputAction.done,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecretLength = false;
+                          _validateSecret = false;
                         });
                       },
                       onSubmitted: (_) {
                         if (isValid) submit();
                       },
-                    ),
+                    ).init(),
                     const SizedBox(height: 8),
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
@@ -467,6 +469,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       children: [
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
+                            key: keys.requireTouchFilterChip,
                             label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {
@@ -476,11 +479,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                             },
                           ),
                         ChoiceFilterChip<OathType>(
+                          key: keys.oathTypeFilterChip,
                           items: OathType.values,
                           value: _oathType,
                           selected: _oathType != defaultOathType,
-                          itemBuilder: (value) =>
-                              Text(value.getDisplayName(l10n)),
+                          itemBuilder: (value) => Text(
+                              value.getDisplayName(l10n),
+                              key: value == OathType.totp
+                                  ? keys.oathTypeTotpFilterValue
+                                  : keys.oathTypeHotpFilterValue),
                           onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
@@ -490,10 +497,16 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                               : null,
                         ),
                         ChoiceFilterChip<HashAlgorithm>(
+                          key: keys.hashAlgorithmFilterChip,
                           items: hashAlgorithms,
                           value: _hashAlgorithm,
                           selected: _hashAlgorithm != defaultHashAlgorithm,
-                          itemBuilder: (value) => Text(value.displayName),
+                          itemBuilder: (value) => Text(value.displayName,
+                              key: value == HashAlgorithm.sha1
+                                  ? keys.hashAlgorithmSha1FilterValue
+                                  : value == HashAlgorithm.sha256
+                                      ? keys.hashAlgorithmSha256FilterValue
+                                      : keys.hashAlgorithmSha512FilterValue),
                           onChanged: !_dataLoaded
                               ? (value) {
                                   setState(() {
@@ -504,6 +517,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         ),
                         if (_oathType == OathType.totp)
                           ChoiceFilterChip<int>(
+                            key: keys.periodFilterChip,
                             items: _periodValues,
                             value: int.tryParse(_periodController.text) ??
                                 defaultPeriod,
@@ -520,11 +534,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                                 : null,
                           ),
                         ChoiceFilterChip<int>(
+                          key: keys.digitsFilterChip,
                           items: _digitsValues,
                           value: _digits,
                           selected: _digits != defaultDigits,
                           itemBuilder: (value) =>
                               Text(l10n.s_num_digits(value)),
+                          // TODO: need to figure out how to add values for
+                          //    digits6FilterValue
+                          //    digits8FilterValue
                           onChanged: !_dataLoaded
                               ? (digits) {
                                   setState(() {

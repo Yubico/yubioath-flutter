@@ -21,12 +21,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import 'android/state.dart';
 import 'app/app_url_launcher.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
 import 'app/state.dart';
+import 'app/views/keys.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
 import 'version.dart';
@@ -63,6 +65,7 @@ class AboutPage extends ConsumerWidget {
               children: [
                 TextButton(
                   child: Text(
+                    key: tosButton,
                     l10n.s_terms_of_use,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
@@ -73,6 +76,7 @@ class AboutPage extends ConsumerWidget {
                 ),
                 TextButton(
                   child: Text(
+                    key: privacyButton,
                     l10n.s_privacy_policy,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
@@ -85,6 +89,7 @@ class AboutPage extends ConsumerWidget {
             ),
             TextButton(
               child: Text(
+                key: licensesButton,
                 l10n.s_open_src_licenses,
                 style: const TextStyle(decoration: TextDecoration.underline),
               ),
@@ -104,6 +109,7 @@ class AboutPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
+                key: helpButton,
                 l10n.s_help_and_feedback,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -112,24 +118,21 @@ class AboutPage extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextButton(
+                  onPressed: launchDocumentationUrl,
                   child: Text(
-                    l10n.s_send_feedback,
+                    key: userGuideButton,
+                    l10n.s_user_guide,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
-                  onPressed: () {
-                    launchFeedbackUrl();
-                  },
                 ),
                 TextButton(
+                  onPressed: launchHelpUrl,
                   child: Text(
                     l10n.s_i_need_help,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
-                  onPressed: () {
-                    launchHelpUrl();
-                  },
                 ),
               ],
             ),
@@ -150,7 +153,8 @@ class AboutPage extends ConsumerWidget {
             if (isDesktop) ...[
               const SizedBox(height: 12.0),
               ActionChip(
-                avatar: const Icon(Icons.bug_report_outlined),
+                key: diagnosticsChip,
+                avatar: const Icon(Symbols.bug_report),
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
@@ -181,6 +185,7 @@ class AboutPage extends ConsumerWidget {
             if (isAndroid) ...[
               const SizedBox(height: 12.0),
               FilterChip(
+                key: screenshotChip,
                 label: Text(l10n.s_allow_screenshots),
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {
@@ -211,7 +216,7 @@ class LoggingPanel extends ConsumerWidget {
       children: [
         ChoiceFilterChip<Level>(
           avatar: Icon(
-            Icons.insights,
+            Symbols.insights,
             color: Theme.of(context).colorScheme.primary,
           ),
           value: logLevel,
@@ -227,7 +232,8 @@ class LoggingPanel extends ConsumerWidget {
           },
         ),
         ActionChip(
-          avatar: const Icon(Icons.copy),
+          key: logChip,
+          avatar: const Icon(Symbols.content_copy),
           label: Text(l10n.s_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');

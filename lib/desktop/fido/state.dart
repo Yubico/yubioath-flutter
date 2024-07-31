@@ -20,8 +20,8 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:yubico_authenticator/app/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../fido/models.dart';
@@ -32,14 +32,18 @@ import '../state.dart';
 
 final _log = Logger('desktop.fido.state');
 
-final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
-  (ref, _) => null,
+final _pinProvider = StateProvider.family<String?, DevicePath>(
+  (ref, _) {
+    // Clear PIN if current device is changed
+    ref.watch(currentDeviceProvider);
+    return null;
+  },
 );
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
   (ref, devicePath) {
-    // Make sure the pinProvider is held for the duration of the session.
+    // Refresh state when PIN is changed
     ref.watch(_pinProvider(devicePath));
     return RpcNodeSession(
         ref.watch(rpcProvider).requireValue, devicePath, ['fido', 'ctap2']);
@@ -149,7 +153,12 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       return unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+        ref.invalidateSelf();
+        return PinResult.failed(FidoPinFailureReason.invalidPin(
+            e.body['retries'], e.body['auth_blocked']));
+      }
+      if (e.status == 'pin-complexity') {
+        return PinResult.failed(const FidoPinFailureReason.weakPin());
       }
       rethrow;
     }
@@ -168,7 +177,9 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
         _pinController.state = null;
-        return PinResult.failed(e.body['retries'], e.body['auth_blocked']);
+        ref.invalidateSelf();
+        return PinResult.failed(FidoPinFailureReason.invalidPin(
+            e.body['retries'], e.body['auth_blocked']));
       }
       rethrow;
     }
@@ -307,7 +318,8 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
             rpId: rpId,
             credentialId: e.key,
             userId: e.value['user_id'],
-            userName: e.value['user_name']));
+            userName: e.value['user_name'],
+            displayName: e.value['display_name']));
       }
     }
     return List.unmodifiable(creds);

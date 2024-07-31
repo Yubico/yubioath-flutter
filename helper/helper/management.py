@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 from .base import RpcNode, action
-from yubikit.core import require_version, NotSupportedError, TRANSPORT
+from yubikit.core import require_version, NotSupportedError, TRANSPORT, Connection
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
@@ -21,6 +21,7 @@ from yubikit.management import ManagementSession, DeviceConfig, Mode, CAPABILITY
 from ykman.device import list_all_devices
 from dataclasses import asdict
 from time import sleep
+from typing import Type
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 class ManagementNode(RpcNode):
     def __init__(self, connection):
         super().__init__()
-        self._connection_type = type(connection)
+        self._connection_type: Type[Connection] = type(connection)
         self.session = ManagementSession(connection)
 
     def get_data(self):
@@ -54,11 +55,13 @@ class ManagementNode(RpcNode):
         if self._connection_type.usb_interface in ifaces:
             connection_types = [self._connection_type]
         else:
-            connection_types = [
-                t
-                for t in [SmartCardConnection, OtpConnection, FidoConnection]
-                if t.usb_interface in ifaces
+            types: list[Type[Connection]] = [
+                SmartCardConnection,
+                OtpConnection,
+                # mypy doesn't support ABC.register()
+                FidoConnection,  # type: ignore
             ]
+            connection_types = [t for t in types if t.usb_interface in ifaces]
 
         self.session.close()
         logger.debug("Waiting for device to re-appear...")
@@ -96,4 +99,11 @@ class ManagementNode(RpcNode):
             params.pop("challenge_response_timeout", 0),
             params.pop("auto_eject_timeout"),
         )
+        return dict()
+
+    @action(
+        condition=lambda self: issubclass(self._connection_type, SmartCardConnection)
+    )
+    def device_reset(self, params, event, signal):
+        self.session.device_reset()
         return dict()

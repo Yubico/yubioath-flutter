@@ -16,11 +16,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
-import '../../widgets/custom_icons.dart';
 import '../../widgets/product_image.dart';
 import '../models.dart';
 import '../state.dart';
@@ -34,12 +34,18 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
-        badge: isDesktop && data.node is NfcReaderNode ? nfcIcon : null,
+        badge: isDesktop && data.node is NfcReaderNode
+            ? const Icon(Symbols.contactless)
+            : null,
         radius: radius,
-        child: ProductImage(
-            name: data.name,
-            formFactor: data.info.formFactor,
-            isNfc: data.info.supportedCapabilities.containsKey(Transport.nfc)),
+        child: CircleAvatar(
+          backgroundColor: Colors.transparent,
+          child: ProductImage(
+              name: data.name,
+              formFactor: data.info.formFactor,
+              isNfc:
+                  data.info.supportedCapabilities.containsKey(Transport.nfc)),
+        ),
       );
 
   factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>
@@ -54,16 +60,22 @@ class DeviceAvatar extends StatelessWidget {
           }
           return DeviceAvatar(
             radius: radius,
-            child: const ProductImage(
-              name: '',
-              formFactor: FormFactor.unknown,
-              isNfc: false,
+            child: const CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: ProductImage(
+                name: '',
+                formFactor: FormFactor.unknown,
+                isNfc: false,
+              ),
             ),
           );
         },
         nfcReader: (_) => DeviceAvatar(
           radius: radius,
-          child: nfcIcon,
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.contactless),
+          ),
         ),
       );
 
@@ -84,35 +96,28 @@ class DeviceAvatar extends StatelessWidget {
       return DeviceAvatar(
         radius: radius,
         key: noDeviceAvatar,
-        child: const Icon(Icons.usb),
+        child: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(Symbols.usb),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final radius = this.radius ?? 20;
     return Stack(
       alignment: AlignmentDirectional.bottomEnd,
       children: [
-        CircleAvatar(
-          radius: radius,
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          child: IconTheme(
-            data: IconTheme.of(context).copyWith(
-              size: radius,
-            ),
-            child: child,
-          ),
-        ),
+        child,
         if (badge != null)
           CircleAvatar(
-            radius: radius / 3,
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            radius: 10,
+            backgroundColor: Colors.transparent,
             child: IconTheme(
               data: IconTheme.of(context).copyWith(
                 color: Theme.of(context).colorScheme.onPrimary,
-                size: radius * 0.5,
+                size: 18,
               ),
               child: badge!,
             ),

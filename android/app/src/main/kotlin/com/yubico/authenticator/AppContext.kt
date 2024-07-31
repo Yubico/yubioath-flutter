@@ -37,7 +37,7 @@ class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, pri
         }
     }
 
-    private suspend fun setContext(subPageIndex: Int): String {
+    private fun setContext(subPageIndex: Int): String {
         val appContext = OperationContext.getByValue(subPageIndex)
         appViewModel.setAppContext(appContext)
         logger.debug("App context is now {}", appContext)

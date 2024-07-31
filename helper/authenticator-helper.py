@@ -15,9 +15,11 @@
 #  limitations under the License.
 
 from helper import run_rpc_pipes, run_rpc_socket
+from typing import cast
 
 import socket
 import sys
+import io
 
 
 if __name__ == "__main__":
@@ -32,8 +34,8 @@ if __name__ == "__main__":
 
         run_rpc_socket(sock)
     else:
-        sys.stdin.reconfigure(encoding="utf-8")
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+        cast(io.TextIOWrapper, sys.stdin).reconfigure(encoding="utf-8")
+        cast(io.TextIOWrapper, sys.stdout).reconfigure(encoding="utf-8")
+        cast(io.TextIOWrapper, sys.stderr).reconfigure(encoding="utf-8")
 
         run_rpc_pipes(sys.stdout, sys.stdin)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yubico_authenticator/android/state.dart';
+import '../theme.dart';
+import 'state.dart';
 
 const appMethodsChannel = MethodChannel('app.methods');
 
@@ -52,6 +53,15 @@ Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }
 
+Future<bool> getAndroidIsArc() async {
+  return await appMethodsChannel.invokeMethod('isArc');
+}
+
+Future<Color> getPrimaryColor() async {
+  final value = await appMethodsChannel.invokeMethod('getPrimaryColor');
+  return value != null ? Color(value) : defaultPrimaryColor;
+}
+
 Future<void> setPrimaryClip(String toClipboard, bool isSensitive) async {
   await appMethodsChannel.invokeMethod('setPrimaryClip',
       {'toClipboard': toClipboard, 'isSensitive': isSensitive});
@@ -70,7 +80,9 @@ void setupAppMethodsChannel(WidgetRef ref) {
       case 'nfcActivityChanged':
         {
           var nfcActivityState = args['state'];
-          ref.read(androidNfcActivityProvider.notifier).setActivityState(nfcActivityState);
+          ref
+              .read(androidNfcActivityProvider.notifier)
+              .setActivityState(nfcActivityState);
           break;
         }
       default:

@@ -30,6 +30,7 @@ Future showPopupMenu(BuildContext context, Offset globalPosition,
         globalPosition.dx,
         0,
       ),
+      popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
       items: actions.map((e) => _buildMenuItem(context, e)).toList(),
     );
 
@@ -58,7 +59,7 @@ PopupMenuItem _buildMenuItem(BuildContext context, ActionItem actionItem) {
       trailing: shortcut != null
           ? Opacity(
               opacity: 0.5,
-              child: Text(shortcut, textScaleFactor: 0.7),
+              child: Text(shortcut),
             )
           : null,
     ),

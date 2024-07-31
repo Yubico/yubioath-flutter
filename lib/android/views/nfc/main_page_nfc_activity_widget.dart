@@ -15,9 +15,10 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:yubico_authenticator/android/state.dart';
-import 'package:yubico_authenticator/android/views/nfc/nfc_activity_widget.dart';
-import 'package:yubico_authenticator/app/views/horizontal_shake.dart';
+
+import '../../../app/views/horizontal_shake.dart';
+import '../../state.dart';
+import 'nfc_activity_widget.dart';
 
 class MainPageNfcActivityWidget extends StatelessWidget {
   final Widget widget;

@@ -19,12 +19,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:yubico_authenticator/app/message.dart';
-import 'package:yubico_authenticator/app/state.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
-import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
+
+import '../../app/message.dart';
+import '../../app/state.dart';
+import '../../widgets/file_drop_overlay.dart';
+import '../../widgets/file_drop_target.dart';
+import '../../widgets/responsive_dialog.dart';
+import 'icon_pack.dart';
+import 'icon_pack_manager.dart';
 
 class IconPackDialog extends ConsumerWidget {
   const IconPackDialog({super.key});
@@ -33,26 +37,52 @@ class IconPackDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final iconPack = ref.watch(iconPackProvider);
-    return ResponsiveDialog(
-      title: Text(l10n.s_custom_icons),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _DialogDescription(),
-            const SizedBox(height: 4),
-            _action(iconPack, l10n),
-            _loadedIconPackRow(iconPack),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
+    return FileDropTarget(
+        onFileDropped: (file) async {
+          final importStatus = await ref
+              .read(iconPackProvider.notifier)
+              .importPack(l10n, file.path);
+          await ref.read(withContextProvider)((context) async {
+            if (importStatus) {
+              showMessage(context, l10n.l_icon_pack_imported);
+            } else {
+              showMessage(
+                  context,
+                  l10n.l_import_icon_pack_failed(
+                      ref.read(iconPackProvider.notifier).lastError ??
+                          l10n.l_import_error));
+            }
+          });
+        },
+        overlay: FileDropOverlay(
+          title: iconPack.when(
+              data: (IconPack? data) => data != null
+                  ? l10n.s_replace_icon_pack
+                  : l10n.s_load_icon_pack,
+              error: (Object error, StackTrace stackTrace) =>
+                  l10n.s_load_icon_pack,
+              loading: () => null),
         ),
-      ),
-    );
+        child: ResponsiveDialog(
+          title: Text(l10n.s_custom_icons),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _DialogDescription(),
+                const SizedBox(height: 4),
+                _action(iconPack, l10n),
+                _loadedIconPackRow(iconPack),
+              ]
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: e,
+                      ))
+                  .toList(),
+            ),
+          ),
+        ));
   }
 
   Widget? _loadedIconPackRow(AsyncValue<IconPack?> iconPack) {
@@ -60,7 +90,11 @@ class IconPackDialog extends ConsumerWidget {
         data: (IconPack? data) =>
             (data != null) ? _IconPackDescription(data) : null,
         error: (Object error, StackTrace stackTrace) => null,
-        loading: () => null);
+        loading: () => const Padding(
+              // Add extra padding to have same size as _IconPackDescription
+              padding: EdgeInsets.symmetric(vertical: 18.0),
+              child: LinearProgressIndicator(),
+            ));
   }
 
   Widget? _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
@@ -71,7 +105,7 @@ class IconPackDialog extends ConsumerWidget {
               _ImportActionChip(l10n.s_load_icon_pack),
           loading: () => _ImportActionChip(
                 l10n.l_loading_icon_pack,
-                avatar: const CircularProgressIndicator(),
+                disabled: true,
               ));
 }
 
@@ -81,7 +115,7 @@ class _DialogDescription extends ConsumerWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return RichText(
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaler: MediaQuery.textScalerOf(context),
       text: TextSpan(
         text: l10n.p_custom_icons_description,
         style: theme.textTheme.bodyMedium,
@@ -127,7 +161,7 @@ class _IconPackDescription extends ConsumerWidget {
           Flexible(
               fit: FlexFit.loose,
               child: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.textScalerOf(context),
                   text: TextSpan(
                       text: iconPack.name,
                       style: theme.textTheme.bodyMedium,
@@ -149,7 +183,10 @@ class _IconPackDescription extends ConsumerWidget {
                       },
                     );
                   },
-                  icon: const Icon(Icons.delete_outline)),
+                  icon: const Icon(
+                    Symbols.delete,
+                    size: 20.0,
+                  )),
             ],
           )
         ]);
@@ -158,18 +195,21 @@ class _IconPackDescription extends ConsumerWidget {
 
 class _ImportActionChip extends ConsumerWidget {
   final String _label;
-  final Widget avatar;
+  final bool disabled;
 
-  const _ImportActionChip(this._label,
-      {this.avatar = const Icon(Icons.download_outlined)});
+  const _ImportActionChip(this._label, {this.disabled = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionChip(
-        onPressed: () async {
-          _importAction(context, ref);
-        },
-        avatar: avatar,
+        onPressed: !disabled
+            ? () async {
+                _importAction(context, ref);
+              }
+            : null,
+        avatar: const Icon(
+          Symbols.download,
+        ),
         label: Text(_label));
   }
 

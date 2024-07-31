@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Read variables from repo
       run: cat .github/workflows/env >> $GITHUB_ENV
@@ -18,20 +18,24 @@ jobs:
         python3 set-version.py
         git diff --exit-code
 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYVER }}
+
+    - name: Set up CocoaPods
+      uses: maxim-lobanov/setup-cocoapods@v1
+      with:
+        podfile-path: macos/Podfile.lock
+
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           build/macos/helper
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
-
-    - name: Set up Python
-      if: steps.cache-helper.outputs.cache-hit != 'true'
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYVER }}
 
     - name: Install dependencies
       if: steps.cache-helper.outputs.cache-hit != 'true'
@@ -53,10 +57,13 @@ jobs:
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
-    - name: Run tests
+    - name: Run lints/tests
+      env:
+        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
+        pip install pre-commit
+        pre-commit run --all-files
         flutter test
-        flutter analyze
 
     - name: Build the app
       run: |
@@ -88,7 +95,7 @@ jobs:
         mv macos/release-macos.sh deploy
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: yubioath-desktop-macos
         path: deploy

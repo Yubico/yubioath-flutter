@@ -35,8 +35,7 @@ abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
     bool storeKey = false,
   });
 
-  Future<PinVerificationStatus> verifyPin(
-      String pin); //TODO: Maybe return authenticated?
+  Future<PinVerificationStatus> verifyPin(String pin);
   Future<PinVerificationStatus> changePin(String pin, String newPin);
   Future<PinVerificationStatus> changePuk(String puk, String newPuk);
   Future<PinVerificationStatus> unblockPin(String puk, String newPin);
@@ -67,5 +66,7 @@ abstract class PivSlotsNotifier
     PinPolicy pinPolicy = PinPolicy.dfault,
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   });
-  Future<void> delete(SlotId slot);
+  Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey);
+  Future<void> moveKey(SlotId source, SlotId destination, bool overwriteKey,
+      bool includeCertificate);
 }

@@ -20,10 +20,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_file_loader.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack.dart';
-import 'package:yubico_authenticator/oath/icon_provider/icon_pack_manager.dart';
-import 'package:yubico_authenticator/widgets/delayed_visibility.dart';
+
+import '../../widgets/delayed_visibility.dart';
+import '../icon_provider/icon_file_loader.dart';
+import '../icon_provider/icon_pack.dart';
+import '../icon_provider/icon_pack_manager.dart';
 
 class AccountIcon extends ConsumerWidget {
   final String? issuer;
@@ -65,15 +66,19 @@ class AccountIcon extends ConsumerWidget {
         fit: BoxFit.fill,
         loader: IconFileLoader(ref, file),
         placeholderBuilder: (BuildContext _) {
-          return DelayedVisibility(
-            delay: const Duration(milliseconds: 10),
-            child: Stack(alignment: Alignment.center, children: [
-              Opacity(
-                opacity: 0.5,
-                child: defaultWidget,
-              ),
-              const CircularProgressIndicator(),
-            ]),
+          return SizedBox(
+            width: _width,
+            height: _height,
+            child: DelayedVisibility(
+              delay: const Duration(milliseconds: 10),
+              child: Stack(alignment: Alignment.center, children: [
+                Opacity(
+                  opacity: 0.5,
+                  child: defaultWidget,
+                ),
+                const CircularProgressIndicator(),
+              ]),
+            ),
           );
         });
   }

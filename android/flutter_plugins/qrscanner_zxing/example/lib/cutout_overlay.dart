@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 
 class CutoutOverlay extends StatelessWidget {
   final int marginPct;
-  const CutoutOverlay({Key? key, required this.marginPct}) : super(key: key);
+  const CutoutOverlay({super.key, required this.marginPct});
 
   @override
   Widget build(BuildContext context) {

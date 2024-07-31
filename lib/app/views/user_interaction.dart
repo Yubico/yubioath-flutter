@@ -75,6 +75,8 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
   @override
   Widget build(BuildContext context) {
     Widget? icon = widget.controller.icon;
+    final theme = Theme.of(context);
+
     return AlertDialog(
       scrollable: true,
       content: SizedBox(
@@ -93,11 +95,15 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
               ),
             Text(
               widget.controller.title,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: theme.textTheme.titleLarge,
+              textAlign: TextAlign.center,
             ),
             Text(
               widget.controller.description,
               textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               softWrap: true,
             ),
           ],
@@ -120,7 +126,7 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
 }
 
 /// Opens a modal dialog informing the user to take some action.
-/// The dialog content can be updated programatically via the returned
+/// The dialog content can be updated programmatically via the returned
 /// [UserInteractionController].
 ///
 /// An optional [onCancel] function can be provided to allow the user to cancel
@@ -150,12 +156,14 @@ UserInteractionController _dialogUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
+  var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(
     title: title,
     description: description,
     icon: icon,
     onClosed: () {
+      completed = true;
       if (!wasPopped) {
         Navigator.of(context).pop();
       }
@@ -165,20 +173,19 @@ UserInteractionController _dialogUserInteraction(
       context: context,
       routeSettings: const RouteSettings(name: 'user_interaction_prompt'),
       builder: (context) {
-        return WillPopScope(
-          onWillPop: () async {
-            if (onCancel != null) {
-              onCancel();
-              wasPopped = true;
-              return true;
-            } else {
-              return false;
-            }
-          },
-          child: _UserInteractionDialog(
-            controller: controller,
-          ),
-        );
+        return PopScope(
+            canPop: onCancel != null,
+            onPopInvoked: (didPop) {
+              if (didPop) {
+                wasPopped = true;
+                if (!completed && onCancel != null) {
+                  onCancel();
+                }
+              }
+            },
+            child: _UserInteractionDialog(
+              controller: controller,
+            ));
       });
 
   return controller;
