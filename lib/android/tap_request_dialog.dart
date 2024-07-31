@@ -29,23 +29,23 @@ import 'views/nfc/nfc_activity_widget.dart';
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
 // _DDesc contains id of title resource for the dialog
-enum _DialogTitle {
+enum _DTitle {
   tapKey,
   operationSuccessful,
   operationFailed,
   invalid;
 
-  static _DialogTitle fromId(int? id) =>
+  static _DTitle fromId(int? id) =>
       const {
-        0: _DialogTitle.tapKey,
-        1: _DialogTitle.operationSuccessful,
-        2: _DialogTitle.operationFailed
+        0: _DTitle.tapKey,
+        1: _DTitle.operationSuccessful,
+        2: _DTitle.operationFailed
       }[id] ??
-      _DialogTitle.invalid;
+      _DTitle.invalid;
 }
 
 // _DDesc contains action description in the dialog
-enum _DialogDescription {
+enum _DDesc {
   // oath descriptions
   oathResetApplet,
   oathUnlockSession,
@@ -71,7 +71,7 @@ enum _DialogDescription {
   static const int dialogDescriptionOathIndex = 100;
   static const int dialogDescriptionFidoIndex = 200;
 
-  static _DialogDescription fromId(int? id) =>
+  static _DDesc fromId(int? id) =>
       const {
         dialogDescriptionOathIndex + 0: oathResetApplet,
         dialogDescriptionOathIndex + 1: oathUnlockSession,
@@ -91,7 +91,7 @@ enum _DialogDescription {
         dialogDescriptionFidoIndex + 5: fidoRenameFingerprint,
         dialogDescriptionFidoIndex + 6: fidoActionFailure,
       }[id] ??
-      _DialogDescription.invalid;
+      _DDesc.invalid;
 }
 
 final androidDialogProvider = Provider<_DialogProvider>(
@@ -134,42 +134,35 @@ class _DialogProvider {
 
   String _getTitle(BuildContext context, int? titleId) {
     final l10n = AppLocalizations.of(context)!;
-    return switch (_DialogTitle.fromId(titleId)) {
-      _DialogTitle.tapKey => l10n.l_nfc_dialog_tap_key,
-      _DialogTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
-      _DialogTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
+    return switch (_DTitle.fromId(titleId)) {
+      _DTitle.tapKey => l10n.l_nfc_dialog_tap_key,
+      _DTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
+      _DTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
       _ => ''
     };
   }
 
   String _getDialogDescription(BuildContext context, int? descriptionId) {
     final l10n = AppLocalizations.of(context)!;
-    return switch (_DialogDescription.fromId(descriptionId)) {
-      _DialogDescription.oathResetApplet => l10n.s_nfc_dialog_oath_reset,
-      _DialogDescription.oathUnlockSession => l10n.s_nfc_dialog_oath_unlock,
-      _DialogDescription.oathSetPassword => l10n.s_nfc_dialog_oath_set_password,
-      _DialogDescription.oathUnsetPassword =>
-        l10n.s_nfc_dialog_oath_unset_password,
-      _DialogDescription.oathAddAccount => l10n.s_nfc_dialog_oath_add_account,
-      _DialogDescription.oathRenameAccount =>
-        l10n.s_nfc_dialog_oath_rename_account,
-      _DialogDescription.oathDeleteAccount =>
-        l10n.s_nfc_dialog_oath_delete_account,
-      _DialogDescription.oathCalculateCode =>
-        l10n.s_nfc_dialog_oath_calculate_code,
-      _DialogDescription.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
-      _DialogDescription.oathAddMultipleAccounts =>
+    return switch (_DDesc.fromId(descriptionId)) {
+      _DDesc.oathResetApplet => l10n.s_nfc_dialog_oath_reset,
+      _DDesc.oathUnlockSession => l10n.s_nfc_dialog_oath_unlock,
+      _DDesc.oathSetPassword => l10n.s_nfc_dialog_oath_set_password,
+      _DDesc.oathUnsetPassword => l10n.s_nfc_dialog_oath_unset_password,
+      _DDesc.oathAddAccount => l10n.s_nfc_dialog_oath_add_account,
+      _DDesc.oathRenameAccount => l10n.s_nfc_dialog_oath_rename_account,
+      _DDesc.oathDeleteAccount => l10n.s_nfc_dialog_oath_delete_account,
+      _DDesc.oathCalculateCode => l10n.s_nfc_dialog_oath_calculate_code,
+      _DDesc.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
+      _DDesc.oathAddMultipleAccounts =>
         l10n.s_nfc_dialog_oath_add_multiple_accounts,
-      _DialogDescription.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
-      _DialogDescription.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
-      _DialogDescription.fidoSetPin => l10n.l_nfc_dialog_fido_set_pin,
-      _DialogDescription.fidoDeleteCredential =>
-        l10n.s_nfc_dialog_fido_delete_credential,
-      _DialogDescription.fidoDeleteFingerprint =>
-        l10n.s_nfc_dialog_fido_delete_fingerprint,
-      _DialogDescription.fidoRenameFingerprint =>
-        l10n.s_nfc_dialog_fido_rename_fingerprint,
-      _DialogDescription.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
+      _DDesc.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
+      _DDesc.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
+      _DDesc.fidoSetPin => l10n.l_nfc_dialog_fido_set_pin,
+      _DDesc.fidoDeleteCredential => l10n.s_nfc_dialog_fido_delete_credential,
+      _DDesc.fidoDeleteFingerprint => l10n.s_nfc_dialog_fido_delete_fingerprint,
+      _DDesc.fidoRenameFingerprint => l10n.s_nfc_dialog_fido_rename_fingerprint,
+      _DDesc.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
       _ => ''
     };
   }
@@ -179,8 +172,7 @@ class _DialogProvider {
       _controller?.updateContent(
         title: _getTitle(context, title),
         description: _getDialogDescription(context, description),
-        icon: (_DialogDescription.fromId(description) !=
-                _DialogDescription.oathActionFailure)
+        icon: (_DDesc.fromId(description) != _DDesc.oathActionFailure)
             ? _icon
             : const Icon(Icons.warning_amber_rounded, size: 64),
       );
