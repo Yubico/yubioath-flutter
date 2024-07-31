@@ -16,6 +16,11 @@
 
 package com.yubico.authenticator
 
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.annotation.SuppressLint
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
@@ -47,17 +52,23 @@ import com.yubico.authenticator.management.ManagementHandler
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
+import com.yubico.authenticator.yubikit.NfcActivityDispatcher
+import com.yubico.authenticator.yubikit.NfcActivityListener
+import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyManager
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
+import com.yubico.yubikit.android.transport.usb.UsbYubiKeyManager
 import com.yubico.yubikit.core.YubiKeyDevice
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -84,6 +95,20 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
+    private val nfcActivityListener = object : NfcActivityListener {
+
+        var appMethodChannel : AppMethodChannel? = null
+
+        override fun onChange(newState: NfcActivityState) {
+            appMethodChannel?.let {
+                logger.debug("setting nfc activity state to ${newState.name}")
+                it.nfcActivityStateChanged(newState)
+            } ?: {
+                logger.warn("cannot set nfc activity state to ${newState.name} - no method channel")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -95,7 +120,10 @@ class MainActivity : FlutterFragmentActivity() {
 
         allowScreenshots(false)
 
-        yubikit = YubiKitManager(this)
+        yubikit = YubiKitManager(
+            UsbYubiKeyManager(this),
+            NfcYubiKeyManager(this, NfcActivityDispatcher(nfcActivityListener))
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -300,8 +328,14 @@ class MainActivity : FlutterFragmentActivity() {
         contextManager?.let {
             try {
                 it.processYubiKey(device)
+                if (device is NfcYubiKeyDevice) {
+                    device.remove {
+                        appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
+                    }
+                }
             } catch (e: Throwable) {
                 logger.error("Error processing YubiKey in AppContextManager", e)
+
             }
         }
     }
@@ -336,6 +370,8 @@ class MainActivity : FlutterFragmentActivity() {
         appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
         managementHandler = ManagementHandler(messenger, deviceManager, dialogManager)
+
+        nfcActivityListener.appMethodChannel = appMethodChannel
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
@@ -378,7 +414,8 @@ class MainActivity : FlutterFragmentActivity() {
                     deviceManager,
                     oathViewModel,
                     dialogManager,
-                    appPreferences
+                    appPreferences,
+                    nfcActivityListener
                 )
 
                 OperationContext.FidoFingerprints,
@@ -397,6 +434,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        nfcActivityListener.appMethodChannel = null
         flutterStreams.forEach { it.close() }
         contextManager?.dispose()
         deviceManager.dispose()
@@ -528,6 +566,15 @@ class MainActivity : FlutterFragmentActivity() {
                 "nfcAdapterStateChanged",
                 JSONObject(mapOf("nfcEnabled" to value)).toString()
             )
+        }
+
+        fun nfcActivityStateChanged(activityState: NfcActivityState) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                methodChannel.invokeMethod(
+                    "nfcActivityChanged",
+                    JSONObject(mapOf("state" to activityState.value)).toString()
+                )
+            }
         }
     }
 

@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.management
 
-import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.device.DeviceManager
@@ -65,7 +64,6 @@ class ManagementConnectionHelper(
                     })
                 }
                 dialogManager.showDialog(
-                    DialogIcon.Nfc,
                     DialogTitle.TapKey,
                     actionDescription.id
                 ) {

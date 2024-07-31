@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.fido
 
-import com.yubico.authenticator.DialogIcon
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.device.DeviceManager
@@ -77,7 +76,6 @@ class FidoConnectionHelper(
                     })
                 }
                 dialogManager.showDialog(
-                    DialogIcon.Nfc,
                     DialogTitle.TapKey,
                     actionDescription.id
                 ) {

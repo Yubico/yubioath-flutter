@@ -21,28 +21,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/state.dart';
 import '../app/views/user_interaction.dart';
+import 'views/nfc/nfc_activity_widget.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
-
-// _DIcon identifies the icon which should be displayed on the dialog
-enum _DIcon {
-  nfcIcon,
-  successIcon,
-  failureIcon,
-  invalid;
-
-  static _DIcon fromId(int? id) =>
-      const {
-        0: _DIcon.nfcIcon,
-        1: _DIcon.successIcon,
-        2: _DIcon.failureIcon
-      }[id] ??
-      _DIcon.invalid;
-}
 
 // _DDesc contains id of title resource for the dialog
 enum _DTitle {
@@ -118,6 +102,7 @@ final androidDialogProvider = Provider<_DialogProvider>(
 
 class _DialogProvider {
   final WithContext _withContext;
+  final Widget _icon = const NfcActivityWidget(width: 64, height: 64);
   UserInteractionController? _controller;
 
   _DialogProvider(this._withContext) {
@@ -128,11 +113,10 @@ class _DialogProvider {
           _closeDialog();
           break;
         case 'show':
-          await _showDialog(args['title'], args['description'], args['icon']);
+          await _showDialog(args['title'], args['description']);
           break;
         case 'state':
-          await _updateDialogState(
-              args['title'], args['description'], args['icon']);
+          await _updateDialogState(args['title'], args['description']);
           break;
         default:
           throw PlatformException(
@@ -147,13 +131,6 @@ class _DialogProvider {
     _controller?.close();
     _controller = null;
   }
-
-  Widget? _getIcon(int? icon) => switch (_DIcon.fromId(icon)) {
-        _DIcon.nfcIcon => const Icon(Symbols.contactless),
-        _DIcon.successIcon => const Icon(Symbols.check_circle),
-        _DIcon.failureIcon => const Icon(Symbols.error),
-        _ => null,
-      };
 
   String _getTitle(BuildContext context, int? titleId) {
     final l10n = AppLocalizations.of(context)!;
@@ -190,38 +167,29 @@ class _DialogProvider {
     };
   }
 
-  Future<void> _updateDialogState(
-      int? title, int? description, int? dialogIcon) async {
-    final icon = _getIcon(dialogIcon);
+  Future<void> _updateDialogState(int? title, int? description) async {
     await _withContext((context) async {
       _controller?.updateContent(
         title: _getTitle(context, title),
         description: _getDialogDescription(context, description),
-        icon: icon != null
-            ? IconTheme(
-                data: IconTheme.of(context).copyWith(size: 64),
-                child: icon,
-              )
-            : null,
+        icon: (_DDesc.fromId(description) != _DDesc.oathActionFailure)
+            ? _icon
+            : const Icon(Icons.warning_amber_rounded, size: 64),
       );
     });
   }
 
-  Future<void> _showDialog(int title, int description, int? dialogIcon) async {
-    final icon = _getIcon(dialogIcon);
-    _controller = await _withContext((context) async => promptUserInteraction(
-          context,
-          title: _getTitle(context, title),
-          description: _getDialogDescription(context, description),
-          icon: icon != null
-              ? IconTheme(
-                  data: IconTheme.of(context).copyWith(size: 64),
-                  child: icon,
-                )
-              : null,
-          onCancel: () {
-            _channel.invokeMethod('cancel');
-          },
-        ));
+  Future<void> _showDialog(int title, int description) async {
+    _controller = await _withContext((context) async {
+      return promptUserInteraction(
+        context,
+        title: _getTitle(context, title),
+        description: _getDialogDescription(context, description),
+        icon: _icon,
+        onCancel: () {
+          _channel.invokeMethod('cancel');
+        },
+      );
+    });
   }
 }

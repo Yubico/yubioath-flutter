@@ -42,6 +42,9 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
+import com.yubico.authenticator.yubikit.NfcActivityListener
+import com.yubico.authenticator.yubikit.NfcActivityState
+import com.yubico.authenticator.yubikit.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -74,6 +77,7 @@ class OathManager(
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
+    private val nfcActivityListener: NfcActivityListener
 ) : AppContextManager(), DeviceListener {
 
     companion object {
@@ -286,7 +290,6 @@ class OathManager(
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Failed to connect to CCID: ", e)
-
             // Clear any cached OATH state
             oathViewModel.clearSession()
         }
@@ -522,7 +525,10 @@ class OathManager(
                 logger.error("IOException when accessing USB device: ", ioException)
                 clearCodes()
             } catch (illegalStateException: IllegalStateException) {
-                logger.error("IllegalStateException when accessing USB device: ", illegalStateException)
+                logger.error(
+                    "IllegalStateException when accessing USB device: ",
+                    illegalStateException
+                )
                 clearCodes()
             }
         }
@@ -674,24 +680,24 @@ class OathManager(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog(DialogIcon.Nfc, DialogTitle.TapKey, oathActionDescription.id) {
+                dialogManager.showDialog(DialogTitle.TapKey, oathActionDescription.id) {
                     logger.debug("Cancelled Dialog {}", oathActionDescription.name)
                     pendingAction?.invoke(Result.failure(CancellationException()))
                     pendingAction = null
                 }
             }
+            nfcActivityListener.onChange(NfcActivityState.PROCESSING_FINISHED)
             dialogManager.updateDialogState(
-                dialogIcon = DialogIcon.Success,
                 dialogTitle = DialogTitle.OperationSuccessful
             )
             // TODO: This delays the closing of the dialog, but also the return value
-            delay(500)
+            delay(1500)
             return result
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Throwable) {
+            nfcActivityListener.onChange(NfcActivityState.PROCESSING_INTERRUPTED)
             dialogManager.updateDialogState(
-                dialogIcon = DialogIcon.Failure,
                 dialogTitle = DialogTitle.OperationFailed,
                 dialogDescriptionId = OathActionDescription.ActionFailure.id
             )

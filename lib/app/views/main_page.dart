@@ -21,6 +21,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/app_methods.dart';
 import '../../android/state.dart';
+import '../../android/views/nfc/main_page_nfc_activity_widget.dart';
 import '../../core/state.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
@@ -86,7 +87,7 @@ class MainPage extends ConsumerWidget {
         var isNfcEnabled = ref.watch(androidNfcStateProvider);
         return HomeMessagePage(
           centered: true,
-          graphic: noKeyImage,
+          graphic: MainPageNfcActivityWidget(noKeyImage),
           header: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
