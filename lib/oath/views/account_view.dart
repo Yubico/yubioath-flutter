@@ -135,15 +135,17 @@ class _AccountViewState extends ConsumerState<AccountView> {
                     Theme.of(context).colorScheme.onSecondaryContainer,
                 selected: widget.selected,
                 tileColor: Theme.of(context).hoverColor,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 title: Column(
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AccountIcon(
                             issuer: credential.issuer,
                             defaultWidget: circleAvatar),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Flexible(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
