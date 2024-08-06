@@ -181,22 +181,28 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       ],
                     ),
                     const SizedBox(height: 8.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        helper.code != null
-                            ? FilledButton.tonalIcon(
-                                icon: helper.buildCodeIcon(),
-                                label: helper.buildCodeLabel(),
-                                style: buttonStyle,
-                                onPressed: Actions.handler(context, openIntent),
-                              )
-                            : FilledButton.tonal(
-                                style: buttonStyle,
-                                onPressed: Actions.handler(context, openIntent),
-                                child: helper.buildCodeIcon()),
-                      ],
-                    )
+                    Focus(
+                      skipTraversal: true,
+                      descendantsAreTraversable: false,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          helper.code != null
+                              ? FilledButton.tonalIcon(
+                                  icon: helper.buildCodeIcon(),
+                                  label: helper.buildCodeLabel(),
+                                  style: buttonStyle,
+                                  onPressed:
+                                      Actions.handler(context, openIntent),
+                                )
+                              : FilledButton.tonal(
+                                  style: buttonStyle,
+                                  onPressed:
+                                      Actions.handler(context, openIntent),
+                                  child: helper.buildCodeIcon()),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               );
