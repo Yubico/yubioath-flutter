@@ -161,6 +161,12 @@ class _FidoStateNotifier extends FidoStateNotifier {
       throw decodedException;
     }
   }
+
+  @override
+  Future<void> enableEnterpriseAttestation() {
+    // TODO: implement enableEnterpriseAttestation
+    throw UnimplementedError();
+  }
 }
 
 final androidFingerprintProvider = AsyncNotifierProvider.autoDispose

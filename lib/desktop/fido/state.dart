@@ -184,6 +184,12 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       rethrow;
     }
   }
+
+  @override
+  Future<void> enableEnterpriseAttestation() async {
+    await _session.command('enable_ep_attestation');
+    ref.invalidateSelf();
+  }
 }
 
 final desktopFingerprintProvider = AsyncNotifierProvider.autoDispose

@@ -30,6 +30,9 @@
     "s_delete": "削除",
     "s_move": "移動",
     "s_quit": "終了",
+    "s_enable": null,
+    "s_enabled": null,
+    "s_disabled": null,
     "s_status": "ステータス",
     "s_unlock": "ロック解除",
     "s_calculate": "計算",
@@ -301,6 +304,10 @@
             "common_pin": {}
         }
     },
+    "s_ep_attestation": null,
+    "s_ep_attestation_enabled": null,
+    "s_enable_ep_attestation": null,
+    "p_enable_ep_attestation_desc": null,
     "s_pin_required": "PINが必要",
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
