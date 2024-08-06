@@ -52,10 +52,11 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
   final authBlocked = state.pinBlocked;
 
   final enterpriseAttestation = state.enterpriseAttestation;
-
-  final canEnableEnterpriseAttestation = state.enterpriseAttestation == false &&
+  final showEnterpriseAttestation = enterpriseAttestation != null &&
       !(state.alwaysUv && !state.hasPin) &&
       !(!state.unlocked && state.hasPin);
+  final canEnableEnterpriseAttestation =
+      enterpriseAttestation == false && showEnterpriseAttestation;
 
   return Column(
     children: [
@@ -122,7 +123,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
                   }
                 : null,
           ),
-          if (enterpriseAttestation != null)
+          if (showEnterpriseAttestation)
             ActionListItem(
               key: keys.enableEnterpriseAttestation,
               feature: features.enableEnterpriseAttestation,
