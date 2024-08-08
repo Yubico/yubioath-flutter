@@ -200,25 +200,28 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                             return null;
                           }),
                       },
-                      child: Column(
-                        children: [
-                          ...normalSlots.map(
-                            (e) => _CertificateListItem(
-                              pivState,
-                              e,
-                              expanded: expanded,
-                              selected: e == selected,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            ...normalSlots.map(
+                              (e) => _CertificateListItem(
+                                pivState,
+                                e,
+                                expanded: expanded,
+                                selected: e == selected,
+                              ),
                             ),
-                          ),
-                          ...shownRetiredSlots.map(
-                            (e) => _CertificateListItem(
-                              pivState,
-                              e,
-                              expanded: expanded,
-                              selected: e == selected,
-                            ),
-                          )
-                        ],
+                            ...shownRetiredSlots.map(
+                              (e) => _CertificateListItem(
+                                pivState,
+                                e,
+                                expanded: expanded,
+                                selected: e == selected,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },

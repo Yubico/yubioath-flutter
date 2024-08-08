@@ -21,6 +21,7 @@ class FlexBox<T> extends StatelessWidget {
   final Widget Function(T value) itemBuilder;
   final int Function(double width)? getItemsPerRow;
   final FlexLayout layout;
+  final double? spacing;
   final double? runSpacing;
   const FlexBox({
     super.key,
@@ -28,7 +29,8 @@ class FlexBox<T> extends StatelessWidget {
     required this.itemBuilder,
     this.getItemsPerRow,
     this.layout = FlexLayout.list,
-    this.runSpacing,
+    this.spacing = 0.0,
+    this.runSpacing = 0.0,
   });
 
   int _getItemsPerRow(double width) {
@@ -92,10 +94,7 @@ class FlexBox<T> extends StatelessWidget {
         return Column(
           children: [
             for (final c in chunks) ...[
-              if (chunks.indexOf(c) > 0 &&
-                  layout == FlexLayout.grid &&
-                  runSpacing != null)
-                SizedBox(height: runSpacing),
+              if (chunks.indexOf(c) > 0) SizedBox(height: runSpacing),
               Row(
                 children: [
                   for (final entry in c) ...[
@@ -103,7 +102,7 @@ class FlexBox<T> extends StatelessWidget {
                       child: itemBuilder(entry),
                     ),
                     if (itemsPerRow != 1 && c.indexOf(entry) != c.length - 1)
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing),
                   ],
                   if (c.length < itemsPerRow) ...[
                     // Prevents resizing when an items is removed

@@ -452,8 +452,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               setState(() {});
                             },
                           ),
-                        if (searchController.text.isEmpty &&
-                            !searchFocus.hasFocus) ...[
+                        if (searchController.text.isEmpty) ...[
                           if (width >= 450)
                             ...availableLayouts.map(
                               (e) => MouseRegion(

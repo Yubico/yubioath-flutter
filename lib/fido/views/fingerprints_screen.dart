@@ -331,15 +331,18 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 }),
               }
             },
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: fingerprints
-                    .map((fp) => _FingerprintListItem(
-                          fp,
-                          expanded: expanded,
-                          selected: fp == _selected,
-                        ))
-                    .toList()),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: fingerprints
+                      .map((fp) => _FingerprintListItem(
+                            fp,
+                            expanded: expanded,
+                            selected: fp == _selected,
+                          ))
+                      .toList()),
+            ),
           );
         },
       ),

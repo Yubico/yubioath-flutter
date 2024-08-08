@@ -31,7 +31,6 @@ class AppListItem<T> extends ConsumerStatefulWidget {
   final Widget? trailing;
   final List<ActionItem> Function(BuildContext context)? buildPopupActions;
   final Widget Function(BuildContext context)? itemBuilder;
-  final BorderRadius? borderRadius;
   final Intent? tapIntent;
   final Intent? doubleTapIntent;
   final bool selected;
@@ -46,7 +45,6 @@ class AppListItem<T> extends ConsumerStatefulWidget {
     this.trailing,
     this.buildPopupActions,
     this.itemBuilder,
-    this.borderRadius,
     this.tapIntent,
     this.doubleTapIntent,
     this.selected = false,
@@ -82,7 +80,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
         item: widget.item,
         child: InkWell(
           focusNode: _focusNode,
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+          borderRadius: BorderRadius.circular(16),
           onSecondaryTapDown: buildPopupActions == null
               ? null
               : (details) {
@@ -133,9 +131,10 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                           ? SystemMouseCursors.click
                           : null,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(48)),
+                          borderRadius: BorderRadius.circular(16)),
                       selectedTileColor: colorScheme.secondaryContainer,
                       selectedColor: colorScheme.onSecondaryContainer,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                       selected: widget.selected,
                       leading: widget.leading,
                       title: subtitle == null
