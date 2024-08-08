@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -19,50 +20,39 @@ enum FlexLayout {
 class FlexBox<T> extends StatelessWidget {
   final List<T> items;
   final Widget Function(T value) itemBuilder;
-  final int Function(double width)? getItemsPerRow;
   final FlexLayout layout;
-  final double? spacing;
-  final double? runSpacing;
+  final double cellMinWidth;
+  final double spacing;
+  final double runSpacing;
   const FlexBox({
     super.key,
     required this.items,
     required this.itemBuilder,
-    this.getItemsPerRow,
+    required this.cellMinWidth,
     this.layout = FlexLayout.list,
     this.spacing = 0.0,
     this.runSpacing = 0.0,
   });
 
   int _getItemsPerRow(double width) {
-    int itemsPerRow = 1;
-    if (layout == FlexLayout.grid) {
-      if (width <= 420) {
-        // single column
-        itemsPerRow = 1;
-      } else if (width <= 620) {
-        // 2 column
-        itemsPerRow = 2;
-      } else if (width < 860) {
-        // 3 column
-        itemsPerRow = 3;
-      } else if (width < 1200) {
-        // 4 column
-        itemsPerRow = 4;
-      } else if (width < 1500) {
-        // 5 column
-        itemsPerRow = 5;
-      } else if (width < 1800) {
-        // 6 column
-        itemsPerRow = 6;
-      } else if (width < 2000) {
-        // 7 column
-        itemsPerRow = 7;
-      } else {
-        // 8 column
-        itemsPerRow = 8;
-      }
+    // Calculate the maximum number of cells that can fit in one row
+    int cellsPerRow = (width / (cellMinWidth + spacing)).floor();
+
+    // Ensure there's at least one cell per row
+    if (cellsPerRow < 1) {
+      cellsPerRow = 1;
     }
-    return itemsPerRow;
+
+    // Calculate the total width needed for the calculated number of cells and spacing
+    double totalWidthNeeded =
+        cellsPerRow * cellMinWidth + (cellsPerRow - 1) * spacing;
+
+    // Adjust the number of cells per row if the calculated total width exceeds the available width
+    if (totalWidthNeeded > width) {
+      cellsPerRow = cellsPerRow - 1 > 0 ? cellsPerRow - 1 : 1;
+    }
+
+    return cellsPerRow;
   }
 
   List<List<T>> getChunks(int itemsPerChunk) {
@@ -86,9 +76,8 @@ class FlexBox<T> extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final itemsPerRow = layout == FlexLayout.grid
-            ? getItemsPerRow?.call(width) ?? _getItemsPerRow(width)
-            : 1;
+        final itemsPerRow =
+            layout == FlexLayout.grid ? _getItemsPerRow(width) : 1;
         final chunks = getChunks(itemsPerRow);
 
         return Column(
@@ -105,7 +94,7 @@ class FlexBox<T> extends StatelessWidget {
                       SizedBox(width: spacing),
                   ],
                   if (c.length < itemsPerRow) ...[
-                    // Prevents resizing when an items is removed
+                    // Prevents resizing when an item is removed
                     SizedBox(width: 8 * (itemsPerRow - c.length).toDouble()),
                     Spacer(
                       flex: itemsPerRow - c.length,

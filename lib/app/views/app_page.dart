@@ -320,13 +320,16 @@ class _AppPageState extends ConsumerState<AppPage> {
   Widget? _buildAppBarTitle(
       BuildContext context, bool hasRail, bool hasManage, bool fullyExpanded) {
     final showNavigation = ref.watch(_navigationVisibilityProvider);
+    final showDetailView = ref.watch(_detailViewVisibilityProvider);
+
     EdgeInsets padding;
     if (fullyExpanded) {
-      padding = EdgeInsets.only(left: showNavigation ? 280 : 72, right: 320);
+      padding = EdgeInsets.only(
+          left: showNavigation ? 280 : 72, right: showDetailView ? 320 : 0.0);
     } else if (!hasRail && hasManage) {
       padding = const EdgeInsets.only(right: 320);
     } else if (hasRail && hasManage) {
-      padding = const EdgeInsets.only(left: 72, right: 320);
+      padding = EdgeInsets.only(left: 72, right: showDetailView ? 320 : 0.0);
     } else if (hasRail && !hasManage) {
       padding = const EdgeInsets.only(left: 72);
     } else {
@@ -627,7 +630,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                   opacity: visible ? 1 : 0,
                   duration: const Duration(milliseconds: 300),
                   child: Container(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    color: Theme.of(context).hoverColor,
                     height: 1.0,
                   ),
                 );
@@ -643,6 +646,7 @@ class _AppPageState extends ConsumerState<AppPage> {
             hasManage,
             fullyExpanded,
           ),
+          centerTitle: true,
           leading: hasRail
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
