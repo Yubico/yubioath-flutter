@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -189,7 +190,7 @@ class Ctap2Node(RpcNode):
                 raise InactivityException()
         self._info = self.ctap.get_info()
         self._token = None
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @action(condition=lambda self: self._info.options["clientPin"])
     def unlock(self, params, event, signal):
@@ -224,7 +225,7 @@ class Ctap2Node(RpcNode):
                     params.pop("new_pin"),
                 )
             self._info = self.ctap.get_info()
-            return dict()
+            return RpcResponse(dict(), ["device_info"])
         except CtapError as e:
             return _handle_pin_error(e, self.client_pin)
 

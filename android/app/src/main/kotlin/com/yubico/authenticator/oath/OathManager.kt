@@ -53,6 +53,7 @@ import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.management.Capability
 import com.yubico.yubikit.oath.CredentialData
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -609,8 +610,10 @@ class OathManager(
      * @param connection the device SmartCard connection
      * @return a [YubiKitOathSession]  which is unlocked or locked based on an internal parameter
      */
-    private fun getOathSession(connection: SmartCardConnection) : YubiKitOathSession {
-        val session = YubiKitOathSession(connection)
+    private fun getOathSession(connection: SmartCardConnection): YubiKitOathSession {
+        // If OATH is FIPS capable, and we have scpKeyParams, we should use them
+        val fips = (deviceManager.deviceInfo?.fipsCapable ?: 0) and Capability.OATH.bit != 0
+        val session = YubiKitOathSession(connection, if (fips) deviceManager.scpKeyParams else null)
 
         if (!unlockOnConnect.compareAndSet(false, true)) {
             tryToUnlockOathSession(session)

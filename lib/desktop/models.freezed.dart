@@ -34,7 +34,8 @@ mixin _$RpcResponse {
   Map<String, dynamic> get body => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> body) success,
+    required TResult Function(Map<String, dynamic> body, List<String> flags)
+        success,
     required TResult Function(String status, Map<String, dynamic> body) signal,
     required TResult Function(
             String status, String message, Map<String, dynamic> body)
@@ -43,7 +44,7 @@ mixin _$RpcResponse {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult? Function(String status, Map<String, dynamic> body)? signal,
     TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
@@ -51,7 +52,7 @@ mixin _$RpcResponse {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
+    TResult Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult Function(String status, Map<String, dynamic> body)? signal,
     TResult Function(String status, String message, Map<String, dynamic> body)?
         error,
@@ -127,7 +128,7 @@ abstract class _$$SuccessImplCopyWith<$Res>
       __$$SuccessImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Map<String, dynamic> body});
+  $Res call({Map<String, dynamic> body, List<String> flags});
 }
 
 /// @nodoc
@@ -142,12 +143,17 @@ class __$$SuccessImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? body = null,
+    Object? flags = null,
   }) {
     return _then(_$SuccessImpl(
       null == body
           ? _value._body
           : body // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
+      null == flags
+          ? _value._flags
+          : flags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -155,8 +161,10 @@ class __$$SuccessImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$SuccessImpl implements Success {
-  _$SuccessImpl(final Map<String, dynamic> body, {final String? $type})
+  _$SuccessImpl(final Map<String, dynamic> body, final List<String> flags,
+      {final String? $type})
       : _body = body,
+        _flags = flags,
         $type = $type ?? 'success';
 
   factory _$SuccessImpl.fromJson(Map<String, dynamic> json) =>
@@ -170,12 +178,20 @@ class _$SuccessImpl implements Success {
     return EqualUnmodifiableMapView(_body);
   }
 
+  final List<String> _flags;
+  @override
+  List<String> get flags {
+    if (_flags is EqualUnmodifiableListView) return _flags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_flags);
+  }
+
   @JsonKey(name: 'kind')
   final String $type;
 
   @override
   String toString() {
-    return 'RpcResponse.success(body: $body)';
+    return 'RpcResponse.success(body: $body, flags: $flags)';
   }
 
   @override
@@ -183,13 +199,16 @@ class _$SuccessImpl implements Success {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SuccessImpl &&
-            const DeepCollectionEquality().equals(other._body, _body));
+            const DeepCollectionEquality().equals(other._body, _body) &&
+            const DeepCollectionEquality().equals(other._flags, _flags));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_body));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_body),
+      const DeepCollectionEquality().hash(_flags));
 
   @JsonKey(ignore: true)
   @override
@@ -200,37 +219,38 @@ class _$SuccessImpl implements Success {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> body) success,
+    required TResult Function(Map<String, dynamic> body, List<String> flags)
+        success,
     required TResult Function(String status, Map<String, dynamic> body) signal,
     required TResult Function(
             String status, String message, Map<String, dynamic> body)
         error,
   }) {
-    return success(body);
+    return success(body, flags);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult? Function(String status, Map<String, dynamic> body)? signal,
     TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
   }) {
-    return success?.call(body);
+    return success?.call(body, flags);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
+    TResult Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult Function(String status, Map<String, dynamic> body)? signal,
     TResult Function(String status, String message, Map<String, dynamic> body)?
         error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(body);
+      return success(body, flags);
     }
     return orElse();
   }
@@ -278,12 +298,14 @@ class _$SuccessImpl implements Success {
 }
 
 abstract class Success implements RpcResponse {
-  factory Success(final Map<String, dynamic> body) = _$SuccessImpl;
+  factory Success(final Map<String, dynamic> body, final List<String> flags) =
+      _$SuccessImpl;
 
   factory Success.fromJson(Map<String, dynamic> json) = _$SuccessImpl.fromJson;
 
   @override
   Map<String, dynamic> get body;
+  List<String> get flags;
   @override
   @JsonKey(ignore: true)
   _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
@@ -380,7 +402,8 @@ class _$SignalImpl implements Signal {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> body) success,
+    required TResult Function(Map<String, dynamic> body, List<String> flags)
+        success,
     required TResult Function(String status, Map<String, dynamic> body) signal,
     required TResult Function(
             String status, String message, Map<String, dynamic> body)
@@ -392,7 +415,7 @@ class _$SignalImpl implements Signal {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult? Function(String status, Map<String, dynamic> body)? signal,
     TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
@@ -403,7 +426,7 @@ class _$SignalImpl implements Signal {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
+    TResult Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult Function(String status, Map<String, dynamic> body)? signal,
     TResult Function(String status, String message, Map<String, dynamic> body)?
         error,
@@ -570,7 +593,8 @@ class _$RpcErrorImpl implements RpcError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> body) success,
+    required TResult Function(Map<String, dynamic> body, List<String> flags)
+        success,
     required TResult Function(String status, Map<String, dynamic> body) signal,
     required TResult Function(
             String status, String message, Map<String, dynamic> body)
@@ -582,7 +606,7 @@ class _$RpcErrorImpl implements RpcError {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> body)? success,
+    TResult? Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult? Function(String status, Map<String, dynamic> body)? signal,
     TResult? Function(String status, String message, Map<String, dynamic> body)?
         error,
@@ -593,7 +617,7 @@ class _$RpcErrorImpl implements RpcError {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> body)? success,
+    TResult Function(Map<String, dynamic> body, List<String> flags)? success,
     TResult Function(String status, Map<String, dynamic> body)? signal,
     TResult Function(String status, String message, Map<String, dynamic> body)?
         error,

@@ -24,6 +24,7 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.OperationContext
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
+import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
 import com.yubico.yubikit.management.Capability
 import org.slf4j.LoggerFactory
 
@@ -45,6 +46,15 @@ class DeviceManager(
     var clearDeviceInfoOnDisconnect: Boolean = true
 
     private val deviceListeners = HashSet<DeviceListener>()
+
+    val deviceInfo: Info?
+        get() = appViewModel.deviceInfo.value
+
+    var scpKeyParams: ScpKeyParams? = null
+        set(value) {
+            field = value
+            logger.debug("SCP params set to {}", value)
+        }
 
     fun addDeviceListener(listener: DeviceListener) {
         deviceListeners.add(listener)
@@ -157,6 +167,7 @@ class DeviceManager(
 
     fun setDeviceInfo(deviceInfo: Info?) {
         appViewModel.setDeviceInfo(deviceInfo)
+        scpKeyParams = null
     }
 
     fun isUsbKeyConnected(): Boolean {

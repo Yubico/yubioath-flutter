@@ -22,6 +22,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
@@ -82,6 +83,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final fipsCapable = ref.watch(currentDeviceDataProvider).maybeWhen(
+        data: (data) => data.info.getFipsStatus(Capability.oath).$1,
+        orElse: () => false);
     final l10n = AppLocalizations.of(context)!;
     final isValid = !_currentIsWrong &&
         _newPassword.isNotEmpty &&
@@ -142,37 +146,40 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 spacing: 4.0,
                 runSpacing: 8.0,
                 children: [
-                  OutlinedButton(
-                    key: keys.removePasswordButton,
-                    onPressed: _currentPasswordController.text.isNotEmpty &&
-                            !_currentIsWrong
-                        ? () async {
-                            final result = await ref
-                                .read(oathStateProvider(widget.path).notifier)
-                                .unsetPassword(_currentPasswordController.text);
-                            if (result) {
-                              if (mounted) {
-                                await ref.read(withContextProvider)(
-                                    (context) async {
-                                  Navigator.of(context).pop();
-                                  showMessage(context, l10n.s_password_removed);
+                  if (!fipsCapable)
+                    OutlinedButton(
+                      key: keys.removePasswordButton,
+                      onPressed: _currentPasswordController.text.isNotEmpty &&
+                              !_currentIsWrong
+                          ? () async {
+                              final result = await ref
+                                  .read(oathStateProvider(widget.path).notifier)
+                                  .unsetPassword(
+                                      _currentPasswordController.text);
+                              if (result) {
+                                if (mounted) {
+                                  await ref.read(withContextProvider)(
+                                      (context) async {
+                                    Navigator.of(context).pop();
+                                    showMessage(
+                                        context, l10n.s_password_removed);
+                                  });
+                                }
+                              } else {
+                                _currentPasswordController.selection =
+                                    TextSelection(
+                                        baseOffset: 0,
+                                        extentOffset: _currentPasswordController
+                                            .text.length);
+                                _currentPasswordFocus.requestFocus();
+                                setState(() {
+                                  _currentIsWrong = true;
                                 });
                               }
-                            } else {
-                              _currentPasswordController.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: _currentPasswordController
-                                          .text.length);
-                              _currentPasswordFocus.requestFocus();
-                              setState(() {
-                                _currentIsWrong = true;
-                              });
                             }
-                          }
-                        : null,
-                    child: Text(l10n.s_remove_password),
-                  ),
+                          : null,
+                      child: Text(l10n.s_remove_password),
+                    ),
                   if (widget.state.remembered)
                     OutlinedButton(
                       child: Text(l10n.s_clear_saved_password),
