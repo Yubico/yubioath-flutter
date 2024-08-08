@@ -60,57 +60,45 @@ class AccountList extends ConsumerWidget {
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
       child: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (pinnedCreds.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text(l10n.s_pinned, style: labelStyle),
-              ),
-              Padding(
-                padding: pinnedLayout == FlexLayout.grid
-                    ? const EdgeInsets.only(left: 16.0, right: 16)
-                    : const EdgeInsets.all(0),
-                child: FlexBox<OathPair>(
-                  items: pinnedCreds.toList(),
-                  itemBuilder: (value) => AccountView(
-                    value.credential,
-                    expanded: expanded,
-                    selected: value.credential == selected,
-                    large: pinnedLayout == FlexLayout.grid,
-                  ),
-                  layout: pinnedLayout,
-                  runSpacing: 8.0,
-                ),
-              ),
-            ],
-            if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text(
-                  l10n.s_accounts,
-                  style: labelStyle,
-                ),
-              ),
-            ],
-            Padding(
-              padding: normalLayout == FlexLayout.grid
-                  ? const EdgeInsets.only(left: 16.0, right: 16)
-                  : const EdgeInsets.all(0),
-              child: FlexBox<OathPair>(
-                items: creds.toList(),
+              Text(l10n.s_pinned, style: labelStyle),
+              const SizedBox(height: 8),
+              FlexBox<OathPair>(
+                items: pinnedCreds.toList(),
                 itemBuilder: (value) => AccountView(
                   value.credential,
                   expanded: expanded,
                   selected: value.credential == selected,
-                  large: normalLayout == FlexLayout.grid,
+                  large: pinnedLayout == FlexLayout.grid,
                 ),
-                layout: normalLayout,
-                runSpacing: 8.0,
+                spacing: pinnedLayout == FlexLayout.grid ? 4.0 : null,
+                runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : null,
+                layout: pinnedLayout,
               ),
+            ],
+            if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              Text(
+                l10n.s_accounts,
+                style: labelStyle,
+              ),
+              const SizedBox(height: 8),
+            ],
+            FlexBox<OathPair>(
+              items: creds.toList(),
+              itemBuilder: (value) => AccountView(
+                value.credential,
+                expanded: expanded,
+                selected: value.credential == selected,
+                large: normalLayout == FlexLayout.grid,
+              ),
+              spacing: normalLayout == FlexLayout.grid ? 4.0 : null,
+              runSpacing: normalLayout == FlexLayout.grid ? 4.0 : null,
+              layout: normalLayout,
             ),
           ],
         ),

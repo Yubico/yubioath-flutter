@@ -120,7 +120,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ? CopyIntent<OathCredential>(credential)
           : null,
       buildPopupActions: (_) => helper.buildActions(),
-      borderRadius: widget.large ? BorderRadius.circular(16) : null,
       itemBuilder: widget.large
           ? (context) {
               return ListTile(

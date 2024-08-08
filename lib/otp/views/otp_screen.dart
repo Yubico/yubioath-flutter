@@ -180,13 +180,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                 return null;
                               }),
                           },
-                          child: Column(children: [
-                            ...otpState.slots.map((e) => _SlotListItem(
-                                  e,
-                                  expanded: expanded,
-                                  selected: e == selected,
-                                ))
-                          ]),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(children: [
+                              ...otpState.slots.map((e) => _SlotListItem(
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                  ))
+                            ]),
+                          ),
                         );
                       },
                     ),

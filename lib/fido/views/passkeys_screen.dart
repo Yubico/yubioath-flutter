@@ -426,9 +426,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                               setState(() {});
                             },
                           ),
-                        if (searchController.text.isEmpty &&
-                            !searchFocus.hasFocus &&
-                            showLayoutOptions)
+                        if (searchController.text.isEmpty && showLayoutOptions)
                           ...FlexLayout.values.map(
                             (e) => MouseRegion(
                               onEnter: (event) {
@@ -533,24 +531,29 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             child: Consumer(
               builder: (context, ref, child) {
                 final layout = ref.watch(passkeysLayoutProvider);
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (filteredCredentials.isEmpty)
-                      Center(
-                        child: Text(l10n.s_no_passkeys),
-                      ),
-                    FlexBox<FidoCredential>(
-                      items: filteredCredentials,
-                      itemBuilder: (cred) => _CredentialListItem(
-                        cred,
-                        expanded: expanded,
-                        selected: _selected == cred,
-                      ),
-                      layout: layout,
-                      getItemsPerRow: _getItemsPerRow,
-                    )
-                  ],
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (filteredCredentials.isEmpty)
+                        Center(
+                          child: Text(l10n.s_no_passkeys),
+                        ),
+                      FlexBox<FidoCredential>(
+                        items: filteredCredentials,
+                        itemBuilder: (cred) => _CredentialListItem(
+                          cred,
+                          expanded: expanded,
+                          selected: _selected == cred,
+                        ),
+                        layout: layout,
+                        spacing: layout == FlexLayout.grid ? 4.0 : null,
+                        runSpacing: layout == FlexLayout.grid ? 4.0 : null,
+                        getItemsPerRow: _getItemsPerRow,
+                      )
+                    ],
+                  ),
                 );
               },
             ),
