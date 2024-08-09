@@ -66,11 +66,11 @@ class AccountList extends ConsumerWidget {
           children: [
             if (pinnedCreds.isNotEmpty) ...[
               Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                padding: const EdgeInsets.only(left: 18, bottom: 8),
                 child: Text(l10n.s_pinned, style: labelStyle),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: FlexBox<OathPair>(
                   items: pinnedCreds.toList(),
                   itemBuilder: (value) => AccountView(
@@ -89,7 +89,7 @@ class AccountList extends ConsumerWidget {
             if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
               const SizedBox(height: 24),
               Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                padding: const EdgeInsets.only(left: 18, bottom: 8),
                 child: Text(
                   l10n.s_accounts,
                   style: labelStyle,
@@ -97,7 +97,7 @@ class AccountList extends ConsumerWidget {
               ),
             ],
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: FlexBox<OathPair>(
                 items: creds.toList(),
                 itemBuilder: (value) => AccountView(

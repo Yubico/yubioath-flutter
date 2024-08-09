@@ -72,7 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           homeBuildActions(context, widget.deviceData, ref),
       builder: (context, expanded) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
