@@ -385,7 +385,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 final layout = ref.watch(passkeysLayoutProvider);
                 return Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 8.0),
                   child: AppTextFormField(
                     key: searchField,
                     controller: searchController,
@@ -532,7 +532,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
               builder: (context, ref, child) {
                 final layout = ref.watch(passkeysLayoutProvider);
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
