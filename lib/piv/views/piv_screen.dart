@@ -201,7 +201,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                           }),
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
                           children: [
                             ...normalSlots.map(

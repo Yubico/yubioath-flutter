@@ -411,7 +411,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 8.0),
                   child: AppTextFormField(
                     key: searchField,
                     controller: searchController,

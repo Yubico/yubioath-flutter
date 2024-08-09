@@ -60,47 +60,57 @@ class AccountList extends ConsumerWidget {
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
       child: Padding(
-        padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
+        padding: const EdgeInsets.only(top: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (pinnedCreds.isNotEmpty) ...[
-              Text(l10n.s_pinned, style: labelStyle),
-              const SizedBox(height: 8),
-              FlexBox<OathPair>(
-                items: pinnedCreds.toList(),
-                itemBuilder: (value) => AccountView(
-                  value.credential,
-                  expanded: expanded,
-                  selected: value.credential == selected,
-                  large: pinnedLayout == FlexLayout.grid,
+              Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                child: Text(l10n.s_pinned, style: labelStyle),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: FlexBox<OathPair>(
+                  items: pinnedCreds.toList(),
+                  itemBuilder: (value) => AccountView(
+                    value.credential,
+                    expanded: expanded,
+                    selected: value.credential == selected,
+                    large: pinnedLayout == FlexLayout.grid,
+                  ),
+                  cellMinWidth: 250,
+                  spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
+                  runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
+                  layout: pinnedLayout,
                 ),
-                cellMinWidth: 250,
-                spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
-                runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
-                layout: pinnedLayout,
               ),
             ],
             if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
               const SizedBox(height: 24),
-              Text(
-                l10n.s_accounts,
-                style: labelStyle,
+              Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                child: Text(
+                  l10n.s_accounts,
+                  style: labelStyle,
+                ),
               ),
-              const SizedBox(height: 8),
             ],
-            FlexBox<OathPair>(
-              items: creds.toList(),
-              itemBuilder: (value) => AccountView(
-                value.credential,
-                expanded: expanded,
-                selected: value.credential == selected,
-                large: normalLayout == FlexLayout.grid,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: FlexBox<OathPair>(
+                items: creds.toList(),
+                itemBuilder: (value) => AccountView(
+                  value.credential,
+                  expanded: expanded,
+                  selected: value.credential == selected,
+                  large: normalLayout == FlexLayout.grid,
+                ),
+                cellMinWidth: 250,
+                spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
+                runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
+                layout: normalLayout,
               ),
-              cellMinWidth: 250,
-              spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
-              runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
-              layout: normalLayout,
             ),
           ],
         ),
