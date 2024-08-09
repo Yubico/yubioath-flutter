@@ -71,9 +71,9 @@ class MessagePage extends StatelessWidget {
         delayedContent: delayedContent,
         builder: (context, _) => Padding(
           padding: EdgeInsets.only(
-              left: 16.0,
+              left: 18.0,
               top: 0.0,
-              right: 16.0,
+              right: 18.0,
               bottom: centered && actionsBuilder == null ? 96 : 0),
           child: SizedBox(
             width: centered ? 250 : 350,

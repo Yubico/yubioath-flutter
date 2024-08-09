@@ -45,6 +45,8 @@
     "s_hide_window": "ウィンドウを非表示",
     "s_expand_navigation": "ナビゲーションを展開",
     "s_collapse_navigation": "ナビゲーションを閉じる",
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
@@ -120,6 +122,12 @@
     "s_system_default": "システムデフォルト",
     "s_light_mode": "ライトモード",
     "s_dark_mode": "ダークモード",
+
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "選択してスキャン",
@@ -410,6 +418,7 @@
     "s_pin_account": "アカウントをピン留めする",
     "s_unpin_account": "アカウントのピン留めを解除",
     "s_no_pinned_accounts": "ピン留めされたアカウントはありません",
+    "s_pinned": null,
     "l_pin_account_desc": "重要なアカウントをまとめて保持",
     "s_rename_account": "アカウント名を変更",
     "l_rename_account_desc": "アカウントの発行者/名前を編集",

@@ -45,6 +45,8 @@
     "s_hide_window": "Ukryj okno",
     "s_expand_navigation": null,
     "s_collapse_navigation": null,
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "Zmienić nazwę {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -120,6 +122,12 @@
     "s_system_default": "Zgodny z systemem",
     "s_light_mode": "Jasny",
     "s_dark_mode": "Ciemny",
+
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Wybierz, aby skanować",
@@ -410,6 +418,7 @@
     "s_pin_account": "Przypnij konto",
     "s_unpin_account": "Odepnij konto",
     "s_no_pinned_accounts": "Brak przypiętych kont",
+    "s_pinned": null,
     "l_pin_account_desc": "Przechowuj ważne konta razem",
     "s_rename_account": "Zmień nazwę konta",
     "l_rename_account_desc": "Edytuj wydawcę/nazwę konta",

@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
+import '../widgets/flex_box.dart';
 import 'models.dart';
 
 final passkeysSearchProvider =
@@ -31,6 +32,11 @@ class PasskeysSearchNotifier extends StateNotifier<String> {
     state = value;
   }
 }
+
+final passkeysLayoutProvider =
+    StateNotifierProvider<LayoutNotifier, FlexLayout>(
+  (ref) => LayoutNotifier('FIDO_PASSKEYS_LAYOUT', ref.watch(prefProvider)),
+);
 
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
