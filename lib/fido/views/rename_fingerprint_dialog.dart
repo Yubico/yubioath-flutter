@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,20 @@ class RenameFingerprintDialog extends ConsumerStatefulWidget {
 
 class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   late String _label;
+  late FocusNode _labelFocus;
   _RenameAccountDialogState();
 
   @override
   void initState() {
     super.initState();
     _label = widget.fingerprint.name ?? '';
+    _labelFocus = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _labelFocus.dispose();
+    super.dispose();
   }
 
   _submit() async {
@@ -94,6 +102,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
             Text(l10n.p_will_change_label_fp),
             AppTextFormField(
               initialValue: _label,
+              focusNode: _labelFocus,
               maxLength: 15,
               inputFormatters: [limitBytesLength(15)],
               buildCounter: buildByteCounterFor(_label),
@@ -110,6 +119,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               onFieldSubmitted: (_) {
                 if (_label.isNotEmpty) {
                   _submit();
+                } else {
+                  _labelFocus.requestFocus();
                 }
               },
             ).init(),

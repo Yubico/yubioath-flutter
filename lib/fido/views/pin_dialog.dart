@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,6 +54,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   final _currentPinFocus = FocusNode();
   final _newPinController = TextEditingController();
   final _newPinFocus = FocusNode();
+  final _confirmPinFocus = FocusNode();
   String _confirmPin = '';
   String? _currentPinError;
   String? _newPinError;
@@ -68,6 +71,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     _currentPinFocus.dispose();
     _newPinController.dispose();
     _newPinFocus.dispose();
+    _confirmPinFocus.dispose();
     super.dispose();
   }
 
@@ -135,23 +139,32 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Symbols.pin),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isObscureCurrent
-                        ? Symbols.visibility
-                        : Symbols.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscureCurrent = !_isObscureCurrent;
-                      });
-                    },
-                    tooltip:
-                        _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
+                  suffixIcon: ExcludeFocusTraversal(
+                    excluding: Platform.isAndroid,
+                    child: IconButton(
+                      icon: Icon(_isObscureCurrent
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscureCurrent = !_isObscureCurrent;
+                        });
+                      },
+                      tooltip:
+                          _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
+                    ),
                   ),
                 ),
+                textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
                   });
+                },
+                onFieldSubmitted: (_) {
+                  if (_currentPinController.text.length < minPinLength) {
+                    _currentPinFocus.requestFocus();
+                  }
                 },
               ).init(),
             ],
@@ -176,27 +189,37 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Symbols.pin),
-                suffixIcon: IconButton(
-                  icon: Icon(_isObscureNew
-                      ? Symbols.visibility
-                      : Symbols.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _isObscureNew = !_isObscureNew;
-                    });
-                  },
-                  tooltip: _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
+                suffixIcon: ExcludeFocusTraversal(
+                  excluding: Platform.isAndroid,
+                  child: IconButton(
+                    icon: Icon(_isObscureNew
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureNew = !_isObscureNew;
+                      });
+                    },
+                    tooltip: _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
+                  ),
                 ),
               ),
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _newIsWrong = false;
                 });
               },
+              onFieldSubmitted: (_) {
+                if (_newPinController.text.length < minPinLength) {
+                  _newPinFocus.requestFocus();
+                }
+              },
             ).init(),
             AppTextFormField(
               key: confirmPin,
               initialValue: _confirmPin,
+              focusNode: _confirmPinFocus,
               maxLength: maxPinLength,
               inputFormatters: [limitBytesLength(maxPinLength)],
               buildCounter: buildByteCounterFor(_confirmPin),
@@ -226,6 +249,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         : null,
                 helperText: '', // Prevents resizing when errorText shown
               ),
+              textInputAction: TextInputAction.done,
               onChanged: (value) {
                 setState(() {
                   _confirmPin = value;
@@ -234,6 +258,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               onFieldSubmitted: (_) {
                 if (isValid) {
                   _submit();
+                } else {
+                  _confirmPinFocus.requestFocus();
                 }
               },
             ).init(),
