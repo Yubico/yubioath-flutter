@@ -182,7 +182,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           },
                           child: Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
+                                const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Column(children: [
                               ...otpState.slots.map((e) => _SlotListItem(
                                     e,

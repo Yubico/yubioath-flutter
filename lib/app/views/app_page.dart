@@ -374,7 +374,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 widget.centered ? Alignment.center : Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(
-                  top: 16, bottom: 0, left: 16, right: 16),
+                  top: 16, bottom: 0, left: 18, right: 18),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 4,
@@ -385,7 +385,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         if (widget.footnote != null)
           Padding(
             padding:
-                const EdgeInsets.only(bottom: 16, top: 33, left: 16, right: 16),
+                const EdgeInsets.only(bottom: 16, top: 33, left: 18, right: 18),
             child: Opacity(
               opacity: 0.6,
               child: Text(
@@ -415,7 +415,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    left: 16.0, right: 8.0, bottom: 24.0, top: 4.0),
+                    left: 18.0, right: 18.0, bottom: 24.0, top: 4.0),
                 child: _buildTitle(context),
               ),
             ),
@@ -468,7 +468,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                       child: Padding(
                         key: _sliverTitleWrapperGlobalKey,
                         padding: const EdgeInsets.only(
-                            left: 16.0, right: 8.0, bottom: 12.0, top: 4.0),
+                            left: 18.0, right: 18.0, bottom: 12.0, top: 4.0),
                         child: _buildTitle(context),
                       ),
                     ),
