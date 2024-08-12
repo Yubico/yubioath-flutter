@@ -546,6 +546,9 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                           cred,
                           expanded: expanded,
                           selected: _selected == cred,
+                          tileColor: layout == FlexLayout.grid
+                              ? Theme.of(context).hoverColor
+                              : null,
                         ),
                         layout: layout,
                         cellMinWidth: 265,
@@ -576,9 +579,10 @@ class _CredentialListItem extends StatelessWidget {
   final FidoCredential credential;
   final bool selected;
   final bool expanded;
+  final Color? tileColor;
 
   const _CredentialListItem(this.credential,
-      {required this.expanded, required this.selected});
+      {required this.expanded, required this.selected, this.tileColor});
 
   @override
   Widget build(BuildContext context) {
@@ -591,6 +595,7 @@ class _CredentialListItem extends StatelessWidget {
         backgroundColor: colorScheme.secondary,
         child: const Icon(Symbols.passkey),
       ),
+      tileColor: tileColor,
       title: credential.rpId,
       subtitle: credential.userName,
       trailing: expanded

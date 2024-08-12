@@ -33,6 +33,7 @@ class AppListItem<T> extends ConsumerStatefulWidget {
   final Widget Function(BuildContext context)? itemBuilder;
   final Intent? tapIntent;
   final Intent? doubleTapIntent;
+  final Color? tileColor;
   final bool selected;
 
   const AppListItem(
@@ -47,6 +48,7 @@ class AppListItem<T> extends ConsumerStatefulWidget {
     this.itemBuilder,
     this.tapIntent,
     this.doubleTapIntent,
+    this.tileColor,
     this.selected = false,
   });
 
@@ -134,6 +136,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                           borderRadius: BorderRadius.circular(16)),
                       selectedTileColor: colorScheme.secondaryContainer,
                       selectedColor: colorScheme.onSecondaryContainer,
+                      tileColor: widget.tileColor,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                       selected: widget.selected,
                       leading: widget.leading,
