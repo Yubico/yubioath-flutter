@@ -101,6 +101,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
             Text(l10n.q_rename_target(widget.fingerprint.label)),
             Text(l10n.p_will_change_label_fp),
             AppTextFormField(
+              autofocus: true,
               initialValue: _label,
               focusNode: _labelFocus,
               maxLength: 15,
