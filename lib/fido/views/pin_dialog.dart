@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,6 +88,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final isValid =
         currentPinLenOk && newPinLenOk && _newPinController.text == _confirmPin;
 
+    final newPinEnabled = !_isBlocked && currentPinLenOk;
+    final confirmPinEnabled = !_isBlocked && currentPinLenOk && newPinLenOk;
+
     final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
 
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
@@ -139,20 +140,17 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
                   prefixIcon: const Icon(Symbols.pin),
-                  suffixIcon: ExcludeFocusTraversal(
-                    excluding: Platform.isAndroid,
-                    child: IconButton(
-                      icon: Icon(_isObscureCurrent
-                          ? Symbols.visibility
-                          : Symbols.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscureCurrent = !_isObscureCurrent;
-                        });
-                      },
-                      tooltip:
-                          _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
-                    ),
+                  suffixIcon: IconButton(
+                    icon: Icon(_isObscureCurrent
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureCurrent = !_isObscureCurrent;
+                      });
+                    },
+                    tooltip:
+                        _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
                   ),
                 ),
                 textInputAction: TextInputAction.next,
@@ -164,6 +162,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 onFieldSubmitted: (_) {
                   if (_currentPinController.text.length < minPinLength) {
                     _currentPinFocus.requestFocus();
+                  } else {
+                    _newPinFocus.requestFocus();
                   }
                 },
               ).init(),
@@ -185,12 +185,12 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
-                enabled: !_isBlocked && currentPinLenOk,
+                enabled: newPinEnabled,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Symbols.pin),
                 suffixIcon: ExcludeFocusTraversal(
-                  excluding: Platform.isAndroid,
+                  excluding: !newPinEnabled,
                   child: IconButton(
                     icon: Icon(_isObscureNew
                         ? Symbols.visibility
@@ -213,6 +213,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               onFieldSubmitted: (_) {
                 if (_newPinController.text.length < minPinLength) {
                   _newPinFocus.requestFocus();
+                } else {
+                  _confirmPinFocus.requestFocus();
                 }
               },
             ).init(),
@@ -229,19 +231,22 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Symbols.pin),
-                suffixIcon: IconButton(
-                  icon: Icon(_isObscureConfirm
-                      ? Symbols.visibility
-                      : Symbols.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _isObscureConfirm = !_isObscureConfirm;
-                    });
-                  },
-                  tooltip:
-                      _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
+                suffixIcon: ExcludeFocusTraversal(
+                  excluding: !confirmPinEnabled,
+                  child: IconButton(
+                    icon: Icon(_isObscureConfirm
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureConfirm = !_isObscureConfirm;
+                      });
+                    },
+                    tooltip:
+                        _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
+                  ),
                 ),
-                enabled: !_isBlocked && currentPinLenOk && newPinLenOk,
+                enabled: confirmPinEnabled,
                 errorText:
                     _newPinController.text.length == _confirmPin.length &&
                             _newPinController.text != _confirmPin
