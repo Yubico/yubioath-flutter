@@ -163,9 +163,26 @@ class _FidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<void> enableEnterpriseAttestation() {
-    // TODO: implement enableEnterpriseAttestation
-    throw UnimplementedError();
+  Future<void> enableEnterpriseAttestation() async {
+    try {
+      final response = jsonDecode(await _methods.invokeMethod(
+        'enableEnterpriseAttestation',
+      ));
+
+      if (response['success'] == true) {
+        _log.debug('Enterprise attestation enabled');
+      }
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled unlock FIDO operation');
+        throw decodedException;
+      }
+
+      _log.debug(
+          'Platform exception during enable enterprise attestation: $pe');
+      rethrow;
+    }
   }
 }
 

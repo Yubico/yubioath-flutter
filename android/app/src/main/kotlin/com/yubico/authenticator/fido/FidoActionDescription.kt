@@ -26,6 +26,7 @@ enum class FidoActionDescription(private val value: Int) {
     DeleteFingerprint(4),
     RenameFingerprint(5),
     RegisterFingerprint(6),
+    EnableEnterpriseAttestation(7),
     ActionFailure(7);
 
     val id: Int
