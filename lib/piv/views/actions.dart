@@ -312,6 +312,7 @@ class PivActions extends ConsumerWidget {
 List<ActionItem> buildSlotActions(
     PivState pivState, PivSlot slot, bool fipsUnready, AppLocalizations l10n) {
   if (fipsUnready) {
+    // TODO: Decide on final look and move strings to .arb file.
     return [
       ActionItem(
           icon: const Icon(Symbols.add),
