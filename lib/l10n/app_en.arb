@@ -332,7 +332,7 @@
     "l_warning_default_puk": "Warning: Default PUK used",
     "l_default_pin_used": "Default PIN used",
     "l_default_puk_used": "Default PUK used",
-    "l_pin_complexity": "PIN complexity is enforced",
+    "l_pin_complexity": "PIN complexity enforced",
 
     "@_passwords": {},
     "s_password": "Password",
