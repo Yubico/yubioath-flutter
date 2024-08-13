@@ -78,6 +78,8 @@ class DeviceConfig with _$DeviceConfig {
 
 @freezed
 class DeviceInfo with _$DeviceInfo {
+  const DeviceInfo._(); // Added constructor
+
   factory DeviceInfo(
       DeviceConfig config,
       int? serial,
@@ -88,8 +90,17 @@ class DeviceInfo with _$DeviceInfo {
       bool isFips,
       bool isSky,
       bool pinComplexity,
-      int fipsCapable) = _DeviceInfo;
+      int fipsCapable,
+      int fipsApproved,
+      int resetBlocked) = _DeviceInfo;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
+
+  /// Gets the tuple fipsCapable, fipsApproved for the given capability.
+  (bool fipsCapable, bool fipsApproved) getFipsStatus(Capability capability) {
+    final capable = fipsCapable & capability.value != 0;
+    final approved = capable && fipsApproved & capability.value != 0;
+    return (capable, approved);
+  }
 }

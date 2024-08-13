@@ -165,8 +165,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
         .contains(deviceData?.info.formFactor);
 
-    final fipsCapable = deviceData?.info.fipsCapable ?? 0;
-    final isFipsCapable = fipsCapable & Capability.piv.value != 0;
+    final isFipsCapable =
+        deviceData?.info.getFipsStatus(Capability.piv).$1 ?? false;
 
     // Old YubiKeys allowed a 4 digit PIN
     final currentMinPinLen = isFipsCapable

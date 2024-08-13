@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -77,9 +78,9 @@ class OathNode(RpcNode):
                 logger.warning("Failed to unwrap access key", exc_info=True)
         return None
 
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = OathSession(connection)
+        self.session = OathSession(connection, scp_params)
         self._key_verifier = None
 
         if self.session.locked:
@@ -193,7 +194,7 @@ class OathNode(RpcNode):
         self.session.set_key(key)
         self._set_key_verifier(key)
         remember &= self._remember_key(key if remember else None)
-        return dict(remembered=remember)
+        return RpcResponse(dict(remembered=remember), ["device_info"])
 
     @action(condition=lambda self: self.session.has_key)
     def unset_key(self, params, event, signal):
@@ -207,7 +208,7 @@ class OathNode(RpcNode):
         self.session.reset()
         self._key_verifier = None
         self._remember_key(None)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @child
     def accounts(self):

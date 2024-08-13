@@ -102,8 +102,12 @@ class RpcSession {
   final String executable;
   late _RpcConnection _connection;
   final StreamController<_Request> _requests = StreamController();
+  final StreamController<String> _flags = StreamController();
+  late final Stream<String> flags;
 
-  RpcSession(this.executable);
+  RpcSession(this.executable) {
+    flags = _flags.stream.asBroadcastStream();
+  }
 
   static void _logEntry(String entry) {
     try {
@@ -230,7 +234,7 @@ class RpcSession {
 
   Future<Map<String, dynamic>> command(String action, List<String>? target,
       {Map? params, Signaler? signal}) {
-    var request = _Request(action, target ?? [], params ?? {}, signal);
+    final request = _Request(action, target ?? [], params ?? {}, signal);
     _requests.add(request);
     return request.completer.future;
   }
@@ -278,6 +282,10 @@ class RpcSession {
           },
           success: (success) {
             request.completer.complete(success.body);
+            for (final flag in success.flags) {
+              _log.traffic('FLAG', flag);
+              _flags.add(flag);
+            }
             completed = true;
           },
           error: (error) {
