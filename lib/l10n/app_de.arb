@@ -149,6 +149,8 @@
         }
     },
     "l_firmware_version": null,
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKey anschließen",
@@ -330,6 +332,7 @@
     "l_warning_default_puk": null,
     "l_default_pin_used": null,
     "l_default_puk_used": null,
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "Passwort",
@@ -339,6 +342,7 @@
     "s_show_password": null,
     "s_hide_password": null,
     "l_optional_password_protection": "Optionaler Passwortschutz",
+    "l_password_protection": null,
     "s_new_password": "Neues Passwort",
     "s_current_password": "Aktuelles Passwort",
     "s_confirm_password": "Passwort bestätigen",
@@ -352,6 +356,7 @@
     "l_keystore_unavailable": "Passwortspeicher des Betriebssystems nicht verfügbar",
     "l_remember_pw_failed": "Konnte Passwort nicht speichern",
     "l_unlock_first": "Zuerst mit Passwort entsperren",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "Das OATH-Passwort für Ihren YubiKey eingeben",
     "p_enter_current_password_or_reset": "Geben Sie Ihr aktuelles Passwort ein. Wenn Sie Ihr Passwort nicht wissen, müssen Sie den YubiKey zurücksetzen.",
     "p_enter_new_password": "Geben Sie Ihr neues Passwort ein. Ein Passwort kann Buchstaben, Ziffern und spezielle Zeichen enthalten.",

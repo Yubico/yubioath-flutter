@@ -95,19 +95,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .map((c) => CapabilityBadge(c))
                               .toList(),
                         ),
-                        // TODO: Make pretty
                         if (widget.deviceData.info.fipsCapable != 0)
-                          Wrap(
-                            spacing: 4,
-                            runSpacing: 8,
-                            children: Capability.values
-                                .where((c) =>
-                                    widget.deviceData.info.fipsApproved &
-                                        c.value !=
-                                    0)
-                                .map((c) => CapabilityBadge(c))
-                                .toList(),
-                          ),
+                          _FipsLegend(),
                         if (serial != null) ...[
                           const SizedBox(height: 32.0),
                           _DeviceColor(
@@ -140,6 +129,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _FipsLegend extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Opacity(
+        opacity: 0.6,
+        child: RichText(
+          text: TextSpan(
+            children: [
+              const WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: Icon(
+                    Symbols.shield,
+                    size: 12,
+                    fill: 0.0,
+                  ),
+                ),
+              ),
+              TextSpan(
+                text: l10n.l_fips_capable,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 16, right: 4),
+                  child: Icon(
+                    Symbols.shield,
+                    size: 12,
+                    fill: 1.0,
+                  ),
+                ),
+              ),
+              TextSpan(
+                text: l10n.l_fips_approved,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -207,6 +245,15 @@ class _DeviceContent extends ConsumerWidget {
                 .textTheme
                 .titleSmall
                 ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        if (deviceData.info.pinComplexity)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              l10n.l_pin_complexity,
+              style: Theme.of(context).textTheme.titleSmall?.apply(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
           ),
       ],
     );

@@ -149,6 +149,8 @@
         }
     },
     "l_firmware_version": "Version du firmware : {version}",
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insérez votre YubiKey",
@@ -330,6 +332,7 @@
     "l_warning_default_puk": "Attention : PUK par défaut utilisé",
     "l_default_pin_used": "Code PIN par défaut utilisé",
     "l_default_puk_used": "PUK par défaut utilisé",
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "Mot de passe",
@@ -339,6 +342,7 @@
     "s_show_password": "Montrer mot de passe",
     "s_hide_password": "Masquer mot de passe",
     "l_optional_password_protection": "Protection par mot de passe facultative",
+    "l_password_protection": null,
     "s_new_password": "Nouveau mot de passe",
     "s_current_password": "Mot de passe actuel",
     "s_confirm_password": "Confirmer mot de passe",
@@ -352,6 +356,7 @@
     "l_keystore_unavailable": "OS Keystore indisponible",
     "l_remember_pw_failed": "Mémorisation mot de passe impossible",
     "l_unlock_first": "Débloquez d'abord avec mot de passe",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "Saisissez le mot de passe OATH de votre YubiKey",
     "p_enter_current_password_or_reset": "Saisissez votre mot de passe actuel. Vous ne connaissez votre mot de passe\u00a0? Réinitialisez la YubiKey.",
     "p_enter_new_password": "Saisissez votre nouveau mot de passe. Un mot de passe peut inclure des lettres, chiffres et caractères spéciaux.",

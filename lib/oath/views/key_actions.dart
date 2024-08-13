@@ -53,7 +53,7 @@ Widget oathBuildActions(
     subtitle = l10n.l_unlock_first;
     enabled = false;
   } else if (fipsCapable & !fipsApproved) {
-    subtitle = 'Set a password first'; // TODO: Replace with l10n
+    subtitle = l10n.l_set_password_first;
     enabled = false;
   } else if (capacity != null) {
     subtitle = l10n.l_accounts_used(used, capacity);
@@ -101,7 +101,7 @@ Widget oathBuildActions(
             feature: features.actionsPassword,
             title:
                 oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password,
-            subtitle: l10n.l_optional_password_protection,
+            subtitle: l10n.l_password_protection,
             icon: const Icon(Symbols.password),
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);

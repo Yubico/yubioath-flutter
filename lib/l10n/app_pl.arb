@@ -149,6 +149,8 @@
         }
     },
     "l_firmware_version": null,
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Podłącz klucz YubiKey",
@@ -330,6 +332,7 @@
     "l_warning_default_puk": null,
     "l_default_pin_used": null,
     "l_default_puk_used": null,
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "Hasło",
@@ -339,6 +342,7 @@
     "s_show_password": "Pokaż hasło",
     "s_hide_password": "Ukryj hasło",
     "l_optional_password_protection": "Opcjonalna ochrona hasłem",
+    "l_password_protection": null,
     "s_new_password": "Nowe hasło",
     "s_current_password": "Aktualne hasło",
     "s_confirm_password": "Potwierdź hasło",
@@ -352,6 +356,7 @@
     "l_keystore_unavailable": "Magazyn kluczy systemu operacyjnego jest niedostępny",
     "l_remember_pw_failed": "Nie udało się zapamiętać hasła",
     "l_unlock_first": "Najpierw odblokuj hasłem",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "Wprowadź hasło OATH dla klucza YubiKey",
     "p_enter_current_password_or_reset": "Wprowadź aktualne hasło. Jeśli go nie znasz, musisz zresetować klucz YubiKey.",
     "p_enter_new_password": "Wprowadź nowe hasło. Może ono zawierać litery, cyfry i znaki specjalne.",

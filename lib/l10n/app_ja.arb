@@ -149,6 +149,8 @@
         }
     },
     "l_firmware_version": "ファームウェアバージョン: {version}",
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKeyを挿入してください",
@@ -330,6 +332,7 @@
     "l_warning_default_puk": "警告: デフォルトのPUKが使用されています",
     "l_default_pin_used": "デフォルトのPINが使用されています",
     "l_default_puk_used": "既定のPUKを使用",
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "パスワード",
@@ -339,6 +342,7 @@
     "s_show_password": "パスワードを表示",
     "s_hide_password": "パスワードを非表示",
     "l_optional_password_protection": "オプションのパスワード保護",
+    "l_password_protection": null,
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
     "s_confirm_password": "パスワードを確認",
@@ -352,6 +356,7 @@
     "l_keystore_unavailable": "OSのキーストアを利用できません",
     "l_remember_pw_failed": "パスワードを記憶できませんでした",
     "l_unlock_first": "最初にパスワードでロックを解除",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "YubiKeyのOATHパスワードを入力",
     "p_enter_current_password_or_reset": "現在のパスワードを入力してください。パスワードがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_enter_new_password": "新しいパスワードを入力してください。パスワードには文字、数字、特殊文字を含めることができます。",
