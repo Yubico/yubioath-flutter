@@ -141,41 +141,51 @@ class _FipsLegend extends StatelessWidget {
       padding: const EdgeInsets.only(top: 16),
       child: Opacity(
         opacity: 0.6,
-        child: RichText(
-          text: TextSpan(
-            children: [
-              const WidgetSpan(
-                alignment: PlaceholderAlignment.middle,
-                child: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: Icon(
-                    Symbols.shield,
-                    size: 12,
-                    fill: 0.0,
+        child: Wrap(
+          runSpacing: 0,
+          spacing: 16,
+          children: [
+            RichText(
+              text: TextSpan(
+                children: [
+                  const WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: Icon(
+                        Symbols.shield,
+                        size: 12,
+                        fill: 0.0,
+                      ),
+                    ),
                   ),
-                ),
+                  TextSpan(
+                      text: l10n.l_fips_capable,
+                      style: Theme.of(context).textTheme.bodySmall),
+                ],
               ),
-              TextSpan(
-                text: l10n.l_fips_capable,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const WidgetSpan(
-                alignment: PlaceholderAlignment.middle,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16, right: 4),
-                  child: Icon(
-                    Symbols.shield,
-                    size: 12,
-                    fill: 1.0,
+            ),
+            RichText(
+              text: TextSpan(
+                children: [
+                  const WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: Icon(
+                        Symbols.shield,
+                        size: 12,
+                        fill: 1.0,
+                      ),
+                    ),
                   ),
-                ),
+                  TextSpan(
+                      text: l10n.l_fips_approved,
+                      style: Theme.of(context).textTheme.bodySmall),
+                ],
               ),
-              TextSpan(
-                text: l10n.l_fips_approved,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
