@@ -608,7 +608,7 @@ class FidoManager(
 
     private suspend fun enableEnterpriseAttestation(): String =
         connectionHelper.useSession(FidoActionDescription.EnableEnterpriseAttestation) { fidoSession ->
-            if (Config.isSupported(fidoSession.cachedInfo)) {
+            try {
                 val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
                 val clientPin = ClientPin(fidoSession, uvAuthProtocol)
                 val token = if (pinStore.hasPin()) {
@@ -618,34 +618,29 @@ class FidoManager(
                         null
                     )
                 } else null
+
                 val config = Config(fidoSession, uvAuthProtocol, token)
-
-                try {
-                    config.enableEnterpriseAttestation()
-                    fidoViewModel.setSessionState(
-                        Session(
-                            fidoSession.info,
-                            pinStore.hasPin(),
-                            pinRetries
-                        )
+                config.enableEnterpriseAttestation()
+                fidoViewModel.setSessionState(
+                    Session(
+                        fidoSession.info,
+                        pinStore.hasPin(),
+                        pinRetries
                     )
-                } catch (e: Exception) {
-                    logger.error("Failed to enable enterprise attestation. ", e)
-                    return@useSession JSONObject(
-                        mapOf(
-                            "success" to false,
-                        )
-                    ).toString()
-                }
-            } else {
-                logger.debug("authenticatorConfig not supported, ignoring call to enableEnterpriseAttestation")
-            }
-
-            return@useSession JSONObject(
-                mapOf(
-                    "success" to true,
                 )
-            ).toString()
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to true,
+                    )
+                ).toString()
+            } catch (e: Exception) {
+                logger.error("Failed to enable enterprise attestation. ", e)
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to false,
+                    )
+                ).toString()
+            }
         }
 
     override fun onDisconnected() {
