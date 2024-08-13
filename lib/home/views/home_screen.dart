@@ -92,7 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           runSpacing: 8,
                           children: Capability.values
                               .where((c) => enabledCapabilities & c.value != 0)
-                              .map((c) => CapabilityBadge(c))
+                              .map((c) => CapabilityBadge(c, noTooltip: true))
                               .toList(),
                         ),
                         if (widget.deviceData.info.fipsCapable != 0)

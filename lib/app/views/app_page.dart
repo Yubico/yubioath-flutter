@@ -709,8 +709,9 @@ class _AppPageState extends ConsumerState<AppPage> {
 
 class CapabilityBadge extends ConsumerWidget {
   final Capability capability;
+  final bool noTooltip;
 
-  const CapabilityBadge(this.capability, {super.key});
+  const CapabilityBadge(this.capability, {super.key, this.noTooltip = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -723,25 +724,32 @@ class CapabilityBadge extends ConsumerWidget {
             ?.info
             .getFipsStatus(capability) ??
         (false, false);
+    final label = fipsCapable
+        ? Row(
+            children: [
+              Icon(
+                Symbols.shield,
+                color: colorScheme.onSecondaryContainer,
+                size: 12,
+                fill: fipsApproved ? 1 : 0,
+              ),
+              const SizedBox(width: 4),
+              text,
+            ],
+          )
+        : text;
     return Badge(
       backgroundColor: colorScheme.secondaryContainer,
       textColor: colorScheme.onSecondaryContainer,
       padding: const EdgeInsets.symmetric(horizontal: 6),
       largeSize: MediaQuery.of(context).textScaler.scale(20),
-      label: fipsCapable
-          ? Row(
-              children: [
-                Icon(
-                  Symbols.shield,
-                  color: colorScheme.onSecondaryContainer,
-                  size: 12,
-                  fill: fipsApproved ? 1 : 0,
-                ),
-                const SizedBox(width: 4),
-                text,
-              ],
+      label: fipsCapable && !noTooltip
+          ? Tooltip(
+              message:
+                  fipsApproved ? l10n.l_fips_approved : l10n.l_fips_capable,
+              child: label,
             )
-          : text,
+          : label,
     );
   }
 }
