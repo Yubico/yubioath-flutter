@@ -42,6 +42,7 @@ import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.fido.ctap.BioEnrollment
 import com.yubico.yubikit.fido.ctap.ClientPin
+import com.yubico.yubikit.fido.ctap.Config
 import com.yubico.yubikit.fido.ctap.CredentialManagement
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
 import com.yubico.yubikit.fido.ctap.FingerprintBioEnrollment
@@ -158,6 +159,8 @@ class FidoManager(
                 )
 
                 "cancelRegisterFingerprint" -> cancelRegisterFingerprint()
+
+                "enableEnterpriseAttestation" -> enableEnterpriseAttestation()
 
                 else -> throw NotImplementedError()
             }
@@ -603,6 +606,42 @@ class FidoManager(
             ).toString()
         }
 
+    private suspend fun enableEnterpriseAttestation(): String =
+        connectionHelper.useSession(FidoActionDescription.EnableEnterpriseAttestation) { fidoSession ->
+            try {
+                val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
+                val clientPin = ClientPin(fidoSession, uvAuthProtocol)
+                val token = if (pinStore.hasPin()) {
+                    clientPin.getPinToken(
+                        pinStore.getPin(),
+                        ClientPin.PIN_PERMISSION_ACFG,
+                        null
+                    )
+                } else null
+
+                val config = Config(fidoSession, uvAuthProtocol, token)
+                config.enableEnterpriseAttestation()
+                fidoViewModel.setSessionState(
+                    Session(
+                        fidoSession.info,
+                        pinStore.hasPin(),
+                        pinRetries
+                    )
+                )
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to true,
+                    )
+                ).toString()
+            } catch (e: Exception) {
+                logger.error("Failed to enable enterprise attestation. ", e)
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to false,
+                    )
+                ).toString()
+            }
+        }
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {

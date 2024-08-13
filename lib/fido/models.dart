@@ -50,6 +50,8 @@ class FidoState with _$FidoState {
   bool get forcePinChange => info['force_pin_change'] == true;
 
   bool get pinBlocked => pinRetries == 0;
+
+  bool? get enterpriseAttestation => info['options']['ep'];
 }
 
 @freezed
