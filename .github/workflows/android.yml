@@ -7,22 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone yubikit-android
-        uses: actions/checkout@v4
-        with:
-          repository: Yubico/yubikit-android
-          ref: dain/scp
-          path: kit
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Build yubikit-android
-        run: ./gradlew --stacktrace build publishToMavenLocal
-        working-directory: ./kit
 
       - uses: actions/checkout@v4
         with:
