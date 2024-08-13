@@ -123,6 +123,8 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       });
     }, onError: (error, stacktrace) {
       _log.error('Error adding fingerprint', error, stacktrace);
+
+      if (!mounted) return;
       Navigator.of(context).pop();
       final l10n = AppLocalizations.of(context)!;
       final String errorMessage;

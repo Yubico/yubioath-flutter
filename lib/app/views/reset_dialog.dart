@@ -163,6 +163,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                         _subscription = null;
                       }, onError: (e) {
                         _log.error('Error performing FIDO reset', e);
+
+                        if (!context.mounted) return;
                         Navigator.of(context).pop();
                         final String errorMessage;
                         // TODO: Make this cleaner than importing desktop specific RpcError.
