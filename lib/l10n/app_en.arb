@@ -160,6 +160,8 @@
         }
     },
     "l_firmware_version": "Firmware version: {version}",
+    "l_fips_capable": "FIPS capable",
+    "l_fips_approved": "FIPS approved",
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insert your YubiKey",
@@ -345,6 +347,7 @@
     "l_warning_default_puk": "Warning: Default PUK used",
     "l_default_pin_used": "Default PIN used",
     "l_default_puk_used": "Default PUK used",
+    "l_pin_complexity": "PIN complexity enforced",
 
     "@_passwords": {},
     "s_password": "Password",
@@ -354,6 +357,7 @@
     "s_show_password": "Show password",
     "s_hide_password": "Hide password",
     "l_optional_password_protection": "Optional password protection",
+    "l_password_protection": "Password protection of accounts",
     "s_new_password": "New password",
     "s_current_password": "Current password",
     "s_confirm_password": "Confirm password",
@@ -367,6 +371,7 @@
     "l_keystore_unavailable": "OS Keystore unavailable",
     "l_remember_pw_failed": "Failed to remember password",
     "l_unlock_first": "Unlock with password first",
+    "l_set_password_first": "Set a password first",
     "l_enter_oath_pw": "Enter the OATH password for your YubiKey",
     "p_enter_current_password_or_reset": "Enter your current password. If you don't know your password, you'll need to reset the YubiKey.",
     "p_enter_new_password": "Enter your new password. A password may contain letters, numbers and special characters.",

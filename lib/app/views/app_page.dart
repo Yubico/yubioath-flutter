@@ -30,6 +30,7 @@ import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
 import '../shortcuts.dart';
+import '../state.dart';
 import 'fs_dialog.dart';
 import 'keys.dart';
 import 'navigation.dart';
@@ -764,23 +765,49 @@ class _GestureDetectorAppBar extends StatelessWidget
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class CapabilityBadge extends StatelessWidget {
+class CapabilityBadge extends ConsumerWidget {
   final Capability capability;
+  final bool noTooltip;
 
-  const CapabilityBadge(this.capability, {super.key});
+  const CapabilityBadge(this.capability, {super.key, this.noTooltip = false});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final text = Text(capability.getDisplayName(l10n));
+    final (fipsCapable, fipsApproved) = ref
+            .watch(currentDeviceDataProvider)
+            .valueOrNull
+            ?.info
+            .getFipsStatus(capability) ??
+        (false, false);
+    final label = fipsCapable
+        ? Row(
+            children: [
+              Icon(
+                Symbols.shield,
+                color: colorScheme.onSecondaryContainer,
+                size: 12,
+                fill: fipsApproved ? 1 : 0,
+              ),
+              const SizedBox(width: 4),
+              text,
+            ],
+          )
+        : text;
     return Badge(
       backgroundColor: colorScheme.secondaryContainer,
       textColor: colorScheme.onSecondaryContainer,
       padding: const EdgeInsets.symmetric(horizontal: 6),
       largeSize: MediaQuery.of(context).textScaler.scale(20),
-      label: Text(
-        capability.getDisplayName(l10n),
-      ),
+      label: fipsCapable && !noTooltip
+          ? Tooltip(
+              message:
+                  fipsApproved ? l10n.l_fips_approved : l10n.l_fips_capable,
+              child: label,
+            )
+          : label,
     );
   }
 }
