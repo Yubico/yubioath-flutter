@@ -45,6 +45,8 @@
     "s_hide_window": "Masquer fenêtre",
     "s_expand_navigation": "Développer la navigation",
     "s_collapse_navigation": "Réduire la navigation",
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "Renommer {label}\u00a0?",
     "@q_rename_target": {
         "placeholders": {
@@ -120,6 +122,12 @@
     "s_system_default": "Système par défaut",
     "s_light_mode": "Thème clair",
     "s_dark_mode": "Thème sombre",
+
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Sélectionner pour scanner",
@@ -410,6 +418,7 @@
     "s_pin_account": "Épingler compte",
     "s_unpin_account": "Détacher compte",
     "s_no_pinned_accounts": "Aucun compte épinglé",
+    "s_pinned": null,
     "l_pin_account_desc": "Conserver vos comptes importants ensemble",
     "s_rename_account": "Renommer compte",
     "l_rename_account_desc": "Modifier émetteur/nom du compte",

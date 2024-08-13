@@ -45,6 +45,8 @@
     "s_hide_window": "Hide window",
     "s_expand_navigation": "Expand navigation",
     "s_collapse_navigation": "Collapse navigation",
+    "s_expand_sidebar": "Expand sidebar",
+    "s_collapse_sidebar": "Collapse sidebar",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -120,6 +122,12 @@
     "s_system_default": "System default",
     "s_light_mode": "Light mode",
     "s_dark_mode": "Dark mode",
+
+    "@_layout": {},
+    "s_list_layout": "List layout",
+    "s_grid_layout": "Grid layout",
+    "s_mixed_layout": "Mixed layout",
+    "s_select_layout": "Select layout",
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Select to scan",
@@ -410,6 +418,7 @@
     "s_pin_account": "Pin account",
     "s_unpin_account": "Unpin account",
     "s_no_pinned_accounts": "No pinned accounts",
+    "s_pinned": "Pinned",
     "l_pin_account_desc": "Keep your important accounts together",
     "s_rename_account": "Rename account",
     "l_rename_account_desc": "Edit the issuer/name of the account",

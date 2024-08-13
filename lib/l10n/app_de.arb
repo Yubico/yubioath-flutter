@@ -45,6 +45,8 @@
     "s_hide_window": "Fenster verstecken",
     "s_expand_navigation": null,
     "s_collapse_navigation": null,
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {
         "placeholders": {
@@ -120,6 +122,12 @@
     "s_system_default": "Standard des Systems",
     "s_light_mode": "Heller Modus",
     "s_dark_mode": "Dunkler Modus",
+
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Zum Scannen auswählen",
@@ -410,6 +418,7 @@
     "s_pin_account": "Konto anpinnen",
     "s_unpin_account": "Konto nicht mehr anpinnen",
     "s_no_pinned_accounts": "Keine angepinnten Konten",
+    "s_pinned": null,
     "l_pin_account_desc": null,
     "s_rename_account": "Konto umbenennen",
     "l_rename_account_desc": null,
