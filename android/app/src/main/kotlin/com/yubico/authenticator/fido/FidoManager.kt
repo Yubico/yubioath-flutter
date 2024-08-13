@@ -252,11 +252,6 @@ class FidoManager(
             ClientPin.PIN_PERMISSION_BE else 0
     }
 
-    private fun getPinPermissionsACFG(fidoSession: YubiKitFidoSession): Int {
-        return if(Config.isSupported(fidoSession.cachedInfo))
-            ClientPin.PIN_PERMISSION_ACFG else 0
-    }
-
     private fun unlockSession(
         fidoSession: YubiKitFidoSession,
         clientPin: ClientPin,
@@ -613,41 +608,44 @@ class FidoManager(
 
     private suspend fun enableEnterpriseAttestation(): String =
         connectionHelper.useSession(FidoActionDescription.EnableEnterpriseAttestation) { fidoSession ->
-
-            val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
-            val clientPin = ClientPin(fidoSession, uvAuthProtocol)
-            val token = if (pinStore.hasPin()) {
-                clientPin.getPinToken(
-                    pinStore.getPin(),
-                    getPinPermissionsACFG(fidoSession),
-                    null
-                )
-            } else null
-            val config = Config(fidoSession, uvAuthProtocol, token)
-
-            try {
-                config.enableEnterpriseAttestation()
-                fidoViewModel.setSessionState(
-                    Session(
-                        fidoSession.info,
-                        pinStore.hasPin(),
-                        pinRetries
+            if (Config.isSupported(fidoSession.cachedInfo)) {
+                val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
+                val clientPin = ClientPin(fidoSession, uvAuthProtocol)
+                val token = if (pinStore.hasPin()) {
+                    clientPin.getPinToken(
+                        pinStore.getPin(),
+                        ClientPin.PIN_PERMISSION_ACFG,
+                        null
                     )
-                )
-                return@useSession JSONObject(
-                    mapOf(
-                        "success" to true,
-                    )
-                ).toString()
+                } else null
+                val config = Config(fidoSession, uvAuthProtocol, token)
 
-            } catch (e: Exception) {
-                logger.error("Failed to enable enterprise attestation. ", e)
-                return@useSession JSONObject(
-                    mapOf(
-                        "success" to false,
+                try {
+                    config.enableEnterpriseAttestation()
+                    fidoViewModel.setSessionState(
+                        Session(
+                            fidoSession.info,
+                            pinStore.hasPin(),
+                            pinRetries
+                        )
                     )
-                ).toString()
+                } catch (e: Exception) {
+                    logger.error("Failed to enable enterprise attestation. ", e)
+                    return@useSession JSONObject(
+                        mapOf(
+                            "success" to false,
+                        )
+                    ).toString()
+                }
+            } else {
+                logger.debug("authenticatorConfig not supported, ignoring call to enableEnterpriseAttestation")
             }
+
+            return@useSession JSONObject(
+                mapOf(
+                    "success" to true,
+                )
+            ).toString()
         }
 
     override fun onDisconnected() {
