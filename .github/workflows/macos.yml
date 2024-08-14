@@ -51,9 +51,8 @@ jobs:
 
     - uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
-        architecture: 'x64'
-        flutter-version: ${{ env.FLUTTER }}
+        channel: master
+        flutter-version: 80c2e84
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
 
