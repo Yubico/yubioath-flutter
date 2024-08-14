@@ -50,6 +50,7 @@ import 'account_helper.dart';
 import 'account_list.dart';
 import 'actions.dart';
 import 'key_actions.dart';
+import 'manage_password_dialog.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
 
@@ -186,21 +187,48 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        actionsBuilder: (context, expanded) => [
-          if (!expanded)
-            ActionChip(
-              label: Text(l10n.s_add_account),
-              onPressed: () async {
-                await addOathAccount(
-                  context,
-                  ref,
-                  widget.devicePath,
-                  widget.oathState,
-                );
-              },
-              avatar: const Icon(Symbols.person_add_alt),
-            )
-        ],
+        actionsBuilder: (context, expanded) {
+          if (expanded) {
+            return [];
+          }
+          final (fipsCapable, fipsApproved) = ref
+                  .watch(currentDeviceDataProvider)
+                  .valueOrNull
+                  ?.info
+                  .getFipsStatus(Capability.oath) ??
+              (false, false);
+
+          if (fipsCapable && !fipsApproved) {
+            return [
+              ActionChip(
+                label: Text(l10n.s_set_password),
+                onPressed: () async {
+                  await showBlurDialog(
+                    context: context,
+                    builder: (context) => ManagePasswordDialog(
+                        widget.devicePath, widget.oathState),
+                  );
+                },
+                avatar: const Icon(Symbols.password),
+              ),
+            ];
+          } else {
+            return [
+              ActionChip(
+                label: Text(l10n.s_add_account),
+                onPressed: () async {
+                  await addOathAccount(
+                    context,
+                    ref,
+                    widget.devicePath,
+                    widget.oathState,
+                  );
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              ),
+            ];
+          }
+        },
         title: l10n.s_accounts,
         capabilities: const [Capability.oath],
         key: keys.noAccountsView,

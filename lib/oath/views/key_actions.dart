@@ -39,6 +39,8 @@ Widget oathBuildActions(
   int? used,
 }) {
   final l10n = AppLocalizations.of(context)!;
+  final colors = Theme.of(context).buttonTheme.colorScheme ??
+      Theme.of(context).colorScheme;
   final capacity = oathState.capacity;
   final (fipsCapable, fipsApproved) = ref
           .watch(currentDeviceDataProvider)
@@ -103,6 +105,9 @@ Widget oathBuildActions(
                 oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password,
             subtitle: l10n.l_password_protection,
             icon: const Icon(Symbols.password),
+            trailing: fipsCapable && !oathState.hasKey
+                ? Icon(Symbols.warning_amber, color: colors.tertiary)
+                : null,
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
               showBlurDialog(
