@@ -68,7 +68,7 @@ jobs:
     - name: Build the app
       run: |
         export VERSION_NAME=`./set-version.py | head -n 1 | sed 's/-.*$//g'`
-        flutter build macos --build-name=$VERSION_NAME
+        flutter build macos --build-name=$VERSION_NAME --verbose
 
     - name: Check generated files
       run: git diff --exit-code
