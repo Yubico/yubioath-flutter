@@ -52,10 +52,16 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        architecture: 'x64'
         flutter-version: ${{ env.FLUTTER }}
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
+
+    - name: Apply Flutter Patch
+      run: |
+        cd $FLUTTER_ROOT
+        git apply $GITHUB_WORKSPACE/macos_assemble.patch
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
 
     - name: Run lints/tests
       env:
