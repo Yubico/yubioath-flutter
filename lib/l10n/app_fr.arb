@@ -906,6 +906,7 @@
 
     "@_key_customization": {},
     "s_set_label": "Définir l'étiquette",
+    "s_set_color": null,
     "s_change_label": "Modifier l'étiquette",
     "s_color": "Couleur",
     "p_set_will_add_custom_name": "Cela donnera un nom personnalisé à votre YubiKey.",

@@ -906,6 +906,7 @@
 
     "@_key_customization": {},
     "s_set_label": "Set label",
+    "s_set_color": "Set color",
     "s_change_label": "Change label",
     "s_color": "Color",
     "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",

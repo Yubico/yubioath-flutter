@@ -906,6 +906,7 @@
 
     "@_key_customization": {},
     "s_set_label": null,
+    "s_set_color": null,
     "s_change_label": null,
     "s_color": null,
     "p_set_will_add_custom_name": null,
