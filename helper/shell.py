@@ -94,9 +94,10 @@ class RpcShell(cmd.Cmd):
         cmd = target.pop() if target else ""
         node = self.get_node(target)
         if node:
-            names = [n + "/" for n in node.get("children", [])]
+            body = node.get("body", {})
+            names = [n + "/" for n in body.get("children", [])]
             if not nodes_only:
-                actions = node.get("actions", [])
+                actions = body.get("actions", [])
                 if "get" in actions:
                     actions.remove("get")
                 names += actions
@@ -104,10 +105,10 @@ class RpcShell(cmd.Cmd):
             return res
         return []
 
-    def completedefault(self, cmd, text, *args):
+    def completedefault(self, cmd, text, *args):  # type: ignore
         return self.completepath(text)
 
-    def completenames(self, cmd, text, *ignored):
+    def completenames(self, cmd, text, *ignored):  # type: ignore
         return self.completepath(text)
 
     def emptyline(self):
