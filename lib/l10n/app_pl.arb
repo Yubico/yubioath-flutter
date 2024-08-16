@@ -656,7 +656,9 @@
     "p_subject_desc": "Nazwa wyróżniająca (DN) sformatowana zgodnie ze specyfikacją RFC 4514.",
     "l_rfc4514_invalid": "Nieprawidłowy format RFC 4514",
     "rfc4514_examples": "Przykłady:\nCN=Przykładowa Nazwa\nCN=jkowalski,DC=przyklad,DC=pl",
+    "s_allow_fingerprint": null,
     "p_cert_options_desc": "Algorytm klucza do użycia, format wyjściowy i data wygaśnięcia (tylko certyfikat).",
+    "p_cert_options_bio_desc": null,
     "s_overwrite_slot": "Nadpisz slot",
     "p_overwrite_slot_desc": "Spowoduje to trwałe nadpisanie istniejącej zawartości w slocie {slot}.",
     "@p_overwrite_slot_desc": {

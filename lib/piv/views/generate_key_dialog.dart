@@ -36,8 +36,9 @@ class GenerateKeyDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final PivState pivState;
   final PivSlot pivSlot;
-  const GenerateKeyDialog(this.devicePath, this.pivState, this.pivSlot,
-      {super.key});
+  final bool showMatch;
+  GenerateKeyDialog(this.devicePath, this.pivState, this.pivSlot, {super.key})
+      : showMatch = pivSlot.slot != SlotId.cardAuth && pivState.supportsBio;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -53,6 +54,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   late DateTime _validTo;
   late DateTime _validToDefault;
   late DateTime _validToMax;
+  late bool _allowMatch;
   bool _generating = false;
 
   @override
@@ -64,6 +66,8 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     _validToDefault = DateTime.utc(now.year + 1, now.month, now.day);
     _validTo = _validToDefault;
     _validToMax = DateTime.utc(now.year + 10, now.month, now.day);
+
+    _allowMatch = widget.showMatch;
   }
 
   @override
@@ -117,6 +121,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                   final result = await pivNotifier.generate(
                     widget.pivSlot.slot,
                     _keyType,
+                    pinPolicy: getPinPolicy(widget.pivSlot.slot, _allowMatch),
                     parameters: switch (_generateType) {
                       GenerateType.publicKey =>
                         PivGenerateParameters.publicKey(),
@@ -183,7 +188,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
               l10n.s_options,
               style: textTheme.bodyLarge,
             ),
-            Text(l10n.p_cert_options_desc),
+            Text(widget.showMatch
+                ? l10n.p_cert_options_bio_desc
+                : l10n.p_cert_options_desc),
             Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 4.0,
@@ -237,6 +244,16 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                 });
                               }
                             },
+                    ),
+                  if (widget.showMatch)
+                    FilterChip(
+                      label: Text(l10n.s_allow_fingerprint),
+                      selected: _allowMatch,
+                      onSelected: (value) {
+                        setState(() {
+                          _allowMatch = value;
+                        });
+                      },
                     ),
                 ]),
             Padding(
