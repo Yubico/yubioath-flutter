@@ -96,7 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         if (widget.deviceData.info.fipsCapable != 0)
                           Padding(
-                            padding: const EdgeInsets.only(top: 16),
+                            padding: const EdgeInsets.only(top: 38),
                             child: _FipsLegend(),
                           ),
                       ],
@@ -216,97 +216,109 @@ class _DeviceContent extends ConsumerWidget {
             ),
             if (serial != null) ...[
               const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Symbols.edit),
-                tooltip: l10n.s_set_label,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                onPressed: () async {
-                  await ref.read(withContextProvider)((context) async {
-                    await _showManageLabelDialog(
-                      initialCustomization ?? KeyCustomization(serial: serial),
-                      context,
-                    );
-                  });
-                },
-              ),
-              Column(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PopupMenuButton(
-                    popUpAnimationStyle:
-                        AnimationStyle(duration: Duration.zero),
-                    menuPadding: EdgeInsets.zero,
-                    tooltip: l10n.s_set_color,
-                    itemBuilder: (context) {
-                      return [
-                        PopupMenuItem(
-                          child: Center(
-                            child: Wrap(
-                              runSpacing: 8,
-                              spacing: 16,
-                              children: [
-                                ...[
-                                  Colors.teal,
-                                  Colors.cyan,
-                                  Colors.blueAccent,
-                                  Colors.deepPurple,
-                                  Colors.red,
-                                  Colors.orange,
-                                  Colors.yellow,
-                                  // add nice color to devices with dynamic color
-                                  if (isAndroid &&
-                                      ref.read(androidSdkVersionProvider) >= 31)
-                                    Colors.lightGreen
-                                ].map((e) => _ColorButton(
-                                      color: e,
-                                      isSelected: customColor?.value == e.value,
+                  IconButton(
+                    icon: const Icon(Symbols.edit),
+                    tooltip: l10n.s_set_label,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    onPressed: () async {
+                      await ref.read(withContextProvider)((context) async {
+                        await _showManageLabelDialog(
+                          initialCustomization ??
+                              KeyCustomization(serial: serial),
+                          context,
+                        );
+                      });
+                    },
+                  ),
+                  Column(
+                    children: [
+                      PopupMenuButton(
+                        popUpAnimationStyle:
+                            AnimationStyle(duration: Duration.zero),
+                        menuPadding: EdgeInsets.zero,
+                        tooltip: l10n.s_set_color,
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                              child: Center(
+                                child: Wrap(
+                                  runSpacing: 8,
+                                  spacing: 16,
+                                  children: [
+                                    ...[
+                                      Colors.teal,
+                                      Colors.cyan,
+                                      Colors.blueAccent,
+                                      Colors.deepPurple,
+                                      Colors.red,
+                                      Colors.orange,
+                                      Colors.yellow,
+                                      // add nice color to devices with dynamic color
+                                      if (isAndroid &&
+                                          ref.read(androidSdkVersionProvider) >=
+                                              31)
+                                        Colors.lightGreen
+                                    ].map((e) => _ColorButton(
+                                          color: e,
+                                          isSelected:
+                                              customColor?.value == e.value,
+                                          onPressed: () {
+                                            _updateColor(e, ref, serial);
+                                            Navigator.of(context).pop();
+                                          },
+                                        )),
+
+                                    // "use default color" button
+                                    RawMaterialButton(
                                       onPressed: () {
-                                        _updateColor(e, ref, serial);
+                                        _updateColor(null, ref, serial);
                                         Navigator.of(context).pop();
                                       },
-                                    )),
-
-                                // "use default color" button
-                                RawMaterialButton(
-                                  onPressed: () {
-                                    _updateColor(null, ref, serial);
-                                    Navigator.of(context).pop();
-                                  },
-                                  constraints: const BoxConstraints(
-                                      minWidth: 26.0, minHeight: 26.0),
-                                  fillColor: defaultColor,
-                                  hoverColor: Colors.black12,
-                                  shape: const CircleBorder(),
-                                  child: Icon(
-                                      customColor == null
-                                          ? Symbols.circle
-                                          : Symbols.clear,
-                                      fill: 1,
-                                      size: 16,
-                                      weight: 700,
-                                      opticalSize: 20,
-                                      color:
-                                          defaultColor.computeLuminance() > 0.7
+                                      constraints: const BoxConstraints(
+                                          minWidth: 26.0, minHeight: 26.0),
+                                      fillColor: defaultColor,
+                                      hoverColor: Colors.black12,
+                                      shape: const CircleBorder(),
+                                      child: Icon(
+                                          customColor == null
+                                              ? Symbols.circle
+                                              : Symbols.clear,
+                                          fill: 1,
+                                          size: 16,
+                                          weight: 700,
+                                          opticalSize: 20,
+                                          color: defaultColor
+                                                      .computeLuminance() >
+                                                  0.7
                                               ? Colors.grey // for bright colors
                                               : Colors.white),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ];
-                    },
-                    icon: Icon(
-                      Symbols.palette,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                              ),
+                            )
+                          ];
+                        },
+                        icon: Icon(
+                          Symbols.palette,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Container(
+                        height: 3.0,
+                        width: 24.0,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.9)),
+                      )
+                    ],
                   ),
-                  Container(
-                    height: 2.0,
-                    width: 24.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: customColor ?? defaultColor),
-                  )
                 ],
               )
             ]
