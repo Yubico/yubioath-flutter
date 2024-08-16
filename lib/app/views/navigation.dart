@@ -59,7 +59,6 @@ class NavigationItem extends StatelessWidget {
                   tooltip: title,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   onPressed: onTap,
-                  color: colorScheme.onSurfaceVariant,
                 ),
               )
             : IconButton(
@@ -67,7 +66,6 @@ class NavigationItem extends StatelessWidget {
                 tooltip: title,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 onPressed: onTap,
-                color: colorScheme.onSurfaceVariant,
               ),
       );
     } else {
