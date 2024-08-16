@@ -229,72 +229,85 @@ class _DeviceContent extends ConsumerWidget {
                   });
                 },
               ),
-              PopupMenuButton(
-                popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-                menuPadding: EdgeInsets.zero,
-                tooltip: l10n.s_set_color,
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      child: Center(
-                        child: Wrap(
-                          runSpacing: 8,
-                          spacing: 16,
-                          children: [
-                            ...[
-                              Colors.teal,
-                              Colors.cyan,
-                              Colors.blueAccent,
-                              Colors.deepPurple,
-                              Colors.red,
-                              Colors.orange,
-                              Colors.yellow,
-                              // add nice color to devices with dynamic color
-                              if (isAndroid &&
-                                  ref.read(androidSdkVersionProvider) >= 31)
-                                Colors.lightGreen
-                            ].map((e) => _ColorButton(
-                                  color: e,
-                                  isSelected: customColor?.value == e.value,
+              Column(
+                children: [
+                  PopupMenuButton(
+                    popUpAnimationStyle:
+                        AnimationStyle(duration: Duration.zero),
+                    menuPadding: EdgeInsets.zero,
+                    tooltip: l10n.s_set_color,
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          child: Center(
+                            child: Wrap(
+                              runSpacing: 8,
+                              spacing: 16,
+                              children: [
+                                ...[
+                                  Colors.teal,
+                                  Colors.cyan,
+                                  Colors.blueAccent,
+                                  Colors.deepPurple,
+                                  Colors.red,
+                                  Colors.orange,
+                                  Colors.yellow,
+                                  // add nice color to devices with dynamic color
+                                  if (isAndroid &&
+                                      ref.read(androidSdkVersionProvider) >= 31)
+                                    Colors.lightGreen
+                                ].map((e) => _ColorButton(
+                                      color: e,
+                                      isSelected: customColor?.value == e.value,
+                                      onPressed: () {
+                                        _updateColor(e, ref, serial);
+                                        Navigator.of(context).pop();
+                                      },
+                                    )),
+
+                                // "use default color" button
+                                RawMaterialButton(
                                   onPressed: () {
-                                    _updateColor(e, ref, serial);
+                                    _updateColor(null, ref, serial);
                                     Navigator.of(context).pop();
                                   },
-                                )),
-
-                            // "use default color" button
-                            RawMaterialButton(
-                              onPressed: () {
-                                _updateColor(null, ref, serial);
-                                Navigator.of(context).pop();
-                              },
-                              constraints: const BoxConstraints(
-                                  minWidth: 26.0, minHeight: 26.0),
-                              fillColor: defaultColor,
-                              hoverColor: Colors.black12,
-                              shape: const CircleBorder(),
-                              child: Icon(
-                                  customColor == null
-                                      ? Symbols.circle
-                                      : Symbols.clear,
-                                  fill: 1,
-                                  size: 16,
-                                  weight: 700,
-                                  opticalSize: 20,
-                                  color: defaultColor.computeLuminance() > 0.7
-                                      ? Colors.grey // for bright colors
-                                      : Colors.white),
+                                  constraints: const BoxConstraints(
+                                      minWidth: 26.0, minHeight: 26.0),
+                                  fillColor: defaultColor,
+                                  hoverColor: Colors.black12,
+                                  shape: const CircleBorder(),
+                                  child: Icon(
+                                      customColor == null
+                                          ? Symbols.circle
+                                          : Symbols.clear,
+                                      fill: 1,
+                                      size: 16,
+                                      weight: 700,
+                                      opticalSize: 20,
+                                      color:
+                                          defaultColor.computeLuminance() > 0.7
+                                              ? Colors.grey // for bright colors
+                                              : Colors.white),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ];
-                },
-                icon: Icon(
-                  Symbols.palette,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                          ),
+                        )
+                      ];
+                    },
+                    icon: Icon(
+                      Symbols.palette,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Container(
+                    height: 2.0,
+                    width: 24.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: customColor ?? defaultColor),
+                  )
+                ],
               )
             ]
           ],
