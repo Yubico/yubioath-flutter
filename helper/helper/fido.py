@@ -401,8 +401,10 @@ class FingerprintNode(RpcNode):
         self.bio.set_name(self.template_id, name)
         self.name = name
         self.refresh()
+        return dict()
 
     @action
     def delete(self, params, event, signal):
         self.bio.remove_enrollment(self.template_id)
         self.refresh()
+        return dict()
