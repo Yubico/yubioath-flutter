@@ -906,6 +906,7 @@
 
     "@_key_customization": {},
     "s_set_label": "ラベルを設定",
+    "s_set_color": null,
     "s_change_label": "ラベルを変更",
     "s_color": "色",
     "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",
