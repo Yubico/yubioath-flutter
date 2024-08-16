@@ -54,7 +54,8 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
   final enterpriseAttestation = state.enterpriseAttestation;
   final showEnterpriseAttestation = enterpriseAttestation != null &&
       !(state.alwaysUv && !state.hasPin) &&
-      !(!state.unlocked && state.hasPin);
+      !(!state.unlocked && state.hasPin) &&
+      fingerprints == null;
   final canEnableEnterpriseAttestation =
       enterpriseAttestation == false && showEnterpriseAttestation;
 

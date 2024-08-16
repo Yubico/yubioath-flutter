@@ -30,6 +30,7 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
@@ -44,6 +45,14 @@ import 'key_actions.dart';
 import 'pin_dialog.dart';
 import 'pin_entry_form.dart';
 
+List<Capability> _getCapabilities(YubiKeyData deviceData) => [
+      Capability.fido2,
+      if (deviceData.info.supportedCapabilities[Transport.usb]! &
+              Capability.piv.value !=
+          0)
+        Capability.piv
+    ];
+
 class FingerprintsScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
 
@@ -52,10 +61,11 @@ class FingerprintsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final capabilities = _getCapabilities(deviceData);
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
               title: l10n.s_fingerprints,
-              capabilities: const [Capability.fido2],
+              capabilities: capabilities,
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
@@ -64,7 +74,7 @@ class FingerprintsScreen extends ConsumerWidget {
           if (error is NoDataException) {
             return MessagePageNotInitialized(
               title: l10n.s_fingerprints,
-              capabilities: const [Capability.fido2],
+              capabilities: capabilities,
             );
           }
           final enabled = deviceData
@@ -73,7 +83,7 @@ class FingerprintsScreen extends ConsumerWidget {
           if (Capability.fido2.value & enabled == 0) {
             return MessagePage(
               title: l10n.s_fingerprints,
-              capabilities: const [Capability.fido2],
+              capabilities: capabilities,
               header: l10n.s_fido_disabled,
               message: l10n.l_webauthn_req_fido2,
             );
@@ -85,23 +95,31 @@ class FingerprintsScreen extends ConsumerWidget {
         },
         data: (fidoState) {
           return fidoState.unlocked
-              ? _FidoUnlockedPage(deviceData.node, fidoState)
-              : _FidoLockedPage(deviceData.node, fidoState);
+              ? _FidoUnlockedPage(deviceData, fidoState)
+              : _FidoLockedPage(deviceData, fidoState);
         });
   }
 }
 
 class _FidoLockedPage extends ConsumerWidget {
-  final DeviceNode node;
+  final YubiKeyData deviceData;
   final FidoState state;
 
-  const _FidoLockedPage(this.node, this.state);
+  const _FidoLockedPage(this.deviceData, this.state);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+
+    final capabilities = [
+      Capability.fido2,
+      if (deviceData.info.supportedCapabilities[Transport.usb]! &
+              Capability.piv.value !=
+          0)
+        Capability.piv
+    ];
 
     if (!state.hasPin) {
       return MessagePage(
@@ -112,13 +130,14 @@ class _FidoLockedPage extends ConsumerWidget {
               onPressed: () async {
                 await showBlurDialog(
                     context: context,
-                    builder: (context) => FidoPinDialog(node.path, state));
+                    builder: (context) =>
+                        FidoPinDialog(deviceData.node.path, state));
               },
               avatar: const Icon(Symbols.pin),
             )
         ],
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capabilities: capabilities,
         header: l10n.s_fingerprints_get_started,
         message: l10n.p_set_fingerprints_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -129,7 +148,7 @@ class _FidoLockedPage extends ConsumerWidget {
     if (state.forcePinChange) {
       return MessagePage(
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capabilities: capabilities,
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
@@ -141,7 +160,8 @@ class _FidoLockedPage extends ConsumerWidget {
               onPressed: () async {
                 await showBlurDialog(
                     context: context,
-                    builder: (context) => FidoPinDialog(node.path, state));
+                    builder: (context) =>
+                        FidoPinDialog(deviceData.node.path, state));
               },
               avatar: const Icon(Symbols.pin),
             )
@@ -151,25 +171,26 @@ class _FidoLockedPage extends ConsumerWidget {
 
     return AppPage(
       title: l10n.s_fingerprints,
-      capabilities: const [Capability.fido2],
+      capabilities: capabilities,
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
-          PinEntryForm(state, node),
+          PinEntryForm(state, deviceData.node),
         ],
       ),
     );
   }
 
   Widget _buildActions(BuildContext context) =>
-      fingerprintsBuildActions(context, node, state, -1);
+      fingerprintsBuildActions(context, deviceData.node, state, -1);
 }
 
 class _FidoUnlockedPage extends ConsumerStatefulWidget {
-  final DeviceNode node;
+  final YubiKeyData deviceData;
   final FidoState state;
 
-  _FidoUnlockedPage(this.node, this.state) : super(key: ObjectKey(node.path));
+  _FidoUnlockedPage(this.deviceData, this.state)
+      : super(key: ObjectKey(deviceData.node.path));
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -184,10 +205,12 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+    final capabilities = _getCapabilities(widget.deviceData);
 
-    final data = ref.watch(fingerprintProvider(widget.node.path)).asData;
+    final data =
+        ref.watch(fingerprintProvider(widget.deviceData.node.path)).asData;
     if (data == null) {
-      return _buildLoadingPage(context);
+      return _buildLoadingPage(context, capabilities);
     }
     final fingerprints = data.value;
     if (fingerprints.isEmpty) {
@@ -200,18 +223,18 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 await showBlurDialog(
                     context: context,
                     builder: (context) =>
-                        AddFingerprintDialog(widget.node.path));
+                        AddFingerprintDialog(widget.deviceData.node.path));
               },
               avatar: const Icon(Symbols.fingerprint),
             )
         ],
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capabilities: capabilities,
         header: l10n.s_fingerprints_get_started,
         message: l10n.l_add_one_or_more_fps,
         keyActionsBuilder: hasActions
-            ? (context) =>
-                fingerprintsBuildActions(context, widget.node, widget.state, 0)
+            ? (context) => fingerprintsBuildActions(
+                context, widget.deviceData.node, widget.state, 0)
             : null,
         keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
       );
@@ -219,7 +242,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
 
     final fingerprint = _selected;
     return FidoActions(
-      devicePath: widget.node.path,
+      devicePath: widget.deviceData.node.path,
       actions: (context) => {
         EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
           if (_selected != null) {
@@ -266,7 +289,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capabilities: capabilities,
         detailViewBuilder: fingerprint != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -306,8 +329,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 )
             : null,
         keyActionsBuilder: hasActions
-            ? (context) => fingerprintsBuildActions(
-                context, widget.node, widget.state, fingerprints.length)
+            ? (context) => fingerprintsBuildActions(context,
+                widget.deviceData.node, widget.state, fingerprints.length)
             : null,
         keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
         builder: (context, expanded) {
@@ -349,9 +372,11 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     );
   }
 
-  Widget _buildLoadingPage(BuildContext context) => AppPage(
+  Widget _buildLoadingPage(
+          BuildContext context, List<Capability> capabilities) =>
+      AppPage(
         title: AppLocalizations.of(context)!.s_fingerprints,
-        capabilities: const [Capability.fido2],
+        capabilities: capabilities,
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
