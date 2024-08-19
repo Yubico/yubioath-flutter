@@ -801,6 +801,7 @@
     "s_reset": "Réinitialiser",
     "s_factory_reset": "Réinitialisation usine",
     "l_factory_reset_desc": "Restaurer les paramètres par défaut de la YubiKey",
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "Réinitialisation OATH",
     "l_fido_app_reset": "Réinitialisation FIDO",
     "l_reset_failed": "Erreur de réinitialisation\u00a0: {message}",

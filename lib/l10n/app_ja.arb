@@ -801,6 +801,7 @@
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷時の状態にリセット",
     "l_factory_reset_desc": "YubiKey の既定値を復元",
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_reset_failed": "リセットの実行エラー：{message}",

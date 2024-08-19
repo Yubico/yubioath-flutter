@@ -801,6 +801,7 @@
     "s_reset": "Reset",
     "s_factory_reset": "Factory reset",
     "l_factory_reset_desc": "Restore YubiKey defaults",
+    "l_factory_reset_required": "Factory reset required",
     "l_oath_application_reset": "OATH application reset",
     "l_fido_app_reset": "FIDO application reset",
     "l_reset_failed": "Error performing reset: {message}",

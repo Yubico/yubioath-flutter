@@ -801,6 +801,7 @@
     "s_reset": "Zresetuj",
     "s_factory_reset": "Ustawienia fabryczne",
     "l_factory_reset_desc": null,
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "Reset funkcji OATH",
     "l_fido_app_reset": "Reset funkcji FIDO",
     "l_reset_failed": "Błąd podczas resetowania: {message}",
