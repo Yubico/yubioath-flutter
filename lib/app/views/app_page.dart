@@ -581,6 +581,7 @@ class _AppPageState extends ConsumerState<AppPage> {
             Expanded(child: body),
             if (hasManage &&
                 !hasDetailsOrKeyActions &&
+                showDetailView &&
                 widget.capabilities != null &&
                 widget.capabilities?.first != Capability.u2f)
               // Add a placeholder for the Manage/Details column. Exceptions are:
