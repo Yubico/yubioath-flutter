@@ -47,7 +47,7 @@ import 'pin_entry_form.dart';
 
 List<Capability> _getCapabilities(YubiKeyData deviceData) => [
       Capability.fido2,
-      if (deviceData.info.supportedCapabilities[Transport.usb]! &
+      if (deviceData.info.config.enabledCapabilities[Transport.usb]! &
               Capability.piv.value !=
           0)
         Capability.piv
@@ -115,7 +115,7 @@ class _FidoLockedPage extends ConsumerWidget {
 
     final capabilities = [
       Capability.fido2,
-      if (deviceData.info.supportedCapabilities[Transport.usb]! &
+      if (deviceData.info.config.enabledCapabilities[Transport.usb]! &
               Capability.piv.value !=
           0)
         Capability.piv
