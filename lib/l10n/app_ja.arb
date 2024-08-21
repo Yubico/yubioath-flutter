@@ -656,7 +656,9 @@
     "p_subject_desc": "RFC 4514仕様に準拠した形式の識別名（DN）。",
     "l_rfc4514_invalid": "無効なRFC 4514形式",
     "rfc4514_examples": "例：\nCN=Example Name CN=jsmith,DC=example,\nDC=net",
+    "s_allow_fingerprint": null,
     "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限（証明書のみ）。",
+    "p_cert_options_bio_desc": null,
     "s_overwrite_slot": "スロットを上書き",
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
     "@p_overwrite_slot_desc": {
@@ -799,6 +801,7 @@
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷時の状態にリセット",
     "l_factory_reset_desc": "YubiKey の既定値を復元",
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_reset_failed": "リセットの実行エラー：{message}",

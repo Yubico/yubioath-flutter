@@ -656,7 +656,9 @@
     "p_subject_desc": null,
     "l_rfc4514_invalid": null,
     "rfc4514_examples": null,
+    "s_allow_fingerprint": null,
     "p_cert_options_desc": null,
+    "p_cert_options_bio_desc": null,
     "s_overwrite_slot": null,
     "p_overwrite_slot_desc": null,
     "@p_overwrite_slot_desc": {
@@ -799,6 +801,7 @@
     "s_reset": "Zurücksetzen",
     "s_factory_reset": "Werkseinstellungen",
     "l_factory_reset_desc": null,
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "OATH Anwendung zurücksetzen",
     "l_fido_app_reset": "FIDO Anwendung zurückgesetzt",
     "l_reset_failed": "Fehler beim Zurücksetzen: {message}",

@@ -656,7 +656,9 @@
     "p_subject_desc": "DN (nom distinctif) formaté conformément à la spécification RFC 4514.",
     "l_rfc4514_invalid": "Format RFC 4514 non valide",
     "rfc4514_examples": "Exemples\u00a0:\nCN=exemple de nom\nCN=jsmith,DC=exemple,DC=net",
+    "s_allow_fingerprint": null,
     "p_cert_options_desc": "Algorithme clé à utiliser, format de sortie et date d'expiration (certificat uniquement).",
+    "p_cert_options_bio_desc": null,
     "s_overwrite_slot": "Écraser slot",
     "p_overwrite_slot_desc": "Cela écrasera définitivement le contenu du slot {slot}.",
     "@p_overwrite_slot_desc": {
@@ -799,6 +801,7 @@
     "s_reset": "Réinitialiser",
     "s_factory_reset": "Réinitialisation usine",
     "l_factory_reset_desc": "Restaurer les paramètres par défaut de la YubiKey",
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "Réinitialisation OATH",
     "l_fido_app_reset": "Réinitialisation FIDO",
     "l_reset_failed": "Erreur de réinitialisation\u00a0: {message}",
