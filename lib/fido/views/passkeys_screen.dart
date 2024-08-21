@@ -379,7 +379,6 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
           child: LayoutBuilder(builder: (context, constraints) {
             final textTheme = Theme.of(context).textTheme;
             final width = constraints.maxWidth;
-            final showLayoutOptions = width > 600;
             return Consumer(
               builder: (context, ref, child) {
                 final layout = ref.watch(passkeysLayoutProvider);
@@ -426,9 +425,40 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                               setState(() {});
                             },
                           ),
-                        if (searchController.text.isEmpty && showLayoutOptions)
-                          ...FlexLayout.values.map(
-                            (e) => MouseRegion(
+                        if (searchController.text.isEmpty) ...[
+                          if (width >= 450)
+                            ...FlexLayout.values.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(passkeysLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e.icon,
+                                    color: e == layout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (width < 450)
+                            MouseRegion(
                               onEnter: (event) {
                                 if (!searchFocus.hasFocus) {
                                   setState(() {
@@ -441,22 +471,47 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                   _canRequestFocus = true;
                                 });
                               },
-                              child: IconButton(
-                                tooltip: e.getDisplayName(l10n),
-                                onPressed: () {
-                                  ref
-                                      .read(passkeysLayoutProvider.notifier)
-                                      .setLayout(e);
-                                },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: l10n.s_select_layout,
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
                                 icon: Icon(
-                                  e.icon,
-                                  color: e == layout
-                                      ? Theme.of(context).colorScheme.primary
-                                      : null,
+                                  layout.icon,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
+                                itemBuilder: (context) => [
+                                  ...FlexLayout.values.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e.icon,
+                                              color: e == layout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                                passkeysLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
                               ),
-                            ),
-                          ),
+                            )
+                        ]
                       ],
                     ),
                     onChanged: (value) {
