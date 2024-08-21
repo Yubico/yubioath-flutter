@@ -30,6 +30,15 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'utils.dart';
 
+bool oathShowActionNotifier(DeviceInfo? info) {
+  if (info == null) {
+    return false;
+  }
+
+  final (fipsCapable, fipsApproved) = info.getFipsStatus(Capability.oath);
+  return fipsCapable && !fipsApproved;
+}
+
 Widget oathBuildActions(
   BuildContext context,
   DevicePath devicePath,
@@ -61,6 +70,10 @@ Widget oathBuildActions(
     subtitle = null;
     enabled = true;
   }
+
+  final colors = Theme.of(context).buttonTheme.colorScheme ??
+      Theme.of(context).colorScheme;
+  final alertIcon = Icon(Symbols.warning_amber, color: colors.tertiary);
 
   return Column(
     children: [
@@ -102,6 +115,7 @@ Widget oathBuildActions(
                 oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password,
             subtitle: l10n.l_password_protection,
             icon: const Icon(Symbols.password),
+            trailing: fipsCapable && !fipsApproved ? alertIcon : null,
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
               setManagePassword(context, ref, devicePath, oathState);

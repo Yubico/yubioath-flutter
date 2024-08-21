@@ -167,7 +167,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final searchText = searchController.text;
-
+    final deviceInfo =
+        ref.watch(currentDeviceDataProvider.select((s) => s.valueOrNull?.info));
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
@@ -186,13 +187,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         actionsBuilder: (context, expanded) {
-          final (fipsCapable, fipsApproved) = ref
-                  .watch(currentDeviceDataProvider)
-                  .valueOrNull
-                  ?.info
-                  .getFipsStatus(Capability.oath) ??
-              (false, false);
+          final (fipsCapable, fipsApproved) =
+              deviceInfo?.getFipsStatus(Capability.oath) ?? (false, false);
+
           return [
             if (!expanded && (!fipsCapable || (fipsCapable && fipsApproved)))
               ActionChip(
@@ -242,6 +241,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         builder: (context, _) => const CircularProgressIndicator(),
       );
     }
@@ -307,6 +307,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         alternativeTitle:
             searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.oath],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
