@@ -52,12 +52,11 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
   final authBlocked = state.pinBlocked;
 
   final enterpriseAttestation = state.enterpriseAttestation;
-  final showEnterpriseAttestation = enterpriseAttestation != null &&
+  final showEnterpriseAttestation =
+      enterpriseAttestation != null && fingerprints == null;
+  final canEnableEnterpriseAttestation = enterpriseAttestation == false &&
       !(state.alwaysUv && !state.hasPin) &&
-      !(!state.unlocked && state.hasPin) &&
-      fingerprints == null;
-  final canEnableEnterpriseAttestation =
-      enterpriseAttestation == false && showEnterpriseAttestation;
+      !(!state.unlocked && state.hasPin);
 
   return Column(
     children: [
