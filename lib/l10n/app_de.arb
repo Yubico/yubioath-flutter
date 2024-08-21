@@ -318,6 +318,7 @@
     "s_ep_attestation_enabled": null,
     "s_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": null,
+    "p_enable_ep_attestation_disable_with_factory_reset": null,
     "s_pin_required": null,
     "p_pin_required_desc": null,
     "l_piv_pin_blocked": null,

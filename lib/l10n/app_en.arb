@@ -318,6 +318,7 @@
     "s_ep_attestation_enabled": "Enterprise Attestation enabled",
     "s_enable_ep_attestation": "Enable Enterprise Attestation",
     "p_enable_ep_attestation_desc": "This will enable Enterprise Attestation, allowing authorized domains to uniquely identify your YubiKey.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "Once enabled, Enterprise Attestation can only be disabled by performing a FIDO factory reset.",
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",

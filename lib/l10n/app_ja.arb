@@ -318,6 +318,7 @@
     "s_ep_attestation_enabled": null,
     "s_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": null,
+    "p_enable_ep_attestation_disable_with_factory_reset": null,
     "s_pin_required": "PINが必要",
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
