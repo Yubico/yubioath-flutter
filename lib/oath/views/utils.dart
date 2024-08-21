@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import '../models.dart';
 import 'add_account_dialog.dart';
 import 'add_account_page.dart';
 import 'add_multi_account_page.dart';
+import 'manage_password_dialog.dart';
 
 /// Calculates the available space for issuer and account name.
 ///
@@ -177,4 +178,12 @@ Future<void> addOathAccount(BuildContext context, WidgetRef ref,
       builder: (context) => AddAccountDialog(devicePath, oathState),
     );
   }
+}
+
+Future<void> setManagePassword(BuildContext context, WidgetRef ref,
+    DevicePath devicePath, OathState oathState) async {
+  await showBlurDialog(
+    context: context,
+    builder: (context) => ManagePasswordDialog(devicePath, oathState),
+  );
 }

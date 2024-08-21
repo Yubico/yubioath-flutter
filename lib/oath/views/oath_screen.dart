@@ -186,21 +186,38 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        actionsBuilder: (context, expanded) => [
-          if (!expanded)
-            ActionChip(
-              label: Text(l10n.s_add_account),
-              onPressed: () async {
-                await addOathAccount(
-                  context,
-                  ref,
-                  widget.devicePath,
-                  widget.oathState,
-                );
-              },
-              avatar: const Icon(Symbols.person_add_alt),
-            )
-        ],
+        actionsBuilder: (context, expanded) {
+          final (fipsCapable, fipsApproved) = ref
+                  .watch(currentDeviceDataProvider)
+                  .valueOrNull
+                  ?.info
+                  .getFipsStatus(Capability.oath) ??
+              (false, false);
+          return [
+            if (!expanded && (!fipsCapable || (fipsCapable && fipsApproved)))
+              ActionChip(
+                label: Text(l10n.s_add_account),
+                onPressed: () async {
+                  await addOathAccount(
+                    context,
+                    ref,
+                    widget.devicePath,
+                    widget.oathState,
+                  );
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              ),
+            if (!expanded && fipsCapable && !fipsApproved)
+              ActionChip(
+                label: Text(l10n.s_set_password),
+                onPressed: () async {
+                  await setManagePassword(
+                      context, ref, widget.devicePath, widget.oathState);
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              )
+          ];
+        },
         title: l10n.s_accounts,
         capabilities: const [Capability.oath],
         key: keys.noAccountsView,
