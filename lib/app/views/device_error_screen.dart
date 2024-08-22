@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,16 @@ class DeviceErrorScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.error,
             ),
             header: l10n.s_unknown_device,
+          ),
+        'restricted-nfc' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.warning,
+              size: 96,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            header: l10n.s_restricted_nfc,
+            message: l10n.l_restricted_nfc,
           ),
         _ => HomeMessagePage(
             centered: true,
