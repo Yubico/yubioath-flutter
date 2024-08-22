@@ -684,7 +684,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 ),
           actions: [
             if (widget.actionButtonBuilder == null &&
-                (widget.keyActionsBuilder != null && (!hasManage)))
+                (widget.keyActionsBuilder != null && !hasManage))
               Padding(
                 padding: const EdgeInsets.only(left: 4),
                 child: IconButton(
