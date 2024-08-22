@@ -30,6 +30,9 @@
     "s_delete": "削除",
     "s_move": "移動",
     "s_quit": "終了",
+    "s_enable": null,
+    "s_enabled": null,
+    "s_disabled": null,
     "s_status": "ステータス",
     "s_unlock": "ロック解除",
     "s_calculate": "計算",
@@ -45,6 +48,8 @@
     "s_hide_window": "ウィンドウを非表示",
     "s_expand_navigation": "ナビゲーションを展開",
     "s_collapse_navigation": "ナビゲーションを閉じる",
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
@@ -121,6 +126,12 @@
     "s_light_mode": "ライトモード",
     "s_dark_mode": "ダークモード",
 
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
+
     "@_yubikey_selection": {},
     "s_select_to_scan": "選択してスキャン",
     "s_hide_device": "デバイスを非表示",
@@ -149,6 +160,8 @@
         }
     },
     "l_firmware_version": "ファームウェアバージョン: {version}",
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKeyを挿入してください",
@@ -301,6 +314,10 @@
             "common_pin": {}
         }
     },
+    "s_ep_attestation": null,
+    "s_ep_attestation_enabled": null,
+    "s_enable_ep_attestation": null,
+    "p_enable_ep_attestation_desc": null,
     "s_pin_required": "PINが必要",
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
@@ -330,6 +347,7 @@
     "l_warning_default_puk": "警告: デフォルトのPUKが使用されています",
     "l_default_pin_used": "デフォルトのPINが使用されています",
     "l_default_puk_used": "既定のPUKを使用",
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "パスワード",
@@ -339,6 +357,7 @@
     "s_show_password": "パスワードを表示",
     "s_hide_password": "パスワードを非表示",
     "l_optional_password_protection": "オプションのパスワード保護",
+    "l_password_protection": null,
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
     "s_confirm_password": "パスワードを確認",
@@ -352,6 +371,7 @@
     "l_keystore_unavailable": "OSのキーストアを利用できません",
     "l_remember_pw_failed": "パスワードを記憶できませんでした",
     "l_unlock_first": "最初にパスワードでロックを解除",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "YubiKeyのOATHパスワードを入力",
     "p_enter_current_password_or_reset": "現在のパスワードを入力してください。パスワードがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_enter_new_password": "新しいパスワードを入力してください。パスワードには文字、数字、特殊文字を含めることができます。",
@@ -410,6 +430,7 @@
     "s_pin_account": "アカウントをピン留めする",
     "s_unpin_account": "アカウントのピン留めを解除",
     "s_no_pinned_accounts": "ピン留めされたアカウントはありません",
+    "s_pinned": null,
     "l_pin_account_desc": "重要なアカウントをまとめて保持",
     "s_rename_account": "アカウント名を変更",
     "l_rename_account_desc": "アカウントの発行者/名前を編集",
@@ -635,7 +656,9 @@
     "p_subject_desc": "RFC 4514仕様に準拠した形式の識別名（DN）。",
     "l_rfc4514_invalid": "無効なRFC 4514形式",
     "rfc4514_examples": "例：\nCN=Example Name CN=jsmith,DC=example,\nDC=net",
+    "s_allow_fingerprint": null,
     "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限（証明書のみ）。",
+    "p_cert_options_bio_desc": null,
     "s_overwrite_slot": "スロットを上書き",
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
     "@p_overwrite_slot_desc": {
@@ -778,6 +801,7 @@
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷時の状態にリセット",
     "l_factory_reset_desc": "YubiKey の既定値を復元",
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_reset_failed": "リセットの実行エラー：{message}",
@@ -885,6 +909,7 @@
 
     "@_key_customization": {},
     "s_set_label": "ラベルを設定",
+    "s_set_color": null,
     "s_change_label": "ラベルを変更",
     "s_color": "色",
     "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",

@@ -29,7 +29,8 @@ data class Options(
     val credMgmt: Boolean,
     val credentialMgmtPreview: Boolean,
     val bioEnroll: Boolean?,
-    val alwaysUv: Boolean
+    val alwaysUv: Boolean,
+    val ep: Boolean?,
 ) {
     constructor(infoData: InfoData) : this(
         infoData.getOptionsBoolean("clientPin") == true,
@@ -37,6 +38,7 @@ data class Options(
         infoData.getOptionsBoolean("credentialMgmtPreview") == true,
         infoData.getOptionsBoolean("bioEnroll"),
         infoData.getOptionsBoolean("alwaysUv") == true,
+        infoData.getOptionsBoolean("ep"),
     )
 
     companion object {

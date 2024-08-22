@@ -20,7 +20,9 @@ mixin _$YubiKeyData {
   String get name => throw _privateConstructorUsedError;
   DeviceInfo get info => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $YubiKeyDataCopyWith<YubiKeyData> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -47,6 +49,8 @@ class _$YubiKeyDataCopyWithImpl<$Res, $Val extends YubiKeyData>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -70,6 +74,8 @@ class _$YubiKeyDataCopyWithImpl<$Res, $Val extends YubiKeyData>
     ) as $Val);
   }
 
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $DeviceNodeCopyWith<$Res> get node {
@@ -78,6 +84,8 @@ class _$YubiKeyDataCopyWithImpl<$Res, $Val extends YubiKeyData>
     });
   }
 
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $DeviceInfoCopyWith<$Res> get info {
@@ -111,6 +119,8 @@ class __$$YubiKeyDataImplCopyWithImpl<$Res>
       _$YubiKeyDataImpl _value, $Res Function(_$YubiKeyDataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -165,7 +175,9 @@ class _$YubiKeyDataImpl implements _YubiKeyData {
   @override
   int get hashCode => Object.hash(runtimeType, node, name, info);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$YubiKeyDataImplCopyWith<_$YubiKeyDataImpl> get copyWith =>
@@ -183,8 +195,11 @@ abstract class _YubiKeyData implements YubiKeyData {
   String get name;
   @override
   DeviceInfo get info;
+
+  /// Create a copy of YubiKeyData
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$YubiKeyDataImplCopyWith<_$YubiKeyDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -238,7 +253,9 @@ mixin _$DeviceNode {
   }) =>
       throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $DeviceNodeCopyWith<DeviceNode> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -262,6 +279,8 @@ class _$DeviceNodeCopyWithImpl<$Res, $Val extends DeviceNode>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -302,6 +321,8 @@ class __$$UsbYubiKeyNodeImplCopyWithImpl<$Res>
       _$UsbYubiKeyNodeImpl _value, $Res Function(_$UsbYubiKeyNodeImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -330,6 +351,8 @@ class __$$UsbYubiKeyNodeImplCopyWithImpl<$Res>
     ));
   }
 
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $DeviceInfoCopyWith<$Res>? get info {
@@ -376,7 +399,9 @@ class _$UsbYubiKeyNodeImpl extends UsbYubiKeyNode {
   @override
   int get hashCode => Object.hash(runtimeType, path, name, pid, info);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$UsbYubiKeyNodeImplCopyWith<_$UsbYubiKeyNodeImpl> get copyWith =>
@@ -463,8 +488,11 @@ abstract class UsbYubiKeyNode extends DeviceNode {
   String get name;
   UsbPid get pid;
   DeviceInfo? get info;
+
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UsbYubiKeyNodeImplCopyWith<_$UsbYubiKeyNodeImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -488,6 +516,8 @@ class __$$NfcReaderNodeImplCopyWithImpl<$Res>
       _$NfcReaderNodeImpl _value, $Res Function(_$NfcReaderNodeImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -534,7 +564,9 @@ class _$NfcReaderNodeImpl extends NfcReaderNode {
   @override
   int get hashCode => Object.hash(runtimeType, path, name);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$NfcReaderNodeImplCopyWith<_$NfcReaderNodeImpl> get copyWith =>
@@ -618,8 +650,11 @@ abstract class NfcReaderNode extends DeviceNode {
   DevicePath get path;
   @override
   String get name;
+
+  /// Create a copy of DeviceNode
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NfcReaderNodeImplCopyWith<_$NfcReaderNodeImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -636,7 +671,9 @@ mixin _$ActionItem {
   Key? get key => throw _privateConstructorUsedError;
   Feature? get feature => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ActionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ActionItemCopyWith<ActionItem> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -669,6 +706,8 @@ class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ActionItem
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -751,6 +790,8 @@ class __$$ActionItemImplCopyWithImpl<$Res>
       _$ActionItemImpl _value, $Res Function(_$ActionItemImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ActionItem
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -867,7 +908,9 @@ class _$ActionItemImpl implements _ActionItem {
   int get hashCode => Object.hash(runtimeType, icon, title, subtitle, shortcut,
       trailing, intent, actionStyle, key, feature);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ActionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ActionItemImplCopyWith<_$ActionItemImpl> get copyWith =>
@@ -904,8 +947,11 @@ abstract class _ActionItem implements ActionItem {
   Key? get key;
   @override
   Feature? get feature;
+
+  /// Create a copy of ActionItem
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ActionItemImplCopyWith<_$ActionItemImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -917,7 +963,9 @@ mixin _$WindowState {
   bool get active => throw _privateConstructorUsedError;
   bool get hidden => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WindowState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $WindowStateCopyWith<WindowState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -941,6 +989,8 @@ class _$WindowStateCopyWithImpl<$Res, $Val extends WindowState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of WindowState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -989,6 +1039,8 @@ class __$$WindowStateImplCopyWithImpl<$Res>
       _$WindowStateImpl _value, $Res Function(_$WindowStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of WindowState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1057,7 +1109,9 @@ class _$WindowStateImpl implements _WindowState {
   int get hashCode =>
       Object.hash(runtimeType, focused, visible, active, hidden);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WindowState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$WindowStateImplCopyWith<_$WindowStateImpl> get copyWith =>
@@ -1079,8 +1133,11 @@ abstract class _WindowState implements WindowState {
   bool get active;
   @override
   bool get hidden;
+
+  /// Create a copy of WindowState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WindowStateImplCopyWith<_$WindowStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1098,8 +1155,12 @@ mixin _$KeyCustomization {
   @_ColorConverter()
   Color? get color => throw _privateConstructorUsedError;
 
+  /// Serializes this KeyCustomization to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of KeyCustomization
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $KeyCustomizationCopyWith<KeyCustomization> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1126,6 +1187,8 @@ class _$KeyCustomizationCopyWithImpl<$Res, $Val extends KeyCustomization>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of KeyCustomization
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1172,6 +1235,8 @@ class __$$KeyCustomizationImplCopyWithImpl<$Res>
       $Res Function(_$KeyCustomizationImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of KeyCustomization
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1232,11 +1297,13 @@ class _$KeyCustomizationImpl implements _KeyCustomization {
             (identical(other.color, color) || other.color == color));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, serial, name, color);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of KeyCustomization
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
@@ -1271,8 +1338,11 @@ abstract class _KeyCustomization implements KeyCustomization {
   @JsonKey(includeIfNull: false)
   @_ColorConverter()
   Color? get color;
+
+  /// Create a copy of KeyCustomization
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

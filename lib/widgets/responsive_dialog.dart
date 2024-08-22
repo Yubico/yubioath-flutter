@@ -102,7 +102,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           ...widget.actions
         ],
       ),
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
           widget.onCancel?.call();
         }

@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
+import '../widgets/flex_box.dart';
 import 'models.dart';
 
 final passkeysSearchProvider =
@@ -32,6 +33,11 @@ class PasskeysSearchNotifier extends StateNotifier<String> {
   }
 }
 
+final passkeysLayoutProvider =
+    StateNotifierProvider<LayoutNotifier, FlexLayout>(
+  (ref) => LayoutNotifier('FIDO_PASSKEYS_LAYOUT', ref.watch(prefProvider)),
+);
+
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
   () => throw UnimplementedError(),
@@ -41,6 +47,7 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Stream<InteractionEvent> reset();
   Future<PinResult> setPin(String newPin, {String? oldPin});
   Future<PinResult> unlock(String pin);
+  Future<void> enableEnterpriseAttestation();
 }
 
 final fingerprintProvider = AsyncNotifierProvider.autoDispose

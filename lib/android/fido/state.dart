@@ -161,6 +161,29 @@ class _FidoStateNotifier extends FidoStateNotifier {
       throw decodedException;
     }
   }
+
+  @override
+  Future<void> enableEnterpriseAttestation() async {
+    try {
+      final response = jsonDecode(await _methods.invokeMethod(
+        'enableEnterpriseAttestation',
+      ));
+
+      if (response['success'] == true) {
+        _log.debug('Enterprise attestation enabled');
+      }
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled unlock FIDO operation');
+        throw decodedException;
+      }
+
+      _log.debug(
+          'Platform exception during enable enterprise attestation: $pe');
+      rethrow;
+    }
+  }
 }
 
 final androidFingerprintProvider = AsyncNotifierProvider.autoDispose

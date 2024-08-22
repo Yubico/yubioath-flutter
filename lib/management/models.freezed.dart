@@ -26,8 +26,12 @@ mixin _$DeviceConfig {
   int? get challengeResponseTimeout => throw _privateConstructorUsedError;
   int? get deviceFlags => throw _privateConstructorUsedError;
 
+  /// Serializes this DeviceConfig to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of DeviceConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $DeviceConfigCopyWith<DeviceConfig> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -55,6 +59,8 @@ class _$DeviceConfigCopyWithImpl<$Res, $Val extends DeviceConfig>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of DeviceConfig
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -107,6 +113,8 @@ class __$$DeviceConfigImplCopyWithImpl<$Res>
       _$DeviceConfigImpl _value, $Res Function(_$DeviceConfigImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of DeviceConfig
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -183,7 +191,7 @@ class _$DeviceConfigImpl implements _DeviceConfig {
                 other.deviceFlags == deviceFlags));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -192,7 +200,9 @@ class _$DeviceConfigImpl implements _DeviceConfig {
       challengeResponseTimeout,
       deviceFlags);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of DeviceConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$DeviceConfigImplCopyWith<_$DeviceConfigImpl> get copyWith =>
@@ -224,8 +234,11 @@ abstract class _DeviceConfig implements DeviceConfig {
   int? get challengeResponseTimeout;
   @override
   int? get deviceFlags;
+
+  /// Create a copy of DeviceConfig
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DeviceConfigImplCopyWith<_$DeviceConfigImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -250,8 +263,12 @@ mixin _$DeviceInfo {
   int get fipsApproved => throw _privateConstructorUsedError;
   int get resetBlocked => throw _privateConstructorUsedError;
 
+  /// Serializes this DeviceInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $DeviceInfoCopyWith<DeviceInfo> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -290,6 +307,8 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -358,6 +377,8 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
     ) as $Val);
   }
 
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $DeviceConfigCopyWith<$Res> get config {
@@ -366,6 +387,8 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
     });
   }
 
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $VersionCopyWith<$Res> get version {
@@ -411,6 +434,8 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
       _$DeviceInfoImpl _value, $Res Function(_$DeviceInfoImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -565,7 +590,7 @@ class _$DeviceInfoImpl extends _DeviceInfo {
                 other.resetBlocked == resetBlocked));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -582,7 +607,9 @@ class _$DeviceInfoImpl extends _DeviceInfo {
       fipsApproved,
       resetBlocked);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$DeviceInfoImplCopyWith<_$DeviceInfoImpl> get copyWith =>
@@ -639,8 +666,11 @@ abstract class _DeviceInfo extends DeviceInfo {
   int get fipsApproved;
   @override
   int get resetBlocked;
+
+  /// Create a copy of DeviceInfo
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DeviceInfoImplCopyWith<_$DeviceInfoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

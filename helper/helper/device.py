@@ -543,16 +543,17 @@ class ScpConnectionNode(ConnectionNode):
         self.fips_capable = info.fips_capable
         self.scp_params = None
         try:
-            scp = SecurityDomainSession(connection)
+            if self.fips_capable != 0:
+                scp = SecurityDomainSession(connection)
 
-            for ref in scp.get_key_information().keys():
-                if ref.kid == 0x13:
-                    chain = scp.get_certificate_bundle(ref)
-                    if chain:
-                        pub_key = chain[-1].public_key()
-                        assert isinstance(pub_key, EllipticCurvePublicKey)  # nosec
-                        self.scp_params = Scp11KeyParams(ref, pub_key)
-                        break
+                for ref in scp.get_key_information().keys():
+                    if ref.kid == 0x13:
+                        chain = scp.get_certificate_bundle(ref)
+                        if chain:
+                            pub_key = chain[-1].public_key()
+                            assert isinstance(pub_key, EllipticCurvePublicKey)  # nosec
+                            self.scp_params = Scp11KeyParams(ref, pub_key)
+                            break
         except NotSupportedError:
             pass
 

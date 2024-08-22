@@ -30,6 +30,9 @@
     "s_delete": "Delete",
     "s_move": "Move",
     "s_quit": "Quit",
+    "s_enable": "Enable",
+    "s_enabled": "Enabled",
+    "s_disabled": "Disabled",
     "s_status": "Status",
     "s_unlock": "Unlock",
     "s_calculate": "Calculate",
@@ -45,6 +48,8 @@
     "s_hide_window": "Hide window",
     "s_expand_navigation": "Expand navigation",
     "s_collapse_navigation": "Collapse navigation",
+    "s_expand_sidebar": "Expand sidebar",
+    "s_collapse_sidebar": "Collapse sidebar",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -121,6 +126,12 @@
     "s_light_mode": "Light mode",
     "s_dark_mode": "Dark mode",
 
+    "@_layout": {},
+    "s_list_layout": "List layout",
+    "s_grid_layout": "Grid layout",
+    "s_mixed_layout": "Mixed layout",
+    "s_select_layout": "Select layout",
+
     "@_yubikey_selection": {},
     "s_select_to_scan": "Select to scan",
     "s_hide_device": "Hide device",
@@ -149,6 +160,8 @@
         }
     },
     "l_firmware_version": "Firmware version: {version}",
+    "l_fips_capable": "FIPS capable",
+    "l_fips_approved": "FIPS approved",
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "Insert your YubiKey",
@@ -301,6 +314,10 @@
             "common_pin": {}
         }
     },
+    "s_ep_attestation": "Enterprise Attestation",
+    "s_ep_attestation_enabled": "Enterprise Attestation enabled",
+    "s_enable_ep_attestation": "Enable Enterprise Attestation",
+    "p_enable_ep_attestation_desc": "This will enable Enterprise Attestation, allowing authorized domains to uniquely identify your YubiKey.",
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
@@ -330,6 +347,7 @@
     "l_warning_default_puk": "Warning: Default PUK used",
     "l_default_pin_used": "Default PIN used",
     "l_default_puk_used": "Default PUK used",
+    "l_pin_complexity": "PIN complexity enforced",
 
     "@_passwords": {},
     "s_password": "Password",
@@ -339,6 +357,7 @@
     "s_show_password": "Show password",
     "s_hide_password": "Hide password",
     "l_optional_password_protection": "Optional password protection",
+    "l_password_protection": "Password protection of accounts",
     "s_new_password": "New password",
     "s_current_password": "Current password",
     "s_confirm_password": "Confirm password",
@@ -352,6 +371,7 @@
     "l_keystore_unavailable": "OS Keystore unavailable",
     "l_remember_pw_failed": "Failed to remember password",
     "l_unlock_first": "Unlock with password first",
+    "l_set_password_first": "Set a password first",
     "l_enter_oath_pw": "Enter the OATH password for your YubiKey",
     "p_enter_current_password_or_reset": "Enter your current password. If you don't know your password, you'll need to reset the YubiKey.",
     "p_enter_new_password": "Enter your new password. A password may contain letters, numbers and special characters.",
@@ -410,6 +430,7 @@
     "s_pin_account": "Pin account",
     "s_unpin_account": "Unpin account",
     "s_no_pinned_accounts": "No pinned accounts",
+    "s_pinned": "Pinned",
     "l_pin_account_desc": "Keep your important accounts together",
     "s_rename_account": "Rename account",
     "l_rename_account_desc": "Edit the issuer/name of the account",
@@ -635,7 +656,9 @@
     "p_subject_desc": "A distinguished name (DN) formatted in accordance to the RFC 4514 specification.",
     "l_rfc4514_invalid": "Invalid RFC 4514 format",
     "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
+    "s_allow_fingerprint": "Allow fingerprint",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
+    "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
     "s_overwrite_slot": "Overwrite slot",
     "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
     "@p_overwrite_slot_desc": {
@@ -778,6 +801,7 @@
     "s_reset": "Reset",
     "s_factory_reset": "Factory reset",
     "l_factory_reset_desc": "Restore YubiKey defaults",
+    "l_factory_reset_required": "Factory reset required",
     "l_oath_application_reset": "OATH application reset",
     "l_fido_app_reset": "FIDO application reset",
     "l_reset_failed": "Error performing reset: {message}",
@@ -885,6 +909,7 @@
 
     "@_key_customization": {},
     "s_set_label": "Set label",
+    "s_set_color": "Set color",
     "s_change_label": "Change label",
     "s_color": "Color",
     "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",

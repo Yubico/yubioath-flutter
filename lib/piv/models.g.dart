@@ -114,6 +114,7 @@ _$PivStateImpl _$$PivStateImplFromJson(Map<String, dynamic> json) =>
       derivedKey: json['derived_key'] as bool,
       storedKey: json['stored_key'] as bool,
       pinAttempts: (json['pin_attempts'] as num).toInt(),
+      supportsBio: json['supports_bio'] as bool,
       chuid: json['chuid'] as String?,
       ccc: json['ccc'] as String?,
       metadata: json['metadata'] == null
@@ -128,6 +129,7 @@ Map<String, dynamic> _$$PivStateImplToJson(_$PivStateImpl instance) =>
       'derived_key': instance.derivedKey,
       'stored_key': instance.storedKey,
       'pin_attempts': instance.pinAttempts,
+      'supports_bio': instance.supportsBio,
       'chuid': instance.chuid,
       'ccc': instance.ccc,
       'metadata': instance.metadata,
