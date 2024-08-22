@@ -86,7 +86,7 @@ class DeviceErrorScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.error,
             ),
             header: l10n.s_restricted_nfc,
-            message: l10n.l_restricted_nfc,
+            message: l10n.p_restricted_nfc,
           ),
         _ => HomeMessagePage(
             centered: true,

@@ -168,7 +168,7 @@
     "l_insert_or_tap_yk": "Insérez ou appuyez sur YubiKey",
     "l_unplug_yk": "Retirez votre YubiKey",
     "l_reinsert_yk": "Réinsérez votre YubiKey",
-    "l_restricted_nfc": null,
+    "p_restricted_nfc": null,
     "l_place_on_nfc_reader": "Placez votre YubiKey sur le lecteur NFC",
     "l_replace_yk_on_reader": "Replacez votre YubiKey sur le lecteur",
     "l_remove_yk_from_reader": "Retirez votre YubiKey du lecteur NFC",
