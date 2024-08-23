@@ -292,16 +292,6 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                         ),
                       ],
                     ),
-                  if (!unsupportedKey && widget.showMatch)
-                    FilterChip(
-                      label: Text(l10n.s_allow_fingerprint),
-                      selected: _allowMatch,
-                      onSelected: (value) {
-                        setState(() {
-                          _allowMatch = value;
-                        });
-                      },
-                    ),
                 ],
                 if (certInfo != null) ...[
                   Text(
@@ -315,7 +305,23 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                         140, // Needed for layout, adapt if text sizes changes
                     child: CertInfoTable(certInfo, null),
                   ),
-                ]
+                ],
+                if (keyType != null && !unsupportedKey && widget.showMatch) ...[
+                  Text(
+                    l10n.s_options,
+                    style: textTheme.bodyLarge,
+                  ),
+                  Text(l10n.p_key_options_bio_desc),
+                  FilterChip(
+                    label: Text(l10n.s_allow_fingerprint),
+                    selected: _allowMatch,
+                    onSelected: (value) {
+                      setState(() {
+                        _allowMatch = value;
+                      });
+                    },
+                  ),
+                ],
               ]
                   .map((e) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),

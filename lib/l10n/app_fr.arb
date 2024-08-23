@@ -660,6 +660,7 @@
     "s_allow_fingerprint": null,
     "p_cert_options_desc": "Algorithme clé à utiliser, format de sortie et date d'expiration (certificat uniquement).",
     "p_cert_options_bio_desc": null,
+    "p_key_options_bio_desc": null,
     "s_overwrite_slot": "Écraser slot",
     "p_overwrite_slot_desc": "Cela écrasera définitivement le contenu du slot {slot}.",
     "@p_overwrite_slot_desc": {

@@ -660,6 +660,7 @@
     "s_allow_fingerprint": null,
     "p_cert_options_desc": "Verwendeter Schlüssel-Algorithmus, Ausgabeformat und Ablaufdatum (nur Zertifikat).",
     "p_cert_options_bio_desc": null,
+    "p_key_options_bio_desc": null,
     "s_overwrite_slot": "Slot überschreiben",
     "p_overwrite_slot_desc": "Damit wird vorhandener Inhalt im Slot {slot} dauerhaft überschrieben.",
     "@p_overwrite_slot_desc": {
