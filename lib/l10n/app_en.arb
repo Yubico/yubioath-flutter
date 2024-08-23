@@ -500,6 +500,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": "Biometrics",
     "l_fingerprint": "Fingerprint: {label}",
     "@l_fingerprint": {
         "placeholders": {

@@ -500,6 +500,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": null,
     "l_fingerprint": "Odcisk palca: {label}",
     "@l_fingerprint": {
         "placeholders": {

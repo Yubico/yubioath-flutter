@@ -500,6 +500,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": null,
     "l_fingerprint": "Empreinte digitale\u00a0: {label}",
     "@l_fingerprint": {
         "placeholders": {

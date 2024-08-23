@@ -315,11 +315,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   FilterChip(
                     label: Text(l10n.s_allow_fingerprint),
                     selected: _allowMatch,
-                    onSelected: (value) {
-                      setState(() {
-                        _allowMatch = value;
-                      });
-                    },
+                    onSelected: _importing
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _allowMatch = value;
+                            });
+                          },
                   ),
                 ],
               ]

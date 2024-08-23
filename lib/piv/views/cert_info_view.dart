@@ -28,9 +28,10 @@ class CertInfoTable extends ConsumerWidget {
   final CertInfo? certInfo;
   final SlotMetadata? metadata;
   final bool alwaysIncludePrivate;
+  final bool supportsBio;
 
   const CertInfoTable(this.certInfo, this.metadata,
-      {super.key, this.alwaysIncludePrivate = false});
+      {super.key, this.alwaysIncludePrivate = false, this.supportsBio = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,6 +46,14 @@ class CertInfoTable extends ConsumerWidget {
         l10n.s_private_key: (
           metadata.keyType.getDisplayName(l10n),
           keys.slotMetadataKeyType
+        ),
+      if (metadata != null && supportsBio)
+        l10n.s_biometrics: (
+          [PinPolicy.matchAlways, PinPolicy.matchOnce]
+                  .contains(metadata.pinPolicy)
+              ? l10n.s_enabled
+              : l10n.s_disabled,
+          keys.slotMetadataBiometrics
         ),
       if (metadata == null && alwaysIncludePrivate)
         l10n.s_private_key: (l10n.s_none, keys.slotMetadataKeyType),
