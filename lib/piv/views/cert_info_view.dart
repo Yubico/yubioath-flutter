@@ -47,7 +47,9 @@ class CertInfoTable extends ConsumerWidget {
           metadata.keyType.getDisplayName(l10n),
           keys.slotMetadataKeyType
         ),
-      if (metadata != null && supportsBio)
+      if (metadata != null &&
+          metadata.pinPolicy != PinPolicy.never &&
+          supportsBio)
         l10n.s_biometrics: (
           [PinPolicy.matchAlways, PinPolicy.matchOnce]
                   .contains(metadata.pinPolicy)
