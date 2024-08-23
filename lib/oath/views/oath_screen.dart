@@ -500,7 +500,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               },
                               child: PopupMenuButton(
                                 constraints: const BoxConstraints.tightFor(),
-                                tooltip: 'Select layout',
+                                tooltip: l10n.s_select_layout,
                                 popUpAnimationStyle:
                                     AnimationStyle(duration: Duration.zero),
                                 icon: Icon(
