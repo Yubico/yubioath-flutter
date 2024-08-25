@@ -30,6 +30,9 @@
     "s_delete": "Löschen",
     "s_move": null,
     "s_quit": "Beenden",
+    "s_enable": null,
+    "s_enabled": null,
+    "s_disabled": null,
     "s_status": null,
     "s_unlock": "Entsperren",
     "s_calculate": "Berechnen",
@@ -45,6 +48,8 @@
     "s_hide_window": "Fenster verstecken",
     "s_expand_navigation": null,
     "s_collapse_navigation": null,
+    "s_expand_sidebar": null,
+    "s_collapse_sidebar": null,
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {
         "placeholders": {
@@ -121,6 +126,12 @@
     "s_light_mode": "Heller Modus",
     "s_dark_mode": "Dunkler Modus",
 
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
+
     "@_yubikey_selection": {},
     "s_select_to_scan": "Zum Scannen auswählen",
     "s_hide_device": "Gerät verstecken",
@@ -149,6 +160,8 @@
         }
     },
     "l_firmware_version": null,
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKey anschließen",
@@ -301,6 +314,10 @@
             "common_pin": {}
         }
     },
+    "s_ep_attestation": null,
+    "s_ep_attestation_enabled": null,
+    "s_enable_ep_attestation": null,
+    "p_enable_ep_attestation_desc": null,
     "s_pin_required": null,
     "p_pin_required_desc": null,
     "l_piv_pin_blocked": null,
@@ -330,6 +347,7 @@
     "l_warning_default_puk": null,
     "l_default_pin_used": null,
     "l_default_puk_used": null,
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "Passwort",
@@ -339,6 +357,7 @@
     "s_show_password": null,
     "s_hide_password": null,
     "l_optional_password_protection": "Optionaler Passwortschutz",
+    "l_password_protection": null,
     "s_new_password": "Neues Passwort",
     "s_current_password": "Aktuelles Passwort",
     "s_confirm_password": "Passwort bestätigen",
@@ -352,6 +371,7 @@
     "l_keystore_unavailable": "Passwortspeicher des Betriebssystems nicht verfügbar",
     "l_remember_pw_failed": "Konnte Passwort nicht speichern",
     "l_unlock_first": "Zuerst mit Passwort entsperren",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "Das OATH-Passwort für Ihren YubiKey eingeben",
     "p_enter_current_password_or_reset": "Geben Sie Ihr aktuelles Passwort ein. Wenn Sie Ihr Passwort nicht wissen, müssen Sie den YubiKey zurücksetzen.",
     "p_enter_new_password": "Geben Sie Ihr neues Passwort ein. Ein Passwort kann Buchstaben, Ziffern und spezielle Zeichen enthalten.",
@@ -410,6 +430,7 @@
     "s_pin_account": "Konto anpinnen",
     "s_unpin_account": "Konto nicht mehr anpinnen",
     "s_no_pinned_accounts": "Keine angepinnten Konten",
+    "s_pinned": null,
     "l_pin_account_desc": null,
     "s_rename_account": "Konto umbenennen",
     "l_rename_account_desc": null,
@@ -885,6 +906,7 @@
 
     "@_key_customization": {},
     "s_set_label": null,
+    "s_set_color": null,
     "s_change_label": null,
     "s_color": null,
     "p_set_will_add_custom_name": null,

@@ -53,6 +53,19 @@ import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
 
+extension on OathLayout {
+  IconData get _icon => switch (this) {
+        OathLayout.list => Symbols.list,
+        OathLayout.grid => Symbols.grid_view,
+        OathLayout.mixed => Symbols.vertical_split
+      };
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OathLayout.list => l10n.s_list_layout,
+        OathLayout.grid => l10n.s_grid_layout,
+        OathLayout.mixed => l10n.s_mixed_layout
+      };
+}
+
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
 
@@ -123,6 +136,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
   OathCredential? _selected;
+  bool _canRequestFocus = true;
 
   @override
   void initState() {
@@ -376,60 +390,171 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             }
             return KeyEventResult.ignored;
           },
-          child: Builder(builder: (context) {
+          child: LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth;
             final textTheme = Theme.of(context).textTheme;
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: AppTextFormField(
-                key: searchField,
-                controller: searchController,
-                focusNode: searchFocus,
-                // Use the default style, but with a smaller font size:
-                style: textTheme.titleMedium
-                    ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-                decoration: AppInputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(48),
-                    borderSide: BorderSide(
-                      width: 0,
-                      style: searchFocus.hasFocus
-                          ? BorderStyle.solid
-                          : BorderStyle.none,
+            return Consumer(
+              builder: (context, ref, child) {
+                final credentials = ref.watch(filteredCredentialsProvider(
+                    ref.watch(credentialListProvider(widget.devicePath)) ??
+                        []));
+                final favorites = ref.watch(favoritesProvider);
+                final pinnedCreds = credentials
+                    .where((entry) => favorites.contains(entry.credential.id));
+
+                final availableLayouts = pinnedCreds.isEmpty ||
+                        pinnedCreds.length == credentials.length
+                    ? OathLayout.values
+                        .where((element) => element != OathLayout.mixed)
+                    : OathLayout.values;
+                final oathLayout = ref.watch(oathLayoutProvider);
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 8.0),
+                  child: AppTextFormField(
+                    key: searchField,
+                    controller: searchController,
+                    canRequestFocus: _canRequestFocus,
+                    focusNode: searchFocus,
+                    // Use the default style, but with a smaller font size:
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                    decoration: AppInputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(48),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: searchFocus.hasFocus
+                              ? BorderStyle.solid
+                              : BorderStyle.none,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                      fillColor: Theme.of(context).hoverColor,
+                      filled: true,
+                      hintText: l10n.s_search_accounts,
+                      isDense: true,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsetsDirectional.only(start: 8.0),
+                        child: Icon(Icons.search_outlined),
+                      ),
+                      suffixIcons: [
+                        if (searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            iconSize: 16,
+                            onPressed: () {
+                              searchController.clear();
+                              ref
+                                  .read(accountsSearchProvider.notifier)
+                                  .setFilter('');
+                              setState(() {});
+                            },
+                          ),
+                        if (searchController.text.isEmpty) ...[
+                          if (width >= 450)
+                            ...availableLayouts.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(oathLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e._icon,
+                                    color: e == oathLayout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (width < 450)
+                            MouseRegion(
+                              onEnter: (event) {
+                                if (!searchFocus.hasFocus) {
+                                  setState(() {
+                                    _canRequestFocus = false;
+                                  });
+                                }
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  _canRequestFocus = true;
+                                });
+                              },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: 'Select layout',
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
+                                icon: Icon(
+                                  oathLayout._icon,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                itemBuilder: (context) => [
+                                  ...availableLayouts.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e._icon,
+                                              color: e == oathLayout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(oathLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                        ]
+                      ],
                     ),
-                  ),
-                  contentPadding: const EdgeInsets.all(16),
-                  fillColor: Theme.of(context).hoverColor,
-                  filled: true,
-                  hintText: l10n.s_search_accounts,
-                  isDense: true,
-                  prefixIcon: const Padding(
-                    padding: EdgeInsetsDirectional.only(start: 8.0),
-                    child: Icon(Icons.search_outlined),
-                  ),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          iconSize: 16,
-                          onPressed: () {
-                            searchController.clear();
-                            ref
-                                .read(accountsSearchProvider.notifier)
-                                .setFilter('');
-                            setState(() {});
-                          },
-                        )
-                      : null,
-                ),
-                onChanged: (value) {
-                  ref.read(accountsSearchProvider.notifier).setFilter(value);
-                  setState(() {});
-                },
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (value) {
-                  Focus.of(context).focusInDirection(TraversalDirection.down);
-                },
-              ).init(),
+
+                    onChanged: (value) {
+                      ref
+                          .read(accountsSearchProvider.notifier)
+                          .setFilter(value);
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (value) {
+                      Focus.of(context)
+                          .focusInDirection(TraversalDirection.down);
+                    },
+                  ).init(),
+                );
+              },
             );
           }),
         ),

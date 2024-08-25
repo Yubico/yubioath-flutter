@@ -56,6 +56,7 @@ import com.yubico.authenticator.yubikit.NfcActivityDispatcher
 import com.yubico.authenticator.yubikit.NfcActivityListener
 import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.authenticator.yubikit.getDeviceInfo
+import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -63,7 +64,14 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyManager
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyManager
+import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
+import com.yubico.yubikit.core.smartcard.SmartCardConnection
+import com.yubico.yubikit.core.smartcard.scp.KeyRef
+import com.yubico.yubikit.core.smartcard.scp.Scp11KeyParams
+import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
+import com.yubico.yubikit.core.smartcard.scp.ScpKid
+import com.yubico.yubikit.core.smartcard.scp.SecurityDomainSession
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
@@ -309,6 +317,25 @@ class MainActivity : FlutterFragmentActivity() {
             return
         }
 
+        // If NFC and FIPS check for SCP11b key
+        if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
+            logger.debug("Checking for usable SCP11b key...")
+            deviceManager.scpKeyParams =
+                device.withConnection<SmartCardConnection, ScpKeyParams?> { connection ->
+                    val scp = SecurityDomainSession(connection)
+                    val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
+                    keyRef?.let {
+                        val certs = scp.getCertificateBundle(it)
+                        if (certs.isNotEmpty()) Scp11KeyParams(
+                            keyRef,
+                            certs[certs.size - 1].publicKey
+                        ) else null
+                    }?.also {
+                        logger.debug("Found SCP11b key: {}", keyRef)
+                    }
+                }
+        }
+
         val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
         logger.debug("Connected key supports: {}", supportedContexts)
         if (!supportedContexts.contains(viewModel.appContext.value)) {
@@ -465,7 +492,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private val sharedPreferencesListener = OnSharedPreferenceChangeListener { _, key ->
-        if ( AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
+        if (AppPreferences.PREF_NFC_SILENCE_SOUNDS == key) {
             stopNfcDiscovery()
             startNfcDiscovery()
         }
@@ -531,6 +558,7 @@ class MainActivity : FlutterFragmentActivity() {
                         }
                         result.success(true)
                     }
+
                     "hasCamera" -> {
                         val cameraService =
                             getSystemService(CAMERA_SERVICE) as CameraManager
@@ -541,9 +569,11 @@ class MainActivity : FlutterFragmentActivity() {
                             }
                         )
                     }
+
                     "hasNfc" -> result.success(
                         packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
                     )
+
                     "isNfcEnabled" -> {
                         val nfcAdapter = NfcAdapter.getDefaultAdapter(this@MainActivity)
 
@@ -551,6 +581,7 @@ class MainActivity : FlutterFragmentActivity() {
                             nfcAdapter != null && nfcAdapter.isEnabled
                         )
                     }
+
                     "openNfcSettings" -> {
                         startActivity(Intent(ACTION_NFC_SETTINGS))
                         result.success(true)

@@ -30,8 +30,10 @@ class AppListItem<T> extends ConsumerStatefulWidget {
   final String? semanticTitle;
   final Widget? trailing;
   final List<ActionItem> Function(BuildContext context)? buildPopupActions;
+  final Widget Function(BuildContext context)? itemBuilder;
   final Intent? tapIntent;
   final Intent? doubleTapIntent;
+  final Color? tileColor;
   final bool selected;
 
   const AppListItem(
@@ -43,8 +45,10 @@ class AppListItem<T> extends ConsumerStatefulWidget {
     this.subtitle,
     this.trailing,
     this.buildPopupActions,
+    this.itemBuilder,
     this.tapIntent,
     this.doubleTapIntent,
+    this.tileColor,
     this.selected = false,
   });
 
@@ -78,7 +82,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
         item: widget.item,
         child: InkWell(
           focusNode: _focusNode,
-          borderRadius: BorderRadius.circular(48),
+          borderRadius: BorderRadius.circular(16),
           onSecondaryTapDown: buildPopupActions == null
               ? null
               : (details) {
@@ -118,57 +122,62 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
               : () {
                   Actions.invoke(context, doubleTapIntent);
                 },
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: [
-              const SizedBox(height: 64),
-              ListTile(
-                mouseCursor:
-                    widget.tapIntent != null ? SystemMouseCursors.click : null,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(48)),
-                selectedTileColor: colorScheme.secondaryContainer,
-                selectedColor: colorScheme.onSecondaryContainer,
-                selected: widget.selected,
-                leading: widget.leading,
-                title: subtitle == null
-                    // We use SizedBox to fill entire space
-                    ? SizedBox(
-                        height: 48,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            widget.title,
-                            overflow: TextOverflow.fade,
-                            maxLines: 1,
-                            softWrap: false,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        widget.title,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
-                subtitle: subtitle != null
-                    ? Text(
-                        subtitle,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                      )
-                    : null,
-                trailing: trailing == null
-                    ? null
-                    : Focus(
-                        skipTraversal: true,
-                        descendantsAreTraversable: false,
-                        child: trailing,
-                      ),
-              ),
-            ],
-          ),
+          child: widget.itemBuilder != null
+              ? widget.itemBuilder!.call(context)
+              : Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    const SizedBox(height: 64),
+                    ListTile(
+                      mouseCursor: widget.tapIntent != null
+                          ? SystemMouseCursors.click
+                          : null,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      selectedTileColor: colorScheme.secondaryContainer,
+                      selectedColor: colorScheme.onSecondaryContainer,
+                      tileColor: widget.tileColor,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      selected: widget.selected,
+                      leading: widget.leading,
+                      title: subtitle == null
+                          // We use SizedBox to fill entire space
+                          ? SizedBox(
+                              height: 48,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  widget.title,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              widget.title,
+                              overflow: TextOverflow.fade,
+                              maxLines: 1,
+                              softWrap: false,
+                            ),
+                      subtitle: subtitle != null
+                          ? Text(
+                              subtitle,
+                              overflow: TextOverflow.fade,
+                              maxLines: 1,
+                              softWrap: false,
+                            )
+                          : null,
+                      trailing: trailing == null
+                          ? null
+                          : Focus(
+                              skipTraversal: true,
+                              descendantsAreTraversable: false,
+                              child: trailing,
+                            ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

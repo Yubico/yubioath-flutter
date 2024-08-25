@@ -64,6 +64,8 @@ enum _DDesc {
   fidoDeleteCredential,
   fidoDeleteFingerprint,
   fidoRenameFingerprint,
+  fidoRegisterFingerprint,
+  fidoEnableEnterpriseAttestation,
   fidoActionFailure,
   // Others
   invalid;
@@ -89,7 +91,9 @@ enum _DDesc {
         dialogDescriptionFidoIndex + 3: fidoDeleteCredential,
         dialogDescriptionFidoIndex + 4: fidoDeleteFingerprint,
         dialogDescriptionFidoIndex + 5: fidoRenameFingerprint,
-        dialogDescriptionFidoIndex + 6: fidoActionFailure,
+        dialogDescriptionFidoIndex + 6: fidoRegisterFingerprint,
+        dialogDescriptionFidoIndex + 7: fidoEnableEnterpriseAttestation,
+        dialogDescriptionFidoIndex + 8: fidoActionFailure,
       }[id] ??
       _DDesc.invalid;
 }

@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -22,7 +23,7 @@ from .base import (
     PinComplexityException,
 )
 from fido2.ctap import CtapError
-from fido2.ctap2 import Ctap2, ClientPin
+from fido2.ctap2 import Ctap2, ClientPin, Config
 from fido2.ctap2.credman import CredentialManagement
 from fido2.ctap2.bio import BioEnrollment, FPBioEnrollment, CaptureError
 from fido2.pcsc import CtapPcscDevice
@@ -189,7 +190,7 @@ class Ctap2Node(RpcNode):
                 raise InactivityException()
         self._info = self.ctap.get_info()
         self._token = None
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @action(condition=lambda self: self._info.options["clientPin"])
     def unlock(self, params, event, signal):
@@ -199,6 +200,8 @@ class Ctap2Node(RpcNode):
             permissions |= ClientPin.PERMISSION.CREDENTIAL_MGMT
         if BioEnrollment.is_supported(self._info):
             permissions |= ClientPin.PERMISSION.BIO_ENROLL
+        if Config.is_supported(self._info):
+            permissions |= ClientPin.PERMISSION.AUTHENTICATOR_CFG
         try:
             if permissions:
                 self._token = self.client_pin.get_pin_token(pin, permissions)
@@ -224,9 +227,17 @@ class Ctap2Node(RpcNode):
                     params.pop("new_pin"),
                 )
             self._info = self.ctap.get_info()
-            return dict()
+            return RpcResponse(dict(), ["device_info"])
         except CtapError as e:
             return _handle_pin_error(e, self.client_pin)
+
+    @action(condition=lambda self: Config.is_supported(self._info))
+    def enable_ep_attestation(self, params, event, signal):
+        if self._info.options["clientPin"] and not self._token:
+            raise AuthRequiredException()
+        config = Config(self.ctap, self.client_pin.protocol, self._token)
+        config._call(Config.CMD.ENABLE_ENTERPRISE_ATT)
+        return dict()
 
     @child(condition=lambda self: BioEnrollment.is_supported(self._info))
     def fingerprints(self):

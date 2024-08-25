@@ -9,12 +9,14 @@ part of 'models.dart';
 _$SuccessImpl _$$SuccessImplFromJson(Map<String, dynamic> json) =>
     _$SuccessImpl(
       json['body'] as Map<String, dynamic>,
+      (json['flags'] as List<dynamic>).map((e) => e as String).toList(),
       $type: json['kind'] as String?,
     );
 
 Map<String, dynamic> _$$SuccessImplToJson(_$SuccessImpl instance) =>
     <String, dynamic>{
       'body': instance.body,
+      'flags': instance.flags,
       'kind': instance.$type,
     };
 

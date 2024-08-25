@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -91,9 +92,9 @@ def _handle_pin_puk_error(e):
 
 
 class PivNode(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = PivSession(connection)
+        self.session = PivSession(connection, scp_params)
         self._pivman_data = get_pivman_data(self.session)
         self._authenticated = False
 
@@ -212,7 +213,7 @@ class PivNode(RpcNode):
         store_key = params.pop("store_key", False)
         pivman_set_mgm_key(self.session, key, key_type, False, store_key)
         self._pivman_data = get_pivman_data(self.session)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @action
     def change_pin(self, params, event, signal):
@@ -220,9 +221,9 @@ class PivNode(RpcNode):
         new_pin = params.pop("new_pin")
         try:
             pivman_change_pin(self.session, old_pin, new_pin)
+            return RpcResponse(dict(), ["device_info"])
         except Exception as e:
             _handle_pin_puk_error(e)
-        return dict()
 
     @action
     def change_puk(self, params, event, signal):
@@ -230,9 +231,9 @@ class PivNode(RpcNode):
         new_puk = params.pop("new_puk")
         try:
             self.session.change_puk(old_puk, new_puk)
+            return RpcResponse(dict(), ["device_info"])
         except Exception as e:
             _handle_pin_puk_error(e)
-        return dict()
 
     @action
     def unblock_pin(self, params, event, signal):
@@ -240,16 +241,16 @@ class PivNode(RpcNode):
         new_pin = params.pop("new_pin")
         try:
             self.session.unblock_pin(puk, new_pin)
+            return RpcResponse(dict(), ["device_info"])
         except Exception as e:
             _handle_pin_puk_error(e)
-        return dict()
 
     @action
     def reset(self, params, event, signal):
         self.session.reset()
         self._authenticated = False
         self._pivman_data = get_pivman_data(self.session)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @child
     def slots(self):
@@ -266,9 +267,11 @@ class PivNode(RpcNode):
             return dict(
                 status=True,
                 password=password is not None,
-                key_type=KEY_TYPE.from_public_key(private_key.public_key())
-                if private_key
-                else None,
+                key_type=(
+                    KEY_TYPE.from_public_key(private_key.public_key())
+                    if private_key
+                    else None
+                ),
                 cert_info=_get_cert_info(certificate),
             )
         except InvalidPasswordError:
@@ -413,9 +416,11 @@ class SlotNode(RpcNode):
             id=f"{int(self.slot):02x}",
             name=self.slot.name,
             metadata=_metadata_dict(self.metadata),
-            certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
-            if self.certificate
-            else None,
+            certificate=(
+                self.certificate.public_bytes(encoding=Encoding.PEM).decode()
+                if self.certificate
+                else None
+            ),
         )
 
     @action(condition=lambda self: self.certificate or self.metadata)
@@ -492,16 +497,20 @@ class SlotNode(RpcNode):
 
         return dict(
             metadata=_metadata_dict(metadata),
-            public_key=private_key.public_key()
-            .public_bytes(
-                encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
-            )
-            .decode()
-            if private_key
-            else None,
-            certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
-            if certs
-            else None,
+            public_key=(
+                private_key.public_key()
+                .public_bytes(
+                    encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+                )
+                .decode()
+                if private_key
+                else None
+            ),
+            certificate=(
+                self.certificate.public_bytes(encoding=Encoding.PEM).decode()
+                if certs
+                else None
+            ),
         )
 
     @action

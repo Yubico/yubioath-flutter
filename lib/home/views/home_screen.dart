@@ -29,7 +29,6 @@ import '../../app/views/app_page.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../management/models.dart';
-import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/product_image.dart';
 import 'key_actions.dart';
 import 'manage_label_dialog.dart';
@@ -72,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           homeBuildActions(context, widget.deviceData, ref),
       builder: (context, expanded) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -92,16 +91,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           runSpacing: 8,
                           children: Capability.values
                               .where((c) => enabledCapabilities & c.value != 0)
-                              .map((c) => CapabilityBadge(c))
+                              .map((c) => CapabilityBadge(c, noTooltip: true))
                               .toList(),
                         ),
-                        if (serial != null) ...[
-                          const SizedBox(height: 32.0),
-                          _DeviceColor(
-                              deviceData: widget.deviceData,
-                              initialCustomization: keyCustomization ??
-                                  KeyCustomization(serial: serial))
-                        ]
+                        if (widget.deviceData.info.fipsCapable != 0)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 38),
+                            child: _FipsLegend(),
+                          ),
                       ],
                     ),
                   ),
@@ -131,6 +128,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
+class _FipsLegend extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Opacity(
+      opacity: 0.6,
+      child: Wrap(
+        runSpacing: 0,
+        spacing: 16,
+        children: [
+          RichText(
+            text: TextSpan(
+              children: [
+                const WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: Icon(
+                      Symbols.shield,
+                      size: 12,
+                      fill: 0.0,
+                    ),
+                  ),
+                ),
+                TextSpan(
+                    text: l10n.l_fips_capable,
+                    style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+          RichText(
+            text: TextSpan(
+              children: [
+                const WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: Icon(
+                      Symbols.shield,
+                      size: 12,
+                      fill: 1.0,
+                    ),
+                  ),
+                ),
+                TextSpan(
+                    text: l10n.l_fips_approved,
+                    style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _DeviceContent extends ConsumerWidget {
   final YubiKeyData deviceData;
   final KeyCustomization? initialCustomization;
@@ -147,6 +200,9 @@ class _DeviceContent extends ConsumerWidget {
     final label = initialCustomization?.name;
     String displayName = label != null ? '$label ($name)' : name;
 
+    final defaultColor = ref.watch(defaultColorProvider);
+    final customColor = initialCustomization?.color;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -158,22 +214,114 @@ class _DeviceContent extends ConsumerWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            if (serial != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: IconButton(
-                  icon: const Icon(Symbols.edit),
-                  onPressed: () async {
-                    await ref.read(withContextProvider)((context) async {
-                      await _showManageLabelDialog(
-                        initialCustomization ??
-                            KeyCustomization(serial: serial),
-                        context,
-                      );
-                    });
-                  },
-                ),
+            if (serial != null) ...[
+              const SizedBox(width: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IconButton(
+                    icon: const Icon(Symbols.edit),
+                    tooltip: l10n.s_set_label,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    onPressed: () async {
+                      await ref.read(withContextProvider)((context) async {
+                        await _showManageLabelDialog(
+                          initialCustomization ??
+                              KeyCustomization(serial: serial),
+                          context,
+                        );
+                      });
+                    },
+                  ),
+                  Column(
+                    children: [
+                      PopupMenuButton(
+                        popUpAnimationStyle:
+                            AnimationStyle(duration: Duration.zero),
+                        menuPadding: EdgeInsets.zero,
+                        tooltip: l10n.s_set_color,
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                              child: Center(
+                                child: Wrap(
+                                  runSpacing: 8,
+                                  spacing: 16,
+                                  children: [
+                                    ...[
+                                      Colors.teal,
+                                      Colors.cyan,
+                                      Colors.blueAccent,
+                                      Colors.deepPurple,
+                                      Colors.red,
+                                      Colors.orange,
+                                      Colors.yellow,
+                                      // add nice color to devices with dynamic color
+                                      if (isAndroid &&
+                                          ref.read(androidSdkVersionProvider) >=
+                                              31)
+                                        Colors.lightGreen
+                                    ].map((e) => _ColorButton(
+                                          color: e,
+                                          isSelected:
+                                              customColor?.value == e.value,
+                                          onPressed: () {
+                                            _updateColor(e, ref, serial);
+                                            Navigator.of(context).pop();
+                                          },
+                                        )),
+
+                                    // "use default color" button
+                                    RawMaterialButton(
+                                      onPressed: () {
+                                        _updateColor(null, ref, serial);
+                                        Navigator.of(context).pop();
+                                      },
+                                      constraints: const BoxConstraints(
+                                          minWidth: 26.0, minHeight: 26.0),
+                                      fillColor: defaultColor,
+                                      hoverColor: Colors.black12,
+                                      shape: const CircleBorder(),
+                                      child: Icon(
+                                          customColor == null
+                                              ? Symbols.circle
+                                              : Symbols.clear,
+                                          fill: 1,
+                                          size: 16,
+                                          weight: 700,
+                                          opticalSize: 20,
+                                          color: defaultColor
+                                                      .computeLuminance() >
+                                                  0.7
+                                              ? Colors.grey // for bright colors
+                                              : Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ];
+                        },
+                        icon: Icon(
+                          Symbols.palette,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Container(
+                        height: 3.0,
+                        width: 24.0,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.9)),
+                      )
+                    ],
+                  ),
+                ],
               )
+            ]
           ],
         ),
         const SizedBox(
@@ -195,7 +343,39 @@ class _DeviceContent extends ConsumerWidget {
                 .titleSmall
                 ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
+        if (deviceData.info.pinComplexity)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: RichText(
+              text: TextSpan(children: [
+                WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(
+                        Symbols.check,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )),
+                TextSpan(
+                  text: l10n.l_pin_complexity,
+                  style: Theme.of(context).textTheme.titleSmall?.apply(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+              ]),
+            ),
+          ),
       ],
+    );
+  }
+
+  void _updateColor(Color? color, WidgetRef ref, int serial) async {
+    final manager = ref.read(keyCustomizationManagerProvider.notifier);
+    await manager.set(
+      serial: serial,
+      name: initialCustomization?.name,
+      color: color,
     );
   }
 
@@ -206,97 +386,6 @@ class _DeviceContent extends ConsumerWidget {
       builder: (context) => ManageLabelDialog(
         initialCustomization: keyCustomization,
       ),
-    );
-  }
-}
-
-class _DeviceColor extends ConsumerWidget {
-  final YubiKeyData deviceData;
-  final KeyCustomization initialCustomization;
-  const _DeviceColor(
-      {required this.deviceData, required this.initialCustomization});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final defaultColor = ref.watch(defaultColorProvider);
-    final customColor = initialCustomization.color;
-
-    return ChoiceFilterChip<Color?>(
-      disableHover: true,
-      value: customColor,
-      items: const [null],
-      selected: customColor != null && customColor.value != defaultColor.value,
-      itemBuilder: (e) => Wrap(
-        alignment: WrapAlignment.center,
-        runSpacing: 8,
-        spacing: 16,
-        children: [
-          ...[
-            Colors.teal,
-            Colors.cyan,
-            Colors.blueAccent,
-            Colors.deepPurple,
-            Colors.red,
-            Colors.orange,
-            Colors.yellow,
-            // add nice color to devices with dynamic color
-            if (isAndroid && ref.read(androidSdkVersionProvider) >= 31)
-              Colors.lightGreen
-          ].map((e) => _ColorButton(
-                color: e,
-                isSelected: customColor?.value == e.value,
-                onPressed: () {
-                  _updateColor(e, ref);
-                  Navigator.of(context).pop();
-                },
-              )),
-
-          // "use default color" button
-          RawMaterialButton(
-            onPressed: () {
-              _updateColor(null, ref);
-              Navigator.of(context).pop();
-            },
-            constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-            fillColor: defaultColor,
-            hoverColor: Colors.black12,
-            shape: const CircleBorder(),
-            child: Icon(customColor == null ? Symbols.circle : Symbols.clear,
-                fill: 1,
-                size: 16,
-                weight: 700,
-                opticalSize: 20,
-                color: defaultColor.computeLuminance() > 0.7
-                    ? Colors.grey // for bright colors
-                    : Colors.white),
-          ),
-        ],
-      ),
-      labelBuilder: (e) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            constraints: const BoxConstraints(minWidth: 22.0, minHeight: 22.0),
-            decoration: BoxDecoration(
-                color: customColor ?? defaultColor, shape: BoxShape.circle),
-          ),
-          const SizedBox(
-            width: 12,
-          ),
-          Flexible(child: Text(l10n.s_color))
-        ],
-      ),
-      onChanged: (e) {},
-    );
-  }
-
-  void _updateColor(Color? color, WidgetRef ref) async {
-    final manager = ref.read(keyCustomizationManagerProvider.notifier);
-    await manager.set(
-      serial: initialCustomization.serial,
-      name: initialCustomization.name,
-      color: color,
     );
   }
 }
