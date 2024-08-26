@@ -81,12 +81,13 @@ class DeviceErrorScreen extends ConsumerWidget {
         'restricted-nfc' => HomeMessagePage(
             centered: true,
             graphic: Icon(
-              Symbols.warning,
+              Symbols.contactless,
               size: 96,
-              color: Theme.of(context).colorScheme.error,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
-            header: l10n.s_restricted_nfc,
-            message: l10n.p_restricted_nfc,
+            header: l10n.l_deactivate_restricted_nfc,
+            message: l10n.p_deactivate_restricted_nfc_desc,
+            footnote: l10n.p_deactivate_restricted_nfc_footer,
           ),
         _ => HomeMessagePage(
             centered: true,
