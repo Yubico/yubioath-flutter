@@ -158,6 +158,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                             selected.metadata,
                                             alwaysIncludePrivate:
                                                 pivState.supportsMetadata,
+                                            supportsBio: pivState.supportsBio,
                                           ),
                                           if (selected.certInfo == null)
                                             const SizedBox(height: 16)

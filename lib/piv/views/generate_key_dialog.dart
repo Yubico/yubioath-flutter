@@ -249,11 +249,13 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     FilterChip(
                       label: Text(l10n.s_allow_fingerprint),
                       selected: _allowMatch,
-                      onSelected: (value) {
-                        setState(() {
-                          _allowMatch = value;
-                        });
-                      },
+                      onSelected: _generating
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _allowMatch = value;
+                              });
+                            },
                     ),
                 ]),
             Padding(

@@ -500,6 +500,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": "Biometrics",
     "l_fingerprint": "Fingerprint: {label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -660,6 +661,7 @@
     "s_allow_fingerprint": "Allow fingerprint",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
+    "p_key_options_bio_desc": "Allow biometrics to be used instead of PIN.",
     "s_overwrite_slot": "Overwrite slot",
     "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
     "@p_overwrite_slot_desc": {
