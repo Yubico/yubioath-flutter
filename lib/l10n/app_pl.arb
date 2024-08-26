@@ -322,6 +322,7 @@
     "s_ep_attestation_enabled": null,
     "s_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": null,
+    "p_enable_ep_attestation_disable_with_factory_reset": null,
     "s_pin_required": "Wymagany PIN",
     "p_pin_required_desc": "Czynność, którą zamierzasz wykonać, wymaga wprowadzenia kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano, użyj PUK, aby zresetować",
@@ -503,6 +504,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": null,
     "l_fingerprint": "Odcisk palca: {label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -663,6 +665,7 @@
     "s_allow_fingerprint": null,
     "p_cert_options_desc": "Algorytm klucza do użycia, format wyjściowy i data wygaśnięcia (tylko certyfikat).",
     "p_cert_options_bio_desc": null,
+    "p_key_options_bio_desc": null,
     "s_overwrite_slot": "Nadpisz slot",
     "p_overwrite_slot_desc": "Spowoduje to trwałe nadpisanie istniejącej zawartości w slocie {slot}.",
     "@p_overwrite_slot_desc": {

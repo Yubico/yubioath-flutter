@@ -36,7 +36,14 @@ class EnableEnterpriseAttestationDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_enable_ep_attestation_desc),
+            Text(
+              l10n.p_enable_ep_attestation_desc,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            Text(l10n.p_enable_ep_attestation_disable_with_factory_reset),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

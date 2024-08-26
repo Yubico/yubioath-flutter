@@ -27,7 +27,9 @@ List<KeyType> getSupportedKeyTypes(Version version, bool isFips) => [
         if (!isFips) KeyType.x25519,
       ],
       KeyType.eccp256,
-      KeyType.eccp384,
+      if (version.isAtLeast(4, 0)) ...[
+        KeyType.eccp384,
+      ]
     ];
 
 PinPolicy getPinPolicy(SlotId slot, bool match) {

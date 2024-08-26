@@ -99,6 +99,7 @@ const appListItem95 = Key('$_prefix.95.applistitem');
 
 // SlotMetadata body keys
 const slotMetadataKeyType = Key('$_prefix.slotMetadata.keyType');
+const slotMetadataBiometrics = Key('$_prefix.slotMetadata.biometrics');
 
 // CertInfo body keys
 const certInfoKeyType = Key('$_prefix.certInfo.keyType');
