@@ -210,7 +210,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               ActionChip(
                 label: Text(l10n.s_set_password),
                 onPressed: () async {
-                  await setManagePassword(
+                  await managePassword(
                       context, ref, widget.devicePath, widget.oathState);
                 },
                 avatar: const Icon(Symbols.person_add_alt),

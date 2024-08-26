@@ -180,7 +180,7 @@ Future<void> addOathAccount(BuildContext context, WidgetRef ref,
   }
 }
 
-Future<void> setManagePassword(BuildContext context, WidgetRef ref,
+Future<void> managePassword(BuildContext context, WidgetRef ref,
     DevicePath devicePath, OathState oathState) async {
   await showBlurDialog(
     context: context,

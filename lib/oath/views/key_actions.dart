@@ -118,7 +118,7 @@ Widget oathBuildActions(
             trailing: fipsCapable && !fipsApproved ? alertIcon : null,
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
-              setManagePassword(context, ref, devicePath, oathState);
+              managePassword(context, ref, devicePath, oathState);
             }),
       ]),
     ],
