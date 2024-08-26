@@ -126,6 +126,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
       key: factoryResetCancel,
+      allowCancel: !_resetting || _application == Capability.fido2,
       onCancel: switch (_application) {
         Capability.fido2 => _currentStep < _totalSteps
             ? () {
@@ -148,15 +149,13 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             onPressed: !_resetting
                 ? switch (_application) {
                     Capability.fido2 => () async {
-                        setState(() {
-                          _resetting = true;
-                        });
                         _subscription = ref
                             .read(fidoStateProvider(widget.data.node.path)
                                 .notifier)
                             .reset()
                             .listen((event) {
                           setState(() {
+                            _resetting = true;
                             _currentStep++;
                             _interaction = event;
                           });
