@@ -18,7 +18,7 @@ zxing-cpp = "^2.2.0"
 [tool.poetry.dev-dependencies]
 pyinstaller = {version = "^6.0", python = "<3.13"}
 pytest = "^8.0.0"
-mypy = "^1.7.1"
+mypy = "^1.11.2"
 types-Pillow = "^10.2.0.0"
 
 [build-system]
