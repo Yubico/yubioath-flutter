@@ -109,6 +109,7 @@ class OathManager(
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
     private var addToAny = false
+    private val updateDeviceInfo = AtomicBoolean(false)
 
     override fun onPause() {
         // cancel any pending actions, except for addToAny
@@ -288,6 +289,10 @@ class OathManager(
             logger.debug(
                 "Successfully read Oath session info (and credentials if unlocked) from connected key"
             )
+
+            if (updateDeviceInfo.getAndSet(false)) {
+                deviceManager.setDeviceInfo(getDeviceInfo(device))
+            }
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Failed to connect to CCID: ", e)
@@ -365,7 +370,7 @@ class OathManager(
     }
 
     private suspend fun reset(): String =
-        useOathSession(OathActionDescription.Reset) {
+        useOathSession(OathActionDescription.Reset, updateDeviceInfo = true) {
             // note, it is ok to reset locked session
             it.reset()
             keyManager.removeKey(it.deviceId)
@@ -399,7 +404,11 @@ class OathManager(
         currentPassword: String?,
         newPassword: String,
     ): String =
-        useOathSession(OathActionDescription.SetPassword, unlock = false) { session ->
+        useOathSession(
+            OathActionDescription.SetPassword,
+            unlock = false,
+            updateDeviceInfo = true
+        ) { session ->
             if (session.isAccessKeySet) {
                 if (currentPassword == null) {
                     throw Exception("Must provide current password to be able to change it")
@@ -654,22 +663,30 @@ class OathManager(
     private suspend fun <T> useOathSession(
         oathActionDescription: OathActionDescription,
         unlock: Boolean = true,
+        updateDeviceInfo: Boolean = false,
         action: (YubiKitOathSession) -> T
     ): T {
 
         // callers can decide whether the session should be unlocked first
         unlockOnConnect.set(unlock)
+        // callers can request whether device info should be updated after session operation
+        this@OathManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
-            onUsb = { useOathSessionUsb(it, action) },
+            onUsb = { useOathSessionUsb(it, updateDeviceInfo, action) },
             onNfc = { useOathSessionNfc(oathActionDescription, action) }
         )
     }
 
     private suspend fun <T> useOathSessionUsb(
         device: UsbYubiKeyDevice,
+        updateDeviceInfo: Boolean = false,
         block: (YubiKitOathSession) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
         block(getOathSession(it))
+    }.also {
+        if (updateDeviceInfo) {
+            deviceManager.setDeviceInfo(getDeviceInfo(device))
+        }
     }
 
     private suspend fun <T> useOathSessionNfc(

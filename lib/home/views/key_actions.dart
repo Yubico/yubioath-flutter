@@ -58,7 +58,7 @@ Widget homeBuildActions(
                     ? l10n.s_toggle_applications
                     : l10n.s_toggle_interfaces,
                 subtitle: interfacesLocked
-                    ? 'Requires factory reset' // TODO: Replace with l10n
+                    ? l10n.l_factory_reset_required
                     : (deviceData.info.version.major > 4
                         ? l10n.l_toggle_applications_desc
                         : l10n.l_toggle_interfaces_desc),

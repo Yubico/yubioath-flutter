@@ -45,6 +45,7 @@ from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException, NoCardException
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
 from smartcard.CardMonitoring import CardObserver, CardMonitor
+from fido2.ctap import CtapError
 from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
 from hashlib import sha256
 from dataclasses import asdict
@@ -349,6 +350,11 @@ class UsbDeviceNode(AbstractDeviceNode):
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
             raise ConnectionException(self._device.fingerprint, "fido", e)
+        except Exception as e:  # TODO: Replace with ConnectionError once added
+            if "Wrong" in str(e):
+                logger.warning("Error opening connection", exc_info=True)
+                raise ConnectionException(self._device.fingerprint, "fido", e)
+            raise
 
 
 class _ReaderObserver(CardObserver):
@@ -445,6 +451,14 @@ class ConnectionNode(RpcNode):
             if e.sw == SW.INVALID_INSTRUCTION:
                 raise ChildResetException(f"SW: {e.sw}")
             raise e
+        except CtapError as e:
+            if e.code == CtapError.ERR.CHANNEL_BUSY:
+                raise ChildResetException(str(e))
+            raise
+        except Exception as e:  # TODO: Replace with ConnectionError once added
+            if "Wrong" in str(e):
+                raise ChildResetException(str(e))
+            raise
 
     @property
     def capabilities(self):
@@ -521,16 +535,17 @@ class ScpConnectionNode(ConnectionNode):
         self.fips_capable = info.fips_capable
         self.scp_params = None
         try:
-            scp = SecurityDomainSession(connection)
+            if self.fips_capable != 0:
+                scp = SecurityDomainSession(connection)
 
-            for ref in scp.get_key_information().keys():
-                if ref.kid == 0x13:
-                    chain = scp.get_certificate_bundle(ref)
-                    if chain:
-                        pub_key = chain[-1].public_key()
-                        assert isinstance(pub_key, EllipticCurvePublicKey)  # nosec
-                        self.scp_params = Scp11KeyParams(ref, pub_key)
-                        break
+                for ref in scp.get_key_information().keys():
+                    if ref.kid == 0x13:
+                        chain = scp.get_certificate_bundle(ref)
+                        if chain:
+                            pub_key = chain[-1].public_key()
+                            assert isinstance(pub_key, EllipticCurvePublicKey)  # nosec
+                            self.scp_params = Scp11KeyParams(ref, pub_key)
+                            break
         except NotSupportedError:
             pass
 

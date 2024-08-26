@@ -167,7 +167,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final searchText = searchController.text;
-
+    final deviceInfo =
+        ref.watch(currentDeviceDataProvider.select((s) => s.valueOrNull?.info));
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
@@ -186,21 +187,36 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        actionsBuilder: (context, expanded) => [
-          if (!expanded)
-            ActionChip(
-              label: Text(l10n.s_add_account),
-              onPressed: () async {
-                await addOathAccount(
-                  context,
-                  ref,
-                  widget.devicePath,
-                  widget.oathState,
-                );
-              },
-              avatar: const Icon(Symbols.person_add_alt),
-            )
-        ],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
+        actionsBuilder: (context, expanded) {
+          final (fipsCapable, fipsApproved) =
+              deviceInfo?.getFipsStatus(Capability.oath) ?? (false, false);
+
+          return [
+            if (!expanded && (!fipsCapable || (fipsCapable && fipsApproved)))
+              ActionChip(
+                label: Text(l10n.s_add_account),
+                onPressed: () async {
+                  await addOathAccount(
+                    context,
+                    ref,
+                    widget.devicePath,
+                    widget.oathState,
+                  );
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              ),
+            if (!expanded && fipsCapable && !fipsApproved)
+              ActionChip(
+                label: Text(l10n.s_set_password),
+                onPressed: () async {
+                  await managePassword(
+                      context, ref, widget.devicePath, widget.oathState);
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              )
+          ];
+        },
         title: l10n.s_accounts,
         capabilities: const [Capability.oath],
         key: keys.noAccountsView,
@@ -225,6 +241,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         builder: (context, _) => const CircularProgressIndicator(),
       );
     }
@@ -290,6 +307,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         alternativeTitle:
             searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.oath],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
@@ -500,7 +518,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               },
                               child: PopupMenuButton(
                                 constraints: const BoxConstraints.tightFor(),
-                                tooltip: 'Select layout',
+                                tooltip: l10n.s_select_layout,
                                 popUpAnimationStyle:
                                     AnimationStyle(duration: Duration.zero),
                                 icon: Icon(

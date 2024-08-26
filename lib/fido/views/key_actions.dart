@@ -52,11 +52,11 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
   final authBlocked = state.pinBlocked;
 
   final enterpriseAttestation = state.enterpriseAttestation;
-  final showEnterpriseAttestation = enterpriseAttestation != null &&
+  final showEnterpriseAttestation =
+      enterpriseAttestation != null && fingerprints == null;
+  final canEnableEnterpriseAttestation = enterpriseAttestation == false &&
       !(state.alwaysUv && !state.hasPin) &&
       !(!state.unlocked && state.hasPin);
-  final canEnableEnterpriseAttestation =
-      enterpriseAttestation == false && showEnterpriseAttestation;
 
   return Column(
     children: [
@@ -129,8 +129,11 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
               feature: features.enableEnterpriseAttestation,
               icon: const Icon(Symbols.local_police),
               title: l10n.s_ep_attestation,
-              subtitle:
-                  enterpriseAttestation ? l10n.s_enabled : l10n.s_disabled,
+              subtitle: enterpriseAttestation
+                  ? l10n.s_enabled
+                  : (state.alwaysUv && !state.hasPin)
+                      ? l10n.l_set_pin_first
+                      : l10n.s_disabled,
               onTap: canEnableEnterpriseAttestation
                   ? (context) {
                       Navigator.of(context).popUntil((route) => route.isFirst);

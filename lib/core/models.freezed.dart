@@ -20,7 +20,9 @@ mixin _$Version {
   int get minor => throw _privateConstructorUsedError;
   int get patch => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Version
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $VersionCopyWith<Version> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -42,6 +44,8 @@ class _$VersionCopyWithImpl<$Res, $Val extends Version>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Version
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -84,6 +88,8 @@ class __$$VersionImplCopyWithImpl<$Res>
       _$VersionImpl _value, $Res Function(_$VersionImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Version
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -140,7 +146,9 @@ class _$VersionImpl extends _Version {
   @override
   int get hashCode => Object.hash(runtimeType, major, minor, patch);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Version
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$VersionImplCopyWith<_$VersionImpl> get copyWith =>
@@ -158,8 +166,11 @@ abstract class _Version extends Version {
   int get minor;
   @override
   int get patch;
+
+  /// Create a copy of Version
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$VersionImplCopyWith<_$VersionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

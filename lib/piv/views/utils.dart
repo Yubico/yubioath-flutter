@@ -29,3 +29,13 @@ List<KeyType> getSupportedKeyTypes(Version version, bool isFips) => [
       KeyType.eccp256,
       KeyType.eccp384,
     ];
+
+PinPolicy getPinPolicy(SlotId slot, bool match) {
+  if (match) {
+    if (slot == SlotId.signature) {
+      return PinPolicy.matchAlways;
+    }
+    return PinPolicy.matchOnce;
+  }
+  return PinPolicy.dfault;
+}

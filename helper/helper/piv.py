@@ -135,11 +135,18 @@ class PivNode(RpcNode):
             pin_attempts = self.session.get_pin_attempts()
             metadata = None
 
+        try:
+            self.session.get_bio_metadata()
+            supports_bio = True
+        except NotSupportedError:
+            supports_bio = False
+
         return dict(
             version=self.session.version,
             authenticated=self._authenticated,
             derived_key=self._pivman_data.has_derived_key,
             stored_key=self._pivman_data.has_stored_key,
+            supports_bio=supports_bio,
             chuid=self._get_object(OBJECT_ID.CHUID),
             ccc=self._get_object(OBJECT_ID.CAPABILITY),
             pin_attempts=pin_attempts,
