@@ -19,7 +19,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -281,47 +280,12 @@ class _CertificateListItem extends ConsumerWidget {
           : pivSlot.metadata != null
               ? l10n.l_key_no_certificate
               : l10n.l_no_certificate,
-      trailing: expanded
-          ? null
-          : OutlinedButton(
-              key: _getMeatballKey(slot),
-              onPressed: Actions.handler(context, OpenIntent(pivSlot)),
-              child: const Icon(Symbols.more_horiz),
-            ),
-      tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
-      doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
+      tapIntent: OpenIntent(pivSlot),
       buildPopupActions: hasFeature(features.slots) && !fipsUnready
           ? (context) => buildSlotActions(pivState, pivSlot, fipsUnready, l10n)
           : null,
     );
   }
-
-  Key _getMeatballKey(SlotId slotId) => switch (slotId) {
-        SlotId.authentication => meatballButton9a,
-        SlotId.signature => meatballButton9c,
-        SlotId.keyManagement => meatballButton9d,
-        SlotId.cardAuth => meatballButton9e,
-        SlotId.retired1 => meatballButton82,
-        SlotId.retired2 => meatballButton83,
-        SlotId.retired3 => meatballButton84,
-        SlotId.retired4 => meatballButton85,
-        SlotId.retired5 => meatballButton86,
-        SlotId.retired6 => meatballButton87,
-        SlotId.retired7 => meatballButton88,
-        SlotId.retired8 => meatballButton89,
-        SlotId.retired9 => meatballButton8a,
-        SlotId.retired10 => meatballButton8b,
-        SlotId.retired11 => meatballButton8c,
-        SlotId.retired12 => meatballButton8d,
-        SlotId.retired13 => meatballButton8e,
-        SlotId.retired14 => meatballButton8f,
-        SlotId.retired15 => meatballButton90,
-        SlotId.retired16 => meatballButton91,
-        SlotId.retired17 => meatballButton92,
-        SlotId.retired18 => meatballButton93,
-        SlotId.retired19 => meatballButton94,
-        SlotId.retired20 => meatballButton95
-      };
 
   Key _getAppListItemKey(SlotId slotId) => switch (slotId) {
         SlotId.authentication => appListItem9a,

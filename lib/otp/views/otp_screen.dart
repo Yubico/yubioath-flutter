@@ -226,15 +226,7 @@ class _SlotListItem extends ConsumerWidget {
       title: slot.getDisplayName(l10n),
       subtitle:
           isConfigured ? l10n.l_otp_slot_configured : l10n.l_otp_slot_empty,
-      trailing: expanded
-          ? null
-          : OutlinedButton(
-              key: getOpenMenuButtonKey(slot),
-              onPressed: Actions.handler(context, OpenIntent(otpSlot)),
-              child: const Icon(Symbols.more_horiz),
-            ),
-      tapIntent: isDesktop && !expanded ? null : OpenIntent(otpSlot),
-      doubleTapIntent: isDesktop && !expanded ? OpenIntent(otpSlot) : null,
+      tapIntent: OpenIntent(otpSlot),
       buildPopupActions: hasFeature(features.slots)
           ? (context) => buildSlotActions(otpSlot, l10n)
           : null,

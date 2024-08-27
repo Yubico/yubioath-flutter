@@ -402,14 +402,7 @@ class _FingerprintListItem extends StatelessWidget {
         child: const Icon(Symbols.fingerprint),
       ),
       title: fingerprint.label,
-      trailing: expanded
-          ? null
-          : OutlinedButton(
-              onPressed: Actions.handler(context, OpenIntent(fingerprint)),
-              child: const Icon(Symbols.more_horiz),
-            ),
-      tapIntent: isDesktop && !expanded ? null : OpenIntent(fingerprint),
-      doubleTapIntent: isDesktop && !expanded ? OpenIntent(fingerprint) : null,
+      tapIntent: OpenIntent(fingerprint),
       buildPopupActions: (context) =>
           buildFingerprintActions(fingerprint, AppLocalizations.of(context)!),
     );

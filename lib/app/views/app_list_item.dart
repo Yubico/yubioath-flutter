@@ -74,7 +74,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
     final buildPopupActions = widget.buildPopupActions;
     final tapIntent = widget.tapIntent;
     final doubleTapIntent = widget.doubleTapIntent;
-    final longPressIntent = widget.longPressIntent;
+    final longPressIntent = widget.longPressIntent ?? doubleTapIntent;
     final trailing = widget.trailing;
     final hasFeature = ref.watch(featureProvider);
     final colorScheme = Theme.of(context).colorScheme;

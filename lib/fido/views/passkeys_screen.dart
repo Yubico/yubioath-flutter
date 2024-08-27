@@ -653,14 +653,7 @@ class _CredentialListItem extends StatelessWidget {
       tileColor: tileColor,
       title: credential.rpId,
       subtitle: credential.userName,
-      trailing: expanded
-          ? null
-          : OutlinedButton(
-              onPressed: Actions.handler(context, OpenIntent(credential)),
-              child: const Icon(Symbols.more_horiz),
-            ),
-      tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
-      doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,
+      tapIntent: OpenIntent(credential),
       buildPopupActions: (context) =>
           buildCredentialActions(credential, AppLocalizations.of(context)!),
     );
