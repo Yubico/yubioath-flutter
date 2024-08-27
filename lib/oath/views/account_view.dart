@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
 import '../../core/state.dart';
-import '../features.dart' as features;
 import '../models.dart';
 import 'account_helper.dart';
 import 'account_icon.dart';
@@ -80,7 +79,6 @@ class _AccountViewState extends ConsumerState<AccountView> {
 
   @override
   Widget build(BuildContext context) {
-    final hasFeature = ref.watch(featureProvider);
     final helper = AccountHelper(context, ref, credential);
     final subtitle = helper.subtitle;
     final circleAvatar = CircleAvatar(
@@ -93,6 +91,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
     );
 
     final openIntent = OpenIntent<OathCredential>(widget.credential);
+    final copyIntent = CopyIntent<OathCredential>(widget.credential);
     final buttonStyle = FilledButton.styleFrom(
         backgroundColor: Theme.of(context).hoverColor, elevation: 0);
     return AppListItem<OathCredential>(
@@ -109,16 +108,13 @@ class _AccountViewState extends ConsumerState<AccountView> {
               icon: helper.buildCodeIcon(),
               label: helper.buildCodeLabel(),
               style: buttonStyle,
-              onPressed: Actions.handler(context, openIntent),
+              onPressed: Actions.handler(context, copyIntent),
             )
           : FilledButton.tonal(
               style: buttonStyle,
-              onPressed: Actions.handler(context, openIntent),
+              onPressed: Actions.handler(context, copyIntent),
               child: helper.buildCodeIcon()),
-      tapIntent: isDesktop && !widget.expanded ? null : openIntent,
-      doubleTapIntent: hasFeature(features.accountsClipboard)
-          ? CopyIntent<OathCredential>(credential)
-          : null,
+      tapIntent: openIntent,
       buildPopupActions: (_) => helper.buildActions(),
       itemBuilder: widget.large
           ? (context) {
