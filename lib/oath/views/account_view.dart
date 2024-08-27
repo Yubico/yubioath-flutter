@@ -20,7 +20,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
-import '../../core/state.dart';
 import '../models.dart';
 import 'account_helper.dart';
 import 'account_icon.dart';
@@ -120,9 +119,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
       itemBuilder: widget.large
           ? (context) {
               return ListTile(
-                mouseCursor: !(isDesktop && !widget.expanded)
-                    ? SystemMouseCursors.click
-                    : null,
+                mouseCursor: SystemMouseCursors.click,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
                 selectedTileColor:
@@ -191,12 +188,12 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                   label: helper.buildCodeLabel(),
                                   style: buttonStyle,
                                   onPressed:
-                                      Actions.handler(context, openIntent),
+                                      Actions.handler(context, copyIntent),
                                 )
                               : FilledButton.tonal(
                                   style: buttonStyle,
                                   onPressed:
-                                      Actions.handler(context, openIntent),
+                                      Actions.handler(context, copyIntent),
                                   child: helper.buildCodeIcon()),
                         ],
                       ),
