@@ -270,6 +270,7 @@ class PivState with _$PivState {
     required bool derivedKey,
     required bool storedKey,
     required int pinAttempts,
+    required bool supportsBio,
     String? chuid,
     String? ccc,
     PivStateMetadata? metadata,
@@ -278,6 +279,7 @@ class PivState with _$PivState {
   bool get protectedKey => derivedKey || storedKey;
   bool get needsAuth =>
       !authenticated && metadata?.managementKeyMetadata.defaultValue != true;
+  bool get supportsMetadata => version.isAtLeast(5, 3);
 
   factory PivState.fromJson(Map<String, dynamic> json) =>
       _$PivStateFromJson(json);

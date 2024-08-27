@@ -63,7 +63,7 @@ class SlotDialog extends ConsumerWidget {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 48, bottom: 16),
+                        padding: const EdgeInsets.only(top: 48, bottom: 32),
                         child: Column(
                           children: [
                             Text(
@@ -73,14 +73,24 @@ class SlotDialog extends ConsumerWidget {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 8),
-                            const Icon(
+                            Icon(
                               Symbols.touch_app,
                               size: 100.0,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                             const SizedBox(height: 8),
-                            Text(otpSlot.isConfigured
-                                ? l10n.l_otp_slot_configured
-                                : l10n.l_otp_slot_empty)
+                            Text(
+                              otpSlot.isConfigured
+                                  ? l10n.l_otp_slot_configured
+                                  : l10n.l_otp_slot_empty,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
+                            )
                           ],
                         ),
                       ),

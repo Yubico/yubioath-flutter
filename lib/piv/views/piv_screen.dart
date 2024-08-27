@@ -24,6 +24,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
@@ -57,10 +58,20 @@ class _PivScreenState extends ConsumerState<PivScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
+    final (fipsCapable, fipsApproved) = ref
+            .watch(currentDeviceDataProvider)
+            .valueOrNull
+            ?.info
+            .getFipsStatus(Capability.piv) ??
+        (false, false);
+    final fipsUnready = fipsCapable && !fipsApproved;
+
     return ref.watch(pivStateProvider(widget.devicePath)).when(
-          loading: () => const MessagePage(
+          loading: () => MessagePage(
+            title: l10n.s_certificates,
+            capabilities: const [Capability.piv],
             centered: true,
-            graphic: CircularProgressIndicator(),
+            graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
@@ -129,7 +140,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                   elevation: 0.0,
                                   color: Theme.of(context).hoverColor,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(16),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 24),
                                     child: Column(
                                       children: [
                                         Text(
@@ -144,9 +156,12 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                           CertInfoTable(
                                             selected.certInfo,
                                             selected.metadata,
-                                            alwaysIncludePrivate: true,
+                                            alwaysIncludePrivate:
+                                                pivState.supportsMetadata,
+                                            supportsBio: pivState.supportsBio,
                                           ),
-                                          const SizedBox(height: 16),
+                                          if (selected.certInfo == null)
+                                            const SizedBox(height: 16)
                                         ],
                                         if (selected.certInfo == null)
                                           Text(
@@ -163,8 +178,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                               ActionListSection.fromMenuActions(
                                 context,
                                 l10n.s_actions,
-                                actions:
-                                    buildSlotActions(pivState, selected, l10n),
+                                actions: buildSlotActions(
+                                    pivState, selected, fipsUnready, l10n),
                               ),
                             ],
                           )
@@ -195,25 +210,30 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                             return null;
                           }),
                       },
-                      child: Column(
-                        children: [
-                          ...normalSlots.map(
-                            (e) => _CertificateListItem(
-                              pivState,
-                              e,
-                              expanded: expanded,
-                              selected: e == selected,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
+                          children: [
+                            ...normalSlots.map(
+                              (e) => _CertificateListItem(
+                                pivState,
+                                e,
+                                expanded: expanded,
+                                selected: e == selected,
+                                fipsUnready: fipsUnready,
+                              ),
                             ),
-                          ),
-                          ...shownRetiredSlots.map(
-                            (e) => _CertificateListItem(
-                              pivState,
-                              e,
-                              expanded: expanded,
-                              selected: e == selected,
-                            ),
-                          )
-                        ],
+                            ...shownRetiredSlots.map(
+                              (e) => _CertificateListItem(
+                                pivState,
+                                e,
+                                expanded: expanded,
+                                selected: e == selected,
+                                fipsUnready: fipsUnready,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -230,9 +250,12 @@ class _CertificateListItem extends ConsumerWidget {
   final PivSlot pivSlot;
   final bool expanded;
   final bool selected;
+  final bool fipsUnready;
 
   const _CertificateListItem(this.pivState, this.pivSlot,
-      {required this.expanded, required this.selected});
+      {required this.expanded,
+      required this.selected,
+      required this.fipsUnready});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -267,8 +290,8 @@ class _CertificateListItem extends ConsumerWidget {
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
-      buildPopupActions: hasFeature(features.slots)
-          ? (context) => buildSlotActions(pivState, pivSlot, l10n)
+      buildPopupActions: hasFeature(features.slots) && !fipsUnready
+          ? (context) => buildSlotActions(pivState, pivSlot, fipsUnready, l10n)
           : null,
     );
   }

@@ -24,8 +24,12 @@ mixin _$PinMetadata {
   int get totalAttempts => throw _privateConstructorUsedError;
   int get attemptsRemaining => throw _privateConstructorUsedError;
 
+  /// Serializes this PinMetadata to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PinMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PinMetadataCopyWith<PinMetadata> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,6 +53,8 @@ class _$PinMetadataCopyWithImpl<$Res, $Val extends PinMetadata>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PinMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -92,6 +98,8 @@ class __$$PinMetadataImplCopyWithImpl<$Res>
       _$PinMetadataImpl _value, $Res Function(_$PinMetadataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PinMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -150,12 +158,14 @@ class _$PinMetadataImpl implements _PinMetadata {
                 other.attemptsRemaining == attemptsRemaining));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, defaultValue, totalAttempts, attemptsRemaining);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PinMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PinMetadataImplCopyWith<_$PinMetadataImpl> get copyWith =>
@@ -182,8 +192,11 @@ abstract class _PinMetadata implements PinMetadata {
   int get totalAttempts;
   @override
   int get attemptsRemaining;
+
+  /// Create a copy of PinMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PinMetadataImplCopyWith<_$PinMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -247,6 +260,9 @@ class _$PinVerificationStatusCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of PinVerificationStatus
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -263,6 +279,9 @@ class __$$PinSuccessImplCopyWithImpl<$Res>
   __$$PinSuccessImplCopyWithImpl(
       _$PinSuccessImpl _value, $Res Function(_$PinSuccessImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of PinVerificationStatus
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -370,6 +389,8 @@ class __$$PinFailureImplCopyWithImpl<$Res>
       _$PinFailureImpl _value, $Res Function(_$PinFailureImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PinVerificationStatus
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -383,6 +404,8 @@ class __$$PinFailureImplCopyWithImpl<$Res>
     ));
   }
 
+  /// Create a copy of PinVerificationStatus
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $PivPinFailureReasonCopyWith<$Res> get reason {
@@ -416,7 +439,9 @@ class _$PinFailureImpl implements PinFailure {
   @override
   int get hashCode => Object.hash(runtimeType, reason);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PinVerificationStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
@@ -489,7 +514,10 @@ abstract class PinFailure implements PinVerificationStatus {
   factory PinFailure(final PivPinFailureReason reason) = _$PinFailureImpl;
 
   PivPinFailureReason get reason;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PinVerificationStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -552,6 +580,9 @@ class _$PivPinFailureReasonCopyWithImpl<$Res, $Val extends PivPinFailureReason>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of PivPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -571,6 +602,8 @@ class __$$PivInvalidPinImplCopyWithImpl<$Res>
       _$PivInvalidPinImpl _value, $Res Function(_$PivInvalidPinImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -610,7 +643,9 @@ class _$PivInvalidPinImpl implements PivInvalidPin {
   @override
   int get hashCode => Object.hash(runtimeType, attemptsRemaining);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PivInvalidPinImplCopyWith<_$PivInvalidPinImpl> get copyWith =>
@@ -683,7 +718,10 @@ abstract class PivInvalidPin implements PivPinFailureReason {
   factory PivInvalidPin(final int attemptsRemaining) = _$PivInvalidPinImpl;
 
   int get attemptsRemaining;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PivInvalidPinImplCopyWith<_$PivInvalidPinImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -702,6 +740,9 @@ class __$$PivWeakPinImplCopyWithImpl<$Res>
   __$$PivWeakPinImplCopyWithImpl(
       _$PivWeakPinImpl _value, $Res Function(_$PivWeakPinImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of PivPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -801,8 +842,12 @@ mixin _$ManagementKeyMetadata {
   bool get defaultValue => throw _privateConstructorUsedError;
   TouchPolicy get touchPolicy => throw _privateConstructorUsedError;
 
+  /// Serializes this ManagementKeyMetadata to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ManagementKeyMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ManagementKeyMetadataCopyWith<ManagementKeyMetadata> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -828,6 +873,8 @@ class _$ManagementKeyMetadataCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ManagementKeyMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -874,6 +921,8 @@ class __$$ManagementKeyMetadataImplCopyWithImpl<$Res>
       $Res Function(_$ManagementKeyMetadataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ManagementKeyMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -931,12 +980,14 @@ class _$ManagementKeyMetadataImpl implements _ManagementKeyMetadata {
                 other.touchPolicy == touchPolicy));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, keyType, defaultValue, touchPolicy);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ManagementKeyMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ManagementKeyMetadataImplCopyWith<_$ManagementKeyMetadataImpl>
@@ -966,8 +1017,11 @@ abstract class _ManagementKeyMetadata implements ManagementKeyMetadata {
   bool get defaultValue;
   @override
   TouchPolicy get touchPolicy;
+
+  /// Create a copy of ManagementKeyMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ManagementKeyMetadataImplCopyWith<_$ManagementKeyMetadataImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -984,8 +1038,12 @@ mixin _$SlotMetadata {
   bool get generated => throw _privateConstructorUsedError;
   String get publicKey => throw _privateConstructorUsedError;
 
+  /// Serializes this SlotMetadata to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SlotMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SlotMetadataCopyWith<SlotMetadata> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1014,6 +1072,8 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SlotMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1072,6 +1132,8 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
       _$SlotMetadataImpl _value, $Res Function(_$SlotMetadataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SlotMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1147,12 +1209,14 @@ class _$SlotMetadataImpl implements _SlotMetadata {
                 other.publicKey == publicKey));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, keyType, pinPolicy, touchPolicy, generated, publicKey);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SlotMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SlotMetadataImplCopyWith<_$SlotMetadataImpl> get copyWith =>
@@ -1187,8 +1251,11 @@ abstract class _SlotMetadata implements SlotMetadata {
   bool get generated;
   @override
   String get publicKey;
+
+  /// Create a copy of SlotMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SlotMetadataImplCopyWith<_$SlotMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1204,8 +1271,12 @@ mixin _$PivStateMetadata {
   PinMetadata get pinMetadata => throw _privateConstructorUsedError;
   PinMetadata get pukMetadata => throw _privateConstructorUsedError;
 
+  /// Serializes this PivStateMetadata to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PivStateMetadataCopyWith<PivStateMetadata> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1236,6 +1307,8 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1259,6 +1332,8 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
     ) as $Val);
   }
 
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ManagementKeyMetadataCopyWith<$Res> get managementKeyMetadata {
@@ -1268,6 +1343,8 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
     });
   }
 
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $PinMetadataCopyWith<$Res> get pinMetadata {
@@ -1276,6 +1353,8 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
     });
   }
 
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $PinMetadataCopyWith<$Res> get pukMetadata {
@@ -1314,6 +1393,8 @@ class __$$PivStateMetadataImplCopyWithImpl<$Res>
       $Res Function(_$PivStateMetadataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1374,12 +1455,14 @@ class _$PivStateMetadataImpl implements _PivStateMetadata {
                 other.pukMetadata == pukMetadata));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, managementKeyMetadata, pinMetadata, pukMetadata);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PivStateMetadataImplCopyWith<_$PivStateMetadataImpl> get copyWith =>
@@ -1409,8 +1492,11 @@ abstract class _PivStateMetadata implements PivStateMetadata {
   PinMetadata get pinMetadata;
   @override
   PinMetadata get pukMetadata;
+
+  /// Create a copy of PivStateMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PivStateMetadataImplCopyWith<_$PivStateMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1426,12 +1512,17 @@ mixin _$PivState {
   bool get derivedKey => throw _privateConstructorUsedError;
   bool get storedKey => throw _privateConstructorUsedError;
   int get pinAttempts => throw _privateConstructorUsedError;
+  bool get supportsBio => throw _privateConstructorUsedError;
   String? get chuid => throw _privateConstructorUsedError;
   String? get ccc => throw _privateConstructorUsedError;
   PivStateMetadata? get metadata => throw _privateConstructorUsedError;
 
+  /// Serializes this PivState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PivStateCopyWith<PivState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1447,6 +1538,7 @@ abstract class $PivStateCopyWith<$Res> {
       bool derivedKey,
       bool storedKey,
       int pinAttempts,
+      bool supportsBio,
       String? chuid,
       String? ccc,
       PivStateMetadata? metadata});
@@ -1465,6 +1557,8 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1473,6 +1567,7 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
     Object? derivedKey = null,
     Object? storedKey = null,
     Object? pinAttempts = null,
+    Object? supportsBio = null,
     Object? chuid = freezed,
     Object? ccc = freezed,
     Object? metadata = freezed,
@@ -1498,6 +1593,10 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
           ? _value.pinAttempts
           : pinAttempts // ignore: cast_nullable_to_non_nullable
               as int,
+      supportsBio: null == supportsBio
+          ? _value.supportsBio
+          : supportsBio // ignore: cast_nullable_to_non_nullable
+              as bool,
       chuid: freezed == chuid
           ? _value.chuid
           : chuid // ignore: cast_nullable_to_non_nullable
@@ -1513,6 +1612,8 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
     ) as $Val);
   }
 
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $VersionCopyWith<$Res> get version {
@@ -1521,6 +1622,8 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
     });
   }
 
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $PivStateMetadataCopyWith<$Res>? get metadata {
@@ -1548,6 +1651,7 @@ abstract class _$$PivStateImplCopyWith<$Res>
       bool derivedKey,
       bool storedKey,
       int pinAttempts,
+      bool supportsBio,
       String? chuid,
       String? ccc,
       PivStateMetadata? metadata});
@@ -1566,6 +1670,8 @@ class __$$PivStateImplCopyWithImpl<$Res>
       _$PivStateImpl _value, $Res Function(_$PivStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1574,6 +1680,7 @@ class __$$PivStateImplCopyWithImpl<$Res>
     Object? derivedKey = null,
     Object? storedKey = null,
     Object? pinAttempts = null,
+    Object? supportsBio = null,
     Object? chuid = freezed,
     Object? ccc = freezed,
     Object? metadata = freezed,
@@ -1599,6 +1706,10 @@ class __$$PivStateImplCopyWithImpl<$Res>
           ? _value.pinAttempts
           : pinAttempts // ignore: cast_nullable_to_non_nullable
               as int,
+      supportsBio: null == supportsBio
+          ? _value.supportsBio
+          : supportsBio // ignore: cast_nullable_to_non_nullable
+              as bool,
       chuid: freezed == chuid
           ? _value.chuid
           : chuid // ignore: cast_nullable_to_non_nullable
@@ -1624,6 +1735,7 @@ class _$PivStateImpl extends _PivState {
       required this.derivedKey,
       required this.storedKey,
       required this.pinAttempts,
+      required this.supportsBio,
       this.chuid,
       this.ccc,
       this.metadata})
@@ -1643,6 +1755,8 @@ class _$PivStateImpl extends _PivState {
   @override
   final int pinAttempts;
   @override
+  final bool supportsBio;
+  @override
   final String? chuid;
   @override
   final String? ccc;
@@ -1651,7 +1765,7 @@ class _$PivStateImpl extends _PivState {
 
   @override
   String toString() {
-    return 'PivState(version: $version, authenticated: $authenticated, derivedKey: $derivedKey, storedKey: $storedKey, pinAttempts: $pinAttempts, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
+    return 'PivState(version: $version, authenticated: $authenticated, derivedKey: $derivedKey, storedKey: $storedKey, pinAttempts: $pinAttempts, supportsBio: $supportsBio, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
   }
 
   @override
@@ -1668,18 +1782,22 @@ class _$PivStateImpl extends _PivState {
                 other.storedKey == storedKey) &&
             (identical(other.pinAttempts, pinAttempts) ||
                 other.pinAttempts == pinAttempts) &&
+            (identical(other.supportsBio, supportsBio) ||
+                other.supportsBio == supportsBio) &&
             (identical(other.chuid, chuid) || other.chuid == chuid) &&
             (identical(other.ccc, ccc) || other.ccc == ccc) &&
             (identical(other.metadata, metadata) ||
                 other.metadata == metadata));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, version, authenticated,
-      derivedKey, storedKey, pinAttempts, chuid, ccc, metadata);
+      derivedKey, storedKey, pinAttempts, supportsBio, chuid, ccc, metadata);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PivStateImplCopyWith<_$PivStateImpl> get copyWith =>
@@ -1700,6 +1818,7 @@ abstract class _PivState extends PivState {
       required final bool derivedKey,
       required final bool storedKey,
       required final int pinAttempts,
+      required final bool supportsBio,
       final String? chuid,
       final String? ccc,
       final PivStateMetadata? metadata}) = _$PivStateImpl;
@@ -1719,13 +1838,18 @@ abstract class _PivState extends PivState {
   @override
   int get pinAttempts;
   @override
+  bool get supportsBio;
+  @override
   String? get chuid;
   @override
   String? get ccc;
   @override
   PivStateMetadata? get metadata;
+
+  /// Create a copy of PivState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PivStateImplCopyWith<_$PivStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1744,8 +1868,12 @@ mixin _$CertInfo {
   String get notValidAfter => throw _privateConstructorUsedError;
   String get fingerprint => throw _privateConstructorUsedError;
 
+  /// Serializes this CertInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of CertInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CertInfoCopyWith<CertInfo> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1775,6 +1903,8 @@ class _$CertInfoCopyWithImpl<$Res, $Val extends CertInfo>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CertInfo
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1845,6 +1975,8 @@ class __$$CertInfoImplCopyWithImpl<$Res>
       _$CertInfoImpl _value, $Res Function(_$CertInfoImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CertInfo
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1941,12 +2073,14 @@ class _$CertInfoImpl implements _CertInfo {
                 other.fingerprint == fingerprint));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, keyType, subject, issuer, serial,
       notValidBefore, notValidAfter, fingerprint);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CertInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CertInfoImplCopyWith<_$CertInfoImpl> get copyWith =>
@@ -1987,8 +2121,11 @@ abstract class _CertInfo implements CertInfo {
   String get notValidAfter;
   @override
   String get fingerprint;
+
+  /// Create a copy of CertInfo
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CertInfoImplCopyWith<_$CertInfoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -2003,8 +2140,12 @@ mixin _$PivSlot {
   SlotMetadata? get metadata => throw _privateConstructorUsedError;
   CertInfo? get certInfo => throw _privateConstructorUsedError;
 
+  /// Serializes this PivSlot to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PivSlotCopyWith<PivSlot> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -2029,6 +2170,8 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2052,6 +2195,8 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
     ) as $Val);
   }
 
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SlotMetadataCopyWith<$Res>? get metadata {
@@ -2064,6 +2209,8 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
     });
   }
 
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $CertInfoCopyWith<$Res>? get certInfo {
@@ -2100,6 +2247,8 @@ class __$$PivSlotImplCopyWithImpl<$Res>
       _$PivSlotImpl _value, $Res Function(_$PivSlotImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2156,11 +2305,13 @@ class _$PivSlotImpl implements _PivSlot {
                 other.certInfo == certInfo));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, slot, metadata, certInfo);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PivSlotImplCopyWith<_$PivSlotImpl> get copyWith =>
@@ -2188,8 +2339,11 @@ abstract class _PivSlot implements PivSlot {
   SlotMetadata? get metadata;
   @override
   CertInfo? get certInfo;
+
+  /// Create a copy of PivSlot
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PivSlotImplCopyWith<_$PivSlotImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -2251,6 +2405,8 @@ mixin _$PivExamineResult {
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
+
+  /// Serializes this PivExamineResult to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
@@ -2270,6 +2426,9 @@ class _$PivExamineResultCopyWithImpl<$Res, $Val extends PivExamineResult>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of PivExamineResult
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -2291,6 +2450,8 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
       _$ExamineResultImpl _value, $Res Function(_$ExamineResultImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivExamineResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2314,6 +2475,8 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
     ));
   }
 
+  /// Create a copy of PivExamineResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $CertInfoCopyWith<$Res>? get certInfo {
@@ -2367,11 +2530,13 @@ class _$ExamineResultImpl implements _ExamineResult {
                 other.certInfo == certInfo));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, password, keyType, certInfo);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivExamineResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ExamineResultImplCopyWith<_$ExamineResultImpl> get copyWith =>
@@ -2463,7 +2628,10 @@ abstract class _ExamineResult implements PivExamineResult {
   bool get password;
   KeyType? get keyType;
   CertInfo? get certInfo;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivExamineResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ExamineResultImplCopyWith<_$ExamineResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -2482,6 +2650,9 @@ class __$$InvalidPasswordImplCopyWithImpl<$Res>
   __$$InvalidPasswordImplCopyWithImpl(
       _$InvalidPasswordImpl _value, $Res Function(_$InvalidPasswordImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of PivExamineResult
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -2507,7 +2678,7 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
         (other.runtimeType == runtimeType && other is _$InvalidPasswordImpl);
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => runtimeType.hashCode;
 
@@ -2661,6 +2832,9 @@ class _$PivGenerateParametersCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -2677,6 +2851,9 @@ class __$$GeneratePublicKeyImplCopyWithImpl<$Res>
   __$$GeneratePublicKeyImplCopyWithImpl(_$GeneratePublicKeyImpl _value,
       $Res Function(_$GeneratePublicKeyImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -2792,6 +2969,8 @@ class __$$GenerateCertificateImplCopyWithImpl<$Res>
       $Res Function(_$GenerateCertificateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2848,7 +3027,9 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @override
   int get hashCode => Object.hash(runtimeType, subject, validFrom, validTo);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$GenerateCertificateImplCopyWith<_$GenerateCertificateImpl> get copyWith =>
@@ -2937,7 +3118,10 @@ abstract class _GenerateCertificate implements PivGenerateParameters {
   String get subject;
   DateTime get validFrom;
   DateTime get validTo;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$GenerateCertificateImplCopyWith<_$GenerateCertificateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -2959,6 +3143,8 @@ class __$$GenerateCsrImplCopyWithImpl<$Res>
       _$GenerateCsrImpl _value, $Res Function(_$GenerateCsrImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2997,7 +3183,9 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   @override
   int get hashCode => Object.hash(runtimeType, subject);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$GenerateCsrImplCopyWith<_$GenerateCsrImpl> get copyWith =>
@@ -3080,7 +3268,10 @@ abstract class _GenerateCsr implements PivGenerateParameters {
   factory _GenerateCsr({required final String subject}) = _$GenerateCsrImpl;
 
   String get subject;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivGenerateParameters
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$GenerateCsrImplCopyWith<_$GenerateCsrImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -3095,8 +3286,12 @@ mixin _$PivGenerateResult {
   String get publicKey => throw _privateConstructorUsedError;
   String? get result => throw _privateConstructorUsedError;
 
+  /// Serializes this PivGenerateResult to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivGenerateResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PivGenerateResultCopyWith<PivGenerateResult> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -3120,6 +3315,8 @@ class _$PivGenerateResultCopyWithImpl<$Res, $Val extends PivGenerateResult>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PivGenerateResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -3163,6 +3360,8 @@ class __$$PivGenerateResultImplCopyWithImpl<$Res>
       $Res Function(_$PivGenerateResultImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivGenerateResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -3220,11 +3419,13 @@ class _$PivGenerateResultImpl implements _PivGenerateResult {
             (identical(other.result, result) || other.result == result));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, generateType, publicKey, result);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivGenerateResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PivGenerateResultImplCopyWith<_$PivGenerateResultImpl> get copyWith =>
@@ -3254,8 +3455,11 @@ abstract class _PivGenerateResult implements PivGenerateResult {
   String get publicKey;
   @override
   String? get result;
+
+  /// Create a copy of PivGenerateResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PivGenerateResultImplCopyWith<_$PivGenerateResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -3270,8 +3474,12 @@ mixin _$PivImportResult {
   String? get publicKey => throw _privateConstructorUsedError;
   String? get certificate => throw _privateConstructorUsedError;
 
+  /// Serializes this PivImportResult to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PivImportResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PivImportResultCopyWith<PivImportResult> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -3297,6 +3505,8 @@ class _$PivImportResultCopyWithImpl<$Res, $Val extends PivImportResult>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PivImportResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -3320,6 +3530,8 @@ class _$PivImportResultCopyWithImpl<$Res, $Val extends PivImportResult>
     ) as $Val);
   }
 
+  /// Create a copy of PivImportResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SlotMetadataCopyWith<$Res>? get metadata {
@@ -3355,6 +3567,8 @@ class __$$PivImportResultImplCopyWithImpl<$Res>
       _$PivImportResultImpl _value, $Res Function(_$PivImportResultImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PivImportResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -3415,12 +3629,14 @@ class _$PivImportResultImpl implements _PivImportResult {
                 other.certificate == certificate));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, metadata, publicKey, certificate);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PivImportResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PivImportResultImplCopyWith<_$PivImportResultImpl> get copyWith =>
@@ -3450,8 +3666,11 @@ abstract class _PivImportResult implements PivImportResult {
   String? get publicKey;
   @override
   String? get certificate;
+
+  /// Create a copy of PivImportResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PivImportResultImplCopyWith<_$PivImportResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

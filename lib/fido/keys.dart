@@ -25,6 +25,8 @@ const _credentialInfo = '$_prefix.credential.info';
 // Key actions
 const managePinAction = Key('$_keyAction.manage_pin');
 const addFingerprintAction = Key('$_keyAction.add_fingerprint');
+const enableEnterpriseAttestation =
+    Key('$_keyAction.enable_enterprise_attestation');
 const newPin = Key('$_keyAction.new_pin');
 const confirmPin = Key('$_keyAction.confirm_pin');
 const currentPin = Key('$_keyAction.current_pin');
@@ -38,7 +40,7 @@ const editCredentialAction = Key('$_credentialAction.edit');
 const deleteCredentialAction = Key('$_credentialAction.delete');
 
 // Fingerprint actions
-const editFingerintAction = Key('$_fingerprintAction.edit');
+const editFingerprintAction = Key('$_fingerprintAction.edit');
 const deleteFingerprintAction = Key('$_fingerprintAction.delete');
 
 const saveButton = Key('$_prefix.save');

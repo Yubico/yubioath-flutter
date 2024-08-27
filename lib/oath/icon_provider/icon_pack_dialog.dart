@@ -115,6 +115,7 @@ class _DialogDescription extends ConsumerWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return RichText(
+      textScaler: MediaQuery.textScalerOf(context),
       text: TextSpan(
         text: l10n.p_custom_icons_description,
         style: theme.textTheme.bodyMedium,
@@ -160,6 +161,7 @@ class _IconPackDescription extends ConsumerWidget {
           Flexible(
               fit: FlexFit.loose,
               child: RichText(
+                  textScaler: MediaQuery.textScalerOf(context),
                   text: TextSpan(
                       text: iconPack.name,
                       style: theme.textTheme.bodyMedium,
@@ -181,7 +183,10 @@ class _IconPackDescription extends ConsumerWidget {
                       },
                     );
                   },
-                  icon: const Icon(Symbols.delete)),
+                  icon: const Icon(
+                    Symbols.delete,
+                    size: 20.0,
+                  )),
             ],
           )
         ]);
@@ -197,13 +202,14 @@ class _ImportActionChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionChip(
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
         onPressed: !disabled
             ? () async {
                 _importAction(context, ref);
               }
             : null,
-        avatar: const Icon(Symbols.download),
+        avatar: const Icon(
+          Symbols.download,
+        ),
         label: Text(_label));
   }
 

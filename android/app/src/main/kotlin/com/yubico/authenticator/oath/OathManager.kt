@@ -26,7 +26,6 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
@@ -43,21 +42,20 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
-import com.yubico.authenticator.yubikit.getDeviceInfo
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
-import com.yubico.yubikit.core.application.ApplicationNotAvailableException
 import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.AppId
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.management.Capability
 import com.yubico.yubikit.oath.CredentialData
-import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
@@ -108,6 +106,7 @@ class OathManager(
     private var pendingAction: OathAction? = null
     private var refreshJob: Job? = null
     private var addToAny = false
+    private val updateDeviceInfo = AtomicBoolean(false)
 
     override fun onPause() {
         // cancel any pending actions, except for addToAny
@@ -268,7 +267,7 @@ class OathManager(
                         try {
                             SmartCardProtocol(connection).select(AppId.OTP)
                         } catch (e: Exception) {
-                            logger.error("Failed to recognize this OATH device.")
+                            logger.error("Failed to recognize this OATH device.", e)
                             // we know this is NFC device and it supports OATH
                             val oathCapabilities = Capabilities(nfc = 0x20)
                             deviceManager.setDeviceInfo(
@@ -287,6 +286,10 @@ class OathManager(
             logger.debug(
                 "Successfully read Oath session info (and credentials if unlocked) from connected key"
             )
+
+            if (updateDeviceInfo.getAndSet(false)) {
+                deviceManager.setDeviceInfo(getDeviceInfo(device))
+            }
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Failed to connect to CCID: ", e)
@@ -365,7 +368,7 @@ class OathManager(
     }
 
     private suspend fun reset(): String =
-        useOathSession(OathActionDescription.Reset) {
+        useOathSession(OathActionDescription.Reset, updateDeviceInfo = true) {
             // note, it is ok to reset locked session
             it.reset()
             keyManager.removeKey(it.deviceId)
@@ -399,7 +402,11 @@ class OathManager(
         currentPassword: String?,
         newPassword: String,
     ): String =
-        useOathSession(OathActionDescription.SetPassword, unlock = false) { session ->
+        useOathSession(
+            OathActionDescription.SetPassword,
+            unlock = false,
+            updateDeviceInfo = true
+        ) { session ->
             if (session.isAccessKeySet) {
                 if (currentPassword == null) {
                     throw Exception("Must provide current password to be able to change it")
@@ -613,8 +620,10 @@ class OathManager(
      * @param connection the device SmartCard connection
      * @return a [YubiKitOathSession]  which is unlocked or locked based on an internal parameter
      */
-    private fun getOathSession(connection: SmartCardConnection) : YubiKitOathSession {
-        val session = YubiKitOathSession(connection)
+    private fun getOathSession(connection: SmartCardConnection): YubiKitOathSession {
+        // If OATH is FIPS capable, and we have scpKeyParams, we should use them
+        val fips = (deviceManager.deviceInfo?.fipsCapable ?: 0) and Capability.OATH.bit != 0
+        val session = YubiKitOathSession(connection, if (fips) deviceManager.scpKeyParams else null)
 
         if (!unlockOnConnect.compareAndSet(false, true)) {
             tryToUnlockOathSession(session)
@@ -649,22 +658,30 @@ class OathManager(
     private suspend fun <T> useOathSession(
         oathActionDescription: OathActionDescription,
         unlock: Boolean = true,
+        updateDeviceInfo: Boolean = false,
         action: (YubiKitOathSession) -> T
     ): T {
 
         // callers can decide whether the session should be unlocked first
         unlockOnConnect.set(unlock)
+        // callers can request whether device info should be updated after session operation
+        this@OathManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
-            onUsb = { useOathSessionUsb(it, action) },
+            onUsb = { useOathSessionUsb(it, updateDeviceInfo, action) },
             onNfc = { useOathSessionNfc(oathActionDescription, action) }
         )
     }
 
     private suspend fun <T> useOathSessionUsb(
         device: UsbYubiKeyDevice,
+        updateDeviceInfo: Boolean = false,
         block: (YubiKitOathSession) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
         block(getOathSession(it))
+    }.also {
+        if (updateDeviceInfo) {
+            deviceManager.setDeviceInfo(getDeviceInfo(device))
+        }
     }
 
     private suspend fun <T> useOathSessionNfc(

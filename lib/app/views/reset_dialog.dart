@@ -48,7 +48,7 @@ extension on Capability {
   IconData get _icon => switch (this) {
         Capability.oath => Symbols.supervisor_account,
         Capability.fido2 => Symbols.passkey,
-        Capability.piv => Symbols.badge,
+        Capability.piv => Symbols.id_card,
         _ => throw UnsupportedError('Icon not defined'),
       };
 }
@@ -72,6 +72,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
+  bool _resetting = false;
   late final int _totalSteps;
 
   @override
@@ -114,7 +115,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
     final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
         .contains(widget.data.info.formFactor);
-    final globalReset = isBio && (supported & Capability.piv.value) != 0;
+    final globalReset = isBio && (enabled & Capability.piv.value) != 0;
     final l10n = AppLocalizations.of(context)!;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);
@@ -125,6 +126,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
       key: factoryResetCancel,
+      allowCancel: !_resetting || _application == Capability.fido2,
       onCancel: switch (_application) {
         Capability.fido2 => _currentStep < _totalSteps
             ? () {
@@ -144,81 +146,97 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
       actions: [
         if (_currentStep < _totalSteps)
           TextButton(
-            onPressed: switch (_application) {
-              Capability.fido2 => _subscription == null
-                  ? () async {
-                      _subscription = ref
-                          .read(
-                              fidoStateProvider(widget.data.node.path).notifier)
-                          .reset()
-                          .listen((event) {
-                        setState(() {
-                          _currentStep++;
-                          _interaction = event;
-                        });
-                      }, onDone: () {
-                        setState(() {
-                          _currentStep++;
-                        });
-                        _subscription = null;
-                      }, onError: (e) {
-                        _log.error('Error performing FIDO reset', e);
-                        Navigator.of(context).pop();
-                        final String errorMessage;
-                        // TODO: Make this cleaner than importing desktop specific RpcError.
-                        if (e is RpcError) {
-                          if (e.status == 'connection-error') {
-                            errorMessage = l10n.l_failed_connecting_to_fido;
-                          } else if (e.status == 'key-mismatch') {
-                            errorMessage = l10n.l_wrong_inserted_yk_error;
-                          } else if (e.status == 'user-action-timeout') {
-                            errorMessage = l10n.l_user_action_timeout_error;
+            onPressed: !_resetting
+                ? switch (_application) {
+                    Capability.fido2 => () async {
+                        _subscription = ref
+                            .read(fidoStateProvider(widget.data.node.path)
+                                .notifier)
+                            .reset()
+                            .listen((event) {
+                          setState(() {
+                            _resetting = true;
+                            _currentStep++;
+                            _interaction = event;
+                          });
+                        }, onDone: () {
+                          setState(() {
+                            _currentStep++;
+                          });
+                          _subscription = null;
+                        }, onError: (e) {
+                          _log.error('Error performing FIDO reset', e);
+
+                          if (!context.mounted) return;
+                          Navigator.of(context).pop();
+                          final String errorMessage;
+                          // TODO: Make this cleaner than importing desktop specific RpcError.
+                          if (e is RpcError) {
+                            if (e.status == 'connection-error') {
+                              errorMessage = l10n.l_failed_connecting_to_fido;
+                            } else if (e.status == 'key-mismatch') {
+                              errorMessage = l10n.l_wrong_inserted_yk_error;
+                            } else if (e.status == 'user-action-timeout') {
+                              errorMessage = l10n.l_user_action_timeout_error;
+                            } else {
+                              errorMessage = e.message;
+                            }
                           } else {
-                            errorMessage = e.message;
+                            errorMessage = e.toString();
                           }
-                        } else {
-                          errorMessage = e.toString();
-                        }
-                        showMessage(
-                          context,
-                          l10n.l_reset_failed(errorMessage),
-                          duration: const Duration(seconds: 4),
-                        );
-                      });
-                    }
-                  : null,
-              Capability.oath => () async {
-                  await ref
-                      .read(oathStateProvider(widget.data.node.path).notifier)
-                      .reset();
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop();
-                    showMessage(context, l10n.l_oath_application_reset);
-                  });
-                },
-              Capability.piv => () async {
-                  await ref
-                      .read(pivStateProvider(widget.data.node.path).notifier)
-                      .reset();
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop();
-                    showMessage(context, l10n.l_piv_app_reset);
-                  });
-                },
-              null => globalReset
-                  ? () async {
-                      await ref
-                          .read(managementStateProvider(widget.data.node.path)
-                              .notifier)
-                          .deviceReset();
-                      await ref.read(withContextProvider)((context) async {
-                        Navigator.of(context).pop();
-                        showMessage(context, l10n.s_factory_reset);
-                      });
-                    }
-                  : null,
-              _ => throw UnsupportedError('Application cannot be reset'),
-            },
+                          showMessage(
+                            context,
+                            l10n.l_reset_failed(errorMessage),
+                            duration: const Duration(seconds: 4),
+                          );
+                        });
+                      },
+                    Capability.oath => () async {
+                        setState(() {
+                          _resetting = true;
+                        });
+                        await ref
+                            .read(oathStateProvider(widget.data.node.path)
+                                .notifier)
+                            .reset();
+                        await ref.read(withContextProvider)((context) async {
+                          Navigator.of(context).pop();
+                          showMessage(context, l10n.l_oath_application_reset);
+                        });
+                      },
+                    Capability.piv => () async {
+                        setState(() {
+                          _resetting = true;
+                        });
+                        await ref
+                            .read(pivStateProvider(widget.data.node.path)
+                                .notifier)
+                            .reset();
+                        await ref.read(withContextProvider)((context) async {
+                          Navigator.of(context).pop();
+                          showMessage(context, l10n.l_piv_app_reset);
+                        });
+                      },
+                    null => globalReset
+                        ? () async {
+                            setState(() {
+                              _resetting = true;
+                            });
+                            await ref
+                                .read(managementStateProvider(
+                                        widget.data.node.path)
+                                    .notifier)
+                                .deviceReset();
+                            await ref.read(withContextProvider)(
+                                (context) async {
+                              Navigator.of(context).pop();
+                              showMessage(context, l10n.s_factory_reset);
+                            });
+                          }
+                        : null,
+                    _ => throw UnsupportedError('Application cannot be reset'),
+                  }
+                : null,
             key: factoryResetReset,
             child: Text(l10n.s_reset),
           )
@@ -304,10 +322,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                 },
               ),
             ],
-            if (_application == Capability.fido2 && _currentStep >= 0) ...[
-              Text('${l10n.s_status}: ${_getMessage()}'),
-              LinearProgressIndicator(value: progress)
-            ],
+            if (_resetting)
+              if (_application == Capability.fido2 && _currentStep >= 0) ...[
+                Text('${l10n.s_status}: ${_getMessage()}'),
+                LinearProgressIndicator(value: progress),
+              ] else
+                const LinearProgressIndicator()
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

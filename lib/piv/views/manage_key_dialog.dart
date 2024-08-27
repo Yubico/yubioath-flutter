@@ -25,6 +25,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_text_form_field.dart';
@@ -176,6 +177,17 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         ? currentKeyOrPin.length >= 4
         : currentKeyOrPin.length == currentType.keyLength * 2;
     final newLenOk = _keyController.text.length == hexLength;
+    final (fipsCapable, fipsApproved) = ref
+            .watch(currentDeviceDataProvider)
+            .valueOrNull
+            ?.info
+            .getFipsStatus(Capability.piv) ??
+        (false, false);
+    final fipsUnready = fipsCapable && !fipsApproved;
+    final managementKeyTypes = ManagementKeyType.values.toList();
+    if (fipsCapable) {
+      managementKeyTypes.remove(ManagementKeyType.tdes);
+    }
 
     return ResponsiveDialog(
       title: Text(l10n.l_change_management_key),
@@ -334,7 +346,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 children: [
                   if (widget.pivState.metadata != null)
                     ChoiceFilterChip<ManagementKeyType>(
-                      items: ManagementKeyType.values,
+                      items: managementKeyTypes,
                       value: _keyType,
                       selected: _keyType != currentType,
                       itemBuilder: (value) => Text(value.getDisplayName(l10n)),
@@ -344,18 +356,17 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         });
                       },
                     ),
-                  FilterChip(
-                    key: keys.pinLockManagementKeyChip,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceVariant,
-                    label: Text(l10n.s_protect_key),
-                    selected: _storeKey,
-                    onSelected: (value) {
-                      setState(() {
-                        _storeKey = value;
-                      });
-                    },
-                  ),
+                  if (!fipsUnready)
+                    FilterChip(
+                      key: keys.pinLockManagementKeyChip,
+                      label: Text(l10n.s_protect_key),
+                      selected: _storeKey,
+                      onSelected: (value) {
+                        setState(() {
+                          _storeKey = value;
+                        });
+                      },
+                    ),
                 ]),
           ]
               .map((e) => Padding(

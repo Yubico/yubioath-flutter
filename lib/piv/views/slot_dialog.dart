@@ -22,6 +22,7 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
+import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -34,12 +35,13 @@ class SlotDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Solve this in a cleaner way
-    final node = ref.watch(currentDeviceDataProvider).valueOrNull?.node;
-    if (node == null) {
+    var keyData = ref.watch(currentDeviceDataProvider).valueOrNull;
+    if (keyData == null) {
       // The rest of this method assumes there is a device, and will throw an exception if not.
       // This will never be shown, as the dialog will be immediately closed
       return const SizedBox();
     }
+    final devicePath = keyData.node.path;
 
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
@@ -48,8 +50,11 @@ class SlotDialog extends ConsumerWidget {
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
 
-    final pivState = ref.watch(pivStateProvider(node.path)).valueOrNull;
-    final slotData = ref.watch(pivSlotsProvider(node.path).select((value) =>
+    final (fipsCapable, fipsApproved) =
+        keyData.info.getFipsStatus(Capability.piv);
+
+    final pivState = ref.watch(pivStateProvider(devicePath)).valueOrNull;
+    final slotData = ref.watch(pivSlotsProvider(devicePath).select((value) =>
         value.whenOrNull(
             data: (data) =>
                 data.firstWhere((element) => element.slot == pivSlot))));
@@ -61,7 +66,7 @@ class SlotDialog extends ConsumerWidget {
     final certInfo = slotData.certInfo;
     final metadata = slotData.metadata;
     return PivActions(
-      devicePath: node.path,
+      devicePath: devicePath,
       pivState: pivState,
       builder: (context) => ItemShortcuts(
         item: slotData,
@@ -71,38 +76,38 @@ class SlotDialog extends ConsumerWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 48, bottom: 16),
+                  padding: const EdgeInsets.only(top: 48, bottom: 32),
                   child: Column(
                     children: [
-                      Text(
-                        pivSlot.getDisplayName(l10n),
-                        style: textTheme.headlineSmall,
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                      ),
                       Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          pivSlot.getDisplayName(l10n),
+                          style: textTheme.headlineSmall,
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
                           children: [
                             if (certInfo != null || metadata != null) ...[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: CertInfoTable(
-                                  certInfo,
-                                  metadata,
-                                  alwaysIncludePrivate: true,
-                                ),
+                              CertInfoTable(
+                                certInfo,
+                                metadata,
+                                alwaysIncludePrivate: pivState.supportsMetadata,
+                                supportsBio: pivState.supportsBio,
                               ),
+                              if (certInfo == null) const SizedBox(height: 16),
                             ],
                             if (certInfo == null) ...[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Text(
-                                  l10n.l_no_certificate,
-                                  softWrap: true,
-                                  textAlign: TextAlign.center,
-                                  style: subtitleStyle,
-                                ),
+                              Text(
+                                l10n.l_no_certificate,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                style: subtitleStyle,
                               ),
                             ],
                           ],
@@ -111,11 +116,11 @@ class SlotDialog extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
                 ActionListSection.fromMenuActions(
                   context,
                   l10n.s_actions,
-                  actions: buildSlotActions(pivState, slotData, l10n),
+                  actions: buildSlotActions(
+                      pivState, slotData, fipsCapable && !fipsApproved, l10n),
                 ),
               ],
             ),

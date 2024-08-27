@@ -40,9 +40,9 @@ _FAIL_MSG = (
 
 
 class YubiOtpNode(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = YubiOtpSession(connection)
+        self.session = YubiOtpSession(connection, scp_params)
 
     def get_data(self):
         state = self.session.get_config_state()

@@ -57,9 +57,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
-        loading: () => const MessagePage(
+        loading: () => MessagePage(
+              title: l10n.s_slots,
+              capabilities: const [Capability.otp],
               centered: true,
-              graphic: CircularProgressIndicator(),
+              graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) => AppFailurePage(cause: error),
@@ -107,7 +109,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                       elevation: 0.0,
                                       color: Theme.of(context).hoverColor,
                                       child: Padding(
-                                        padding: const EdgeInsets.all(16),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 24, horizontal: 16.0),
                                         // TODO: Reuse from fingerprint_dialog
                                         child: Column(
                                           children: [
@@ -126,9 +129,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                               size: 100.0,
                                             ),
                                             const SizedBox(height: 8),
-                                            Text(selected.isConfigured
-                                                ? l10n.l_otp_slot_configured
-                                                : l10n.l_otp_slot_empty)
+                                            Text(
+                                              selected.isConfigured
+                                                  ? l10n.l_otp_slot_configured
+                                                  : l10n.l_otp_slot_empty,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -167,13 +180,17 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                 return null;
                               }),
                           },
-                          child: Column(children: [
-                            ...otpState.slots.map((e) => _SlotListItem(
-                                  e,
-                                  expanded: expanded,
-                                  selected: e == selected,
-                                ))
-                          ]),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(children: [
+                              ...otpState.slots.map((e) => _SlotListItem(
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                  ))
+                            ]),
+                          ),
                         );
                       },
                     ),

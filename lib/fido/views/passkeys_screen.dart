@@ -38,6 +38,7 @@ import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
+import '../../widgets/flex_box.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../models.dart';
@@ -59,13 +60,18 @@ class PasskeysScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
           if (error is NoDataException) {
-            return MessagePageNotInitialized(title: l10n.s_passkeys);
+            return MessagePageNotInitialized(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
+            );
           }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
@@ -214,6 +220,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
   FidoCredential? _selected;
+  bool _canRequestFocus = true;
 
   @override
   void initState() {
@@ -369,60 +376,158 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             }
             return KeyEventResult.ignored;
           },
-          child: Builder(builder: (context) {
+          child: LayoutBuilder(builder: (context, constraints) {
             final textTheme = Theme.of(context).textTheme;
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: AppTextFormField(
-                key: searchField,
-                controller: searchController,
-                focusNode: searchFocus,
-                // Use the default style, but with a smaller font size:
-                style: textTheme.titleMedium
-                    ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-                decoration: AppInputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(48),
-                    borderSide: BorderSide(
-                      width: 0,
-                      style: searchFocus.hasFocus
-                          ? BorderStyle.solid
-                          : BorderStyle.none,
+            final width = constraints.maxWidth;
+            return Consumer(
+              builder: (context, ref, child) {
+                final layout = ref.watch(passkeysLayoutProvider);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 8.0),
+                  child: AppTextFormField(
+                    key: searchField,
+                    controller: searchController,
+                    canRequestFocus: _canRequestFocus,
+                    focusNode: searchFocus,
+                    // Use the default style, but with a smaller font size:
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                    decoration: AppInputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(48),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: searchFocus.hasFocus
+                              ? BorderStyle.solid
+                              : BorderStyle.none,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                      fillColor: Theme.of(context).hoverColor,
+                      filled: true,
+                      hintText: l10n.s_search_passkeys,
+                      isDense: true,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsetsDirectional.only(start: 8.0),
+                        child: Icon(Icons.search_outlined),
+                      ),
+                      suffixIcons: [
+                        if (searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            iconSize: 16,
+                            onPressed: () {
+                              searchController.clear();
+                              ref
+                                  .read(passkeysSearchProvider.notifier)
+                                  .setFilter('');
+                              setState(() {});
+                            },
+                          ),
+                        if (searchController.text.isEmpty) ...[
+                          if (width >= 450)
+                            ...FlexLayout.values.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(passkeysLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e.icon,
+                                    color: e == layout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (width < 450)
+                            MouseRegion(
+                              onEnter: (event) {
+                                if (!searchFocus.hasFocus) {
+                                  setState(() {
+                                    _canRequestFocus = false;
+                                  });
+                                }
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  _canRequestFocus = true;
+                                });
+                              },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: l10n.s_select_layout,
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
+                                icon: Icon(
+                                  layout.icon,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                itemBuilder: (context) => [
+                                  ...FlexLayout.values.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e.icon,
+                                              color: e == layout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                                passkeysLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                        ]
+                      ],
                     ),
-                  ),
-                  contentPadding: const EdgeInsets.all(16),
-                  fillColor: Theme.of(context).hoverColor,
-                  filled: true,
-                  hintText: l10n.s_search_passkeys,
-                  isDense: true,
-                  prefixIcon: const Padding(
-                    padding: EdgeInsetsDirectional.only(start: 8.0),
-                    child: Icon(Icons.search_outlined),
-                  ),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          iconSize: 16,
-                          onPressed: () {
-                            searchController.clear();
-                            ref
-                                .read(passkeysSearchProvider.notifier)
-                                .setFilter('');
-                            setState(() {});
-                          },
-                        )
-                      : null,
-                ),
-                onChanged: (value) {
-                  ref.read(passkeysSearchProvider.notifier).setFilter(value);
-                  setState(() {});
-                },
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (value) {
-                  Focus.of(context).focusInDirection(TraversalDirection.down);
-                },
-              ),
+                    onChanged: (value) {
+                      ref
+                          .read(passkeysSearchProvider.notifier)
+                          .setFilter(value);
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (value) {
+                      Focus.of(context)
+                          .focusInDirection(TraversalDirection.down);
+                    },
+                  ).init(),
+                );
+              },
             );
           }),
         ),
@@ -437,7 +542,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                         elevation: 0.0,
                         color: Theme.of(context).hoverColor,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
                           child: CredentialInfoTable(credential),
                         ),
                       ),
@@ -477,21 +583,37 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 }),
               }
             },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (filteredCredentials.isEmpty)
-                  Center(
-                    child: Text(l10n.s_no_passkeys),
+            child: Consumer(
+              builder: (context, ref, child) {
+                final layout = ref.watch(passkeysLayoutProvider);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (filteredCredentials.isEmpty)
+                        Center(
+                          child: Text(l10n.s_no_passkeys),
+                        ),
+                      FlexBox<FidoCredential>(
+                        items: filteredCredentials,
+                        itemBuilder: (cred) => _CredentialListItem(
+                          cred,
+                          expanded: expanded,
+                          selected: _selected == cred,
+                          tileColor: layout == FlexLayout.grid
+                              ? Theme.of(context).hoverColor
+                              : null,
+                        ),
+                        layout: layout,
+                        cellMinWidth: 265,
+                        spacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                        runSpacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                      )
+                    ],
                   ),
-                ...filteredCredentials.map(
-                  (cred) => _CredentialListItem(
-                    cred,
-                    expanded: expanded,
-                    selected: _selected == cred,
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           );
         },
@@ -500,6 +622,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
+        title: AppLocalizations.of(context)!.s_passkeys,
+        capabilities: const [Capability.fido2],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
@@ -510,9 +634,10 @@ class _CredentialListItem extends StatelessWidget {
   final FidoCredential credential;
   final bool selected;
   final bool expanded;
+  final Color? tileColor;
 
   const _CredentialListItem(this.credential,
-      {required this.expanded, required this.selected});
+      {required this.expanded, required this.selected, this.tileColor});
 
   @override
   Widget build(BuildContext context) {
@@ -525,6 +650,7 @@ class _CredentialListItem extends StatelessWidget {
         backgroundColor: colorScheme.secondary,
         child: const Icon(Symbols.passkey),
       ),
+      tileColor: tileColor,
       title: credential.rpId,
       subtitle: credential.userName,
       trailing: expanded

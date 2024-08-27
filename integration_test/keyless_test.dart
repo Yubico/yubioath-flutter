@@ -15,6 +15,7 @@
  */
 
 @Tags(['desktop', 'android'])
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -101,9 +102,9 @@ void main() {
         await tester.tap(helpDrawerButton);
         await tester.shortWait();
         if (isAndroid) {
-          expect(find.byKey(feedbackButton).hitTestable(), findsOneWidget);
+          expect(find.byKey(userGuideButton).hitTestable(), findsOneWidget);
         } else {
-          await tester.tap(find.byKey(feedbackButton).hitTestable());
+          await tester.tap(find.byKey(userGuideButton).hitTestable());
           await tester.longWait();
         }
       });

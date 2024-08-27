@@ -35,6 +35,7 @@ Widget homeBuildActions(
     BuildContext context, YubiKeyData? deviceData, WidgetRef ref) {
   final l10n = AppLocalizations.of(context)!;
   final hasFeature = ref.watch(featureProvider);
+  final interfacesLocked = deviceData?.info.resetBlocked != 0;
   final managementAvailability = hasFeature(features.management) &&
       switch (deviceData?.info.version) {
         Version version => (version.major > 4 || // YK5 and up
@@ -57,16 +58,21 @@ Widget homeBuildActions(
                 title: deviceData.info.version.major > 4
                     ? l10n.s_toggle_applications
                     : l10n.s_toggle_interfaces,
-                subtitle: deviceData.info.version.major > 4
-                    ? l10n.l_toggle_applications_desc
-                    : l10n.l_toggle_interfaces_desc,
-                onTap: (context) {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ManagementScreen(deviceData),
-                  );
-                },
+                subtitle: interfacesLocked
+                    ? l10n.l_factory_reset_required
+                    : (deviceData.info.version.major > 4
+                        ? l10n.l_toggle_applications_desc
+                        : l10n.l_toggle_interfaces_desc),
+                onTap: interfacesLocked
+                    ? null
+                    : (context) {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        showBlurDialog(
+                          context: context,
+                          builder: (context) => ManagementScreen(deviceData),
+                        );
+                      },
               ),
             if (getResetCapabilities(hasFeature).any((c) =>
                 c.value &

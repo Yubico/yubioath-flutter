@@ -1,3 +1,23 @@
+* Version 7.0.1 (released 2024-05-30) Android only release
+ ** Fix: Opening the app by NFC tap needs another tap to reveal accounts.
+ ** Fix: NFC devices attached to mobile phone prevent usage of USB YubiKeys.
+ ** Fix: Invalid colors shown in customization views for Android Dynamic color.
+ ** Fix: Fingerprints are shown in random order.
+
+* Version 7.0.0 (released 2024-05-06)
+ ** UI: Add home screen with device information, customization options, and factory reset.
+ ** UI: Add search filtering to Passkeys and display more information.
+ ** Localization: Add official support for French and Japanese.
+ ** PIV (desktop): Support managing retired key slots.
+ ** Management (desktop): Support toggling applications when Configuration Lock code is set.
+ ** OTP (desktop): Support managing slots when OTP Access Code is set.
+ ** Android: Support for FIDO (managing PIN, Passkeys, Fingerprints, and factory reset).
+ ** Linux: Add ability to use external program for copying to clipboard (see README).
+ ** Additional features/support for YubiKey 5.7:
+  *** Handling of PIN complexity.
+  *** PIV: New key algorithms: RSA3072, RSA4096, Ed25519, and X25519.
+  *** PIV: The ability to move and delete keys.
+
 * Version 6.4.0 (released 2024-02-20)
  ** UI: Major UI overhaul, with improvements including:
   *** Add new UI layouts for wider windows to better utilize screen space.

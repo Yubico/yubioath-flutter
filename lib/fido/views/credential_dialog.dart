@@ -60,9 +60,13 @@ class CredentialDialog extends ConsumerWidget {
                       top: 48, bottom: 32, left: 16, right: 16),
                   child: Column(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Icon(Symbols.passkey, size: 72),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Icon(
+                          Symbols.passkey,
+                          size: 100,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                       CredentialInfoTable(credential),
                     ],

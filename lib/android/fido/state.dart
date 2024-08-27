@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -160,6 +161,29 @@ class _FidoStateNotifier extends FidoStateNotifier {
       throw decodedException;
     }
   }
+
+  @override
+  Future<void> enableEnterpriseAttestation() async {
+    try {
+      final response = jsonDecode(await _methods.invokeMethod(
+        'enableEnterpriseAttestation',
+      ));
+
+      if (response['success'] == true) {
+        _log.debug('Enterprise attestation enabled');
+      }
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled unlock FIDO operation');
+        throw decodedException;
+      }
+
+      _log.debug(
+          'Platform exception during enable enterprise attestation: $pe');
+      rethrow;
+    }
+  }
 }
 
 final androidFingerprintProvider = AsyncNotifierProvider.autoDispose
@@ -177,8 +201,10 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
       if (json == null) {
         state = const AsyncValue.loading();
       } else {
-        List<Fingerprint> newState = List.from(
-            (json as List).map((e) => Fingerprint.fromJson(e)).toList());
+        List<Fingerprint> newState = List.from((json as List)
+            .map((e) => Fingerprint.fromJson(e))
+            .sortedBy<String>((f) => f.label.toLowerCase())
+            .toList());
         state = AsyncValue.data(newState);
       }
     }, onError: (err, stackTrace) {

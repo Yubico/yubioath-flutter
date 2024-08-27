@@ -19,6 +19,7 @@ import json
 import os
 import sys
 
+non_words = (":",)
 errors = []
 
 
@@ -46,8 +47,9 @@ def check_prefixes(k, v, s_max_words, s_max_len, p_ending_chars, q_ending_chars)
     if k.startswith("s_"):
         if len(v) > s_max_len:
             errs.append(f"Too long ({len(v)} chars)")
-        if len(v.split()) > s_max_words:
-            errs.append(f"Too many words ({len(v.split())})")
+        n_words = len([w for w in v.split() if w not in non_words])
+        if n_words > s_max_words:
+            errs.append(f"Too many words ({n_words})")
     if k.startswith("l_") or k.startswith("s_"):
         if v.endswith("."):
             errs.append("Ends with '.'")
@@ -89,7 +91,7 @@ def lint_strings(strings, rules):
                 k,
                 v,
                 rules.get("s_max_words", 4),
-                rules.get("s_max_len", 32),
+                rules.get("s_max_length", 32),
                 rules.get("p_ending_chars", ".!"),
                 rules.get("q_ending_chars", "?"),
             )

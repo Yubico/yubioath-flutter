@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -52,6 +53,19 @@ import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
 
+extension on OathLayout {
+  IconData get _icon => switch (this) {
+        OathLayout.list => Symbols.list,
+        OathLayout.grid => Symbols.grid_view,
+        OathLayout.mixed => Symbols.vertical_split
+      };
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OathLayout.list => l10n.s_list_layout,
+        OathLayout.grid => l10n.s_grid_layout,
+        OathLayout.mixed => l10n.s_mixed_layout
+      };
+}
+
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
 
@@ -61,13 +75,18 @@ class OathScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return ref.watch(oathStateProvider(devicePath)).when(
-        loading: () => const MessagePage(
+        loading: () => MessagePage(
+              title: AppLocalizations.of(context)!.s_accounts,
+              capabilities: const [Capability.oath],
               centered: true,
-              graphic: CircularProgressIndicator(),
+              graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) => error is NoDataException
-            ? MessagePageNotInitialized(title: l10n.s_accounts)
+            ? MessagePageNotInitialized(
+                title: l10n.s_accounts,
+                capabilities: const [Capability.oath],
+              )
             : AppFailurePage(
                 cause: error,
               ),
@@ -117,6 +136,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
   OathCredential? _selected;
+  bool _canRequestFocus = true;
 
   @override
   void initState() {
@@ -147,7 +167,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final searchText = searchController.text;
-
+    final deviceInfo =
+        ref.watch(currentDeviceDataProvider.select((s) => s.valueOrNull?.info));
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
@@ -166,21 +187,36 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        actionsBuilder: (context, expanded) => [
-          if (!expanded)
-            ActionChip(
-              label: Text(l10n.s_add_account),
-              onPressed: () async {
-                await addOathAccount(
-                  context,
-                  ref,
-                  widget.devicePath,
-                  widget.oathState,
-                );
-              },
-              avatar: const Icon(Symbols.person_add_alt),
-            )
-        ],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
+        actionsBuilder: (context, expanded) {
+          final (fipsCapable, fipsApproved) =
+              deviceInfo?.getFipsStatus(Capability.oath) ?? (false, false);
+
+          return [
+            if (!expanded && (!fipsCapable || (fipsCapable && fipsApproved)))
+              ActionChip(
+                label: Text(l10n.s_add_account),
+                onPressed: () async {
+                  await addOathAccount(
+                    context,
+                    ref,
+                    widget.devicePath,
+                    widget.oathState,
+                  );
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              ),
+            if (!expanded && fipsCapable && !fipsApproved)
+              ActionChip(
+                label: Text(l10n.s_set_password),
+                onPressed: () async {
+                  await managePassword(
+                      context, ref, widget.devicePath, widget.oathState);
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              )
+          ];
+        },
         title: l10n.s_accounts,
         capabilities: const [Capability.oath],
         key: keys.noAccountsView,
@@ -201,8 +237,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == null) {
       return AppPage(
+        title: AppLocalizations.of(context)!.s_accounts,
+        capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         builder: (context, _) => const CircularProgressIndicator(),
       );
     }
@@ -268,6 +307,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         alternativeTitle:
             searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.oath],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
@@ -296,50 +336,46 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                         elevation: 0.0,
                         color: Theme.of(context).hoverColor,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
                           child: Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    IconTheme(
-                                      data: IconTheme.of(context)
-                                          .copyWith(size: 24),
-                                      child: helper.buildCodeIcon(),
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    DefaultTextStyle.merge(
-                                      style: const TextStyle(fontSize: 28),
-                                      child: helper.buildCodeLabel(),
-                                    ),
-                                  ],
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconTheme(
+                                    data: IconTheme.of(context)
+                                        .copyWith(size: 24),
+                                    child: helper.buildCodeIcon(),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  DefaultTextStyle.merge(
+                                    style: const TextStyle(fontSize: 28),
+                                    child: helper.buildCodeLabel(),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                helper.title,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
+                              const SizedBox(height: 16),
+                              TooltipIfTruncated(
+                                text: helper.title,
+                                style: TextStyle(
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.fontSize),
                               ),
                               if (subtitle != null)
-                                Text(
-                                  subtitle,
-                                  softWrap: true,
-                                  textAlign: TextAlign.center,
+                                TooltipIfTruncated(
+                                  text: subtitle,
                                   // This is what ListTile uses for subtitle
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium!
                                       .copyWith(
                                         color: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .color,
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                 ),
                             ],
@@ -372,60 +408,171 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             }
             return KeyEventResult.ignored;
           },
-          child: Builder(builder: (context) {
+          child: LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth;
             final textTheme = Theme.of(context).textTheme;
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: AppTextFormField(
-                key: searchField,
-                controller: searchController,
-                focusNode: searchFocus,
-                // Use the default style, but with a smaller font size:
-                style: textTheme.titleMedium
-                    ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
-                decoration: AppInputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(48),
-                    borderSide: BorderSide(
-                      width: 0,
-                      style: searchFocus.hasFocus
-                          ? BorderStyle.solid
-                          : BorderStyle.none,
+            return Consumer(
+              builder: (context, ref, child) {
+                final credentials = ref.watch(filteredCredentialsProvider(
+                    ref.watch(credentialListProvider(widget.devicePath)) ??
+                        []));
+                final favorites = ref.watch(favoritesProvider);
+                final pinnedCreds = credentials
+                    .where((entry) => favorites.contains(entry.credential.id));
+
+                final availableLayouts = pinnedCreds.isEmpty ||
+                        pinnedCreds.length == credentials.length
+                    ? OathLayout.values
+                        .where((element) => element != OathLayout.mixed)
+                    : OathLayout.values;
+                final oathLayout = ref.watch(oathLayoutProvider);
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 8.0),
+                  child: AppTextFormField(
+                    key: searchField,
+                    controller: searchController,
+                    canRequestFocus: _canRequestFocus,
+                    focusNode: searchFocus,
+                    // Use the default style, but with a smaller font size:
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                    decoration: AppInputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(48),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: searchFocus.hasFocus
+                              ? BorderStyle.solid
+                              : BorderStyle.none,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                      fillColor: Theme.of(context).hoverColor,
+                      filled: true,
+                      hintText: l10n.s_search_accounts,
+                      isDense: true,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsetsDirectional.only(start: 8.0),
+                        child: Icon(Icons.search_outlined),
+                      ),
+                      suffixIcons: [
+                        if (searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            iconSize: 16,
+                            onPressed: () {
+                              searchController.clear();
+                              ref
+                                  .read(accountsSearchProvider.notifier)
+                                  .setFilter('');
+                              setState(() {});
+                            },
+                          ),
+                        if (searchController.text.isEmpty) ...[
+                          if (width >= 450)
+                            ...availableLayouts.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(oathLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e._icon,
+                                    color: e == oathLayout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (width < 450)
+                            MouseRegion(
+                              onEnter: (event) {
+                                if (!searchFocus.hasFocus) {
+                                  setState(() {
+                                    _canRequestFocus = false;
+                                  });
+                                }
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  _canRequestFocus = true;
+                                });
+                              },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: l10n.s_select_layout,
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
+                                icon: Icon(
+                                  oathLayout._icon,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                itemBuilder: (context) => [
+                                  ...availableLayouts.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e._icon,
+                                              color: e == oathLayout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(oathLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                        ]
+                      ],
                     ),
-                  ),
-                  contentPadding: const EdgeInsets.all(16),
-                  fillColor: Theme.of(context).hoverColor,
-                  filled: true,
-                  hintText: l10n.s_search_accounts,
-                  isDense: true,
-                  prefixIcon: const Padding(
-                    padding: EdgeInsetsDirectional.only(start: 8.0),
-                    child: Icon(Icons.search_outlined),
-                  ),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          iconSize: 16,
-                          onPressed: () {
-                            searchController.clear();
-                            ref
-                                .read(accountsSearchProvider.notifier)
-                                .setFilter('');
-                            setState(() {});
-                          },
-                        )
-                      : null,
-                ),
-                onChanged: (value) {
-                  ref.read(accountsSearchProvider.notifier).setFilter(value);
-                  setState(() {});
-                },
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (value) {
-                  Focus.of(context).focusInDirection(TraversalDirection.down);
-                },
-              ),
+
+                    onChanged: (value) {
+                      ref
+                          .read(accountsSearchProvider.notifier)
+                          .setFilter(value);
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (value) {
+                      Focus.of(context)
+                          .focusInDirection(TraversalDirection.down);
+                    },
+                  ).init(),
+                );
+              },
             );
           }),
         ),

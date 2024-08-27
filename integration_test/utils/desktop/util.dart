@@ -19,4 +19,5 @@ import 'package:yubico_authenticator/desktop/init.dart';
 
 Future<void> startUp(WidgetTester tester,
         [Map<dynamic, dynamic>? startUpParams]) async =>
-    tester.pumpWidget(await initialize([]), const Duration(milliseconds: 2000));
+    tester.pumpWidget(await initialize([]),
+        duration: const Duration(milliseconds: 2000));

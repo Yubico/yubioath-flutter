@@ -25,6 +25,8 @@ const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');
 const noDeviceAvatar = Key('$_prefix.no_device_avatar');
 const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
+const toggleDetailViewIconButtonKey =
+    Key('$_prefix.toggle_detail_view_icon_button');
 
 // drawer items
 const homeDrawer = Key('$_prefix.drawer.home');
@@ -62,7 +64,7 @@ Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
 const tosButton = Key('$_prefix.tos_button');
 const privacyButton = Key('$_prefix.privacy_button');
 const licensesButton = Key('$_prefix.licenses_button');
-const feedbackButton = Key('$_prefix.feedback_button');
+const userGuideButton = Key('$_prefix.user_guide_button');
 const helpButton = Key('$_prefix.help_button');
 const diagnosticsChip = Key('$_prefix.diagnostics_chip');
 const logChip = Key('$_prefix.log_chip');

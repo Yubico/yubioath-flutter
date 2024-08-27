@@ -10,7 +10,7 @@ _$FidoStateImpl _$$FidoStateImplFromJson(Map<String, dynamic> json) =>
     _$FidoStateImpl(
       info: json['info'] as Map<String, dynamic>,
       unlocked: json['unlocked'] as bool,
-      pinRetries: json['pin_retries'] as int?,
+      pinRetries: (json['pin_retries'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$FidoStateImplToJson(_$FidoStateImpl instance) =>

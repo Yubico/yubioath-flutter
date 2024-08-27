@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcException, encode_bytes
+from .base import RpcResponse, RpcException, encode_bytes
 from .device import RootNode
 
 from queue import Queue
@@ -80,7 +80,7 @@ def _handle_incoming(event, recv, error, cmd_queue):
 def process(
     send: Callable[[Dict], None],
     recv: Callable[[], Dict],
-    handler: Callable[[str, List, Dict, Event, Callable[[str], None]], Dict],
+    handler: Callable[[str, List, Dict, Event, Callable[[str], None]], RpcResponse],
 ) -> None:
     def error(status: str, message: str, body: Dict = {}):
         send(dict(kind="error", status=status, message=message, body=body))
@@ -88,8 +88,8 @@ def process(
     def signal(status: str, body: Dict = {}):
         send(dict(kind="signal", status=status, body=body))
 
-    def success(body: Dict):
-        send(dict(kind="success", body=body))
+    def success(response: RpcResponse):
+        send(dict(kind="success", body=response.body, flags=response.flags))
 
     event = Event()
     cmd_queue: Queue = Queue(1)

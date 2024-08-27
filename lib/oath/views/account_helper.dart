@@ -26,7 +26,6 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
 import '../../widgets/circle_timer.dart';
-import '../../widgets/custom_icons.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -90,7 +89,7 @@ class AccountHelper {
             ActionItem(
               key: keys.togglePinAction,
               feature: features.accountsPin,
-              icon: pinned ? pushPinStrokeIcon : const Icon(Symbols.push_pin),
+              icon: Icon(pinned ? Symbols.keep_off : Symbols.keep),
               title: pinned ? l10n.s_unpin_account : l10n.s_pin_account,
               subtitle: l10n.l_pin_account_desc,
               intent: TogglePinIntent(credential),

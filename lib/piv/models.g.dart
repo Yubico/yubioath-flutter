@@ -9,8 +9,8 @@ part of 'models.dart';
 _$PinMetadataImpl _$$PinMetadataImplFromJson(Map<String, dynamic> json) =>
     _$PinMetadataImpl(
       json['default_value'] as bool,
-      json['total_attempts'] as int,
-      json['attempts_remaining'] as int,
+      (json['total_attempts'] as num).toInt(),
+      (json['attempts_remaining'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$PinMetadataImplToJson(_$PinMetadataImpl instance) =>
@@ -113,7 +113,8 @@ _$PivStateImpl _$$PivStateImplFromJson(Map<String, dynamic> json) =>
       authenticated: json['authenticated'] as bool,
       derivedKey: json['derived_key'] as bool,
       storedKey: json['stored_key'] as bool,
-      pinAttempts: json['pin_attempts'] as int,
+      pinAttempts: (json['pin_attempts'] as num).toInt(),
+      supportsBio: json['supports_bio'] as bool,
       chuid: json['chuid'] as String?,
       ccc: json['ccc'] as String?,
       metadata: json['metadata'] == null
@@ -128,6 +129,7 @@ Map<String, dynamic> _$$PivStateImplToJson(_$PivStateImpl instance) =>
       'derived_key': instance.derivedKey,
       'stored_key': instance.storedKey,
       'pin_attempts': instance.pinAttempts,
+      'supports_bio': instance.supportsBio,
       'chuid': instance.chuid,
       'ccc': instance.ccc,
       'metadata': instance.metadata,
@@ -157,7 +159,7 @@ Map<String, dynamic> _$$CertInfoImplToJson(_$CertInfoImpl instance) =>
 
 _$PivSlotImpl _$$PivSlotImplFromJson(Map<String, dynamic> json) =>
     _$PivSlotImpl(
-      slot: SlotId.fromJson(json['slot'] as int),
+      slot: SlotId.fromJson((json['slot'] as num).toInt()),
       metadata: json['metadata'] == null
           ? null
           : SlotMetadata.fromJson(json['metadata'] as Map<String, dynamic>),

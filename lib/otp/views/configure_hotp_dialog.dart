@@ -96,11 +96,11 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       options: SlotConfigurationOptions(
                           digits8: _digits == 8, appendCr: _appendEnter));
 
-                  bool configurationSucceded = false;
+                  bool configurationSucceeded = false;
                   try {
                     await otpNotifier.configureSlot(widget.otpSlot.slot,
                         configuration: configuration);
-                    configurationSucceded = true;
+                    configurationSucceeded = true;
                   } catch (e) {
                     _log.error('Failed to program credential', e);
                     // Access code required
@@ -117,13 +117,13 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                                       accessCode: accessCode);
                                 },
                               ));
-                      configurationSucceded = result ?? false;
+                      configurationSucceeded = result ?? false;
                     });
                   }
 
                   await ref.read(withContextProvider)((context) async {
                     Navigator.of(context).pop();
-                    if (configurationSucceded) {
+                    if (configurationSucceeded) {
                       showMessage(context,
                           l10n.l_slot_credential_configured(l10n.s_hotp));
                     }
