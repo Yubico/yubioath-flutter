@@ -115,6 +115,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
               onPressed: Actions.handler(context, copyIntent),
               child: helper.buildCodeIcon()),
       tapIntent: openIntent,
+      longPressIntent: copyIntent,
       buildPopupActions: (_) => helper.buildActions(),
       itemBuilder: widget.large
           ? (context) {

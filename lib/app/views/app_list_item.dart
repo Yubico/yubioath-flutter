@@ -33,6 +33,7 @@ class AppListItem<T> extends ConsumerStatefulWidget {
   final Widget Function(BuildContext context)? itemBuilder;
   final Intent? tapIntent;
   final Intent? doubleTapIntent;
+  final Intent? longPressIntent;
   final Color? tileColor;
   final bool selected;
 
@@ -48,6 +49,7 @@ class AppListItem<T> extends ConsumerStatefulWidget {
     this.itemBuilder,
     this.tapIntent,
     this.doubleTapIntent,
+    this.longPressIntent,
     this.tileColor,
     this.selected = false,
   });
@@ -72,6 +74,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
     final buildPopupActions = widget.buildPopupActions;
     final tapIntent = widget.tapIntent;
     final doubleTapIntent = widget.doubleTapIntent;
+    final longPressIntent = widget.longPressIntent;
     final trailing = widget.trailing;
     final hasFeature = ref.watch(featureProvider);
     final colorScheme = Theme.of(context).colorScheme;
@@ -117,10 +120,10 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
               }
             }
           },
-          onLongPress: doubleTapIntent == null
+          onLongPress: longPressIntent == null
               ? null
               : () {
-                  Actions.invoke(context, doubleTapIntent);
+                  Actions.invoke(context, longPressIntent);
                 },
           child: widget.itemBuilder != null
               ? widget.itemBuilder!.call(context)
