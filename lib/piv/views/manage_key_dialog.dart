@@ -292,7 +292,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 },
               ).init(),
             AppTextField(
-              key: keys.newPinPukField,
+              //key: keys.newPinPukField,
               autofocus: _defaultKeyUsed,
               autofillHints: const [AutofillHints.newPassword],
               maxLength: hexLength,
