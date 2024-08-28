@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,9 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
+import '../tap_request_dialog.dart';
 
 final _log = Logger('android.oath.state');
-
-const _methods = MethodChannel('android.oath.methods');
 
 final androidOathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
@@ -47,6 +46,8 @@ final androidOathStateProvider = AsyncNotifierProvider.autoDispose
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final _events = const EventChannel('android.oath.sessionState');
   late StreamSubscription _sub;
+  late _OathMethodChannelNotifier oath =
+      ref.watch(_oathMethodsProvider.notifier);
 
   @override
   FutureOr<OathState> build(DevicePath arg) {
@@ -75,7 +76,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       // await ref
       //     .read(androidAppContextHandler)
       //     .switchAppContext(Application.accounts);
-      await _methods.invokeMethod('reset');
+      await oath.reset();
     } catch (e) {
       _log.debug('Calling reset failed with exception: $e');
     }
@@ -84,8 +85,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
     try {
-      final unlockResponse = jsonDecode(await _methods.invokeMethod(
-          'unlock', {'password': password, 'remember': remember}));
+      final unlockResponse =
+          jsonDecode(await oath.unlock(password, remember: remember));
       _log.debug('applet unlocked');
 
       final unlocked = unlockResponse['unlocked'] == true;
@@ -106,8 +107,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> setPassword(String? current, String password) async {
     try {
-      await _methods.invokeMethod(
-          'setPassword', {'current': current, 'password': password});
+      await oath.setPassword(current, password);
       return true;
     } on PlatformException catch (e) {
       _log.debug('Calling set password failed with exception: $e');
@@ -118,7 +118,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> unsetPassword(String current) async {
     try {
-      await _methods.invokeMethod('unsetPassword', {'current': current});
+      await oath.unsetPassword(current);
       return true;
     } on PlatformException catch (e) {
       _log.debug('Calling unset password failed with exception: $e');
@@ -129,7 +129,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> forgetPassword() async {
     try {
-      await _methods.invokeMethod('forgetPassword');
+      await oath.forgetPassword();
     } on PlatformException catch (e) {
       _log.debug('Calling forgetPassword failed with exception: $e');
     }
@@ -161,12 +161,10 @@ Exception _decodeAddAccountException(PlatformException platformException) {
 
 final addCredentialToAnyProvider =
     Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
+          final oath = ref.watch(_oathMethodsProvider.notifier);
           try {
-            String resultString = await _methods.invokeMethod(
-                'addAccountToAny', {
-              'uri': credentialUri.toString(),
-              'requireTouch': requireTouch
-            });
+            String resultString = await oath.addAccountToAny(credentialUri,
+                requireTouch: requireTouch);
 
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
@@ -177,17 +175,13 @@ final addCredentialToAnyProvider =
 
 final addCredentialsToAnyProvider = Provider(
     (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
+          final oath = ref.read(_oathMethodsProvider.notifier);
           try {
             _log.debug(
                 'Calling android with ${credentialUris.length} credentials to be added');
 
-            String resultString = await _methods.invokeMethod(
-              'addAccountsToAny',
-              {
-                'uris': credentialUris,
-                'requireTouch': touchRequired,
-              },
-            );
+            String resultString =
+                await oath.addAccounts(credentialUris, touchRequired);
 
             _log.debug('Call result: $resultString');
             var result = jsonDecode(resultString);
@@ -218,6 +212,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final WithContext _withContext;
   final Ref _ref;
   late StreamSubscription _sub;
+  late _OathMethodChannelNotifier oath =
+      _ref.read(_oathMethodsProvider.notifier);
 
   _AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
@@ -264,8 +260,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     }
 
     try {
-      final resultJson = await _methods
-          .invokeMethod('calculate', {'credentialId': credential.id});
+      final resultJson = await oath.calculate(credential);
       _log.debug('Calculate', resultJson);
       return OathCode.fromJson(jsonDecode(resultJson));
     } on PlatformException catch (pe) {
@@ -280,9 +275,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   Future<OathCredential> addAccount(Uri credentialUri,
       {bool requireTouch = false}) async {
     try {
-      String resultString = await _methods.invokeMethod('addAccount',
-          {'uri': credentialUri.toString(), 'requireTouch': requireTouch});
-
+      String resultString =
+          await oath.addAccount(credentialUri, requireTouch: requireTouch);
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
@@ -294,9 +288,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   Future<OathCredential> renameAccount(
       OathCredential credential, String? issuer, String name) async {
     try {
-      final response = await _methods.invokeMethod('renameAccount',
-          {'credentialId': credential.id, 'name': name, 'issuer': issuer});
-
+      final response = await oath.renameAccount(credential, issuer, name);
       _log.debug('Rename response: $response');
 
       var responseJson = jsonDecode(response);
@@ -311,11 +303,149 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   @override
   Future<void> deleteAccount(OathCredential credential) async {
     try {
-      await _methods
-          .invokeMethod('deleteAccount', {'credentialId': credential.id});
+      await oath.deleteAccount(credential);
     } on PlatformException catch (e) {
-      _log.debug('Received exception: $e');
-      throw e.decode();
+      var decoded = e.decode();
+      if (decoded is CancellationException) {
+        _log.debug('Account delete was cancelled.');
+      } else {
+        _log.debug('Received exception: $e');
+      }
+
+      throw decoded;
     }
   }
+}
+
+final _oathMethodsProvider = NotifierProvider<_OathMethodChannelNotifier, void>(
+    () => _OathMethodChannelNotifier());
+
+class _OathMethodChannelNotifier extends MethodChannelNotifier {
+  _OathMethodChannelNotifier()
+      : super(const MethodChannel('android.oath.methods'));
+  late final l10n = ref.read(l10nProvider);
+
+  @override
+  void build() {}
+
+  Future<dynamic> reset() async => invoke('reset', {
+        'operationName': l10n.s_nfc_dialog_oath_reset,
+        'operationProcessing': l10n.s_nfc_dialog_oath_reset_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_reset_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_reset_failure
+      });
+
+  Future<dynamic> unlock(String password, {bool remember = false}) async =>
+      invoke('unlock', {
+        'callArgs': {'password': password, 'remember': remember},
+        'operationName': l10n.s_nfc_dialog_oath_unlock,
+        'operationProcessing': l10n.s_nfc_dialog_oath_unlock_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_unlock_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_unlock_failure,
+      });
+
+  Future<dynamic> setPassword(String? current, String password) async =>
+      invoke('setPassword', {
+        'callArgs': {'current': current, 'password': password},
+        'operationName': current != null
+            ? l10n.s_nfc_dialog_oath_change_password
+            : l10n.s_nfc_dialog_oath_set_password,
+        'operationProcessing': current != null
+            ? l10n.s_nfc_dialog_oath_change_password_processing
+            : l10n.s_nfc_dialog_oath_set_password_processing,
+        'operationSuccess': current != null
+            ? l10n.s_nfc_dialog_oath_change_password_success
+            : l10n.s_nfc_dialog_oath_set_password_success,
+        'operationFailure': current != null
+            ? l10n.s_nfc_dialog_oath_change_password_failure
+            : l10n.s_nfc_dialog_oath_set_password_failure,
+      });
+
+  Future<dynamic> unsetPassword(String current) async =>
+      invoke('unsetPassword', {
+        'callArgs': {'current': current},
+        'operationName': l10n.s_nfc_dialog_oath_remove_password,
+        'operationProcessing':
+            l10n.s_nfc_dialog_oath_remove_password_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_remove_password_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_remove_password_failure,
+      });
+
+  Future<dynamic> forgetPassword() async => invoke('forgetPassword');
+
+  Future<dynamic> calculate(OathCredential credential) async =>
+      invoke('calculate', {
+        'callArgs': {'credentialId': credential.id},
+        'operationName': l10n.s_nfc_dialog_oath_calculate_code,
+        'operationProcessing': l10n.s_nfc_dialog_oath_calculate_code_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_calculate_code_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_calculate_code_failure,
+      });
+
+  Future<dynamic> addAccount(Uri credentialUri,
+          {bool requireTouch = false}) async =>
+      invoke('addAccount', {
+        'callArgs': {
+          'uri': credentialUri.toString(),
+          'requireTouch': requireTouch
+        },
+        'operationName': l10n.s_nfc_dialog_oath_add_account,
+        'operationProcessing': l10n.s_nfc_dialog_oath_add_account_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_add_account_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_add_account_failure,
+        'showSuccess': true
+      });
+
+  Future<dynamic> addAccounts(
+          List<String> credentialUris, List<bool> touchRequired) async =>
+      invoke('addAccountsToAny', {
+        'callArgs': {
+          'uris': credentialUris,
+          'requireTouch': touchRequired,
+        },
+        'operationName': l10n.s_nfc_dialog_oath_add_multiple_accounts,
+        'operationProcessing':
+            l10n.s_nfc_dialog_oath_add_multiple_accounts_processing,
+        'operationSuccess':
+            l10n.s_nfc_dialog_oath_add_multiple_accounts_success,
+        'operationFailure':
+            l10n.s_nfc_dialog_oath_add_multiple_accounts_failure,
+      });
+
+  Future<dynamic> addAccountToAny(Uri credentialUri,
+          {bool requireTouch = false}) async =>
+      invoke('addAccountToAny', {
+        'callArgs': {
+          'uri': credentialUri.toString(),
+          'requireTouch': requireTouch
+        },
+        'operationName': l10n.s_nfc_dialog_oath_add_account,
+        'operationProcessing': l10n.s_nfc_dialog_oath_add_account_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_add_account_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_add_account_failure,
+      });
+
+  Future<dynamic> deleteAccount(OathCredential credential) async =>
+      invoke('deleteAccount', {
+        'callArgs': {'credentialId': credential.id},
+        'operationName': l10n.s_nfc_dialog_oath_delete_account,
+        'operationProcessing': l10n.s_nfc_dialog_oath_delete_account_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_delete_account_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_delete_account_failure,
+        'showSuccess': true
+      });
+
+  Future<dynamic> renameAccount(
+          OathCredential credential, String? issuer, String name) async =>
+      invoke('renameAccount', {
+        'callArgs': {
+          'credentialId': credential.id,
+          'name': name,
+          'issuer': issuer
+        },
+        'operationName': l10n.s_nfc_dialog_oath_rename_account,
+        'operationProcessing': l10n.s_nfc_dialog_oath_rename_account_processing,
+        'operationSuccess': l10n.s_nfc_dialog_oath_rename_account_success,
+        'operationFailure': l10n.s_nfc_dialog_oath_rename_account_failure,
+      });
 }

@@ -17,7 +17,6 @@
 package com.yubico.authenticator.management
 
 import com.yubico.authenticator.DialogManager
-import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -63,10 +62,7 @@ class ManagementConnectionHelper(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog(
-                    DialogTitle.TapKey,
-                    actionDescription.id
-                ) {
+                dialogManager.showDialog {
                     logger.debug("Cancelled Dialog {}", actionDescription.name)
                     action?.invoke(Result.failure(CancellationException()))
                     action = null

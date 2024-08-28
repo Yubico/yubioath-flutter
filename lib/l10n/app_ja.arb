@@ -885,28 +885,95 @@
     "l_launch_app_on_usb_off": "他のアプリがUSB経由でYubiKeyを使用できます",
     "s_allow_screenshots": "スクリーンショットを許可",
 
-    "l_nfc_dialog_tap_key": "キーをタップして長押しします",
-    "s_nfc_dialog_operation_success": "成功",
-    "s_nfc_dialog_operation_failed": "失敗",
-
+    "@_ndef_oath_actions": {},
     "s_nfc_dialog_oath_reset": "アクション：OATHアプレットをリセット",
-    "s_nfc_dialog_oath_unlock": "アクション：OATHアプレットをロック解除",
-    "s_nfc_dialog_oath_set_password": "アクション：OATHパスワードを設定",
-    "s_nfc_dialog_oath_unset_password": "アクション：OATHパスワードを削除",
-    "s_nfc_dialog_oath_add_account": "アクション：新しいアカウントを追加",
-    "s_nfc_dialog_oath_rename_account": "アクション：アカウント名を変更",
-    "s_nfc_dialog_oath_delete_account": "アクション：アカウントを削除",
-    "s_nfc_dialog_oath_calculate_code": "アクション：OATHコードを計算",
-    "s_nfc_dialog_oath_failure": "OATH操作が失敗しました",
-    "s_nfc_dialog_oath_add_multiple_accounts": "アクション：複数アカウントを追加",
+    "s_nfc_dialog_oath_reset_processing": null,
+    "s_nfc_dialog_oath_reset_success": null,
+    "s_nfc_dialog_oath_reset_failure": null,
 
+    "s_nfc_dialog_oath_unlock": "アクション：OATHアプレットをロック解除",
+    "s_nfc_dialog_oath_unlock_processing": null,
+    "s_nfc_dialog_oath_unlock_success": null,
+    "s_nfc_dialog_oath_unlock_failure": null,
+
+    "s_nfc_dialog_oath_set_password": "アクション：OATHパスワードを設定",
+    "s_nfc_dialog_oath_change_password": null,
+    "s_nfc_dialog_oath_set_password_processing": null,
+    "s_nfc_dialog_oath_change_password_processing": null,
+    "s_nfc_dialog_oath_set_password_success": null,
+    "s_nfc_dialog_oath_change_password_success": null,
+    "s_nfc_dialog_oath_set_password_failure": null,
+    "s_nfc_dialog_oath_change_password_failure": null,
+
+    "s_nfc_dialog_oath_remove_password": null,
+    "s_nfc_dialog_oath_remove_password_processing": null,
+    "s_nfc_dialog_oath_remove_password_success": null,
+    "s_nfc_dialog_oath_remove_password_failure": null,
+
+    "s_nfc_dialog_oath_add_account": "アクション：新しいアカウントを追加",
+    "s_nfc_dialog_oath_add_account_processing": null,
+    "s_nfc_dialog_oath_add_account_success": null,
+    "s_nfc_dialog_oath_add_account_failure": null,
+
+    "s_nfc_dialog_oath_rename_account": "アクション：アカウント名を変更",
+    "s_nfc_dialog_oath_rename_account_processing": null,
+    "s_nfc_dialog_oath_rename_account_success": null,
+    "s_nfc_dialog_oath_rename_account_failure": null,
+
+    "s_nfc_dialog_oath_delete_account": "アクション：アカウントを削除",
+    "s_nfc_dialog_oath_delete_account_processing": null,
+    "s_nfc_dialog_oath_delete_account_success": null,
+    "s_nfc_dialog_oath_delete_account_failure": null,
+
+    "s_nfc_dialog_oath_calculate_code": "アクション：OATHコードを計算",
+    "s_nfc_dialog_oath_calculate_code_processing": null,
+    "s_nfc_dialog_oath_calculate_code_success": null,
+    "s_nfc_dialog_oath_calculate_code_failure": null,
+
+    "s_nfc_dialog_oath_add_multiple_accounts": "アクション：複数アカウントを追加",
+    "s_nfc_dialog_oath_add_multiple_accounts_processing": null,
+    "s_nfc_dialog_oath_add_multiple_accounts_success": null,
+    "s_nfc_dialog_oath_add_multiple_accounts_failure": null,
+
+    "@_ndef_fido_actions": {},
     "s_nfc_dialog_fido_reset": "アクション: FIDOアプリケーションをリセット",
+    "s_nfc_dialog_fido_reset_processing": null,
+    "s_nfc_dialog_fido_reset_success": null,
+    "s_nfc_dialog_fido_reset_failure": null,
+
     "s_nfc_dialog_fido_unlock": "アクション：FIDOアプリケーションのロックを解除する",
-    "l_nfc_dialog_fido_set_pin": "アクション：FIDOのPINの設定または変更",
+    "s_nfc_dialog_fido_unlock_processing": null,
+    "s_nfc_dialog_fido_unlock_success": null,
+    "s_nfc_dialog_fido_unlock_failure": null,
+
+    "s_nfc_dialog_fido_set_pin": null,
+    "s_nfc_dialog_fido_set_pin_processing": null,
+    "s_nfc_dialog_fido_set_pin_success": null,
+    "s_nfc_dialog_fido_set_pin_failure": null,
+
+    "s_nfc_dialog_fido_change_pin": null,
+    "s_nfc_dialog_fido_change_pin_processing": null,
+    "s_nfc_dialog_fido_change_pin_success": null,
+    "s_nfc_dialog_fido_change_pin_failure": null,
+
     "s_nfc_dialog_fido_delete_credential": "アクション: パスキーを削除",
-    "s_nfc_dialog_fido_delete_fingerprint": "アクション: 指紋の削除",
-    "s_nfc_dialog_fido_rename_fingerprint": "アクション: 指紋の名前を変更する",
-    "s_nfc_dialog_fido_failure": "FIDO操作に失敗しました",
+    "s_nfc_dialog_fido_delete_credential_processing": null,
+    "s_nfc_dialog_fido_delete_credential_success": null,
+    "s_nfc_dialog_fido_delete_credential_failure": null,
+
+    "@_ndef_operations": {},
+    "s_nfc_dialog_tap_for": null,
+    "@s_nfc_dialog_tap_for": {
+        "placeholders": {
+            "operation": {}
+        }
+    },
+
+    "s_nfc_dialog_read_key": null,
+    "s_nfc_dialog_read_key_failure": null,
+
+    "s_nfc_dialog_hold_key": null,
+    "s_nfc_dialog_remove_key": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",

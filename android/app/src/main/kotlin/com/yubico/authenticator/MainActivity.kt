@@ -17,7 +17,6 @@
 package com.yubico.authenticator
 
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -355,13 +354,14 @@ class MainActivity : FlutterFragmentActivity() {
             try {
                 it.processYubiKey(device)
                 if (device is NfcYubiKeyDevice) {
+                    appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_FINISHED)
                     device.remove {
                         appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
                     }
                 }
             } catch (e: Throwable) {
+                appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
                 logger.error("Error processing YubiKey in AppContextManager", e)
-
             }
         }
     }
@@ -441,6 +441,7 @@ class MainActivity : FlutterFragmentActivity() {
                     oathViewModel,
                     dialogManager,
                     appPreferences,
+                    appMethodChannel,
                     nfcActivityListener
                 )
 

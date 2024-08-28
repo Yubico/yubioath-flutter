@@ -170,3 +170,46 @@ class _ColorConverter implements JsonConverter<Color?, int?> {
   @override
   int? toJson(Color? object) => object?.value;
 }
+
+class NfcActivityWidgetAction {
+  const NfcActivityWidgetAction();
+}
+
+class NfcActivityWidgetActionShowWidget extends NfcActivityWidgetAction {
+  final Widget child;
+  const NfcActivityWidgetActionShowWidget({required this.child});
+}
+
+class NfcActivityWidgetActionHideWidget extends NfcActivityWidgetAction {
+  final int timeoutMs;
+  const NfcActivityWidgetActionHideWidget({required this.timeoutMs});
+}
+
+class NfcActivityWidgetActionCancelWidget extends NfcActivityWidgetAction {
+  const NfcActivityWidgetActionCancelWidget();
+}
+
+class NfcActivityWidgetActionSetWidgetData extends NfcActivityWidgetAction {
+  final Widget child;
+  const NfcActivityWidgetActionSetWidgetData({required this.child});
+}
+
+@freezed
+class NfcActivityWidgetState with _$NfcActivityWidgetState {
+  factory NfcActivityWidgetState(
+      {required bool isShowing,
+      required Widget child,
+      bool? showCloseButton,
+      bool? showSuccess,
+      String? operationName,
+      String? operationProcessing,
+      String? operationSuccess,
+      String? operationFailure}) = _NfcActivityWidgetState;
+}
+
+@freezed
+class NfcActivityWidgetCommand with _$NfcActivityWidgetCommand {
+  factory NfcActivityWidgetCommand({
+    @Default(NfcActivityWidgetAction()) NfcActivityWidgetAction action,
+  }) = _NfcActivityWidgetCommand;
+}

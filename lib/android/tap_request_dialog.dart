@@ -15,113 +15,132 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
+import '../app/models.dart';
 import '../app/state.dart';
-import '../app/views/user_interaction.dart';
-import 'views/nfc/nfc_activity_widget.dart';
+import '../widgets/pulsing.dart';
+import 'state.dart';
+import 'views/nfc/nfc_activity_overlay.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
-// _DDesc contains id of title resource for the dialog
-enum _DTitle {
-  tapKey,
-  operationSuccessful,
-  operationFailed,
-  invalid;
+final androidDialogProvider =
+    NotifierProvider<_DialogProvider, int>(_DialogProvider.new);
 
-  static _DTitle fromId(int? id) =>
-      const {
-        0: _DTitle.tapKey,
-        1: _DTitle.operationSuccessful,
-        2: _DTitle.operationFailed
-      }[id] ??
-      _DTitle.invalid;
-}
+class _DialogProvider extends Notifier<int> {
+  Timer? processingTimer;
+  bool explicitAction = false;
 
-// _DDesc contains action description in the dialog
-enum _DDesc {
-  // oath descriptions
-  oathResetApplet,
-  oathUnlockSession,
-  oathSetPassword,
-  oathUnsetPassword,
-  oathAddAccount,
-  oathRenameAccount,
-  oathDeleteAccount,
-  oathCalculateCode,
-  oathActionFailure,
-  oathAddMultipleAccounts,
-  // FIDO descriptions
-  fidoResetApplet,
-  fidoUnlockSession,
-  fidoSetPin,
-  fidoDeleteCredential,
-  fidoDeleteFingerprint,
-  fidoRenameFingerprint,
-  fidoRegisterFingerprint,
-  fidoEnableEnterpriseAttestation,
-  fidoActionFailure,
-  // Others
-  invalid;
+  @override
+  int build() {
+    final l10n = ref.read(l10nProvider);
+    ref.listen(androidNfcActivityProvider, (previous, current) {
+      final notifier = ref.read(nfcActivityCommandNotifier.notifier);
 
-  static const int dialogDescriptionOathIndex = 100;
-  static const int dialogDescriptionFidoIndex = 200;
+      if (!explicitAction) {
+        // setup properties for ad-hoc action
+        ref.read(nfcActivityWidgetNotifier.notifier).setDialogProperties(
+              operationProcessing: l10n.s_nfc_dialog_read_key,
+              operationFailure: l10n.s_nfc_dialog_read_key_failure,
+              showSuccess: false,
+            );
+      }
 
-  static _DDesc fromId(int? id) =>
-      const {
-        dialogDescriptionOathIndex + 0: oathResetApplet,
-        dialogDescriptionOathIndex + 1: oathUnlockSession,
-        dialogDescriptionOathIndex + 2: oathSetPassword,
-        dialogDescriptionOathIndex + 3: oathUnsetPassword,
-        dialogDescriptionOathIndex + 4: oathAddAccount,
-        dialogDescriptionOathIndex + 5: oathRenameAccount,
-        dialogDescriptionOathIndex + 6: oathDeleteAccount,
-        dialogDescriptionOathIndex + 7: oathCalculateCode,
-        dialogDescriptionOathIndex + 8: oathActionFailure,
-        dialogDescriptionOathIndex + 9: oathAddMultipleAccounts,
-        dialogDescriptionFidoIndex + 0: fidoResetApplet,
-        dialogDescriptionFidoIndex + 1: fidoUnlockSession,
-        dialogDescriptionFidoIndex + 2: fidoSetPin,
-        dialogDescriptionFidoIndex + 3: fidoDeleteCredential,
-        dialogDescriptionFidoIndex + 4: fidoDeleteFingerprint,
-        dialogDescriptionFidoIndex + 5: fidoRenameFingerprint,
-        dialogDescriptionFidoIndex + 6: fidoRegisterFingerprint,
-        dialogDescriptionFidoIndex + 7: fidoEnableEnterpriseAttestation,
-        dialogDescriptionFidoIndex + 8: fidoActionFailure,
-      }[id] ??
-      _DDesc.invalid;
-}
+      final properties = ref.read(nfcActivityWidgetNotifier);
 
-final androidDialogProvider = Provider<_DialogProvider>(
-  (ref) {
-    return _DialogProvider(ref.watch(withContextProvider));
-  },
-);
+      debugPrint('XXX now it is: $current');
+      switch (current) {
+        case NfcActivity.processingStarted:
+          processingTimer?.cancel();
 
-class _DialogProvider {
-  final WithContext _withContext;
-  final Widget _icon = const NfcActivityWidget(width: 64, height: 64);
-  UserInteractionController? _controller;
+          debugPrint('XXX explicit action: $explicitAction');
+          final timeout = explicitAction ? 300 : 200;
 
-  _DialogProvider(this._withContext) {
+          processingTimer = Timer(Duration(milliseconds: timeout), () {
+            if (!explicitAction) {
+              // show the widget
+              notifier.update(NfcActivityWidgetCommand(
+                  action: NfcActivityWidgetActionShowWidget(
+                      child: _NfcActivityWidgetView(
+                title: properties.operationProcessing,
+                subtitle: '',
+                inProgress: true,
+              ))));
+            } else {
+              // the processing view will only be shown if the timer is still active
+              notifier.update(NfcActivityWidgetCommand(
+                  action: NfcActivityWidgetActionSetWidgetData(
+                      child: _NfcActivityWidgetView(
+                title: properties.operationProcessing,
+                subtitle: l10n.s_nfc_dialog_hold_key,
+                inProgress: true,
+              ))));
+            }
+          });
+          break;
+        case NfcActivity.processingFinished:
+          explicitAction = false; // next action might not be explicit
+          processingTimer?.cancel();
+          if (properties.showSuccess ?? false) {
+            notifier.update(NfcActivityWidgetCommand(
+                action: NfcActivityWidgetActionSetWidgetData(
+                    child: NfcActivityClosingCountdownWidgetView(
+              closeInSec: 5,
+              child: _NfcActivityWidgetView(
+                title: properties.operationSuccess,
+                subtitle: l10n.s_nfc_dialog_remove_key,
+                inProgress: false,
+              ),
+            ))));
+          } else {
+            // directly hide
+            notifier.update(NfcActivityWidgetCommand(
+                action: const NfcActivityWidgetActionHideWidget(timeoutMs: 0)));
+          }
+          break;
+        case NfcActivity.processingInterrupted:
+          explicitAction = false; // next action might not be explicit
+          notifier.update(NfcActivityWidgetCommand(
+              action: NfcActivityWidgetActionSetWidgetData(
+                  child: _NfcActivityWidgetView(
+            title: properties.operationFailure,
+            inProgress: false,
+          ))));
+          break;
+        case NfcActivity.notActive:
+          debugPrint('Received not handled notActive');
+          break;
+        case NfcActivity.ready:
+          debugPrint('Received not handled ready');
+      }
+    });
+
     _channel.setMethodCallHandler((call) async {
-      final args = jsonDecode(call.arguments);
+      final notifier = ref.read(nfcActivityCommandNotifier.notifier);
+      final properties = ref.read(nfcActivityWidgetNotifier);
       switch (call.method) {
-        case 'close':
-          _closeDialog();
-          break;
         case 'show':
-          await _showDialog(args['title'], args['description']);
+          explicitAction = true;
+          notifier.update(NfcActivityWidgetCommand(
+              action: NfcActivityWidgetActionShowWidget(
+                  child: _NfcActivityWidgetView(
+            title: l10n.s_nfc_dialog_tap_for(
+                properties.operationName ?? '[OPERATION NAME MISSING]'),
+            subtitle: '',
+            inProgress: false,
+          ))));
           break;
-        case 'state':
-          await _updateDialogState(args['title'], args['description']);
+
+        case 'close':
+          notifier.update(NfcActivityWidgetCommand(
+              action: const NfcActivityWidgetActionHideWidget(timeoutMs: 0)));
           break;
+
         default:
           throw PlatformException(
             code: 'NotImplemented',
@@ -129,71 +148,112 @@ class _DialogProvider {
           );
       }
     });
+    return 0;
   }
 
-  void _closeDialog() {
-    _controller?.close();
-    _controller = null;
+  void cancelDialog() async {
+    debugPrint('Cancelled dialog');
+    explicitAction = false;
+    await _channel.invokeMethod('cancel');
   }
 
-  String _getTitle(BuildContext context, int? titleId) {
-    final l10n = AppLocalizations.of(context)!;
-    return switch (_DTitle.fromId(titleId)) {
-      _DTitle.tapKey => l10n.l_nfc_dialog_tap_key,
-      _DTitle.operationSuccessful => l10n.s_nfc_dialog_operation_success,
-      _DTitle.operationFailed => l10n.s_nfc_dialog_operation_failed,
-      _ => ''
-    };
-  }
+  Future<void> waitForDialogClosed() async {
+    final completer = Completer();
 
-  String _getDialogDescription(BuildContext context, int? descriptionId) {
-    final l10n = AppLocalizations.of(context)!;
-    return switch (_DDesc.fromId(descriptionId)) {
-      _DDesc.oathResetApplet => l10n.s_nfc_dialog_oath_reset,
-      _DDesc.oathUnlockSession => l10n.s_nfc_dialog_oath_unlock,
-      _DDesc.oathSetPassword => l10n.s_nfc_dialog_oath_set_password,
-      _DDesc.oathUnsetPassword => l10n.s_nfc_dialog_oath_unset_password,
-      _DDesc.oathAddAccount => l10n.s_nfc_dialog_oath_add_account,
-      _DDesc.oathRenameAccount => l10n.s_nfc_dialog_oath_rename_account,
-      _DDesc.oathDeleteAccount => l10n.s_nfc_dialog_oath_delete_account,
-      _DDesc.oathCalculateCode => l10n.s_nfc_dialog_oath_calculate_code,
-      _DDesc.oathActionFailure => l10n.s_nfc_dialog_oath_failure,
-      _DDesc.oathAddMultipleAccounts =>
-        l10n.s_nfc_dialog_oath_add_multiple_accounts,
-      _DDesc.fidoResetApplet => l10n.s_nfc_dialog_fido_reset,
-      _DDesc.fidoUnlockSession => l10n.s_nfc_dialog_fido_unlock,
-      _DDesc.fidoSetPin => l10n.l_nfc_dialog_fido_set_pin,
-      _DDesc.fidoDeleteCredential => l10n.s_nfc_dialog_fido_delete_credential,
-      _DDesc.fidoDeleteFingerprint => l10n.s_nfc_dialog_fido_delete_fingerprint,
-      _DDesc.fidoRenameFingerprint => l10n.s_nfc_dialog_fido_rename_fingerprint,
-      _DDesc.fidoActionFailure => l10n.s_nfc_dialog_fido_failure,
-      _ => ''
-    };
-  }
+    Timer.periodic(
+      const Duration(milliseconds: 200),
+      (timer) {
+        if (!ref.read(nfcActivityWidgetNotifier.select((s) => s.isShowing))) {
+          timer.cancel();
+          completer.complete();
+        }
+      },
+    );
 
-  Future<void> _updateDialogState(int? title, int? description) async {
-    await _withContext((context) async {
-      _controller?.updateContent(
-        title: _getTitle(context, title),
-        description: _getDialogDescription(context, description),
-        icon: (_DDesc.fromId(description) != _DDesc.oathActionFailure)
-            ? _icon
-            : const Icon(Icons.warning_amber_rounded, size: 64),
-      );
-    });
+    await completer.future;
   }
+}
 
-  Future<void> _showDialog(int title, int description) async {
-    _controller = await _withContext((context) async {
-      return promptUserInteraction(
-        context,
-        title: _getTitle(context, title),
-        description: _getDialogDescription(context, description),
-        icon: _icon,
-        onCancel: () {
-          _channel.invokeMethod('cancel');
-        },
-      );
-    });
+class _NfcActivityWidgetView extends StatelessWidget {
+  final bool inProgress;
+  final String? title;
+  final String? subtitle;
+
+  const _NfcActivityWidgetView(
+      {required this.title, this.subtitle, this.inProgress = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: [
+          Text(title ?? 'Missing title',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          if (subtitle != null)
+            Text(subtitle!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 32),
+          inProgress
+              ? const Pulsing(child: Icon(Symbols.contactless, size: 64))
+              : const Icon(Symbols.contactless, size: 64),
+          const SizedBox(height: 24)
+        ],
+      ),
+    );
+  }
+}
+
+class MethodChannelHelper {
+  final ProviderRef _ref;
+  final MethodChannel _channel;
+
+  const MethodChannelHelper(this._ref, this._channel);
+
+  Future<dynamic> invoke(String method,
+      {String? operationName,
+      String? operationSuccess,
+      String? operationProcessing,
+      String? operationFailure,
+      bool? showSuccess,
+      Map<String, dynamic> arguments = const {}}) async {
+    final notifier = _ref.read(nfcActivityWidgetNotifier.notifier);
+    notifier.setDialogProperties(
+        operationName: operationName,
+        operationProcessing: operationProcessing,
+        operationSuccess: operationSuccess,
+        operationFailure: operationFailure,
+        showSuccess: showSuccess);
+
+    final result = await _channel.invokeMethod(method, arguments);
+    await _ref.read(androidDialogProvider.notifier).waitForDialogClosed();
+    return result;
+  }
+}
+
+class MethodChannelNotifier extends Notifier<void> {
+  final MethodChannel _channel;
+
+  MethodChannelNotifier(this._channel);
+
+  @override
+  void build() {}
+
+  Future<dynamic> invoke(String name,
+      [Map<String, dynamic> params = const {}]) async {
+    final notifier = ref.read(nfcActivityWidgetNotifier.notifier);
+    notifier.setDialogProperties(
+        operationName: params['operationName'],
+        operationProcessing: params['operationProcessing'],
+        operationSuccess: params['operationSuccess'],
+        operationFailure: params['operationFailure'],
+        showSuccess: params['showSuccess']);
+
+    final result = await _channel.invokeMethod(name, params['callArgs']);
+    await ref.read(androidDialogProvider.notifier).waitForDialogClosed();
+    return result;
   }
 }

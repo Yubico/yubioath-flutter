@@ -885,28 +885,95 @@
     "l_launch_app_on_usb_off": "Andere Anwendungen können den YubiKey über USB nutzen",
     "s_allow_screenshots": "Bildschirmfotos erlauben",
 
-    "l_nfc_dialog_tap_key": "Halten Sie Ihren Schlüssel dagegen",
-    "s_nfc_dialog_operation_success": "Erfolgreich",
-    "s_nfc_dialog_operation_failed": "Fehlgeschlagen",
+    "@_ndef_oath_actions": {},
+    "s_nfc_dialog_oath_reset": null,
+    "s_nfc_dialog_oath_reset_processing": null,
+    "s_nfc_dialog_oath_reset_success": null,
+    "s_nfc_dialog_oath_reset_failure": null,
 
-    "s_nfc_dialog_oath_reset": "Aktion: OATH-Anwendung zurücksetzen",
-    "s_nfc_dialog_oath_unlock": "Aktion: OATH-Anwendung entsperren",
-    "s_nfc_dialog_oath_set_password": "Aktion: OATH-Passwort setzen",
-    "s_nfc_dialog_oath_unset_password": "Aktion: OATH-Passwort entfernen",
-    "s_nfc_dialog_oath_add_account": "Aktion: neues Konto hinzufügen",
-    "s_nfc_dialog_oath_rename_account": "Aktion: Konto umbenennen",
-    "s_nfc_dialog_oath_delete_account": "Aktion: Konto löschen",
-    "s_nfc_dialog_oath_calculate_code": "Aktion: OATH-Code berechnen",
-    "s_nfc_dialog_oath_failure": "OATH-Operation fehlgeschlagen",
-    "s_nfc_dialog_oath_add_multiple_accounts": "Aktion: mehrere Konten hinzufügen",
+    "s_nfc_dialog_oath_unlock": null,
+    "s_nfc_dialog_oath_unlock_processing": null,
+    "s_nfc_dialog_oath_unlock_success": null,
+    "s_nfc_dialog_oath_unlock_failure": null,
 
-    "s_nfc_dialog_fido_reset": "Aktion: FIDO-Anwendung zurücksetzen",
-    "s_nfc_dialog_fido_unlock": "Aktion: FIDO-Anwendung entsperren",
-    "l_nfc_dialog_fido_set_pin": "Aktion: FIDO-PIN setzen oder ändern",
-    "s_nfc_dialog_fido_delete_credential": "Aktion: Passkey löschen",
-    "s_nfc_dialog_fido_delete_fingerprint": "Aktion: Fingerabdruck löschen",
-    "s_nfc_dialog_fido_rename_fingerprint": "Aktion: Fingerabdruck umbenennen",
-    "s_nfc_dialog_fido_failure": "FIDO-Operation fehlgeschlagen",
+    "s_nfc_dialog_oath_set_password": null,
+    "s_nfc_dialog_oath_change_password": null,
+    "s_nfc_dialog_oath_set_password_processing": null,
+    "s_nfc_dialog_oath_change_password_processing": null,
+    "s_nfc_dialog_oath_set_password_success": null,
+    "s_nfc_dialog_oath_change_password_success": null,
+    "s_nfc_dialog_oath_set_password_failure": null,
+    "s_nfc_dialog_oath_change_password_failure": null,
+
+    "s_nfc_dialog_oath_remove_password": null,
+    "s_nfc_dialog_oath_remove_password_processing": null,
+    "s_nfc_dialog_oath_remove_password_success": null,
+    "s_nfc_dialog_oath_remove_password_failure": null,
+
+    "s_nfc_dialog_oath_add_account": null,
+    "s_nfc_dialog_oath_add_account_processing": null,
+    "s_nfc_dialog_oath_add_account_success": null,
+    "s_nfc_dialog_oath_add_account_failure": null,
+
+    "s_nfc_dialog_oath_rename_account": null,
+    "s_nfc_dialog_oath_rename_account_processing": null,
+    "s_nfc_dialog_oath_rename_account_success": null,
+    "s_nfc_dialog_oath_rename_account_failure": null,
+
+    "s_nfc_dialog_oath_delete_account": null,
+    "s_nfc_dialog_oath_delete_account_processing": null,
+    "s_nfc_dialog_oath_delete_account_success": null,
+    "s_nfc_dialog_oath_delete_account_failure": null,
+
+    "s_nfc_dialog_oath_calculate_code": null,
+    "s_nfc_dialog_oath_calculate_code_processing": null,
+    "s_nfc_dialog_oath_calculate_code_success": null,
+    "s_nfc_dialog_oath_calculate_code_failure": null,
+
+    "s_nfc_dialog_oath_add_multiple_accounts": null,
+    "s_nfc_dialog_oath_add_multiple_accounts_processing": null,
+    "s_nfc_dialog_oath_add_multiple_accounts_success": null,
+    "s_nfc_dialog_oath_add_multiple_accounts_failure": null,
+
+    "@_ndef_fido_actions": {},
+    "s_nfc_dialog_fido_reset": null,
+    "s_nfc_dialog_fido_reset_processing": null,
+    "s_nfc_dialog_fido_reset_success": null,
+    "s_nfc_dialog_fido_reset_failure": null,
+
+    "s_nfc_dialog_fido_unlock": null,
+    "s_nfc_dialog_fido_unlock_processing": null,
+    "s_nfc_dialog_fido_unlock_success": null,
+    "s_nfc_dialog_fido_unlock_failure": null,
+
+    "s_nfc_dialog_fido_set_pin": null,
+    "s_nfc_dialog_fido_set_pin_processing": null,
+    "s_nfc_dialog_fido_set_pin_success": null,
+    "s_nfc_dialog_fido_set_pin_failure": null,
+
+    "s_nfc_dialog_fido_change_pin": null,
+    "s_nfc_dialog_fido_change_pin_processing": null,
+    "s_nfc_dialog_fido_change_pin_success": null,
+    "s_nfc_dialog_fido_change_pin_failure": null,
+
+    "s_nfc_dialog_fido_delete_credential": null,
+    "s_nfc_dialog_fido_delete_credential_processing": null,
+    "s_nfc_dialog_fido_delete_credential_success": null,
+    "s_nfc_dialog_fido_delete_credential_failure": null,
+
+    "@_ndef_operations": {},
+    "s_nfc_dialog_tap_for": null,
+    "@s_nfc_dialog_tap_for": {
+        "placeholders": {
+            "operation": {}
+        }
+    },
+
+    "s_nfc_dialog_read_key": null,
+    "s_nfc_dialog_read_key_failure": null,
+
+    "s_nfc_dialog_hold_key": null,
+    "s_nfc_dialog_remove_key": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP-Code wurde erfolgreich von Ihrem YubiKey in die Zwischenablage kopiert.",

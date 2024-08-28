@@ -17,7 +17,6 @@
 package com.yubico.authenticator.fido
 
 import com.yubico.authenticator.DialogManager
-import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.withConnection
@@ -48,12 +47,9 @@ class FidoConnectionHelper(
         }
     }
 
-    suspend fun <T> useSession(
-        actionDescription: FidoActionDescription,
-        action: (YubiKitFidoSession) -> T
-    ): T {
+    suspend fun <T> useSession(action: (YubiKitFidoSession) -> T): T {
         return deviceManager.withKey(
-            onNfc = { useSessionNfc(actionDescription,action) },
+            onNfc = { useSessionNfc(action) },
             onUsb = { useSessionUsb(it, action) })
     }
 
@@ -64,10 +60,7 @@ class FidoConnectionHelper(
         block(YubiKitFidoSession(it))
     }
 
-    suspend fun <T> useSessionNfc(
-        actionDescription: FidoActionDescription,
-        block: (YubiKitFidoSession) -> T
-    ): T {
+    suspend fun <T> useSessionNfc(block: (YubiKitFidoSession) -> T): T {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
@@ -75,11 +68,8 @@ class FidoConnectionHelper(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog(
-                    DialogTitle.TapKey,
-                    actionDescription.id
-                ) {
-                    logger.debug("Cancelled Dialog {}", actionDescription.name)
+                dialogManager.showDialog {
+                    logger.debug("Cancelled dialog")
                     pendingAction?.invoke(Result.failure(CancellationException()))
                     pendingAction = null
                 }

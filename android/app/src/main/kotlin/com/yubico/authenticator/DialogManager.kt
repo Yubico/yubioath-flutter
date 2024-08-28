@@ -22,16 +22,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 typealias OnDialogCancelled = suspend () -> Unit
-
-enum class DialogTitle(val value: Int) {
-    TapKey(0),
-    OperationSuccessful(1),
-    OperationFailed(2)
-}
 
 class DialogManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
     private val channel =
@@ -48,38 +40,11 @@ class DialogManager(messenger: BinaryMessenger, private val coroutineScope: Coro
         }
     }
 
-    fun showDialog(
-        dialogTitle: DialogTitle,
-        dialogDescriptionId: Int,
-        cancelled: OnDialogCancelled?
-    ) {
+    fun showDialog(cancelled: OnDialogCancelled?) {
         onCancelled = cancelled
         coroutineScope.launch {
-            channel.invoke(
-                "show",
-                Json.encodeToString(
-                    mapOf(
-                        "title" to dialogTitle.value,
-                        "description" to dialogDescriptionId
-                    )
-                )
-            )
+            channel.invoke("show", null)
         }
-    }
-
-    suspend fun updateDialogState(
-        dialogTitle: DialogTitle,
-        dialogDescriptionId: Int? = null,
-    ) {
-        channel.invoke(
-            "state",
-            Json.encodeToString(
-                mapOf(
-                    "title" to dialogTitle.value,
-                    "description" to dialogDescriptionId
-                )
-            )
-        )
     }
 
     suspend fun closeDialog() {

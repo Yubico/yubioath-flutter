@@ -1346,3 +1346,410 @@ abstract class _KeyCustomization implements KeyCustomization {
   _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$NfcActivityWidgetState {
+  bool get isShowing => throw _privateConstructorUsedError;
+  Widget get child => throw _privateConstructorUsedError;
+  bool? get showCloseButton => throw _privateConstructorUsedError;
+  bool? get showSuccess => throw _privateConstructorUsedError;
+  String? get operationName => throw _privateConstructorUsedError;
+  String? get operationProcessing => throw _privateConstructorUsedError;
+  String? get operationSuccess => throw _privateConstructorUsedError;
+  String? get operationFailure => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $NfcActivityWidgetStateCopyWith<NfcActivityWidgetState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $NfcActivityWidgetStateCopyWith<$Res> {
+  factory $NfcActivityWidgetStateCopyWith(NfcActivityWidgetState value,
+          $Res Function(NfcActivityWidgetState) then) =
+      _$NfcActivityWidgetStateCopyWithImpl<$Res, NfcActivityWidgetState>;
+  @useResult
+  $Res call(
+      {bool isShowing,
+      Widget child,
+      bool? showCloseButton,
+      bool? showSuccess,
+      String? operationName,
+      String? operationProcessing,
+      String? operationSuccess,
+      String? operationFailure});
+}
+
+/// @nodoc
+class _$NfcActivityWidgetStateCopyWithImpl<$Res,
+        $Val extends NfcActivityWidgetState>
+    implements $NfcActivityWidgetStateCopyWith<$Res> {
+  _$NfcActivityWidgetStateCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isShowing = null,
+    Object? child = null,
+    Object? showCloseButton = freezed,
+    Object? showSuccess = freezed,
+    Object? operationName = freezed,
+    Object? operationProcessing = freezed,
+    Object? operationSuccess = freezed,
+    Object? operationFailure = freezed,
+  }) {
+    return _then(_value.copyWith(
+      isShowing: null == isShowing
+          ? _value.isShowing
+          : isShowing // ignore: cast_nullable_to_non_nullable
+              as bool,
+      child: null == child
+          ? _value.child
+          : child // ignore: cast_nullable_to_non_nullable
+              as Widget,
+      showCloseButton: freezed == showCloseButton
+          ? _value.showCloseButton
+          : showCloseButton // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      showSuccess: freezed == showSuccess
+          ? _value.showSuccess
+          : showSuccess // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      operationName: freezed == operationName
+          ? _value.operationName
+          : operationName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      operationProcessing: freezed == operationProcessing
+          ? _value.operationProcessing
+          : operationProcessing // ignore: cast_nullable_to_non_nullable
+              as String?,
+      operationSuccess: freezed == operationSuccess
+          ? _value.operationSuccess
+          : operationSuccess // ignore: cast_nullable_to_non_nullable
+              as String?,
+      operationFailure: freezed == operationFailure
+          ? _value.operationFailure
+          : operationFailure // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$NfcActivityWidgetStateImplCopyWith<$Res>
+    implements $NfcActivityWidgetStateCopyWith<$Res> {
+  factory _$$NfcActivityWidgetStateImplCopyWith(
+          _$NfcActivityWidgetStateImpl value,
+          $Res Function(_$NfcActivityWidgetStateImpl) then) =
+      __$$NfcActivityWidgetStateImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {bool isShowing,
+      Widget child,
+      bool? showCloseButton,
+      bool? showSuccess,
+      String? operationName,
+      String? operationProcessing,
+      String? operationSuccess,
+      String? operationFailure});
+}
+
+/// @nodoc
+class __$$NfcActivityWidgetStateImplCopyWithImpl<$Res>
+    extends _$NfcActivityWidgetStateCopyWithImpl<$Res,
+        _$NfcActivityWidgetStateImpl>
+    implements _$$NfcActivityWidgetStateImplCopyWith<$Res> {
+  __$$NfcActivityWidgetStateImplCopyWithImpl(
+      _$NfcActivityWidgetStateImpl _value,
+      $Res Function(_$NfcActivityWidgetStateImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isShowing = null,
+    Object? child = null,
+    Object? showCloseButton = freezed,
+    Object? showSuccess = freezed,
+    Object? operationName = freezed,
+    Object? operationProcessing = freezed,
+    Object? operationSuccess = freezed,
+    Object? operationFailure = freezed,
+  }) {
+    return _then(_$NfcActivityWidgetStateImpl(
+      isShowing: null == isShowing
+          ? _value.isShowing
+          : isShowing // ignore: cast_nullable_to_non_nullable
+              as bool,
+      child: null == child
+          ? _value.child
+          : child // ignore: cast_nullable_to_non_nullable
+              as Widget,
+      showCloseButton: freezed == showCloseButton
+          ? _value.showCloseButton
+          : showCloseButton // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      showSuccess: freezed == showSuccess
+          ? _value.showSuccess
+          : showSuccess // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      operationName: freezed == operationName
+          ? _value.operationName
+          : operationName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      operationProcessing: freezed == operationProcessing
+          ? _value.operationProcessing
+          : operationProcessing // ignore: cast_nullable_to_non_nullable
+              as String?,
+      operationSuccess: freezed == operationSuccess
+          ? _value.operationSuccess
+          : operationSuccess // ignore: cast_nullable_to_non_nullable
+              as String?,
+      operationFailure: freezed == operationFailure
+          ? _value.operationFailure
+          : operationFailure // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$NfcActivityWidgetStateImpl implements _NfcActivityWidgetState {
+  _$NfcActivityWidgetStateImpl(
+      {required this.isShowing,
+      required this.child,
+      this.showCloseButton,
+      this.showSuccess,
+      this.operationName,
+      this.operationProcessing,
+      this.operationSuccess,
+      this.operationFailure});
+
+  @override
+  final bool isShowing;
+  @override
+  final Widget child;
+  @override
+  final bool? showCloseButton;
+  @override
+  final bool? showSuccess;
+  @override
+  final String? operationName;
+  @override
+  final String? operationProcessing;
+  @override
+  final String? operationSuccess;
+  @override
+  final String? operationFailure;
+
+  @override
+  String toString() {
+    return 'NfcActivityWidgetState(isShowing: $isShowing, child: $child, showCloseButton: $showCloseButton, showSuccess: $showSuccess, operationName: $operationName, operationProcessing: $operationProcessing, operationSuccess: $operationSuccess, operationFailure: $operationFailure)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$NfcActivityWidgetStateImpl &&
+            (identical(other.isShowing, isShowing) ||
+                other.isShowing == isShowing) &&
+            (identical(other.child, child) || other.child == child) &&
+            (identical(other.showCloseButton, showCloseButton) ||
+                other.showCloseButton == showCloseButton) &&
+            (identical(other.showSuccess, showSuccess) ||
+                other.showSuccess == showSuccess) &&
+            (identical(other.operationName, operationName) ||
+                other.operationName == operationName) &&
+            (identical(other.operationProcessing, operationProcessing) ||
+                other.operationProcessing == operationProcessing) &&
+            (identical(other.operationSuccess, operationSuccess) ||
+                other.operationSuccess == operationSuccess) &&
+            (identical(other.operationFailure, operationFailure) ||
+                other.operationFailure == operationFailure));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      isShowing,
+      child,
+      showCloseButton,
+      showSuccess,
+      operationName,
+      operationProcessing,
+      operationSuccess,
+      operationFailure);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$NfcActivityWidgetStateImplCopyWith<_$NfcActivityWidgetStateImpl>
+      get copyWith => __$$NfcActivityWidgetStateImplCopyWithImpl<
+          _$NfcActivityWidgetStateImpl>(this, _$identity);
+}
+
+abstract class _NfcActivityWidgetState implements NfcActivityWidgetState {
+  factory _NfcActivityWidgetState(
+      {required final bool isShowing,
+      required final Widget child,
+      final bool? showCloseButton,
+      final bool? showSuccess,
+      final String? operationName,
+      final String? operationProcessing,
+      final String? operationSuccess,
+      final String? operationFailure}) = _$NfcActivityWidgetStateImpl;
+
+  @override
+  bool get isShowing;
+  @override
+  Widget get child;
+  @override
+  bool? get showCloseButton;
+  @override
+  bool? get showSuccess;
+  @override
+  String? get operationName;
+  @override
+  String? get operationProcessing;
+  @override
+  String? get operationSuccess;
+  @override
+  String? get operationFailure;
+  @override
+  @JsonKey(ignore: true)
+  _$$NfcActivityWidgetStateImplCopyWith<_$NfcActivityWidgetStateImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$NfcActivityWidgetCommand {
+  NfcActivityWidgetAction get action => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $NfcActivityWidgetCommandCopyWith<NfcActivityWidgetCommand> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $NfcActivityWidgetCommandCopyWith<$Res> {
+  factory $NfcActivityWidgetCommandCopyWith(NfcActivityWidgetCommand value,
+          $Res Function(NfcActivityWidgetCommand) then) =
+      _$NfcActivityWidgetCommandCopyWithImpl<$Res, NfcActivityWidgetCommand>;
+  @useResult
+  $Res call({NfcActivityWidgetAction action});
+}
+
+/// @nodoc
+class _$NfcActivityWidgetCommandCopyWithImpl<$Res,
+        $Val extends NfcActivityWidgetCommand>
+    implements $NfcActivityWidgetCommandCopyWith<$Res> {
+  _$NfcActivityWidgetCommandCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? action = null,
+  }) {
+    return _then(_value.copyWith(
+      action: null == action
+          ? _value.action
+          : action // ignore: cast_nullable_to_non_nullable
+              as NfcActivityWidgetAction,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$NfcActivityWidgetCommandImplCopyWith<$Res>
+    implements $NfcActivityWidgetCommandCopyWith<$Res> {
+  factory _$$NfcActivityWidgetCommandImplCopyWith(
+          _$NfcActivityWidgetCommandImpl value,
+          $Res Function(_$NfcActivityWidgetCommandImpl) then) =
+      __$$NfcActivityWidgetCommandImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({NfcActivityWidgetAction action});
+}
+
+/// @nodoc
+class __$$NfcActivityWidgetCommandImplCopyWithImpl<$Res>
+    extends _$NfcActivityWidgetCommandCopyWithImpl<$Res,
+        _$NfcActivityWidgetCommandImpl>
+    implements _$$NfcActivityWidgetCommandImplCopyWith<$Res> {
+  __$$NfcActivityWidgetCommandImplCopyWithImpl(
+      _$NfcActivityWidgetCommandImpl _value,
+      $Res Function(_$NfcActivityWidgetCommandImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? action = null,
+  }) {
+    return _then(_$NfcActivityWidgetCommandImpl(
+      action: null == action
+          ? _value.action
+          : action // ignore: cast_nullable_to_non_nullable
+              as NfcActivityWidgetAction,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$NfcActivityWidgetCommandImpl implements _NfcActivityWidgetCommand {
+  _$NfcActivityWidgetCommandImpl(
+      {this.action = const NfcActivityWidgetAction()});
+
+  @override
+  @JsonKey()
+  final NfcActivityWidgetAction action;
+
+  @override
+  String toString() {
+    return 'NfcActivityWidgetCommand(action: $action)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$NfcActivityWidgetCommandImpl &&
+            (identical(other.action, action) || other.action == action));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, action);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$NfcActivityWidgetCommandImplCopyWith<_$NfcActivityWidgetCommandImpl>
+      get copyWith => __$$NfcActivityWidgetCommandImplCopyWithImpl<
+          _$NfcActivityWidgetCommandImpl>(this, _$identity);
+}
+
+abstract class _NfcActivityWidgetCommand implements NfcActivityWidgetCommand {
+  factory _NfcActivityWidgetCommand({final NfcActivityWidgetAction action}) =
+      _$NfcActivityWidgetCommandImpl;
+
+  @override
+  NfcActivityWidgetAction get action;
+  @override
+  @JsonKey(ignore: true)
+  _$$NfcActivityWidgetCommandImplCopyWith<_$NfcActivityWidgetCommandImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

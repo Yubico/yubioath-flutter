@@ -43,6 +43,7 @@ import 'oath/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'tap_request_dialog.dart';
+import 'views/nfc/nfc_activity_command_listener.dart';
 import 'window_state_provider.dart';
 
 Future<Widget> initialize() async {
@@ -106,6 +107,8 @@ Future<Widget> initialize() async {
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
+          ref.read(nfcActivityCommandListener).startListener(context);
+
           Timer.run(() {
             ref.read(featureFlagProvider.notifier)
               // TODO: Load feature flags from file/config?

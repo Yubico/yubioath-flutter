@@ -211,7 +211,7 @@ class FidoResetHelper(
         coroutineScope.launch {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             try {
-                connectionHelper.useSessionNfc(FidoActionDescription.Reset) { fidoSession ->
+                connectionHelper.useSessionNfc { fidoSession ->
                     doReset(fidoSession)
                     continuation.resume(Unit)
                 }

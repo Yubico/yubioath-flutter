@@ -343,7 +343,7 @@ class FidoManager(
         }
 
     private suspend fun unlock(pin: CharArray): String =
-        connectionHelper.useSession(FidoActionDescription.Unlock) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             try {
                 val clientPin =
@@ -380,7 +380,7 @@ class FidoManager(
     }
 
     private suspend fun setPin(pin: CharArray?, newPin: CharArray): String =
-        connectionHelper.useSession(FidoActionDescription.SetPin) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
             try {
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -428,7 +428,7 @@ class FidoManager(
         }
 
     private suspend fun deleteCredential(rpId: String, credentialId: String): String =
-        connectionHelper.useSession(FidoActionDescription.DeleteCredential) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -476,7 +476,7 @@ class FidoManager(
     }
 
     private suspend fun deleteFingerprint(templateId: String): String =
-        connectionHelper.useSession(FidoActionDescription.DeleteFingerprint) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -501,7 +501,7 @@ class FidoManager(
         }
 
     private suspend fun renameFingerprint(templateId: String, name: String): String =
-        connectionHelper.useSession(FidoActionDescription.RenameFingerprint) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -531,7 +531,7 @@ class FidoManager(
     }
 
     private suspend fun registerFingerprint(name: String?): String =
-        connectionHelper.useSession(FidoActionDescription.RegisterFingerprint) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
             state?.cancel()
             state = CommandState()
             val clientPin =
@@ -607,7 +607,7 @@ class FidoManager(
         }
 
     private suspend fun enableEnterpriseAttestation(): String =
-        connectionHelper.useSession(FidoActionDescription.EnableEnterpriseAttestation) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
             try {
                 val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
                 val clientPin = ClientPin(fidoSession, uvAuthProtocol)

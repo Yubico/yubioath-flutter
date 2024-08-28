@@ -19,6 +19,7 @@ package com.yubico.authenticator.yubikit
 import android.app.Activity
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import com.yubico.authenticator.yubikit.NfcActivityListener
 
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcDispatcher
@@ -51,7 +52,7 @@ class NfcActivityDispatcher(private val listener: NfcActivityListener) : NfcDisp
             nfcConfiguration,
             TagInterceptor(listener, handler)
         )
-        listener.onChange(NfcActivityState.READY)
+        //listener.onChange(NfcActivityState.READY)
     }
 
     override fun disable(activity: Activity) {
@@ -68,7 +69,7 @@ class NfcActivityDispatcher(private val listener: NfcActivityListener) : NfcDisp
         private val logger = LoggerFactory.getLogger(TagInterceptor::class.java)
 
         override fun onTag(tag: Tag) {
-            listener.onChange(NfcActivityState.PROCESSING_STARTED)
+            //listener.onChange(NfcActivityState.PROCESSING_STARTED)
             logger.debug("forwarding tag")
             tagHandler.onTag(tag)
         }
