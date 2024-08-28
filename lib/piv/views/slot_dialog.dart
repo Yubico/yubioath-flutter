@@ -98,6 +98,7 @@ class SlotDialog extends ConsumerWidget {
                                 certInfo,
                                 metadata,
                                 alwaysIncludePrivate: pivState.supportsMetadata,
+                                supportsBio: pivState.supportsBio,
                               ),
                               if (certInfo == null) const SizedBox(height: 16),
                             ],

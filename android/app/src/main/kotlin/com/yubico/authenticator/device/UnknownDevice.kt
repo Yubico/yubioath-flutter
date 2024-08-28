@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2023-2024 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.yubico.authenticator.device
 
 import com.yubico.yubikit.core.Transport
@@ -17,7 +33,7 @@ val UnknownDevice = Info(
     isLocked = false,
     isSky = false,
     isFips = false,
-    name = "Unrecognized device",
+    name = "unknown-device",
     isNfc = false,
     usbPid = null,
     pinComplexity = false,
@@ -49,5 +65,16 @@ fun unknownOathDeviceInfo(transport: Transport) : Info {
 fun unknownFido2DeviceInfo(transport: Transport) : Info {
     return unknownDeviceWithCapability(transport, Capability.FIDO2.bit).copy(
         name = "FIDO2 device"
+    )
+}
+
+fun restrictedNfcDeviceInfo(transport: Transport) : Info {
+    if (transport != Transport.NFC) {
+        return UnknownDevice
+    }
+
+    return UnknownDevice.copy(
+        isNfc = true,
+        name = "restricted-nfc"
     )
 }

@@ -186,8 +186,18 @@ class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
       .maybeWhen(data: (data) => [data.node], orElse: () => []);
 }
 
-final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
-    (ref) => ref.watch(androidYubikeyProvider));
+final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
+  return ref.watch(androidYubikeyProvider).when(data: (d) {
+    if (d.name == 'restricted-nfc' || d.name == 'unknown-device') {
+      return AsyncError(d.name, StackTrace.current);
+    }
+    return AsyncData(d);
+  }, error: (Object error, StackTrace stackTrace) {
+    return AsyncError(error, stackTrace);
+  }, loading: () {
+    return const AsyncLoading();
+  });
+});
 
 class AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
   @override

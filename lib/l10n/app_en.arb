@@ -229,6 +229,10 @@
     "l_no_yk_present": "No YubiKey present",
     "s_unknown_type": "Unknown type",
     "s_unknown_device": "Unrecognized device",
+    "s_restricted_nfc": "NFC activation",
+    "l_deactivate_restricted_nfc": "How to activate NFC",
+    "p_deactivate_restricted_nfc_desc": "Connect your YubiKey to any USB power source, such as a computer, for at least 3 seconds.\n\nOnce powered, NFC will be activated and ready for use.",
+    "p_deactivate_restricted_nfc_footer": "Your YubiKey is equipped with Restricted NFC, a feature designed to safeguard against wireless manipulation during shipping. This means that NFC operations are temporarily disabled until you activate them.",
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
     "p_operation_failed_try_again": "The operation failed, please try again.",
@@ -500,6 +504,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": "Biometrics",
     "l_fingerprint": "Fingerprint: {label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -660,6 +665,7 @@
     "s_allow_fingerprint": "Allow fingerprint",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
+    "p_key_options_bio_desc": "Allow biometrics to be used instead of PIN.",
     "s_overwrite_slot": "Overwrite slot",
     "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
     "@p_overwrite_slot_desc": {

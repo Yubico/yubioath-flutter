@@ -229,6 +229,10 @@
     "l_no_yk_present": "Nie wykryto YubiKey",
     "s_unknown_type": "Nieznany typ",
     "s_unknown_device": "Nierozpoznane urządzenie",
+    "s_restricted_nfc": null,
+    "l_deactivate_restricted_nfc": null,
+    "p_deactivate_restricted_nfc_desc": null,
+    "p_deactivate_restricted_nfc_footer": null,
     "s_unsupported_yk": "Nieobsługiwany klucz YubiKey",
     "s_yk_not_recognized": "Urządzenie nie rozpoznane",
     "p_operation_failed_try_again": null,
@@ -500,6 +504,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": null,
     "l_fingerprint": "Odcisk palca: {label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -660,6 +665,7 @@
     "s_allow_fingerprint": null,
     "p_cert_options_desc": "Algorytm klucza do użycia, format wyjściowy i data wygaśnięcia (tylko certyfikat).",
     "p_cert_options_bio_desc": null,
+    "p_key_options_bio_desc": null,
     "s_overwrite_slot": "Nadpisz slot",
     "p_overwrite_slot_desc": "Spowoduje to trwałe nadpisanie istniejącej zawartości w slocie {slot}.",
     "@p_overwrite_slot_desc": {

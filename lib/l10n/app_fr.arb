@@ -229,6 +229,10 @@
     "l_no_yk_present": "Aucune YubiKey présente",
     "s_unknown_type": "Type inconnu",
     "s_unknown_device": "Appareil non reconnu",
+    "s_restricted_nfc": null,
+    "l_deactivate_restricted_nfc": null,
+    "p_deactivate_restricted_nfc_desc": null,
+    "p_deactivate_restricted_nfc_footer": null,
     "s_unsupported_yk": "YubiKey non prise en charge",
     "s_yk_not_recognized": "Appareil non reconnu",
     "p_operation_failed_try_again": "L'opération a échoué, veuillez réessayer.",
@@ -500,6 +504,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": null,
     "l_fingerprint": "Empreinte digitale\u00a0: {label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -660,6 +665,7 @@
     "s_allow_fingerprint": null,
     "p_cert_options_desc": "Algorithme clé à utiliser, format de sortie et date d'expiration (certificat uniquement).",
     "p_cert_options_bio_desc": null,
+    "p_key_options_bio_desc": null,
     "s_overwrite_slot": "Écraser slot",
     "p_overwrite_slot_desc": "Cela écrasera définitivement le contenu du slot {slot}.",
     "@p_overwrite_slot_desc": {

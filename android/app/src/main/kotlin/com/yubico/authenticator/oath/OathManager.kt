@@ -44,7 +44,7 @@ import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.authenticator.yubikit.NfcActivityListener
 import com.yubico.authenticator.yubikit.NfcActivityState
-import com.yubico.authenticator.yubikit.getDeviceInfo
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice

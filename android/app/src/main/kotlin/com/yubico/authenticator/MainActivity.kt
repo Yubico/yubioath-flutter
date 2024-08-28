@@ -55,7 +55,7 @@ import com.yubico.authenticator.oath.OathViewModel
 import com.yubico.authenticator.yubikit.NfcActivityDispatcher
 import com.yubico.authenticator.yubikit.NfcActivityListener
 import com.yubico.authenticator.yubikit.NfcActivityState
-import com.yubico.authenticator.yubikit.getDeviceInfo
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
@@ -67,7 +67,6 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyManager
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
-import com.yubico.yubikit.core.smartcard.scp.KeyRef
 import com.yubico.yubikit.core.smartcard.scp.Scp11KeyParams
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
 import com.yubico.yubikit.core.smartcard.scp.ScpKid
@@ -152,7 +151,7 @@ class MainActivity : FlutterFragmentActivity() {
             }
 
             hasNfc = true
-        } catch (e: NfcNotAvailable) {
+        } catch (_: NfcNotAvailable) {
             hasNfc = false
         }
 
@@ -348,7 +347,7 @@ class MainActivity : FlutterFragmentActivity() {
             switchContext(preferredContext)
         }
 
-        if (contextManager == null) {
+        if (contextManager == null && supportedContexts.isNotEmpty()) {
             switchContext(DeviceManager.getPreferredContext(supportedContexts))
         }
 
