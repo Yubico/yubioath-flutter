@@ -58,6 +58,7 @@ Widget homeBuildActions(
                 title: deviceData.info.version.major > 4
                     ? l10n.s_toggle_applications
                     : l10n.s_toggle_interfaces,
+                key: yubikeyApplicationToggleMenuButton,
                 subtitle: interfacesLocked
                     ? l10n.l_factory_reset_required
                     : (deviceData.info.version.major > 4
@@ -83,6 +84,7 @@ Widget homeBuildActions(
               ActionListItem(
                 icon: const Icon(Symbols.delete_forever),
                 title: l10n.s_factory_reset,
+                key: yubikeyFactoryResetMenuButton,
                 subtitle: l10n.l_factory_reset_desc,
                 actionStyle: ActionStyle.primary,
                 onTap: (context) {
