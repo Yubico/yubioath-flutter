@@ -587,6 +587,7 @@
     "l_delete_certificate_or_key_desc": "Entfernen Sie das Zertifikat oder den Schlüssel von Ihrem YubiKey",
     "l_move_key": "Schlüssel verschieben",
     "l_move_key_desc": "Verschieben Sie einen Schlüssel von einem PIV-Slot in einen anderen",
+    "l_change_defaults": null,
     "s_issuer": "Aussteller",
     "s_serial": "Serial",
     "s_certificate_fingerprint": "Fingerprint",
