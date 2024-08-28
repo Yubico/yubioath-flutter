@@ -329,46 +329,45 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   void build() {}
 
   Future<dynamic> reset() async => invoke('reset', {
-        'operationName': l10n.s_nfc_dialog_oath_reset,
-        'operationProcessing': l10n.s_nfc_dialog_oath_reset_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_reset_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_reset_failure
+        'operationName': l10n.s_nfc_oath_reset,
+        'operationProcessing': l10n.s_nfc_oath_reset_processing,
+        'operationSuccess': l10n.s_nfc_oath_reset_success,
+        'operationFailure': l10n.s_nfc_oath_reset_failure
       });
 
   Future<dynamic> unlock(String password, {bool remember = false}) async =>
       invoke('unlock', {
         'callArgs': {'password': password, 'remember': remember},
-        'operationName': l10n.s_nfc_dialog_oath_unlock,
-        'operationProcessing': l10n.s_nfc_dialog_oath_unlock_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_unlock_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_unlock_failure,
+        'operationName': l10n.s_nfc_oath_unlock,
+        'operationProcessing': l10n.s_nfc_oath_unlock_processing,
+        'operationSuccess': l10n.s_nfc_oath_unlock_success,
+        'operationFailure': l10n.s_nfc_oath_unlock_failure,
       });
 
   Future<dynamic> setPassword(String? current, String password) async =>
       invoke('setPassword', {
         'callArgs': {'current': current, 'password': password},
         'operationName': current != null
-            ? l10n.s_nfc_dialog_oath_change_password
-            : l10n.s_nfc_dialog_oath_set_password,
+            ? l10n.s_nfc_oath_change_password
+            : l10n.s_nfc_oath_set_password,
         'operationProcessing': current != null
-            ? l10n.s_nfc_dialog_oath_change_password_processing
-            : l10n.s_nfc_dialog_oath_set_password_processing,
+            ? l10n.s_nfc_oath_change_password_processing
+            : l10n.s_nfc_oath_set_password_processing,
         'operationSuccess': current != null
-            ? l10n.s_nfc_dialog_oath_change_password_success
-            : l10n.s_nfc_dialog_oath_set_password_success,
+            ? l10n.s_nfc_oath_change_password_success
+            : l10n.s_nfc_oath_set_password_success,
         'operationFailure': current != null
-            ? l10n.s_nfc_dialog_oath_change_password_failure
-            : l10n.s_nfc_dialog_oath_set_password_failure,
+            ? l10n.s_nfc_oath_change_password_failure
+            : l10n.s_nfc_oath_set_password_failure,
       });
 
   Future<dynamic> unsetPassword(String current) async =>
       invoke('unsetPassword', {
         'callArgs': {'current': current},
-        'operationName': l10n.s_nfc_dialog_oath_remove_password,
-        'operationProcessing':
-            l10n.s_nfc_dialog_oath_remove_password_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_remove_password_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_remove_password_failure,
+        'operationName': l10n.s_nfc_oath_remove_password,
+        'operationProcessing': l10n.s_nfc_oath_remove_password_processing,
+        'operationSuccess': l10n.s_nfc_oath_remove_password_success,
+        'operationFailure': l10n.s_nfc_oath_remove_password_failure,
       });
 
   Future<dynamic> forgetPassword() async => invoke('forgetPassword');
@@ -376,10 +375,10 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> calculate(OathCredential credential) async =>
       invoke('calculate', {
         'callArgs': {'credentialId': credential.id},
-        'operationName': l10n.s_nfc_dialog_oath_calculate_code,
-        'operationProcessing': l10n.s_nfc_dialog_oath_calculate_code_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_calculate_code_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_calculate_code_failure,
+        'operationName': l10n.s_nfc_oath_calculate_code,
+        'operationProcessing': l10n.s_nfc_oath_calculate_code_processing,
+        'operationSuccess': l10n.s_nfc_oath_calculate_code_success,
+        'operationFailure': l10n.s_nfc_oath_calculate_code_failure,
       });
 
   Future<dynamic> addAccount(Uri credentialUri,
@@ -389,10 +388,10 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uri': credentialUri.toString(),
           'requireTouch': requireTouch
         },
-        'operationName': l10n.s_nfc_dialog_oath_add_account,
-        'operationProcessing': l10n.s_nfc_dialog_oath_add_account_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_add_account_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_add_account_failure,
+        'operationName': l10n.s_nfc_oath_add_account,
+        'operationProcessing': l10n.s_nfc_oath_add_account_processing,
+        'operationSuccess': l10n.s_nfc_oath_add_account_success,
+        'operationFailure': l10n.s_nfc_oath_add_account_failure,
         'showSuccess': true
       });
 
@@ -403,13 +402,10 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uris': credentialUris,
           'requireTouch': touchRequired,
         },
-        'operationName': l10n.s_nfc_dialog_oath_add_multiple_accounts,
-        'operationProcessing':
-            l10n.s_nfc_dialog_oath_add_multiple_accounts_processing,
-        'operationSuccess':
-            l10n.s_nfc_dialog_oath_add_multiple_accounts_success,
-        'operationFailure':
-            l10n.s_nfc_dialog_oath_add_multiple_accounts_failure,
+        'operationName': l10n.s_nfc_oath_add_multiple_accounts,
+        'operationProcessing': l10n.s_nfc_oath_add_multiple_accounts_processing,
+        'operationSuccess': l10n.s_nfc_oath_add_multiple_accounts_success,
+        'operationFailure': l10n.s_nfc_oath_add_multiple_accounts_failure,
       });
 
   Future<dynamic> addAccountToAny(Uri credentialUri,
@@ -419,19 +415,19 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uri': credentialUri.toString(),
           'requireTouch': requireTouch
         },
-        'operationName': l10n.s_nfc_dialog_oath_add_account,
-        'operationProcessing': l10n.s_nfc_dialog_oath_add_account_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_add_account_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_add_account_failure,
+        'operationName': l10n.s_nfc_oath_add_account,
+        'operationProcessing': l10n.s_nfc_oath_add_account_processing,
+        'operationSuccess': l10n.s_nfc_oath_add_account_success,
+        'operationFailure': l10n.s_nfc_oath_add_account_failure,
       });
 
   Future<dynamic> deleteAccount(OathCredential credential) async =>
       invoke('deleteAccount', {
         'callArgs': {'credentialId': credential.id},
-        'operationName': l10n.s_nfc_dialog_oath_delete_account,
-        'operationProcessing': l10n.s_nfc_dialog_oath_delete_account_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_delete_account_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_delete_account_failure,
+        'operationName': l10n.s_nfc_oath_delete_account,
+        'operationProcessing': l10n.s_nfc_oath_delete_account_processing,
+        'operationSuccess': l10n.s_nfc_oath_delete_account_success,
+        'operationFailure': l10n.s_nfc_oath_delete_account_failure,
         'showSuccess': true
       });
 
@@ -443,9 +439,9 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'name': name,
           'issuer': issuer
         },
-        'operationName': l10n.s_nfc_dialog_oath_rename_account,
-        'operationProcessing': l10n.s_nfc_dialog_oath_rename_account_processing,
-        'operationSuccess': l10n.s_nfc_dialog_oath_rename_account_success,
-        'operationFailure': l10n.s_nfc_dialog_oath_rename_account_failure,
+        'operationName': l10n.s_nfc_oath_rename_account,
+        'operationProcessing': l10n.s_nfc_oath_rename_account_processing,
+        'operationSuccess': l10n.s_nfc_oath_rename_account_success,
+        'operationFailure': l10n.s_nfc_oath_rename_account_failure,
       });
 }

@@ -45,8 +45,8 @@ class _DialogProvider extends Notifier<int> {
       if (!explicitAction) {
         // setup properties for ad-hoc action
         ref.read(nfcActivityWidgetNotifier.notifier).setDialogProperties(
-              operationProcessing: l10n.s_nfc_dialog_read_key,
-              operationFailure: l10n.s_nfc_dialog_read_key_failure,
+              operationProcessing: l10n.s_nfc_read_key,
+              operationFailure: l10n.s_nfc_read_key_failure,
               showSuccess: false,
             );
       }
@@ -77,7 +77,7 @@ class _DialogProvider extends Notifier<int> {
                   action: NfcActivityWidgetActionSetWidgetData(
                       child: _NfcActivityWidgetView(
                 title: properties.operationProcessing,
-                subtitle: l10n.s_nfc_dialog_hold_key,
+                subtitle: l10n.s_nfc_hold_key,
                 inProgress: true,
               ))));
             }
@@ -93,7 +93,7 @@ class _DialogProvider extends Notifier<int> {
               closeInSec: 5,
               child: _NfcActivityWidgetView(
                 title: properties.operationSuccess,
-                subtitle: l10n.s_nfc_dialog_remove_key,
+                subtitle: l10n.s_nfc_remove_key,
                 inProgress: false,
               ),
             ))));
@@ -129,7 +129,7 @@ class _DialogProvider extends Notifier<int> {
           notifier.update(NfcActivityWidgetCommand(
               action: NfcActivityWidgetActionShowWidget(
                   child: _NfcActivityWidgetView(
-            title: l10n.s_nfc_dialog_tap_for(
+            title: l10n.s_nfc_tap_for(
                 properties.operationName ?? '[OPERATION NAME MISSING]'),
             subtitle: '',
             inProgress: false,
