@@ -28,7 +28,6 @@ import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
-import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -118,6 +117,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   late String _issuer;
   late String _name;
 
+  final _issuerFocusNode = FocusNode();
+  final _nameFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -126,7 +128,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   }
 
   void _submit() async {
-    FocusUtils.unfocus(context);
+    _issuerFocusNode.unfocus();
+    _nameFocusNode.unfocus();
     final nav = Navigator.of(context);
     final renamed =
         await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
@@ -188,6 +191,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 prefixIcon: const Icon(Symbols.business),
               ),
               textInputAction: TextInputAction.next,
+              focusNode: _issuerFocusNode,
               onChanged: (value) {
                 setState(() {
                   _issuer = value.trim();
@@ -212,6 +216,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 prefixIcon: const Icon(Symbols.people_alt),
               ),
               textInputAction: TextInputAction.done,
+              focusNode: _nameFocusNode,
               onChanged: (value) {
                 setState(() {
                   _name = value.trim();
