@@ -236,6 +236,8 @@
     "s_unsupported_yk": "Nieobsługiwany klucz YubiKey",
     "s_yk_not_recognized": "Urządzenie nie rozpoznane",
     "p_operation_failed_try_again": null,
+    "l_scp11b_nfc_technology_missing": null,
+    "p_scp11b_missing_support_desc": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Wystąpił błąd",

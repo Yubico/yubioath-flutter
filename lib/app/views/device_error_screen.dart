@@ -89,6 +89,16 @@ class DeviceErrorScreen extends ConsumerWidget {
             message: l10n.p_deactivate_restricted_nfc_desc,
             footnote: l10n.p_deactivate_restricted_nfc_footer,
           ),
+        'no-scp11b-nfc-support' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.contactless,
+              size: 96,
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+            header: l10n.l_scp11b_nfc_technology_missing,
+            message: l10n.p_scp11b_missing_support_desc,
+          ),
         _ => HomeMessagePage(
             centered: true,
             graphic: Image.asset(
