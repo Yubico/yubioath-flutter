@@ -333,6 +333,7 @@ class CredentialNode(RpcNode):
     def delete(self, params, event, signal):
         self.credman.delete_cred(self.data["credential_id"])
         self.refresh_rps()
+        return dict()
 
 
 class FingerprintsNode(RpcNode):
