@@ -46,10 +46,11 @@
     "s_details": "Szczegóły",
     "s_show_window": "Pokaż okno",
     "s_hide_window": "Ukryj okno",
+    "s_show_navigation": null,
     "s_expand_navigation": null,
     "s_collapse_navigation": null,
-    "s_expand_sidebar": null,
-    "s_collapse_sidebar": null,
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "Zmienić nazwę {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -87,7 +88,6 @@
     "s_terms_of_use": "Warunki użytkowania",
     "s_privacy_policy": "Polityka prywatności",
     "s_open_src_licenses": "Licencje open source",
-    "s_configure_yk": "Skonfiguruj YubiKey",
     "s_please_wait": "Proszę czekać\u2026",
     "s_secret_key": "Tajny klucz",
     "s_show_secret_key": "Pokaż tajny klucz",
