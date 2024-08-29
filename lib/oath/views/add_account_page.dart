@@ -71,11 +71,11 @@ class OathAddAccountPage extends ConsumerStatefulWidget {
 
 class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   final _issuerController = TextEditingController();
-  final _issuerFocusNode = FocusNode();
   final _accountController = TextEditingController();
-  final _accountFocusNode = FocusNode();
   final _secretController = TextEditingController();
-  final _secretFocusNode = FocusNode();
+  final _issuerFocus = FocusNode();
+  final _accountFocus = FocusNode();
+  final _secretFocus = FocusNode();
   final _periodController = TextEditingController(text: '$defaultPeriod');
   UserInteractionController? _promptController;
   Uri? _otpauthUri;
@@ -98,6 +98,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     _accountController.dispose();
     _secretController.dispose();
     _periodController.dispose();
+    _issuerFocus.dispose();
+    _accountFocus.dispose();
+    _secretFocus.dispose();
     super.dispose();
   }
 
@@ -274,9 +277,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     void submit() async {
       if (secretLengthValid && secretFormatValid) {
-        _issuerFocusNode.unfocus();
-        _accountFocusNode.unfocus();
-        _secretFocusNode.unfocus();
+        _issuerFocus.unfocus();
+        _accountFocus.unfocus();
+        _secretFocus.unfocus();
 
         setState(() {
           _submitting = true;
@@ -386,8 +389,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '',
+                        // Prevents dialog resizing when disabled
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
                             : issuerNoColon
@@ -396,7 +399,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         prefixIcon: const Icon(Symbols.business),
                       ),
                       textInputAction: TextInputAction.next,
-                      focusNode: _issuerFocusNode,
+                      focusNode: _issuerFocus,
                       onChanged: (value) {
                         setState(() {
                           // Update maxlengths
@@ -427,7 +430,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         prefixIcon: const Icon(Symbols.person),
                       ),
                       textInputAction: TextInputAction.next,
-                      focusNode: _accountFocusNode,
+                      focusNode: _accountFocus,
                       onChanged: (value) {
                         setState(() {
                           // Update max lengths
@@ -470,7 +473,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           )),
                       readOnly: _dataLoaded,
                       textInputAction: TextInputAction.done,
-                      focusNode: _secretFocusNode,
+                      focusNode: _secretFocus,
                       onChanged: (value) {
                         setState(() {
                           _validateSecret = false;

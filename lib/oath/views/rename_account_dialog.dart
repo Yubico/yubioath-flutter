@@ -117,8 +117,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   late String _issuer;
   late String _name;
 
-  final _issuerFocusNode = FocusNode();
-  final _nameFocusNode = FocusNode();
+  final _issuerFocus = FocusNode();
+  final _nameFocus = FocusNode();
 
   @override
   void initState() {
@@ -127,9 +127,16 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     _name = widget.name.trim();
   }
 
+  @override
+  void dispose() {
+    _issuerFocus.dispose();
+    _nameFocus.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
-    _issuerFocusNode.unfocus();
-    _nameFocusNode.unfocus();
+    _issuerFocus.unfocus();
+    _nameFocus.unfocus();
     final nav = Navigator.of(context);
     final renamed =
         await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
@@ -191,7 +198,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 prefixIcon: const Icon(Symbols.business),
               ),
               textInputAction: TextInputAction.next,
-              focusNode: _issuerFocusNode,
+              focusNode: _issuerFocus,
               onChanged: (value) {
                 setState(() {
                   _issuer = value.trim();
@@ -207,7 +214,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_account_name,
-                helperText: '', // Prevents dialog resizing when disabled
+                helperText: '',
+                // Prevents dialog resizing when disabled
                 errorText: !nameNotEmpty
                     ? l10n.l_account_name_required
                     : !isUnique
@@ -216,7 +224,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 prefixIcon: const Icon(Symbols.people_alt),
               ),
               textInputAction: TextInputAction.done,
-              focusNode: _nameFocusNode,
+              focusNode: _nameFocus,
               onChanged: (value) {
                 setState(() {
                   _name = value.trim();
