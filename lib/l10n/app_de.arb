@@ -11,7 +11,8 @@
             "s_": "Ein einzelnes Wort oder wenige Wörter. Sollte kurz genug sein, um auf einer Schaltfläche oder einer Überschrift angezeigt zu werden.",
             "l_": "Eine einzelne Zeile, kann umbgebrochen werden. Sollte nicht mehr als einen Satz umfassen und nicht mit einem Punkt enden.",
             "p_": "Ein oder mehrere ganze Sätze mit allen Satzzeichen.",
-            "q_": "Eine Frage, die mit einem Fragezeichen endet."
+            "q_": "Eine Frage, die mit einem Fragezeichen endet.",
+            "c_": null
         }
     },
 
@@ -886,79 +887,62 @@
     "s_allow_screenshots": "Bildschirmfotos erlauben",
 
     "@_nfc_oath_actions": {},
-    "s_nfc_oath_reset": null,
+    "c_nfc_oath_reset": null,
     "s_nfc_oath_reset_processing": null,
     "s_nfc_oath_reset_success": null,
     "s_nfc_oath_reset_failure": null,
 
-    "s_nfc_oath_unlock": null,
-    "s_nfc_oath_unlock_processing": null,
-    "s_nfc_oath_unlock_success": null,
-    "s_nfc_oath_unlock_failure": null,
-
-    "s_nfc_oath_set_password": null,
-    "s_nfc_oath_change_password": null,
+    "c_nfc_oath_set_password": null,
+    "c_nfc_oath_change_password": null,
     "s_nfc_oath_set_password_processing": null,
     "s_nfc_oath_change_password_processing": null,
-    "s_nfc_oath_set_password_success": null,
     "s_nfc_oath_change_password_success": null,
     "s_nfc_oath_set_password_failure": null,
     "s_nfc_oath_change_password_failure": null,
 
-    "s_nfc_oath_remove_password": null,
+    "c_nfc_oath_remove_password": null,
     "s_nfc_oath_remove_password_processing": null,
-    "s_nfc_oath_remove_password_success": null,
     "s_nfc_oath_remove_password_failure": null,
 
-    "s_nfc_oath_add_account": null,
+    "c_nfc_oath_add_account": null,
     "s_nfc_oath_add_account_processing": null,
-    "s_nfc_oath_add_account_success": null,
     "s_nfc_oath_add_account_failure": null,
 
-    "s_nfc_oath_rename_account": null,
+    "c_nfc_oath_rename_account": null,
     "s_nfc_oath_rename_account_processing": null,
-    "s_nfc_oath_rename_account_success": null,
     "s_nfc_oath_rename_account_failure": null,
 
-    "s_nfc_oath_delete_account": null,
+    "c_nfc_oath_delete_account": null,
     "s_nfc_oath_delete_account_processing": null,
-    "s_nfc_oath_delete_account_success": null,
     "s_nfc_oath_delete_account_failure": null,
 
-    "s_nfc_oath_calculate_code": null,
+    "c_nfc_oath_calculate_code": null,
     "s_nfc_oath_calculate_code_processing": null,
     "s_nfc_oath_calculate_code_success": null,
     "s_nfc_oath_calculate_code_failure": null,
 
-    "s_nfc_oath_add_multiple_accounts": null,
+    "c_nfc_oath_add_multiple_accounts": null,
     "s_nfc_oath_add_multiple_accounts_processing": null,
     "s_nfc_oath_add_multiple_accounts_success": null,
     "s_nfc_oath_add_multiple_accounts_failure": null,
 
     "@_nfc_fido_actions": {},
-    "s_nfc_fido_reset": null,
+    "c_nfc_fido_reset": null,
     "s_nfc_fido_reset_processing": null,
     "s_nfc_fido_reset_success": null,
     "s_nfc_fido_reset_failure": null,
 
-    "s_nfc_fido_unlock": null,
-    "s_nfc_fido_unlock_processing": null,
-    "s_nfc_fido_unlock_success": null,
-    "s_nfc_fido_unlock_failure": null,
-
-    "s_nfc_fido_set_pin": null,
+    "c_nfc_fido_set_pin": null,
     "s_nfc_fido_set_pin_processing": null,
-    "s_nfc_fido_set_pin_success": null,
     "s_nfc_fido_set_pin_failure": null,
 
-    "s_nfc_fido_change_pin": null,
+    "c_nfc_fido_change_pin": null,
     "s_nfc_fido_change_pin_processing": null,
     "s_nfc_fido_change_pin_success": null,
     "s_nfc_fido_change_pin_failure": null,
 
-    "s_nfc_fido_delete_passkey": null,
+    "c_nfc_fido_delete_passkey": null,
     "s_nfc_fido_delete_passkey_processing": null,
-    "s_nfc_fido_delete_passkey_success": null,
     "s_nfc_fido_delete_passkey_failure": null,
 
     "@_nfc_actions": {},
@@ -970,10 +954,15 @@
     },
 
     "s_nfc_read_key": null,
-    "s_nfc_read_key_failure": null,
+    "l_nfc_read_key_failure": null,
 
     "s_nfc_hold_key": null,
     "s_nfc_remove_key": null,
+
+    "c_nfc_unlock": null,
+    "s_nfc_unlock_processing": null,
+    "s_nfc_unlock_success": null,
+    "s_nfc_unlock_failure": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP-Code wurde erfolgreich von Ihrem YubiKey in die Zwischenablage kopiert.",

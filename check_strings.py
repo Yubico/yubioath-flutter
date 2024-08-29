@@ -68,7 +68,7 @@ def check_misc(k, v):
     errs = []
     if "..." in v:
         errs.append("'...' should be replaced with '\\u2026'")
-    if v[0].upper() != v[0]:
+    if v[0].upper() != v[0] and not k.startswith("c_"):
         errs.append("Starts with lowercase letter")
     return errs
 

@@ -46,7 +46,7 @@ class _DialogProvider extends Notifier<int> {
         // setup properties for ad-hoc action
         ref.read(nfcActivityWidgetNotifier.notifier).setDialogProperties(
               operationProcessing: l10n.s_nfc_read_key,
-              operationFailure: l10n.s_nfc_read_key_failure,
+              operationFailure: l10n.l_nfc_read_key_failure,
               showSuccess: false,
             );
       }

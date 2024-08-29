@@ -11,7 +11,8 @@
             "s_": "A single, or few words. Should be short enough to display on a button, or a header.",
             "l_": "A single line, can be wrapped. Should not be more than one sentence, and not end with a period.",
             "p_": "One or more full sentences, with proper punctuation.",
-            "q_": "A question, ending in question mark."
+            "q_": "A question, ending in question mark.",
+            "c_": "Composable, used in substitutions"
         }
     },
 
@@ -886,79 +887,62 @@
     "s_allow_screenshots": "Allow screenshots",
 
     "@_nfc_oath_actions": {},
-    "s_nfc_oath_reset": "reset Accounts",
+    "c_nfc_oath_reset": "reset Accounts",
     "s_nfc_oath_reset_processing": "Reset in progress",
     "s_nfc_oath_reset_success": "Accounts reset",
     "s_nfc_oath_reset_failure": "Failed to reset accounts",
 
-    "s_nfc_oath_unlock": "unlock",
-    "s_nfc_oath_unlock_processing": "Unlocking",
-    "s_nfc_oath_unlock_success": "Accounts unlocked",
-    "s_nfc_oath_unlock_failure": "Failed to unlock",
-
-    "s_nfc_oath_set_password": "set password",
-    "s_nfc_oath_change_password": "change password",
+    "c_nfc_oath_set_password": "set password",
+    "c_nfc_oath_change_password": "change password",
     "s_nfc_oath_set_password_processing": "Setting password",
     "s_nfc_oath_change_password_processing": "Changing password",
-    "s_nfc_oath_set_password_success": "Password set",
     "s_nfc_oath_change_password_success": "Password changed",
     "s_nfc_oath_set_password_failure": "Failed to set password",
     "s_nfc_oath_change_password_failure": "Failed to change password",
 
-    "s_nfc_oath_remove_password": "remove password",
+    "c_nfc_oath_remove_password": "remove password",
     "s_nfc_oath_remove_password_processing": "Removing password",
-    "s_nfc_oath_remove_password_success": "Password removed",
     "s_nfc_oath_remove_password_failure": "Failed to remove password",
 
-    "s_nfc_oath_add_account": "add account",
+    "c_nfc_oath_add_account": "add account",
     "s_nfc_oath_add_account_processing": "Adding account",
-    "s_nfc_oath_add_account_success": "Account added",
     "s_nfc_oath_add_account_failure": "Failed to add account",
 
-    "s_nfc_oath_rename_account": "rename account",
+    "c_nfc_oath_rename_account": "rename account",
     "s_nfc_oath_rename_account_processing": "Renaming account",
-    "s_nfc_oath_rename_account_success": "Account renamed",
     "s_nfc_oath_rename_account_failure": "Failed to rename account",
 
-    "s_nfc_oath_delete_account": "delete account",
+    "c_nfc_oath_delete_account": "delete account",
     "s_nfc_oath_delete_account_processing": "Deleting account",
-    "s_nfc_oath_delete_account_success": "Account deleted",
     "s_nfc_oath_delete_account_failure": "Failed to delete account",
 
-    "s_nfc_oath_calculate_code": "calculate code",
+    "c_nfc_oath_calculate_code": "calculate code",
     "s_nfc_oath_calculate_code_processing": "Calculating",
     "s_nfc_oath_calculate_code_success": "Code calculated",
     "s_nfc_oath_calculate_code_failure": "Failed to calculate code",
 
-    "s_nfc_oath_add_multiple_accounts": "add selected accounts",
+    "c_nfc_oath_add_multiple_accounts": "add selected accounts",
     "s_nfc_oath_add_multiple_accounts_processing": "Adding accounts",
     "s_nfc_oath_add_multiple_accounts_success": "Accounts added",
     "s_nfc_oath_add_multiple_accounts_failure": "Failed to add accounts",
 
     "@_nfc_fido_actions": {},
-    "s_nfc_fido_reset": "reset FIDO application",
+    "c_nfc_fido_reset": "reset FIDO application",
     "s_nfc_fido_reset_processing": "Resetting FIDO",
     "s_nfc_fido_reset_success": "FIDO reset",
     "s_nfc_fido_reset_failure": "FIDO reset failed",
 
-    "s_nfc_fido_unlock": "unlock",
-    "s_nfc_fido_unlock_processing": "Unlocking",
-    "s_nfc_fido_unlock_success": "unlocked",
-    "s_nfc_fido_unlock_failure": "Failed to unlock",
-
-    "s_nfc_fido_set_pin": "set PIN",
+    "c_nfc_fido_set_pin": "set PIN",
     "s_nfc_fido_set_pin_processing": "Setting PIN",
-    "s_nfc_fido_set_pin_success": "PIN set",
     "s_nfc_fido_set_pin_failure": "Failure setting PIN",
 
-    "s_nfc_fido_change_pin": "change PIN",
+    "c_nfc_fido_change_pin": "change PIN",
     "s_nfc_fido_change_pin_processing": "Changing PIN",
     "s_nfc_fido_change_pin_success": "PIN changed",
     "s_nfc_fido_change_pin_failure": "Failure changing PIN",
 
-    "s_nfc_fido_delete_passkey": "delete passkey",
+    "c_nfc_fido_delete_passkey": "delete passkey",
     "s_nfc_fido_delete_passkey_processing": "Deleting passkey",
-    "s_nfc_fido_delete_passkey_success": "Passkey deleted",
     "s_nfc_fido_delete_passkey_failure": "Failed to delete passkey",
 
     "@_nfc_actions": {},
@@ -970,10 +954,15 @@
     },
 
     "s_nfc_read_key": "Reading YubiKey",
-    "s_nfc_read_key_failure": "Failed to read YubiKey, try again",
+    "l_nfc_read_key_failure": "Failed to read YubiKey, try again",
 
     "s_nfc_hold_key": "Hold YubiKey",
     "s_nfc_remove_key": "You can remove YubiKey",
+
+    "c_nfc_unlock": "unlock",
+    "s_nfc_unlock_processing": "Unlocking",
+    "s_nfc_unlock_success": "Accounts unlocked",
+    "s_nfc_unlock_failure": "Failed to unlock",
 
     "@_ndef": {},
     "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",
