@@ -35,7 +35,7 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../tap_request_dialog.dart';
+import '../method_channel_notifier.dart';
 
 final _log = Logger('android.oath.state');
 

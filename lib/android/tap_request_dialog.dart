@@ -24,7 +24,7 @@ import '../app/state.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
-import 'views/nfc/nfc_progress_bar.dart';
+import 'views/nfc/nfc_content_widget.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -52,12 +52,9 @@ class _DialogProvider extends Notifier<int> {
 
       final properties = ref.read(nfcViewNotifier);
 
-      debugPrint('XXX now it is: $current');
       switch (current) {
         case NfcActivity.processingStarted:
           processingTimer?.cancel();
-
-          debugPrint('XXX explicit action: $explicitAction');
           final timeout = explicitAction ? 300 : 200;
 
           processingTimer = Timer(Duration(milliseconds: timeout), () {
@@ -65,7 +62,7 @@ class _DialogProvider extends Notifier<int> {
               // show the widget
               notifier.sendCommand(NfcEventCommand(
                   event: NfcShowViewEvent(
-                      child: _NfcActivityWidgetView(
+                      child: NfcContentWidget(
                 title: properties.operationProcessing,
                 subtitle: '',
                 inProgress: true,
@@ -74,7 +71,7 @@ class _DialogProvider extends Notifier<int> {
               // the processing view will only be shown if the timer is still active
               notifier.sendCommand(NfcEventCommand(
                   event: NfcUpdateViewEvent(
-                      child: _NfcActivityWidgetView(
+                      child: NfcContentWidget(
                 title: properties.operationProcessing,
                 subtitle: l10n.s_nfc_hold_key,
                 inProgress: true,
@@ -90,7 +87,7 @@ class _DialogProvider extends Notifier<int> {
                 event: NfcUpdateViewEvent(
                     child: NfcActivityClosingCountdownWidgetView(
               closeInSec: 5,
-              child: _NfcActivityWidgetView(
+              child: NfcContentWidget(
                 title: properties.operationSuccess,
                 subtitle: l10n.s_nfc_remove_key,
                 inProgress: false,
@@ -106,7 +103,7 @@ class _DialogProvider extends Notifier<int> {
           explicitAction = false; // next action might not be explicit
           notifier.sendCommand(NfcEventCommand(
               event: NfcUpdateViewEvent(
-                  child: _NfcActivityWidgetView(
+                  child: NfcContentWidget(
             title: properties.operationFailure,
             inProgress: false,
           ))));
@@ -127,7 +124,7 @@ class _DialogProvider extends Notifier<int> {
           explicitAction = true;
           notifier.sendCommand(NfcEventCommand(
               event: NfcShowViewEvent(
-                  child: _NfcActivityWidgetView(
+                  child: NfcContentWidget(
             title: l10n.s_nfc_tap_for(
                 properties.operationName ?? '[OPERATION NAME MISSING]'),
             subtitle: '',
@@ -173,37 +170,6 @@ class _DialogProvider extends Notifier<int> {
   }
 }
 
-class _NfcActivityWidgetView extends StatelessWidget {
-  final bool inProgress;
-  final String? title;
-  final String? subtitle;
-
-  const _NfcActivityWidgetView(
-      {required this.title, this.subtitle, this.inProgress = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        children: [
-          Text(title ?? 'Missing title',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
-          if (subtitle != null)
-            Text(subtitle!,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 32),
-          NfcIconProgressBar(inProgress),
-          const SizedBox(height: 24)
-        ],
-      ),
-    );
-  }
-}
-
 class MethodChannelHelper {
   final ProviderRef _ref;
   final MethodChannel _channel;
@@ -227,30 +193,6 @@ class MethodChannelHelper {
 
     final result = await _channel.invokeMethod(method, arguments);
     await _ref.read(androidDialogProvider.notifier).waitForDialogClosed();
-    return result;
-  }
-}
-
-class MethodChannelNotifier extends Notifier<void> {
-  final MethodChannel _channel;
-
-  MethodChannelNotifier(this._channel);
-
-  @override
-  void build() {}
-
-  Future<dynamic> invoke(String name,
-      [Map<String, dynamic> params = const {}]) async {
-    final notifier = ref.read(nfcViewNotifier.notifier);
-    notifier.setDialogProperties(
-        operationName: params['operationName'],
-        operationProcessing: params['operationProcessing'],
-        operationSuccess: params['operationSuccess'],
-        operationFailure: params['operationFailure'],
-        showSuccess: params['showSuccess']);
-
-    final result = await _channel.invokeMethod(name, params['callArgs']);
-    await ref.read(androidDialogProvider.notifier).waitForDialogClosed();
     return result;
   }
 }
