@@ -588,6 +588,7 @@
     "l_delete_certificate_or_key_desc": "Remove the certificate or key from your YubiKey",
     "l_move_key": "Move key",
     "l_move_key_desc": "Move a key from one PIV slot into another",
+    "l_change_defaults": "Change default access codes",
     "s_issuer": "Issuer",
     "s_serial": "Serial",
     "s_certificate_fingerprint": "Fingerprint",

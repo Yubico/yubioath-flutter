@@ -312,12 +312,22 @@ class PivActions extends ConsumerWidget {
 List<ActionItem> buildSlotActions(
     PivState pivState, PivSlot slot, bool fipsUnready, AppLocalizations l10n) {
   if (fipsUnready) {
-    // TODO: Decide on final look and move strings to .arb file.
     return [
       ActionItem(
-          icon: const Icon(Symbols.add),
-          title: 'Provision slot',
-          subtitle: 'Change from default PIN/PUK/Management key first'),
+        key: keys.generateAction,
+        feature: features.slotsGenerate,
+        icon: const Icon(Symbols.add),
+        actionStyle: ActionStyle.primary,
+        title: l10n.s_generate_key,
+        subtitle: l10n.l_change_defaults,
+      ),
+      ActionItem(
+        key: keys.importAction,
+        feature: features.slotsImport,
+        icon: const Icon(Symbols.file_download),
+        title: l10n.l_import_file,
+        subtitle: l10n.l_change_defaults,
+      ),
     ];
   }
   final hasCert = slot.certInfo != null;

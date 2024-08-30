@@ -502,7 +502,7 @@ class SlotNode(RpcNode):
 
         self._refresh()
 
-        return dict(
+        response = dict(
             metadata=_metadata_dict(metadata),
             public_key=(
                 private_key.public_key()
@@ -519,6 +519,7 @@ class SlotNode(RpcNode):
                 else None
             ),
         )
+        return RpcResponse(response, ["device_info"])
 
     @action
     def generate(self, params, event, signal):
@@ -570,4 +571,5 @@ class SlotNode(RpcNode):
 
         self._refresh()
 
-        return dict(public_key=public_key_pem, result=result)
+        response = dict(public_key=public_key_pem, result=result)
+        return RpcResponse(response, ["device_info"])

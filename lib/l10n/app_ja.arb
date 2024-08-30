@@ -588,6 +588,7 @@
     "l_delete_certificate_or_key_desc": "YubiKey から証明書または鍵を削除する",
     "l_move_key": "キーを移動",
     "l_move_key_desc": "あるPIVスロットから別のスロットにキーを移動する",
+    "l_change_defaults": null,
     "s_issuer": "発行者",
     "s_serial": "シリアル",
     "s_certificate_fingerprint": "フィンガープリント",

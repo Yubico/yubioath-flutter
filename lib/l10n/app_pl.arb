@@ -588,6 +588,7 @@
     "l_delete_certificate_or_key_desc": null,
     "l_move_key": null,
     "l_move_key_desc": null,
+    "l_change_defaults": null,
     "s_issuer": "Wydawca",
     "s_serial": "Nr. seryjny",
     "s_certificate_fingerprint": "Odcisk palca",
