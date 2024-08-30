@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'nfc_progress_bar.dart';
+import '../../../app/state.dart';
 
-class NfcContentWidget extends StatelessWidget {
-  final bool inProgress;
+class NfcContentWidget extends ConsumerWidget {
   final String? title;
   final String? subtitle;
+  final Widget icon;
 
   const NfcContentWidget(
-      {super.key, required this.title, this.subtitle, this.inProgress = false});
+      {super.key, required this.title, this.subtitle, required this.icon});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = ref.watch(l10nProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
-          Text(title ?? 'Missing title',
+          Text(title ?? l10n.s_nfc_ready_to_scan,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          if (subtitle != null)
-            Text(subtitle!,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium),
+          Text(subtitle ?? '',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 32),
-          NfcIconProgressBar(inProgress),
+          icon,
           const SizedBox(height: 24)
         ],
       ),

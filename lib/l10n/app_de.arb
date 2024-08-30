@@ -961,6 +961,9 @@
     "s_nfc_hold_key": null,
     "s_nfc_remove_key": null,
 
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_scan_yubikey": null,
+
     "c_nfc_unlock": null,
     "s_nfc_unlock_processing": null,
     "s_nfc_unlock_success": null,

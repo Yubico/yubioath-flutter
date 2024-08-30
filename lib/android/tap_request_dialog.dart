@@ -19,12 +19,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/state.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
 import 'views/nfc/nfc_content_widget.dart';
+import 'views/nfc/nfc_progress_bar.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -61,16 +63,15 @@ class _DialogProvider extends Notifier<int> {
             if (!explicitAction) {
               // show the widget
               notifier.sendCommand(showNfcView(NfcContentWidget(
-                title: properties.operationProcessing,
-                subtitle: '',
-                inProgress: true,
+                title: properties.operationName,
+                icon: const NfcIconProgressBar(true),
               )));
             } else {
               // the processing view will only be shown if the timer is still active
               notifier.sendCommand(updateNfcView(NfcContentWidget(
                 title: properties.operationProcessing,
                 subtitle: l10n.s_nfc_hold_key,
-                inProgress: true,
+                icon: const NfcIconProgressBar(true),
               )));
             }
           });
@@ -85,7 +86,10 @@ class _DialogProvider extends Notifier<int> {
               child: NfcContentWidget(
                 title: properties.operationSuccess,
                 subtitle: l10n.s_nfc_remove_key,
-                inProgress: false,
+                icon: const Icon(
+                  Symbols.check,
+                  size: 64,
+                ),
               ),
             )));
           } else {
@@ -97,7 +101,7 @@ class _DialogProvider extends Notifier<int> {
           explicitAction = false; // next action might not be explicit
           notifier.sendCommand(updateNfcView(NfcContentWidget(
             title: properties.operationFailure,
-            inProgress: false,
+            icon: const NfcIconProgressBar(false),
           )));
           break;
         case NfcActivity.notActive:
@@ -115,9 +119,9 @@ class _DialogProvider extends Notifier<int> {
         case 'show':
           explicitAction = true;
           notifier.sendCommand(showNfcView(NfcContentWidget(
-            title: properties.operationName ?? '[OPERATION NAME MISSING]',
-            subtitle: 'Scan your YubiKey',
-            inProgress: false,
+            title: properties.operationName,
+            subtitle: l10n.s_nfc_scan_yubikey,
+            icon: const NfcIconProgressBar(false),
           )));
           break;
 
