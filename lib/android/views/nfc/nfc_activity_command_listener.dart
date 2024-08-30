@@ -17,8 +17,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/models.dart';
 import '../../tap_request_dialog.dart';
+import 'models.dart';
 import 'nfc_activity_overlay.dart';
 
 final nfcActivityCommandListener = Provider<_NfcActivityCommandListener>(
@@ -26,28 +26,27 @@ final nfcActivityCommandListener = Provider<_NfcActivityCommandListener>(
 
 class _NfcActivityCommandListener {
   final ProviderRef _ref;
-  ProviderSubscription<NfcActivityWidgetAction>? listener;
+  ProviderSubscription<NfcEvent>? listener;
 
   _NfcActivityCommandListener(this._ref);
 
   void startListener(BuildContext context) {
-    debugPrint('XXX Started listener');
     listener?.close();
-    listener = _ref.listen(nfcActivityCommandNotifier.select((c) => c.action),
+    listener = _ref.listen(nfcEventNotifier.select((c) => c.event),
         (previous, action) {
       debugPrint(
           'XXX Change in command for Overlay: $previous -> $action in context: $context');
       switch (action) {
-        case (NfcActivityWidgetActionShowWidget a):
+        case (NfcShowViewEvent a):
           _show(context, a.child);
           break;
-        case (NfcActivityWidgetActionSetWidgetData a):
-          _ref.read(nfcActivityWidgetNotifier.notifier).update(a.child);
+        case (NfcUpdateViewEvent a):
+          _ref.read(nfcViewNotifier.notifier).update(a.child);
           break;
-        case (NfcActivityWidgetActionHideWidget _):
+        case (NfcHideViewEvent _):
           _hide(context);
           break;
-        case (NfcActivityWidgetActionCancelWidget _):
+        case (NfcCancelEvent _):
           _ref.read(androidDialogProvider.notifier).cancelDialog();
           _hide(context);
           break;
@@ -56,17 +55,15 @@ class _NfcActivityCommandListener {
   }
 
   void _show(BuildContext context, Widget child) async {
-    final widgetNotifier = _ref.read(nfcActivityWidgetNotifier.notifier);
+    final widgetNotifier = _ref.read(nfcViewNotifier.notifier);
     widgetNotifier.update(child);
-    if (!_ref.read(nfcActivityWidgetNotifier.select((s) => s.isShowing))) {
+    if (!_ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
       widgetNotifier.setShowing(true);
       final result = await showModalBottomSheet(
           context: context,
           builder: (BuildContext context) {
             return const NfcBottomSheet();
           });
-
-      debugPrint('XXX result is: $result');
       if (result == null) {
         // the modal sheet was cancelled by Back button, close button or dismiss
         _ref.read(androidDialogProvider.notifier).cancelDialog();
@@ -76,9 +73,9 @@ class _NfcActivityCommandListener {
   }
 
   void _hide(BuildContext context) {
-    if (_ref.read(nfcActivityWidgetNotifier.select((s) => s.isShowing))) {
-      Navigator.of(context).pop('AFTER OP');
-      _ref.read(nfcActivityWidgetNotifier.notifier).setShowing(false);
+    if (_ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
+      Navigator.of(context).pop('HIDDEN');
+      _ref.read(nfcViewNotifier.notifier).setShowing(false);
     }
   }
 }

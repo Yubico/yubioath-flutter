@@ -21,10 +21,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../app/models.dart';
 import '../app/state.dart';
 import '../widgets/pulsing.dart';
 import 'state.dart';
+import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
@@ -40,18 +40,18 @@ class _DialogProvider extends Notifier<int> {
   int build() {
     final l10n = ref.read(l10nProvider);
     ref.listen(androidNfcActivityProvider, (previous, current) {
-      final notifier = ref.read(nfcActivityCommandNotifier.notifier);
+      final notifier = ref.read(nfcEventNotifier.notifier);
 
       if (!explicitAction) {
         // setup properties for ad-hoc action
-        ref.read(nfcActivityWidgetNotifier.notifier).setDialogProperties(
+        ref.read(nfcViewNotifier.notifier).setDialogProperties(
               operationProcessing: l10n.s_nfc_read_key,
               operationFailure: l10n.l_nfc_read_key_failure,
               showSuccess: false,
             );
       }
 
-      final properties = ref.read(nfcActivityWidgetNotifier);
+      final properties = ref.read(nfcViewNotifier);
 
       debugPrint('XXX now it is: $current');
       switch (current) {
@@ -64,8 +64,8 @@ class _DialogProvider extends Notifier<int> {
           processingTimer = Timer(Duration(milliseconds: timeout), () {
             if (!explicitAction) {
               // show the widget
-              notifier.update(NfcActivityWidgetCommand(
-                  action: NfcActivityWidgetActionShowWidget(
+              notifier.sendCommand(NfcEventCommand(
+                  event: NfcShowViewEvent(
                       child: _NfcActivityWidgetView(
                 title: properties.operationProcessing,
                 subtitle: '',
@@ -73,8 +73,8 @@ class _DialogProvider extends Notifier<int> {
               ))));
             } else {
               // the processing view will only be shown if the timer is still active
-              notifier.update(NfcActivityWidgetCommand(
-                  action: NfcActivityWidgetActionSetWidgetData(
+              notifier.sendCommand(NfcEventCommand(
+                  event: NfcUpdateViewEvent(
                       child: _NfcActivityWidgetView(
                 title: properties.operationProcessing,
                 subtitle: l10n.s_nfc_hold_key,
@@ -87,8 +87,8 @@ class _DialogProvider extends Notifier<int> {
           explicitAction = false; // next action might not be explicit
           processingTimer?.cancel();
           if (properties.showSuccess ?? false) {
-            notifier.update(NfcActivityWidgetCommand(
-                action: NfcActivityWidgetActionSetWidgetData(
+            notifier.sendCommand(NfcEventCommand(
+                event: NfcUpdateViewEvent(
                     child: NfcActivityClosingCountdownWidgetView(
               closeInSec: 5,
               child: _NfcActivityWidgetView(
@@ -99,14 +99,14 @@ class _DialogProvider extends Notifier<int> {
             ))));
           } else {
             // directly hide
-            notifier.update(NfcActivityWidgetCommand(
-                action: const NfcActivityWidgetActionHideWidget(timeoutMs: 0)));
+            notifier.sendCommand(
+                NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
           }
           break;
         case NfcActivity.processingInterrupted:
           explicitAction = false; // next action might not be explicit
-          notifier.update(NfcActivityWidgetCommand(
-              action: NfcActivityWidgetActionSetWidgetData(
+          notifier.sendCommand(NfcEventCommand(
+              event: NfcUpdateViewEvent(
                   child: _NfcActivityWidgetView(
             title: properties.operationFailure,
             inProgress: false,
@@ -121,13 +121,13 @@ class _DialogProvider extends Notifier<int> {
     });
 
     _channel.setMethodCallHandler((call) async {
-      final notifier = ref.read(nfcActivityCommandNotifier.notifier);
-      final properties = ref.read(nfcActivityWidgetNotifier);
+      final notifier = ref.read(nfcEventNotifier.notifier);
+      final properties = ref.read(nfcViewNotifier);
       switch (call.method) {
         case 'show':
           explicitAction = true;
-          notifier.update(NfcActivityWidgetCommand(
-              action: NfcActivityWidgetActionShowWidget(
+          notifier.sendCommand(NfcEventCommand(
+              event: NfcShowViewEvent(
                   child: _NfcActivityWidgetView(
             title: l10n.s_nfc_tap_for(
                 properties.operationName ?? '[OPERATION NAME MISSING]'),
@@ -137,8 +137,8 @@ class _DialogProvider extends Notifier<int> {
           break;
 
         case 'close':
-          notifier.update(NfcActivityWidgetCommand(
-              action: const NfcActivityWidgetActionHideWidget(timeoutMs: 0)));
+          notifier.sendCommand(
+              NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
           break;
 
         default:
@@ -163,7 +163,7 @@ class _DialogProvider extends Notifier<int> {
     Timer.periodic(
       const Duration(milliseconds: 200),
       (timer) {
-        if (!ref.read(nfcActivityWidgetNotifier.select((s) => s.isShowing))) {
+        if (!ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
           timer.cancel();
           completer.complete();
         }
@@ -220,7 +220,7 @@ class MethodChannelHelper {
       String? operationFailure,
       bool? showSuccess,
       Map<String, dynamic> arguments = const {}}) async {
-    final notifier = _ref.read(nfcActivityWidgetNotifier.notifier);
+    final notifier = _ref.read(nfcViewNotifier.notifier);
     notifier.setDialogProperties(
         operationName: operationName,
         operationProcessing: operationProcessing,
@@ -244,7 +244,7 @@ class MethodChannelNotifier extends Notifier<void> {
 
   Future<dynamic> invoke(String name,
       [Map<String, dynamic> params = const {}]) async {
-    final notifier = ref.read(nfcActivityWidgetNotifier.notifier);
+    final notifier = ref.read(nfcViewNotifier.notifier);
     notifier.setDialogProperties(
         operationName: params['operationName'],
         operationProcessing: params['operationProcessing'],

@@ -4,28 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../app/models.dart';
 import '../../state.dart';
+import 'models.dart';
 
-final nfcActivityCommandNotifier = NotifierProvider<
-    _NfcActivityWidgetCommandNotifier,
-    NfcActivityWidgetCommand>(_NfcActivityWidgetCommandNotifier.new);
+final nfcEventNotifier =
+    NotifierProvider<_NfcEventCommandNotifier, NfcEventCommand>(
+        _NfcEventCommandNotifier.new);
 
-class _NfcActivityWidgetCommandNotifier
-    extends Notifier<NfcActivityWidgetCommand> {
+class _NfcEventCommandNotifier extends Notifier<NfcEventCommand> {
   @override
-  NfcActivityWidgetCommand build() {
-    return NfcActivityWidgetCommand(action: const NfcActivityWidgetAction());
+  NfcEventCommand build() {
+    return NfcEventCommand(event: const NfcEvent());
   }
 
-  void update(NfcActivityWidgetCommand command) {
+  void sendCommand(NfcEventCommand command) {
     state = command;
   }
 }
 
-final nfcActivityWidgetNotifier =
-    NotifierProvider<_NfcActivityWidgetNotifier, NfcActivityWidgetState>(
-        _NfcActivityWidgetNotifier.new);
+final nfcViewNotifier =
+    NotifierProvider<_NfcViewNotifier, NfcView>(_NfcViewNotifier.new);
 
 class NfcActivityClosingCountdownWidgetView extends ConsumerStatefulWidget {
   final int closeInSec;
@@ -100,16 +98,15 @@ class _NfcActivityClosingCountdownWidgetViewState
 
   void hideNow() {
     debugPrint('XXX closing because have to!');
-    ref.read(nfcActivityCommandNotifier.notifier).update(
-        NfcActivityWidgetCommand(
-            action: const NfcActivityWidgetActionHideWidget(timeoutMs: 0)));
+    ref.read(nfcEventNotifier.notifier).sendCommand(
+        NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
   }
 }
 
-class _NfcActivityWidgetNotifier extends Notifier<NfcActivityWidgetState> {
+class _NfcViewNotifier extends Notifier<NfcView> {
   @override
-  NfcActivityWidgetState build() {
-    return NfcActivityWidgetState(isShowing: false, child: const SizedBox());
+  NfcView build() {
+    return NfcView(isShowing: false, child: const SizedBox());
   }
 
   void update(Widget child) {
@@ -140,9 +137,9 @@ class NfcBottomSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widget = ref.watch(nfcActivityWidgetNotifier.select((s) => s.child));
-    final showCloseButton = ref.watch(
-        nfcActivityWidgetNotifier.select((s) => s.showCloseButton ?? false));
+    final widget = ref.watch(nfcViewNotifier.select((s) => s.child));
+    final showCloseButton =
+        ref.watch(nfcViewNotifier.select((s) => s.showCloseButton ?? false));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
