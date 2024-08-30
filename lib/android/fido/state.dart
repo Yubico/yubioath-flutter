@@ -384,8 +384,6 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
           'rpId': credential.rpId,
           'credentialId': credential.credentialId
         },
-        'operationName': l10n.c_nfc_fido_delete_passkey,
-        'operationProcessing': l10n.s_nfc_fido_delete_passkey_processing,
         'operationSuccess': l10n.s_passkey_deleted,
         'operationFailure': l10n.s_nfc_fido_delete_passkey_failure,
         'showSuccess': true
@@ -394,8 +392,6 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> cancelReset() async => invoke('cancelReset');
 
   Future<dynamic> reset() async => invoke('reset', {
-        'operationName': l10n.c_nfc_fido_reset,
-        'operationProcessing': l10n.s_nfc_fido_reset_processing,
         'operationSuccess': l10n.s_nfc_fido_reset_success,
         'operationFailure': l10n.s_nfc_fido_reset_failure,
         'showSuccess': true
@@ -404,12 +400,6 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> setPin(String newPin, {String? oldPin}) async =>
       invoke('setPin', {
         'callArgs': {'pin': oldPin, 'newPin': newPin},
-        'operationName': oldPin != null
-            ? l10n.c_nfc_fido_change_pin
-            : l10n.c_nfc_fido_set_pin,
-        'operationProcessing': oldPin != null
-            ? l10n.s_nfc_fido_change_pin_processing
-            : l10n.s_nfc_fido_set_pin_processing,
         'operationSuccess': oldPin != null
             ? l10n.s_nfc_fido_change_pin_success
             : l10n.s_pin_set,
@@ -421,8 +411,6 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
 
   Future<dynamic> unlock(String pin) async => invoke('unlock', {
         'callArgs': {'pin': pin},
-        'operationName': l10n.s_unlock,
-        'operationProcessing': l10n.s_nfc_unlock_processing,
         'operationSuccess': l10n.s_nfc_unlock_success,
         'operationFailure': l10n.s_nfc_unlock_failure,
         'showSuccess': true

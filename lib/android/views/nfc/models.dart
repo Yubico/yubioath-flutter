@@ -52,8 +52,6 @@ class NfcView with _$NfcView {
       required Widget child,
       bool? showCloseButton,
       bool? showSuccess,
-      String? operationName,
-      String? operationProcessing,
       String? operationSuccess,
       String? operationFailure}) = _NfcView;
 }

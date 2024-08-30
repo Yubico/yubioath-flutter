@@ -32,8 +32,6 @@ class MethodChannelNotifier extends Notifier<void> {
       [Map<String, dynamic> params = const {}]) async {
     final notifier = ref.read(nfcViewNotifier.notifier);
     notifier.setDialogProperties(
-        operationName: params['operationName'],
-        operationProcessing: params['operationProcessing'],
         operationSuccess: params['operationSuccess'],
         operationFailure: params['operationFailure'],
         showSuccess: params['showSuccess']);

@@ -9,7 +9,7 @@ class NfcContentWidget extends ConsumerWidget {
   final Widget icon;
 
   const NfcContentWidget(
-      {super.key, required this.title, this.subtitle, required this.icon});
+      {super.key, this.title, this.subtitle, required this.icon});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

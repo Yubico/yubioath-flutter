@@ -20,8 +20,6 @@ mixin _$NfcView {
   Widget get child => throw _privateConstructorUsedError;
   bool? get showCloseButton => throw _privateConstructorUsedError;
   bool? get showSuccess => throw _privateConstructorUsedError;
-  String? get operationName => throw _privateConstructorUsedError;
-  String? get operationProcessing => throw _privateConstructorUsedError;
   String? get operationSuccess => throw _privateConstructorUsedError;
   String? get operationFailure => throw _privateConstructorUsedError;
 
@@ -41,8 +39,6 @@ abstract class $NfcViewCopyWith<$Res> {
       Widget child,
       bool? showCloseButton,
       bool? showSuccess,
-      String? operationName,
-      String? operationProcessing,
       String? operationSuccess,
       String? operationFailure});
 }
@@ -66,8 +62,6 @@ class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
     Object? child = null,
     Object? showCloseButton = freezed,
     Object? showSuccess = freezed,
-    Object? operationName = freezed,
-    Object? operationProcessing = freezed,
     Object? operationSuccess = freezed,
     Object? operationFailure = freezed,
   }) {
@@ -88,14 +82,6 @@ class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
           ? _value.showSuccess
           : showSuccess // ignore: cast_nullable_to_non_nullable
               as bool?,
-      operationName: freezed == operationName
-          ? _value.operationName
-          : operationName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      operationProcessing: freezed == operationProcessing
-          ? _value.operationProcessing
-          : operationProcessing // ignore: cast_nullable_to_non_nullable
-              as String?,
       operationSuccess: freezed == operationSuccess
           ? _value.operationSuccess
           : operationSuccess // ignore: cast_nullable_to_non_nullable
@@ -120,8 +106,6 @@ abstract class _$$NfcViewImplCopyWith<$Res> implements $NfcViewCopyWith<$Res> {
       Widget child,
       bool? showCloseButton,
       bool? showSuccess,
-      String? operationName,
-      String? operationProcessing,
       String? operationSuccess,
       String? operationFailure});
 }
@@ -143,8 +127,6 @@ class __$$NfcViewImplCopyWithImpl<$Res>
     Object? child = null,
     Object? showCloseButton = freezed,
     Object? showSuccess = freezed,
-    Object? operationName = freezed,
-    Object? operationProcessing = freezed,
     Object? operationSuccess = freezed,
     Object? operationFailure = freezed,
   }) {
@@ -165,14 +147,6 @@ class __$$NfcViewImplCopyWithImpl<$Res>
           ? _value.showSuccess
           : showSuccess // ignore: cast_nullable_to_non_nullable
               as bool?,
-      operationName: freezed == operationName
-          ? _value.operationName
-          : operationName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      operationProcessing: freezed == operationProcessing
-          ? _value.operationProcessing
-          : operationProcessing // ignore: cast_nullable_to_non_nullable
-              as String?,
       operationSuccess: freezed == operationSuccess
           ? _value.operationSuccess
           : operationSuccess // ignore: cast_nullable_to_non_nullable
@@ -193,8 +167,6 @@ class _$NfcViewImpl implements _NfcView {
       required this.child,
       this.showCloseButton,
       this.showSuccess,
-      this.operationName,
-      this.operationProcessing,
       this.operationSuccess,
       this.operationFailure});
 
@@ -207,17 +179,13 @@ class _$NfcViewImpl implements _NfcView {
   @override
   final bool? showSuccess;
   @override
-  final String? operationName;
-  @override
-  final String? operationProcessing;
-  @override
   final String? operationSuccess;
   @override
   final String? operationFailure;
 
   @override
   String toString() {
-    return 'NfcView(isShowing: $isShowing, child: $child, showCloseButton: $showCloseButton, showSuccess: $showSuccess, operationName: $operationName, operationProcessing: $operationProcessing, operationSuccess: $operationSuccess, operationFailure: $operationFailure)';
+    return 'NfcView(isShowing: $isShowing, child: $child, showCloseButton: $showCloseButton, showSuccess: $showSuccess, operationSuccess: $operationSuccess, operationFailure: $operationFailure)';
   }
 
   @override
@@ -232,10 +200,6 @@ class _$NfcViewImpl implements _NfcView {
                 other.showCloseButton == showCloseButton) &&
             (identical(other.showSuccess, showSuccess) ||
                 other.showSuccess == showSuccess) &&
-            (identical(other.operationName, operationName) ||
-                other.operationName == operationName) &&
-            (identical(other.operationProcessing, operationProcessing) ||
-                other.operationProcessing == operationProcessing) &&
             (identical(other.operationSuccess, operationSuccess) ||
                 other.operationSuccess == operationSuccess) &&
             (identical(other.operationFailure, operationFailure) ||
@@ -243,16 +207,8 @@ class _$NfcViewImpl implements _NfcView {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      isShowing,
-      child,
-      showCloseButton,
-      showSuccess,
-      operationName,
-      operationProcessing,
-      operationSuccess,
-      operationFailure);
+  int get hashCode => Object.hash(runtimeType, isShowing, child,
+      showCloseButton, showSuccess, operationSuccess, operationFailure);
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.
@@ -269,8 +225,6 @@ abstract class _NfcView implements NfcView {
       required final Widget child,
       final bool? showCloseButton,
       final bool? showSuccess,
-      final String? operationName,
-      final String? operationProcessing,
       final String? operationSuccess,
       final String? operationFailure}) = _$NfcViewImpl;
 
@@ -282,10 +236,6 @@ abstract class _NfcView implements NfcView {
   bool? get showCloseButton;
   @override
   bool? get showSuccess;
-  @override
-  String? get operationName;
-  @override
-  String? get operationProcessing;
   @override
   String? get operationSuccess;
   @override

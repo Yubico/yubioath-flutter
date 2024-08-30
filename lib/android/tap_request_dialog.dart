@@ -19,7 +19,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/state.dart';
 import 'state.dart';
@@ -27,6 +26,7 @@ import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
 import 'views/nfc/nfc_content_widget.dart';
 import 'views/nfc/nfc_progress_bar.dart';
+import 'views/nfc/nfc_success_icon.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -46,7 +46,6 @@ class _DialogProvider extends Notifier<int> {
       if (!explicitAction) {
         // setup properties for ad-hoc action
         ref.read(nfcViewNotifier.notifier).setDialogProperties(
-              operationProcessing: l10n.s_nfc_read_key,
               operationFailure: l10n.l_nfc_read_key_failure,
               showSuccess: false,
             );
@@ -63,14 +62,13 @@ class _DialogProvider extends Notifier<int> {
             if (!explicitAction) {
               // show the widget
               notifier.sendCommand(showNfcView(NfcContentWidget(
-                title: properties.operationName,
+                title: l10n.s_nfc_accessing_yubikey,
                 icon: const NfcIconProgressBar(true),
               )));
             } else {
               // the processing view will only be shown if the timer is still active
               notifier.sendCommand(updateNfcView(NfcContentWidget(
-                title: properties.operationProcessing,
-                subtitle: l10n.s_nfc_hold_key,
+                title: l10n.s_nfc_accessing_yubikey,
                 icon: const NfcIconProgressBar(true),
               )));
             }
@@ -86,10 +84,7 @@ class _DialogProvider extends Notifier<int> {
               child: NfcContentWidget(
                 title: properties.operationSuccess,
                 subtitle: l10n.s_nfc_remove_key,
-                icon: const Icon(
-                  Symbols.check,
-                  size: 64,
-                ),
+                icon: const NfcIconSuccess(),
               ),
             )));
           } else {
@@ -114,12 +109,10 @@ class _DialogProvider extends Notifier<int> {
 
     _channel.setMethodCallHandler((call) async {
       final notifier = ref.read(nfcEventCommandNotifier.notifier);
-      final properties = ref.read(nfcViewNotifier);
       switch (call.method) {
         case 'show':
           explicitAction = true;
           notifier.sendCommand(showNfcView(NfcContentWidget(
-            title: properties.operationName,
             subtitle: l10n.s_nfc_scan_yubikey,
             icon: const NfcIconProgressBar(false),
           )));
@@ -169,16 +162,12 @@ class MethodChannelHelper {
   const MethodChannelHelper(this._ref, this._channel);
 
   Future<dynamic> invoke(String method,
-      {String? operationName,
-      String? operationSuccess,
-      String? operationProcessing,
+      {String? operationSuccess,
       String? operationFailure,
       bool? showSuccess,
       Map<String, dynamic> arguments = const {}}) async {
     final notifier = _ref.read(nfcViewNotifier.notifier);
     notifier.setDialogProperties(
-        operationName: operationName,
-        operationProcessing: operationProcessing,
         operationSuccess: operationSuccess,
         operationFailure: operationFailure,
         showSuccess: showSuccess);
