@@ -40,21 +40,24 @@ class _DialogProvider extends Notifier<int> {
   @override
   int build() {
     final l10n = ref.read(l10nProvider);
+    final viewNotifier = ref.read(nfcViewNotifier.notifier);
+
     ref.listen(androidNfcActivityProvider, (previous, current) {
       final notifier = ref.read(nfcEventCommandNotifier.notifier);
 
       if (!explicitAction) {
         // setup properties for ad-hoc action
-        ref.read(nfcViewNotifier.notifier).setDialogProperties(
-              operationFailure: l10n.l_nfc_read_key_failure,
-              showSuccess: false,
-            );
+        viewNotifier.setDialogProperties(
+            operationFailure: l10n.l_nfc_read_key_failure,
+            showSuccess: false,
+            showCloseButton: false);
       }
 
       final properties = ref.read(nfcViewNotifier);
 
       switch (current) {
         case NfcActivity.processingStarted:
+          viewNotifier.setDialogProperties(showCloseButton: false);
           processingTimer?.cancel();
           final timeout = explicitAction ? 300 : 200;
 
@@ -112,6 +115,10 @@ class _DialogProvider extends Notifier<int> {
       switch (call.method) {
         case 'show':
           explicitAction = true;
+
+          // we want to show the close button
+          viewNotifier.setDialogProperties(showCloseButton: true);
+
           notifier.sendCommand(showNfcView(NfcContentWidget(
             subtitle: l10n.s_nfc_scan_yubikey,
             icon: const NfcIconProgressBar(false),
@@ -165,12 +172,14 @@ class MethodChannelHelper {
       {String? operationSuccess,
       String? operationFailure,
       bool? showSuccess,
+      bool? showCloseButton,
       Map<String, dynamic> arguments = const {}}) async {
     final notifier = _ref.read(nfcViewNotifier.notifier);
     notifier.setDialogProperties(
         operationSuccess: operationSuccess,
         operationFailure: operationFailure,
-        showSuccess: showSuccess);
+        showSuccess: showSuccess,
+        showCloseButton: showCloseButton);
 
     final result = await _channel.invokeMethod(method, arguments);
     await _ref.read(androidDialogProvider.notifier).waitForDialogClosed();
