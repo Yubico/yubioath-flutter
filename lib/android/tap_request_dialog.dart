@@ -19,13 +19,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/state.dart';
-import '../widgets/pulsing.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
+import 'views/nfc/nfc_progress_bar.dart';
 
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
@@ -197,9 +196,7 @@ class _NfcActivityWidgetView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 32),
-          inProgress
-              ? const Pulsing(child: Icon(Symbols.contactless, size: 64))
-              : const Icon(Symbols.contactless, size: 64),
+          NfcIconProgressBar(inProgress),
           const SizedBox(height: 24)
         ],
       ),
