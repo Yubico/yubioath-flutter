@@ -338,7 +338,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> unlock(String password, {bool remember = false}) async =>
       invoke('unlock', {
         'callArgs': {'password': password, 'remember': remember},
-        'operationName': l10n.c_nfc_unlock,
+        'operationName': l10n.s_unlock,
         'operationProcessing': l10n.s_nfc_unlock_processing,
         'operationSuccess': l10n.s_nfc_unlock_success,
         'operationFailure': l10n.s_nfc_unlock_failure,
@@ -347,9 +347,8 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> setPassword(String? current, String password) async =>
       invoke('setPassword', {
         'callArgs': {'current': current, 'password': password},
-        'operationName': current != null
-            ? l10n.c_nfc_oath_change_password
-            : l10n.c_nfc_oath_set_password,
+        'operationName':
+            current != null ? l10n.s_change_password : l10n.s_set_password,
         'operationProcessing': current != null
             ? l10n.s_nfc_oath_change_password_processing
             : l10n.s_nfc_oath_set_password_processing,
@@ -364,7 +363,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> unsetPassword(String current) async =>
       invoke('unsetPassword', {
         'callArgs': {'current': current},
-        'operationName': l10n.c_nfc_oath_remove_password,
+        'operationName': l10n.s_remove_password,
         'operationProcessing': l10n.s_nfc_oath_remove_password_processing,
         'operationSuccess': l10n.s_password_removed,
         'operationFailure': l10n.s_nfc_oath_remove_password_failure,
@@ -375,7 +374,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> calculate(OathCredential credential) async =>
       invoke('calculate', {
         'callArgs': {'credentialId': credential.id},
-        'operationName': l10n.c_nfc_oath_calculate_code,
+        'operationName': l10n.s_nfc_oath_calculate_code,
         'operationProcessing': l10n.s_nfc_oath_calculate_code_processing,
         'operationSuccess': l10n.s_nfc_oath_calculate_code_success,
         'operationFailure': l10n.s_nfc_oath_calculate_code_failure,
@@ -388,7 +387,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uri': credentialUri.toString(),
           'requireTouch': requireTouch
         },
-        'operationName': l10n.c_nfc_oath_add_account,
+        'operationName': l10n.s_add_account,
         'operationProcessing': l10n.s_nfc_oath_add_account_processing,
         'operationSuccess': l10n.s_account_added,
         'operationFailure': l10n.s_nfc_oath_add_account_failure,
@@ -402,7 +401,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uris': credentialUris,
           'requireTouch': touchRequired,
         },
-        'operationName': l10n.c_nfc_oath_add_multiple_accounts,
+        'operationName': l10n.s_add_accounts,
         'operationProcessing': l10n.s_nfc_oath_add_multiple_accounts_processing,
         'operationSuccess': l10n.s_nfc_oath_add_multiple_accounts_success,
         'operationFailure': l10n.s_nfc_oath_add_multiple_accounts_failure,
@@ -415,7 +414,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uri': credentialUri.toString(),
           'requireTouch': requireTouch
         },
-        'operationName': l10n.c_nfc_oath_add_account,
+        'operationName': l10n.s_add_account,
         'operationProcessing': l10n.s_nfc_oath_add_account_processing,
         'operationSuccess': l10n.s_account_added,
         'operationFailure': l10n.s_nfc_oath_add_account_failure,
@@ -424,7 +423,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> deleteAccount(OathCredential credential) async =>
       invoke('deleteAccount', {
         'callArgs': {'credentialId': credential.id},
-        'operationName': l10n.c_nfc_oath_delete_account,
+        'operationName': l10n.s_delete_account,
         'operationProcessing': l10n.s_nfc_oath_delete_account_processing,
         'operationSuccess': l10n.s_account_deleted,
         'operationFailure': l10n.s_nfc_oath_delete_account_failure,
@@ -439,7 +438,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'name': name,
           'issuer': issuer
         },
-        'operationName': l10n.c_nfc_oath_rename_account,
+        'operationName': l10n.s_rename_account,
         'operationProcessing': l10n.s_nfc_oath_rename_account_processing,
         'operationSuccess': l10n.s_account_renamed,
         'operationFailure': l10n.s_nfc_oath_rename_account_failure,

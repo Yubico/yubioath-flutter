@@ -359,6 +359,7 @@
     "s_password": "Hasło",
     "s_manage_password": "Zarządzaj hasłem",
     "s_set_password": "Ustaw hasło",
+    "s_change_password": null,
     "s_password_set": "Hasło zostało ustawione",
     "s_show_password": "Pokaż hasło",
     "s_hide_password": "Ukryj hasło",
@@ -917,7 +918,7 @@
     "s_nfc_oath_delete_account_processing": null,
     "s_nfc_oath_delete_account_failure": null,
 
-    "c_nfc_oath_calculate_code": null,
+    "s_nfc_oath_calculate_code": null,
     "s_nfc_oath_calculate_code_processing": null,
     "s_nfc_oath_calculate_code_success": null,
     "s_nfc_oath_calculate_code_failure": null,

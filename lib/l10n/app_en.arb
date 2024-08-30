@@ -359,6 +359,7 @@
     "s_password": "Password",
     "s_manage_password": "Manage password",
     "s_set_password": "Set password",
+    "s_change_password": "Change password",
     "s_password_set": "Password set",
     "s_show_password": "Show password",
     "s_hide_password": "Hide password",
@@ -917,7 +918,7 @@
     "s_nfc_oath_delete_account_processing": "Deleting account",
     "s_nfc_oath_delete_account_failure": "Failed to delete account",
 
-    "c_nfc_oath_calculate_code": "calculate code",
+    "s_nfc_oath_calculate_code": "Calculate code",
     "s_nfc_oath_calculate_code_processing": "Calculating",
     "s_nfc_oath_calculate_code_success": "Code calculated",
     "s_nfc_oath_calculate_code_failure": "Failed to calculate code",

@@ -359,6 +359,7 @@
     "s_password": "パスワード",
     "s_manage_password": "パスワードを管理",
     "s_set_password": "パスワードを設定",
+    "s_change_password": null,
     "s_password_set": "パスワードが設定されました",
     "s_show_password": "パスワードを表示",
     "s_hide_password": "パスワードを非表示",
@@ -917,7 +918,7 @@
     "s_nfc_oath_delete_account_processing": null,
     "s_nfc_oath_delete_account_failure": null,
 
-    "c_nfc_oath_calculate_code": null,
+    "s_nfc_oath_calculate_code": null,
     "s_nfc_oath_calculate_code_processing": null,
     "s_nfc_oath_calculate_code_success": null,
     "s_nfc_oath_calculate_code_failure": null,

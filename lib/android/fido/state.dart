@@ -421,7 +421,7 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
 
   Future<dynamic> unlock(String pin) async => invoke('unlock', {
         'callArgs': {'pin': pin},
-        'operationName': l10n.c_nfc_unlock,
+        'operationName': l10n.s_unlock,
         'operationProcessing': l10n.s_nfc_unlock_processing,
         'operationSuccess': l10n.s_nfc_unlock_success,
         'operationFailure': l10n.s_nfc_unlock_failure,

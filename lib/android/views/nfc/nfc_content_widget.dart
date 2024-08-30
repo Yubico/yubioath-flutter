@@ -23,7 +23,7 @@ class NfcContentWidget extends StatelessWidget {
           if (subtitle != null)
             Text(subtitle!,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall),
+                style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 32),
           NfcIconProgressBar(inProgress),
           const SizedBox(height: 24)

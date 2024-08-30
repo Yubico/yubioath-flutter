@@ -145,23 +145,20 @@ class NfcBottomSheet extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showCloseButton) const SizedBox(height: 8),
-        if (showCloseButton)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Symbols.close, fill: 1, size: 24))
-              ],
+        Stack(fit: StackFit.passthrough, children: [
+          if (showCloseButton)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Symbols.close, fill: 1, size: 24)),
             ),
-          ),
-        if (showCloseButton) const SizedBox(height: 16),
-        if (!showCloseButton) const SizedBox(height: 48),
-        widget,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+            child: widget,
+          )
+        ]),
         const SizedBox(height: 32),
       ],
     );

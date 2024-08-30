@@ -115,9 +115,8 @@ class _DialogProvider extends Notifier<int> {
         case 'show':
           explicitAction = true;
           notifier.sendCommand(showNfcView(NfcContentWidget(
-            title: l10n.s_nfc_tap_for(
-                properties.operationName ?? '[OPERATION NAME MISSING]'),
-            subtitle: '',
+            title: properties.operationName ?? '[OPERATION NAME MISSING]',
+            subtitle: 'Scan your YubiKey',
             inProgress: false,
           )));
           break;
