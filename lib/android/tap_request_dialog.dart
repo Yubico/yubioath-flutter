@@ -60,22 +60,18 @@ class _DialogProvider extends Notifier<int> {
           processingTimer = Timer(Duration(milliseconds: timeout), () {
             if (!explicitAction) {
               // show the widget
-              notifier.sendCommand(NfcEventCommand(
-                  event: NfcShowViewEvent(
-                      child: NfcContentWidget(
+              notifier.sendCommand(showNfcView(NfcContentWidget(
                 title: properties.operationProcessing,
                 subtitle: '',
                 inProgress: true,
-              ))));
+              )));
             } else {
               // the processing view will only be shown if the timer is still active
-              notifier.sendCommand(NfcEventCommand(
-                  event: NfcUpdateViewEvent(
-                      child: NfcContentWidget(
+              notifier.sendCommand(updateNfcView(NfcContentWidget(
                 title: properties.operationProcessing,
                 subtitle: l10n.s_nfc_hold_key,
                 inProgress: true,
-              ))));
+              )));
             }
           });
           break;
@@ -83,30 +79,26 @@ class _DialogProvider extends Notifier<int> {
           explicitAction = false; // next action might not be explicit
           processingTimer?.cancel();
           if (properties.showSuccess ?? false) {
-            notifier.sendCommand(NfcEventCommand(
-                event: NfcUpdateViewEvent(
-                    child: NfcActivityClosingCountdownWidgetView(
+            notifier.sendCommand(
+                updateNfcView(NfcActivityClosingCountdownWidgetView(
               closeInSec: 5,
               child: NfcContentWidget(
                 title: properties.operationSuccess,
                 subtitle: l10n.s_nfc_remove_key,
                 inProgress: false,
               ),
-            ))));
+            )));
           } else {
             // directly hide
-            notifier.sendCommand(
-                NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
+            notifier.sendCommand(hideNfcView);
           }
           break;
         case NfcActivity.processingInterrupted:
           explicitAction = false; // next action might not be explicit
-          notifier.sendCommand(NfcEventCommand(
-              event: NfcUpdateViewEvent(
-                  child: NfcContentWidget(
+          notifier.sendCommand(updateNfcView(NfcContentWidget(
             title: properties.operationFailure,
             inProgress: false,
-          ))));
+          )));
           break;
         case NfcActivity.notActive:
           debugPrint('Received not handled notActive');
@@ -122,19 +114,16 @@ class _DialogProvider extends Notifier<int> {
       switch (call.method) {
         case 'show':
           explicitAction = true;
-          notifier.sendCommand(NfcEventCommand(
-              event: NfcShowViewEvent(
-                  child: NfcContentWidget(
+          notifier.sendCommand(showNfcView(NfcContentWidget(
             title: l10n.s_nfc_tap_for(
                 properties.operationName ?? '[OPERATION NAME MISSING]'),
             subtitle: '',
             inProgress: false,
-          ))));
+          )));
           break;
 
         case 'close':
-          notifier.sendCommand(
-              NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
+          notifier.sendCommand(hideNfcView);
           break;
 
         default:

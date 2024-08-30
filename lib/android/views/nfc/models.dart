@@ -64,3 +64,12 @@ class NfcEventCommand with _$NfcEventCommand {
     @Default(NfcEvent()) NfcEvent event,
   }) = _NfcEventCommand;
 }
+
+final hideNfcView =
+    NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0));
+
+NfcEventCommand updateNfcView(Widget child) =>
+    NfcEventCommand(event: NfcUpdateViewEvent(child: child));
+
+NfcEventCommand showNfcView(Widget child) =>
+    NfcEventCommand(event: NfcShowViewEvent(child: child));
