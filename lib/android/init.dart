@@ -107,7 +107,7 @@ Future<Widget> initialize() async {
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
-          ref.read(nfcActivityCommandListener).startListener(context);
+          ref.read(nfcEventCommandListener).startListener(context);
 
           Timer.run(() {
             ref.read(featureFlagProvider.notifier)

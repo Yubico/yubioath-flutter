@@ -7,7 +7,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../state.dart';
 import 'models.dart';
 
-final nfcEventNotifier =
+final nfcEventCommandNotifier =
     NotifierProvider<_NfcEventCommandNotifier, NfcEventCommand>(
         _NfcEventCommandNotifier.new);
 
@@ -98,7 +98,7 @@ class _NfcActivityClosingCountdownWidgetViewState
 
   void hideNow() {
     debugPrint('XXX closing because have to!');
-    ref.read(nfcEventNotifier.notifier).sendCommand(
+    ref.read(nfcEventCommandNotifier.notifier).sendCommand(
         NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
   }
 }

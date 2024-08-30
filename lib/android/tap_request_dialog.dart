@@ -39,7 +39,7 @@ class _DialogProvider extends Notifier<int> {
   int build() {
     final l10n = ref.read(l10nProvider);
     ref.listen(androidNfcActivityProvider, (previous, current) {
-      final notifier = ref.read(nfcEventNotifier.notifier);
+      final notifier = ref.read(nfcEventCommandNotifier.notifier);
 
       if (!explicitAction) {
         // setup properties for ad-hoc action
@@ -120,7 +120,7 @@ class _DialogProvider extends Notifier<int> {
     });
 
     _channel.setMethodCallHandler((call) async {
-      final notifier = ref.read(nfcEventNotifier.notifier);
+      final notifier = ref.read(nfcEventCommandNotifier.notifier);
       final properties = ref.read(nfcViewNotifier);
       switch (call.method) {
         case 'show':
