@@ -80,7 +80,6 @@ class OathManager(
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
     private val appPreferences: AppPreferences,
-    private val appMethodChannel: MainActivity.AppMethodChannel,
     private val nfcActivityListener: NfcActivityListener
 ) : AppContextManager(), DeviceListener {
 
@@ -221,10 +220,6 @@ class OathManager(
 
     override suspend fun processYubiKey(device: YubiKeyDevice) {
         try {
-            if (device is NfcYubiKeyDevice) {
-                appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
-            }
-
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
                 val previousId = oathViewModel.currentSession()?.deviceId
@@ -310,7 +305,6 @@ class OathManager(
                 deviceManager.setDeviceInfo(getDeviceInfo(device))
             }
         } catch (e: Exception) {
-            appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Failed to connect to CCID: ", e)
             // Clear any cached OATH state
@@ -346,7 +340,7 @@ class OathManager(
 
             logger.debug("Added cred {}", credential)
             jsonSerializer.encodeToString(addedCred)
-        }
+        }.value
     }
 
     private suspend fun addAccountsToAny(
@@ -725,7 +719,7 @@ class OathManager(
 
     private suspend fun <T> useOathSessionNfc(
         block: (YubiKitOathSession) -> T
-    ): T {
+    ): Result<T, Throwable> {
         var firstShow = true
         while (true) { // loop until success or cancel
             try {
@@ -749,14 +743,12 @@ class OathManager(
                     // here the coroutine is suspended and waits till pendingAction is
                     // invoked - the pending action result will resume this coroutine
                 }
-                nfcActivityListener.onChange(NfcActivityState.PROCESSING_FINISHED)
-                return result
+                return Result.success(result!!)
             } catch (cancelled: CancellationException) {
-                throw cancelled
+                return Result.failure(cancelled)
             } catch (e: Exception) {
                 logger.error("Exception during action: ", e)
-                nfcActivityListener.onChange(NfcActivityState.PROCESSING_INTERRUPTED)
-                throw e
+                return Result.failure(e)
             }
         } // while
     }

@@ -109,8 +109,13 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       await oath.setPassword(current, password);
       return true;
-    } on PlatformException catch (e) {
-      _log.debug('Calling set password failed with exception: $e');
+    } on PlatformException catch (pe) {
+      final decoded = pe.decode();
+      if (decoded is CancellationException) {
+        _log.debug('Set password cancelled');
+        throw decoded;
+      }
+      _log.debug('Calling set password failed with exception: $pe');
       return false;
     }
   }
@@ -120,8 +125,13 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       await oath.unsetPassword(current);
       return true;
-    } on PlatformException catch (e) {
-      _log.debug('Calling unset password failed with exception: $e');
+    } on PlatformException catch (pe) {
+      final decoded = pe.decode();
+      if (decoded is CancellationException) {
+        _log.debug('Unset password cancelled');
+        throw decoded;
+      }
+      _log.debug('Calling unset password failed with exception: $pe');
       return false;
     }
   }

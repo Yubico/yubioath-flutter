@@ -27,15 +27,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
-const val dialogDescriptionManagementIndex = 300
-
-enum class ManagementActionDescription(private val value: Int) {
-    DeviceReset(0), ActionFailure(1);
-
-    val id: Int
-        get() = value + dialogDescriptionManagementIndex
-}
-
 class ManagementHandler(
     messenger: BinaryMessenger,
     deviceManager: DeviceManager,
@@ -58,7 +49,7 @@ class ManagementHandler(
     }
 
     private suspend fun deviceReset(): String =
-        connectionHelper.useSession(ManagementActionDescription.DeviceReset) { managementSession ->
+        connectionHelper.useSession { managementSession ->
             managementSession.deviceReset()
             NULL
         }

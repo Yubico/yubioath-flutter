@@ -20,8 +20,10 @@ import androidx.collection.ArraySet
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.OperationContext
+import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
@@ -41,7 +43,8 @@ interface DeviceListener {
 
 class DeviceManager(
     private val lifecycleOwner: LifecycleOwner,
-    private val appViewModel: MainViewModel
+    private val appViewModel: MainViewModel,
+    private val appMethodChannel: MainActivity.AppMethodChannel
 ) {
     var clearDeviceInfoOnDisconnect: Boolean = true
 
@@ -179,8 +182,19 @@ class DeviceManager(
             onUsb(it)
         }
 
-    suspend fun <T> withKey(onNfc: suspend () -> T, onUsb: suspend (UsbYubiKeyDevice) -> T) =
+    suspend fun <T> withKey(
+        onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
+        onUsb: suspend (UsbYubiKeyDevice) -> T
+    ): T =
         appViewModel.connectedYubiKey.value?.let {
             onUsb(it)
-        } ?: onNfc()
+        } ?: try {
+            onNfc().value.also {
+                appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_FINISHED)
+            }
+        } catch (e: Throwable) {
+            appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+            throw e
+        }
+
 }

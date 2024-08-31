@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../app/message.dart';
 import '../app/state.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
@@ -80,7 +81,9 @@ class _DialogProvider extends Notifier<int> {
         case NfcActivity.processingFinished:
           explicitAction = false; // next action might not be explicit
           processingTimer?.cancel();
-          if (properties.showSuccess ?? false) {
+          final showSuccess = properties.showSuccess ?? false;
+          allowMessages = !showSuccess;
+          if (showSuccess) {
             notifier.sendCommand(
                 updateNfcView(NfcActivityClosingCountdownWidgetView(
               closeInSec: 5,

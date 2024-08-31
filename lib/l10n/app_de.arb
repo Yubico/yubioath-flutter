@@ -442,6 +442,12 @@
     "s_rename_account": "Konto umbenennen",
     "l_rename_account_desc": "Bearbeiten Sie den Aussteller/Namen des Kontos",
     "s_account_renamed": "Konto umbenannt",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "Das ändert die Anzeige dieses Kontos in der Liste.",
     "s_delete_account": "Konto löschen",
     "l_delete_account_desc": "Löschen Sie das Konto von Ihrem YubiKey",

@@ -35,12 +35,9 @@ class ManagementConnectionHelper(
 ) {
     private var action: ManagementAction? = null
 
-    suspend fun <T> useSession(
-        actionDescription: ManagementActionDescription,
-        action: (YubiKitManagementSession) -> T
-    ): T {
+    suspend fun <T> useSession(action: (YubiKitManagementSession) -> T): T {
         return deviceManager.withKey(
-            onNfc = { useSessionNfc(actionDescription, action) },
+            onNfc = { useSessionNfc(action) },
             onUsb = { useSessionUsb(it, action) })
     }
 
@@ -51,28 +48,25 @@ class ManagementConnectionHelper(
         block(YubiKitManagementSession(it))
     }
 
-    private suspend fun <T> useSessionNfc(
-        actionDescription: ManagementActionDescription,
-        block: (YubiKitManagementSession) -> T
-    ): T {
+    private suspend fun <T> useSessionNfc(block: (YubiKitManagementSession) -> T): Result<T, Throwable> {
         try {
-            val result = suspendCoroutine { outer ->
+            val result = suspendCoroutine<T> { outer ->
                 action = {
                     outer.resumeWith(runCatching {
                         block.invoke(it.value)
                     })
                 }
                 dialogManager.showDialog {
-                    logger.debug("Cancelled Dialog {}", actionDescription.name)
+                    logger.debug("Cancelled Dialog")
                     action?.invoke(Result.failure(CancellationException()))
                     action = null
                 }
             }
-            return result
+            return Result.success(result!!)
         } catch (cancelled: CancellationException) {
-            throw cancelled
+            return Result.failure(cancelled)
         } catch (error: Throwable) {
-            throw error
+            return Result.failure(error)
         } finally {
             dialogManager.closeDialog()
         }

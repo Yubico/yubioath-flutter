@@ -60,7 +60,7 @@ class FidoConnectionHelper(
         block(YubiKitFidoSession(it))
     }
 
-    suspend fun <T> useSessionNfc(block: (YubiKitFidoSession) -> T): T {
+    suspend fun <T> useSessionNfc(block: (YubiKitFidoSession) -> T): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
@@ -74,11 +74,11 @@ class FidoConnectionHelper(
                     pendingAction = null
                 }
             }
-            return result
+            return Result.success(result!!)
         } catch (cancelled: CancellationException) {
-            throw cancelled
+            return Result.failure(cancelled)
         } catch (error: Throwable) {
-            throw error
+            return Result.failure(error)
         } finally {
             dialogManager.closeDialog()
         }

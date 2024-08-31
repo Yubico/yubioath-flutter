@@ -92,7 +92,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
         } on CancellationException catch (_) {
           // ignored
         } catch (e) {
-          _log.error('Failed to add account', e);
+          _log.error('Failed to rename account', e);
           final String errorMessage;
           // TODO: Make this cleaner than importing desktop specific RpcError.
           if (e is RpcError) {
@@ -103,7 +103,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
           await withContext((context) async => showMessage(
                 context,
                 AppLocalizations.of(context)!
-                    .l_account_add_failed(errorMessage),
+                    .l_rename_account_failed(errorMessage),
                 duration: const Duration(seconds: 4),
               ));
           return null;

@@ -352,6 +352,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         contextManager?.let {
             try {
+                if (device is NfcYubiKeyDevice) {
+                    appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
+                }
                 it.processYubiKey(device)
                 if (device is NfcYubiKeyDevice) {
                     appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_FINISHED)
@@ -389,11 +392,11 @@ class MainActivity : FlutterFragmentActivity() {
 
         messenger = flutterEngine.dartExecutor.binaryMessenger
         flutterLog = FlutterLog(messenger)
-        deviceManager = DeviceManager(this, viewModel)
+        appMethodChannel = AppMethodChannel(messenger)
+        deviceManager = DeviceManager(this, viewModel,appMethodChannel)
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
         appPreferences = AppPreferences(this)
-        appMethodChannel = AppMethodChannel(messenger)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
         managementHandler = ManagementHandler(messenger, deviceManager, dialogManager)
 
@@ -441,7 +444,6 @@ class MainActivity : FlutterFragmentActivity() {
                     oathViewModel,
                     dialogManager,
                     appPreferences,
-                    appMethodChannel,
                     nfcActivityListener
                 )
 

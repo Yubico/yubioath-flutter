@@ -97,9 +97,7 @@ class _NfcActivityClosingCountdownWidgetViewState
   }
 
   void hideNow() {
-    debugPrint('XXX closing because have to!');
-    ref.read(nfcEventCommandNotifier.notifier).sendCommand(
-        NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0)));
+    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView);
   }
 }
 
@@ -123,10 +121,10 @@ class _NfcViewNotifier extends Notifier<NfcView> {
       bool? showSuccess,
       bool? showCloseButton}) {
     state = state.copyWith(
-        operationSuccess: operationSuccess,
-        operationFailure: operationFailure,
-        showSuccess: showSuccess,
-        showCloseButton: showCloseButton);
+        operationSuccess: operationSuccess ?? state.operationSuccess,
+        operationFailure: operationFailure ?? state.operationFailure,
+        showSuccess: showSuccess ?? state.showSuccess,
+        showCloseButton: showCloseButton ?? state.showCloseButton);
   }
 }
 
