@@ -174,7 +174,7 @@
     "p_try_reinsert_yk": "Hãy thử rút và cắm lại YubiKey của bạn.",
     "s_touch_required": "Yêu cầu chạm",
     "l_touch_button_now": "Chạm vào nút trên YubiKey của bạn ngay bây giờ",
-    "l_keep_touching_yk": "Giữ chạm vào YubiKey của bạn liên tục…",
+    "l_keep_touching_yk": "Giữ chạm vào YubiKey của bạn liên tục\u2026",
 
     "@_capabilities": {},
     "s_capability_otp": "Yubico OTP",
@@ -192,7 +192,7 @@
     "p_toggle_interfaces_desc": "Bật hoặc tắt giao diện USB.",
     "l_toggle_applications_desc": "Bật/tắt ứng dụng",
     "l_toggle_interfaces_desc": "Bật/tắt giao diện",
-    "s_reconfiguring_yk": "Đang cấu hình lại YubiKey…",
+    "s_reconfiguring_yk": "Đang cấu hình lại YubiKey\u2026",
     "s_config_updated": "Đã cập nhật cấu hình",
     "l_config_updated_reinsert": "Đã cập nhật cấu hình, rút và cắm lại YubiKey của bạn",
     "s_app_not_supported": "Ứng dụng không được hỗ trợ",
