@@ -162,8 +162,9 @@ class FidoResetHelper(
         coroutineScope.launch(Dispatchers.Main) {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             logger.debug("Waiting for touch")
-            deviceManager.withKey { usbYubiKeyDevice ->
-                connectionHelper.useSessionUsb(usbYubiKeyDevice) { fidoSession ->
+            deviceManager.withKey {
+                usbYubiKeyDevice ->
+                connectionHelper.useSessionUsb(usbYubiKeyDevice, updateDeviceInfo = true) { fidoSession ->
                     resetCommandState = CommandState()
                     try {
                         if (cancelReset) {
@@ -211,6 +212,7 @@ class FidoResetHelper(
         coroutineScope.launch {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             try {
+                FidoManager.updateDeviceInfo.set(true)
                 connectionHelper.useSessionNfc(FidoActionDescription.Reset) { fidoSession ->
                     doReset(fidoSession)
                     continuation.resume(Unit)
