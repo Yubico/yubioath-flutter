@@ -522,11 +522,11 @@ class _AppPageState extends ConsumerState<AppPage> {
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
-    var navigationText = showNavigation
-        ? (fullyExpanded
+    var navigationText = fullyExpanded
+        ? (showNavigation
             ? l10n.s_collapse_navigation
-            : MaterialLocalizations.of(context).openAppDrawerTooltip)
-        : l10n.s_expand_navigation;
+            : l10n.s_expand_navigation)
+        : l10n.s_show_navigation;
 
     if (widget.onFileDropped != null) {
       body = FileDropTarget(
@@ -678,8 +678,12 @@ class _AppPageState extends ConsumerState<AppPage> {
                   builder: (context) {
                     // Need to wrap with builder to get Scaffold context
                     return IconButton(
+                      tooltip: l10n.s_show_navigation,
                       onPressed: () => Scaffold.of(context).openDrawer(),
-                      icon: const Icon(Symbols.menu),
+                      icon: Icon(
+                        Symbols.menu,
+                        semanticLabel: l10n.s_show_navigation,
+                      ),
                     );
                   },
                 ),
@@ -705,12 +709,12 @@ class _AppPageState extends ConsumerState<AppPage> {
                   icon: widget.keyActionsBadge
                       ? Badge(
                           child: Icon(Symbols.more_vert,
-                              semanticLabel: l10n.s_configure_yk),
+                              semanticLabel: l10n.s_show_menu),
                         )
                       : Icon(Symbols.more_vert,
-                          semanticLabel: l10n.s_configure_yk),
+                          semanticLabel: l10n.s_show_menu),
                   iconSize: 24,
-                  tooltip: l10n.s_configure_yk,
+                  tooltip: l10n.s_show_menu,
                   padding: const EdgeInsets.all(12),
                 ),
               ),
@@ -726,11 +730,9 @@ class _AppPageState extends ConsumerState<AppPage> {
                         .read(_detailViewVisibilityProvider.notifier)
                         .toggleExpanded();
                   },
-                  icon: const Icon(Symbols.view_sidebar),
+                  icon: const Icon(Symbols.more_vert),
                   iconSize: 24,
-                  tooltip: showDetailView
-                      ? l10n.s_collapse_sidebar
-                      : l10n.s_expand_sidebar,
+                  tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
                   padding: const EdgeInsets.all(12),
                 ),
               ),
