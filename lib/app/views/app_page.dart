@@ -522,11 +522,11 @@ class _AppPageState extends ConsumerState<AppPage> {
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
-    var navigationText = showNavigation
-        ? (fullyExpanded
+    var navigationText = fullyExpanded
+        ? (showNavigation
             ? l10n.s_collapse_navigation
-            : MaterialLocalizations.of(context).openAppDrawerTooltip)
-        : l10n.s_expand_navigation;
+            : l10n.s_expand_navigation)
+        : l10n.s_show_navigation;
 
     if (widget.onFileDropped != null) {
       body = FileDropTarget(
