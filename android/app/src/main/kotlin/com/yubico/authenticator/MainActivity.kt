@@ -44,6 +44,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.device.noScp11bNfcSupport
 import com.yubico.authenticator.fido.FidoManager
 import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
@@ -79,7 +80,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.Closeable
+import java.security.NoSuchAlgorithmException
 import java.util.concurrent.Executors
+import javax.crypto.Mac
 
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -309,9 +312,9 @@ class MainActivity : FlutterFragmentActivity() {
 
     private suspend fun processYubiKey(device: YubiKeyDevice) {
         val deviceInfo = getDeviceInfo(device)
-        deviceManager.setDeviceInfo(deviceInfo)
 
         if (deviceInfo == null) {
+            deviceManager.setDeviceInfo(null)
             return
         }
 
@@ -334,6 +337,13 @@ class MainActivity : FlutterFragmentActivity() {
                 }
         }
 
+        // this YubiKey provides SCP11b key but the phone cannot perform AESCMAC
+        if (deviceManager.scpKeyParams != null && !supportsScp11b) {
+            deviceManager.setDeviceInfo(noScp11bNfcSupport)
+            return
+        }
+
+        deviceManager.setDeviceInfo(deviceInfo)
         val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
         logger.debug("Connected key supports: {}", supportedContexts)
         if (!supportedContexts.contains(viewModel.appContext.value)) {
@@ -473,6 +483,12 @@ class MainActivity : FlutterFragmentActivity() {
     companion object {
         const val YUBICO_VENDOR_ID = 4176
         const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
+        val supportsScp11b = try {
+            Mac.getInstance("AESCMAC");
+            true
+        } catch (_: NoSuchAlgorithmException) {
+            false
+        }
     }
 
     /** We observed that some devices (Pixel 2, OnePlus 6) automatically end NFC discovery

@@ -47,10 +47,11 @@
     "s_details": "Details",
     "s_show_window": "Fenster anzeigen",
     "s_hide_window": "Fenster verstecken",
+    "s_show_navigation": null,
     "s_expand_navigation": "Navigation erweitern",
     "s_collapse_navigation": "Navigation einklappen",
-    "s_expand_sidebar": "Sidebar erweitern",
-    "s_collapse_sidebar": "Sidebar einklappen",
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {
         "placeholders": {
@@ -88,7 +89,6 @@
     "s_terms_of_use": "Nutzungsbedingungen",
     "s_privacy_policy": "Datenschutzerklärung",
     "s_open_src_licenses": "Open Source-Lizenzen",
-    "s_configure_yk": "YubiKey konfigurieren",
     "s_please_wait": "Bitte warten\u2026",
     "s_secret_key": "Geheimer Schlüssel",
     "s_show_secret_key": "Geheimen Schlüssel anzeigen",
@@ -237,6 +237,8 @@
     "s_unsupported_yk": "Nicht unterstützter YubiKey",
     "s_yk_not_recognized": "Geräte nicht erkannt",
     "p_operation_failed_try_again": "Die Aktion ist fehlgeschlagen, bitte versuchen Sie es erneut.",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Es ist ein Fehler aufgetreten",

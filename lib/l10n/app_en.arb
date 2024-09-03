@@ -47,10 +47,11 @@
     "s_details": "Details",
     "s_show_window": "Show window",
     "s_hide_window": "Hide window",
+    "s_show_navigation": "Show navigation",
     "s_expand_navigation": "Expand navigation",
     "s_collapse_navigation": "Collapse navigation",
-    "s_expand_sidebar": "Expand sidebar",
-    "s_collapse_sidebar": "Collapse sidebar",
+    "s_show_menu": "Show menu",
+    "s_hide_menu": "Hide menu",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -88,7 +89,6 @@
     "s_terms_of_use": "Terms of use",
     "s_privacy_policy": "Privacy policy",
     "s_open_src_licenses": "Open source licenses",
-    "s_configure_yk": "Configure YubiKey",
     "s_please_wait": "Please wait\u2026",
     "s_secret_key": "Secret key",
     "s_show_secret_key": "Show secret key",
@@ -237,6 +237,8 @@
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
     "p_operation_failed_try_again": "The operation failed, please try again.",
+    "l_configuration_unsupported": "Configuration not supported",
+    "p_scp_unsupported": "To communicate over NFC, the YubiKey requires technology which is not supported by this phone. Please plug the YubiKey to the phone's USB port.",
 
     "@_general_errors": {},
     "l_error_occurred": "An error has occurred",

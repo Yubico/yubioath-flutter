@@ -1,0 +1,968 @@
+{
+    "@@locale": "vi",
+
+    "@_readme": {
+        "notes": [
+            "Tất cả chuỗi bắt đầu bằng chữ cái viết hoa.",
+            "Nhóm chuỗi theo danh mục, nhưng không cần thiết ràng buộc chúng với một phần của ứng dụng nếu chúng có thể được sử dụng lại giữa nhiều phần.",
+            "Chạy check_strings.py trên tệp .arb để phát hiện vấn đề, điều chỉnh @_lint_rules theo yêu cầu cho từng ngôn ngữ."
+        ],
+        "prefixes": {
+            "s_": "Một hoặc vài từ. Nên đủ ngắn để hiển thị trên nút hoặc tiêu đề.",
+            "l_": "Một dòng đơn, có thể xuống dòng. Không nên quá một câu, và không kết thúc bằng dấu chấm.",
+            "p_": "Một hoặc nhiều câu đầy đủ, với dấu chấm câu thích hợp.",
+            "q_": "Một câu hỏi, kết thúc bằng dấu hỏi chấm.",
+            "c_": null
+        }
+    },
+
+    "@_lint_rules": {
+        "p_ending_chars": ".!",
+        "q_ending_chars": "?",
+        "s_max_words": 4,
+        "s_max_length": 32
+    },
+
+    "app_name": "Yubico Authenticator",
+
+    "s_save": "Lưu",
+    "s_cancel": "Hủy",
+    "s_close": "Đóng",
+    "s_delete": "Xóa",
+    "s_move": "Di chuyển",
+    "s_quit": "Thoát",
+    "s_enable": "Bật",
+    "s_enabled": "Đã bật",
+    "s_disabled": "Đã tắt",
+    "s_status": "Trạng thái",
+    "s_unlock": "Mở khóa",
+    "s_calculate": "Tính toán",
+    "s_import": "Nhập khẩu",
+    "s_overwrite": "Ghi đè",
+    "s_label": "Nhãn",
+    "s_name": "Tên",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "Tùy chọn",
+    "s_details": "Chi tiết",
+    "s_show_window": "Hiển thị cửa sổ",
+    "s_hide_window": "Ẩn cửa sổ",
+    "s_show_navigation": null,
+    "s_expand_navigation": "Mở rộng điều hướng",
+    "s_collapse_navigation": "Thu gọn điều hướng",
+    "s_show_menu": null,
+    "s_hide_menu": null,
+    "q_rename_target": "Đổi tên {label}?",
+    "@q_rename_target": {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {}
+        }
+    },
+    "s_none": "<không có>",
+
+    "s_about": "Giới thiệu",
+    "s_algorithm": "Thuật toán",
+    "s_appearance": "Giao diện",
+    "s_actions": "Hành động",
+    "s_manage": "Quản lý",
+    "s_setup": "Cài đặt",
+    "s_device": "Thiết bị",
+    "s_application": "Ứng dụng",
+    "s_settings": "Cài đặt",
+    "l_settings_desc": "Thay đổi tùy chọn ứng dụng",
+    "s_certificates": "Chứng chỉ",
+    "s_security_key": "Khóa bảo mật",
+    "s_slots": "Khe cắm",
+    "s_help_and_about": "Trợ giúp và giới thiệu",
+    "l_help_and_about_desc": "Khắc phục sự cố và hỗ trợ",
+    "s_help_and_feedback": "Trợ giúp và phản hồi",
+    "s_home": "Trang chủ",
+    "s_user_guide": "Hướng dẫn sử dụng",
+    "s_i_need_help": "Tôi cần trợ giúp",
+    "s_troubleshooting": "Khắc phục sự cố",
+    "s_terms_of_use": "Điều khoản sử dụng",
+    "s_privacy_policy": "Chính sách bảo mật",
+    "s_open_src_licenses": "Giấy phép mã nguồn mở",
+    "s_please_wait": "Vui lòng chờ\u2026",
+    "s_secret_key": "Khóa bí mật",
+    "s_show_secret_key": "Hiển thị khóa bí mật",
+    "s_hide_secret_key": "Ẩn khóa bí mật",
+    "s_private_key": "Khóa riêng tư",
+    "s_public_key": "Khóa công khai",
+    "s_invalid_length": "Độ dài không hợp lệ",
+    "l_invalid_format_allowed_chars": "Định dạng không hợp lệ, các ký tự được phép: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {}
+        }
+    },
+    "l_invalid_keyboard_character": "Ký tự không hợp lệ cho bàn phím đã chọn",
+    "s_require_touch": "Yêu cầu chạm",
+    "q_have_account_info": "Có thông tin tài khoản?",
+    "s_run_diagnostics": "Chạy chẩn đoán",
+    "s_log_level": "Mức nhật ký: {level}",
+    "@s_log_level": {
+        "placeholders": {
+            "level": {}
+        }
+    },
+    "s_character_count": "Số lượng ký tự",
+    "s_learn_more": "Tìm hiểu thêm",
+
+    "@_language": {},
+    "s_language": "Ngôn ngữ",
+    "l_enable_community_translations": "Bật dịch thuật cộng đồng",
+    "p_community_translations_desc": "Các bản dịch này được cung cấp và duy trì bởi cộng đồng. Chúng có thể chứa lỗi hoặc chưa hoàn chỉnh.",
+
+    "@_theme": {},
+    "s_app_theme": "Chủ đề ứng dụng",
+    "s_choose_app_theme": "Chọn chủ đề",
+    "s_system_default": "Mặc định hệ thống",
+    "s_light_mode": "Chế độ sáng",
+    "s_dark_mode": "Chế độ tối",
+
+    "@_layout": {},
+    "s_list_layout": "Bố cục danh sách",
+    "s_grid_layout": "Bố cục lưới",
+    "s_mixed_layout": "Bố cục hỗn hợp",
+    "s_select_layout": "Chọn bố cục",
+
+    "@_yubikey_selection": {},
+    "s_select_to_scan": "Chọn để quét",
+    "s_hide_device": "Ẩn thiết bị",
+    "s_show_hidden_devices": "Hiển thị các thiết bị ẩn",
+    "s_sn_serial": "S/N: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "s_fw_version": "F/W: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {}
+        }
+    },
+    "l_serial_number": "Số serial: {serial}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "l_firmware_version": "Phiên bản firmware: {version}",
+    "l_fips_capable": "Hỗ trợ FIPS",
+    "l_fips_approved": "Đã phê duyệt FIPS",
+
+    "@_yubikey_interactions": {},
+    "l_insert_yk": "Chèn YubiKey của bạn",
+    "l_insert_or_tap_yk": "Chèn hoặc chạm YubiKey",
+    "l_unplug_yk": "Rút YubiKey của bạn",
+    "l_reinsert_yk": "Cắm lại YubiKey của bạn",
+    "l_place_on_nfc_reader": "Đặt YubiKey của bạn lên đầu đọc NFC",
+    "l_replace_yk_on_reader": "Đặt lại YubiKey của bạn lên đầu đọc",
+    "l_remove_yk_from_reader": "Rút YubiKey của bạn khỏi đầu đọc NFC",
+    "p_try_reinsert_yk": "Hãy thử rút và cắm lại YubiKey của bạn.",
+    "s_touch_required": "Yêu cầu chạm",
+    "l_touch_button_now": "Chạm vào nút trên YubiKey của bạn ngay bây giờ",
+    "l_keep_touching_yk": "Giữ chạm vào YubiKey của bạn liên tục\u2026",
+
+    "@_capabilities": {},
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM Auth",
+
+    "@_app_configuration": {},
+    "s_toggle_applications": "Chuyển đổi ứng dụng",
+    "s_toggle_interfaces": "Chuyển đổi giao diện",
+    "p_toggle_applications_desc": "Bật hoặc tắt ứng dụng qua các phương tiện có sẵn.",
+    "p_toggle_interfaces_desc": "Bật hoặc tắt giao diện USB.",
+    "l_toggle_applications_desc": "Bật/tắt ứng dụng",
+    "l_toggle_interfaces_desc": "Bật/tắt giao diện",
+    "s_reconfiguring_yk": "Đang cấu hình lại YubiKey\u2026",
+    "s_config_updated": "Đã cập nhật cấu hình",
+    "l_config_updated_reinsert": "Đã cập nhật cấu hình, rút và cắm lại YubiKey của bạn",
+    "s_app_not_supported": "Ứng dụng không được hỗ trợ",
+    "l_app_not_supported_on_yk": "YubiKey được sử dụng không hỗ trợ ứng dụng '{app}'",
+    "@l_app_not_supported_on_yk": {
+        "placeholders": {
+            "app": {}
+        }
+    },
+    "s_app_disabled": "Ứng dụng đã bị tắt",
+    "l_app_disabled_desc": "Bật ứng dụng '{app}' trên YubiKey của bạn để truy cập",
+    "@l_app_disabled_desc": {
+        "placeholders": {
+            "app": {}
+        }
+    },
+    "s_fido_disabled": "FIDO2 đã bị tắt",
+    "l_webauthn_req_fido2": "WebAuthn yêu cầu ứng dụng FIDO2 được bật trên YubiKey của bạn",
+    "s_lock_code": "Mã khóa",
+    "l_wrong_lock_code": "Mã khóa sai",
+    "s_show_lock_code": "Hiển thị mã khóa",
+    "s_hide_lock_code": "Ẩn mã khóa",
+    "p_lock_code_required_desc": "Hành động bạn sắp thực hiện yêu cầu nhập mã khóa cấu hình.",
+
+
+    "@_connectivity_issues": {},
+    "l_helper_not_responding": "Quá trình Helper không phản hồi",
+    "l_yk_no_access": "YubiKey này không thể truy cập",
+    "s_yk_inaccessible": "Thiết bị không thể truy cập",
+    "l_open_connection_failed": "Không mở được kết nối",
+    "l_ccid_connection_failed": "Không mở được kết nối thẻ thông minh",
+    "p_ccid_service_unavailable": "Đảm bảo dịch vụ thẻ thông minh của bạn đang hoạt động.",
+    "p_pcscd_unavailable": "Đảm bảo pcscd đã được cài đặt và đang chạy.",
+    "l_no_yk_present": "Không có YubiKey nào hiện diện",
+    "s_unknown_type": "Loại không xác định",
+    "s_unknown_device": "Thiết bị không nhận dạng",
+    "s_restricted_nfc": "Kích hoạt NFC",
+    "l_deactivate_restricted_nfc": "Cách kích hoạt NFC",
+    "p_deactivate_restricted_nfc_desc": "Kết nối YubiKey của bạn với bất kỳ nguồn điện USB nào, chẳng hạn như máy tính, trong ít nhất 3 giây.\n\nKhi đã có nguồn điện, NFC sẽ được kích hoạt và sẵn sàng sử dụng.",
+    "p_deactivate_restricted_nfc_footer": "YubiKey của bạn được trang bị NFC Giới hạn, một tính năng được thiết kế để bảo vệ chống lại thao tác không dây trong quá trình vận chuyển. Điều này có nghĩa là các hoạt động NFC tạm thời bị tắt cho đến khi bạn kích hoạt chúng.",
+    "s_unsupported_yk": "YubiKey không được hỗ trợ",
+    "s_yk_not_recognized": "Thiết bị không được nhận diện",
+    "p_operation_failed_try_again": "Thao tác không thành công, vui lòng thử lại.",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
+
+    "@_general_errors": {},
+    "l_error_occurred": "Đã xảy ra lỗi",
+    "s_application_error": "Lỗi ứng dụng",
+    "l_import_error": "Lỗi nhập",
+    "l_file_not_found": "Tệp không tìm thấy",
+    "l_file_too_big": "Kích thước tệp quá lớn",
+    "l_filesystem_error": "Lỗi hệ thống tệp",
+
+    "@_pins": {},
+    "s_pin": "Mã PIN",
+    "s_puk": "Mã PUK",
+    "s_set_pin": "Cài đặt Mã PIN",
+    "s_change_pin": "Thay đổi Mã PIN",
+    "s_change_puk": "Thay đổi Mã PUK",
+    "s_show_pin": "Hiển thị Mã PIN",
+    "s_hide_pin": "Ẩn Mã PIN",
+    "s_show_puk": "Hiển thị Mã PUK",
+    "s_hide_puk": "Ẩn Mã PUK",
+    "s_current_pin": "Mã PIN hiện tại",
+    "s_current_puk": "Mã PUK hiện tại",
+    "s_new_pin": "Mã PIN mới",
+    "s_new_puk": "Mã PUK mới",
+    "s_confirm_pin": "Xác nhận Mã PIN",
+    "s_confirm_puk": "Xác nhận Mã PUK",
+    "s_unblock_pin": "Bỏ khóa Mã PIN",
+    "l_pin_mismatch": "Mã PIN không khớp",
+    "l_puk_mismatch": "Mã PUK không khớp",
+    "s_pin_set": "Mã PIN đã được cài đặt",
+    "s_puk_set": "Mã PUK đã được cài đặt",
+    "l_set_pin_failed": "Cài đặt Mã PIN thất bại: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_attempts_remaining": "Còn {retries} lần thử",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {}
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Mã PIN sai, còn {retries} lần thử",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {}
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "Mã PUK sai, còn {retries} lần thử",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {}
+        }
+    },
+    "s_fido_pin_protection": "Bảo vệ Mã PIN FIDO",
+    "s_pin_change_required": "Cần thay đổi Mã PIN",
+    "l_enter_fido2_pin": "Nhập Mã PIN FIDO2 cho YubiKey của bạn",
+    "l_pin_blocked_reset": "Mã PIN bị khóa; khôi phục cài đặt gốc ứng dụng FIDO",
+    "l_pin_blocked": "Mã PIN bị khóa",
+    "l_set_pin_first": "Cần có Mã PIN",
+    "l_unlock_pin_first": "Mở khóa bằng Mã PIN",
+    "l_pin_soft_locked": "Mã PIN đã bị khóa cho đến khi YubiKey được tháo ra và cắm lại",
+    "l_pin_change_required_desc": "Cần thiết lập một Mã PIN mới trước khi bạn có thể sử dụng ứng dụng này",
+    "p_enter_current_pin_or_reset": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải mở khóa bằng Mã PUK hoặc khôi phục cài đặt gốc YubiKey.",
+    "p_enter_current_pin_or_reset_no_puk": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
+    "p_enter_current_puk_or_reset": "Nhập Mã PUK hiện tại của bạn. Nếu bạn không biết Mã PUK, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
+    "p_enter_new_fido2_pin": "Nhập Mã PIN mới của bạn. Mã PIN phải có độ dài từ {min_length} đến {max_length} ký tự và có thể chứa chữ cái, số và ký tự đặc biệt.",
+    "@p_enter_new_fido2_pin": {
+        "placeholders": {
+            "min_length": {},
+            "max_length": {}
+        }
+    },
+    "p_enter_new_fido2_pin_complexity_active": "Nhập Mã PIN mới của bạn. Mã PIN phải có độ dài từ {min_length} đến {max_length} ký tự, chứa ít nhất {unique_characters} ký tự độc đáo, và không phải là Mã PIN thường dùng, như \"{common_pin}\". Nó có thể chứa chữ cái, số và ký tự đặc biệt.",
+    "@p_enter_new_fido2_pin_complexity_active": {
+        "placeholders": {
+            "min_length": {},
+            "max_length": {},
+            "unique_characters": {},
+            "common_pin": {}
+        }
+    },
+    "s_ep_attestation": "Xác thực Doanh Nghiệp",
+    "s_ep_attestation_enabled": "Xác thực Doanh Nghiệp đã được kích hoạt",
+    "s_enable_ep_attestation": "Kích hoạt Xác thực Doanh Nghiệp",
+    "p_enable_ep_attestation_desc": "Điều này sẽ kích hoạt Xác thực Doanh Nghiệp, cho phép các miền được ủy quyền xác định YubiKey của bạn một cách duy nhất.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "Khi đã kích hoạt, Xác thực Doanh Nghiệp chỉ có thể bị tắt bằng cách thực hiện khôi phục cài đặt gốc FIDO.",
+    "s_pin_required": "Cần Mã PIN",
+    "p_pin_required_desc": "Hành động bạn sắp thực hiện yêu cầu phải nhập Mã PIN PIV.",
+    "l_piv_pin_blocked": "Bị khóa, sử dụng PUK để khôi phục",
+    "l_piv_pin_puk_blocked": "Bị khóa, cần khôi phục cài đặt gốc",
+    "p_enter_new_piv_pin_puk": "Nhập một {name} mới để thiết lập. Phải có ít nhất {length} ký tự.",
+    "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {},
+            "length": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_complexity_active": "Nhập một {name} mới để thiết lập. Phải có ít nhất {length} ký tự, chứa ít nhất 2 ký tự độc đáo, và không phải là {name} thường dùng, như \"{common}\".",
+    "@p_enter_new_piv_pin_puk_complexity_active": {
+        "placeholders": {
+            "name": {},
+            "length": {},
+            "common": {}
+        }
+    },
+    "p_pin_puk_complexity_failure": "Mới {name} không đáp ứng yêu cầu độ phức tạp.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "l_warning_default_pin": "Cảnh báo: Đã sử dụng Mã PIN mặc định",
+    "l_warning_default_puk": "Cảnh báo: Đã sử dụng Mã PUK mặc định",
+    "l_default_pin_used": "Đã sử dụng Mã PIN mặc định",
+    "l_default_puk_used": "Đã sử dụng Mã PUK mặc định",
+    "l_pin_complexity": "Yêu cầu độ phức tạp của Mã PIN",
+
+    "@_passwords": {},
+    "s_password": "Mật khẩu",
+    "s_manage_password": "Quản lý mật khẩu",
+    "s_set_password": "Đặt mật khẩu",
+    "s_change_password": null,
+    "s_password_set": "Mật khẩu đã được đặt",
+    "s_show_password": "Hiển thị mật khẩu",
+    "s_hide_password": "Ẩn mật khẩu",
+    "l_optional_password_protection": "Bảo vệ mật khẩu tùy chọn",
+    "l_password_protection": "Bảo vệ mật khẩu của các tài khoản",
+    "s_new_password": "Mật khẩu mới",
+    "s_current_password": "Mật khẩu hiện tại",
+    "s_confirm_password": "Xác nhận mật khẩu",
+    "l_password_mismatch": "Mật khẩu không khớp",
+    "s_wrong_password": "Mật khẩu sai",
+    "s_remove_password": "Xóa mật khẩu",
+    "s_password_removed": "Mật khẩu đã bị xóa",
+    "s_remember_password": "Nhớ mật khẩu",
+    "s_clear_saved_password": "Xóa mật khẩu đã lưu",
+    "s_password_forgotten": "Quên mật khẩu",
+    "l_keystore_unavailable": "Keystore của hệ điều hành không khả dụng",
+    "l_remember_pw_failed": "Không thể nhớ mật khẩu",
+    "l_unlock_first": "Mở khóa bằng mật khẩu",
+    "l_set_password_first": "Đặt mật khẩu",
+    "l_enter_oath_pw": "Nhập mật khẩu OATH cho YubiKey của bạn",
+    "p_enter_current_password_or_reset": "Nhập mật khẩu hiện tại của bạn. Nếu bạn không biết mật khẩu của mình, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
+    "p_enter_new_password": "Nhập mật khẩu mới của bạn. Mật khẩu có thể chứa chữ cái, số và ký tự đặc biệt.",
+
+    "@_management_key": {},
+    "s_management_key": "Khóa quản lý",
+    "s_current_management_key": "Khóa quản lý hiện tại",
+    "s_new_management_key": "Khóa quản lý mới",
+    "l_change_management_key": "Thay đổi khóa quản lý",
+    "p_change_management_key_desc": "Thay đổi khóa quản lý của bạn. Bạn có thể chọn cho phép sử dụng Mã PIN thay vì khóa quản lý.",
+    "l_management_key_changed": "Khóa quản lý đã được thay đổi",
+    "l_default_key_used": "Đã sử dụng khóa quản lý mặc định",
+    "s_generate_random": "Tạo ngẫu nhiên",
+    "s_use_default": "Sử dụng mặc định",
+    "l_warning_default_key": "Cảnh báo: Đã sử dụng khóa mặc định",
+    "s_protect_key": "Bảo vệ bằng Mã PIN",
+    "l_pin_protected_key": "Mã PIN có thể được sử dụng thay thế",
+    "l_wrong_key": "Khóa sai",
+    "l_unlock_piv_management": "Mở khóa quản lý PIV",
+    "p_unlock_piv_management_desc": "Hành động bạn sắp thực hiện yêu cầu khóa quản lý PIV. Cung cấp khóa này để mở khóa chức năng quản lý cho phiên làm việc này.",
+
+    "@_oath_accounts": {},
+    "l_account": "Tài khoản: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "s_accounts": "Các tài khoản",
+    "s_no_accounts": "Không có tài khoản",
+    "l_results_for": "Kết quả cho \"{query}\"",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {}
+        }
+    },
+    "l_authenticator_get_started": "Bắt đầu với các tài khoản OTP",
+    "l_no_accounts_desc": "Thêm tài khoản vào YubiKey của bạn từ bất kỳ nhà cung cấp dịch vụ nào hỗ trợ OATH TOTP/HOTP",
+    "s_add_account": "Thêm tài khoản",
+    "s_add_accounts": "Thêm tài khoản(s)",
+    "p_add_description": "Để quét mã QR, hãy chắc chắn rằng mã QR được hiển thị đầy đủ trên màn hình và nhấn nút bên dưới. Bạn cũng có thể kéo một hình ảnh đã lưu từ thư mục vào hộp thoại này. Nếu bạn có thông tin tài khoản dưới dạng văn bản, hãy sử dụng nhập thủ công thay vào đó.",
+    "l_drop_qr_description": "Kéo mã QR để thêm tài khoản(s)",
+    "s_add_manually": "Thêm thủ công",
+    "s_account_added": "Tài khoản đã được thêm",
+    "l_account_add_failed": "Thêm tài khoản thất bại: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_account_name_required": "Tài khoản của bạn phải có tên",
+    "l_name_already_exists": "Tên này đã tồn tại cho nhà phát hành",
+    "l_account_already_exists": "Tài khoản này đã tồn tại trên YubiKey",
+    "l_invalid_character_issuer": "Ký tự không hợp lệ: ':' không được phép trong nhà phát hành",
+    "l_select_accounts": "Chọn tài khoản(s) để thêm vào YubiKey",
+    "s_pin_account": "Ghim tài khoản",
+    "s_unpin_account": "Bỏ ghim tài khoản",
+    "s_no_pinned_accounts": "Không có tài khoản nào được ghim",
+    "s_pinned": "Đã ghim",
+    "l_pin_account_desc": "Giữ các tài khoản quan trọng của bạn cùng nhau",
+    "s_rename_account": "Đổi tên tài khoản",
+    "l_rename_account_desc": "Chỉnh sửa nhà phát hành/tên của tài khoản",
+    "s_account_renamed": "Tài khoản đã được đổi tên",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "p_rename_will_change_account_displayed": "Điều này sẽ thay đổi cách tài khoản được hiển thị trong danh sách.",
+    "s_delete_account": "Xóa tài khoản",
+    "l_delete_account_desc": "Xóa tài khoản khỏi YubiKey của bạn",
+    "s_account_deleted": "Tài khoản đã bị xóa",
+    "p_warning_delete_account": "Cảnh báo! Hành động này sẽ xóa tài khoản khỏi YubiKey của bạn.",
+    "p_warning_disable_credential": "Bạn sẽ không còn có thể tạo OTP cho tài khoản này. Hãy chắc chắn vô hiệu hóa thông tin đăng nhập này từ trang web để tránh bị khóa tài khoản của bạn.",
+    "s_account_name": "Tên tài khoản",
+    "s_search_accounts": "Tìm kiếm tài khoản",
+    "l_accounts_used": "{used} trong {capacity} tài khoản đã sử dụng",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {},
+            "capacity": {}
+        }
+    },
+    "s_num_digits": "{num} chữ số",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {}
+        }
+    },
+    "s_num_sec": "{num} giây",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {}
+        }
+    },
+    "s_issuer_optional": "Nhà phát hành (tùy chọn)",
+    "s_counter_based": "Dựa trên bộ đếm",
+    "s_time_based": "Dựa trên thời gian",
+    "l_copy_code_desc": "Dán mã vào ứng dụng khác",
+    "l_calculate_code_desc": "Lấy mã mới từ YubiKey của bạn",
+
+    "@_fido_credentials": {},
+    "s_rp_id": "RP ID",
+    "s_user_id": "User ID",
+    "s_credential_id": "Credential ID",
+    "s_display_name": "Tên hiển thị",
+    "s_user_name": "Tên người dùng",
+    "l_passkey": "Mã bảo mật: {label}",
+    "@l_passkey": {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "s_passkeys": "Mã bảo mật",
+    "s_no_passkeys": "Không có mã bảo mật",
+    "l_ready_to_use": "Sẵn sàng sử dụng",
+    "l_register_sk_on_websites": "Đăng ký làm Security Key trên các trang web",
+    "l_no_discoverable_accounts": "Không có mã bảo mật đã lưu",
+    "p_non_passkeys_note": "Có thể có thông tin đăng nhập không phải là mã bảo mật, nhưng không thể được liệt kê.",
+    "s_delete_passkey": "Xóa mã bảo mật",
+    "l_delete_passkey_desc": "Xóa mã bảo mật khỏi YubiKey",
+    "s_passkey_deleted": "Mã bảo mật đã bị xóa",
+    "p_warning_delete_passkey": "Điều này sẽ xóa mã bảo mật khỏi YubiKey của bạn.",
+    "s_search_passkeys": "Tìm kiếm mã bảo mật",
+    "p_passkeys_used": "{used} trong {max} mã bảo mật đã sử dụng.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {},
+            "max": {}
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "Sinh trắc học",
+    "l_fingerprint": "Vân tay: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {}
+        }
+    },
+    "s_fingerprints": "Vân tay",
+    "l_fingerprint_captured": "Vân tay đã được ghi lại thành công!",
+    "s_fingerprint_added": "Vân tay đã được thêm",
+    "l_adding_fingerprint_failed": "Lỗi khi thêm vân tay: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {}
+    },
+    "l_setting_name_failed": "Lỗi khi thiết lập tên: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "s_setup_fingerprints": "Thiết lập vân tay",
+    "p_setup_fingerprints_desc": "Cần thiết lập vân tay trước khi có thể sử dụng khóa.",
+    "s_add_fingerprint": "Thêm vân tay",
+    "s_delete_fingerprint": "Xóa vân tay",
+    "l_delete_fingerprint_desc": "Xóa vân tay khỏi YubiKey",
+    "s_fingerprint_deleted": "Vân tay đã bị xóa",
+    "p_warning_delete_fingerprint": "Điều này sẽ xóa vân tay khỏi YubiKey của bạn.",
+    "s_fingerprints_get_started": "Bắt đầu với vân tay",
+    "p_set_fingerprints_desc": "Trước khi có thể đăng ký vân tay, cần thiết lập mã PIN.",
+    "l_no_fps_added": "Chưa có vân tay nào được thêm",
+    "s_rename_fp": "Đổi tên vân tay",
+    "l_rename_fp_desc": "Thay đổi tên",
+    "s_fingerprint_renamed": "Vân tay đã được đổi tên",
+    "l_rename_fp_failed": "Lỗi khi đổi tên: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_add_one_or_more_fps": "Thêm một hoặc nhiều (tối đa năm) vân tay",
+    "l_fingerprints_used": "{used}/5 vân tay đã đăng ký",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {}
+        }
+    },
+    "p_press_fingerprint_begin": "Ấn ngón tay của bạn vào YubiKey để bắt đầu.",
+    "p_will_change_label_fp": "Điều này sẽ thay đổi tên của vân tay.",
+    "l_name_fingerprint": "Đặt tên cho vân tay này",
+
+    "@_fido_errors": {},
+    "l_user_action_timeout_error": "Thất bại do không hoạt động của người dùng",
+    "l_wrong_inserted_yk_error": "YubiKey được cắm lại không khớp với thiết bị ban đầu",
+    "l_failed_connecting_to_fido": "Kết nối với giao diện FIDO thất bại",
+
+    "@_certificates": {},
+    "s_certificate": "Chứng chỉ",
+    "s_csr": "CSR",
+    "s_subject": "Chủ thể",
+    "l_export_csr_file": "Lưu CSR vào tập tin",
+    "l_export_public_key": "Xuất khóa công khai",
+    "l_export_public_key_file": "Lưu khóa công khai vào tập tin",
+    "l_export_public_key_desc": "Xuất khóa công khai vào một tập tin",
+    "l_public_key_exported": "Khóa công khai đã được xuất",
+    "l_export_certificate": "Xuất chứng chỉ",
+    "l_export_certificate_file": "Xuất chứng chỉ vào tập tin",
+    "l_export_certificate_desc": "Xuất chứng chỉ vào một tập tin",
+    "l_certificate_exported": "Chứng chỉ đã được xuất",
+    "l_select_import_file": "Chọn tập tin để nhập",
+    "l_import_file": "Nhập tập tin",
+    "l_import_desc": "Nhập khóa và/hoặc chứng chỉ",
+    "l_import_nothing": "Không có gì để nhập",
+    "l_importing_file": "Đang nhập tập tin\u2026",
+    "s_file_imported": "Tập tin đã được nhập",
+    "l_unsupported_key_type": "Loại khóa không được hỗ trợ",
+    "l_delete_certificate": "Xóa chứng chỉ",
+    "l_delete_certificate_desc": "Xóa chứng chỉ khỏi YubiKey của bạn",
+    "l_delete_key": "Xóa khóa",
+    "l_delete_key_desc": "Xóa khóa khỏi YubiKey của bạn",
+    "l_delete_certificate_or_key": "Xóa chứng chỉ/khóa",
+    "l_delete_certificate_or_key_desc": "Xóa chứng chỉ hoặc khóa khỏi YubiKey",
+    "l_move_key": "Di chuyển khóa",
+    "l_move_key_desc": "Di chuyển một khóa từ khe PIV này sang khe khác",
+    "l_change_defaults": null,
+    "s_issuer": "Nhà phát hành",
+    "s_serial": "Số serial",
+    "s_certificate_fingerprint": "Dấu vân tay",
+    "s_valid_from": "Có hiệu lực từ",
+    "s_valid_to": "Có hiệu lực đến",
+    "l_no_certificate": "Chưa có chứng chỉ nào được tải",
+    "l_key_no_certificate": "Khóa không có chứng chỉ được tải",
+    "s_generate_key": "Tạo khóa",
+    "l_generate_desc": "Tạo một chứng chỉ hoặc CSR mới",
+    "p_generate_desc": "Điều này sẽ tạo một khóa mới trên YubiKey trong khe PIV {slot}. Khóa công khai sẽ được lưu vào tập tin, nhúng vào một chứng chỉ tự ký được lưu trữ trên YubiKey, hoặc trong một yêu cầu ký chứng chỉ (CSR) được lưu vào tập tin.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "s_private_key_generated": "Khóa riêng đã được tạo",
+    "p_select_what_to_delete": "Chọn những gì để xóa từ khe.",
+    "p_warning_delete_certificate": "Cảnh báo! Hành động này sẽ xóa chứng chỉ khỏi YubiKey của bạn.",
+    "p_warning_delete_key": "Cảnh báo! Hành động này sẽ xóa khóa riêng khỏi YubiKey của bạn.",
+    "p_warning_delete_certificate_and_key": "Cảnh báo! Hành động này sẽ xóa chứng chỉ và khóa riêng khỏi YubiKey của bạn.",
+    "q_delete_certificate_confirm": "Xóa chứng chỉ trong khe PIV {slot}?",
+    "@q_delete_certificate_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_key_confirm": "Xóa khóa riêng trong khe PIV {slot}?",
+    "@q_delete_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "q_delete_certificate_and_key_confirm": "Xóa chứng chỉ và khóa riêng trong khe PIV {slot}?",
+    "@q_delete_certificate_and_key_confirm": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_certificate_deleted": "Chứng chỉ đã bị xóa",
+    "l_key_deleted": "Khóa đã bị xóa",
+    "l_certificate_and_key_deleted": "Chứng chỉ và khóa đã bị xóa",
+    "l_include_certificate": "Bao gồm chứng chỉ",
+    "l_select_destination_slot": "Chọn khe đích",
+    "q_move_key_confirm": "Di chuyển khóa riêng trong khe PIV {from_slot}?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {}
+        }
+    },
+    "q_move_key_to_slot_confirm": "Di chuyển khóa riêng trong khe PIV {from_slot} đến khe {to_slot}?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "Di chuyển khóa riêng và chứng chỉ trong khe PIV {from_slot} đến khe {to_slot}?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {},
+            "to_slot": {}
+        }
+    },
+    "p_password_protected_file": "Tập tin đã chọn được bảo vệ bằng mật khẩu. Nhập mật khẩu để tiếp tục.",
+    "p_import_items_desc": "Các mục sau sẽ được nhập vào khe PIV {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_key_moved": "Khóa đã được di chuyển",
+    "l_key_and_certificate_moved": "Khóa và chứng chỉ đã được di chuyển",
+    "p_subject_desc": "Tên phân biệt (DN) được định dạng theo tiêu chuẩn RFC 4514.",
+    "l_rfc4514_invalid": "Định dạng RFC 4514 không hợp lệ",
+    "rfc4514_examples": "Ví dụ:\nCN=Tên Ví dụ\nCN=jsmith,DC=example,DC=net",
+    "s_allow_fingerprint": "Cho phép vân tay",
+    "p_cert_options_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra và ngày hết hạn (chứng chỉ chỉ).",
+    "p_cert_options_bio_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra, ngày hết hạn (chứng chỉ chỉ) và nếu sinh trắc học có thể được sử dụng thay cho PIN.",
+    "p_key_options_bio_desc": "Cho phép sử dụng sinh trắc học thay cho PIN.",
+    "s_overwrite_slot": "Ghi đè khe",
+    "p_overwrite_slot_desc": "Điều này sẽ ghi đè vĩnh viễn nội dung hiện có trong khe {slot}.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+    "l_overwrite_cert": "Chứng chỉ sẽ bị ghi đè",
+    "l_overwrite_key": "Khóa riêng sẽ bị ghi đè",
+    "l_overwrite_key_maybe": "Bất kỳ khóa riêng nào hiện có trong khe sẽ bị ghi đè",
+
+    "@_piv_slots": {},
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {},
+            "hexid": {}
+        }
+    },
+    "s_slot_9a": "Xác thực",
+    "s_slot_9c": "Chữ ký số",
+    "s_slot_9d": "Quản lý khóa",
+    "s_slot_9e": "Xác thực thẻ",
+    "s_retired_slot": "Quản lý khóa đã nghỉ hưu",
+
+    "@_otp_slots": {},
+    "s_otp_slot_one": "Chạm ngắn",
+    "s_otp_slot_two": "Chạm lâu",
+    "l_otp_slot_empty": "Khe trống",
+    "l_otp_slot_configured": "Khe đã được cấu hình",
+
+    "@_otp_slot_configurations": {},
+    "l_yubiotp_desc": "Cài đặt thông tin xác thực Yubico OTP",
+    "s_challenge_response": "Thách thức-phản hồi",
+    "l_challenge_response_desc": "Cài đặt thông tin xác thực thách thức-phản hồi",
+    "s_static_password": "Mật khẩu tĩnh",
+    "l_static_password_desc": "Cấu hình mật khẩu tĩnh",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "Cài đặt thông tin xác thực dựa trên HMAC-SHA1",
+    "s_public_id": "ID công khai",
+    "s_private_id": "ID riêng tư",
+    "s_use_serial": "Sử dụng số sê-ri",
+    "l_select_file": "Chọn tệp",
+    "l_no_export_file": "Không có tệp xuất khẩu",
+    "s_no_export": "Không xuất khẩu",
+    "s_export": "Xuất khẩu",
+    "l_export_configuration_file": "Xuất cấu hình ra tệp",
+    "l_exported_can_be_uploaded_at": "Các thông tin xác thực đã xuất có thể được tải lên tại {url}",
+    "@_export_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {}
+        }
+    },
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": "Xóa thông tin xác thực",
+    "l_delete_slot_desc": "Xóa thông tin xác thực trong khe",
+    "p_warning_delete_slot_configuration": "Cảnh báo! Hành động này sẽ xóa vĩnh viễn thông tin xác thực khỏi khe {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {}
+        }
+    },
+    "l_slot_deleted": "Thông tin xác thực đã bị xóa",
+    "s_swap": "Hoán đổi",
+    "s_swap_slots": "Hoán đổi các khe",
+    "l_swap_slots_desc": "Hoán đổi chạm ngắn/dài",
+    "p_swap_slots_desc": "Điều này sẽ hoán đổi cấu hình của hai khe.",
+    "l_slots_swapped": "Cấu hình khe đã được hoán đổi",
+    "l_slot_credential_configured": "Thông tin xác thực {type} đã được cấu hình",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {}
+        }
+    },
+    "l_slot_credential_configured_and_exported": "Thông tin xác thực {type} đã được cấu hình và xuất khẩu ra {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {},
+            "file": {}
+        }
+    },
+    "s_append_enter": "Thêm ⏎",
+    "l_append_enter_desc": "Thêm một cú nhấn Enter sau khi phát OTP",
+
+    "@_otp_errors": {},
+    "p_otp_swap_error": "Không thể hoán đổi khe! Đảm bảo YubiKey không có quyền truy cập hạn chế.",
+    "l_wrong_access_code": "Mã truy cập sai",
+
+    "@_otp_access_code": {},
+    "s_access_code": "Mã truy cập",
+    "s_show_access_code": "Hiển thị mã truy cập",
+    "s_hide_access_code": "Ẩn mã truy cập",
+    "p_enter_access_code": "Nhập mã truy cập cho khe {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
+
+
+    "@_permissions": {},
+    "s_enable_nfc": "Bật NFC",
+    "s_request_access": "Yêu cầu quyền truy cập",
+    "s_permission_denied": "Quyền truy cập bị từ chối",
+    "l_elevating_permissions": "Nâng cao quyền\u2026",
+    "s_review_permissions": "Xem xét quyền",
+    "s_open_windows_settings": "Mở cài đặt Windows",
+    "l_admin_privileges_required": "Yêu cầu quyền quản trị",
+    "p_elevated_permissions_required": "Quản lý thiết bị này yêu cầu quyền quản trị. Bạn cũng có thể sử dụng Cài đặt Windows để quản lý cấu hình FIDO.",
+    "p_webauthn_elevated_permissions_required": "Quản lý WebAuthn yêu cầu quyền quản trị. Bạn cũng có thể sử dụng Cài đặt Windows để quản lý cấu hình FIDO.",
+    "l_ms_store_permission_note": "Phiên bản ứng dụng từ Microsoft Store có thể không nâng cao quyền.",
+    "p_need_camera_permission": "Yubico Authenticator cần quyền truy cập Camera để quét mã QR.",
+
+    "@_qr_codes": {},
+    "s_qr_scan": "Quét mã QR",
+    "l_invalid_qr": "Mã QR không hợp lệ",
+    "l_qr_not_found": "Không tìm thấy mã QR",
+    "l_qr_file_too_large": "Tệp quá lớn (tối đa {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {}
+        }
+    },
+    "l_qr_invalid_image_file": "Tệp hình ảnh không hợp lệ",
+    "l_qr_select_file": "Chọn tệp có mã QR",
+    "l_qr_not_read": "Không thể đọc mã QR: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_point_camera_scan": "Chỉa camera vào mã QR để quét",
+    "q_want_to_scan": "Bạn có muốn quét không?",
+    "q_no_qr": "Không có mã QR?",
+    "s_enter_manually": "Nhập thủ công",
+    "s_read_from_file": "Đọc từ tệp",
+
+    "@_factory_reset": {},
+    "s_reset": "Đặt lại",
+    "s_factory_reset": "Đặt lại nhà máy",
+    "l_factory_reset_desc": "Khôi phục các cài đặt mặc định của YubiKey",
+    "l_factory_reset_required": "Yêu cầu đặt lại nhà máy",
+    "l_oath_application_reset": "Đặt lại ứng dụng OATH",
+    "l_fido_app_reset": "Đặt lại ứng dụng FIDO",
+    "l_reset_failed": "Lỗi khi thực hiện đặt lại: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_piv_app_reset": "Đặt lại ứng dụng PIV",
+    "p_factory_reset_an_app": "Đặt lại một ứng dụng trên YubiKey của bạn.",
+    "p_factory_reset_desc": "Dữ liệu được lưu trữ trong nhiều ứng dụng trên YubiKey, một số trong số đó có thể được đặt lại nhà máy độc lập với nhau.\n\nChọn một ứng dụng ở trên để đặt lại.",
+    "p_warning_factory_reset": "Cảnh báo! Điều này sẽ xóa vĩnh viễn tất cả các tài khoản OATH TOTP/HOTP khỏi YubiKey của bạn.",
+    "p_warning_disable_credentials": "Các thông tin xác thực OATH của bạn, cũng như bất kỳ mật khẩu nào đã đặt, sẽ bị xóa khỏi YubiKey này. Hãy đảm bảo vô hiệu hóa chúng từ các trang web tương ứng để tránh bị khóa tài khoản của bạn.",
+    "p_warning_deletes_accounts": "Cảnh báo! Điều này sẽ xóa vĩnh viễn tất cả các tài khoản U2F và FIDO2, bao gồm cả passkeys, khỏi YubiKey của bạn.",
+    "p_warning_disable_accounts": "Các thông tin xác thực của bạn, cũng như bất kỳ PIN nào đã đặt, sẽ bị xóa khỏi YubiKey này. Hãy đảm bảo vô hiệu hóa chúng từ các trang web tương ứng để tránh bị khóa tài khoản của bạn.",
+    "p_warning_piv_reset": "Cảnh báo! Tất cả dữ liệu được lưu trữ cho PIV sẽ bị xóa vĩnh viễn khỏi YubiKey của bạn.",
+    "p_warning_piv_reset_desc": "Điều này bao gồm các khóa riêng và chứng chỉ. PIN, PUK và khóa quản lý của bạn sẽ được đặt lại về giá trị mặc định của nhà máy.",
+    "p_warning_global_reset": "Cảnh báo! Điều này sẽ xóa vĩnh viễn tất cả dữ liệu đã lưu, bao gồm các thông tin xác thực, khỏi YubiKey của bạn.",
+    "p_warning_global_reset_desc": "Đặt lại các ứng dụng trên YubiKey của bạn về cài đặt mặc định của nhà máy. PIN sẽ được đặt lại về giá trị mặc định của nhà máy, và các dấu vân tay đã đăng ký sẽ bị xóa. Tất cả các khóa, chứng chỉ hoặc các thông tin xác thực khác sẽ bị xóa vĩnh viễn.",
+
+    "@_copy_to_clipboard": {},
+    "l_copy_to_clipboard": "Sao chép vào clipboard",
+    "s_code_copied": "Mã đã được sao chép",
+    "l_code_copied_clipboard": "Mã đã được sao chép vào clipboard",
+    "s_copy_log": "Sao chép nhật ký",
+    "l_log_copied": "Nhật ký đã được sao chép vào clipboard",
+    "l_diagnostics_copied": "Dữ liệu chẩn đoán đã được sao chép vào clipboard",
+    "p_target_copied_clipboard": "{label} đã được sao chép vào clipboard.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {}
+        }
+    },
+
+    "@_custom_icons": {},
+    "s_custom_icons": "Biểu tượng tùy chỉnh",
+    "l_set_icons_for_accounts": "Đặt biểu tượng cho các tài khoản",
+    "p_custom_icons_description": "Các gói biểu tượng có thể làm cho các tài khoản của bạn dễ phân biệt hơn với các logo và màu sắc quen thuộc.",
+    "s_replace_icon_pack": "Thay thế gói biểu tượng",
+    "l_loading_icon_pack": "Đang tải gói biểu tượng\u2026",
+    "s_load_icon_pack": "Tải gói biểu tượng",
+    "s_remove_icon_pack": "Gỡ gói biểu tượng",
+    "l_icon_pack_removed": "Gói biểu tượng đã được gỡ bỏ",
+    "l_remove_icon_pack_failed": "Lỗi khi gỡ bỏ gói biểu tượng",
+    "s_choose_icon_pack": "Chọn gói biểu tượng",
+    "l_icon_pack_imported": "Gói biểu tượng đã được nhập khẩu",
+    "l_import_icon_pack_failed": "Lỗi khi nhập khẩu gói biểu tượng: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
+    "l_invalid_icon_pack": "Gói biểu tượng không hợp lệ",
+    "l_icon_pack_copy_failed": "Không thể sao chép các tệp gói biểu tượng",
+
+    "@_android_settings": {},
+    "s_nfc_options": "Tùy chọn NFC",
+    "l_on_yk_nfc_tap": "Khi chạm NFC trên YubiKey",
+    "l_do_nothing": "Không làm gì",
+    "l_launch_ya": "Khởi chạy Yubico Authenticator",
+    "l_copy_otp_clipboard": "Sao chép OTP vào clipboard",
+    "l_launch_and_copy_otp": "Khởi chạy ứng dụng và sao chép OTP",
+    "l_kbd_layout_for_static": "Bố cục bàn phím (cho mật khẩu tĩnh)",
+    "s_choose_kbd_layout": "Chọn bố cục bàn phím",
+    "l_bypass_touch_requirement": "Bỏ qua yêu cầu chạm",
+    "l_bypass_touch_requirement_on": "Các tài khoản yêu cầu chạm sẽ tự động được hiển thị qua NFC",
+    "l_bypass_touch_requirement_off": "Các tài khoản yêu cầu chạm cần thêm một lần chạm qua NFC",
+    "s_silence_nfc_sounds": "Tắt âm thanh NFC",
+    "l_silence_nfc_sounds_on": "Không có âm thanh nào sẽ được phát khi chạm NFC",
+    "l_silence_nfc_sounds_off": "Âm thanh sẽ phát khi chạm NFC",
+    "s_usb_options": "Tùy chọn USB",
+    "l_launch_app_on_usb": "Khởi chạy khi kết nối YubiKey",
+    "l_launch_app_on_usb_on": "Điều này ngăn cản các ứng dụng khác sử dụng YubiKey qua USB",
+    "l_launch_app_on_usb_off": "Các ứng dụng khác có thể sử dụng YubiKey qua USB",
+    "s_allow_screenshots": "Cho phép chụp ảnh màn hình",
+
+    "@_nfc_oath_actions": {},
+    "s_nfc_oath_reset_success": null,
+    "s_nfc_oath_reset_failure": null,
+
+    "s_nfc_oath_change_password_success": null,
+    "s_nfc_oath_set_password_failure": null,
+    "s_nfc_oath_change_password_failure": null,
+
+    "s_nfc_oath_remove_password_failure": null,
+
+    "s_nfc_oath_add_account_failure": null,
+
+    "s_nfc_oath_rename_account_failure": null,
+
+    "s_nfc_oath_delete_account_failure": null,
+
+    "s_nfc_oath_calculate_code_success": null,
+    "s_nfc_oath_calculate_code_failure": null,
+
+    "s_nfc_oath_add_multiple_accounts_success": null,
+    "s_nfc_oath_add_multiple_accounts_failure": null,
+
+    "@_nfc_fido_actions": {},
+    "s_nfc_fido_reset_success": null,
+    "s_nfc_fido_reset_failure": null,
+
+    "s_nfc_fido_set_pin_failure": null,
+
+    "s_nfc_fido_change_pin_success": null,
+    "s_nfc_fido_change_pin_failure": null,
+
+    "s_nfc_fido_delete_passkey_failure": null,
+
+    "@_nfc_actions": {},
+    "s_nfc_tap_for": null,
+    "@s_nfc_tap_for": {
+        "placeholders": {
+            "operation": {}
+        }
+    },
+
+    "l_nfc_read_key_failure": null,
+
+    "s_nfc_remove_key": null,
+
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_accessing_yubikey": null,
+    "s_nfc_scan_yubikey": null,
+
+    "c_nfc_unlock": null,
+    "s_nfc_unlock_processing": null,
+    "s_nfc_unlock_success": null,
+    "s_nfc_unlock_failure": null,
+
+    "@_ndef": {},
+    "p_ndef_set_otp": "Đã sao chép mã OTP từ YubiKey vào clipboard.",
+    "p_ndef_set_password": "Đã sao chép mật khẩu từ YubiKey vào clipboard.",
+    "p_ndef_parse_failure": "Không thể phân tích mã OTP từ YubiKey.",
+    "p_ndef_set_clip_failure": "Không thể truy cập clipboard khi cố gắng sao chép mã OTP từ YubiKey.",
+
+    "@_key_customization": {},
+    "s_set_label": "Đặt nhãn",
+    "s_set_color": "Đặt màu",
+    "s_change_label": "Thay đổi nhãn",
+    "s_color": "Màu sắc",
+    "p_set_will_add_custom_name": "Điều này sẽ đặt tên tùy chỉnh cho YubiKey của bạn.",
+    "p_rename_will_change_custom_name": "Điều này sẽ thay đổi nhãn của YubiKey của bạn.",
+
+    "@_eof": {}
+}
