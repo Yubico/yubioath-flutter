@@ -236,6 +236,8 @@
     "s_unsupported_yk": "YubiKey không được hỗ trợ",
     "s_yk_not_recognized": "Thiết bị không được nhận diện",
     "p_operation_failed_try_again": "Thao tác không thành công, vui lòng thử lại.",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Đã xảy ra lỗi",

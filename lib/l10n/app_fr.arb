@@ -236,6 +236,8 @@
     "s_unsupported_yk": "YubiKey non prise en charge",
     "s_yk_not_recognized": "Appareil non reconnu",
     "p_operation_failed_try_again": "L'opération a échoué, veuillez réessayer.",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Une erreur s'est produite",

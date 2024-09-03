@@ -236,6 +236,8 @@
     "s_unsupported_yk": "サポートされていないYubiKey",
     "s_yk_not_recognized": "デバイスが認識されません",
     "p_operation_failed_try_again": "操作に失敗しました。もう一度やり直してください。",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "エラーが発生しました",

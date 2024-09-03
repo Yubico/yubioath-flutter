@@ -236,6 +236,8 @@
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
     "p_operation_failed_try_again": "The operation failed, please try again.",
+    "l_configuration_unsupported": "Configuration not supported",
+    "p_scp_unsupported": "To communicate over NFC, the YubiKey requires technology which is not supported by this phone. Please plug the YubiKey to the phone's USB port.",
 
     "@_general_errors": {},
     "l_error_occurred": "An error has occurred",
