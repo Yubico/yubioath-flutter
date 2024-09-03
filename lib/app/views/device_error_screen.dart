@@ -96,8 +96,8 @@ class DeviceErrorScreen extends ConsumerWidget {
               size: 96,
               color: Theme.of(context).colorScheme.tertiary,
             ),
-            header: l10n.l_scp11b_nfc_technology_missing,
-            message: l10n.p_scp11b_missing_support_desc,
+            header: l10n.l_configuration_unsupported,
+            message: l10n.p_scp_unsupported,
           ),
         _ => HomeMessagePage(
             centered: true,
