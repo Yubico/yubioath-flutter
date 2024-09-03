@@ -35,6 +35,7 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
+import '../android_alert_dialog.dart';
 
 final _log = Logger('android.oath.state');
 
@@ -136,27 +137,33 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
-// Converts Platform exception during Add Account operation
-// Returns CancellationException for situations we don't want to show a Toast
-Exception _decodeAddAccountException(PlatformException platformException) {
-  final decodedException = platformException.decode();
-
-  // Auth required, the app will show Unlock dialog
-  if (decodedException is ApduException && decodedException.sw == 0x6982) {
-    _log.error('Add account failed: Auth required');
-    return CancellationException();
+Exception handlePlatformException(PlatformException platformException, ref) {
+  final decoded = platformException.decode();
+  final l10n = ref.read(l10nProvider);
+  switch (decoded) {
+    case ApduException apduException:
+      if (apduException.sw == 0x6985) {
+        showAlertDialog(ref, l10n.l_account_add_failure_title,
+            l10n.p_account_add_failure_6985);
+        return CancellationException();
+      }
+      if (apduException.sw == 0x6982) {
+        showAlertDialog(ref, l10n.l_account_add_failure_title,
+            l10n.p_account_add_failure_6982);
+        return CancellationException();
+      }
+    case PlatformException pe:
+      if (pe.code == 'JobCancellationException') {
+        showAlertDialog(ref, l10n.l_account_add_failure_title,
+            l10n.p_account_add_failure_application_not_available);
+        return CancellationException();
+      } else if (pe.code == 'IllegalArgumentException') {
+        showAlertDialog(ref, l10n.l_account_add_failure_title,
+            l10n.p_account_add_failure_exists);
+        return CancellationException();
+      }
   }
-
-  // Thrown in native code when the account already exists on the YubiKey
-  // The entry dialog will show an error message and that is why we convert
-  // this to CancellationException to avoid showing a Toast
-  if (platformException.code == 'IllegalArgumentException') {
-    _log.error('Add account failed: Account already exists');
-    return CancellationException();
-  }
-
-  // original exception
-  return decodedException;
+  return decoded;
 }
 
 final addCredentialToAnyProvider =
@@ -171,7 +178,7 @@ final addCredentialToAnyProvider =
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
-            throw _decodeAddAccountException(pe);
+            throw handlePlatformException(pe, ref);
           }
         });
 
@@ -286,7 +293,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
-      throw _decodeAddAccountException(pe);
+      throw handlePlatformException(pe, _ref);
     }
   }
 

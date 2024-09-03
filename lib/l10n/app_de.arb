@@ -427,6 +427,11 @@
             "message": {}
         }
     },
+    "l_account_add_failure_title": null,
+    "p_account_add_failure_6985": null,
+    "p_account_add_failure_6982": null,
+    "p_account_add_failure_exists": null,
+    "p_account_add_failure_application_not_available": null,
     "l_account_name_required": "Ihr Konto muss einen Namen haben",
     "l_name_already_exists": "Für diesen Aussteller existiert dieser Name bereits",
     "l_account_already_exists": "Dieses Konto existiert bereits auf dem YubiKey",

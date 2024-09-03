@@ -427,6 +427,11 @@
             "message": {}
         }
     },
+    "l_account_add_failure_title": null,
+    "p_account_add_failure_6985": null,
+    "p_account_add_failure_6982": null,
+    "p_account_add_failure_exists": null,
+    "p_account_add_failure_application_not_available": null,
     "l_account_name_required": "Tài khoản của bạn phải có tên",
     "l_name_already_exists": "Tên này đã tồn tại cho nhà phát hành",
     "l_account_already_exists": "Tài khoản này đã tồn tại trên YubiKey",
