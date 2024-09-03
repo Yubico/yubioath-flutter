@@ -46,10 +46,11 @@
     "s_details": "詳細",
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを非表示",
+    "s_show_navigation": null,
     "s_expand_navigation": "ナビゲーションを展開",
     "s_collapse_navigation": "ナビゲーションを閉じる",
-    "s_expand_sidebar": null,
-    "s_collapse_sidebar": null,
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
@@ -87,7 +88,6 @@
     "s_terms_of_use": "利用規約",
     "s_privacy_policy": "プライバシーポリシー",
     "s_open_src_licenses": "オープンソースライセンス",
-    "s_configure_yk": "YubiKeyを設定",
     "s_please_wait": "お待ちください\u2026",
     "s_secret_key": "秘密鍵",
     "s_show_secret_key": "秘密鍵を表示",
