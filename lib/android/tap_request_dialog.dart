@@ -16,19 +16,22 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../app/logging.dart';
 import '../app/message.dart';
 import '../app/state.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
 import 'views/nfc/nfc_content_widget.dart';
+import 'views/nfc/nfc_failure_icon.dart';
 import 'views/nfc/nfc_progress_bar.dart';
 import 'views/nfc/nfc_success_icon.dart';
 
+final _log = Logger('android.tap_request_dialog');
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
 final androidDialogProvider =
@@ -99,17 +102,19 @@ class _DialogProvider extends Notifier<int> {
           }
           break;
         case NfcActivity.processingInterrupted:
-          explicitAction = false; // next action might not be explicit
+          processingTimer?.cancel();
+          viewNotifier.setDialogProperties(showCloseButton: true);
           notifier.sendCommand(updateNfcView(NfcContentWidget(
             title: properties.operationFailure,
-            icon: const NfcIconProgressBar(false),
+            subtitle: l10n.s_nfc_scan_again,
+            icon: const NfcIconFailure(),
           )));
           break;
         case NfcActivity.notActive:
-          debugPrint('Received not handled notActive');
+          _log.debug('Received not handled notActive');
           break;
         case NfcActivity.ready:
-          debugPrint('Received not handled ready');
+          _log.debug('Received not handled ready');
       }
     });
 
@@ -143,7 +148,6 @@ class _DialogProvider extends Notifier<int> {
   }
 
   void cancelDialog() async {
-    debugPrint('Cancelled dialog');
     explicitAction = false;
     await _channel.invokeMethod('cancel');
   }

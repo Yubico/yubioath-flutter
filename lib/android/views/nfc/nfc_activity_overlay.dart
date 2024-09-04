@@ -144,14 +144,14 @@ class NfcBottomSheet extends ConsumerWidget {
         Stack(fit: StackFit.passthrough, children: [
           if (showCloseButton)
             Positioned(
-              top: 8,
-              right: 8,
+              top: 10,
+              right: 10,
               child: IconButton(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Symbols.close, fill: 1, size: 24)),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
             child: widget,
           )
         ]),

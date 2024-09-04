@@ -16,10 +16,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../../../app/logging.dart';
 import '../../tap_request_dialog.dart';
 import 'models.dart';
 import 'nfc_activity_overlay.dart';
+
+final _log = Logger('android.nfc_activity_command_listener');
 
 final nfcEventCommandListener =
     Provider<_NfcEventCommandListener>((ref) => _NfcEventCommandListener(ref));
@@ -34,8 +38,7 @@ class _NfcEventCommandListener {
     listener?.close();
     listener = _ref.listen(nfcEventCommandNotifier.select((c) => c.event),
         (previous, action) {
-      debugPrint(
-          'XXX Change in command for Overlay: $previous -> $action in context: $context');
+      _log.debug('Change in command for Overlay: $previous -> $action');
       switch (action) {
         case (NfcShowViewEvent a):
           _show(context, a.child);

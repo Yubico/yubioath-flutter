@@ -19,6 +19,7 @@ package com.yubico.authenticator.fido
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.DialogManager
+import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
@@ -68,9 +69,10 @@ class FidoManager(
     messenger: BinaryMessenger,
     lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
+    private val appMethodChannel: MainActivity.AppMethodChannel,
+    private val dialogManager: DialogManager,
     private val fidoViewModel: FidoViewModel,
-    mainViewModel: MainViewModel,
-    dialogManager: DialogManager,
+    mainViewModel: MainViewModel
 ) : AppContextManager(), DeviceListener {
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -97,7 +99,7 @@ class FidoManager(
         }
     }
 
-    private val connectionHelper = FidoConnectionHelper(deviceManager, dialogManager)
+    private val connectionHelper = FidoConnectionHelper(deviceManager)
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -114,6 +116,8 @@ class FidoManager(
         FidoResetHelper(
             lifecycleOwner,
             deviceManager,
+            appMethodChannel,
+            dialogManager,
             fidoViewModel,
             mainViewModel,
             connectionHelper,
@@ -194,7 +198,6 @@ class FidoManager(
             // Clear any cached FIDO state
             fidoViewModel.clearSessionState()
         }
-
     }
 
     private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice) {
@@ -578,7 +581,7 @@ class FidoManager(
                         }
                         else -> throw ctapException
                     }
-                } catch (io: IOException) {
+                } catch (_: IOException) {
                     return@useSession JSONObject(
                         mapOf(
                             "success" to false,

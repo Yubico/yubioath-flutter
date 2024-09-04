@@ -42,8 +42,6 @@ import com.yubico.authenticator.oath.keystore.ClearingMemProvider
 import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
 import com.yubico.authenticator.oath.keystore.SharedPrefProvider
-import com.yubico.authenticator.yubikit.NfcActivityListener
-import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -58,7 +56,6 @@ import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.management.Capability
 import com.yubico.yubikit.oath.CredentialData
-import com.yubico.yubikit.support.DeviceUtil
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
@@ -66,10 +63,10 @@ import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.URI
-import java.util.TimerTask
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
+import kotlin.random.Random
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
 
@@ -79,8 +76,7 @@ class OathManager(
     private val deviceManager: DeviceManager,
     private val oathViewModel: OathViewModel,
     private val dialogManager: DialogManager,
-    private val appPreferences: AppPreferences,
-    private val nfcActivityListener: NfcActivityListener
+    private val appPreferences: AppPreferences
 ) : AppContextManager(), DeviceListener {
 
     companion object {
@@ -216,8 +212,6 @@ class OathManager(
         coroutineScope.cancel()
     }
 
-    var showProcessingTimerTask: TimerTask? = null
-
     override suspend fun processYubiKey(device: YubiKeyDevice) {
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
@@ -227,8 +221,8 @@ class OathManager(
                     // Either run a pending action, or just refresh codes
                     if (pendingAction != null) {
                         pendingAction?.let { action ->
-                            action.invoke(Result.success(session))
                             pendingAction = null
+                            action.invoke(Result.success(session))
                         }
                     } else {
                         // Refresh codes
@@ -268,7 +262,6 @@ class OathManager(
                         } else {
                             // Awaiting an action for a different device? Fail it and stop processing.
                             action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
-                            showProcessingTimerTask?.cancel()
                             return@withConnection
                         }
                     }
@@ -289,14 +282,12 @@ class OathManager(
                                     supportedCapabilities = oathCapabilities
                                 )
                             )
-                            showProcessingTimerTask?.cancel()
                             return@withConnection
                         }
                     }
                 }
             }
 
-            showProcessingTimerTask?.cancel()
             logger.debug(
                 "Successfully read Oath session info (and credentials if unlocked) from connected key"
             )
@@ -320,7 +311,7 @@ class OathManager(
         val credentialData: CredentialData =
             CredentialData.parseUri(URI.create(uri))
         addToAny = true
-        return useOathSessionNfc { session ->
+        return useSessionNfc { session ->
             // We need to check for duplicates here since we haven't yet read the credentials
             if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
                 throw IllegalArgumentException()
@@ -499,12 +490,6 @@ class OathManager(
                 renamed
             )
 
-//            // simulate long taking op
-//            val renamedCredential = credential
-//            logger.debug("simulate error")
-//            Thread.sleep(3000)
-//            throw IOException("Test exception")
-
             jsonSerializer.encodeToString(renamed)
         }
 
@@ -527,7 +512,7 @@ class OathManager(
 
         deviceManager.withKey { usbYubiKeyDevice ->
             try {
-                useOathSessionUsb(usbYubiKeyDevice) { session ->
+                useSessionUsb(usbYubiKeyDevice) { session ->
                     try {
                         oathViewModel.updateCredentials(calculateOathCodes(session))
                     } catch (apduException: ApduException) {
@@ -653,7 +638,6 @@ class OathManager(
         return session
     }
 
-
     private fun calculateOathCodes(session: YubiKitOathSession): Map<Credential, Code?> {
         val isUsbKey = deviceManager.isUsbKeyConnected()
         var timestamp = System.currentTimeMillis()
@@ -693,19 +677,23 @@ class OathManager(
     private suspend fun <T> useOathSession(
         unlock: Boolean = true,
         updateDeviceInfo: Boolean = false,
-        action: (YubiKitOathSession) -> T
+        block: (YubiKitOathSession) -> T
     ): T {
         // callers can decide whether the session should be unlocked first
         unlockOnConnect.set(unlock)
         // callers can request whether device info should be updated after session operation
         this@OathManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
-            onUsb = { useOathSessionUsb(it, updateDeviceInfo, action) },
-            onNfc = { useOathSessionNfc(action) }
+            onUsb = { useSessionUsb(it, updateDeviceInfo, block) },
+            onNfc = { useSessionNfc(block) },
+            onDialogCancelled = {
+                pendingAction?.invoke(Result.failure(CancellationException()))
+                pendingAction = null
+            },
         )
     }
 
-    private suspend fun <T> useOathSessionUsb(
+    private suspend fun <T> useSessionUsb(
         device: UsbYubiKeyDevice,
         updateDeviceInfo: Boolean = false,
         block: (YubiKitOathSession) -> T
@@ -717,40 +705,27 @@ class OathManager(
         }
     }
 
-    private suspend fun <T> useOathSessionNfc(
-        block: (YubiKitOathSession) -> T
+    private suspend fun <T> useSessionNfc(
+        block: (YubiKitOathSession) -> T,
     ): Result<T, Throwable> {
-        var firstShow = true
-        while (true) { // loop until success or cancel
-            try {
-                val result = suspendCoroutine { outer ->
-                    pendingAction = {
-                        outer.resumeWith(runCatching {
-                            val session = it.value // this can throw CancellationException
-                            nfcActivityListener.onChange(NfcActivityState.PROCESSING_STARTED)
-                            block.invoke(session)
-                        })
-                    }
-
-                    if (firstShow) {
-                        dialogManager.showDialog {
-                            logger.debug("Cancelled dialog")
-                            pendingAction?.invoke(Result.failure(CancellationException()))
-                            pendingAction = null
-                        }
-                        firstShow = false
-                    }
-                    // here the coroutine is suspended and waits till pendingAction is
-                    // invoked - the pending action result will resume this coroutine
+        try {
+            val result = suspendCoroutine { outer ->
+                pendingAction = {
+                    outer.resumeWith(runCatching {
+                        block.invoke(it.value)
+                    })
                 }
-                return Result.success(result!!)
-            } catch (cancelled: CancellationException) {
-                return Result.failure(cancelled)
-            } catch (e: Exception) {
-                logger.error("Exception during action: ", e)
-                return Result.failure(e)
+
+                // here the coroutine is suspended and waits till pendingAction is
+                // invoked - the pending action result will resume this coroutine
             }
-        } // while
+            return Result.success(result!!)
+        } catch (cancelled: CancellationException) {
+            return Result.failure(cancelled)
+        } catch (e: Exception) {
+            logger.error("Exception during action: ", e)
+            return Result.failure(e)
+        }
     }
 
     override fun onConnected(device: YubiKeyDevice) {

@@ -16,13 +16,11 @@
 
 package com.yubico.authenticator.management
 
-import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
-import org.slf4j.LoggerFactory
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
 
@@ -30,16 +28,19 @@ typealias YubiKitManagementSession = com.yubico.yubikit.management.ManagementSes
 typealias ManagementAction = (Result<YubiKitManagementSession, Exception>) -> Unit
 
 class ManagementConnectionHelper(
-    private val deviceManager: DeviceManager,
-    private val dialogManager: DialogManager
+    private val deviceManager: DeviceManager
 ) {
     private var action: ManagementAction? = null
 
-    suspend fun <T> useSession(action: (YubiKitManagementSession) -> T): T {
-        return deviceManager.withKey(
-            onNfc = { useSessionNfc(action) },
-            onUsb = { useSessionUsb(it, action) })
-    }
+    suspend fun <T> useSession(block: (YubiKitManagementSession) -> T): T =
+        deviceManager.withKey(
+            onUsb = { useSessionUsb(it, block) },
+            onNfc = { useSessionNfc(block) },
+            onDialogCancelled = {
+                action?.invoke(Result.failure(CancellationException()))
+                action = null
+            },
+        )
 
     private suspend fun <T> useSessionUsb(
         device: UsbYubiKeyDevice,
@@ -48,7 +49,8 @@ class ManagementConnectionHelper(
         block(YubiKitManagementSession(it))
     }
 
-    private suspend fun <T> useSessionNfc(block: (YubiKitManagementSession) -> T): Result<T, Throwable> {
+    private suspend fun <T> useSessionNfc(
+        block: (YubiKitManagementSession) -> T): Result<T, Throwable> {
         try {
             val result = suspendCoroutine<T> { outer ->
                 action = {
@@ -56,23 +58,12 @@ class ManagementConnectionHelper(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog {
-                    logger.debug("Cancelled Dialog")
-                    action?.invoke(Result.failure(CancellationException()))
-                    action = null
-                }
             }
             return Result.success(result!!)
         } catch (cancelled: CancellationException) {
             return Result.failure(cancelled)
         } catch (error: Throwable) {
             return Result.failure(error)
-        } finally {
-            dialogManager.closeDialog()
         }
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(ManagementConnectionHelper::class.java)
     }
 }

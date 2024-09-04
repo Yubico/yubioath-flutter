@@ -199,6 +199,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               ),
               textInputAction: TextInputAction.next,
               focusNode: _issuerFocus,
+              autofocus: true,
               onChanged: (value) {
                 setState(() {
                   _issuer = value.trim();

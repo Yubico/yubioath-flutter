@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.fido
 
-import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.withConnection
@@ -27,10 +26,7 @@ import org.slf4j.LoggerFactory
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
 
-class FidoConnectionHelper(
-    private val deviceManager: DeviceManager,
-    private val dialogManager: DialogManager
-) {
+class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: FidoAction? = null
 
     fun invokePending(fidoSession: YubiKitFidoSession) {
@@ -47,10 +43,15 @@ class FidoConnectionHelper(
         }
     }
 
-    suspend fun <T> useSession(action: (YubiKitFidoSession) -> T): T {
+    suspend fun <T> useSession(block: (YubiKitFidoSession) -> T): T {
         return deviceManager.withKey(
-            onNfc = { useSessionNfc(action) },
-            onUsb = { useSessionUsb(it, action) })
+            onUsb = { useSessionUsb(it, block) },
+            onNfc = { useSessionNfc(block) },
+            onDialogCancelled = {
+                pendingAction?.invoke(Result.failure(CancellationException()))
+                pendingAction = null
+            }
+        )
     }
 
     suspend fun <T> useSessionUsb(
@@ -60,7 +61,9 @@ class FidoConnectionHelper(
         block(YubiKitFidoSession(it))
     }
 
-    suspend fun <T> useSessionNfc(block: (YubiKitFidoSession) -> T): Result<T, Throwable> {
+    suspend fun <T> useSessionNfc(
+        block: (YubiKitFidoSession) -> T
+    ): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
@@ -68,19 +71,13 @@ class FidoConnectionHelper(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog {
-                    logger.debug("Cancelled dialog")
-                    pendingAction?.invoke(Result.failure(CancellationException()))
-                    pendingAction = null
-                }
             }
             return Result.success(result!!)
         } catch (cancelled: CancellationException) {
             return Result.failure(cancelled)
         } catch (error: Throwable) {
+            logger.error("Exception during action: ", error)
             return Result.failure(error)
-        } finally {
-            dialogManager.closeDialog()
         }
     }
 

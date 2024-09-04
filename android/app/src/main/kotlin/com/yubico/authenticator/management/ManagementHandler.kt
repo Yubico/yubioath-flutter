@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.management
 
-import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.setHandler
@@ -29,14 +28,13 @@ import java.util.concurrent.Executors
 
 class ManagementHandler(
     messenger: BinaryMessenger,
-    deviceManager: DeviceManager,
-    dialogManager: DialogManager
+    deviceManager: DeviceManager
 ) {
     private val channel = MethodChannel(messenger, "android.management.methods")
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
-    private val connectionHelper = ManagementConnectionHelper(deviceManager, dialogManager)
+    private val connectionHelper = ManagementConnectionHelper(deviceManager)
 
     init {
         channel.setHandler(coroutineScope) { method, _ ->

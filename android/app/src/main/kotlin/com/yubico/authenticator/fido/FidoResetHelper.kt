@@ -18,11 +18,14 @@ package com.yubico.authenticator.fido
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.yubico.authenticator.DialogManager
+import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
+import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import kotlinx.coroutines.CoroutineScope
@@ -68,6 +71,8 @@ fun createCaptureErrorEvent(code: Int) : FidoRegisterFpCaptureErrorEvent {
 class FidoResetHelper(
     private val lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
+    private val appMethodChannel: MainActivity.AppMethodChannel,
+    private val dialogManager: DialogManager,
     private val fidoViewModel: FidoViewModel,
     private val mainViewModel: MainViewModel,
     private val connectionHelper: FidoConnectionHelper,
@@ -106,7 +111,7 @@ class FidoResetHelper(
                 resetOverNfc()
             }
             logger.info("FIDO reset complete")
-        } catch (e: CancellationException) {
+        } catch (_: CancellationException) {
             logger.debug("FIDO reset cancelled")
         } finally {
             withContext(Dispatchers.Main) {
@@ -209,15 +214,19 @@ class FidoResetHelper(
 
     private suspend fun resetOverNfc() = suspendCoroutine { continuation ->
         coroutineScope.launch {
+            dialogManager.showDialog {
+
+            }
             fidoViewModel.updateResetState(FidoResetState.Touch)
             try {
                 connectionHelper.useSessionNfc { fidoSession ->
                     doReset(fidoSession)
                     continuation.resume(Unit)
-                }
+                }.value
             } catch (e: Throwable) {
                 // on NFC, clean device info in this situation
                 mainViewModel.setDeviceInfo(null)
+                logger.error("Failure during FIDO reset:", e)
                 continuation.resumeWithException(e)
             }
         }

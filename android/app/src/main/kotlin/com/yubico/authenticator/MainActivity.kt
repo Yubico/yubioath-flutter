@@ -21,7 +21,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.annotation.SuppressLint
-import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -80,6 +79,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.Closeable
+import java.io.IOException
 import java.security.NoSuchAlgorithmException
 import java.util.concurrent.Executors
 import javax.crypto.Mac
@@ -318,10 +318,14 @@ class MainActivity : FlutterFragmentActivity() {
             return
         }
 
-        // If NFC and FIPS check for SCP11b key
-        if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
-            logger.debug("Checking for usable SCP11b key...")
-            deviceManager.scpKeyParams =
+        if (device is NfcYubiKeyDevice) {
+            appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
+        }
+
+        val scpKeyParams : ScpKeyParams? = try {
+            // If NFC and FIPS check for SCP11b key
+            if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
+                logger.debug("Checking for usable SCP11b key...")
                 device.withConnection<SmartCardConnection, ScpKeyParams?> { connection ->
                     val scp = SecurityDomainSession(connection)
                     val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
@@ -335,15 +339,22 @@ class MainActivity : FlutterFragmentActivity() {
                         logger.debug("Found SCP11b key: {}", keyRef)
                     }
                 }
+            } else null
+        } catch (e: Exception) {
+            logger.debug("Exception while getting scp keys: ", e)
+            if (device is NfcYubiKeyDevice) {
+                appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+            }
+            null
         }
 
         // this YubiKey provides SCP11b key but the phone cannot perform AESCMAC
-        if (deviceManager.scpKeyParams != null && !supportsScp11b) {
+        if (scpKeyParams != null && !supportsScp11b) {
             deviceManager.setDeviceInfo(noScp11bNfcSupport)
             return
         }
 
-        deviceManager.setDeviceInfo(deviceInfo)
+        deviceManager.setDeviceInfo(deviceInfo, scpKeyParams)
         val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
         logger.debug("Connected key supports: {}", supportedContexts)
         if (!supportedContexts.contains(viewModel.appContext.value)) {
@@ -362,9 +373,6 @@ class MainActivity : FlutterFragmentActivity() {
 
         contextManager?.let {
             try {
-                if (device is NfcYubiKeyDevice) {
-                    appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
-                }
                 it.processYubiKey(device)
                 if (device is NfcYubiKeyDevice) {
                     appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_FINISHED)
@@ -372,10 +380,12 @@ class MainActivity : FlutterFragmentActivity() {
                         appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
                     }
                 }
-            } catch (e: Throwable) {
+            } catch (e: IOException) {
+                logger.debug("Caught IOException during YubiKey processing: ", e)
                 appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
-                logger.error("Error processing YubiKey in AppContextManager", e)
             }
+
+
         }
     }
 
@@ -403,12 +413,13 @@ class MainActivity : FlutterFragmentActivity() {
         messenger = flutterEngine.dartExecutor.binaryMessenger
         flutterLog = FlutterLog(messenger)
         appMethodChannel = AppMethodChannel(messenger)
-        deviceManager = DeviceManager(this, viewModel,appMethodChannel)
-        appContext = AppContext(messenger, this.lifecycleScope, viewModel)
         dialogManager = DialogManager(messenger, this.lifecycleScope)
+        deviceManager = DeviceManager(this, viewModel,appMethodChannel, dialogManager)
+        appContext = AppContext(messenger, this.lifecycleScope, viewModel)
+
         appPreferences = AppPreferences(this)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
-        managementHandler = ManagementHandler(messenger, deviceManager, dialogManager)
+        managementHandler = ManagementHandler(messenger, deviceManager)
 
         nfcActivityListener.appMethodChannel = appMethodChannel
 
@@ -453,8 +464,7 @@ class MainActivity : FlutterFragmentActivity() {
                     deviceManager,
                     oathViewModel,
                     dialogManager,
-                    appPreferences,
-                    nfcActivityListener
+                    appPreferences
                 )
 
                 OperationContext.FidoFingerprints,
@@ -462,9 +472,10 @@ class MainActivity : FlutterFragmentActivity() {
                     messenger,
                     this,
                     deviceManager,
+                    appMethodChannel,
+                    dialogManager,
                     fidoViewModel,
-                    viewModel,
-                    dialogManager
+                    viewModel
                 )
 
                 else -> null

@@ -413,7 +413,7 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
         'callArgs': {'pin': pin},
         'operationSuccess': l10n.s_nfc_unlock_success,
         'operationFailure': l10n.s_nfc_unlock_failure,
-        'showSuccess': true
+        'showSuccess': false
       });
 
   Future<dynamic> enableEnterpriseAttestation() async =>
