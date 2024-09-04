@@ -35,7 +35,9 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
+import '../../widgets/toast.dart';
 import '../method_channel_notifier.dart';
+import '../tap_request_dialog.dart';
 
 final _log = Logger('android.oath.state');
 
@@ -146,27 +148,45 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
-// Converts Platform exception during Add Account operation
-// Returns CancellationException for situations we don't want to show a Toast
-Exception _decodeAddAccountException(PlatformException platformException) {
-  final decodedException = platformException.decode();
+Exception handlePlatformException(
+    Ref ref, PlatformException platformException) {
+  final decoded = platformException.decode();
+  final l10n = ref.read(l10nProvider);
+  final withContext = ref.read(withContextProvider);
 
-  // Auth required, the app will show Unlock dialog
-  if (decodedException is ApduException && decodedException.sw == 0x6982) {
-    _log.error('Add account failed: Auth required');
-    return CancellationException();
+  toast(String message, {bool popStack = false}) =>
+      withContext((context) async {
+        ref.read(androidDialogProvider.notifier).closeDialog();
+        if (popStack) {
+          Navigator.of(context).popUntil((route) {
+            return route.isFirst;
+          });
+        }
+        showToast(context, message, duration: const Duration(seconds: 4));
+      });
+
+  switch (decoded) {
+    case ApduException apduException:
+      if (apduException.sw == 0x6985) {
+        // pop stack to show the OATH view with "Set password"
+        toast(l10n.l_add_account_password_required, popStack: true);
+        return CancellationException();
+      }
+      if (apduException.sw == 0x6982) {
+        toast(l10n.l_add_account_unlock_required);
+        return CancellationException();
+      }
+    case PlatformException pe:
+      if (pe.code == 'JobCancellationException') {
+        // pop stack to show FIDO view
+        toast(l10n.l_add_account_func_missing, popStack: true);
+        return CancellationException();
+      } else if (pe.code == 'IllegalArgumentException') {
+        toast(l10n.l_add_account_already_exists);
+        return CancellationException();
+      }
   }
-
-  // Thrown in native code when the account already exists on the YubiKey
-  // The entry dialog will show an error message and that is why we convert
-  // this to CancellationException to avoid showing a Toast
-  if (platformException.code == 'IllegalArgumentException') {
-    _log.error('Add account failed: Account already exists');
-    return CancellationException();
-  }
-
-  // original exception
-  return decodedException;
+  return decoded;
 }
 
 final addCredentialToAnyProvider =
@@ -179,7 +199,7 @@ final addCredentialToAnyProvider =
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
-            throw _decodeAddAccountException(pe);
+            throw handlePlatformException(ref, pe);
           }
         });
 
@@ -290,7 +310,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
-      throw _decodeAddAccountException(pe);
+      throw handlePlatformException(_ref, pe);
     }
   }
 

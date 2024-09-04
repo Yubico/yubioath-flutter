@@ -639,6 +639,8 @@ class _AppPageState extends ConsumerState<AppPage> {
               },
             ),
           ),
+          iconTheme: IconThemeData(
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
           scrolledUnderElevation: 0.0,
           leadingWidth: hasRail ? 84 : null,
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -730,7 +732,10 @@ class _AppPageState extends ConsumerState<AppPage> {
                         .read(_detailViewVisibilityProvider.notifier)
                         .toggleExpanded();
                   },
-                  icon: const Icon(Symbols.more_vert),
+                  icon: const Icon(
+                    Symbols.more_vert,
+                    weight: 600.0,
+                  ),
                   iconSize: 24,
                   tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
                   padding: const EdgeInsets.all(12),

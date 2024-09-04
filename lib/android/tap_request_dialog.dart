@@ -134,7 +134,7 @@ class _DialogProvider extends Notifier<int> {
           break;
 
         case 'close':
-          notifier.sendCommand(hideNfcView);
+          closeDialog();
           break;
 
         default:
@@ -145,6 +145,10 @@ class _DialogProvider extends Notifier<int> {
       }
     });
     return 0;
+  }
+
+  void closeDialog() {
+    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView);
   }
 
   void cancelDialog() async {

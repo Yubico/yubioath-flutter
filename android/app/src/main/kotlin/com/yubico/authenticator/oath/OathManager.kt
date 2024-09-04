@@ -209,6 +209,7 @@ class OathManager(
         oathChannel.setMethodCallHandler(null)
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
+        pendingAction?.invoke(Result.failure(Exception()))
         coroutineScope.cancel()
     }
 
