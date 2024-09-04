@@ -427,16 +427,10 @@
             "message": {}
         }
     },
-    "l_operation_failed": null,
-    "l_account_add_failure_title": null,
     "l_add_account_no_password": null,
-    "p_add_account_no_password_desc": null,
     "l_add_account_key_locked": null,
-    "p_add_account_key_locked_desc": null,
     "l_add_account_already_exists": null,
-    "p_add_account_already_exists_desc": null,
     "l_add_account_no_oath": null,
-    "p_add_account_no_oath_desc": null,
     "l_account_name_required": "Tài khoản của bạn phải có tên",
     "l_name_already_exists": "Tên này đã tồn tại cho nhà phát hành",
     "l_account_already_exists": "Tài khoản này đã tồn tại trên YubiKey",

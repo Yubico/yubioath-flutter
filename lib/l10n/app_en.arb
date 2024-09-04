@@ -427,16 +427,10 @@
             "message": {}
         }
     },
-    "l_operation_failed": "Operation failed",
-    "l_account_add_failure_title": "Add account failed",
     "l_add_account_no_password": "Set password first",
-    "p_add_account_no_password_desc": "Your YubiKey needs password to be set before accounts can be added to it.",
     "l_add_account_key_locked": "Unlock the key",
-    "p_add_account_key_locked_desc": "Your YubiKey is password protected. Unlock it before adding accounts.",
     "l_add_account_already_exists": "Account already exists on the key",
-    "p_add_account_already_exists_desc": "The YubiKey already contains account with the same name. Change the account details to add it.",
     "l_add_account_no_oath": "This YubiKey does not support accounts",
-    "p_add_account_no_oath_desc": "Only YubiKey 5 with enabled OATH application can store accounts.",
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the issuer",
     "l_account_already_exists": "This account already exists on the YubiKey",

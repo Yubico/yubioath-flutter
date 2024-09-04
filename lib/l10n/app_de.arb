@@ -427,16 +427,10 @@
             "message": {}
         }
     },
-    "l_operation_failed": null,
-    "l_account_add_failure_title": null,
     "l_add_account_no_password": null,
-    "p_add_account_no_password_desc": null,
     "l_add_account_key_locked": null,
-    "p_add_account_key_locked_desc": null,
     "l_add_account_already_exists": null,
-    "p_add_account_already_exists_desc": null,
     "l_add_account_no_oath": null,
-    "p_add_account_no_oath_desc": null,
     "l_account_name_required": "Ihr Konto muss einen Namen haben",
     "l_name_already_exists": "Für diesen Aussteller existiert dieser Name bereits",
     "l_account_already_exists": "Dieses Konto existiert bereits auf dem YubiKey",

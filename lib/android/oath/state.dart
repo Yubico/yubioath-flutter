@@ -35,7 +35,8 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../android_alert_dialog.dart';
+import '../../widgets/toast.dart';
+import '../tap_request_dialog.dart';
 
 final _log = Logger('android.oath.state');
 
@@ -137,45 +138,41 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
-Exception handlePlatformException(PlatformException platformException, ref) {
+Exception handlePlatformException(
+    Ref ref, PlatformException platformException) {
   final decoded = platformException.decode();
   final l10n = ref.read(l10nProvider);
+  final withContext = ref.read(withContextProvider);
+
+  toast(String message, {bool popStack = false}) =>
+      withContext((context) async {
+        ref.read(androidDialogProvider).closeDialog();
+        if (popStack) {
+          Navigator.of(context).popUntil((route) {
+            return route.isFirst;
+          });
+        }
+        showToast(context, message, duration: const Duration(seconds: 4));
+      });
+
   switch (decoded) {
     case ApduException apduException:
       if (apduException.sw == 0x6985) {
-        showAlertDialog(
-          ref,
-          l10n.l_operation_failed,
-          l10n.l_add_account_no_password,
-          l10n.p_add_account_no_password_desc,
-        );
+        // pop stack to show the OATH view with "Set password"
+        toast(l10n.l_add_account_no_password, popStack: true);
         return CancellationException();
       }
       if (apduException.sw == 0x6982) {
-        showAlertDialog(
-          ref,
-          l10n.l_operation_failed,
-          l10n.l_add_account_key_locked,
-          l10n.p_add_account_key_locked_desc,
-        );
+        toast(l10n.l_add_account_key_locked);
         return CancellationException();
       }
     case PlatformException pe:
       if (pe.code == 'JobCancellationException') {
-        showAlertDialog(
-          ref,
-          l10n.l_operation_failed,
-          l10n.l_add_account_no_oath,
-          l10n.p_add_account_no_oath_desc,
-        );
+        // pop stack to show FIDO view
+        toast(l10n.l_add_account_no_oath, popStack: true);
         return CancellationException();
       } else if (pe.code == 'IllegalArgumentException') {
-        showAlertDialog(
-          ref,
-          l10n.l_operation_failed,
-          l10n.l_add_account_already_exists,
-          l10n.p_add_account_already_exists_desc,
-        );
+        toast(l10n.l_add_account_already_exists);
         return CancellationException();
       }
   }
@@ -194,7 +191,7 @@ final addCredentialToAnyProvider =
             var result = jsonDecode(resultString);
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
-            throw handlePlatformException(pe, ref);
+            throw handlePlatformException(ref, pe);
           }
         });
 
@@ -309,7 +306,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
-      throw handlePlatformException(pe, _ref);
+      throw handlePlatformException(_ref, pe);
     }
   }
 
