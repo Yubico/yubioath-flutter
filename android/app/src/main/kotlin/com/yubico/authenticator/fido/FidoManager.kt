@@ -30,6 +30,7 @@ import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.SessionInfo
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyConnection
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.Arrays
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
@@ -80,6 +82,7 @@ class FidoManager(
     }
 
     companion object {
+        val updateDeviceInfo = AtomicBoolean(false)
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
             val pinUvAuthProtocols = infoData.pinUvAuthProtocols
             val pinSupported = infoData.options["clientPin"] != null
@@ -119,6 +122,8 @@ class FidoManager(
             connectionHelper,
             pinStore
         )
+
+
 
     init {
         pinRetries = null
@@ -187,6 +192,10 @@ class FidoManager(
                 device.withConnection<SmartCardConnection, Unit> { connection ->
                     processYubiKey(connection, device)
                 }
+            }
+
+            if (updateDeviceInfo.getAndSet(false)) {
+                deviceManager.setDeviceInfo(getDeviceInfo(device))
             }
         } catch (e: Exception) {
             // something went wrong, try to get DeviceInfo from any available connection type
@@ -381,7 +390,7 @@ class FidoManager(
     }
 
     private suspend fun setPin(pin: CharArray?, newPin: CharArray): String =
-        connectionHelper.useSession(FidoActionDescription.SetPin) { fidoSession ->
+        connectionHelper.useSession(FidoActionDescription.SetPin, updateDeviceInfo = true) { fidoSession ->
             try {
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))

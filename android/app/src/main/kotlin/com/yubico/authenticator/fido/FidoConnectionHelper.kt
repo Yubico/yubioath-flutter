@@ -21,6 +21,7 @@ import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
@@ -51,18 +52,25 @@ class FidoConnectionHelper(
 
     suspend fun <T> useSession(
         actionDescription: FidoActionDescription,
+        updateDeviceInfo: Boolean = false,
         action: (YubiKitFidoSession) -> T
     ): T {
+        FidoManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
             onNfc = { useSessionNfc(actionDescription,action) },
-            onUsb = { useSessionUsb(it, action) })
+            onUsb = { useSessionUsb(it, updateDeviceInfo, action) })
     }
 
     suspend fun <T> useSessionUsb(
         device: UsbYubiKeyDevice,
+        updateDeviceInfo: Boolean = false,
         block: (YubiKitFidoSession) -> T
     ): T = device.withConnection<FidoConnection, T> {
         block(YubiKitFidoSession(it))
+    }.also {
+        if (updateDeviceInfo) {
+            deviceManager.setDeviceInfo(getDeviceInfo(device))
+        }
     }
 
     suspend fun <T> useSessionNfc(
