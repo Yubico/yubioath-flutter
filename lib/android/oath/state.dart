@@ -159,17 +159,17 @@ Exception handlePlatformException(
     case ApduException apduException:
       if (apduException.sw == 0x6985) {
         // pop stack to show the OATH view with "Set password"
-        toast(l10n.l_add_account_no_password, popStack: true);
+        toast(l10n.l_add_account_password_required, popStack: true);
         return CancellationException();
       }
       if (apduException.sw == 0x6982) {
-        toast(l10n.l_add_account_key_locked);
+        toast(l10n.l_add_account_unlock_required);
         return CancellationException();
       }
     case PlatformException pe:
       if (pe.code == 'JobCancellationException') {
         // pop stack to show FIDO view
-        toast(l10n.l_add_account_no_oath, popStack: true);
+        toast(l10n.l_add_account_func_missing, popStack: true);
         return CancellationException();
       } else if (pe.code == 'IllegalArgumentException') {
         toast(l10n.l_add_account_already_exists);
