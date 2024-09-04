@@ -238,7 +238,26 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     super.dispose();
   }
 
+  void _scrollSearchField() {
+    // Ensures the search field is fully visible when in focus
+    final headerSliverContext = headerSliverGlobalKey.currentContext;
+    if (searchFocus.hasFocus && headerSliverContext != null) {
+      final scrollable = Scrollable.of(headerSliverContext);
+      if (scrollable.deltaToScrollOrigin.dy > 0) {
+        // Need delay to wait for ongoing scroll to finish
+        Future.delayed(const Duration(milliseconds: 100), () {
+          scrollable.position.animateTo(
+            0,
+            duration: const Duration(milliseconds: 50),
+            curve: Curves.ease,
+          );
+        });
+      }
+    }
+  }
+
   void _onFocusChange() {
+    _scrollSearchField();
     setState(() {});
   }
 
@@ -518,6 +537,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                       ref
                           .read(passkeysSearchProvider.notifier)
                           .setFilter(value);
+                      _scrollSearchField();
                       setState(() {});
                     },
                     textInputAction: TextInputAction.next,

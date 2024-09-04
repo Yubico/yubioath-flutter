@@ -62,7 +62,6 @@ final _navKey = GlobalKey();
 final _navExpandedKey = GlobalKey();
 final _sliverTitleGlobalKey = GlobalKey();
 final _sliverTitleWrapperGlobalKey = GlobalKey();
-final _headerSliverGlobalKey = GlobalKey();
 final _detailsViewGlobalKey = GlobalKey();
 final _mainContentGlobalKey = GlobalKey();
 
@@ -446,7 +445,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         targetKey: _sliverTitleGlobalKey,
         controller: _sliverTitleController,
         subTargetKey:
-            widget.headerSliver != null ? _headerSliverGlobalKey : null,
+            widget.headerSliver != null ? headerSliverGlobalKey : null,
         subController:
             widget.headerSliver != null ? _headerSliverController : null,
         subAnchorKey:
@@ -487,11 +486,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                           _sliverTitleScrollController,
                           _headerSliverController.scrollDirection,
                           _headerSliverController,
-                          _headerSliverGlobalKey,
+                          headerSliverGlobalKey,
                           _sliverTitleWrapperGlobalKey);
 
                       return Container(
-                          key: _headerSliverGlobalKey,
+                          key: headerSliverGlobalKey,
                           child: widget.headerSliver);
                     },
                   ))
