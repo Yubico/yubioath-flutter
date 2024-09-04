@@ -143,23 +143,39 @@ Exception handlePlatformException(PlatformException platformException, ref) {
   switch (decoded) {
     case ApduException apduException:
       if (apduException.sw == 0x6985) {
-        showAlertDialog(ref, l10n.l_account_add_failure_title,
-            l10n.p_account_add_failure_6985);
+        showAlertDialog(
+          ref,
+          l10n.l_operation_failed,
+          l10n.l_add_account_no_password,
+          l10n.p_add_account_no_password_desc,
+        );
         return CancellationException();
       }
       if (apduException.sw == 0x6982) {
-        showAlertDialog(ref, l10n.l_account_add_failure_title,
-            l10n.p_account_add_failure_6982);
+        showAlertDialog(
+          ref,
+          l10n.l_operation_failed,
+          l10n.l_add_account_key_locked,
+          l10n.p_add_account_key_locked_desc,
+        );
         return CancellationException();
       }
     case PlatformException pe:
       if (pe.code == 'JobCancellationException') {
-        showAlertDialog(ref, l10n.l_account_add_failure_title,
-            l10n.p_account_add_failure_application_not_available);
+        showAlertDialog(
+          ref,
+          l10n.l_operation_failed,
+          l10n.l_add_account_no_oath,
+          l10n.p_add_account_no_oath_desc,
+        );
         return CancellationException();
       } else if (pe.code == 'IllegalArgumentException') {
-        showAlertDialog(ref, l10n.l_account_add_failure_title,
-            l10n.p_account_add_failure_exists);
+        showAlertDialog(
+          ref,
+          l10n.l_operation_failed,
+          l10n.l_add_account_already_exists,
+          l10n.p_add_account_already_exists_desc,
+        );
         return CancellationException();
       }
   }

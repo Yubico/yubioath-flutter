@@ -15,30 +15,76 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/state.dart';
 import 'tap_request_dialog.dart';
 
-void showAlertDialog(ref, String title, String message) =>
+void showAlertDialog(ref, String title, String message, String description,
+        [Function()? onClosed]) =>
     ref.read(withContextProvider)((context) async {
       ref.read(androidDialogProvider).closeDialog();
-      final l10n = ref.read(l10nProvider);
       Navigator.of(context).popUntil((route) {
         return route.isFirst;
       });
       await showDialog(
           routeSettings: const RouteSettings(name: 'android_alert_dialog'),
+          useSafeArea: true,
           context: context,
-          builder: (dialogContext) {
-            return AlertDialog(
-                title: Text(title),
-                actions: [
-                  TextButton(
-                      onPressed: () async {
-                        Navigator.of(dialogContext).pop();
-                      },
-                      child: Text(l10n.s_close))
-                ],
-                content: Text(message));
-          });
+          builder: (dialogContext) =>
+              _AndroidAlertDialog(title, message, description));
+      if (onClosed != null) {
+        onClosed();
+      }
     });
+
+class _AndroidAlertDialog extends StatelessWidget {
+  final String title;
+  final String message;
+  final String description;
+
+  const _AndroidAlertDialog(this.title, this.message, this.description);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+        child: Stack(fit: StackFit.loose, children: [
+      Positioned(
+        top: 5,
+        right: 5,
+        child: IconButton(
+          autofocus: true,
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Symbols.close, fill: 1, size: 24),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(
+              height: 32,
+            ),
+            Text(
+              message,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(
+              height: 32,
+            ),
+            Text(
+              description,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      )
+    ]));
+  }
+}
