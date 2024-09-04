@@ -129,7 +129,7 @@ class _DialogProvider {
       final args = jsonDecode(call.arguments);
       switch (call.method) {
         case 'close':
-          _closeDialog();
+          closeDialog();
           break;
         case 'show':
           await _showDialog(args['title'], args['description'], args['icon']);
@@ -147,7 +147,7 @@ class _DialogProvider {
     });
   }
 
-  void _closeDialog() {
+  void closeDialog() {
     _controller?.close();
     _controller = null;
   }

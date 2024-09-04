@@ -69,6 +69,7 @@ class MainPage extends ConsumerWidget {
               'oath_add_account',
               'oath_icon_pack_dialog',
               'android_qr_scanner_view',
+              'android_alert_dialog'
             ].contains(route.settings.name);
       });
     });

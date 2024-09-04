@@ -173,6 +173,7 @@ class FidoManager(
         fidoChannel.setMethodCallHandler(null)
         fidoViewModel.clearSessionState()
         fidoViewModel.updateCredentials(null)
+        connectionHelper.cancelPending()
         coroutineScope.cancel()
     }
 

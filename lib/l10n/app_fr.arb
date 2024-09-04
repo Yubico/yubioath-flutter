@@ -429,6 +429,10 @@
             "message": {}
         }
     },
+    "l_add_account_password_required": null,
+    "l_add_account_unlock_required": null,
+    "l_add_account_already_exists": null,
+    "l_add_account_func_missing": null,
     "l_account_name_required": "Votre compte doit avoir un nom",
     "l_name_already_exists": "Ce nom existe déjà pour l'émetteur",
     "l_account_already_exists": "Ce compte existe déjà sur la YubiKey",
