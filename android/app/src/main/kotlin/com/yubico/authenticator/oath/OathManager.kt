@@ -26,6 +26,7 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
@@ -63,10 +64,12 @@ import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.URI
+import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
-import kotlin.random.Random
+import kotlin.concurrent.schedule
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
 
@@ -108,8 +111,10 @@ class OathManager(
     private var refreshJob: Job? = null
     private var addToAny = false
     private val updateDeviceInfo = AtomicBoolean(false)
+    private var deviceInfoTimer: TimerTask? = null
 
     override fun onPause() {
+        deviceInfoTimer?.cancel()
         // cancel any pending actions, except for addToAny
         if (!addToAny) {
             pendingAction?.let {
@@ -294,7 +299,7 @@ class OathManager(
             )
 
             if (updateDeviceInfo.getAndSet(false)) {
-                deviceManager.setDeviceInfo(getDeviceInfo(device))
+                scheduleDeviceInfoUpdate(getDeviceInfo(device))
             }
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
@@ -675,6 +680,14 @@ class OathManager(
         return credential.data
     }
 
+    fun scheduleDeviceInfoUpdate(deviceInfo: Info?) {
+        deviceInfoTimer?.cancel()
+        deviceInfoTimer = Timer("update-device-info", false).schedule(500) {
+            logger.debug("Updating device info")
+            deviceManager.setDeviceInfo(deviceInfo)
+        }
+    }
+
     private suspend fun <T> useOathSession(
         unlock: Boolean = true,
         updateDeviceInfo: Boolean = false,
@@ -702,7 +715,7 @@ class OathManager(
         block(getOathSession(it))
     }.also {
         if (updateDeviceInfo) {
-            deviceManager.setDeviceInfo(getDeviceInfo(device))
+            scheduleDeviceInfoUpdate(getDeviceInfo(device))
         }
     }
 

@@ -393,8 +393,7 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
 
   Future<dynamic> reset() async => invoke('reset', {
         'operationSuccess': l10n.s_nfc_fido_reset_success,
-        'operationFailure': l10n.s_nfc_fido_reset_failure,
-        'showSuccess': true
+        'operationFailure': l10n.s_nfc_fido_reset_failure
       });
 
   Future<dynamic> setPin(String newPin, {String? oldPin}) async =>
@@ -405,8 +404,7 @@ class _FidoMethodChannelNotifier extends MethodChannelNotifier {
             : l10n.s_pin_set,
         'operationFailure': oldPin != null
             ? l10n.s_nfc_fido_change_pin_failure
-            : l10n.s_nfc_fido_set_pin_failure,
-        'showSuccess': true
+            : l10n.s_nfc_fido_set_pin_failure
       });
 
   Future<dynamic> unlock(String pin) async => invoke('unlock', {

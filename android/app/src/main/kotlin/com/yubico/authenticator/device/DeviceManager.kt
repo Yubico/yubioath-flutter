@@ -30,9 +30,7 @@ import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
 import com.yubico.yubikit.management.Capability
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
-import kotlin.coroutines.suspendCoroutine
 
 interface DeviceListener {
     // a USB device is connected

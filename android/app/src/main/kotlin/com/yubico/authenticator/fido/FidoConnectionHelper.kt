@@ -17,6 +17,7 @@
 package com.yubico.authenticator.fido
 
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
@@ -24,11 +25,15 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.util.Result
 import org.slf4j.LoggerFactory
+import java.util.Timer
+import java.util.TimerTask
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.concurrent.schedule
 
 class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: FidoAction? = null
+    private var deviceInfoTimer: TimerTask? = null
 
     fun invokePending(fidoSession: YubiKitFidoSession) {
         pendingAction?.let { action ->
@@ -38,6 +43,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     }
 
     fun cancelPending() {
+        deviceInfoTimer?.cancel()
         pendingAction?.let { action ->
             action.invoke(Result.failure(CancellationException()))
             pendingAction = null
@@ -67,7 +73,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         block(YubiKitFidoSession(it))
     }.also {
         if (updateDeviceInfo) {
-            deviceManager.setDeviceInfo(getDeviceInfo(device))
+            scheduleDeviceInfoUpdate(getDeviceInfo(device))
         }
     }
 
@@ -88,6 +94,14 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         } catch (error: Throwable) {
             logger.error("Exception during action: ", error)
             return Result.failure(error)
+        }
+    }
+
+    fun scheduleDeviceInfoUpdate(deviceInfo: Info?) {
+        deviceInfoTimer?.cancel()
+        deviceInfoTimer = Timer("update-device-info", false).schedule(500) {
+            logger.debug("Updating device info")
+            deviceManager.setDeviceInfo(deviceInfo)
         }
     }
 
