@@ -57,21 +57,36 @@ class MainPage extends ConsumerWidget {
     }
 
     // If the current device changes, we need to pop any open dialogs.
-    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, __) {
-      Navigator.of(context).popUntil((route) {
-        return route.isFirst ||
-            [
-              'device_picker',
-              'settings',
-              'about',
-              'licenses',
-              'user_interaction_prompt',
-              'oath_add_account',
-              'oath_icon_pack_dialog',
-              'android_qr_scanner_view',
-              'android_alert_dialog'
-            ].contains(route.settings.name);
-      });
+    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
+        (prev, next) {
+      var canPop = true;
+      if ((next.value != null) && (prev?.value != null)) {
+        // if there is change only in fipsApproved, don't pop anything
+        var nextInfo = next.value!.info;
+        var prevInfo = prev!.value!.info;
+
+        canPop =
+            prevInfo.copyWith(fipsApproved: nextInfo.fipsApproved) != nextInfo;
+      } else if (next.hasValue && (prev != null && prev.isLoading)) {
+        canPop = false;
+      }
+      debugPrint('Should pop: $canPop');
+
+      if (canPop) {
+        Navigator.of(context).popUntil((route) {
+          return route.isFirst ||
+              [
+                'device_picker',
+                'settings',
+                'about',
+                'licenses',
+                'user_interaction_prompt',
+                'oath_add_account',
+                'oath_icon_pack_dialog',
+                'android_qr_scanner_view',
+              ].contains(route.settings.name);
+        });
+      }
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
@@ -155,6 +170,7 @@ class MainPage extends ConsumerWidget {
                 );
               }
 
+              debugPrint('showing section $section');
               return switch (section) {
                 Section.home => HomeScreen(data),
                 Section.accounts => OathScreen(data.node.path),

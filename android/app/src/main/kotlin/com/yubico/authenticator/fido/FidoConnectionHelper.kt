@@ -52,6 +52,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
 
     suspend fun <T> useSession(
         updateDeviceInfo: Boolean = false,
+        retryOnNfcFailure: Boolean = true,
         block: (YubiKitFidoSession) -> T
     ): T {
         FidoManager.updateDeviceInfo.set(updateDeviceInfo)
@@ -61,7 +62,8 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
             onDialogCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
-            }
+            },
+            retryOnNfcFailure = retryOnNfcFailure
         )
     }
 
@@ -73,7 +75,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         block(YubiKitFidoSession(it))
     }.also {
         if (updateDeviceInfo) {
-            scheduleDeviceInfoUpdate(getDeviceInfo(device))
+            deviceManager.setDeviceInfo(getDeviceInfo(device))
         }
     }
 
@@ -94,14 +96,6 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         } catch (error: Throwable) {
             logger.error("Exception during action: ", error)
             return Result.failure(error)
-        }
-    }
-
-    fun scheduleDeviceInfoUpdate(deviceInfo: Info?) {
-        deviceInfoTimer?.cancel()
-        deviceInfoTimer = Timer("update-device-info", false).schedule(500) {
-            logger.debug("Updating device info")
-            deviceManager.setDeviceInfo(deviceInfo)
         }
     }
 

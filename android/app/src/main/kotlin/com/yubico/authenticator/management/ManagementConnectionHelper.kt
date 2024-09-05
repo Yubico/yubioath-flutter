@@ -40,6 +40,7 @@ class ManagementConnectionHelper(
                 action?.invoke(Result.failure(CancellationException()))
                 action = null
             },
+            retryOnNfcFailure = false
         )
 
     private suspend fun <T> useSessionUsb(

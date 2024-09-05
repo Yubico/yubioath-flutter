@@ -199,7 +199,7 @@ class FidoManager(
             }
 
             if (updateDeviceInfo.getAndSet(false)) {
-                connectionHelper.scheduleDeviceInfoUpdate(getDeviceInfo(device))
+                deviceManager.setDeviceInfo(getDeviceInfo(device))
             }
         } catch (e: Exception) {
             // something went wrong, try to get DeviceInfo from any available connection type

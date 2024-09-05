@@ -177,7 +177,7 @@ Exception handlePlatformException(
         return CancellationException();
       }
     case PlatformException pe:
-      if (pe.code == 'JobCancellationException') {
+      if (pe.code == 'ContextDisposedException') {
         // pop stack to show FIDO view
         toast(l10n.l_add_account_func_missing, popStack: true);
         return CancellationException();
@@ -193,40 +193,31 @@ final addCredentialToAnyProvider =
     Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
           final oath = ref.watch(_oathMethodsProvider.notifier);
           try {
-            String resultString = await oath.addAccountToAny(credentialUri,
-                requireTouch: requireTouch);
-
-            var result = jsonDecode(resultString);
+            var result = jsonDecode(await oath.addAccountToAny(
+              credentialUri,
+              requireTouch: requireTouch,
+            ));
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
+            _log.error('Received exception: $pe');
             throw handlePlatformException(ref, pe);
           }
         });
 
-final addCredentialsToAnyProvider = Provider(
-    (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
-          final oath = ref.read(_oathMethodsProvider.notifier);
-          try {
-            _log.debug(
-                'Calling android with ${credentialUris.length} credentials to be added');
-
-            String resultString =
-                await oath.addAccounts(credentialUris, touchRequired);
-
-            _log.debug('Call result: $resultString');
-            var result = jsonDecode(resultString);
-            return result['succeeded'] == credentialUris.length;
-          } on PlatformException catch (pe) {
-            var decodedException = pe.decode();
-            if (decodedException is CancellationException) {
-              _log.debug('User cancelled adding multiple accounts');
-            } else {
-              _log.error('Failed to add multiple accounts.', pe);
-            }
-
-            throw decodedException;
-          }
-        });
+final addCredentialsToAnyProvider = Provider((ref) =>
+    (List<String> credentialUris, List<bool> touchRequired) async {
+      final oath = ref.read(_oathMethodsProvider.notifier);
+      try {
+        _log.debug(
+            'Calling android with ${credentialUris.length} credentials to be added');
+        var result =
+            jsonDecode(await oath.addAccounts(credentialUris, touchRequired));
+        return result['succeeded'] == credentialUris.length;
+      } on PlatformException catch (pe) {
+        _log.error('Received exception: $pe');
+        throw handlePlatformException(ref, pe);
+      }
+    });
 
 final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
@@ -360,7 +351,8 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
 
   Future<dynamic> reset() async => invoke('reset', {
         'operationSuccess': l10n.s_nfc_oath_reset_success,
-        'operationFailure': l10n.s_nfc_oath_reset_failure
+        'operationFailure': l10n.s_nfc_oath_reset_failure,
+        'showSuccess': true
       });
 
   Future<dynamic> unlock(String password, {bool remember = false}) async =>
@@ -379,6 +371,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
         'operationFailure': current != null
             ? l10n.s_nfc_oath_change_password_failure
             : l10n.s_nfc_oath_set_password_failure,
+        'showSuccess': true
       });
 
   Future<dynamic> unsetPassword(String current) async =>
@@ -429,6 +422,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
         },
         'operationSuccess': l10n.s_account_added,
         'operationFailure': l10n.s_nfc_oath_add_account_failure,
+        'showSuccess': true
       });
 
   Future<dynamic> deleteAccount(OathCredential credential) async =>

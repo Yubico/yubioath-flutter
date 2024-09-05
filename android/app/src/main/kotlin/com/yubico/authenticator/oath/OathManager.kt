@@ -192,6 +192,7 @@ class OathManager(
                 )
 
                 "deleteAccount" -> deleteAccount(args["credentialId"] as String)
+
                 "addAccountToAny" -> addAccountToAny(
                     args["uri"] as String,
                     args["requireTouch"] as Boolean
@@ -214,7 +215,7 @@ class OathManager(
         oathChannel.setMethodCallHandler(null)
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
-        pendingAction?.invoke(Result.failure(Exception()))
+        pendingAction?.invoke(Result.failure(ContextDisposedException()))
         coroutineScope.cancel()
     }
 
@@ -299,7 +300,7 @@ class OathManager(
             )
 
             if (updateDeviceInfo.getAndSet(false)) {
-                scheduleDeviceInfoUpdate(getDeviceInfo(device))
+                deviceManager.setDeviceInfo(getDeviceInfo(device))
             }
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
@@ -317,7 +318,7 @@ class OathManager(
         val credentialData: CredentialData =
             CredentialData.parseUri(URI.create(uri))
         addToAny = true
-        return useSessionNfc { session ->
+        return useOathSession(retryOnNfcFailure = false) { session ->
             // We need to check for duplicates here since we haven't yet read the credentials
             if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
                 throw IllegalArgumentException()
@@ -337,7 +338,7 @@ class OathManager(
 
             logger.debug("Added cred {}", credential)
             jsonSerializer.encodeToString(addedCred)
-        }.value
+        }
     }
 
     private suspend fun addAccountsToAny(
@@ -347,7 +348,7 @@ class OathManager(
         logger.trace("Adding following accounts: {}", uris)
 
         addToAny = true
-        return useOathSession { session ->
+        return useOathSession(retryOnNfcFailure = false) { session ->
             var successCount = 0
             for (index in uris.indices) {
 
@@ -680,17 +681,10 @@ class OathManager(
         return credential.data
     }
 
-    fun scheduleDeviceInfoUpdate(deviceInfo: Info?) {
-        deviceInfoTimer?.cancel()
-        deviceInfoTimer = Timer("update-device-info", false).schedule(500) {
-            logger.debug("Updating device info")
-            deviceManager.setDeviceInfo(deviceInfo)
-        }
-    }
-
     private suspend fun <T> useOathSession(
         unlock: Boolean = true,
         updateDeviceInfo: Boolean = false,
+        retryOnNfcFailure: Boolean = true,
         block: (YubiKitOathSession) -> T
     ): T {
         // callers can decide whether the session should be unlocked first
@@ -704,6 +698,7 @@ class OathManager(
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
             },
+            retryOnNfcFailure = retryOnNfcFailure
         )
     }
 
@@ -715,7 +710,7 @@ class OathManager(
         block(getOathSession(it))
     }.also {
         if (updateDeviceInfo) {
-            scheduleDeviceInfoUpdate(getDeviceInfo(device))
+            deviceManager.setDeviceInfo(getDeviceInfo(device))
         }
     }
 
