@@ -452,9 +452,12 @@ class _AppPageState extends ConsumerState<AppPage> {
             widget.headerSliver != null ? _sliverTitleWrapperGlobalKey : null,
         child: CustomScrollView(
           physics: isAndroid
-              ? const ClampingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics())
-              : null,
+              ? const _NoImplicitScrollPhysics(
+                  parent: ClampingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                )
+              : const _NoImplicitScrollPhysics(),
           controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
@@ -1039,4 +1042,16 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(_SliverTitleDelegate oldDelegate) => true;
+}
+
+class _NoImplicitScrollPhysics extends ScrollPhysics {
+  const _NoImplicitScrollPhysics({super.parent});
+
+  @override
+  bool get allowImplicitScrolling => false;
+
+  @override
+  _NoImplicitScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return _NoImplicitScrollPhysics(parent: buildParent(ancestor));
+  }
 }

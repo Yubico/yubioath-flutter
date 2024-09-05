@@ -244,14 +244,11 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     if (searchFocus.hasFocus && headerSliverContext != null) {
       final scrollable = Scrollable.of(headerSliverContext);
       if (scrollable.deltaToScrollOrigin.dy > 0) {
-        // Need delay to wait for ongoing scroll to finish
-        Future.delayed(const Duration(milliseconds: 100), () {
-          scrollable.position.animateTo(
-            0,
-            duration: const Duration(milliseconds: 50),
-            curve: Curves.ease,
-          );
-        });
+        scrollable.position.animateTo(
+          0,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.ease,
+        );
       }
     }
   }
