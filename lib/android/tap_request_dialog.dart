@@ -26,6 +26,7 @@ import '../app/state.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
+import 'views/nfc/nfc_auto_close_widget.dart';
 import 'views/nfc/nfc_content_widget.dart';
 import 'views/nfc/nfc_failure_icon.dart';
 import 'views/nfc/nfc_progress_bar.dart';
@@ -53,7 +54,7 @@ class _DialogProvider extends Notifier<int> {
         // setup properties for ad-hoc action
         viewNotifier.setDialogProperties(
             operationFailure: l10n.l_nfc_read_key_failure,
-            showSuccess: false,
+            showSuccess: true,
             showCloseButton: false);
       }
 
@@ -82,24 +83,19 @@ class _DialogProvider extends Notifier<int> {
           });
           break;
         case NfcActivity.processingFinished:
-          explicitAction = false; // next action might not be explicit
           processingTimer?.cancel();
           final showSuccess = properties.showSuccess ?? false;
           allowMessages = !showSuccess;
           if (showSuccess) {
-            notifier.sendCommand(
-                updateNfcView(NfcActivityClosingCountdownWidgetView(
-              closeInSec: 5,
-              child: NfcContentWidget(
-                title: properties.operationSuccess,
-                subtitle: l10n.s_nfc_remove_key,
-                icon: const NfcIconSuccess(),
-              ),
-            )));
-          } else {
-            // directly hide
-            notifier.sendCommand(hideNfcView);
+            notifier.sendCommand(autoClose(
+              title: properties.operationSuccess,
+              subtitle: l10n.s_nfc_remove_key,
+              icon: const NfcIconSuccess(),
+            ));
           }
+          // hide
+          notifier.sendCommand(hideNfcView(explicitAction ? 5000 : 400));
+          explicitAction = false; // next action might not be explicit
           break;
         case NfcActivity.processingInterrupted:
           processingTimer?.cancel();
@@ -148,7 +144,7 @@ class _DialogProvider extends Notifier<int> {
   }
 
   void closeDialog() {
-    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView);
+    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView());
   }
 
   void cancelDialog() async {

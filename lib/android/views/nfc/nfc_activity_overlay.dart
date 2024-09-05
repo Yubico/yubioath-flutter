@@ -1,10 +1,23 @@
-import 'dart:async';
+/*
+ * Copyright (C) 2024 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../state.dart';
 import 'models.dart';
 
 final nfcEventCommandNotifier =
@@ -24,82 +37,6 @@ class _NfcEventCommandNotifier extends Notifier<NfcEventCommand> {
 
 final nfcViewNotifier =
     NotifierProvider<_NfcViewNotifier, NfcView>(_NfcViewNotifier.new);
-
-class NfcActivityClosingCountdownWidgetView extends ConsumerStatefulWidget {
-  final int closeInSec;
-  final Widget child;
-
-  const NfcActivityClosingCountdownWidgetView(
-      {super.key, required this.child, this.closeInSec = 3});
-
-  @override
-  ConsumerState<NfcActivityClosingCountdownWidgetView> createState() =>
-      _NfcActivityClosingCountdownWidgetViewState();
-}
-
-class _NfcActivityClosingCountdownWidgetViewState
-    extends ConsumerState<NfcActivityClosingCountdownWidgetView> {
-  late int counter;
-  late Timer? timer;
-  bool shouldHide = false;
-
-  @override
-  Widget build(BuildContext context) {
-    ref.listen(androidNfcActivityProvider, (previous, current) {
-      if (current == NfcActivity.ready) {
-        timer?.cancel();
-        hideNow();
-      }
-    });
-
-    return Stack(
-      fit: StackFit.loose,
-      children: [
-        Center(child: widget.child),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: counter > 0
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Closing in $counter'),
-                )
-              : const SizedBox(),
-        )
-      ],
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    counter = widget.closeInSec;
-    timer = Timer(const Duration(seconds: 1), onTimer);
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  void onTimer() async {
-    timer?.cancel();
-    setState(() {
-      counter--;
-    });
-
-    if (counter > 0) {
-      timer = Timer(const Duration(seconds: 1), onTimer);
-    } else {
-      hideNow();
-    }
-  }
-
-  void hideNow() {
-    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView);
-  }
-}
 
 class _NfcViewNotifier extends Notifier<NfcView> {
   @override

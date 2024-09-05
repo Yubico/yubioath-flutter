@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../../../app/logging.dart';
+import '../../../app/state.dart';
 import '../../tap_request_dialog.dart';
 import 'models.dart';
 import 'nfc_activity_overlay.dart';
@@ -46,12 +47,12 @@ class _NfcEventCommandListener {
         case (NfcUpdateViewEvent a):
           _ref.read(nfcViewNotifier.notifier).update(a.child);
           break;
-        case (NfcHideViewEvent _):
-          _hide(context);
+        case (NfcHideViewEvent e):
+          _hide(context, Duration(milliseconds: e.timeoutMs));
           break;
         case (NfcCancelEvent _):
           _ref.read(androidDialogProvider.notifier).cancelDialog();
-          _hide(context);
+          _hide(context, Duration.zero);
           break;
       }
     });
@@ -75,10 +76,14 @@ class _NfcEventCommandListener {
     }
   }
 
-  void _hide(BuildContext context) {
-    if (_ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
-      Navigator.of(context).pop('HIDDEN');
-      _ref.read(nfcViewNotifier.notifier).setShowing(false);
-    }
+  void _hide(BuildContext context, Duration timeout) {
+    Future.delayed(timeout, () {
+      _ref.read(withContextProvider)((context) async {
+        if (_ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
+          Navigator.of(context).pop('HIDDEN');
+          _ref.read(nfcViewNotifier.notifier).setShowing(false);
+        }
+      });
+    });
   }
 }

@@ -70,7 +70,6 @@ class MainPage extends ConsumerWidget {
       } else if (next.hasValue && (prev != null && prev.isLoading)) {
         canPop = false;
       }
-      debugPrint('Should pop: $canPop');
 
       if (canPop) {
         Navigator.of(context).popUntil((route) {

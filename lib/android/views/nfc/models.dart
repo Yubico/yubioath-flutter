@@ -63,8 +63,8 @@ class NfcEventCommand with _$NfcEventCommand {
   }) = _NfcEventCommand;
 }
 
-final hideNfcView =
-    NfcEventCommand(event: const NfcHideViewEvent(timeoutMs: 0));
+NfcEventCommand hideNfcView([int timeoutMs = 0]) =>
+    NfcEventCommand(event: NfcHideViewEvent(timeoutMs: timeoutMs));
 
 NfcEventCommand updateNfcView(Widget child) =>
     NfcEventCommand(event: NfcUpdateViewEvent(child: child));

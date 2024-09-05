@@ -943,7 +943,7 @@
 
     "l_nfc_read_key_failure": "Failed to scan YubiKey",
 
-    "s_nfc_remove_key": "You can remove YubiKey",
+    "s_nfc_remove_key": "Remove your YubiKey",
 
     "s_nfc_ready_to_scan": "Ready to scan",
     "s_nfc_accessing_yubikey": "Accessing YubiKey",
