@@ -357,6 +357,7 @@ class MainActivity : FlutterFragmentActivity() {
         deviceManager.setDeviceInfo(deviceInfo, scpKeyParams)
         val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
         logger.debug("Connected key supports: {}", supportedContexts)
+        var switchedContext: Boolean = false
         if (!supportedContexts.contains(viewModel.appContext.value)) {
             val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
             logger.debug(
@@ -364,17 +365,17 @@ class MainActivity : FlutterFragmentActivity() {
                 viewModel.appContext.value,
                 preferredContext
             )
-            switchContext(preferredContext)
+            switchedContext = switchContext(preferredContext)
         }
 
         if (contextManager == null && supportedContexts.isNotEmpty()) {
-            switchContext(DeviceManager.getPreferredContext(supportedContexts))
+            switchedContext = switchContext(DeviceManager.getPreferredContext(supportedContexts))
         }
 
         contextManager?.let {
             try {
                 it.processYubiKey(device)
-                if (device is NfcYubiKeyDevice) {
+                if (!switchedContext && device is NfcYubiKeyDevice) {
                     appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_FINISHED)
                     device.remove {
                         appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
@@ -440,7 +441,8 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
-    private fun switchContext(appContext: OperationContext) {
+    private fun switchContext(appContext: OperationContext) : Boolean {
+        var switchHappened = false
         // TODO: refactor this when more OperationContext are handled
         // only recreate the contextManager object if it cannot be reused
         if (appContext == OperationContext.Home ||
@@ -454,6 +456,7 @@ class MainActivity : FlutterFragmentActivity() {
         } else {
             contextManager?.dispose()
             contextManager = null
+            switchHappened = true
         }
 
         if (contextManager == null) {
@@ -481,6 +484,7 @@ class MainActivity : FlutterFragmentActivity() {
                 else -> null
             }
         }
+        return switchHappened
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {

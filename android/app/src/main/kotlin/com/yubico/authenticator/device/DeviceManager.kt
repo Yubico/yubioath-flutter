@@ -20,6 +20,7 @@ import androidx.collection.ArraySet
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import com.yubico.authenticator.ContextDisposedException
 import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
@@ -214,10 +215,17 @@ class DeviceManager(
             } catch (e: Exception) {
 
                 logger.debug("NFC action failed, asking to try again. Failure: ", e)
-
                 if (e is CancellationException) {
                     throw e
                 }
+
+                if (e is ContextDisposedException) {
+                    // the key does not have the needed context anymore
+                    // we cannot continue
+                    appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+                    throw e
+                }
+
                 appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
             }
 

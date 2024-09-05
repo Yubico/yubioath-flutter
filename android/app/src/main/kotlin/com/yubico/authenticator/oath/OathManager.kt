@@ -216,6 +216,7 @@ class OathManager(
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
         pendingAction?.invoke(Result.failure(ContextDisposedException()))
+        pendingAction = null
         coroutineScope.cancel()
     }
 
