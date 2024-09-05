@@ -172,9 +172,9 @@ class DeviceManager(
         appViewModel.connectedYubiKey.removeObserver(usbObserver)
     }
 
-    fun setDeviceInfo(deviceInfo: Info?, scpKeyParams: ScpKeyParams? = null) {
+    fun setDeviceInfo(deviceInfo: Info?) {
         appViewModel.setDeviceInfo(deviceInfo)
-        this.scpKeyParams = scpKeyParams
+        this.scpKeyParams = null
     }
 
     fun isUsbKeyConnected(): Boolean {
@@ -228,8 +228,6 @@ class DeviceManager(
 
                 appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
             }
-
-
         }
     }
 

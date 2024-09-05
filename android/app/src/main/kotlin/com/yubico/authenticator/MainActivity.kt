@@ -322,10 +322,10 @@ class MainActivity : FlutterFragmentActivity() {
             appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_STARTED)
         }
 
-        val scpKeyParams : ScpKeyParams? = try {
-            // If NFC and FIPS check for SCP11b key
-            if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
-                logger.debug("Checking for usable SCP11b key...")
+        // If NFC and FIPS check for SCP11b key
+        if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
+            logger.debug("Checking for usable SCP11b key...")
+            deviceManager.scpKeyParams = try {
                 device.withConnection<SmartCardConnection, ScpKeyParams?> { connection ->
                     val scp = SecurityDomainSession(connection)
                     val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
@@ -339,22 +339,22 @@ class MainActivity : FlutterFragmentActivity() {
                         logger.debug("Found SCP11b key: {}", keyRef)
                     }
                 }
-            } else null
-        } catch (e: Exception) {
-            logger.debug("Exception while getting scp keys: ", e)
-            if (device is NfcYubiKeyDevice) {
-                appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+            } catch (e: Exception) {
+                logger.debug("Exception while getting scp keys: ", e)
+                if (device is NfcYubiKeyDevice) {
+                    appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+                }
+                null
             }
-            null
         }
 
         // this YubiKey provides SCP11b key but the phone cannot perform AESCMAC
-        if (scpKeyParams != null && !supportsScp11b) {
+        if (deviceManager.scpKeyParams != null && !supportsScp11b) {
             deviceManager.setDeviceInfo(noScp11bNfcSupport)
             return
         }
 
-        deviceManager.setDeviceInfo(deviceInfo, scpKeyParams)
+        deviceManager.setDeviceInfo(deviceInfo)
         val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
         logger.debug("Connected key supports: {}", supportedContexts)
         var switchedContext: Boolean = false
@@ -381,12 +381,10 @@ class MainActivity : FlutterFragmentActivity() {
                         appMethodChannel.nfcActivityStateChanged(NfcActivityState.READY)
                     }
                 }
-            } catch (e: IOException) {
-                logger.debug("Caught IOException during YubiKey processing: ", e)
+            } catch (e: Exception) {
+                logger.debug("Caught Exception during YubiKey processing: ", e)
                 appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
             }
-
-
         }
     }
 

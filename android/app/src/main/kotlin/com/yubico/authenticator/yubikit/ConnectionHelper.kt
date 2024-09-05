@@ -23,13 +23,9 @@ import kotlin.coroutines.suspendCoroutine
 suspend inline fun <reified C : YubiKeyConnection, T> YubiKeyDevice.withConnection(
     crossinline block: (C) -> T
 ): T = suspendCoroutine { continuation ->
-    try {
-        requestConnection(C::class.java) {
-            continuation.resumeWith(runCatching {
-                block(it.value)
-            })
-        }
-    } catch (_: Exception) {
-        // ignored
+    requestConnection(C::class.java) {
+        continuation.resumeWith(runCatching {
+            block(it.value)
+        })
     }
 }
