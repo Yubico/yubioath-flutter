@@ -607,7 +607,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
               builder: (context, ref, child) {
                 final layout = ref.watch(passkeysLayoutProvider);
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding:
+                      const EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
