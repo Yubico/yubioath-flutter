@@ -34,37 +34,38 @@ class _NfcEventNotifier extends Notifier<NfcEvent> {
   }
 }
 
-final nfcViewNotifier =
-    NotifierProvider<_NfcViewNotifier, NfcView>(_NfcViewNotifier.new);
+final nfcActivityWidgetPropertiesNotifier = NotifierProvider<
+    _NfcActivityWidgetPropertiesNotifier,
+    NfcActivityWidgetProperties>(_NfcActivityWidgetPropertiesNotifier.new);
 
-class _NfcViewNotifier extends Notifier<NfcView> {
+class _NfcActivityWidgetPropertiesNotifier
+    extends Notifier<NfcActivityWidgetProperties> {
   @override
-  NfcView build() {
-    return NfcView(child: const SizedBox());
+  NfcActivityWidgetProperties build() {
+    return NfcActivityWidgetProperties(child: const SizedBox());
   }
 
-  void update(Widget child) {
-    state = state.copyWith(child: child);
-  }
-
-  void setShowing(bool value) {
-    state = state.copyWith(visible: value);
-  }
-
-  void setDialogProperties({bool? showCloseButton}) {
-    state =
-        state.copyWith(hasCloseButton: showCloseButton ?? state.hasCloseButton);
+  void update({
+    Widget? child,
+    bool? visible,
+    bool? hasCloseButton,
+  }) {
+    state = state.copyWith(
+        child: child ?? state.child,
+        visible: visible ?? state.visible,
+        hasCloseButton: hasCloseButton ?? state.hasCloseButton);
   }
 }
 
-class NfcBottomSheet extends ConsumerWidget {
-  const NfcBottomSheet({super.key});
+class NfcActivityWidget extends ConsumerWidget {
+  const NfcActivityWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widget = ref.watch(nfcViewNotifier.select((s) => s.child));
-    final showCloseButton =
-        ref.watch(nfcViewNotifier.select((s) => s.hasCloseButton));
+    final widget =
+        ref.watch(nfcActivityWidgetPropertiesNotifier.select((s) => s.child));
+    final showCloseButton = ref.watch(
+        nfcActivityWidgetPropertiesNotifier.select((s) => s.hasCloseButton));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

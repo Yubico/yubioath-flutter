@@ -44,7 +44,7 @@ class _DialogProvider extends Notifier<int> {
 
   @override
   int build() {
-    final viewNotifier = ref.read(nfcViewNotifier.notifier);
+    final viewNotifier = ref.read(nfcActivityWidgetPropertiesNotifier.notifier);
 
     ref.listen(androidNfcActivityProvider, (previous, current) {
       processingViewTimeout?.cancel();
@@ -52,7 +52,7 @@ class _DialogProvider extends Notifier<int> {
 
       if (!explicitAction) {
         // setup properties for ad-hoc action
-        viewNotifier.setDialogProperties(showCloseButton: false);
+        viewNotifier.update(hasCloseButton: false);
       }
 
       switch (current) {
@@ -103,8 +103,8 @@ class _DialogProvider extends Notifier<int> {
 
   NfcEvent showTapYourYubiKey() {
     ref
-        .read(nfcViewNotifier.notifier)
-        .setDialogProperties(showCloseButton: true);
+        .read(nfcActivityWidgetPropertiesNotifier.notifier)
+        .update(hasCloseButton: true);
     return NfcSetViewEvent(
         child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
@@ -115,8 +115,8 @@ class _DialogProvider extends Notifier<int> {
 
   NfcEvent showHoldStill() {
     ref
-        .read(nfcViewNotifier.notifier)
-        .setDialogProperties(showCloseButton: false);
+        .read(nfcActivityWidgetPropertiesNotifier.notifier)
+        .update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
@@ -127,8 +127,8 @@ class _DialogProvider extends Notifier<int> {
 
   NfcEvent showDone() {
     ref
-        .read(nfcViewNotifier.notifier)
-        .setDialogProperties(showCloseButton: true);
+        .read(nfcActivityWidgetPropertiesNotifier.notifier)
+        .update(hasCloseButton: true);
     return NfcSetViewEvent(
         child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
@@ -140,8 +140,8 @@ class _DialogProvider extends Notifier<int> {
 
   NfcEvent showFailed() {
     ref
-        .read(nfcViewNotifier.notifier)
-        .setDialogProperties(showCloseButton: true);
+        .read(nfcActivityWidgetPropertiesNotifier.notifier)
+        .update(hasCloseButton: true);
     return NfcSetViewEvent(
         child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
@@ -166,7 +166,8 @@ class _DialogProvider extends Notifier<int> {
     Timer.periodic(
       const Duration(milliseconds: 200),
       (timer) {
-        if (ref.read(nfcViewNotifier.select((s) => !s.visible))) {
+        if (ref.read(
+            nfcActivityWidgetPropertiesNotifier.select((s) => !s.visible))) {
           timer.cancel();
           completer.complete();
         }

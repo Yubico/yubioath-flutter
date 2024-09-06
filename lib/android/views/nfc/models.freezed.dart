@@ -15,36 +15,41 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$NfcView {
+mixin _$NfcActivityWidgetProperties {
   Widget get child => throw _privateConstructorUsedError;
   bool get visible => throw _privateConstructorUsedError;
   bool get hasCloseButton => throw _privateConstructorUsedError;
 
-  /// Create a copy of NfcView
+  /// Create a copy of NfcActivityWidgetProperties
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $NfcViewCopyWith<NfcView> get copyWith => throw _privateConstructorUsedError;
+  $NfcActivityWidgetPropertiesCopyWith<NfcActivityWidgetProperties>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NfcViewCopyWith<$Res> {
-  factory $NfcViewCopyWith(NfcView value, $Res Function(NfcView) then) =
-      _$NfcViewCopyWithImpl<$Res, NfcView>;
+abstract class $NfcActivityWidgetPropertiesCopyWith<$Res> {
+  factory $NfcActivityWidgetPropertiesCopyWith(
+          NfcActivityWidgetProperties value,
+          $Res Function(NfcActivityWidgetProperties) then) =
+      _$NfcActivityWidgetPropertiesCopyWithImpl<$Res,
+          NfcActivityWidgetProperties>;
   @useResult
   $Res call({Widget child, bool visible, bool hasCloseButton});
 }
 
 /// @nodoc
-class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
-    implements $NfcViewCopyWith<$Res> {
-  _$NfcViewCopyWithImpl(this._value, this._then);
+class _$NfcActivityWidgetPropertiesCopyWithImpl<$Res,
+        $Val extends NfcActivityWidgetProperties>
+    implements $NfcActivityWidgetPropertiesCopyWith<$Res> {
+  _$NfcActivityWidgetPropertiesCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of NfcView
+  /// Create a copy of NfcActivityWidgetProperties
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -71,24 +76,28 @@ class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
 }
 
 /// @nodoc
-abstract class _$$NfcViewImplCopyWith<$Res> implements $NfcViewCopyWith<$Res> {
-  factory _$$NfcViewImplCopyWith(
-          _$NfcViewImpl value, $Res Function(_$NfcViewImpl) then) =
-      __$$NfcViewImplCopyWithImpl<$Res>;
+abstract class _$$NfcActivityWidgetPropertiesImplCopyWith<$Res>
+    implements $NfcActivityWidgetPropertiesCopyWith<$Res> {
+  factory _$$NfcActivityWidgetPropertiesImplCopyWith(
+          _$NfcActivityWidgetPropertiesImpl value,
+          $Res Function(_$NfcActivityWidgetPropertiesImpl) then) =
+      __$$NfcActivityWidgetPropertiesImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Widget child, bool visible, bool hasCloseButton});
 }
 
 /// @nodoc
-class __$$NfcViewImplCopyWithImpl<$Res>
-    extends _$NfcViewCopyWithImpl<$Res, _$NfcViewImpl>
-    implements _$$NfcViewImplCopyWith<$Res> {
-  __$$NfcViewImplCopyWithImpl(
-      _$NfcViewImpl _value, $Res Function(_$NfcViewImpl) _then)
+class __$$NfcActivityWidgetPropertiesImplCopyWithImpl<$Res>
+    extends _$NfcActivityWidgetPropertiesCopyWithImpl<$Res,
+        _$NfcActivityWidgetPropertiesImpl>
+    implements _$$NfcActivityWidgetPropertiesImplCopyWith<$Res> {
+  __$$NfcActivityWidgetPropertiesImplCopyWithImpl(
+      _$NfcActivityWidgetPropertiesImpl _value,
+      $Res Function(_$NfcActivityWidgetPropertiesImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of NfcView
+  /// Create a copy of NfcActivityWidgetProperties
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -97,7 +106,7 @@ class __$$NfcViewImplCopyWithImpl<$Res>
     Object? visible = null,
     Object? hasCloseButton = null,
   }) {
-    return _then(_$NfcViewImpl(
+    return _then(_$NfcActivityWidgetPropertiesImpl(
       child: null == child
           ? _value.child
           : child // ignore: cast_nullable_to_non_nullable
@@ -116,8 +125,9 @@ class __$$NfcViewImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NfcViewImpl implements _NfcView {
-  _$NfcViewImpl(
+class _$NfcActivityWidgetPropertiesImpl
+    implements _NfcActivityWidgetProperties {
+  _$NfcActivityWidgetPropertiesImpl(
       {required this.child, this.visible = false, this.hasCloseButton = false});
 
   @override
@@ -131,14 +141,14 @@ class _$NfcViewImpl implements _NfcView {
 
   @override
   String toString() {
-    return 'NfcView(child: $child, visible: $visible, hasCloseButton: $hasCloseButton)';
+    return 'NfcActivityWidgetProperties(child: $child, visible: $visible, hasCloseButton: $hasCloseButton)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NfcViewImpl &&
+            other is _$NfcActivityWidgetPropertiesImpl &&
             (identical(other.child, child) || other.child == child) &&
             (identical(other.visible, visible) || other.visible == visible) &&
             (identical(other.hasCloseButton, hasCloseButton) ||
@@ -148,20 +158,22 @@ class _$NfcViewImpl implements _NfcView {
   @override
   int get hashCode => Object.hash(runtimeType, child, visible, hasCloseButton);
 
-  /// Create a copy of NfcView
+  /// Create a copy of NfcActivityWidgetProperties
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$NfcViewImplCopyWith<_$NfcViewImpl> get copyWith =>
-      __$$NfcViewImplCopyWithImpl<_$NfcViewImpl>(this, _$identity);
+  _$$NfcActivityWidgetPropertiesImplCopyWith<_$NfcActivityWidgetPropertiesImpl>
+      get copyWith => __$$NfcActivityWidgetPropertiesImplCopyWithImpl<
+          _$NfcActivityWidgetPropertiesImpl>(this, _$identity);
 }
 
-abstract class _NfcView implements NfcView {
-  factory _NfcView(
+abstract class _NfcActivityWidgetProperties
+    implements NfcActivityWidgetProperties {
+  factory _NfcActivityWidgetProperties(
       {required final Widget child,
       final bool visible,
-      final bool hasCloseButton}) = _$NfcViewImpl;
+      final bool hasCloseButton}) = _$NfcActivityWidgetPropertiesImpl;
 
   @override
   Widget get child;
@@ -170,10 +182,10 @@ abstract class _NfcView implements NfcView {
   @override
   bool get hasCloseButton;
 
-  /// Create a copy of NfcView
+  /// Create a copy of NfcActivityWidgetProperties
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$NfcViewImplCopyWith<_$NfcViewImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$NfcActivityWidgetPropertiesImplCopyWith<_$NfcActivityWidgetPropertiesImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }

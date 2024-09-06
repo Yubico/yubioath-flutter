@@ -37,10 +37,10 @@ class NfcSetViewEvent extends NfcEvent {
 }
 
 @freezed
-class NfcView with _$NfcView {
-  factory NfcView({
+class NfcActivityWidgetProperties with _$NfcActivityWidgetProperties {
+  factory NfcActivityWidgetProperties({
     required Widget child,
     @Default(false) bool visible,
     @Default(false) bool hasCloseButton,
-  }) = _NfcView;
+  }) = _NfcActivityWidgetProperties;
 }
