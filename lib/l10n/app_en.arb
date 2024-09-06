@@ -360,7 +360,6 @@
     "s_password": "Password",
     "s_manage_password": "Manage password",
     "s_set_password": "Set password",
-    "s_change_password": "Change password",
     "s_password_set": "Password set",
     "s_show_password": "Show password",
     "s_hide_password": "Hide password",
@@ -899,23 +898,11 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
 
-    "@_nfc_actions": {},
-    "s_nfc_tap_for": "Tap YubiKey to {operation}",
-    "@s_nfc_tap_for": {
-        "placeholders": {
-            "operation": {}
-        }
-    },
-
     "s_nfc_ready_to_scan": "Ready to scan",
     "s_nfc_scanning": "Scanning\u2026",
     "s_nfc_tap_your_yubikey": "Tap your YubiKey",
     "l_nfc_failed_to_scan": "Failed to scan, try again",
     "s_nfc_done": "Done",
-
-    "s_nfc_unlock_processing": "Unlocking",
-    "s_nfc_unlock_success": "Accounts unlocked",
-    "s_nfc_unlock_failure": "Failed to unlock",
 
     "@_ndef": {},
     "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",

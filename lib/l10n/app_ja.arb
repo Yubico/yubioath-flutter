@@ -360,7 +360,6 @@
     "s_password": "パスワード",
     "s_manage_password": "パスワードを管理",
     "s_set_password": "パスワードを設定",
-    "s_change_password": null,
     "s_password_set": "パスワードが設定されました",
     "s_show_password": "パスワードを表示",
     "s_hide_password": "パスワードを非表示",
@@ -899,23 +898,11 @@
     "l_launch_app_on_usb_off": "他のアプリがUSB経由でYubiKeyを使用できます",
     "s_allow_screenshots": "スクリーンショットを許可",
 
-    "@_nfc_actions": {},
-    "s_nfc_tap_for": null,
-    "@s_nfc_tap_for": {
-        "placeholders": {
-            "operation": {}
-        }
-    },
-
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
     "s_nfc_done": null,
-
-    "s_nfc_unlock_processing": null,
-    "s_nfc_unlock_success": null,
-    "s_nfc_unlock_failure": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",

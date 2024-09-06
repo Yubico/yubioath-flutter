@@ -360,7 +360,6 @@
     "s_password": "Mật khẩu",
     "s_manage_password": "Quản lý mật khẩu",
     "s_set_password": "Đặt mật khẩu",
-    "s_change_password": null,
     "s_password_set": "Mật khẩu đã được đặt",
     "s_show_password": "Hiển thị mật khẩu",
     "s_hide_password": "Ẩn mật khẩu",
@@ -899,23 +898,11 @@
     "l_launch_app_on_usb_off": "Các ứng dụng khác có thể sử dụng YubiKey qua USB",
     "s_allow_screenshots": "Cho phép chụp ảnh màn hình",
 
-    "@_nfc_actions": {},
-    "s_nfc_tap_for": null,
-    "@s_nfc_tap_for": {
-        "placeholders": {
-            "operation": {}
-        }
-    },
-
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
     "s_nfc_done": null,
-
-    "s_nfc_unlock_processing": null,
-    "s_nfc_unlock_success": null,
-    "s_nfc_unlock_failure": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Đã sao chép mã OTP từ YubiKey vào clipboard.",

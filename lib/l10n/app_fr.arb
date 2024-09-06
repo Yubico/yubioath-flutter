@@ -360,7 +360,6 @@
     "s_password": "Mot de passe",
     "s_manage_password": "Gérer mot de passe",
     "s_set_password": "Créer mot de passe",
-    "s_change_password": null,
     "s_password_set": "Mot de passe créé",
     "s_show_password": "Montrer mot de passe",
     "s_hide_password": "Masquer mot de passe",
@@ -899,23 +898,11 @@
     "l_launch_app_on_usb_off": "D'autres applications peuvent utiliser la YubiKey en USB",
     "s_allow_screenshots": "Autoriser captures d'écran",
 
-    "@_nfc_actions": {},
-    "s_nfc_tap_for": null,
-    "@s_nfc_tap_for": {
-        "placeholders": {
-            "operation": {}
-        }
-    },
-
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
     "s_nfc_done": null,
-
-    "s_nfc_unlock_processing": null,
-    "s_nfc_unlock_success": null,
-    "s_nfc_unlock_failure": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Code OTP copié de la YubiKey dans le presse-papiers.",

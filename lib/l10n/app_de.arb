@@ -360,7 +360,6 @@
     "s_password": "Passwort",
     "s_manage_password": "Passwort verwalten",
     "s_set_password": "Passwort setzen",
-    "s_change_password": null,
     "s_password_set": "Passwort gesetzt",
     "s_show_password": "Passwort anzeigen",
     "s_hide_password": "Passwort verstekcen",
@@ -899,23 +898,11 @@
     "l_launch_app_on_usb_off": "Andere Anwendungen können den YubiKey über USB nutzen",
     "s_allow_screenshots": "Bildschirmfotos erlauben",
 
-    "@_nfc_actions": {},
-    "s_nfc_tap_for": null,
-    "@s_nfc_tap_for": {
-        "placeholders": {
-            "operation": {}
-        }
-    },
-
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
     "s_nfc_done": null,
-
-    "s_nfc_unlock_processing": null,
-    "s_nfc_unlock_success": null,
-    "s_nfc_unlock_failure": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP-Code wurde erfolgreich von Ihrem YubiKey in die Zwischenablage kopiert.",
