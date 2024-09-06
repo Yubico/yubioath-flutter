@@ -924,7 +924,7 @@
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": null,
-    "s_nfc_scanning": null,
+    "s_nfc_hold_still": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
 

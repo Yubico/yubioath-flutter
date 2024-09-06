@@ -924,7 +924,7 @@
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Ready to scan",
-    "s_nfc_scanning": "Scanning\u2026",
+    "s_nfc_hold_still": "Hold still\u2026",
     "s_nfc_tap_your_yubikey": "Tap your YubiKey",
     "l_nfc_failed_to_scan": "Failed to scan, try again",
 
