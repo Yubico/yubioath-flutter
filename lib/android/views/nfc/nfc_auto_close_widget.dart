@@ -23,9 +23,9 @@ import 'nfc_activity_overlay.dart';
 import 'nfc_content_widget.dart';
 
 NfcEventCommand autoClose(
-        {String? title,
-        String? subtitle,
-        Widget? icon,
+        {required String title,
+        required String subtitle,
+        required Widget icon,
         bool showIfHidden = true}) =>
     setNfcView(
         _NfcAutoCloseWidget(

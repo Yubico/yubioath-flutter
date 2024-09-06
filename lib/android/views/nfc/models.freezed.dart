@@ -19,9 +19,6 @@ mixin _$NfcView {
   bool get isShowing => throw _privateConstructorUsedError;
   Widget get child => throw _privateConstructorUsedError;
   bool? get showCloseButton => throw _privateConstructorUsedError;
-  bool? get showSuccess => throw _privateConstructorUsedError;
-  String? get operationSuccess => throw _privateConstructorUsedError;
-  String? get operationFailure => throw _privateConstructorUsedError;
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.
@@ -34,13 +31,7 @@ abstract class $NfcViewCopyWith<$Res> {
   factory $NfcViewCopyWith(NfcView value, $Res Function(NfcView) then) =
       _$NfcViewCopyWithImpl<$Res, NfcView>;
   @useResult
-  $Res call(
-      {bool isShowing,
-      Widget child,
-      bool? showCloseButton,
-      bool? showSuccess,
-      String? operationSuccess,
-      String? operationFailure});
+  $Res call({bool isShowing, Widget child, bool? showCloseButton});
 }
 
 /// @nodoc
@@ -61,9 +52,6 @@ class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
     Object? isShowing = null,
     Object? child = null,
     Object? showCloseButton = freezed,
-    Object? showSuccess = freezed,
-    Object? operationSuccess = freezed,
-    Object? operationFailure = freezed,
   }) {
     return _then(_value.copyWith(
       isShowing: null == isShowing
@@ -78,18 +66,6 @@ class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
           ? _value.showCloseButton
           : showCloseButton // ignore: cast_nullable_to_non_nullable
               as bool?,
-      showSuccess: freezed == showSuccess
-          ? _value.showSuccess
-          : showSuccess // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      operationSuccess: freezed == operationSuccess
-          ? _value.operationSuccess
-          : operationSuccess // ignore: cast_nullable_to_non_nullable
-              as String?,
-      operationFailure: freezed == operationFailure
-          ? _value.operationFailure
-          : operationFailure // ignore: cast_nullable_to_non_nullable
-              as String?,
     ) as $Val);
   }
 }
@@ -101,13 +77,7 @@ abstract class _$$NfcViewImplCopyWith<$Res> implements $NfcViewCopyWith<$Res> {
       __$$NfcViewImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {bool isShowing,
-      Widget child,
-      bool? showCloseButton,
-      bool? showSuccess,
-      String? operationSuccess,
-      String? operationFailure});
+  $Res call({bool isShowing, Widget child, bool? showCloseButton});
 }
 
 /// @nodoc
@@ -126,9 +96,6 @@ class __$$NfcViewImplCopyWithImpl<$Res>
     Object? isShowing = null,
     Object? child = null,
     Object? showCloseButton = freezed,
-    Object? showSuccess = freezed,
-    Object? operationSuccess = freezed,
-    Object? operationFailure = freezed,
   }) {
     return _then(_$NfcViewImpl(
       isShowing: null == isShowing
@@ -143,18 +110,6 @@ class __$$NfcViewImplCopyWithImpl<$Res>
           ? _value.showCloseButton
           : showCloseButton // ignore: cast_nullable_to_non_nullable
               as bool?,
-      showSuccess: freezed == showSuccess
-          ? _value.showSuccess
-          : showSuccess // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      operationSuccess: freezed == operationSuccess
-          ? _value.operationSuccess
-          : operationSuccess // ignore: cast_nullable_to_non_nullable
-              as String?,
-      operationFailure: freezed == operationFailure
-          ? _value.operationFailure
-          : operationFailure // ignore: cast_nullable_to_non_nullable
-              as String?,
     ));
   }
 }
@@ -163,12 +118,7 @@ class __$$NfcViewImplCopyWithImpl<$Res>
 
 class _$NfcViewImpl implements _NfcView {
   _$NfcViewImpl(
-      {required this.isShowing,
-      required this.child,
-      this.showCloseButton,
-      this.showSuccess,
-      this.operationSuccess,
-      this.operationFailure});
+      {required this.isShowing, required this.child, this.showCloseButton});
 
   @override
   final bool isShowing;
@@ -176,16 +126,10 @@ class _$NfcViewImpl implements _NfcView {
   final Widget child;
   @override
   final bool? showCloseButton;
-  @override
-  final bool? showSuccess;
-  @override
-  final String? operationSuccess;
-  @override
-  final String? operationFailure;
 
   @override
   String toString() {
-    return 'NfcView(isShowing: $isShowing, child: $child, showCloseButton: $showCloseButton, showSuccess: $showSuccess, operationSuccess: $operationSuccess, operationFailure: $operationFailure)';
+    return 'NfcView(isShowing: $isShowing, child: $child, showCloseButton: $showCloseButton)';
   }
 
   @override
@@ -197,18 +141,12 @@ class _$NfcViewImpl implements _NfcView {
                 other.isShowing == isShowing) &&
             (identical(other.child, child) || other.child == child) &&
             (identical(other.showCloseButton, showCloseButton) ||
-                other.showCloseButton == showCloseButton) &&
-            (identical(other.showSuccess, showSuccess) ||
-                other.showSuccess == showSuccess) &&
-            (identical(other.operationSuccess, operationSuccess) ||
-                other.operationSuccess == operationSuccess) &&
-            (identical(other.operationFailure, operationFailure) ||
-                other.operationFailure == operationFailure));
+                other.showCloseButton == showCloseButton));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isShowing, child,
-      showCloseButton, showSuccess, operationSuccess, operationFailure);
+  int get hashCode =>
+      Object.hash(runtimeType, isShowing, child, showCloseButton);
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.
@@ -223,10 +161,7 @@ abstract class _NfcView implements NfcView {
   factory _NfcView(
       {required final bool isShowing,
       required final Widget child,
-      final bool? showCloseButton,
-      final bool? showSuccess,
-      final String? operationSuccess,
-      final String? operationFailure}) = _$NfcViewImpl;
+      final bool? showCloseButton}) = _$NfcViewImpl;
 
   @override
   bool get isShowing;
@@ -234,12 +169,6 @@ abstract class _NfcView implements NfcView {
   Widget get child;
   @override
   bool? get showCloseButton;
-  @override
-  bool? get showSuccess;
-  @override
-  String? get operationSuccess;
-  @override
-  String? get operationFailure;
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.

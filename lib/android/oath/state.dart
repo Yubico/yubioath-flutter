@@ -349,37 +349,21 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   @override
   void build() {}
 
-  Future<dynamic> reset() async => invoke('reset', {
-        'operationSuccess': l10n.s_nfc_oath_reset_success,
-        'operationFailure': l10n.s_nfc_oath_reset_failure,
-        'showSuccess': true
-      });
+  Future<dynamic> reset() async => invoke('reset');
 
   Future<dynamic> unlock(String password, {bool remember = false}) async =>
       invoke('unlock', {
         'callArgs': {'password': password, 'remember': remember},
-        'operationSuccess': l10n.s_nfc_unlock_success,
-        'operationFailure': l10n.s_nfc_unlock_failure,
-        'showSuccess': false,
       });
 
   Future<dynamic> setPassword(String? current, String password) async =>
       invoke('setPassword', {
         'callArgs': {'current': current, 'password': password},
-        'operationSuccess': current != null
-            ? l10n.s_nfc_oath_change_password_success
-            : l10n.s_password_set,
-        'operationFailure': current != null
-            ? l10n.s_nfc_oath_change_password_failure
-            : l10n.s_nfc_oath_set_password_failure,
-        'showSuccess': true
       });
 
   Future<dynamic> unsetPassword(String current) async =>
       invoke('unsetPassword', {
         'callArgs': {'current': current},
-        'operationSuccess': l10n.s_password_removed,
-        'operationFailure': l10n.s_nfc_oath_remove_password_failure,
       });
 
   Future<dynamic> forgetPassword() async => invoke('forgetPassword');
@@ -387,8 +371,6 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
   Future<dynamic> calculate(OathCredential credential) async =>
       invoke('calculate', {
         'callArgs': {'credentialId': credential.id},
-        'operationSuccess': l10n.s_nfc_oath_calculate_code_success,
-        'operationFailure': l10n.s_nfc_oath_calculate_code_failure,
       });
 
   Future<dynamic> addAccount(Uri credentialUri,
@@ -398,9 +380,6 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uri': credentialUri.toString(),
           'requireTouch': requireTouch
         },
-        'operationSuccess': l10n.s_account_added,
-        'operationFailure': l10n.s_nfc_oath_add_account_failure,
-        'showSuccess': true
       });
 
   Future<dynamic> addAccounts(
@@ -409,9 +388,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
         'callArgs': {
           'uris': credentialUris,
           'requireTouch': touchRequired,
-        },
-        'operationSuccess': l10n.s_nfc_oath_add_multiple_accounts_success,
-        'operationFailure': l10n.s_nfc_oath_add_multiple_accounts_failure,
+        }
       });
 
   Future<dynamic> addAccountToAny(Uri credentialUri,
@@ -421,17 +398,11 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'uri': credentialUri.toString(),
           'requireTouch': requireTouch
         },
-        'operationSuccess': l10n.s_account_added,
-        'operationFailure': l10n.s_nfc_oath_add_account_failure,
-        'showSuccess': true
       });
 
   Future<dynamic> deleteAccount(OathCredential credential) async =>
       invoke('deleteAccount', {
         'callArgs': {'credentialId': credential.id},
-        'operationSuccess': l10n.s_account_deleted,
-        'operationFailure': l10n.s_nfc_oath_delete_account_failure,
-        'showSuccess': true
       });
 
   Future<dynamic> renameAccount(
@@ -442,7 +413,5 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
           'name': name,
           'issuer': issuer
         },
-        'operationSuccess': l10n.s_account_renamed,
-        'operationFailure': l10n.s_nfc_oath_rename_account_failure,
       });
 }

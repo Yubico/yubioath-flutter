@@ -899,39 +899,6 @@
     "l_launch_app_on_usb_off": "D'autres applications peuvent utiliser la YubiKey en USB",
     "s_allow_screenshots": "Autoriser captures d'écran",
 
-    "@_nfc_oath_actions": {},
-    "s_nfc_oath_reset_success": null,
-    "s_nfc_oath_reset_failure": null,
-
-    "s_nfc_oath_change_password_success": null,
-    "s_nfc_oath_set_password_failure": null,
-    "s_nfc_oath_change_password_failure": null,
-
-    "s_nfc_oath_remove_password_failure": null,
-
-    "s_nfc_oath_add_account_failure": null,
-
-    "s_nfc_oath_rename_account_failure": null,
-
-    "s_nfc_oath_delete_account_failure": null,
-
-    "s_nfc_oath_calculate_code_success": null,
-    "s_nfc_oath_calculate_code_failure": null,
-
-    "s_nfc_oath_add_multiple_accounts_success": null,
-    "s_nfc_oath_add_multiple_accounts_failure": null,
-
-    "@_nfc_fido_actions": {},
-    "s_nfc_fido_reset_success": null,
-    "s_nfc_fido_reset_failure": null,
-
-    "s_nfc_fido_set_pin_failure": null,
-
-    "s_nfc_fido_change_pin_success": null,
-    "s_nfc_fido_change_pin_failure": null,
-
-    "s_nfc_fido_delete_passkey_failure": null,
-
     "@_nfc_actions": {},
     "s_nfc_tap_for": null,
     "@s_nfc_tap_for": {
@@ -940,15 +907,11 @@
         }
     },
 
-    "l_nfc_read_key_failure": null,
-
-    "s_nfc_remove_key": null,
-
     "s_nfc_ready_to_scan": null,
-    "s_nfc_accessing_yubikey": null,
-    "s_nfc_scan_yubikey": null,
-    "s_nfc_scan_again": null,
-    "s_nfc_scan_success": null,
+    "s_nfc_scanning": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
+    "s_nfc_done": null,
 
     "s_nfc_unlock_processing": null,
     "s_nfc_unlock_success": null,

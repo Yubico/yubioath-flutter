@@ -42,13 +42,11 @@ class NfcSetViewEvent extends NfcEvent {
 
 @freezed
 class NfcView with _$NfcView {
-  factory NfcView(
-      {required bool isShowing,
-      required Widget child,
-      bool? showCloseButton,
-      bool? showSuccess,
-      String? operationSuccess,
-      String? operationFailure}) = _NfcView;
+  factory NfcView({
+    required bool isShowing,
+    required Widget child,
+    bool? showCloseButton,
+  }) = _NfcView;
 }
 
 @freezed

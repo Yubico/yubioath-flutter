@@ -23,18 +23,35 @@ class NfcIconProgressBar extends StatelessWidget {
   const NfcIconProgressBar(this.inProgress, {super.key});
 
   @override
-  Widget build(BuildContext context) => Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          Visibility(
-            visible: inProgress,
-            child: const SizedBox(
-              width: 64,
-              height: 64,
-              child: CircularProgressIndicator(),
+  Widget build(BuildContext context) => IconTheme(
+        data: IconThemeData(
+          size: 64,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            const Opacity(
+              opacity: 0.5,
+              child: Icon(Symbols.contactless),
             ),
-          ),
-          const Icon(Symbols.contactless, size: 64)
-        ],
+            const ClipOval(
+              child: SizedBox(
+                width: 42,
+                height: 42,
+                child: OverflowBox(
+                  maxWidth: double.infinity,
+                  maxHeight: double.infinity,
+                  child: Icon(Symbols.contactless),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: CircularProgressIndicator(value: inProgress ? null : 1.0),
+            ),
+          ],
+        ),
       );
 }

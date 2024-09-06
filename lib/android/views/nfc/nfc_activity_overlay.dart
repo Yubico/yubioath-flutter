@@ -52,15 +52,8 @@ class _NfcViewNotifier extends Notifier<NfcView> {
     state = state.copyWith(isShowing: value);
   }
 
-  void setDialogProperties(
-      {String? operationSuccess,
-      String? operationFailure,
-      bool? showSuccess,
-      bool? showCloseButton}) {
+  void setDialogProperties({bool? showCloseButton}) {
     state = state.copyWith(
-        operationSuccess: operationSuccess ?? state.operationSuccess,
-        operationFailure: operationFailure ?? state.operationFailure,
-        showSuccess: showSuccess ?? state.showSuccess,
         showCloseButton: showCloseButton ?? state.showCloseButton);
   }
 }

@@ -21,12 +21,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 import '../app/logging.dart';
-import '../app/message.dart';
 import '../app/state.dart';
 import 'state.dart';
 import 'views/nfc/models.dart';
 import 'views/nfc/nfc_activity_overlay.dart';
-import 'views/nfc/nfc_auto_close_widget.dart';
 import 'views/nfc/nfc_content_widget.dart';
 import 'views/nfc/nfc_failure_icon.dart';
 import 'views/nfc/nfc_progress_bar.dart';
@@ -46,7 +44,6 @@ class _DialogProvider extends Notifier<int> {
 
   @override
   int build() {
-    final l10n = ref.read(l10nProvider);
     final viewNotifier = ref.read(nfcViewNotifier.notifier);
 
     ref.listen(androidNfcActivityProvider, (previous, current) {
@@ -54,52 +51,27 @@ class _DialogProvider extends Notifier<int> {
 
       if (!explicitAction) {
         // setup properties for ad-hoc action
-        viewNotifier.setDialogProperties(
-            operationSuccess: l10n.s_nfc_scan_success,
-            operationFailure: l10n.l_nfc_read_key_failure,
-            showSuccess: true,
-            showCloseButton: false);
+        viewNotifier.setDialogProperties(showCloseButton: false);
       }
-
-      final properties = ref.read(nfcViewNotifier);
 
       switch (current) {
         case NfcActivity.processingStarted:
           final timeout = explicitAction ? 300 : 500;
           processingViewTimeout?.cancel();
           processingViewTimeout = Timer(Duration(milliseconds: timeout), () {
-            notifier.sendCommand(showAccessingKeyView());
+            notifier.sendCommand(showScanning());
           });
           break;
         case NfcActivity.processingFinished:
           processingViewTimeout?.cancel();
-          final showSuccess = properties.showSuccess ?? false;
-          allowMessages = !showSuccess;
-          if (showSuccess) {
-            notifier.sendCommand(autoClose(
-                title: properties.operationSuccess,
-                subtitle: explicitAction ? l10n.s_nfc_remove_key : null,
-                icon: const NfcIconSuccess(),
-                showIfHidden: false));
-            // hide
-          }
-          notifier.sendCommand(hideNfcView(Duration(
-              milliseconds: !showSuccess
-                  ? 0
-                  : explicitAction
-                      ? 5000
-                      : 400)));
+          notifier.sendCommand(showDone());
+          notifier.sendCommand(hideNfcView(const Duration(milliseconds: 400)));
 
           explicitAction = false; // next action might not be explicit
           break;
         case NfcActivity.processingInterrupted:
           processingViewTimeout?.cancel();
-          viewNotifier.setDialogProperties(showCloseButton: true);
-          notifier.sendCommand(setNfcView(NfcContentWidget(
-            title: properties.operationFailure,
-            subtitle: l10n.s_nfc_scan_again,
-            icon: const NfcIconFailure(),
-          )));
+          notifier.sendCommand(showFailed());
           break;
         case NfcActivity.notActive:
           _log.debug('Received not handled notActive');
@@ -114,7 +86,7 @@ class _DialogProvider extends Notifier<int> {
       switch (call.method) {
         case 'show':
           explicitAction = true;
-          notifier.sendCommand(showScanKeyView());
+          notifier.sendCommand(showTapYourYubiKey());
           break;
 
         case 'close':
@@ -131,24 +103,52 @@ class _DialogProvider extends Notifier<int> {
     return 0;
   }
 
-  NfcEventCommand showScanKeyView() {
+  NfcEventCommand showTapYourYubiKey() {
     ref
         .read(nfcViewNotifier.notifier)
         .setDialogProperties(showCloseButton: true);
     return setNfcView(NfcContentWidget(
-      subtitle: l10n.s_nfc_scan_yubikey,
+      title: l10n.s_nfc_ready_to_scan,
+      subtitle: l10n.s_nfc_tap_your_yubikey,
       icon: const NfcIconProgressBar(false),
     ));
   }
 
-  NfcEventCommand showAccessingKeyView() {
+  NfcEventCommand showScanning() {
     ref
         .read(nfcViewNotifier.notifier)
         .setDialogProperties(showCloseButton: false);
     return setNfcView(NfcContentWidget(
-      title: l10n.s_nfc_accessing_yubikey,
+      title: l10n.s_nfc_ready_to_scan,
+      subtitle: l10n.s_nfc_scanning,
       icon: const NfcIconProgressBar(true),
     ));
+  }
+
+  NfcEventCommand showDone() {
+    ref
+        .read(nfcViewNotifier.notifier)
+        .setDialogProperties(showCloseButton: true);
+    return setNfcView(
+        NfcContentWidget(
+          title: l10n.s_nfc_ready_to_scan,
+          subtitle: l10n.s_nfc_done,
+          icon: const NfcIconSuccess(),
+        ),
+        showIfHidden: false);
+  }
+
+  NfcEventCommand showFailed() {
+    ref
+        .read(nfcViewNotifier.notifier)
+        .setDialogProperties(showCloseButton: true);
+    return setNfcView(
+        NfcContentWidget(
+          title: l10n.s_nfc_ready_to_scan,
+          subtitle: l10n.l_nfc_failed_to_scan,
+          icon: const NfcIconFailure(),
+        ),
+        showIfHidden: false);
   }
 
   void closeDialog() {

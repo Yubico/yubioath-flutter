@@ -21,17 +21,12 @@ import 'package:flutter/material.dart';
 
 import '../widgets/toast.dart';
 
-var allowMessages = true;
-
 void Function() showMessage(
   BuildContext context,
   String message, {
   Duration duration = const Duration(seconds: 2),
-}) {
-  return allowMessages
-      ? showToast(context, message, duration: duration)
-      : () {};
-}
+}) =>
+    showToast(context, message, duration: duration);
 
 Future<T?> showBlurDialog<T>({
   required BuildContext context,

@@ -31,10 +31,7 @@ class MethodChannelNotifier extends Notifier<void> {
   Future<dynamic> invoke(String name,
       [Map<String, dynamic> params = const {}]) async {
     final notifier = ref.read(nfcViewNotifier.notifier);
-    notifier.setDialogProperties(
-        operationSuccess: params['operationSuccess'],
-        operationFailure: params['operationFailure'],
-        showSuccess: params['showSuccess']);
+    notifier.setDialogProperties();
 
     final result = await _channel.invokeMethod(name, params['callArgs']);
     await ref.read(androidDialogProvider.notifier).waitForDialogClosed();
