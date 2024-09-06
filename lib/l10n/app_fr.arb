@@ -38,6 +38,7 @@
     "s_calculate": "Calculer",
     "s_import": "Importer",
     "s_overwrite": "Écraser",
+    "s_done": null,
     "s_label": "Étiquette",
     "s_name": "Nom",
     "s_usb": "USB",
@@ -926,7 +927,6 @@
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
-    "s_nfc_done": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Code OTP copié de la YubiKey dans le presse-papiers.",

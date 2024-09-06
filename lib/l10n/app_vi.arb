@@ -38,6 +38,7 @@
     "s_calculate": "Tính toán",
     "s_import": "Nhập khẩu",
     "s_overwrite": "Ghi đè",
+    "s_done": null,
     "s_label": "Nhãn",
     "s_name": "Tên",
     "s_usb": "USB",
@@ -926,7 +927,6 @@
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
-    "s_nfc_done": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Đã sao chép mã OTP từ YubiKey vào clipboard.",
