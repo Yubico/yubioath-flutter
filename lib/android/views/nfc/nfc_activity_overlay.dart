@@ -20,18 +20,17 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import 'models.dart';
 
-final nfcEventCommandNotifier =
-    NotifierProvider<_NfcEventCommandNotifier, NfcEventCommand>(
-        _NfcEventCommandNotifier.new);
+final nfcEventNotifier =
+    NotifierProvider<_NfcEventNotifier, NfcEvent>(_NfcEventNotifier.new);
 
-class _NfcEventCommandNotifier extends Notifier<NfcEventCommand> {
+class _NfcEventNotifier extends Notifier<NfcEvent> {
   @override
-  NfcEventCommand build() {
-    return NfcEventCommand(event: const NfcEvent());
+  NfcEvent build() {
+    return const NfcEvent();
   }
 
-  void sendCommand(NfcEventCommand command) {
-    state = command;
+  void send(NfcEvent event) {
+    state = event;
   }
 }
 
@@ -41,7 +40,7 @@ final nfcViewNotifier =
 class _NfcViewNotifier extends Notifier<NfcView> {
   @override
   NfcView build() {
-    return NfcView(isShowing: false, child: const SizedBox());
+    return NfcView(child: const SizedBox());
   }
 
   void update(Widget child) {
@@ -49,12 +48,12 @@ class _NfcViewNotifier extends Notifier<NfcView> {
   }
 
   void setShowing(bool value) {
-    state = state.copyWith(isShowing: value);
+    state = state.copyWith(visible: value);
   }
 
   void setDialogProperties({bool? showCloseButton}) {
-    state = state.copyWith(
-        showCloseButton: showCloseButton ?? state.showCloseButton);
+    state =
+        state.copyWith(hasCloseButton: showCloseButton ?? state.hasCloseButton);
   }
 }
 
@@ -65,7 +64,7 @@ class NfcBottomSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final widget = ref.watch(nfcViewNotifier.select((s) => s.child));
     final showCloseButton =
-        ref.watch(nfcViewNotifier.select((s) => s.showCloseButton ?? false));
+        ref.watch(nfcViewNotifier.select((s) => s.hasCloseButton));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

@@ -22,13 +22,13 @@ import 'models.dart';
 import 'nfc_activity_overlay.dart';
 import 'nfc_content_widget.dart';
 
-NfcEventCommand autoClose(
+NfcEvent autoClose(
         {required String title,
         required String subtitle,
         required Widget icon,
         bool showIfHidden = true}) =>
-    setNfcView(
-        _NfcAutoCloseWidget(
+    NfcSetViewEvent(
+        child: _NfcAutoCloseWidget(
           child: NfcContentWidget(
             title: title,
             subtitle: subtitle,
@@ -46,7 +46,7 @@ class _NfcAutoCloseWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(androidNfcActivityProvider, (previous, current) {
       if (current == NfcActivity.ready) {
-        ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView());
+        ref.read(nfcEventNotifier.notifier).send(const NfcHideViewEvent());
       }
     });
 

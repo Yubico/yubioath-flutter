@@ -37,8 +37,7 @@ class _NfcEventCommandListener {
 
   void startListener(BuildContext context) {
     listener?.close();
-    listener = _ref.listen(nfcEventCommandNotifier.select((c) => c.event),
-        (previous, action) {
+    listener = _ref.listen(nfcEventNotifier, (previous, action) {
       _log.debug('Change in command for Overlay: $previous -> $action');
       switch (action) {
         case (NfcSetViewEvent a):
@@ -49,11 +48,7 @@ class _NfcEventCommandListener {
           }
           break;
         case (NfcHideViewEvent e):
-          _hide(context, e.hideAfter);
-          break;
-        case (NfcCancelEvent _):
-          _ref.read(androidDialogProvider.notifier).cancelDialog();
-          _hide(context, Duration.zero);
+          _hide(context, e.delay);
           break;
       }
     });
@@ -88,7 +83,8 @@ class _NfcEventCommandListener {
     });
   }
 
-  bool get visible => _ref.read(nfcViewNotifier.select((s) => s.isShowing));
+  bool get visible => _ref.read(nfcViewNotifier.select((s) => s.visible));
+
   set visible(bool showing) =>
       _ref.read(nfcViewNotifier.notifier).setShowing(showing);
 }

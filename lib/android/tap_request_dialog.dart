@@ -47,7 +47,8 @@ class _DialogProvider extends Notifier<int> {
     final viewNotifier = ref.read(nfcViewNotifier.notifier);
 
     ref.listen(androidNfcActivityProvider, (previous, current) {
-      final notifier = ref.read(nfcEventCommandNotifier.notifier);
+      processingViewTimeout?.cancel();
+      final notifier = ref.read(nfcEventNotifier.notifier);
 
       if (!explicitAction) {
         // setup properties for ad-hoc action
@@ -57,21 +58,18 @@ class _DialogProvider extends Notifier<int> {
       switch (current) {
         case NfcActivity.processingStarted:
           final timeout = explicitAction ? 300 : 500;
-          processingViewTimeout?.cancel();
           processingViewTimeout = Timer(Duration(milliseconds: timeout), () {
-            notifier.sendCommand(showScanning());
+            notifier.send(showHoldStill());
           });
           break;
         case NfcActivity.processingFinished:
-          processingViewTimeout?.cancel();
-          notifier.sendCommand(showDone());
-          notifier.sendCommand(hideNfcView(const Duration(milliseconds: 400)));
-
+          notifier.send(showDone());
+          notifier
+              .send(const NfcHideViewEvent(delay: Duration(milliseconds: 400)));
           explicitAction = false; // next action might not be explicit
           break;
         case NfcActivity.processingInterrupted:
-          processingViewTimeout?.cancel();
-          notifier.sendCommand(showFailed());
+          notifier.send(showFailed());
           break;
         case NfcActivity.notActive:
           _log.debug('Received not handled notActive');
@@ -82,11 +80,11 @@ class _DialogProvider extends Notifier<int> {
     });
 
     _channel.setMethodCallHandler((call) async {
-      final notifier = ref.read(nfcEventCommandNotifier.notifier);
+      final notifier = ref.read(nfcEventNotifier.notifier);
       switch (call.method) {
         case 'show':
           explicitAction = true;
-          notifier.sendCommand(showTapYourYubiKey());
+          notifier.send(showTapYourYubiKey());
           break;
 
         case 'close':
@@ -103,34 +101,36 @@ class _DialogProvider extends Notifier<int> {
     return 0;
   }
 
-  NfcEventCommand showTapYourYubiKey() {
+  NfcEvent showTapYourYubiKey() {
     ref
         .read(nfcViewNotifier.notifier)
         .setDialogProperties(showCloseButton: true);
-    return setNfcView(NfcContentWidget(
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
       subtitle: l10n.s_nfc_tap_your_yubikey,
       icon: const NfcIconProgressBar(false),
     ));
   }
 
-  NfcEventCommand showScanning() {
+  NfcEvent showHoldStill() {
     ref
         .read(nfcViewNotifier.notifier)
         .setDialogProperties(showCloseButton: false);
-    return setNfcView(NfcContentWidget(
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
       subtitle: l10n.s_nfc_hold_still,
       icon: const NfcIconProgressBar(true),
     ));
   }
 
-  NfcEventCommand showDone() {
+  NfcEvent showDone() {
     ref
         .read(nfcViewNotifier.notifier)
         .setDialogProperties(showCloseButton: true);
-    return setNfcView(
-        NfcContentWidget(
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
           subtitle: l10n.s_done,
           icon: const NfcIconSuccess(),
@@ -138,12 +138,12 @@ class _DialogProvider extends Notifier<int> {
         showIfHidden: false);
   }
 
-  NfcEventCommand showFailed() {
+  NfcEvent showFailed() {
     ref
         .read(nfcViewNotifier.notifier)
         .setDialogProperties(showCloseButton: true);
-    return setNfcView(
-        NfcContentWidget(
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
           subtitle: l10n.l_nfc_failed_to_scan,
           icon: const NfcIconFailure(),
@@ -152,7 +152,7 @@ class _DialogProvider extends Notifier<int> {
   }
 
   void closeDialog() {
-    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView());
+    ref.read(nfcEventNotifier.notifier).send(const NfcHideViewEvent());
   }
 
   void cancelDialog() async {
@@ -166,7 +166,7 @@ class _DialogProvider extends Notifier<int> {
     Timer.periodic(
       const Duration(milliseconds: 200),
       (timer) {
-        if (!ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
+        if (ref.read(nfcViewNotifier.select((s) => !s.visible))) {
           timer.cancel();
           completer.complete();
         }

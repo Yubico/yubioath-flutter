@@ -24,13 +24,14 @@ import 'models.dart';
 import 'nfc_activity_overlay.dart';
 import 'nfc_content_widget.dart';
 
-NfcEventCommand countDownClose({
+NfcEvent countDownClose({
   required String title,
   required String subtitle,
   required Widget icon,
   int closeInSec = 3,
 }) =>
-    setNfcView(_CountDownCloseWidget(
+    NfcSetViewEvent(
+        child: _CountDownCloseWidget(
       closeInSec: closeInSec,
       child: NfcContentWidget(
         title: title,
@@ -109,6 +110,6 @@ class _CountDownCloseWidgetState extends ConsumerState<_CountDownCloseWidget> {
   }
 
   void hideNow() {
-    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView());
+    ref.read(nfcEventNotifier.notifier).send(const NfcHideViewEvent());
   }
 }

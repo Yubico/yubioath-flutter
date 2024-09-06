@@ -24,13 +24,9 @@ class NfcEvent {
 }
 
 class NfcHideViewEvent extends NfcEvent {
-  final Duration hideAfter;
+  final Duration delay;
 
-  const NfcHideViewEvent({required this.hideAfter});
-}
-
-class NfcCancelEvent extends NfcEvent {
-  const NfcCancelEvent();
+  const NfcHideViewEvent({this.delay = Duration.zero});
 }
 
 class NfcSetViewEvent extends NfcEvent {
@@ -43,22 +39,8 @@ class NfcSetViewEvent extends NfcEvent {
 @freezed
 class NfcView with _$NfcView {
   factory NfcView({
-    required bool isShowing,
     required Widget child,
-    bool? showCloseButton,
+    @Default(false) bool visible,
+    @Default(false) bool hasCloseButton,
   }) = _NfcView;
 }
-
-@freezed
-class NfcEventCommand with _$NfcEventCommand {
-  factory NfcEventCommand({
-    @Default(NfcEvent()) NfcEvent event,
-  }) = _NfcEventCommand;
-}
-
-NfcEventCommand hideNfcView([Duration hideAfter = Duration.zero]) =>
-    NfcEventCommand(event: NfcHideViewEvent(hideAfter: hideAfter));
-
-NfcEventCommand setNfcView(Widget child, {bool showIfHidden = true}) =>
-    NfcEventCommand(
-        event: NfcSetViewEvent(child: child, showIfHidden: showIfHidden));

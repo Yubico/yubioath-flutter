@@ -16,9 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$NfcView {
-  bool get isShowing => throw _privateConstructorUsedError;
   Widget get child => throw _privateConstructorUsedError;
-  bool? get showCloseButton => throw _privateConstructorUsedError;
+  bool get visible => throw _privateConstructorUsedError;
+  bool get hasCloseButton => throw _privateConstructorUsedError;
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.
@@ -31,7 +31,7 @@ abstract class $NfcViewCopyWith<$Res> {
   factory $NfcViewCopyWith(NfcView value, $Res Function(NfcView) then) =
       _$NfcViewCopyWithImpl<$Res, NfcView>;
   @useResult
-  $Res call({bool isShowing, Widget child, bool? showCloseButton});
+  $Res call({Widget child, bool visible, bool hasCloseButton});
 }
 
 /// @nodoc
@@ -49,23 +49,23 @@ class _$NfcViewCopyWithImpl<$Res, $Val extends NfcView>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? isShowing = null,
     Object? child = null,
-    Object? showCloseButton = freezed,
+    Object? visible = null,
+    Object? hasCloseButton = null,
   }) {
     return _then(_value.copyWith(
-      isShowing: null == isShowing
-          ? _value.isShowing
-          : isShowing // ignore: cast_nullable_to_non_nullable
-              as bool,
       child: null == child
           ? _value.child
           : child // ignore: cast_nullable_to_non_nullable
               as Widget,
-      showCloseButton: freezed == showCloseButton
-          ? _value.showCloseButton
-          : showCloseButton // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      visible: null == visible
+          ? _value.visible
+          : visible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hasCloseButton: null == hasCloseButton
+          ? _value.hasCloseButton
+          : hasCloseButton // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -77,7 +77,7 @@ abstract class _$$NfcViewImplCopyWith<$Res> implements $NfcViewCopyWith<$Res> {
       __$$NfcViewImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool isShowing, Widget child, bool? showCloseButton});
+  $Res call({Widget child, bool visible, bool hasCloseButton});
 }
 
 /// @nodoc
@@ -93,23 +93,23 @@ class __$$NfcViewImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? isShowing = null,
     Object? child = null,
-    Object? showCloseButton = freezed,
+    Object? visible = null,
+    Object? hasCloseButton = null,
   }) {
     return _then(_$NfcViewImpl(
-      isShowing: null == isShowing
-          ? _value.isShowing
-          : isShowing // ignore: cast_nullable_to_non_nullable
-              as bool,
       child: null == child
           ? _value.child
           : child // ignore: cast_nullable_to_non_nullable
               as Widget,
-      showCloseButton: freezed == showCloseButton
-          ? _value.showCloseButton
-          : showCloseButton // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      visible: null == visible
+          ? _value.visible
+          : visible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hasCloseButton: null == hasCloseButton
+          ? _value.hasCloseButton
+          : hasCloseButton // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -118,18 +118,20 @@ class __$$NfcViewImplCopyWithImpl<$Res>
 
 class _$NfcViewImpl implements _NfcView {
   _$NfcViewImpl(
-      {required this.isShowing, required this.child, this.showCloseButton});
+      {required this.child, this.visible = false, this.hasCloseButton = false});
 
-  @override
-  final bool isShowing;
   @override
   final Widget child;
   @override
-  final bool? showCloseButton;
+  @JsonKey()
+  final bool visible;
+  @override
+  @JsonKey()
+  final bool hasCloseButton;
 
   @override
   String toString() {
-    return 'NfcView(isShowing: $isShowing, child: $child, showCloseButton: $showCloseButton)';
+    return 'NfcView(child: $child, visible: $visible, hasCloseButton: $hasCloseButton)';
   }
 
   @override
@@ -137,16 +139,14 @@ class _$NfcViewImpl implements _NfcView {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NfcViewImpl &&
-            (identical(other.isShowing, isShowing) ||
-                other.isShowing == isShowing) &&
             (identical(other.child, child) || other.child == child) &&
-            (identical(other.showCloseButton, showCloseButton) ||
-                other.showCloseButton == showCloseButton));
+            (identical(other.visible, visible) || other.visible == visible) &&
+            (identical(other.hasCloseButton, hasCloseButton) ||
+                other.hasCloseButton == hasCloseButton));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isShowing, child, showCloseButton);
+  int get hashCode => Object.hash(runtimeType, child, visible, hasCloseButton);
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.
@@ -159,151 +159,21 @@ class _$NfcViewImpl implements _NfcView {
 
 abstract class _NfcView implements NfcView {
   factory _NfcView(
-      {required final bool isShowing,
-      required final Widget child,
-      final bool? showCloseButton}) = _$NfcViewImpl;
+      {required final Widget child,
+      final bool visible,
+      final bool hasCloseButton}) = _$NfcViewImpl;
 
-  @override
-  bool get isShowing;
   @override
   Widget get child;
   @override
-  bool? get showCloseButton;
+  bool get visible;
+  @override
+  bool get hasCloseButton;
 
   /// Create a copy of NfcView
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NfcViewImplCopyWith<_$NfcViewImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-mixin _$NfcEventCommand {
-  NfcEvent get event => throw _privateConstructorUsedError;
-
-  /// Create a copy of NfcEventCommand
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $NfcEventCommandCopyWith<NfcEventCommand> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $NfcEventCommandCopyWith<$Res> {
-  factory $NfcEventCommandCopyWith(
-          NfcEventCommand value, $Res Function(NfcEventCommand) then) =
-      _$NfcEventCommandCopyWithImpl<$Res, NfcEventCommand>;
-  @useResult
-  $Res call({NfcEvent event});
-}
-
-/// @nodoc
-class _$NfcEventCommandCopyWithImpl<$Res, $Val extends NfcEventCommand>
-    implements $NfcEventCommandCopyWith<$Res> {
-  _$NfcEventCommandCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of NfcEventCommand
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? event = null,
-  }) {
-    return _then(_value.copyWith(
-      event: null == event
-          ? _value.event
-          : event // ignore: cast_nullable_to_non_nullable
-              as NfcEvent,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$NfcEventCommandImplCopyWith<$Res>
-    implements $NfcEventCommandCopyWith<$Res> {
-  factory _$$NfcEventCommandImplCopyWith(_$NfcEventCommandImpl value,
-          $Res Function(_$NfcEventCommandImpl) then) =
-      __$$NfcEventCommandImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({NfcEvent event});
-}
-
-/// @nodoc
-class __$$NfcEventCommandImplCopyWithImpl<$Res>
-    extends _$NfcEventCommandCopyWithImpl<$Res, _$NfcEventCommandImpl>
-    implements _$$NfcEventCommandImplCopyWith<$Res> {
-  __$$NfcEventCommandImplCopyWithImpl(
-      _$NfcEventCommandImpl _value, $Res Function(_$NfcEventCommandImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of NfcEventCommand
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? event = null,
-  }) {
-    return _then(_$NfcEventCommandImpl(
-      event: null == event
-          ? _value.event
-          : event // ignore: cast_nullable_to_non_nullable
-              as NfcEvent,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$NfcEventCommandImpl implements _NfcEventCommand {
-  _$NfcEventCommandImpl({this.event = const NfcEvent()});
-
-  @override
-  @JsonKey()
-  final NfcEvent event;
-
-  @override
-  String toString() {
-    return 'NfcEventCommand(event: $event)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$NfcEventCommandImpl &&
-            (identical(other.event, event) || other.event == event));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, event);
-
-  /// Create a copy of NfcEventCommand
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$NfcEventCommandImplCopyWith<_$NfcEventCommandImpl> get copyWith =>
-      __$$NfcEventCommandImplCopyWithImpl<_$NfcEventCommandImpl>(
-          this, _$identity);
-}
-
-abstract class _NfcEventCommand implements NfcEventCommand {
-  factory _NfcEventCommand({final NfcEvent event}) = _$NfcEventCommandImpl;
-
-  @override
-  NfcEvent get event;
-
-  /// Create a copy of NfcEventCommand
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$NfcEventCommandImplCopyWith<_$NfcEventCommandImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
