@@ -11,8 +11,7 @@
             "s_": "A single, or few words. Should be short enough to display on a button, or a header.",
             "l_": "A single line, can be wrapped. Should not be more than one sentence, and not end with a period.",
             "p_": "One or more full sentences, with proper punctuation.",
-            "q_": "A question, ending in question mark.",
-            "c_": "Composable, used in substitutions"
+            "q_": "A question, ending in question mark."
         }
     },
 
@@ -951,7 +950,6 @@
     "s_nfc_scan_again": "Scan again",
     "s_nfc_scan_success": "Scanned your Yubikey",
 
-    "c_nfc_unlock": "unlock",
     "s_nfc_unlock_processing": "Unlocking",
     "s_nfc_unlock_success": "Accounts unlocked",
     "s_nfc_unlock_failure": "Failed to unlock",

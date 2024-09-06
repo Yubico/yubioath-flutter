@@ -11,8 +11,7 @@
             "s_": "Một hoặc vài từ. Nên đủ ngắn để hiển thị trên nút hoặc tiêu đề.",
             "l_": "Một dòng đơn, có thể xuống dòng. Không nên quá một câu, và không kết thúc bằng dấu chấm.",
             "p_": "Một hoặc nhiều câu đầy đủ, với dấu chấm câu thích hợp.",
-            "q_": "Một câu hỏi, kết thúc bằng dấu hỏi chấm.",
-            "c_": null
+            "q_": "Một câu hỏi, kết thúc bằng dấu hỏi chấm."
         }
     },
 
@@ -951,7 +950,6 @@
     "s_nfc_scan_again": null,
     "s_nfc_scan_success": null,
 
-    "c_nfc_unlock": null,
     "s_nfc_unlock_processing": null,
     "s_nfc_unlock_success": null,
     "s_nfc_unlock_failure": null,

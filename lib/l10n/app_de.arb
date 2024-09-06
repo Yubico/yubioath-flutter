@@ -11,8 +11,7 @@
             "s_": "Ein einzelnes Wort oder wenige Wörter. Sollte kurz genug sein, um auf einer Schaltfläche oder einer Überschrift angezeigt zu werden.",
             "l_": "Eine einzelne Zeile, kann umbgebrochen werden. Sollte nicht mehr als einen Satz umfassen und nicht mit einem Punkt enden.",
             "p_": "Ein oder mehrere ganze Sätze mit allen Satzzeichen.",
-            "q_": "Eine Frage, die mit einem Fragezeichen endet.",
-            "c_": null
+            "q_": "Eine Frage, die mit einem Fragezeichen endet."
         }
     },
 
@@ -951,7 +950,6 @@
     "s_nfc_scan_again": null,
     "s_nfc_scan_success": null,
 
-    "c_nfc_unlock": null,
     "s_nfc_unlock_processing": null,
     "s_nfc_unlock_success": null,
     "s_nfc_unlock_failure": null,
