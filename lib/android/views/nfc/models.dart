@@ -23,26 +23,21 @@ class NfcEvent {
   const NfcEvent();
 }
 
-class NfcShowViewEvent extends NfcEvent {
-  final Widget child;
-
-  const NfcShowViewEvent({required this.child});
-}
-
 class NfcHideViewEvent extends NfcEvent {
-  final int timeoutMs;
+  final Duration hideAfter;
 
-  const NfcHideViewEvent({required this.timeoutMs});
+  const NfcHideViewEvent({required this.hideAfter});
 }
 
 class NfcCancelEvent extends NfcEvent {
   const NfcCancelEvent();
 }
 
-class NfcUpdateViewEvent extends NfcEvent {
+class NfcSetViewEvent extends NfcEvent {
   final Widget child;
+  final bool showIfHidden;
 
-  const NfcUpdateViewEvent({required this.child});
+  const NfcSetViewEvent({required this.child, this.showIfHidden = true});
 }
 
 @freezed
@@ -63,11 +58,9 @@ class NfcEventCommand with _$NfcEventCommand {
   }) = _NfcEventCommand;
 }
 
-NfcEventCommand hideNfcView([int timeoutMs = 0]) =>
-    NfcEventCommand(event: NfcHideViewEvent(timeoutMs: timeoutMs));
+NfcEventCommand hideNfcView([Duration hideAfter = Duration.zero]) =>
+    NfcEventCommand(event: NfcHideViewEvent(hideAfter: hideAfter));
 
-NfcEventCommand updateNfcView(Widget child) =>
-    NfcEventCommand(event: NfcUpdateViewEvent(child: child));
-
-NfcEventCommand showNfcView(Widget child) =>
-    NfcEventCommand(event: NfcShowViewEvent(child: child));
+NfcEventCommand setNfcView(Widget child, {bool showIfHidden = true}) =>
+    NfcEventCommand(
+        event: NfcSetViewEvent(child: child, showIfHidden: showIfHidden));

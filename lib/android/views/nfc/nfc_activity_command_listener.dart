@@ -41,14 +41,15 @@ class _NfcEventCommandListener {
         (previous, action) {
       _log.debug('Change in command for Overlay: $previous -> $action');
       switch (action) {
-        case (NfcShowViewEvent a):
-          _show(context, a.child);
-          break;
-        case (NfcUpdateViewEvent a):
-          _ref.read(nfcViewNotifier.notifier).update(a.child);
+        case (NfcSetViewEvent a):
+          if (!visible && a.showIfHidden) {
+            _show(context, a.child);
+          } else {
+            _ref.read(nfcViewNotifier.notifier).update(a.child);
+          }
           break;
         case (NfcHideViewEvent e):
-          _hide(context, Duration(milliseconds: e.timeoutMs));
+          _hide(context, e.hideAfter);
           break;
         case (NfcCancelEvent _):
           _ref.read(androidDialogProvider.notifier).cancelDialog();
@@ -61,8 +62,8 @@ class _NfcEventCommandListener {
   void _show(BuildContext context, Widget child) async {
     final notifier = _ref.read(nfcViewNotifier.notifier);
     notifier.update(child);
-    if (!_ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
-      notifier.setShowing(true);
+    if (!visible) {
+      visible = true;
       final result = await showModalBottomSheet(
           context: context,
           builder: (BuildContext context) {
@@ -72,18 +73,22 @@ class _NfcEventCommandListener {
         // the modal sheet was cancelled by Back button, close button or dismiss
         _ref.read(androidDialogProvider.notifier).cancelDialog();
       }
-      notifier.setShowing(false);
+      visible = false;
     }
   }
 
   void _hide(BuildContext context, Duration timeout) {
     Future.delayed(timeout, () {
       _ref.read(withContextProvider)((context) async {
-        if (_ref.read(nfcViewNotifier.select((s) => s.isShowing))) {
+        if (visible) {
           Navigator.of(context).pop('HIDDEN');
-          _ref.read(nfcViewNotifier.notifier).setShowing(false);
+          visible = false;
         }
       });
     });
   }
+
+  bool get visible => _ref.read(nfcViewNotifier.select((s) => s.isShowing));
+  set visible(bool showing) =>
+      _ref.read(nfcViewNotifier.notifier).setShowing(showing);
 }

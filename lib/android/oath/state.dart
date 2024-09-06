@@ -360,6 +360,7 @@ class _OathMethodChannelNotifier extends MethodChannelNotifier {
         'callArgs': {'password': password, 'remember': remember},
         'operationSuccess': l10n.s_nfc_unlock_success,
         'operationFailure': l10n.s_nfc_unlock_failure,
+        'showSuccess': false,
       });
 
   Future<dynamic> setPassword(String? current, String password) async =>

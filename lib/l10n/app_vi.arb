@@ -949,6 +949,7 @@
     "s_nfc_accessing_yubikey": null,
     "s_nfc_scan_yubikey": null,
     "s_nfc_scan_again": null,
+    "s_nfc_scan_success": null,
 
     "c_nfc_unlock": null,
     "s_nfc_unlock_processing": null,

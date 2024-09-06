@@ -39,8 +39,10 @@ final androidDialogProvider =
     NotifierProvider<_DialogProvider, int>(_DialogProvider.new);
 
 class _DialogProvider extends Notifier<int> {
-  Timer? processingTimer;
+  Timer? processingViewTimeout;
   bool explicitAction = false;
+
+  late final l10n = ref.read(l10nProvider);
 
   @override
   int build() {
@@ -53,6 +55,7 @@ class _DialogProvider extends Notifier<int> {
       if (!explicitAction) {
         // setup properties for ad-hoc action
         viewNotifier.setDialogProperties(
+            operationSuccess: l10n.s_nfc_scan_success,
             operationFailure: l10n.l_nfc_read_key_failure,
             showSuccess: true,
             showCloseButton: false);
@@ -62,45 +65,37 @@ class _DialogProvider extends Notifier<int> {
 
       switch (current) {
         case NfcActivity.processingStarted:
-          viewNotifier.setDialogProperties(showCloseButton: false);
-          processingTimer?.cancel();
-          final timeout = explicitAction ? 300 : 200;
-
-          processingTimer = Timer(Duration(milliseconds: timeout), () {
-            if (!explicitAction) {
-              // show the widget
-              notifier.sendCommand(showNfcView(NfcContentWidget(
-                title: l10n.s_nfc_accessing_yubikey,
-                icon: const NfcIconProgressBar(true),
-              )));
-            } else {
-              // the processing view will only be shown if the timer is still active
-              notifier.sendCommand(updateNfcView(NfcContentWidget(
-                title: l10n.s_nfc_accessing_yubikey,
-                icon: const NfcIconProgressBar(true),
-              )));
-            }
+          final timeout = explicitAction ? 300 : 500;
+          processingViewTimeout?.cancel();
+          processingViewTimeout = Timer(Duration(milliseconds: timeout), () {
+            notifier.sendCommand(showAccessingKeyView());
           });
           break;
         case NfcActivity.processingFinished:
-          processingTimer?.cancel();
+          processingViewTimeout?.cancel();
           final showSuccess = properties.showSuccess ?? false;
           allowMessages = !showSuccess;
           if (showSuccess) {
             notifier.sendCommand(autoClose(
-              title: properties.operationSuccess,
-              subtitle: l10n.s_nfc_remove_key,
-              icon: const NfcIconSuccess(),
-            ));
+                title: properties.operationSuccess,
+                subtitle: explicitAction ? l10n.s_nfc_remove_key : null,
+                icon: const NfcIconSuccess(),
+                showIfHidden: false));
+            // hide
           }
-          // hide
-          notifier.sendCommand(hideNfcView(explicitAction ? 5000 : 400));
+          notifier.sendCommand(hideNfcView(Duration(
+              milliseconds: !showSuccess
+                  ? 0
+                  : explicitAction
+                      ? 5000
+                      : 400)));
+
           explicitAction = false; // next action might not be explicit
           break;
         case NfcActivity.processingInterrupted:
-          processingTimer?.cancel();
+          processingViewTimeout?.cancel();
           viewNotifier.setDialogProperties(showCloseButton: true);
-          notifier.sendCommand(updateNfcView(NfcContentWidget(
+          notifier.sendCommand(setNfcView(NfcContentWidget(
             title: properties.operationFailure,
             subtitle: l10n.s_nfc_scan_again,
             icon: const NfcIconFailure(),
@@ -119,14 +114,7 @@ class _DialogProvider extends Notifier<int> {
       switch (call.method) {
         case 'show':
           explicitAction = true;
-
-          // we want to show the close button
-          viewNotifier.setDialogProperties(showCloseButton: true);
-
-          notifier.sendCommand(showNfcView(NfcContentWidget(
-            subtitle: l10n.s_nfc_scan_yubikey,
-            icon: const NfcIconProgressBar(false),
-          )));
+          notifier.sendCommand(showScanKeyView());
           break;
 
         case 'close':
@@ -141,6 +129,26 @@ class _DialogProvider extends Notifier<int> {
       }
     });
     return 0;
+  }
+
+  NfcEventCommand showScanKeyView() {
+    ref
+        .read(nfcViewNotifier.notifier)
+        .setDialogProperties(showCloseButton: true);
+    return setNfcView(NfcContentWidget(
+      subtitle: l10n.s_nfc_scan_yubikey,
+      icon: const NfcIconProgressBar(false),
+    ));
+  }
+
+  NfcEventCommand showAccessingKeyView() {
+    ref
+        .read(nfcViewNotifier.notifier)
+        .setDialogProperties(showCloseButton: false);
+    return setNfcView(NfcContentWidget(
+      title: l10n.s_nfc_accessing_yubikey,
+      icon: const NfcIconProgressBar(true),
+    ));
   }
 
   void closeDialog() {
@@ -166,30 +174,5 @@ class _DialogProvider extends Notifier<int> {
     );
 
     await completer.future;
-  }
-}
-
-class MethodChannelHelper {
-  final ProviderRef _ref;
-  final MethodChannel _channel;
-
-  const MethodChannelHelper(this._ref, this._channel);
-
-  Future<dynamic> invoke(String method,
-      {String? operationSuccess,
-      String? operationFailure,
-      bool? showSuccess,
-      bool? showCloseButton,
-      Map<String, dynamic> arguments = const {}}) async {
-    final notifier = _ref.read(nfcViewNotifier.notifier);
-    notifier.setDialogProperties(
-        operationSuccess: operationSuccess,
-        operationFailure: operationFailure,
-        showSuccess: showSuccess,
-        showCloseButton: showCloseButton);
-
-    final result = await _channel.invokeMethod(method, arguments);
-    await _ref.read(androidDialogProvider.notifier).waitForDialogClosed();
-    return result;
   }
 }

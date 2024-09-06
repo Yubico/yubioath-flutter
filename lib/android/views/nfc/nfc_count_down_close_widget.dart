@@ -30,7 +30,7 @@ NfcEventCommand countDownClose({
   String? subtitle,
   Widget? icon,
 }) =>
-    updateNfcView(_CountDownCloseWidget(
+    setNfcView(_CountDownCloseWidget(
       closeInSec: closeInSec,
       child: NfcContentWidget(
         title: title,
@@ -109,6 +109,6 @@ class _CountDownCloseWidgetState extends ConsumerState<_CountDownCloseWidget> {
   }
 
   void hideNow() {
-    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView(0));
+    ref.read(nfcEventCommandNotifier.notifier).sendCommand(hideNfcView());
   }
 }
