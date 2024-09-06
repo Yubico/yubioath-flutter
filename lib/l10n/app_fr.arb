@@ -38,6 +38,7 @@
     "s_calculate": "Calculer",
     "s_import": "Importer",
     "s_overwrite": "Écraser",
+    "s_done": null,
     "s_label": "Étiquette",
     "s_name": "Nom",
     "s_usb": "USB",
@@ -446,6 +447,12 @@
     "s_rename_account": "Renommer compte",
     "l_rename_account_desc": "Modifier émetteur/nom du compte",
     "s_account_renamed": "Compte renommé",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "Cela modifiera l'affichage du compte dans la liste.",
     "s_delete_account": "Supprimer compte",
     "l_delete_account_desc": "Supprimer le compte de votre YubiKey",
@@ -914,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "Action : supprimer l'empreinte digitale",
     "s_nfc_dialog_fido_rename_fingerprint": "Action : renommer l'empreinte digitale",
     "s_nfc_dialog_fido_failure": "Échec de l'opération FIDO",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_scanning": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Code OTP copié de la YubiKey dans le presse-papiers.",

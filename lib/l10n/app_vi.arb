@@ -38,6 +38,7 @@
     "s_calculate": "Tính toán",
     "s_import": "Nhập khẩu",
     "s_overwrite": "Ghi đè",
+    "s_done": null,
     "s_label": "Nhãn",
     "s_name": "Tên",
     "s_usb": "USB",
@@ -446,6 +447,12 @@
     "s_rename_account": "Đổi tên tài khoản",
     "l_rename_account_desc": "Chỉnh sửa nhà phát hành/tên của tài khoản",
     "s_account_renamed": "Tài khoản đã được đổi tên",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "Điều này sẽ thay đổi cách tài khoản được hiển thị trong danh sách.",
     "s_delete_account": "Xóa tài khoản",
     "l_delete_account_desc": "Xóa tài khoản khỏi YubiKey của bạn",
@@ -914,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "Hành động: xóa dấu vân tay",
     "s_nfc_dialog_fido_rename_fingerprint": "Hành động: đổi tên dấu vân tay",
     "s_nfc_dialog_fido_failure": "Hành động FIDO thất bại",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_scanning": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Đã sao chép mã OTP từ YubiKey vào clipboard.",

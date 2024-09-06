@@ -38,6 +38,7 @@
     "s_calculate": "Calculate",
     "s_import": "Import",
     "s_overwrite": "Overwrite",
+    "s_done": "Done",
     "s_label": "Label",
     "s_name": "Name",
     "s_usb": "USB",
@@ -446,6 +447,12 @@
     "s_rename_account": "Rename account",
     "l_rename_account_desc": "Edit the issuer/name of the account",
     "s_account_renamed": "Account renamed",
+    "l_rename_account_failed": "Failed renaming account: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "This will change how the account is displayed in the list.",
     "s_delete_account": "Delete account",
     "l_delete_account_desc": "Remove the account from your YubiKey",
@@ -914,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "Action: delete fingerprint",
     "s_nfc_dialog_fido_rename_fingerprint": "Action: rename fingerprint",
     "s_nfc_dialog_fido_failure": "FIDO operation failed",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": "Ready to scan",
+    "s_nfc_scanning": "Scanning\u2026",
+    "s_nfc_tap_your_yubikey": "Tap your YubiKey",
+    "l_nfc_failed_to_scan": "Failed to scan, try again",
 
     "@_ndef": {},
     "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",

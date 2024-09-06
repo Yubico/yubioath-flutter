@@ -38,6 +38,7 @@
     "s_calculate": "Oblicz",
     "s_import": "Importuj",
     "s_overwrite": "Nadpisz",
+    "s_done": null,
     "s_label": "Etykieta",
     "s_name": "Nazwa",
     "s_usb": "USB",
@@ -446,6 +447,12 @@
     "s_rename_account": "Zmień nazwę konta",
     "l_rename_account_desc": "Edytuj wydawcę/nazwę konta",
     "s_account_renamed": "Zmieniono nazwę konta",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "Spowoduje to zmianę sposobu wyświetlania konta na liście.",
     "s_delete_account": "Usuń konto",
     "l_delete_account_desc": "Usuń konto z klucza YubiKey",
@@ -914,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": null,
     "s_nfc_dialog_fido_rename_fingerprint": null,
     "s_nfc_dialog_fido_failure": null,
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_scanning": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP zostało skopiowane do schowka.",

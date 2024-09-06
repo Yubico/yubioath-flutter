@@ -38,6 +38,7 @@
     "s_calculate": "計算",
     "s_import": "インポート",
     "s_overwrite": "上書き",
+    "s_done": null,
     "s_label": "ラベル",
     "s_name": "名前",
     "s_usb": "USB",
@@ -446,6 +447,12 @@
     "s_rename_account": "アカウント名を変更",
     "l_rename_account_desc": "アカウントの発行者/名前を編集",
     "s_account_renamed": "アカウントの名前が変更されました",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "これにより、リスト内のアカウントの表示が変更されます。",
     "s_delete_account": "アカウントを削除",
     "l_delete_account_desc": "YubiKeyからアカウントを削除",
@@ -914,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "アクション: 指紋の削除",
     "s_nfc_dialog_fido_rename_fingerprint": "アクション: 指紋の名前を変更する",
     "s_nfc_dialog_fido_failure": "FIDO操作に失敗しました",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_scanning": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",
