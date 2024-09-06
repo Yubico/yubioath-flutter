@@ -120,7 +120,7 @@ class _DialogProvider extends Notifier<int> {
         .setDialogProperties(showCloseButton: false);
     return setNfcView(NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
-      subtitle: l10n.s_nfc_scanning,
+      subtitle: l10n.s_nfc_hold_still,
       icon: const NfcIconProgressBar(true),
     ));
   }
