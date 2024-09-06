@@ -38,6 +38,7 @@
     "s_calculate": "Oblicz",
     "s_import": "Importuj",
     "s_overwrite": "Nadpisz",
+    "s_done": null,
     "s_label": "Etykieta",
     "s_name": "Nazwa",
     "s_usb": "USB",
@@ -898,11 +899,11 @@
     "l_launch_app_on_usb_off": "Inne aplikacje mogą korzystać z YubiKey przez USB",
     "s_allow_screenshots": "Zezwalaj na zrzuty ekranu",
 
+    "@_nfc": {},
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
-    "s_nfc_done": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP zostało skopiowane do schowka.",

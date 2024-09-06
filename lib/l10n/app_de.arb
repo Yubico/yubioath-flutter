@@ -38,6 +38,7 @@
     "s_calculate": "Berechnen",
     "s_import": "Importieren",
     "s_overwrite": "Überschreiben",
+    "s_done": null,
     "s_label": "Beschriftung",
     "s_name": "Name",
     "s_usb": "USB",
@@ -898,11 +899,11 @@
     "l_launch_app_on_usb_off": "Andere Anwendungen können den YubiKey über USB nutzen",
     "s_allow_screenshots": "Bildschirmfotos erlauben",
 
+    "@_nfc": {},
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
-    "s_nfc_done": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP-Code wurde erfolgreich von Ihrem YubiKey in die Zwischenablage kopiert.",

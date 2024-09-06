@@ -38,6 +38,7 @@
     "s_calculate": "Calculate",
     "s_import": "Import",
     "s_overwrite": "Overwrite",
+    "s_done": "Done",
     "s_label": "Label",
     "s_name": "Name",
     "s_usb": "USB",
@@ -898,11 +899,11 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
 
+    "@_nfc": {},
     "s_nfc_ready_to_scan": "Ready to scan",
     "s_nfc_scanning": "Scanning\u2026",
     "s_nfc_tap_your_yubikey": "Tap your YubiKey",
     "l_nfc_failed_to_scan": "Failed to scan, try again",
-    "s_nfc_done": "Done",
 
     "@_ndef": {},
     "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",

@@ -38,6 +38,7 @@
     "s_calculate": "計算",
     "s_import": "インポート",
     "s_overwrite": "上書き",
+    "s_done": null,
     "s_label": "ラベル",
     "s_name": "名前",
     "s_usb": "USB",
@@ -898,11 +899,11 @@
     "l_launch_app_on_usb_off": "他のアプリがUSB経由でYubiKeyを使用できます",
     "s_allow_screenshots": "スクリーンショットを許可",
 
+    "@_nfc": {},
     "s_nfc_ready_to_scan": null,
     "s_nfc_scanning": null,
     "s_nfc_tap_your_yubikey": null,
     "l_nfc_failed_to_scan": null,
-    "s_nfc_done": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",

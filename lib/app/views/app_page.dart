@@ -62,7 +62,6 @@ final _navKey = GlobalKey();
 final _navExpandedKey = GlobalKey();
 final _sliverTitleGlobalKey = GlobalKey();
 final _sliverTitleWrapperGlobalKey = GlobalKey();
-final _headerSliverGlobalKey = GlobalKey();
 final _detailsViewGlobalKey = GlobalKey();
 final _mainContentGlobalKey = GlobalKey();
 
@@ -446,16 +445,19 @@ class _AppPageState extends ConsumerState<AppPage> {
         targetKey: _sliverTitleGlobalKey,
         controller: _sliverTitleController,
         subTargetKey:
-            widget.headerSliver != null ? _headerSliverGlobalKey : null,
+            widget.headerSliver != null ? headerSliverGlobalKey : null,
         subController:
             widget.headerSliver != null ? _headerSliverController : null,
         subAnchorKey:
             widget.headerSliver != null ? _sliverTitleWrapperGlobalKey : null,
         child: CustomScrollView(
           physics: isAndroid
-              ? const ClampingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics())
-              : null,
+              ? const _NoImplicitScrollPhysics(
+                  parent: ClampingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                )
+              : const _NoImplicitScrollPhysics(),
           controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
@@ -487,11 +489,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                           _sliverTitleScrollController,
                           _headerSliverController.scrollDirection,
                           _headerSliverController,
-                          _headerSliverGlobalKey,
+                          headerSliverGlobalKey,
                           _sliverTitleWrapperGlobalKey);
 
                       return Container(
-                          key: _headerSliverGlobalKey,
+                          key: headerSliverGlobalKey,
                           child: widget.headerSliver);
                     },
                   ))
@@ -1040,4 +1042,16 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(_SliverTitleDelegate oldDelegate) => true;
+}
+
+class _NoImplicitScrollPhysics extends ScrollPhysics {
+  const _NoImplicitScrollPhysics({super.parent});
+
+  @override
+  bool get allowImplicitScrolling => false;
+
+  @override
+  _NoImplicitScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return _NoImplicitScrollPhysics(parent: buildParent(ancestor));
+  }
 }

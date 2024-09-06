@@ -132,7 +132,7 @@ class _DialogProvider extends Notifier<int> {
     return setNfcView(
         NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
-          subtitle: l10n.s_nfc_done,
+          subtitle: l10n.s_done,
           icon: const NfcIconSuccess(),
         ),
         showIfHidden: false);
