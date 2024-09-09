@@ -31,10 +31,10 @@ import 'views/nfc_overlay_widget.dart';
 final _log = Logger('android.tap_request_dialog');
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
-final nfcOverlayProvider =
-    NotifierProvider<_NfcOverlayProvider, int>(_NfcOverlayProvider.new);
+final nfcOverlay =
+    NotifierProvider<_NfcOverlayNotifier, int>(_NfcOverlayNotifier.new);
 
-class _NfcOverlayProvider extends Notifier<int> {
+class _NfcOverlayNotifier extends Notifier<int> {
   Timer? processingViewTimeout;
   late final l10n = ref.read(l10nProvider);
 
@@ -80,7 +80,7 @@ class _NfcOverlayProvider extends Notifier<int> {
           break;
 
         case 'close':
-          hideOverlay();
+          hide();
           break;
 
         default:
@@ -135,7 +135,7 @@ class _NfcOverlayProvider extends Notifier<int> {
         showIfHidden: false);
   }
 
-  void hideOverlay() {
+  void hide() {
     ref.read(nfcEventNotifier.notifier).send(const NfcHideViewEvent());
   }
 

@@ -20,7 +20,7 @@ import 'package:logging/logging.dart';
 
 import '../../../app/logging.dart';
 import '../../../app/state.dart';
-import 'nfc_overlay_provider.dart';
+import 'nfc_overlay.dart';
 import 'views/nfc_overlay_widget.dart';
 
 final _log = Logger('android.nfc_event_notifier');
@@ -98,7 +98,7 @@ class _NfcEventNotifierListener {
           });
       if (result == null) {
         // the modal sheet was cancelled by Back button, close button or dismiss
-        _ref.read(nfcOverlayProvider.notifier).onCancel();
+        _ref.read(nfcOverlay.notifier).onCancel();
       }
       visible = false;
     }

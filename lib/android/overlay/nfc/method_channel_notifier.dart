@@ -17,7 +17,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'nfc_overlay_provider.dart';
+import 'nfc_overlay.dart';
 
 class MethodChannelNotifier extends Notifier<void> {
   final MethodChannel _channel;
@@ -30,7 +30,7 @@ class MethodChannelNotifier extends Notifier<void> {
   Future<dynamic> invoke(String name,
       [Map<String, dynamic> args = const {}]) async {
     final result = await _channel.invokeMethod(name, args);
-    await ref.read(nfcOverlayProvider.notifier).waitForHide();
+    await ref.read(nfcOverlay.notifier).waitForHide();
     return result;
   }
 }
