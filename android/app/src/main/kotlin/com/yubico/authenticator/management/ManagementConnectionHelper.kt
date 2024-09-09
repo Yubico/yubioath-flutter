@@ -36,7 +36,7 @@ class ManagementConnectionHelper(
         deviceManager.withKey(
             onUsb = { useSessionUsb(it, block) },
             onNfc = { useSessionNfc(block) },
-            onDialogCancelled = {
+            onCancelled = {
                 action?.invoke(Result.failure(CancellationException()))
                 action = null
             },

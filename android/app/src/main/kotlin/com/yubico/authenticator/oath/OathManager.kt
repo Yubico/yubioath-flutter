@@ -26,7 +26,6 @@ import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
@@ -64,12 +63,10 @@ import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.URI
-import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
-import kotlin.concurrent.schedule
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
 
@@ -78,7 +75,7 @@ class OathManager(
     messenger: BinaryMessenger,
     private val deviceManager: DeviceManager,
     private val oathViewModel: OathViewModel,
-    private val dialogManager: DialogManager,
+    private val nfcOverlayManager: NfcOverlayManager,
     private val appPreferences: AppPreferences
 ) : AppContextManager(), DeviceListener {
 
@@ -118,10 +115,10 @@ class OathManager(
         // cancel any pending actions, except for addToAny
         if (!addToAny) {
             pendingAction?.let {
-                logger.debug("Cancelling pending action/closing nfc dialog.")
+                logger.debug("Cancelling pending action/closing nfc overlay.")
                 it.invoke(Result.failure(CancellationException()))
                 coroutineScope.launch {
-                    dialogManager.closeDialog()
+                    nfcOverlayManager.close()
                 }
                 pendingAction = null
             }
@@ -695,7 +692,7 @@ class OathManager(
         return deviceManager.withKey(
             onUsb = { useSessionUsb(it, updateDeviceInfo, block) },
             onNfc = { useSessionNfc(block) },
-            onDialogCancelled = {
+            onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
             },

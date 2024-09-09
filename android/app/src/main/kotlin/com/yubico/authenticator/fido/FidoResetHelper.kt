@@ -18,7 +18,7 @@ package com.yubico.authenticator.fido
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.yubico.authenticator.DialogManager
+import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
@@ -71,7 +71,7 @@ class FidoResetHelper(
     private val lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
     private val appMethodChannel: MainActivity.AppMethodChannel,
-    private val dialogManager: DialogManager,
+    private val nfcOverlayManager: NfcOverlayManager,
     private val fidoViewModel: FidoViewModel,
     private val mainViewModel: MainViewModel,
     private val connectionHelper: FidoConnectionHelper,
@@ -214,7 +214,7 @@ class FidoResetHelper(
 
     private suspend fun resetOverNfc() = suspendCoroutine { continuation ->
         coroutineScope.launch {
-            dialogManager.showDialog {
+            nfcOverlayManager.show {
 
             }
             fidoViewModel.updateResetState(FidoResetState.Touch)

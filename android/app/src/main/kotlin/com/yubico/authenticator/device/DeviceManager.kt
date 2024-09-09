@@ -21,9 +21,9 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.ContextDisposedException
-import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
@@ -48,7 +48,7 @@ class DeviceManager(
     private val lifecycleOwner: LifecycleOwner,
     private val appViewModel: MainViewModel,
     private val appMethodChannel: MainActivity.AppMethodChannel,
-    private val dialogManager: DialogManager
+    private val nfcOverlayManager: NfcOverlayManager
 ) {
     var clearDeviceInfoOnDisconnect: Boolean = true
 
@@ -189,24 +189,42 @@ class DeviceManager(
     suspend fun <T> withKey(
         onUsb: suspend (UsbYubiKeyDevice) -> T,
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
-        onDialogCancelled: () -> Unit,
+        onCancelled: () -> Unit,
         retryOnNfcFailure: Boolean
     ): T =
         appViewModel.connectedYubiKey.value?.let {
             onUsb(it)
         } ?: if (retryOnNfcFailure == true) {
-            onNfcWithRetries(onNfc, onDialogCancelled)
+            onNfcWithRetries(onNfc, onCancelled)
         } else {
-            onNfc(onNfc, onDialogCancelled)
+            onNfc(onNfc, onCancelled)
         }
+
+    private suspend fun <T> onNfc(
+        onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
+        onCancelled: () -> Unit
+    ): T {
+        nfcOverlayManager.show {
+            logger.debug("NFC action was cancelled")
+            onCancelled.invoke()
+        }
+
+        try {
+            return onNfc.invoke().value
+        } catch (e: Exception) {
+            appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+            throw e
+        }
+    }
 
     private suspend fun <T> onNfcWithRetries(
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
-        onDialogCancelled: () -> Unit) : T {
+        onCancelled: () -> Unit
+    ): T {
 
-        dialogManager.showDialog {
-            logger.debug("Cancelled dialog")
-            onDialogCancelled.invoke()
+        nfcOverlayManager.show {
+            logger.debug("NFC action with retries was cancelled")
+            onCancelled.invoke()
         }
 
         while (true) {
@@ -230,21 +248,4 @@ class DeviceManager(
             }
         }
     }
-
-    private suspend fun <T> onNfc(
-        onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
-        onDialogCancelled: () -> Unit) : T {
-
-        dialogManager.showDialog {
-            onDialogCancelled.invoke()
-        }
-
-        try {
-            return onNfc.invoke().value
-        } catch (e: Exception) {
-            appMethodChannel.nfcStateChanged(NfcState.FAILURE)
-            throw e
-        }
-    }
-
 }

@@ -17,7 +17,6 @@
 package com.yubico.authenticator.fido
 
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
@@ -25,11 +24,9 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.util.Result
 import org.slf4j.LoggerFactory
-import java.util.Timer
 import java.util.TimerTask
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
-import kotlin.concurrent.schedule
 
 class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: FidoAction? = null
@@ -59,7 +56,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         return deviceManager.withKey(
             onUsb = { useSessionUsb(it, updateDeviceInfo, block) },
             onNfc = { useSessionNfc(block) },
-            onDialogCancelled = {
+            onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
             },

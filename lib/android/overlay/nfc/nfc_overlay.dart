@@ -29,7 +29,7 @@ import 'views/nfc_overlay_icons.dart';
 import 'views/nfc_overlay_widget.dart';
 
 final _log = Logger('android.tap_request_dialog');
-const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
+const _channel = MethodChannel('com.yubico.authenticator.channel.nfc_overlay');
 
 final nfcOverlay =
     NotifierProvider<_NfcOverlayNotifier, int>(_NfcOverlayNotifier.new);

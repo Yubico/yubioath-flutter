@@ -23,35 +23,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-typealias OnDialogCancelled = suspend () -> Unit
+typealias OnCancelled = suspend () -> Unit
 
-class DialogManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
+class NfcOverlayManager(messenger: BinaryMessenger, private val coroutineScope: CoroutineScope) {
     private val channel =
-        MethodChannel(messenger, "com.yubico.authenticator.channel.dialog")
+        MethodChannel(messenger, "com.yubico.authenticator.channel.nfc_overlay")
 
-    private var onCancelled: OnDialogCancelled? = null
+    private var onCancelled: OnCancelled? = null
 
     init {
         channel.setHandler(coroutineScope) { method, _ ->
             when (method) {
-                "cancel" -> dialogClosed()
+                "cancel" -> onClosed()
                 else -> throw NotImplementedError()
             }
         }
     }
 
-    fun showDialog(cancelled: OnDialogCancelled?) {
+    fun show(cancelled: OnCancelled?) {
         onCancelled = cancelled
         coroutineScope.launch {
             channel.invoke("show", null)
         }
     }
 
-    suspend fun closeDialog() {
+    suspend fun close() {
         channel.invoke("close", NULL)
     }
 
-    private suspend fun dialogClosed(): String {
+    private suspend fun onClosed(): String {
         onCancelled?.let {
             onCancelled = null
             withContext(Dispatchers.Main) {

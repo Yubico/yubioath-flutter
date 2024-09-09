@@ -18,7 +18,7 @@ package com.yubico.authenticator.fido
 
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.DialogManager
+import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
@@ -72,7 +72,7 @@ class FidoManager(
     lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
     private val appMethodChannel: MainActivity.AppMethodChannel,
-    private val dialogManager: DialogManager,
+    private val nfcOverlayManager: NfcOverlayManager,
     private val fidoViewModel: FidoViewModel,
     mainViewModel: MainViewModel
 ) : AppContextManager(), DeviceListener {
@@ -120,7 +120,7 @@ class FidoManager(
             lifecycleOwner,
             deviceManager,
             appMethodChannel,
-            dialogManager,
+            nfcOverlayManager,
             fidoViewModel,
             mainViewModel,
             connectionHelper,

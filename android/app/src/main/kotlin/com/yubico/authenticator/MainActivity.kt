@@ -396,7 +396,7 @@ class MainActivity : FlutterFragmentActivity() {
     private var contextManager: AppContextManager? = null
     private lateinit var deviceManager: DeviceManager
     private lateinit var appContext: AppContext
-    private lateinit var dialogManager: DialogManager
+    private lateinit var nfcOverlayManager: NfcOverlayManager
     private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
@@ -411,8 +411,8 @@ class MainActivity : FlutterFragmentActivity() {
         messenger = flutterEngine.dartExecutor.binaryMessenger
         flutterLog = FlutterLog(messenger)
         appMethodChannel = AppMethodChannel(messenger)
-        dialogManager = DialogManager(messenger, this.lifecycleScope)
-        deviceManager = DeviceManager(this, viewModel,appMethodChannel, dialogManager)
+        nfcOverlayManager = NfcOverlayManager(messenger, this.lifecycleScope)
+        deviceManager = DeviceManager(this, viewModel,appMethodChannel, nfcOverlayManager)
         appContext = AppContext(messenger, this.lifecycleScope, viewModel)
 
         appPreferences = AppPreferences(this)
@@ -463,7 +463,7 @@ class MainActivity : FlutterFragmentActivity() {
                     messenger,
                     deviceManager,
                     oathViewModel,
-                    dialogManager,
+                    nfcOverlayManager,
                     appPreferences
                 )
 
@@ -473,7 +473,7 @@ class MainActivity : FlutterFragmentActivity() {
                     this,
                     deviceManager,
                     appMethodChannel,
-                    dialogManager,
+                    nfcOverlayManager,
                     fidoViewModel,
                     viewModel
                 )
