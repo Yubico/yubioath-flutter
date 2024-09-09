@@ -28,8 +28,8 @@ class MethodChannelNotifier extends Notifier<void> {
   void build() {}
 
   Future<dynamic> invoke(String name,
-      [Map<String, dynamic> params = const {}]) async {
-    final result = await _channel.invokeMethod(name, params['callArgs']);
+      [Map<String, dynamic> args = const {}]) async {
+    final result = await _channel.invokeMethod(name, args);
     await ref.read(nfcOverlayProvider.notifier).waitForHide();
     return result;
   }

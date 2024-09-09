@@ -78,7 +78,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
       // await ref
       //     .read(androidAppContextHandler)
       //     .switchAppContext(Application.accounts);
-      await oath.reset();
+      await oath.invoke('reset');
     } catch (e) {
       _log.debug('Calling reset failed with exception: $e');
     }
@@ -87,8 +87,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
     try {
-      final unlockResponse =
-          jsonDecode(await oath.unlock(password, remember: remember));
+      final unlockResponse = jsonDecode(await oath
+          .invoke('unlock', {'password': password, 'remember': remember}));
       _log.debug('applet unlocked');
 
       final unlocked = unlockResponse['unlocked'] == true;
@@ -109,7 +109,8 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> setPassword(String? current, String password) async {
     try {
-      await oath.setPassword(current, password);
+      await oath
+          .invoke('setPassword', {'current': current, 'password': password});
       return true;
     } on PlatformException catch (pe) {
       final decoded = pe.decode();
@@ -125,7 +126,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> unsetPassword(String current) async {
     try {
-      await oath.unsetPassword(current);
+      await oath.invoke('unsetPassword', {'current': current});
       return true;
     } on PlatformException catch (pe) {
       final decoded = pe.decode();
@@ -141,7 +142,7 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> forgetPassword() async {
     try {
-      await oath.forgetPassword();
+      await oath.invoke('forgetPassword');
     } on PlatformException catch (e) {
       _log.debug('Calling forgetPassword failed with exception: $e');
     }
@@ -193,10 +194,10 @@ final addCredentialToAnyProvider =
     Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
           final oath = ref.watch(_oathMethodsProvider.notifier);
           try {
-            var result = jsonDecode(await oath.addAccountToAny(
-              credentialUri,
-              requireTouch: requireTouch,
-            ));
+            var result = jsonDecode(await oath.invoke('addAccountToAny', {
+              'uri': credentialUri.toString(),
+              'requireTouch': requireTouch
+            }));
             return OathCredential.fromJson(result['credential']);
           } on PlatformException catch (pe) {
             _log.error('Received exception: $pe');
@@ -204,20 +205,20 @@ final addCredentialToAnyProvider =
           }
         });
 
-final addCredentialsToAnyProvider = Provider((ref) =>
-    (List<String> credentialUris, List<bool> touchRequired) async {
-      final oath = ref.read(_oathMethodsProvider.notifier);
-      try {
-        _log.debug(
-            'Calling android with ${credentialUris.length} credentials to be added');
-        var result =
-            jsonDecode(await oath.addAccounts(credentialUris, touchRequired));
-        return result['succeeded'] == credentialUris.length;
-      } on PlatformException catch (pe) {
-        _log.error('Received exception: $pe');
-        throw handlePlatformException(ref, pe);
-      }
-    });
+final addCredentialsToAnyProvider = Provider(
+    (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
+          final oath = ref.read(_oathMethodsProvider.notifier);
+          try {
+            _log.debug(
+                'Calling android with ${credentialUris.length} credentials to be added');
+            var result = jsonDecode(await oath.invoke('addAccountsToAny',
+                {'uris': credentialUris, 'requireTouch': touchRequired}));
+            return result['succeeded'] == credentialUris.length;
+          } on PlatformException catch (pe) {
+            _log.error('Received exception: $pe');
+            throw handlePlatformException(ref, pe);
+          }
+        });
 
 final androidCredentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
@@ -281,7 +282,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     }
 
     try {
-      final resultJson = await oath.calculate(credential);
+      final resultJson =
+          await oath.invoke('calculate', {'credentialId': credential.id});
       _log.debug('Calculate', resultJson);
       return OathCode.fromJson(jsonDecode(resultJson));
     } on PlatformException catch (pe) {
@@ -296,8 +298,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   Future<OathCredential> addAccount(Uri credentialUri,
       {bool requireTouch = false}) async {
     try {
-      String resultString =
-          await oath.addAccount(credentialUri, requireTouch: requireTouch);
+      String resultString = await oath.invoke('addAccount',
+          {'uri': credentialUri.toString(), 'requireTouch': requireTouch});
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
@@ -309,7 +311,8 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   Future<OathCredential> renameAccount(
       OathCredential credential, String? issuer, String name) async {
     try {
-      final response = await oath.renameAccount(credential, issuer, name);
+      final response = await oath.invoke('renameAccount',
+          {'credentialId': credential.id, 'name': name, 'issuer': issuer});
       _log.debug('Rename response: $response');
 
       var responseJson = jsonDecode(response);
@@ -324,7 +327,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   @override
   Future<void> deleteAccount(OathCredential credential) async {
     try {
-      await oath.deleteAccount(credential);
+      await oath.invoke('deleteAccount', {'credentialId': credential.id});
     } on PlatformException catch (e) {
       var decoded = e.decode();
       if (decoded is CancellationException) {
@@ -344,74 +347,4 @@ final _oathMethodsProvider = NotifierProvider<_OathMethodChannelNotifier, void>(
 class _OathMethodChannelNotifier extends MethodChannelNotifier {
   _OathMethodChannelNotifier()
       : super(const MethodChannel('android.oath.methods'));
-  late final l10n = ref.read(l10nProvider);
-
-  @override
-  void build() {}
-
-  Future<dynamic> reset() async => invoke('reset');
-
-  Future<dynamic> unlock(String password, {bool remember = false}) async =>
-      invoke('unlock', {
-        'callArgs': {'password': password, 'remember': remember},
-      });
-
-  Future<dynamic> setPassword(String? current, String password) async =>
-      invoke('setPassword', {
-        'callArgs': {'current': current, 'password': password},
-      });
-
-  Future<dynamic> unsetPassword(String current) async =>
-      invoke('unsetPassword', {
-        'callArgs': {'current': current},
-      });
-
-  Future<dynamic> forgetPassword() async => invoke('forgetPassword');
-
-  Future<dynamic> calculate(OathCredential credential) async =>
-      invoke('calculate', {
-        'callArgs': {'credentialId': credential.id},
-      });
-
-  Future<dynamic> addAccount(Uri credentialUri,
-          {bool requireTouch = false}) async =>
-      invoke('addAccount', {
-        'callArgs': {
-          'uri': credentialUri.toString(),
-          'requireTouch': requireTouch
-        },
-      });
-
-  Future<dynamic> addAccounts(
-          List<String> credentialUris, List<bool> touchRequired) async =>
-      invoke('addAccountsToAny', {
-        'callArgs': {
-          'uris': credentialUris,
-          'requireTouch': touchRequired,
-        }
-      });
-
-  Future<dynamic> addAccountToAny(Uri credentialUri,
-          {bool requireTouch = false}) async =>
-      invoke('addAccountToAny', {
-        'callArgs': {
-          'uri': credentialUri.toString(),
-          'requireTouch': requireTouch
-        },
-      });
-
-  Future<dynamic> deleteAccount(OathCredential credential) async =>
-      invoke('deleteAccount', {
-        'callArgs': {'credentialId': credential.id},
-      });
-
-  Future<dynamic> renameAccount(
-          OathCredential credential, String? issuer, String name) async =>
-      invoke('renameAccount', {
-        'callArgs': {
-          'credentialId': credential.id,
-          'name': name,
-          'issuer': issuer
-        },
-      });
 }
