@@ -38,27 +38,22 @@ final androidDialogProvider =
 
 class _DialogProvider extends Notifier<int> {
   Timer? processingViewTimeout;
-  bool explicitAction = false;
-
   late final l10n = ref.read(l10nProvider);
 
   @override
   int build() {
-    final viewNotifier = ref.read(nfcActivityWidgetPropertiesNotifier.notifier);
-
     ref.listen(androidNfcActivityProvider, (previous, current) {
       processingViewTimeout?.cancel();
       final notifier = ref.read(nfcEventNotifier.notifier);
 
-      if (!explicitAction) {
-        // setup properties for ad-hoc action
-        viewNotifier.update(hasCloseButton: false);
-      }
-
       switch (current) {
         case NfcActivity.processingStarted:
-          final timeout = explicitAction ? 300 : 500;
-          processingViewTimeout = Timer(Duration(milliseconds: timeout), () {
+          // the "Hold still..." view will be shown after this timeout
+          // if the action is finished before, the timer might be cancelled
+          // causing the view not to be visible at all
+          const timeout = 300;
+          processingViewTimeout =
+              Timer(const Duration(milliseconds: timeout), () {
             notifier.send(showHoldStill());
           });
           break;
@@ -66,7 +61,6 @@ class _DialogProvider extends Notifier<int> {
           notifier.send(showDone());
           notifier
               .send(const NfcHideViewEvent(delay: Duration(milliseconds: 400)));
-          explicitAction = false; // next action might not be explicit
           break;
         case NfcActivity.processingInterrupted:
           notifier.send(showFailed());
@@ -83,7 +77,6 @@ class _DialogProvider extends Notifier<int> {
       final notifier = ref.read(nfcEventNotifier.notifier);
       switch (call.method) {
         case 'show':
-          explicitAction = true;
           notifier.send(showTapYourYubiKey());
           break;
 
@@ -128,7 +121,7 @@ class _DialogProvider extends Notifier<int> {
   NfcEvent showDone() {
     ref
         .read(nfcActivityWidgetPropertiesNotifier.notifier)
-        .update(hasCloseButton: true);
+        .update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
@@ -156,7 +149,6 @@ class _DialogProvider extends Notifier<int> {
   }
 
   void cancelDialog() async {
-    explicitAction = false;
     await _channel.invokeMethod('cancel');
   }
 
