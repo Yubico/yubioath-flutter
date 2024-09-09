@@ -32,7 +32,7 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
-import '../method_channel_notifier.dart';
+import '../overlay/nfc/method_channel_notifier.dart';
 
 final _log = Logger('android.fido.state');
 

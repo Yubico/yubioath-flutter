@@ -55,3 +55,25 @@ class NfcIconProgressBar extends StatelessWidget {
         ),
       );
 }
+
+class NfcIconSuccess extends StatelessWidget {
+  const NfcIconSuccess({super.key});
+
+  @override
+  Widget build(BuildContext context) => Icon(
+        Symbols.check,
+        size: 64,
+        color: Theme.of(context).colorScheme.primary,
+      );
+}
+
+class NfcIconFailure extends StatelessWidget {
+  const NfcIconFailure({super.key});
+
+  @override
+  Widget build(BuildContext context) => Icon(
+        Symbols.close,
+        size: 64,
+        color: Theme.of(context).colorScheme.error,
+      );
+}

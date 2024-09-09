@@ -15,15 +15,15 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class NfcIconFailure extends StatelessWidget {
-  const NfcIconFailure({super.key});
+part 'models.freezed.dart';
 
-  @override
-  Widget build(BuildContext context) => Icon(
-        Symbols.close,
-        size: 64,
-        color: Theme.of(context).colorScheme.error,
-      );
+@freezed
+class NfcOverlayWidgetProperties with _$NfcOverlayWidgetProperties {
+  factory NfcOverlayWidgetProperties({
+    required Widget child,
+    @Default(false) bool visible,
+    @Default(false) bool hasCloseButton,
+  }) = _NfcOverlayWidgetProperties;
 }

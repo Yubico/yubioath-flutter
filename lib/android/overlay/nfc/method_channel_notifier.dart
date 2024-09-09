@@ -17,7 +17,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'tap_request_dialog.dart';
+import 'nfc_overlay_provider.dart';
 
 class MethodChannelNotifier extends Notifier<void> {
   final MethodChannel _channel;
@@ -30,7 +30,7 @@ class MethodChannelNotifier extends Notifier<void> {
   Future<dynamic> invoke(String name,
       [Map<String, dynamic> params = const {}]) async {
     final result = await _channel.invokeMethod(name, params['callArgs']);
-    await ref.read(androidDialogProvider.notifier).waitForDialogClosed();
+    await ref.read(nfcOverlayProvider.notifier).waitForHide();
     return result;
   }
 }

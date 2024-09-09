@@ -18,31 +18,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import 'models.dart';
+import '../models.dart';
 
-final nfcEventNotifier =
-    NotifierProvider<_NfcEventNotifier, NfcEvent>(_NfcEventNotifier.new);
+final nfcOverlayWidgetProperties =
+    NotifierProvider<_NfcOverlayWidgetProperties, NfcOverlayWidgetProperties>(
+        _NfcOverlayWidgetProperties.new);
 
-class _NfcEventNotifier extends Notifier<NfcEvent> {
+class _NfcOverlayWidgetProperties extends Notifier<NfcOverlayWidgetProperties> {
   @override
-  NfcEvent build() {
-    return const NfcEvent();
-  }
-
-  void send(NfcEvent event) {
-    state = event;
-  }
-}
-
-final nfcActivityWidgetPropertiesNotifier = NotifierProvider<
-    _NfcActivityWidgetPropertiesNotifier,
-    NfcActivityWidgetProperties>(_NfcActivityWidgetPropertiesNotifier.new);
-
-class _NfcActivityWidgetPropertiesNotifier
-    extends Notifier<NfcActivityWidgetProperties> {
-  @override
-  NfcActivityWidgetProperties build() {
-    return NfcActivityWidgetProperties(child: const SizedBox());
+  NfcOverlayWidgetProperties build() {
+    return NfcOverlayWidgetProperties(child: const SizedBox());
   }
 
   void update({
@@ -57,15 +42,14 @@ class _NfcActivityWidgetPropertiesNotifier
   }
 }
 
-class NfcActivityWidget extends ConsumerWidget {
-  const NfcActivityWidget({super.key});
+class NfcOverlayWidget extends ConsumerWidget {
+  const NfcOverlayWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widget =
-        ref.watch(nfcActivityWidgetPropertiesNotifier.select((s) => s.child));
-    final showCloseButton = ref.watch(
-        nfcActivityWidgetPropertiesNotifier.select((s) => s.hasCloseButton));
+    final widget = ref.watch(nfcOverlayWidgetProperties.select((s) => s.child));
+    final showCloseButton =
+        ref.watch(nfcOverlayWidgetProperties.select((s) => s.hasCloseButton));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

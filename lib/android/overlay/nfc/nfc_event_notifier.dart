@@ -20,11 +20,41 @@ import 'package:logging/logging.dart';
 
 import '../../../app/logging.dart';
 import '../../../app/state.dart';
-import '../../tap_request_dialog.dart';
-import 'models.dart';
-import 'nfc_activity_overlay.dart';
+import 'nfc_overlay_provider.dart';
+import 'views/nfc_overlay_widget.dart';
 
-final _log = Logger('android.nfc_activity_command_listener');
+final _log = Logger('android.nfc_event_notifier');
+
+class NfcEvent {
+  const NfcEvent();
+}
+
+class NfcHideViewEvent extends NfcEvent {
+  final Duration delay;
+
+  const NfcHideViewEvent({this.delay = Duration.zero});
+}
+
+class NfcSetViewEvent extends NfcEvent {
+  final Widget child;
+  final bool showIfHidden;
+
+  const NfcSetViewEvent({required this.child, this.showIfHidden = true});
+}
+
+final nfcEventNotifier =
+    NotifierProvider<_NfcEventNotifier, NfcEvent>(_NfcEventNotifier.new);
+
+class _NfcEventNotifier extends Notifier<NfcEvent> {
+  @override
+  NfcEvent build() {
+    return const NfcEvent();
+  }
+
+  void send(NfcEvent event) {
+    state = event;
+  }
+}
 
 final nfcEventNotifierListener = Provider<_NfcEventNotifierListener>(
     (ref) => _NfcEventNotifierListener(ref));
@@ -45,7 +75,7 @@ class _NfcEventNotifierListener {
             _show(context, a.child);
           } else {
             _ref
-                .read(nfcActivityWidgetPropertiesNotifier.notifier)
+                .read(nfcOverlayWidgetProperties.notifier)
                 .update(child: a.child);
           }
           break;
@@ -57,18 +87,18 @@ class _NfcEventNotifierListener {
   }
 
   void _show(BuildContext context, Widget child) async {
-    final notifier = _ref.read(nfcActivityWidgetPropertiesNotifier.notifier);
+    final notifier = _ref.read(nfcOverlayWidgetProperties.notifier);
     notifier.update(child: child);
     if (!visible) {
       visible = true;
       final result = await showModalBottomSheet(
           context: context,
           builder: (BuildContext context) {
-            return const NfcActivityWidget();
+            return const NfcOverlayWidget();
           });
       if (result == null) {
         // the modal sheet was cancelled by Back button, close button or dismiss
-        _ref.read(androidDialogProvider.notifier).cancelDialog();
+        _ref.read(nfcOverlayProvider.notifier).onCancel();
       }
       visible = false;
     }
@@ -86,9 +116,8 @@ class _NfcEventNotifierListener {
   }
 
   bool get visible =>
-      _ref.read(nfcActivityWidgetPropertiesNotifier.select((s) => s.visible));
+      _ref.read(nfcOverlayWidgetProperties.select((s) => s.visible));
 
-  set visible(bool visible) => _ref
-      .read(nfcActivityWidgetPropertiesNotifier.notifier)
-      .update(visible: visible);
+  set visible(bool visible) =>
+      _ref.read(nfcOverlayWidgetProperties.notifier).update(visible: visible);
 }

@@ -20,23 +20,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-import '../app/logging.dart';
-import '../app/state.dart';
-import 'state.dart';
-import 'views/nfc/models.dart';
-import 'views/nfc/nfc_activity_overlay.dart';
-import 'views/nfc/nfc_content_widget.dart';
-import 'views/nfc/nfc_failure_icon.dart';
-import 'views/nfc/nfc_progress_bar.dart';
-import 'views/nfc/nfc_success_icon.dart';
+import '../../../app/logging.dart';
+import '../../../app/state.dart';
+import '../../state.dart';
+import 'nfc_event_notifier.dart';
+import 'views/nfc_content_widget.dart';
+import 'views/nfc_overlay_icons.dart';
+import 'views/nfc_overlay_widget.dart';
 
 final _log = Logger('android.tap_request_dialog');
 const _channel = MethodChannel('com.yubico.authenticator.channel.dialog');
 
-final androidDialogProvider =
-    NotifierProvider<_DialogProvider, int>(_DialogProvider.new);
+final nfcOverlayProvider =
+    NotifierProvider<_NfcOverlayProvider, int>(_NfcOverlayProvider.new);
 
-class _DialogProvider extends Notifier<int> {
+class _NfcOverlayProvider extends Notifier<int> {
   Timer? processingViewTimeout;
   late final l10n = ref.read(l10nProvider);
 
@@ -81,7 +79,7 @@ class _DialogProvider extends Notifier<int> {
           break;
 
         case 'close':
-          closeDialog();
+          hideOverlay();
           break;
 
         default:
@@ -95,9 +93,7 @@ class _DialogProvider extends Notifier<int> {
   }
 
   NfcEvent showTapYourYubiKey() {
-    ref
-        .read(nfcActivityWidgetPropertiesNotifier.notifier)
-        .update(hasCloseButton: true);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: true);
     return NfcSetViewEvent(
         child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
@@ -107,9 +103,7 @@ class _DialogProvider extends Notifier<int> {
   }
 
   NfcEvent showHoldStill() {
-    ref
-        .read(nfcActivityWidgetPropertiesNotifier.notifier)
-        .update(hasCloseButton: false);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
@@ -119,9 +113,7 @@ class _DialogProvider extends Notifier<int> {
   }
 
   NfcEvent showDone() {
-    ref
-        .read(nfcActivityWidgetPropertiesNotifier.notifier)
-        .update(hasCloseButton: false);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
@@ -132,9 +124,7 @@ class _DialogProvider extends Notifier<int> {
   }
 
   NfcEvent showFailed() {
-    ref
-        .read(nfcActivityWidgetPropertiesNotifier.notifier)
-        .update(hasCloseButton: true);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: true);
     return NfcSetViewEvent(
         child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,
@@ -144,22 +134,21 @@ class _DialogProvider extends Notifier<int> {
         showIfHidden: false);
   }
 
-  void closeDialog() {
+  void hideOverlay() {
     ref.read(nfcEventNotifier.notifier).send(const NfcHideViewEvent());
   }
 
-  void cancelDialog() async {
+  void onCancel() async {
     await _channel.invokeMethod('cancel');
   }
 
-  Future<void> waitForDialogClosed() async {
+  Future<void> waitForHide() async {
     final completer = Completer();
 
     Timer.periodic(
       const Duration(milliseconds: 200),
       (timer) {
-        if (ref.read(
-            nfcActivityWidgetPropertiesNotifier.select((s) => !s.visible))) {
+        if (ref.read(nfcOverlayWidgetProperties.select((s) => !s.visible))) {
           timer.cancel();
           completer.complete();
         }

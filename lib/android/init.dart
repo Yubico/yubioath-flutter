@@ -40,10 +40,10 @@ import 'logger.dart';
 import 'management/state.dart';
 import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
+import 'overlay/nfc/nfc_event_notifier.dart';
+import 'overlay/nfc/nfc_overlay_provider.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
-import 'tap_request_dialog.dart';
-import 'views/nfc/nfc_activity_command_listener.dart';
 import 'window_state_provider.dart';
 
 Future<Widget> initialize() async {
@@ -123,7 +123,7 @@ Future<Widget> initialize() async {
           ref.read(androidWindowStateProvider);
 
           // initializes global handler for dialogs
-          ref.read(androidDialogProvider);
+          ref.read(nfcOverlayProvider);
 
           // set context which will handle otpauth links
           setupOtpAuthLinkHandler(context);

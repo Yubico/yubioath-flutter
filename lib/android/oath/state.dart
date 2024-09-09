@@ -36,8 +36,8 @@ import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../../widgets/toast.dart';
-import '../method_channel_notifier.dart';
-import '../tap_request_dialog.dart';
+import '../overlay/nfc/method_channel_notifier.dart';
+import '../overlay/nfc/nfc_overlay_provider.dart';
 
 final _log = Logger('android.oath.state');
 
@@ -156,7 +156,7 @@ Exception handlePlatformException(
 
   toast(String message, {bool popStack = false}) =>
       withContext((context) async {
-        ref.read(androidDialogProvider.notifier).closeDialog();
+        ref.read(nfcOverlayProvider.notifier).hideOverlay();
         if (popStack) {
           Navigator.of(context).popUntil((route) {
             return route.isFirst;
