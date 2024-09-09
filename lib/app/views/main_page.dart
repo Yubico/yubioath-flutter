@@ -169,7 +169,6 @@ class MainPage extends ConsumerWidget {
                 );
               }
 
-              debugPrint('showing section $section');
               return switch (section) {
                 Section.home => HomeScreen(data),
                 Section.accounts => OathScreen(data.node.path),

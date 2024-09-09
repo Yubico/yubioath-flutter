@@ -215,8 +215,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_account_name,
-                helperText: '',
-                // Prevents dialog resizing when disabled
+                helperText: '', // Prevents dialog resizing when disabled
                 errorText: !nameNotEmpty
                     ? l10n.l_account_name_required
                     : !isUnique

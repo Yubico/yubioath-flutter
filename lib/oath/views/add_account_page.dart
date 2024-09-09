@@ -389,8 +389,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
-                        helperText: '',
-                        // Prevents dialog resizing when disabled
+                        helperText: '', // Prevents dialog resizing when
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
                             : issuerNoColon
@@ -418,8 +417,8 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_account_name,
-                        helperText: '',
-                        // Prevents dialog resizing when disabled
+                        helperText:
+                            '', // Prevents dialog resizing when disabled
                         errorText: _submitting
                             ? null
                             : (byteLength(nameText) > nameMaxLength)
