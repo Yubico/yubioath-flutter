@@ -52,8 +52,8 @@ class MainPage extends ConsumerWidget {
     );
 
     if (isAndroid) {
-      isNfcEnabled().then((value) =>
-          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+      isNfcEnabled().then(
+          (value) => ref.read(androidNfcAdapterState.notifier).enable(value));
     }
 
     // If the current device changes, we need to pop any open dialogs.
@@ -98,7 +98,7 @@ class MainPage extends ConsumerWidget {
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
-        var isNfcEnabled = ref.watch(androidNfcStateProvider);
+        var isNfcEnabled = ref.watch(androidNfcAdapterState);
         return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,

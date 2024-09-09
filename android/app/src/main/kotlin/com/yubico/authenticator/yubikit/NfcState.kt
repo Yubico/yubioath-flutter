@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.yubico.authenticator.yubikit
 
-enum class NfcActivityState(val value: Int) {
-    NOT_ACTIVE(0),
-    READY(1),
-    PROCESSING_STARTED(2),
-    PROCESSING_FINISHED(3),
-    PROCESSING_INTERRUPTED(4)
+enum class NfcState(val value: Int) {
+    DISABLED(0),
+    IDLE(1),
+    ONGOING(2),
+    SUCCESS(3),
+    FAILURE(4)
 }

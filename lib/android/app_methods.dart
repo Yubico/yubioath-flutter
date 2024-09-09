@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../theme.dart';
 import 'state.dart';
 
@@ -73,16 +74,14 @@ void setupAppMethodsChannel(WidgetRef ref) {
     switch (call.method) {
       case 'nfcAdapterStateChanged':
         {
-          var nfcEnabled = args['nfcEnabled'];
-          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(nfcEnabled);
+          var enabled = args['enabled'];
+          ref.read(androidNfcAdapterState.notifier).enable(enabled);
           break;
         }
-      case 'nfcActivityChanged':
+      case 'nfcStateChanged':
         {
-          var nfcActivityState = args['state'];
-          ref
-              .read(androidNfcActivityProvider.notifier)
-              .setActivityState(nfcActivityState);
+          var nfcState = args['state'];
+          ref.read(androidNfcState.notifier).set(nfcState);
           break;
         }
       default:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package com.yubico.authenticator.yubikit
 
 import android.app.Activity
 import android.nfc.NfcAdapter
-import android.nfc.Tag
-import com.yubico.authenticator.yubikit.NfcActivityListener
 
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcDispatcher
@@ -27,16 +25,16 @@ import com.yubico.yubikit.android.transport.nfc.NfcReaderDispatcher
 
 import org.slf4j.LoggerFactory
 
-interface NfcActivityListener {
-    fun onChange(newState: NfcActivityState)
+interface NfcStateListener {
+    fun onChange(newState: NfcState)
 }
 
-class NfcActivityDispatcher(private val listener: NfcActivityListener) : NfcDispatcher {
+class NfcStateDispatcher(private val listener: NfcStateListener) : NfcDispatcher {
 
     private lateinit var adapter: NfcAdapter
     private lateinit var yubikitNfcDispatcher: NfcReaderDispatcher
 
-    private val logger = LoggerFactory.getLogger(NfcActivityDispatcher::class.java)
+    private val logger = LoggerFactory.getLogger(NfcStateDispatcher::class.java)
 
     override fun enable(
         activity: Activity,
@@ -46,33 +44,17 @@ class NfcActivityDispatcher(private val listener: NfcActivityListener) : NfcDisp
         adapter = NfcAdapter.getDefaultAdapter(activity)
         yubikitNfcDispatcher = NfcReaderDispatcher(adapter)
 
-        logger.debug("enabling yubikit NFC activity dispatcher")
+        logger.debug("enabling yubikit NFC state dispatcher")
         yubikitNfcDispatcher.enable(
             activity,
             nfcConfiguration,
-            TagInterceptor(listener, handler)
+            handler
         )
-        //listener.onChange(NfcActivityState.READY)
     }
 
     override fun disable(activity: Activity) {
-        listener.onChange(NfcActivityState.NOT_ACTIVE)
+        listener.onChange(NfcState.DISABLED)
         yubikitNfcDispatcher.disable(activity)
-        logger.debug("disabling yubikit NFC activity dispatcher")
-    }
-
-    class TagInterceptor(
-        private val listener: NfcActivityListener,
-        private val tagHandler: NfcDispatcher.OnTagHandler
-    ) : NfcDispatcher.OnTagHandler {
-
-        private val logger = LoggerFactory.getLogger(TagInterceptor::class.java)
-
-        override fun onTag(tag: Tag) {
-            //listener.onChange(NfcActivityState.PROCESSING_STARTED)
-            logger.debug("forwarding tag")
-            tagHandler.onTag(tag)
-        }
-
+        logger.debug("disabling yubikit NFC state dispatcher")
     }
 }

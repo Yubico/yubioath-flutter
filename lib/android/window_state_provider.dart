@@ -58,7 +58,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
       if (lifeCycleState == AppLifecycleState.resumed) {
         _log.debug('Reading nfc enabled value');
         isNfcEnabled().then((value) =>
-            _ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+            _ref.read(androidNfcAdapterState.notifier).enable(value));
       }
     } else {
       _log.debug('Ignoring appLifecycleStateChange');

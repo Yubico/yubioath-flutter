@@ -25,7 +25,7 @@ import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.OperationContext
-import com.yubico.authenticator.yubikit.NfcActivityState
+import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
@@ -222,11 +222,11 @@ class DeviceManager(
                 if (e is ContextDisposedException) {
                     // the key does not have the needed context anymore
                     // we cannot continue
-                    appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+                    appMethodChannel.nfcStateChanged(NfcState.FAILURE)
                     throw e
                 }
 
-                appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             }
         }
     }
@@ -242,7 +242,7 @@ class DeviceManager(
         try {
             return onNfc.invoke().value
         } catch (e: Exception) {
-            appMethodChannel.nfcActivityStateChanged(NfcActivityState.PROCESSING_INTERRUPTED)
+            appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             throw e
         }
     }

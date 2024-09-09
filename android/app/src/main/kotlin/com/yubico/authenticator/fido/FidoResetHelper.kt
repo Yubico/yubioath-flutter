@@ -25,7 +25,6 @@ import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
-import com.yubico.authenticator.yubikit.NfcActivityState
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import kotlinx.coroutines.CoroutineScope

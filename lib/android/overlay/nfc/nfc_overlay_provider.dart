@@ -40,12 +40,12 @@ class _NfcOverlayProvider extends Notifier<int> {
 
   @override
   int build() {
-    ref.listen(androidNfcActivityProvider, (previous, current) {
+    ref.listen(androidNfcState, (previous, current) {
       processingViewTimeout?.cancel();
       final notifier = ref.read(nfcEventNotifier.notifier);
 
       switch (current) {
-        case NfcActivity.processingStarted:
+        case NfcState.ongoing:
           // the "Hold still..." view will be shown after this timeout
           // if the action is finished before, the timer might be cancelled
           // causing the view not to be visible at all
@@ -55,19 +55,20 @@ class _NfcOverlayProvider extends Notifier<int> {
             notifier.send(showHoldStill());
           });
           break;
-        case NfcActivity.processingFinished:
+        case NfcState.success:
           notifier.send(showDone());
           notifier
               .send(const NfcHideViewEvent(delay: Duration(milliseconds: 400)));
           break;
-        case NfcActivity.processingInterrupted:
+        case NfcState.failure:
           notifier.send(showFailed());
           break;
-        case NfcActivity.notActive:
-          _log.debug('Received not handled notActive');
+        case NfcState.disabled:
+          _log.debug('Received state: disabled');
           break;
-        case NfcActivity.ready:
-          _log.debug('Received not handled ready');
+        case NfcState.idle:
+          _log.debug('Received state: idle');
+          break;
       }
     });
 
