@@ -42,6 +42,14 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         return requestHandled
     }
 
+    fun failPending(e: Exception) {
+        pendingAction?.let { action ->
+            logger.error("Failing pending action with {}", e.message)
+            action.invoke(Result.failure(e))
+            pendingAction = null
+        }
+    }
+
     fun cancelPending() {
         pendingAction?.let { action ->
             action.invoke(Result.failure(CancellationException()))

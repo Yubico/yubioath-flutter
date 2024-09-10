@@ -60,7 +60,8 @@ class MainPage extends ConsumerWidget {
     ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
         (prev, next) {
       final serial = next.value?.info.serial;
-      if (serial != null && serial == prev?.value?.info.serial) {
+      if ((serial != null && serial == prev?.value?.info.serial) ||
+          (next.hasValue && (prev != null && prev.isLoading))) {
         return;
       }
 

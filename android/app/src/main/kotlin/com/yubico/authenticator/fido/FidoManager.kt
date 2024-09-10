@@ -210,8 +210,13 @@ class FidoManager(
             // something went wrong, try to get DeviceInfo from any available connection type
             logger.error("Failure when processing YubiKey: ", e)
 
-            // Clear any cached FIDO state
-            fidoViewModel.clearSessionState()
+            connectionHelper.failPending(e)
+
+            if (e !is IOException) {
+                // we don't clear the session on IOExceptions so that the session is ready for
+                // a possible re-run of a failed action.
+                fidoViewModel.clearSessionState()
+            }
             throw e
         }
 

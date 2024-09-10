@@ -266,7 +266,15 @@ class OathManager(
                         )
                     )
                     if (!session.isLocked) {
-                        oathViewModel.updateCredentials(calculateOathCodes(session))
+                        try {
+                            oathViewModel.updateCredentials(calculateOathCodes(session))
+                        } catch (e: IOException) {
+                            // in this situation we clear the session because otherwise
+                            // the credential list would be in loading state
+                            // clearing the session will prompt the user to try again
+                            oathViewModel.clearSession()
+                            throw e
+                        }
                     }
 
                     // Awaiting an action for a different or no device?
@@ -315,14 +323,19 @@ class OathManager(
             }
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
-            logger.error("Failed to connect to CCID: ", e)
-            // Clear any cached OATH state
-            oathViewModel.clearSession()
+            logger.error("Exception during SmartCard connection/OATH session creation: ", e)
+
             // Remove any pending action
             pendingAction?.let { action ->
-                logger.error("Cancelling pending action")
+                logger.error("Failing pending action with {}", e.message)
+                action.invoke(Result.failure(e))
                 pendingAction = null
-                action.invoke(Result.failure(CancellationException()))
+            }
+
+            if (e !is IOException) {
+                // we don't clear the session on IOExceptions so that the session is ready for
+                // a possible re-run of a failed action.
+                oathViewModel.clearSession()
             }
 
             throw e
