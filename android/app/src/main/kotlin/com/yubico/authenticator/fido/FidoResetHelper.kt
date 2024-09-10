@@ -25,6 +25,7 @@ import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
+import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import kotlinx.coroutines.CoroutineScope
@@ -222,11 +223,13 @@ class FidoResetHelper(
                 FidoManager.updateDeviceInfo.set(true)
                 connectionHelper.useSessionNfc { fidoSession ->
                     doReset(fidoSession)
+                    appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
                     continuation.resume(Unit)
                 }.value
             } catch (e: Throwable) {
                 // on NFC, clean device info in this situation
                 mainViewModel.setDeviceInfo(null)
+                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
                 logger.error("Failure during FIDO reset:", e)
                 continuation.resumeWithException(e)
             }
