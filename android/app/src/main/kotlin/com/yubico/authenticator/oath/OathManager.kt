@@ -232,7 +232,31 @@ class OathManager(
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
                 val previousId = oathViewModel.currentSession()?.deviceId
-                if (session.deviceId == previousId && device is NfcYubiKeyDevice) {
+                // only run pending action over NFC
+                // when the device is still the same
+                // or when there is no previous device, but we have a pending action
+                if (device is NfcYubiKeyDevice &&
+                    ((session.deviceId == previousId) ||
+                            (previousId == null && pendingAction != null))
+                ) {
+                    // update session if it is null
+                    if (previousId == null) {
+                        oathViewModel.setSessionState(
+                            Session(
+                                session,
+                                keyManager.isRemembered(session.deviceId)
+                            )
+                        )
+
+                        if (!session.isLocked) {
+                            try {
+                                // only load the accounts without calculating the codes
+                                oathViewModel.updateCredentials(getAccounts(session))
+                            } catch (e: IOException) {
+                                oathViewModel.updateCredentials(emptyMap())
+                            }                            }
+                    }
+
                     // Either run a pending action, or just refresh codes
                     if (pendingAction != null) {
                         pendingAction?.let { action ->
@@ -684,6 +708,15 @@ class OathManager(
         }
 
         return session
+    }
+
+    private fun getAccounts(session: YubiKitOathSession): Map<Credential, Code?> {
+        return session.credentials.map { credential ->
+            Pair(
+                Credential(credential, session.deviceId),
+                null
+            )
+        }.toMap()
     }
 
     private fun calculateOathCodes(session: YubiKitOathSession): Map<Credential, Code?> {

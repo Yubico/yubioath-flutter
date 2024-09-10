@@ -76,9 +76,6 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> reset() async {
     try {
-      // await ref
-      //     .read(androidAppContextHandler)
-      //     .switchAppContext(Application.accounts);
       await oath.invoke('reset');
     } catch (e) {
       _log.debug('Calling reset failed with exception: $e');
