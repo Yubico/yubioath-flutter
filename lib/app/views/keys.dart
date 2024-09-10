@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 
 // global keys
 final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+final headerSliverGlobalKey = GlobalKey();
 // This is global so we can access it from the global Ctrl+F shortcut.
 final searchField = GlobalKey();
 
