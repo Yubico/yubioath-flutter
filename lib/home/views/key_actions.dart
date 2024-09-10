@@ -25,6 +25,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/reset_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
@@ -57,6 +58,7 @@ Widget homeBuildActions(
                 title: deviceData.info.version.major > 4
                     ? l10n.s_toggle_applications
                     : l10n.s_toggle_interfaces,
+                key: yubikeyApplicationToggleMenuButton,
                 subtitle: interfacesLocked
                     ? l10n.l_factory_reset_required
                     : (deviceData.info.version.major > 4
@@ -82,6 +84,7 @@ Widget homeBuildActions(
               ActionListItem(
                 icon: const Icon(Symbols.delete_forever),
                 title: l10n.s_factory_reset,
+                key: yubikeyFactoryResetMenuButton,
                 subtitle: l10n.l_factory_reset_desc,
                 actionStyle: ActionStyle.primary,
                 onTap: (context) {
@@ -97,6 +100,7 @@ Widget homeBuildActions(
       ActionListSection(l10n.s_application, children: [
         ActionListItem(
           icon: const Icon(Symbols.settings),
+          key: settingDrawerIcon,
           title: l10n.s_settings,
           subtitle: l10n.l_settings_desc,
           actionStyle: ActionStyle.primary,
@@ -107,6 +111,7 @@ Widget homeBuildActions(
         ),
         ActionListItem(
           icon: const Icon(Symbols.help),
+          key: helpDrawerIcon,
           title: l10n.s_help_and_about,
           subtitle: l10n.l_help_and_about_desc,
           actionStyle: ActionStyle.primary,

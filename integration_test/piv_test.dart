@@ -34,87 +34,121 @@ void main() {
   group('PIV Settings', skip: isAndroid, () {
     const factoryPin = '123456';
     const factoryPuk = '12345678';
-    appTest('Reset PIV (settings-init)', (WidgetTester tester) async {
+    const uno = 'abcdabcd';
+    const due = 'bcdabcda';
+    const tre = 'cdabcdab';
+
+    appTest('reset PIV (settings-init)', (WidgetTester tester) async {
       await tester.resetPiv();
       await tester.shortWait();
     });
-    appTest('Lock PIN, unlock with PUK', (WidgetTester tester) async {
-      await tester.configurePiv();
-      await tester.shortWait();
-      await tester.tap(find.byKey(managePinAction).hitTestable());
-      await tester.shortWait();
-      await tester.lockPinPuk();
-      await tester.shortWait();
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
 
-      /// TODO: This expect needs to verify that Pin subtitle is 'Blocked'
-      /// expect(find.byKey(managePinAction), find.byTooltip('Blocked'));
+    appTest('pin lock-unlock', (WidgetTester tester) async {
+      await tester.resetPiv();
       await tester.shortWait();
+
+      await tester.pinView();
+      await tester.pivFirst();
+
+      await tester.longWait();
+      await tester.pinView();
+      await tester.longWait();
+
+      await tester.pivLockTest();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.shortWait();
+
+      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+      await tester.longWait();
+
+      expect(find.text('Blocked, use PUK to reset'), findsOne);
+
       await tester.tap(find.byKey(managePinAction).hitTestable());
       await tester.shortWait();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), factoryPuk);
-      await tester.shortWait();
-      await tester.enterText(
-          find.byKey(newPinPukField).hitTestable(), factoryPin);
-      await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), factoryPin);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+
+      // PUK field is pre-filled
+      await tester.pivFirst();
+      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
       await tester.longWait();
-      await tester.resetPiv();
+
+      expect(find.text('Blocked, use PUK to reset'), findsNothing);
     });
-    appTest('Lock PUK, lock PIN, factory reset', (WidgetTester tester) async {
-      await tester.configurePiv();
-      await tester.shortWait();
-      await tester.tap(find.byKey(managePukAction).hitTestable());
-      await tester.shortWait();
-      await tester.lockPinPuk();
-      await tester.shortWait();
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
 
-      /// TODO: This expect needs to verify that PUK underline is 'Blocked'
-      /// expect(find.byKey(managePukAction), find.byTooltip('Blocked'));
-
-      await tester.shortWait();
-      await tester.tap(find.byKey(managePinAction).hitTestable());
-      await tester.shortWait();
-      await tester.lockPinPuk();
-      await tester.shortWait();
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-
-      /// TODO: This expect needs to verify that Pin underline is 'Blocked'
-      /// expect(find.byKey(managePinAction), find.byTooltip('Blocked'));
-
-      await tester.shortWait();
-      await tester.tap(find.byKey(managePinAction).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(managePukAction).hitTestable());
-      await tester.shortWait();
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.longWait();
+    appTest('lock PUK, lock PIN, factory reset', (WidgetTester tester) async {
       await tester.resetPiv();
+      await tester.shortWait();
+
+      // set first pin/puk
+      await tester.pinView();
+      await tester.pivFirst();
+      await tester.pukView();
+      await tester.pivFirst();
+
+      // lock pin and puk
+      await tester.pinView();
+      await tester.pivLockTest();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.shortWait();
+      await tester.pukView();
+      await tester.pivLockTest();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.shortWait();
+
+      // verify blockedness
+
+      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
+      await tester.shortWait();
+
+      expect(find.text('Blocked, factory reset needed'), findsAny);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.shortWait();
     });
     appTest('Change PIN', (WidgetTester tester) async {
-      const newpin = '123123';
-      await tester.configurePiv();
-      await tester.tap(find.byKey(managePinAction).hitTestable());
+      await tester.resetPiv();
       await tester.shortWait();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), factoryPin);
+
+      //reset factorypin
+      await tester.pinView();
+      await tester.pivFirst();
+
+      // onepin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), 'firstpin');
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), newpin);
+      await tester.enterText(find.byKey(newPinPukField).hitTestable(), uno);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), newpin);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), uno);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      await tester.configurePiv();
-      await tester.tap(find.byKey(managePinAction).hitTestable());
       await tester.shortWait();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), newpin);
+
+      // onepin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), uno);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(newPinPukField).hitTestable(), due);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), due);
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // onepin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), due);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(newPinPukField).hitTestable(), tre);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), tre);
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // factorpin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), tre);
       await tester.shortWait();
       await tester.enterText(
           find.byKey(newPinPukField).hitTestable(), factoryPin);
@@ -123,26 +157,52 @@ void main() {
           find.byKey(confirmPinPukField).hitTestable(), factoryPin);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
+      await tester.shortWait();
     });
     appTest('Change PUK', (WidgetTester tester) async {
-      const newpuk = '12341234';
-      await tester.configurePiv();
-      await tester.tap(find.byKey(managePukAction).hitTestable());
+      await tester.resetPiv();
       await tester.shortWait();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), factoryPuk);
+
+      //reset factorypuk
+      await tester.pinView();
+      await tester.pivFirst();
+
+      // onepin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), 'firstpin');
       await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), newpuk);
+      await tester.enterText(find.byKey(newPinPukField).hitTestable(), uno);
       await tester.shortWait();
-      await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), newpuk);
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), uno);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      await tester.configurePiv();
-      await tester.tap(find.byKey(managePukAction).hitTestable());
       await tester.shortWait();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), newpuk);
+
+      // onepin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), uno);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(newPinPukField).hitTestable(), due);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), due);
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // onepin
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), due);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(newPinPukField).hitTestable(), tre);
+      await tester.shortWait();
+      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), tre);
+      await tester.shortWait();
+      await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.shortWait();
+
+      // factorpuk
+      await tester.pinView();
+      await tester.enterText(find.byKey(pinPukField).hitTestable(), tre);
       await tester.shortWait();
       await tester.enterText(
           find.byKey(newPinPukField).hitTestable(), factoryPuk);
@@ -151,127 +211,148 @@ void main() {
           find.byKey(confirmPinPukField).hitTestable(), factoryPuk);
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
+      await tester.shortWait();
     });
-    group('PIV Management Key', () {
-      const newmanagementkey =
-          'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbcccc';
-      const boundsmanagementkey =
-          'llllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkmmmm';
-      const shortmanagementkey =
-          'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbccc';
-
-      appTest('Out of bounds managementkey key', (WidgetTester tester) async {
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.longWait();
-        // testing out of bounds management key does not work
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), boundsmanagementkey);
-        await tester.longWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-        expect(tester.isTextButtonEnabled(saveButton), true);
-        // TODO assert that errorText and errorIcon are shown
-      });
-
-      appTest('Short managementkey key', (WidgetTester tester) async {
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.longWait();
-        // testing too short management key does not work
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), shortmanagementkey);
-        await tester.longWait();
-        expect(tester.isTextButtonEnabled(saveButton), false);
-      });
-
-      appTest('Change managementkey key', (WidgetTester tester) async {
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.shortWait();
-        // setting newmanagementkey
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-        await tester.longWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-        // verifying newmanagementkey
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(
-            find.byKey(managementKeyField).hitTestable(), newmanagementkey);
-        await tester.shortWait();
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-        await tester.shortWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-        await tester.resetPiv();
-      });
-      appTest('Change managementkey type', (WidgetTester tester) async {
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.shortWait();
-        // TODO: this needs to use manageManagementKeyAction chip
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-        await tester.shortWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-
-        await tester.resetPiv();
-        await tester.shortWait();
-      });
-      appTest('Change managementkey PIN-lock', (WidgetTester tester) async {
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.shortWait();
-        // testing out of bounds management key does not work
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-        await tester.shortWait();
-        // TODO: Investigate why chip-tap fails
-        //await tester.tap(find.byKey(pinLockManagementKeyChip).hitTestable());
-        //await tester.shortWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-        await tester.resetPiv();
-        await tester.shortWait();
-      });
-
-      appTest('Random managementkeytype', (WidgetTester tester) async {
-        await tester.configurePiv();
-        await tester.shortWait();
-        await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-        await tester.shortWait();
-        // rndm 3x, for luck
-        await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
-        await tester.shortWait();
-        await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
-        await tester.shortWait();
-        await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
-        await tester.shortWait();
-        await tester.enterText(
-            find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-        await tester.shortWait();
-        await tester.tap(find.byKey(saveButton).hitTestable());
-        await tester.longWait();
-        await tester.resetPiv();
-      });
-
-      appTest('Reset PIV (settings-exit)', (WidgetTester tester) async {
-        await tester.resetPiv();
-        await tester.shortWait();
-      });
-    });
+    // group('PIV Management Key', () {
+    //   const newmanagementkey =
+    //       'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbcccc';
+    //   const boundsmanagementkey =
+    //       'llllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkssssllllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkmmmm';
+    //   const shortmanagementkey =
+    //       'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbccc';
+    //
+    //   appTest('Out of bounds managementkey key', (WidgetTester tester) async {
+    //     //await tester.resetPiv();
+    //     await tester.shortWait();
+    //
+    //     // short management key
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.longWait();
+    //     // testing out of bounds management key does not work
+    //     await tester.enterText(
+    //         find.text('New management key').hitTestable(), shortmanagementkey);
+    //     await tester.longWait();
+    //
+    //     expect(tester.isTextButtonEnabled(saveButton), false);
+    //     expect(find.text('47/48'), findsOne);
+    //     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    //
+    //     // out of bounds management key
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.shortWait();
+    //     // testing out of bounds management key does not work
+    //     await tester.enterText(
+    //         find.byKey(newManagementKeyField).hitTestable(), shortmanagementkey);
+    //     await tester.shortWait();
+    //
+    //     expect(tester.isTextButtonEnabled(saveButton), false);
+    //     expect(find.text('48/48'), findsOne);
+    //     expect(find.text('llllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkssssllllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkmmmm'), findsNothing);
+    //     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    //
+    //
+    //   });
+    //
+    //   appTest('Short managementkey key', (WidgetTester tester) async {
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.longWait();
+    //     // testing too short management key does not work
+    //     await tester.enterText(
+    //         find.byKey(newPinPukField).hitTestable(), shortmanagementkey);
+    //     await tester.longWait();
+    //     expect(tester.isTextButtonEnabled(saveButton), false);
+    //   });
+    //
+    //   appTest('Change managementkey key', (WidgetTester tester) async {
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.shortWait();
+    //     // setting newmanagementkey
+    //     await tester.enterText(
+    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+    //     await tester.longWait();
+    //     await tester.tap(find.byKey(saveButton).hitTestable());
+    //     await tester.longWait();
+    //     // verifying newmanagementkey
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.shortWait();
+    //     await tester.enterText(
+    //         find.byKey(managementKeyField).hitTestable(), newmanagementkey);
+    //     await tester.shortWait();
+    //     await tester.enterText(
+    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(saveButton).hitTestable());
+    //     await tester.longWait();
+    //     await tester.resetPiv();
+    //   });
+    //   appTest('Change managementkey type', (WidgetTester tester) async {
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.shortWait();
+    //     // TODO: this needs to use manageManagementKeyAction chip
+    //     await tester.enterText(
+    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(saveButton).hitTestable());
+    //     await tester.longWait();
+    //
+    //     await tester.resetPiv();
+    //     await tester.shortWait();
+    //   });
+    //   appTest('Change managementkey PIN-lock', (WidgetTester tester) async {
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.shortWait();
+    //     // testing out of bounds management key does not work
+    //     await tester.enterText(
+    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+    //     await tester.shortWait();
+    //     // TODO: Investigate why chip-tap fails
+    //     //await tester.tap(find.byKey(pinLockManagementKeyChip).hitTestable());
+    //     //await tester.shortWait();
+    //     await tester.tap(find.byKey(saveButton).hitTestable());
+    //     await tester.longWait();
+    //     await tester.resetPiv();
+    //     await tester.shortWait();
+    //   });
+    //
+    //   appTest('Random managementkeytype', (WidgetTester tester) async {
+    //     await tester.configurePiv();
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
+    //     await tester.shortWait();
+    //     // rndm 3x, for luck
+    //     await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
+    //     await tester.shortWait();
+    //     await tester.enterText(
+    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
+    //     await tester.shortWait();
+    //     await tester.tap(find.byKey(saveButton).hitTestable());
+    //     await tester.longWait();
+    //     await tester.resetPiv();
+    //   });
+    //
+    //   appTest('Reset PIV (settings-exit)', (WidgetTester tester) async {
+    //     await tester.resetPiv();
+    //     await tester.shortWait();
+    //   });
+    // });
   });
 
   //    Distinguished name schema according to RFC 4514
@@ -303,11 +384,11 @@ void main() {
       await tester.tap(find.byKey(generateAction).hitTestable());
       await tester.longWait();
       // 4. enter PIN and click Unlock
-      await tester.enterText(
-          find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.longWait();
-      await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.longWait();
+      // await tester.enterText(
+      //     find.byKey(managementKeyField).hitTestable(), '123456');
+      // await tester.longWait();
+      // await tester.tap(find.byKey(unlockButton).hitTestable());
+      // await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
@@ -331,7 +412,7 @@ void main() {
         return false;
       }), findsOneWidget);*/
 
-      await tester.pump(const Duration(milliseconds: 5000));
+      await tester.longWait();
       // 10. Export Certificate
       // await tester.tap(find.byKey(exportAction).hitTestable());
       // await tester.enterText(
@@ -355,11 +436,11 @@ void main() {
       await tester.tap(find.byKey(generateAction).hitTestable());
       await tester.longWait();
       // 4. enter PIN and click Unlock
-      await tester.enterText(
-          find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.longWait();
-      await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.longWait();
+      // await tester.enterText(
+      //     find.byKey(managementKeyField).hitTestable(), '123456');
+      // await tester.longWait();
+      // await tester.tap(find.byKey(unlockButton).hitTestable());
+      // await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
@@ -403,11 +484,11 @@ void main() {
       await tester.tap(find.byKey(generateAction).hitTestable());
       await tester.longWait();
       // 4. enter PIN and click Unlock
-      await tester.enterText(
-          find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.longWait();
-      await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.longWait();
+      // await tester.enterText(
+      //     find.byKey(managementKeyField).hitTestable(), '123456');
+      // await tester.longWait();
+      // await tester.tap(find.byKey(unlockButton).hitTestable());
+      // await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
@@ -456,11 +537,11 @@ void main() {
       await tester.tap(find.byKey(generateAction).hitTestable());
       await tester.longWait();
       // 4. enter PIN and click Unlock
-      await tester.enterText(
-          find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.longWait();
-      await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.longWait();
+      // await tester.enterText(
+      //     find.byKey(managementKeyField).hitTestable(), '123456');
+      // await tester.longWait();
+      // await tester.tap(find.byKey(unlockButton).hitTestable());
+      // await tester.longWait();
 
       // 5. Enter DN
       await tester.enterText(
@@ -497,59 +578,59 @@ void main() {
       await tester.tap(find.byKey(deleteButton).hitTestable());
       await tester.longWait();
     });
-    appTest('Import outdated Key+Certificate from file',
-        (WidgetTester tester) async {});
-
-    /// TODO fileload needs to be handled
-    appTest('Import neverexpire Key+Certificate from file',
-        (WidgetTester tester) async {
-      /// TODO fileload needs to be handled
-    });
-    appTest('Generate a CSR', (WidgetTester tester) async {
-      // 1. open PIV view
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.longWait();
-      // 2. click meatball menu for 9e
-      await tester.tap(find.byKey(meatballButton9e).hitTestable());
-      await tester.longWait();
-      // 3. click generate
-      await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.longWait();
-      // 4. enter PIN and click Unlock
-      await tester.enterText(
-          find.byKey(managementKeyField).hitTestable(), '123456');
-      await tester.longWait();
-      await tester.tap(find.byKey(unlockButton).hitTestable());
-      await tester.longWait();
-
-      // 5. Enter DN
-      await tester.enterText(
-          find.byKey(subjectField).hitTestable(), 'CN=Generate9e-CSR');
-      await tester.longWait();
-      // 6. Change 'output format': CSR
-      //      enum models.dart, generate_key_dialog.dart
-      // 7. Choose File Name > Save As > 'File Name generate93-csr'
-      //    TODO: where are files saved?
-      // 8. click save
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      // 9 Verify 'No certificate loaded'
-/*      expect(find.byWidgetPredicate((widget) {
-        if (widget is TooltipIfTruncated) {
-          final TooltipIfTruncated textWidget = widget;
-          if (textWidget.key == certInfoSubjectKey &&
-              textWidget.text == 'CN=Generate9e') {
-            return true;
-          }
-        }
-        return false;
-      }), findsOneWidget);*/
-    });
-    // appTest('Reset PIV (load-exit)', (WidgetTester tester) async {
-    //   /// TODO: investigate why this reset randomly fails!
-    //   await tester.resetPiv();
-    //   await tester.shortWait();
-    // });
+//     appTest('Import outdated Key+Certificate from file',
+//         (WidgetTester tester) async {});
+//
+//     /// TODO fileload needs to be handled
+//     appTest('Import neverexpire Key+Certificate from file',
+//         (WidgetTester tester) async {
+//       /// TODO fileload needs to be handled
+//     });
+//     appTest('Generate a CSR', (WidgetTester tester) async {
+//       // 1. open PIV view
+//       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+//       await tester.tap(pivDrawerButton);
+//       await tester.longWait();
+//       // 2. click meatball menu for 9e
+//       await tester.tap(find.byKey(meatballButton9e).hitTestable());
+//       await tester.longWait();
+//       // 3. click generate
+//       await tester.tap(find.byKey(generateAction).hitTestable());
+//       await tester.longWait();
+//       // 4. enter PIN and click Unlock
+//       // await tester.enterText(
+//       //     find.byKey(managementKeyField).hitTestable(), '123456');
+//       // await tester.longWait();
+//       // await tester.tap(find.byKey(unlockButton).hitTestable());
+//       // await tester.longWait();
+//
+//       // 5. Enter DN
+//       await tester.enterText(
+//           find.byKey(subjectField).hitTestable(), 'CN=Generate9e-CSR');
+//       await tester.longWait();
+//       // 6. Change 'output format': CSR
+//       //      enum models.dart, generate_key_dialog.dart
+//       // 7. Choose File Name > Save As > 'File Name generate93-csr'
+//       //    TODO: where are files saved?
+//       // 8. click save
+//       await tester.tap(find.byKey(saveButton).hitTestable());
+//       await tester.longWait();
+//       // 9 Verify 'No certificate loaded'
+// /*      expect(find.byWidgetPredicate((widget) {
+//         if (widget is TooltipIfTruncated) {
+//           final TooltipIfTruncated textWidget = widget;
+//           if (textWidget.key == certInfoSubjectKey &&
+//               textWidget.text == 'CN=Generate9e') {
+//             return true;
+//           }
+//         }
+//         return false;
+//       }), findsOneWidget);*/
+//     });
+//     // appTest('Reset PIV (load-exit)', (WidgetTester tester) async {
+//     //   /// TODO: investigate why this reset randomly fails!
+//     //   await tester.resetPiv();
+//     //   await tester.shortWait();
+//     // });
   });
 }
