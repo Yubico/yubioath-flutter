@@ -186,8 +186,13 @@ class Ctap2Node(RpcNode):
         try:
             self.ctap.reset(event=event)
         except CtapError as e:
-            if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
+            if e.code in (
+                # Different keys respond with different errors here
+                CtapError.ERR.USER_ACTION_TIMEOUT,
+                CtapError.ERR.ACTION_TIMEOUT,
+            ):
                 raise InactivityException()
+            raise
         self._info = self.ctap.get_info()
         self._token = None
         return RpcResponse(dict(), ["device_info"])
@@ -333,6 +338,7 @@ class CredentialNode(RpcNode):
     def delete(self, params, event, signal):
         self.credman.delete_cred(self.data["credential_id"])
         self.refresh_rps()
+        return dict()
 
 
 class FingerprintsNode(RpcNode):

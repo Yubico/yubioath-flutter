@@ -38,6 +38,7 @@
     "s_calculate": "Calculer",
     "s_import": "Importer",
     "s_overwrite": "Écraser",
+    "s_done": null,
     "s_label": "Étiquette",
     "s_name": "Nom",
     "s_usb": "USB",
@@ -46,10 +47,11 @@
     "s_details": "Détails",
     "s_show_window": "Montrer fenêtre",
     "s_hide_window": "Masquer fenêtre",
+    "s_show_navigation": null,
     "s_expand_navigation": "Développer la navigation",
     "s_collapse_navigation": "Réduire la navigation",
-    "s_expand_sidebar": null,
-    "s_collapse_sidebar": null,
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "Renommer {label}\u00a0?",
     "@q_rename_target": {
         "placeholders": {
@@ -87,7 +89,6 @@
     "s_terms_of_use": "Conditions d'utilisation",
     "s_privacy_policy": "Confidentialité",
     "s_open_src_licenses": "Licences Open Source",
-    "s_configure_yk": "Configurer YubiKey",
     "s_please_wait": "Patientez\u2026",
     "s_secret_key": "Clé secrète",
     "s_show_secret_key": "Afficher clé secrète",
@@ -236,6 +237,8 @@
     "s_unsupported_yk": "YubiKey non prise en charge",
     "s_yk_not_recognized": "Appareil non reconnu",
     "p_operation_failed_try_again": "L'opération a échoué, veuillez réessayer.",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Une erreur s'est produite",
@@ -427,6 +430,10 @@
             "message": {}
         }
     },
+    "l_add_account_password_required": null,
+    "l_add_account_unlock_required": null,
+    "l_add_account_already_exists": null,
+    "l_add_account_func_missing": null,
     "l_account_name_required": "Votre compte doit avoir un nom",
     "l_name_already_exists": "Ce nom existe déjà pour l'émetteur",
     "l_account_already_exists": "Ce compte existe déjà sur la YubiKey",
@@ -440,6 +447,12 @@
     "s_rename_account": "Renommer compte",
     "l_rename_account_desc": "Modifier émetteur/nom du compte",
     "s_account_renamed": "Compte renommé",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "Cela modifiera l'affichage du compte dans la liste.",
     "s_delete_account": "Supprimer compte",
     "l_delete_account_desc": "Supprimer le compte de votre YubiKey",
@@ -587,6 +600,7 @@
     "l_delete_certificate_or_key_desc": "Supprimer le certificat ou la clé de votre YubiKey",
     "l_move_key": "Déplacer la clé",
     "l_move_key_desc": "Déplacer une clé d'un emplacement PIV vers un autre",
+    "l_change_defaults": null,
     "s_issuer": "Émetteur",
     "s_serial": "Série",
     "s_certificate_fingerprint": "Empreinte digitale",
@@ -907,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "Action : supprimer l'empreinte digitale",
     "s_nfc_dialog_fido_rename_fingerprint": "Action : renommer l'empreinte digitale",
     "s_nfc_dialog_fido_failure": "Échec de l'opération FIDO",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_hold_still": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "Code OTP copié de la YubiKey dans le presse-papiers.",

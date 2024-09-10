@@ -38,6 +38,7 @@
     "s_calculate": "Oblicz",
     "s_import": "Importuj",
     "s_overwrite": "Nadpisz",
+    "s_done": null,
     "s_label": "Etykieta",
     "s_name": "Nazwa",
     "s_usb": "USB",
@@ -46,10 +47,11 @@
     "s_details": "Szczegóły",
     "s_show_window": "Pokaż okno",
     "s_hide_window": "Ukryj okno",
+    "s_show_navigation": null,
     "s_expand_navigation": null,
     "s_collapse_navigation": null,
-    "s_expand_sidebar": null,
-    "s_collapse_sidebar": null,
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "Zmienić nazwę {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -87,7 +89,6 @@
     "s_terms_of_use": "Warunki użytkowania",
     "s_privacy_policy": "Polityka prywatności",
     "s_open_src_licenses": "Licencje open source",
-    "s_configure_yk": "Skonfiguruj YubiKey",
     "s_please_wait": "Proszę czekać\u2026",
     "s_secret_key": "Tajny klucz",
     "s_show_secret_key": "Pokaż tajny klucz",
@@ -236,6 +237,8 @@
     "s_unsupported_yk": "Nieobsługiwany klucz YubiKey",
     "s_yk_not_recognized": "Urządzenie nie rozpoznane",
     "p_operation_failed_try_again": null,
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "Wystąpił błąd",
@@ -427,6 +430,10 @@
             "message": {}
         }
     },
+    "l_add_account_password_required": null,
+    "l_add_account_unlock_required": null,
+    "l_add_account_already_exists": null,
+    "l_add_account_func_missing": null,
     "l_account_name_required": "Twoje konto musi mieć nazwę",
     "l_name_already_exists": "Ta nazwa już istnieje dla tego wydawcy",
     "l_account_already_exists": "To konto już istnieje w YubiKey",
@@ -440,6 +447,12 @@
     "s_rename_account": "Zmień nazwę konta",
     "l_rename_account_desc": "Edytuj wydawcę/nazwę konta",
     "s_account_renamed": "Zmieniono nazwę konta",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "Spowoduje to zmianę sposobu wyświetlania konta na liście.",
     "s_delete_account": "Usuń konto",
     "l_delete_account_desc": "Usuń konto z klucza YubiKey",
@@ -587,6 +600,7 @@
     "l_delete_certificate_or_key_desc": null,
     "l_move_key": null,
     "l_move_key_desc": null,
+    "l_change_defaults": null,
     "s_issuer": "Wydawca",
     "s_serial": "Nr. seryjny",
     "s_certificate_fingerprint": "Odcisk palca",
@@ -907,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": null,
     "s_nfc_dialog_fido_rename_fingerprint": null,
     "s_nfc_dialog_fido_failure": null,
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_hold_still": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP zostało skopiowane do schowka.",

@@ -78,3 +78,9 @@ fun restrictedNfcDeviceInfo(transport: Transport) : Info {
         name = "restricted-nfc"
     )
 }
+
+// the YubiKey requires SCP11b communication but the phone cannot handle it
+val noScp11bNfcSupport = UnknownDevice.copy(
+    isNfc = true,
+    name = "no-scp11b-nfc-support"
+)

@@ -38,6 +38,7 @@
     "s_calculate": "計算",
     "s_import": "インポート",
     "s_overwrite": "上書き",
+    "s_done": null,
     "s_label": "ラベル",
     "s_name": "名前",
     "s_usb": "USB",
@@ -46,10 +47,11 @@
     "s_details": "詳細",
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを非表示",
+    "s_show_navigation": null,
     "s_expand_navigation": "ナビゲーションを展開",
     "s_collapse_navigation": "ナビゲーションを閉じる",
-    "s_expand_sidebar": null,
-    "s_collapse_sidebar": null,
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
@@ -87,7 +89,6 @@
     "s_terms_of_use": "利用規約",
     "s_privacy_policy": "プライバシーポリシー",
     "s_open_src_licenses": "オープンソースライセンス",
-    "s_configure_yk": "YubiKeyを設定",
     "s_please_wait": "お待ちください\u2026",
     "s_secret_key": "秘密鍵",
     "s_show_secret_key": "秘密鍵を表示",
@@ -236,6 +237,8 @@
     "s_unsupported_yk": "サポートされていないYubiKey",
     "s_yk_not_recognized": "デバイスが認識されません",
     "p_operation_failed_try_again": "操作に失敗しました。もう一度やり直してください。",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "エラーが発生しました",
@@ -427,6 +430,10 @@
             "message": {}
         }
     },
+    "l_add_account_password_required": null,
+    "l_add_account_unlock_required": null,
+    "l_add_account_already_exists": null,
+    "l_add_account_func_missing": null,
     "l_account_name_required": "アカウントには名前が必要です",
     "l_name_already_exists": "この名前は発行者にすでに存在します",
     "l_account_already_exists": "このアカウントはYubiKeyにすでに存在します",
@@ -440,6 +447,12 @@
     "s_rename_account": "アカウント名を変更",
     "l_rename_account_desc": "アカウントの発行者/名前を編集",
     "s_account_renamed": "アカウントの名前が変更されました",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "これにより、リスト内のアカウントの表示が変更されます。",
     "s_delete_account": "アカウントを削除",
     "l_delete_account_desc": "YubiKeyからアカウントを削除",
@@ -587,6 +600,7 @@
     "l_delete_certificate_or_key_desc": "YubiKey から証明書または鍵を削除する",
     "l_move_key": "キーを移動",
     "l_move_key_desc": "あるPIVスロットから別のスロットにキーを移動する",
+    "l_change_defaults": null,
     "s_issuer": "発行者",
     "s_serial": "シリアル",
     "s_certificate_fingerprint": "フィンガープリント",
@@ -907,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "アクション: 指紋の削除",
     "s_nfc_dialog_fido_rename_fingerprint": "アクション: 指紋の名前を変更する",
     "s_nfc_dialog_fido_failure": "FIDO操作に失敗しました",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_hold_still": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",

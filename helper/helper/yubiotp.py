@@ -154,6 +154,7 @@ class SlotNode(RpcNode):
             access_code = params.pop("curr_acc_code", None)
             access_code = bytes.fromhex(access_code) if access_code else None
             self.session.delete_slot(self.slot, access_code)
+            return dict()
         except CommandError:
             raise ValueError(_FAIL_MSG)
 

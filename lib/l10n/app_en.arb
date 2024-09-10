@@ -38,6 +38,7 @@
     "s_calculate": "Calculate",
     "s_import": "Import",
     "s_overwrite": "Overwrite",
+    "s_done": "Done",
     "s_label": "Label",
     "s_name": "Name",
     "s_usb": "USB",
@@ -46,10 +47,11 @@
     "s_details": "Details",
     "s_show_window": "Show window",
     "s_hide_window": "Hide window",
+    "s_show_navigation": "Show navigation",
     "s_expand_navigation": "Expand navigation",
     "s_collapse_navigation": "Collapse navigation",
-    "s_expand_sidebar": "Expand sidebar",
-    "s_collapse_sidebar": "Collapse sidebar",
+    "s_show_menu": "Show menu",
+    "s_hide_menu": "Hide menu",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -87,7 +89,6 @@
     "s_terms_of_use": "Terms of use",
     "s_privacy_policy": "Privacy policy",
     "s_open_src_licenses": "Open source licenses",
-    "s_configure_yk": "Configure YubiKey",
     "s_please_wait": "Please wait\u2026",
     "s_secret_key": "Secret key",
     "s_show_secret_key": "Show secret key",
@@ -236,6 +237,8 @@
     "s_unsupported_yk": "Unsupported YubiKey",
     "s_yk_not_recognized": "Device not recognized",
     "p_operation_failed_try_again": "The operation failed, please try again.",
+    "l_configuration_unsupported": "Configuration not supported",
+    "p_scp_unsupported": "To communicate over NFC, the YubiKey requires technology which is not supported by this phone. Please plug the YubiKey to the phone's USB port.",
 
     "@_general_errors": {},
     "l_error_occurred": "An error has occurred",
@@ -427,6 +430,10 @@
             "message": {}
         }
     },
+    "l_add_account_password_required": "Password required",
+    "l_add_account_unlock_required": "Unlock required",
+    "l_add_account_already_exists": "Account already exists",
+    "l_add_account_func_missing": "Functionality missing or disabled",
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the issuer",
     "l_account_already_exists": "This account already exists on the YubiKey",
@@ -440,6 +447,12 @@
     "s_rename_account": "Rename account",
     "l_rename_account_desc": "Edit the issuer/name of the account",
     "s_account_renamed": "Account renamed",
+    "l_rename_account_failed": "Failed renaming account: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "This will change how the account is displayed in the list.",
     "s_delete_account": "Delete account",
     "l_delete_account_desc": "Remove the account from your YubiKey",
@@ -587,6 +600,7 @@
     "l_delete_certificate_or_key_desc": "Remove the certificate or key from your YubiKey",
     "l_move_key": "Move key",
     "l_move_key_desc": "Move a key from one PIV slot into another",
+    "l_change_defaults": "Change default access codes",
     "s_issuer": "Issuer",
     "s_serial": "Serial",
     "s_certificate_fingerprint": "Fingerprint",
@@ -907,6 +921,12 @@
     "s_nfc_dialog_fido_delete_fingerprint": "Action: delete fingerprint",
     "s_nfc_dialog_fido_rename_fingerprint": "Action: rename fingerprint",
     "s_nfc_dialog_fido_failure": "FIDO operation failed",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": "Ready to scan",
+    "s_nfc_hold_still": "Hold still\u2026",
+    "s_nfc_tap_your_yubikey": "Tap your YubiKey",
+    "l_nfc_failed_to_scan": "Failed to scan, try again",
 
     "@_ndef": {},
     "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",

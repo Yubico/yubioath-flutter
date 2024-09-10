@@ -274,9 +274,6 @@ class AbstractDeviceNode(RpcNode):
                 # Clear DeviceInfo cache
                 self._info = None
                 self._data = None
-                # Make sure any child node is re-opened after this,
-                # as enabled applications may have changed
-                super().close()
 
             return response
 
@@ -465,7 +462,20 @@ class ConnectionNode(RpcNode):
 
     def __call__(self, *args, **kwargs):
         try:
-            return super().__call__(*args, **kwargs)
+            response = super().__call__(*args, **kwargs)
+            if "device_info" in response.flags:
+                # Refresh DeviceInfo
+                info = read_info(self._connection, self._device.pid)
+                if self._info != info:
+                    self._info = info
+                    # Make sure any child node is re-opened after this,
+                    # as enabled applications may have changed
+                    self.close()
+                else:
+                    # No change to DeviceInfo, further propagation not needed.
+                    response.flags.remove("device_info")
+
+            return response
         except (SmartcardException, OSError) as e:
             logger.exception("Connection error")
             raise ChildResetException(f"{e}")

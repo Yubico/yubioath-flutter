@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Đã sao chép mã OTP từ YubiKey vào clipboard.</string>
+    <string name="p_ndef_set_password">Đã sao chép mật khẩu từ YubiKey vào clipboard.</string>
+    <string name="p_ndef_parse_failure">Không thể phân tích mã OTP từ YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Không thể truy cập clipboard khi cố gắng sao chép mã OTP từ YubiKey.</string>
+</resources>
