@@ -28,7 +28,7 @@ import 'views/nfc_content_widget.dart';
 import 'views/nfc_overlay_icons.dart';
 import 'views/nfc_overlay_widget.dart';
 
-final _log = Logger('android.tap_request_dialog');
+final _log = Logger('android.nfc_overlay');
 const _channel = MethodChannel('com.yubico.authenticator.channel.nfc_overlay');
 
 final nfcOverlay =
@@ -41,6 +41,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
   @override
   int build() {
     ref.listen(androidNfcState, (previous, current) {
+      _log.debug('Received nfc state: $current');
       processingViewTimeout?.cancel();
       final notifier = ref.read(nfcEventNotifier.notifier);
 
@@ -62,6 +63,8 @@ class _NfcOverlayNotifier extends Notifier<int> {
           break;
         case NfcState.failure:
           notifier.send(showFailed());
+          notifier
+              .send(const NfcHideViewEvent(delay: Duration(milliseconds: 800)));
           break;
         case NfcState.disabled:
           _log.debug('Received state: disabled');
@@ -125,7 +128,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
   }
 
   NfcEvent showFailed() {
-    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: true);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
           title: l10n.s_nfc_ready_to_scan,

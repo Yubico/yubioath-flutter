@@ -22,11 +22,13 @@ import com.yubico.yubikit.core.YubiKeyDevice
  * Provides behavior to run when a YubiKey is inserted/tapped for a specific view of the app.
  */
 abstract class AppContextManager {
-    abstract suspend fun processYubiKey(device: YubiKeyDevice)
+    abstract suspend fun processYubiKey(device: YubiKeyDevice): Boolean
 
     open fun dispose() {}
 
     open fun onPause() {}
+
+    open fun onError() {}
 }
 
 class ContextDisposedException : Exception()

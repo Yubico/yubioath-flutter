@@ -32,6 +32,7 @@ import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
 import com.yubico.yubikit.management.Capability
 import kotlinx.coroutines.CancellationException
 import org.slf4j.LoggerFactory
+import java.io.IOException
 
 interface DeviceListener {
     // a USB device is connected
@@ -174,7 +175,6 @@ class DeviceManager(
 
     fun setDeviceInfo(deviceInfo: Info?) {
         appViewModel.setDeviceInfo(deviceInfo)
-        this.scpKeyParams = null
     }
 
     fun isUsbKeyConnected(): Boolean {
@@ -189,16 +189,12 @@ class DeviceManager(
     suspend fun <T> withKey(
         onUsb: suspend (UsbYubiKeyDevice) -> T,
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
-        onCancelled: () -> Unit,
-        retryOnNfcFailure: Boolean
+        onCancelled: () -> Unit
     ): T =
         appViewModel.connectedYubiKey.value?.let {
             onUsb(it)
-        } ?: if (retryOnNfcFailure == true) {
-            onNfcWithRetries(onNfc, onCancelled)
-        } else {
-            onNfc(onNfc, onCancelled)
-        }
+        } ?: onNfc(onNfc, onCancelled)
+
 
     private suspend fun <T> onNfc(
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
@@ -210,42 +206,12 @@ class DeviceManager(
         }
 
         try {
-            return onNfc.invoke().value
+            return onNfc.invoke().value.also {
+                appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+            }
         } catch (e: Exception) {
             appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             throw e
-        }
-    }
-
-    private suspend fun <T> onNfcWithRetries(
-        onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
-        onCancelled: () -> Unit
-    ): T {
-
-        nfcOverlayManager.show {
-            logger.debug("NFC action with retries was cancelled")
-            onCancelled.invoke()
-        }
-
-        while (true) {
-            try {
-                return onNfc.invoke().value
-            } catch (e: Exception) {
-
-                logger.debug("NFC action failed, asking to try again. Failure: ", e)
-                if (e is CancellationException) {
-                    throw e
-                }
-
-                if (e is ContextDisposedException) {
-                    // the key does not have the needed context anymore
-                    // we cannot continue
-                    appMethodChannel.nfcStateChanged(NfcState.FAILURE)
-                    throw e
-                }
-
-                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
-            }
         }
     }
 }

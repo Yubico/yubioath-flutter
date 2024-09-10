@@ -30,17 +30,19 @@ import kotlin.coroutines.suspendCoroutine
 
 class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: FidoAction? = null
-    private var deviceInfoTimer: TimerTask? = null
 
-    fun invokePending(fidoSession: YubiKitFidoSession) {
+    fun invokePending(fidoSession: YubiKitFidoSession): Boolean {
+        var requestHandled = true
         pendingAction?.let { action ->
-            action.invoke(Result.success(fidoSession))
             pendingAction = null
+            // it is the pending action who handles this request
+            requestHandled = false
+            action.invoke(Result.success(fidoSession))
         }
+        return requestHandled
     }
 
     fun cancelPending() {
-        deviceInfoTimer?.cancel()
         pendingAction?.let { action ->
             action.invoke(Result.failure(CancellationException()))
             pendingAction = null
@@ -49,7 +51,6 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
 
     suspend fun <T> useSession(
         updateDeviceInfo: Boolean = false,
-        retryOnNfcFailure: Boolean = true,
         block: (YubiKitFidoSession) -> T
     ): T {
         FidoManager.updateDeviceInfo.set(updateDeviceInfo)
@@ -59,8 +60,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
-            },
-            retryOnNfcFailure = retryOnNfcFailure
+            }
         )
     }
 

@@ -321,6 +321,7 @@ class MainActivity : FlutterFragmentActivity() {
             appMethodChannel.nfcStateChanged(NfcState.ONGOING)
         }
 
+        deviceManager.scpKeyParams = null
         // If NFC and FIPS check for SCP11b key
         if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
             logger.debug("Checking for usable SCP11b key...")
@@ -340,6 +341,7 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             } catch (e: Exception) {
                 logger.debug("Exception while getting scp keys: ", e)
+                contextManager?.onError()
                 if (device is NfcYubiKeyDevice) {
                     appMethodChannel.nfcStateChanged(NfcState.FAILURE)
                 }
@@ -373,9 +375,12 @@ class MainActivity : FlutterFragmentActivity() {
 
         contextManager?.let {
             try {
-                it.processYubiKey(device)
-                if (!switchedContext && device is NfcYubiKeyDevice) {
+                val requestHandled = it.processYubiKey(device)
+                if (requestHandled) {
                     appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                }
+                if (!switchedContext && device is NfcYubiKeyDevice) {
+
                     device.remove {
                         appMethodChannel.nfcStateChanged(NfcState.IDLE)
                     }

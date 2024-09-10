@@ -127,8 +127,6 @@ class FidoManager(
             pinStore
         )
 
-
-
     init {
         pinRetries = null
 
@@ -176,6 +174,12 @@ class FidoManager(
         }
     }
 
+    override fun onError() {
+        super.onError()
+        logger.debug("Cancel any pending action because of upstream error")
+        connectionHelper.cancelPending()
+    }
+
     override fun dispose() {
         super.dispose()
         deviceManager.removeDeviceListener(this)
@@ -186,15 +190,16 @@ class FidoManager(
         coroutineScope.cancel()
     }
 
-    override suspend fun processYubiKey(device: YubiKeyDevice) {
+    override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {
+        var requestHandled = true
         try {
             if (device.supportsConnection(FidoConnection::class.java)) {
                 device.withConnection<FidoConnection, Unit> { connection ->
-                    processYubiKey(connection, device)
+                    requestHandled = processYubiKey(connection, device)
                 }
             } else {
                 device.withConnection<SmartCardConnection, Unit> { connection ->
-                    processYubiKey(connection, device)
+                    requestHandled = processYubiKey(connection, device)
                 }
             }
 
@@ -207,10 +212,14 @@ class FidoManager(
 
             // Clear any cached FIDO state
             fidoViewModel.clearSessionState()
+            throw e
         }
+
+        return requestHandled
     }
 
-    private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice) {
+    private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice): Boolean {
+        var requestHandled = true
         val fidoSession =
             if (connection is FidoConnection) {
                 YubiKitFidoSession(connection)
@@ -229,7 +238,7 @@ class FidoManager(
         val sameDevice = currentSession == previousSession
 
         if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
-            connectionHelper.invokePending(fidoSession)
+            requestHandled = connectionHelper.invokePending(fidoSession)
         } else {
 
             if (!sameDevice) {
@@ -253,6 +262,8 @@ class FidoManager(
                 Session(infoData, pinStore.hasPin(), pinRetries)
             )
         }
+
+        return requestHandled
     }
 
     private fun getPinPermissionsCM(fidoSession: YubiKitFidoSession): Int {

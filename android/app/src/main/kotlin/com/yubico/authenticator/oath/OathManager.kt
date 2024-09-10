@@ -110,6 +110,15 @@ class OathManager(
     private val updateDeviceInfo = AtomicBoolean(false)
     private var deviceInfoTimer: TimerTask? = null
 
+    override fun onError() {
+        super.onError()
+        logger.debug("Cancel any pending action because of upstream error")
+        pendingAction?.let { action ->
+            action.invoke(Result.failure(CancellationException()))
+            pendingAction = null
+        }
+    }
+
     override fun onPause() {
         deviceInfoTimer?.cancel()
         // cancel any pending actions, except for addToAny
@@ -217,7 +226,8 @@ class OathManager(
         coroutineScope.cancel()
     }
 
-    override suspend fun processYubiKey(device: YubiKeyDevice) {
+    override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {
+        var requestHandled = true
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
@@ -227,6 +237,8 @@ class OathManager(
                     if (pendingAction != null) {
                         pendingAction?.let { action ->
                             pendingAction = null
+                            // it is the pending action who handles this request
+                            requestHandled = false
                             action.invoke(Result.success(session))
                         }
                     } else {
@@ -235,7 +247,7 @@ class OathManager(
                             try {
                                 oathViewModel.updateCredentials(calculateOathCodes(session))
                             } catch (error: Exception) {
-                                logger.error("Failed to refresh codes", error)
+                                logger.error("Failed to refresh codes: ", error)
                                 throw error
                             }
                         }
@@ -263,7 +275,9 @@ class OathManager(
                         if (addToAny) {
                             // Special "add to any YubiKey" action, process
                             addToAny = false
+                            requestHandled = false
                             action.invoke(Result.success(session))
+                            requestHandled = true
                         } else {
                             // Awaiting an action for a different device? Fail it and stop processing.
                             action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
@@ -305,8 +319,17 @@ class OathManager(
             logger.error("Failed to connect to CCID: ", e)
             // Clear any cached OATH state
             oathViewModel.clearSession()
+            // Remove any pending action
+            pendingAction?.let { action ->
+                logger.error("Cancelling pending action")
+                pendingAction = null
+                action.invoke(Result.failure(CancellationException()))
+            }
+
             throw e
         }
+
+        return requestHandled
     }
 
     private suspend fun addAccountToAny(
@@ -316,7 +339,7 @@ class OathManager(
         val credentialData: CredentialData =
             CredentialData.parseUri(URI.create(uri))
         addToAny = true
-        return useOathSession(retryOnNfcFailure = false) { session ->
+        return useOathSession { session ->
             // We need to check for duplicates here since we haven't yet read the credentials
             if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
                 throw IllegalArgumentException()
@@ -346,7 +369,7 @@ class OathManager(
         logger.trace("Adding following accounts: {}", uris)
 
         addToAny = true
-        return useOathSession(retryOnNfcFailure = false) { session ->
+        return useOathSession { session ->
             var successCount = 0
             for (index in uris.indices) {
 
@@ -398,7 +421,16 @@ class OathManager(
             val remembered = keyManager.isRemembered(it.deviceId)
             if (unlocked) {
                 oathViewModel.setSessionState(Session(it, remembered))
-                oathViewModel.updateCredentials(calculateOathCodes(it))
+
+                try {
+                    oathViewModel.updateCredentials(calculateOathCodes(it))
+                } catch (e: Exception) {
+                    // after unlocking there was problem getting the codes
+                    // to avoid incomplete session, just reset it so that the user has to
+                    // unlock it again
+                    oathViewModel.clearSession()
+                    throw e
+                }
             }
 
             jsonSerializer.encodeToString(mapOf("unlocked" to unlocked, "remembered" to remembered))
@@ -682,7 +714,6 @@ class OathManager(
     private suspend fun <T> useOathSession(
         unlock: Boolean = true,
         updateDeviceInfo: Boolean = false,
-        retryOnNfcFailure: Boolean = true,
         block: (YubiKitOathSession) -> T
     ): T {
         // callers can decide whether the session should be unlocked first
@@ -695,8 +726,7 @@ class OathManager(
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
-            },
-            retryOnNfcFailure = retryOnNfcFailure
+            }
         )
     }
 
@@ -722,7 +752,6 @@ class OathManager(
                         block.invoke(it.value)
                     })
                 }
-
                 // here the coroutine is suspended and waits till pendingAction is
                 // invoked - the pending action result will resume this coroutine
             }
