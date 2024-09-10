@@ -27,7 +27,7 @@ import 'package:yubico_authenticator/management/views/keys.dart';
 import 'android/util.dart' as android_test_util;
 import 'desktop/util.dart' as desktop_test_util;
 
-const shortWaitMs = 200;
+const shortWaitMs = 240;
 const longWaitMs = 500;
 const ultraLongWaitMs = 3000;
 

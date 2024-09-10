@@ -154,7 +154,7 @@ extension PIVFunctions on WidgetTester {
 
     /// 5. Click reset TextButton: done
     await tap(find.byKey(factoryResetReset));
-    await ultraLongWait();
+    await longWait();
 
     // 5. Verify Resetedness
     // /// TODO: this expect algorithm is flaky
