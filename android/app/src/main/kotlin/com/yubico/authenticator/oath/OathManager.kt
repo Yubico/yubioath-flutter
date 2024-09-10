@@ -277,7 +277,6 @@ class OathManager(
                             addToAny = false
                             requestHandled = false
                             action.invoke(Result.success(session))
-                            requestHandled = true
                         } else {
                             // Awaiting an action for a different device? Fail it and stop processing.
                             action.invoke(Result.failure(IllegalStateException("Wrong deviceId")))
@@ -426,8 +425,7 @@ class OathManager(
                     oathViewModel.updateCredentials(calculateOathCodes(it))
                 } catch (e: Exception) {
                     // after unlocking there was problem getting the codes
-                    // to avoid incomplete session, just reset it so that the user has to
-                    // unlock it again
+                    // to avoid inconsistent UI, clear the session
                     oathViewModel.clearSession()
                     throw e
                 }
