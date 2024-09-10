@@ -47,9 +47,9 @@ void main() {
         await tester.shortWait();
 
         await tester.enterText(find.byKey(newPin), simplePin);
-        await tester.shortWait();
+        await tester.longWait();
         await tester.enterText(find.byKey(confirmPin), simplePin);
-        await tester.shortWait();
+        await tester.longWait();
 
         await tester.tap(find.byKey(saveButton).hitTestable());
         await tester.shortWait();
