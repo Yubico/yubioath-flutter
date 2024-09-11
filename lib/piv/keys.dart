@@ -40,6 +40,7 @@ const unlockButton = Key('$_prefix.unlock');
 const resetButton = Key('$_prefix.reset');
 
 const managementKeyField = Key('$_prefix.management_key');
+const newManagementKeyField = Key('$_prefix.management_key');
 const managementKeyRefresh = Key('$_prefix.management_key_refresh');
 
 const pinPukField = Key('$_prefix.pin_puk');
