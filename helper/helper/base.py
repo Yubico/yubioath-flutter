@@ -114,6 +114,7 @@ def child(func=None, *, condition=None):
 
 class RpcNode:
     def __init__(self):
+        self._closed = False
         self._child = None
         self._child_name = None
 
@@ -147,8 +148,13 @@ class RpcNode:
             raise InvalidParametersException(e)
 
     def close(self):
+        self._closed = True
         if self._child:
             self._close_child()
+
+    @property
+    def closed(self):
+        return self._closed
 
     def get_data(self):
         return dict()
@@ -209,7 +215,7 @@ class RpcNode:
         if self._child and self._child_name != name:
             self._close_child()
 
-        if not self._child:
+        if not self._child or self._child.closed:
             self._child = self.create_child(name)
             self._child_name = name
             logger.debug("created child: %s", name)
