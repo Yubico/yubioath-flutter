@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Anwendung deaktiviert",
     "l_app_disabled_desc": "Aktivieren Sie die Anwendung '{app}' auf Ihrem YubiKey für Zugriff",
     "@l_app_disabled_desc": {
         "placeholders": {

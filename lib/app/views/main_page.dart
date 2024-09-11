@@ -27,16 +27,13 @@ import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
 import '../../home/views/home_message_page.dart';
 import '../../home/views/home_screen.dart';
-import '../../management/views/management_screen.dart';
 import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
-import 'message_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -131,41 +128,6 @@ class MainPage extends ConsumerWidget {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
               final section = ref.watch(currentSectionProvider);
-              final capabilities = section.capabilities;
-              if (section.getAvailability(data) == Availability.unsupported) {
-                return MessagePage(
-                  title: section.getDisplayName(l10n),
-                  capabilities: capabilities,
-                  header: l10n.s_app_not_supported,
-                  message: l10n.l_app_not_supported_on_yk(capabilities
-                      .map((c) => c.getDisplayName(l10n))
-                      .join(',')),
-                );
-              } else if (section.getAvailability(data) !=
-                  Availability.enabled) {
-                return MessagePage(
-                  title: section.getDisplayName(l10n),
-                  capabilities: capabilities,
-                  header: l10n.s_app_disabled,
-                  message: l10n.l_app_disabled_desc(capabilities
-                      .map((c) => c.getDisplayName(l10n))
-                      .join(',')),
-                  actionsBuilder: (context, expanded) => [
-                    ActionChip(
-                      label: Text(data.info.version.major > 4
-                          ? l10n.s_toggle_applications
-                          : l10n.s_toggle_interfaces),
-                      onPressed: () async {
-                        await showBlurDialog(
-                          context: context,
-                          builder: (context) => ManagementScreen(data),
-                        );
-                      },
-                      avatar: const Icon(Symbols.construction),
-                    )
-                  ],
-                );
-              }
 
               return switch (section) {
                 Section.home => HomeScreen(data),

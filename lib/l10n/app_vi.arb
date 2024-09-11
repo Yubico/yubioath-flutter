@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Ứng dụng đã bị tắt",
     "l_app_disabled_desc": "Bật ứng dụng '{app}' trên YubiKey của bạn để truy cập",
     "@l_app_disabled_desc": {
         "placeholders": {

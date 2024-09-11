@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Application disabled",
     "l_app_disabled_desc": "Enable the '{app}' application on your YubiKey to access",
     "@l_app_disabled_desc": {
         "placeholders": {

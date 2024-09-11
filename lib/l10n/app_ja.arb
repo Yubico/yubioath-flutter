@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "アプリケーションが無効です",
     "l_app_disabled_desc": "アクセスするにはYubiKeyで{app}アプリケーションを有効にしてください",
     "@l_app_disabled_desc": {
         "placeholders": {

@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Aplikacja została wyłączona",
     "l_app_disabled_desc": "Włącz aplikację '{app}' w kluczu YubiKey, aby uzyskać do niej dostęp",
     "@l_app_disabled_desc": {
         "placeholders": {
