@@ -59,8 +59,10 @@ class MainPage extends ConsumerWidget {
     // If the current device changes, we need to pop any open dialogs.
     ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
         (prev, next) {
-      final serial = next.value?.info.serial;
-      if ((serial != null && serial == prev?.value?.info.serial) ||
+      final serial = next.hasValue == true ? next.value?.info.serial : null;
+      final prevSerial =
+          prev?.hasValue == true ? prev?.value?.info.serial : null;
+      if ((serial != null && serial == prevSerial) ||
           (next.hasValue && (prev != null && prev.isLoading))) {
         return;
       }
