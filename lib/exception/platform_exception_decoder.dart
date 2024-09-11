@@ -24,14 +24,8 @@ extension Decoder on PlatformException {
 
   bool _isApduException() => code == 'ApduException';
 
-  bool _isContextDisposed() => code == 'ContextDisposedException';
-
   Exception decode() {
     if (_isCancellation()) {
-      return CancellationException();
-    }
-
-    if (_isContextDisposed()) {
       return CancellationException();
     }
 
