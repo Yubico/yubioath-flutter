@@ -18,7 +18,8 @@ package com.yubico.authenticator.fido
 
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.DialogManager
+import com.yubico.authenticator.NfcOverlayManager
+import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
@@ -70,9 +71,10 @@ class FidoManager(
     messenger: BinaryMessenger,
     lifecycleOwner: LifecycleOwner,
     private val deviceManager: DeviceManager,
+    private val appMethodChannel: MainActivity.AppMethodChannel,
+    private val nfcOverlayManager: NfcOverlayManager,
     private val fidoViewModel: FidoViewModel,
-    mainViewModel: MainViewModel,
-    dialogManager: DialogManager,
+    mainViewModel: MainViewModel
 ) : AppContextManager(), DeviceListener {
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -100,7 +102,7 @@ class FidoManager(
         }
     }
 
-    private val connectionHelper = FidoConnectionHelper(deviceManager, dialogManager)
+    private val connectionHelper = FidoConnectionHelper(deviceManager)
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -117,13 +119,13 @@ class FidoManager(
         FidoResetHelper(
             lifecycleOwner,
             deviceManager,
+            appMethodChannel,
+            nfcOverlayManager,
             fidoViewModel,
             mainViewModel,
             connectionHelper,
             pinStore
         )
-
-
 
     init {
         pinRetries = null
@@ -172,6 +174,12 @@ class FidoManager(
         }
     }
 
+    override fun onError() {
+        super.onError()
+        logger.debug("Cancel any pending action because of upstream error")
+        connectionHelper.cancelPending()
+    }
+
     override fun dispose() {
         super.dispose()
         deviceManager.removeDeviceListener(this)
@@ -182,15 +190,16 @@ class FidoManager(
         coroutineScope.cancel()
     }
 
-    override suspend fun processYubiKey(device: YubiKeyDevice) {
+    override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {
+        var requestHandled = true
         try {
             if (device.supportsConnection(FidoConnection::class.java)) {
                 device.withConnection<FidoConnection, Unit> { connection ->
-                    processYubiKey(connection, device)
+                    requestHandled = processYubiKey(connection, device)
                 }
             } else {
                 device.withConnection<SmartCardConnection, Unit> { connection ->
-                    processYubiKey(connection, device)
+                    requestHandled = processYubiKey(connection, device)
                 }
             }
 
@@ -201,13 +210,21 @@ class FidoManager(
             // something went wrong, try to get DeviceInfo from any available connection type
             logger.error("Failure when processing YubiKey: ", e)
 
-            // Clear any cached FIDO state
-            fidoViewModel.clearSessionState()
+            connectionHelper.failPending(e)
+
+            if (e !is IOException) {
+                // we don't clear the session on IOExceptions so that the session is ready for
+                // a possible re-run of a failed action.
+                fidoViewModel.clearSessionState()
+            }
+            throw e
         }
 
+        return requestHandled
     }
 
-    private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice) {
+    private fun processYubiKey(connection: YubiKeyConnection, device: YubiKeyDevice): Boolean {
+        var requestHandled = true
         val fidoSession =
             if (connection is FidoConnection) {
                 YubiKitFidoSession(connection)
@@ -226,7 +243,7 @@ class FidoManager(
         val sameDevice = currentSession == previousSession
 
         if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
-            connectionHelper.invokePending(fidoSession)
+            requestHandled = connectionHelper.invokePending(fidoSession)
         } else {
 
             if (!sameDevice) {
@@ -250,6 +267,8 @@ class FidoManager(
                 Session(infoData, pinStore.hasPin(), pinRetries)
             )
         }
+
+        return requestHandled
     }
 
     private fun getPinPermissionsCM(fidoSession: YubiKitFidoSession): Int {
@@ -353,7 +372,7 @@ class FidoManager(
         }
 
     private suspend fun unlock(pin: CharArray): String =
-        connectionHelper.useSession(FidoActionDescription.Unlock) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             try {
                 val clientPin =
@@ -390,7 +409,7 @@ class FidoManager(
     }
 
     private suspend fun setPin(pin: CharArray?, newPin: CharArray): String =
-        connectionHelper.useSession(FidoActionDescription.SetPin, updateDeviceInfo = true) { fidoSession ->
+        connectionHelper.useSession(updateDeviceInfo = true) { fidoSession ->
             try {
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -438,7 +457,7 @@ class FidoManager(
         }
 
     private suspend fun deleteCredential(rpId: String, credentialId: String): String =
-        connectionHelper.useSession(FidoActionDescription.DeleteCredential) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -486,7 +505,7 @@ class FidoManager(
     }
 
     private suspend fun deleteFingerprint(templateId: String): String =
-        connectionHelper.useSession(FidoActionDescription.DeleteFingerprint) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -511,7 +530,7 @@ class FidoManager(
         }
 
     private suspend fun renameFingerprint(templateId: String, name: String): String =
-        connectionHelper.useSession(FidoActionDescription.RenameFingerprint) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
 
             val clientPin =
                 ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -541,7 +560,7 @@ class FidoManager(
     }
 
     private suspend fun registerFingerprint(name: String?): String =
-        connectionHelper.useSession(FidoActionDescription.RegisterFingerprint) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
             state?.cancel()
             state = CommandState()
             val clientPin =
@@ -588,7 +607,7 @@ class FidoManager(
                         }
                         else -> throw ctapException
                     }
-                } catch (io: IOException) {
+                } catch (_: IOException) {
                     return@useSession JSONObject(
                         mapOf(
                             "success" to false,
@@ -617,7 +636,7 @@ class FidoManager(
         }
 
     private suspend fun enableEnterpriseAttestation(): String =
-        connectionHelper.useSession(FidoActionDescription.EnableEnterpriseAttestation) { fidoSession ->
+        connectionHelper.useSession { fidoSession ->
             try {
                 val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
                 val clientPin = ClientPin(fidoSession, uvAuthProtocol)

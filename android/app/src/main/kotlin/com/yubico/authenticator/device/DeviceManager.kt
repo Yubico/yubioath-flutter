@@ -20,13 +20,19 @@ import androidx.collection.ArraySet
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import com.yubico.authenticator.ContextDisposedException
+import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
+import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
+import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
 import com.yubico.yubikit.management.Capability
+import kotlinx.coroutines.CancellationException
 import org.slf4j.LoggerFactory
+import java.io.IOException
 
 interface DeviceListener {
     // a USB device is connected
@@ -41,7 +47,9 @@ interface DeviceListener {
 
 class DeviceManager(
     private val lifecycleOwner: LifecycleOwner,
-    private val appViewModel: MainViewModel
+    private val appViewModel: MainViewModel,
+    private val appMethodChannel: MainActivity.AppMethodChannel,
+    private val nfcOverlayManager: NfcOverlayManager
 ) {
     var clearDeviceInfoOnDisconnect: Boolean = true
 
@@ -167,7 +175,6 @@ class DeviceManager(
 
     fun setDeviceInfo(deviceInfo: Info?) {
         appViewModel.setDeviceInfo(deviceInfo)
-        scpKeyParams = null
     }
 
     fun isUsbKeyConnected(): Boolean {
@@ -179,8 +186,32 @@ class DeviceManager(
             onUsb(it)
         }
 
-    suspend fun <T> withKey(onNfc: suspend () -> T, onUsb: suspend (UsbYubiKeyDevice) -> T) =
+    suspend fun <T> withKey(
+        onUsb: suspend (UsbYubiKeyDevice) -> T,
+        onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
+        onCancelled: () -> Unit
+    ): T =
         appViewModel.connectedYubiKey.value?.let {
             onUsb(it)
-        } ?: onNfc()
+        } ?: onNfc(onNfc, onCancelled)
+
+
+    private suspend fun <T> onNfc(
+        onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
+        onCancelled: () -> Unit
+    ): T {
+        nfcOverlayManager.show {
+            logger.debug("NFC action was cancelled")
+            onCancelled.invoke()
+        }
+
+        try {
+            return onNfc.invoke().value.also {
+                appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+            }
+        } catch (e: Exception) {
+            appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+            throw e
+        }
+    }
 }

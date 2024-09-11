@@ -25,7 +25,6 @@ import '../../app/state.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
-import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -63,8 +62,14 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     super.dispose();
   }
 
+  void _removeFocus() {
+    _currentPasswordFocus.unfocus();
+    _newPasswordFocus.unfocus();
+    _confirmPasswordFocus.unfocus();
+  }
+
   _submit() async {
-    FocusUtils.unfocus(context);
+    _removeFocus();
 
     final result = await ref
         .read(oathStateProvider(widget.path).notifier)
@@ -171,6 +176,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       onPressed: _currentPasswordController.text.isNotEmpty &&
                               !_currentIsWrong
                           ? () async {
+                              _removeFocus();
+
                               final result = await ref
                                   .read(oathStateProvider(widget.path).notifier)
                                   .unsetPassword(

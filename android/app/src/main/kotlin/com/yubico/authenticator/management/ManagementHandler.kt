@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.management
 
-import com.yubico.authenticator.DialogManager
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.setHandler
@@ -27,25 +26,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
-const val dialogDescriptionManagementIndex = 300
-
-enum class ManagementActionDescription(private val value: Int) {
-    DeviceReset(0), ActionFailure(1);
-
-    val id: Int
-        get() = value + dialogDescriptionManagementIndex
-}
-
 class ManagementHandler(
     messenger: BinaryMessenger,
-    deviceManager: DeviceManager,
-    dialogManager: DialogManager
+    deviceManager: DeviceManager
 ) {
     private val channel = MethodChannel(messenger, "android.management.methods")
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
-    private val connectionHelper = ManagementConnectionHelper(deviceManager, dialogManager)
+    private val connectionHelper = ManagementConnectionHelper(deviceManager)
 
     init {
         channel.setHandler(coroutineScope) { method, _ ->
@@ -58,7 +47,7 @@ class ManagementHandler(
     }
 
     private suspend fun deviceReset(): String =
-        connectionHelper.useSession(ManagementActionDescription.DeviceReset) { managementSession ->
+        connectionHelper.useSession { managementSession ->
             managementSession.deviceReset()
             NULL
         }

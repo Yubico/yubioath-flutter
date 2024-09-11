@@ -40,9 +40,10 @@ import 'logger.dart';
 import 'management/state.dart';
 import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
+import 'overlay/nfc/nfc_event_notifier.dart';
+import 'overlay/nfc/nfc_overlay.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
-import 'tap_request_dialog.dart';
 import 'window_state_provider.dart';
 
 Future<Widget> initialize() async {
@@ -106,6 +107,8 @@ Future<Widget> initialize() async {
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
+          ref.read(nfcEventNotifierListener).startListener(context);
+
           Timer.run(() {
             ref.read(featureFlagProvider.notifier)
               // TODO: Load feature flags from file/config?
@@ -119,8 +122,8 @@ Future<Widget> initialize() async {
           // activates window state provider
           ref.read(androidWindowStateProvider);
 
-          // initializes global handler for dialogs
-          ref.read(androidDialogProvider);
+          // initializes overlay for nfc events
+          ref.read(nfcOverlay);
 
           // set context which will handle otpauth links
           setupOtpAuthLinkHandler(context);

@@ -32,10 +32,9 @@ import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
+import '../overlay/nfc/method_channel_notifier.dart';
 
 final _log = Logger('android.fido.state');
-
-const _methods = MethodChannel('android.fido.methods');
 
 final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(_FidoStateNotifier.new);
@@ -43,6 +42,8 @@ final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
 class _FidoStateNotifier extends FidoStateNotifier {
   final _events = const EventChannel('android.fido.sessionState');
   late StreamSubscription _sub;
+  late final _FidoMethodChannelNotifier fido =
+      ref.read(_fidoMethodsProvider.notifier);
 
   @override
   FutureOr<FidoState> build(DevicePath devicePath) async {
@@ -79,7 +80,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
     });
 
     controller.onCancel = () async {
-      await _methods.invokeMethod('cancelReset');
+      await fido.invoke('cancelReset');
       if (!controller.isClosed) {
         await subscription.cancel();
       }
@@ -87,7 +88,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
     controller.onListen = () async {
       try {
-        await _methods.invokeMethod('reset');
+        await fido.invoke('reset');
         await controller.sink.close();
         ref.invalidateSelf();
       } catch (e) {
@@ -102,13 +103,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<PinResult> setPin(String newPin, {String? oldPin}) async {
     try {
-      final response = jsonDecode(await _methods.invokeMethod(
-        'setPin',
-        {
-          'pin': oldPin,
-          'newPin': newPin,
-        },
-      ));
+      final response = jsonDecode(
+          await fido.invoke('setPin', {'pin': oldPin, 'newPin': newPin}));
       if (response['success'] == true) {
         _log.debug('FIDO PIN set/change successful');
         return PinResult.success();
@@ -134,10 +130,7 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<PinResult> unlock(String pin) async {
     try {
-      final response = jsonDecode(await _methods.invokeMethod(
-        'unlock',
-        {'pin': pin},
-      ));
+      final response = jsonDecode(await fido.invoke('unlock', {'pin': pin}));
 
       if (response['success'] == true) {
         _log.debug('FIDO applet unlocked');
@@ -165,9 +158,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<void> enableEnterpriseAttestation() async {
     try {
-      final response = jsonDecode(await _methods.invokeMethod(
-        'enableEnterpriseAttestation',
-      ));
+      final response =
+          jsonDecode(await fido.invoke('enableEnterpriseAttestation'));
 
       if (response['success'] == true) {
         _log.debug('Enterprise attestation enabled');
@@ -193,6 +185,8 @@ final androidFingerprintProvider = AsyncNotifierProvider.autoDispose
 class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   final _events = const EventChannel('android.fido.fingerprints');
   late StreamSubscription _sub;
+  late final _FidoMethodChannelNotifier fido =
+      ref.read(_fidoMethodsProvider.notifier);
 
   @override
   FutureOr<List<Fingerprint>> build(DevicePath devicePath) async {
@@ -243,7 +237,7 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     controller.onCancel = () async {
       if (!controller.isClosed) {
         _log.debug('Cancelling fingerprint registration');
-        await _methods.invokeMethod('cancelRegisterFingerprint');
+        await fido.invoke('cancelRegisterFingerprint');
         await registerFpSub.cancel();
       }
     };
@@ -251,7 +245,7 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     controller.onListen = () async {
       try {
         final registerFpResult =
-            await _methods.invokeMethod('registerFingerprint', {'name': name});
+            await fido.invoke('registerFingerprint', {'name': name});
 
         _log.debug('Finished registerFingerprint with: $registerFpResult');
 
@@ -286,13 +280,9 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   Future<Fingerprint> renameFingerprint(
       Fingerprint fingerprint, String name) async {
     try {
-      final renameFingerprintResponse = jsonDecode(await _methods.invokeMethod(
-        'renameFingerprint',
-        {
-          'templateId': fingerprint.templateId,
-          'name': name,
-        },
-      ));
+      final renameFingerprintResponse = jsonDecode(await fido.invoke(
+          'renameFingerprint',
+          {'templateId': fingerprint.templateId, 'name': name}));
 
       if (renameFingerprintResponse['success'] == true) {
         _log.debug('FIDO rename fingerprint succeeded');
@@ -316,12 +306,8 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   @override
   Future<void> deleteFingerprint(Fingerprint fingerprint) async {
     try {
-      final deleteFingerprintResponse = jsonDecode(await _methods.invokeMethod(
-        'deleteFingerprint',
-        {
-          'templateId': fingerprint.templateId,
-        },
-      ));
+      final deleteFingerprintResponse = jsonDecode(await fido
+          .invoke('deleteFingerprint', {'templateId': fingerprint.templateId}));
 
       if (deleteFingerprintResponse['success'] == true) {
         _log.debug('FIDO delete fingerprint succeeded');
@@ -348,6 +334,8 @@ final androidCredentialProvider = AsyncNotifierProvider.autoDispose
 class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   final _events = const EventChannel('android.fido.credentials');
   late StreamSubscription _sub;
+  late final _FidoMethodChannelNotifier fido =
+      ref.read(_fidoMethodsProvider.notifier);
 
   @override
   FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
@@ -371,13 +359,8 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   @override
   Future<void> deleteCredential(FidoCredential credential) async {
     try {
-      await _methods.invokeMethod(
-        'deleteCredential',
-        {
-          'rpId': credential.rpId,
-          'credentialId': credential.credentialId,
-        },
-      );
+      await fido.invoke('deleteCredential',
+          {'rpId': credential.rpId, 'credentialId': credential.credentialId});
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
@@ -387,4 +370,12 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
       }
     }
   }
+}
+
+final _fidoMethodsProvider = NotifierProvider<_FidoMethodChannelNotifier, void>(
+    () => _FidoMethodChannelNotifier());
+
+class _FidoMethodChannelNotifier extends MethodChannelNotifier {
+  _FidoMethodChannelNotifier()
+      : super(const MethodChannel('android.fido.methods'));
 }

@@ -16,8 +16,11 @@
 
 package com.yubico.authenticator
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.annotation.SuppressLint
-import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -48,13 +51,18 @@ import com.yubico.authenticator.management.ManagementHandler
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
+import com.yubico.authenticator.yubikit.NfcStateDispatcher
+import com.yubico.authenticator.yubikit.NfcStateListener
+import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyManager
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration
+import com.yubico.yubikit.android.transport.usb.UsbYubiKeyManager
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
@@ -66,6 +74,7 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -94,6 +103,20 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val logger = LoggerFactory.getLogger(MainActivity::class.java)
 
+    private val nfcStateListener = object : NfcStateListener {
+
+        var appMethodChannel : AppMethodChannel? = null
+
+        override fun onChange(newState: NfcState) {
+            appMethodChannel?.let {
+                logger.debug("set nfc state to ${newState.name}")
+                it.nfcStateChanged(newState)
+            } ?: {
+                logger.warn("failed set nfc state to ${newState.name} - no method channel")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -105,7 +128,10 @@ class MainActivity : FlutterFragmentActivity() {
 
         allowScreenshots(false)
 
-        yubikit = YubiKitManager(this)
+        yubikit = YubiKitManager(
+            UsbYubiKeyManager(this),
+            NfcYubiKeyManager(this, NfcStateDispatcher(nfcStateListener))
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -291,10 +317,15 @@ class MainActivity : FlutterFragmentActivity() {
             return
         }
 
+        if (device is NfcYubiKeyDevice) {
+            appMethodChannel.nfcStateChanged(NfcState.ONGOING)
+        }
+
+        deviceManager.scpKeyParams = null
         // If NFC and FIPS check for SCP11b key
         if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
             logger.debug("Checking for usable SCP11b key...")
-            deviceManager.scpKeyParams =
+            deviceManager.scpKeyParams = try {
                 device.withConnection<SmartCardConnection, ScpKeyParams?> { connection ->
                     val scp = SecurityDomainSession(connection)
                     val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
@@ -308,6 +339,14 @@ class MainActivity : FlutterFragmentActivity() {
                         logger.debug("Found SCP11b key: {}", keyRef)
                     }
                 }
+            } catch (e: Exception) {
+                logger.debug("Exception while getting scp keys: ", e)
+                contextManager?.onError()
+                if (device is NfcYubiKeyDevice) {
+                    appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+                }
+                null
+            }
         }
 
         // this YubiKey provides SCP11b key but the phone cannot perform AESCMAC
@@ -319,6 +358,7 @@ class MainActivity : FlutterFragmentActivity() {
         deviceManager.setDeviceInfo(deviceInfo)
         val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
         logger.debug("Connected key supports: {}", supportedContexts)
+        var switchedContext: Boolean = false
         if (!supportedContexts.contains(viewModel.appContext.value)) {
             val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
             logger.debug(
@@ -326,18 +366,28 @@ class MainActivity : FlutterFragmentActivity() {
                 viewModel.appContext.value,
                 preferredContext
             )
-            switchContext(preferredContext)
+            switchedContext = switchContext(preferredContext)
         }
 
         if (contextManager == null && supportedContexts.isNotEmpty()) {
-            switchContext(DeviceManager.getPreferredContext(supportedContexts))
+            switchedContext = switchContext(DeviceManager.getPreferredContext(supportedContexts))
         }
 
         contextManager?.let {
             try {
-                it.processYubiKey(device)
-            } catch (e: Throwable) {
-                logger.error("Error processing YubiKey in AppContextManager", e)
+                val requestHandled = it.processYubiKey(device)
+                if (requestHandled) {
+                    appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                }
+                if (!switchedContext && device is NfcYubiKeyDevice) {
+
+                    device.remove {
+                        appMethodChannel.nfcStateChanged(NfcState.IDLE)
+                    }
+                }
+            } catch (e: Exception) {
+                logger.debug("Caught Exception during YubiKey processing: ", e)
+                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             }
         }
     }
@@ -351,7 +401,7 @@ class MainActivity : FlutterFragmentActivity() {
     private var contextManager: AppContextManager? = null
     private lateinit var deviceManager: DeviceManager
     private lateinit var appContext: AppContext
-    private lateinit var dialogManager: DialogManager
+    private lateinit var nfcOverlayManager: NfcOverlayManager
     private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
@@ -365,13 +415,16 @@ class MainActivity : FlutterFragmentActivity() {
 
         messenger = flutterEngine.dartExecutor.binaryMessenger
         flutterLog = FlutterLog(messenger)
-        deviceManager = DeviceManager(this, viewModel)
-        appContext = AppContext(messenger, this.lifecycleScope, viewModel)
-        dialogManager = DialogManager(messenger, this.lifecycleScope)
-        appPreferences = AppPreferences(this)
         appMethodChannel = AppMethodChannel(messenger)
+        nfcOverlayManager = NfcOverlayManager(messenger, this.lifecycleScope)
+        deviceManager = DeviceManager(this, viewModel,appMethodChannel, nfcOverlayManager)
+        appContext = AppContext(messenger, this.lifecycleScope, viewModel)
+
+        appPreferences = AppPreferences(this)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
-        managementHandler = ManagementHandler(messenger, deviceManager, dialogManager)
+        managementHandler = ManagementHandler(messenger, deviceManager)
+
+        nfcStateListener.appMethodChannel = appMethodChannel
 
         flutterStreams = listOf(
             viewModel.deviceInfo.streamTo(this, messenger, "android.devices.deviceInfo"),
@@ -390,7 +443,8 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
-    private fun switchContext(appContext: OperationContext) {
+    private fun switchContext(appContext: OperationContext) : Boolean {
+        var switchHappened = false
         // TODO: refactor this when more OperationContext are handled
         // only recreate the contextManager object if it cannot be reused
         if (appContext == OperationContext.Home ||
@@ -404,6 +458,7 @@ class MainActivity : FlutterFragmentActivity() {
         } else {
             contextManager?.dispose()
             contextManager = null
+            switchHappened = true
         }
 
         if (contextManager == null) {
@@ -413,7 +468,7 @@ class MainActivity : FlutterFragmentActivity() {
                     messenger,
                     deviceManager,
                     oathViewModel,
-                    dialogManager,
+                    nfcOverlayManager,
                     appPreferences
                 )
 
@@ -422,17 +477,20 @@ class MainActivity : FlutterFragmentActivity() {
                     messenger,
                     this,
                     deviceManager,
+                    appMethodChannel,
+                    nfcOverlayManager,
                     fidoViewModel,
-                    viewModel,
-                    dialogManager
+                    viewModel
                 )
 
                 else -> null
             }
         }
+        return switchHappened
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        nfcStateListener.appMethodChannel = null
         flutterStreams.forEach { it.close() }
         contextManager?.dispose()
         deviceManager.dispose()
@@ -572,8 +630,17 @@ class MainActivity : FlutterFragmentActivity() {
         fun nfcAdapterStateChanged(value: Boolean) {
             methodChannel.invokeMethod(
                 "nfcAdapterStateChanged",
-                JSONObject(mapOf("nfcEnabled" to value)).toString()
+                JSONObject(mapOf("enabled" to value)).toString()
             )
+        }
+
+        fun nfcStateChanged(activityState: NfcState) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                methodChannel.invokeMethod(
+                    "nfcStateChanged",
+                    JSONObject(mapOf("state" to activityState.value)).toString()
+                )
+            }
         }
     }
 

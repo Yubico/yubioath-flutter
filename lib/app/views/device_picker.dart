@@ -71,7 +71,7 @@ class DevicePickerContent extends ConsumerWidget {
     Widget? androidNoKeyWidget;
     if (isAndroid && devices.isEmpty) {
       var hasNfcSupport = ref.watch(androidNfcSupportProvider);
-      var isNfcEnabled = ref.watch(androidNfcStateProvider);
+      var isNfcEnabled = ref.watch(androidNfcAdapterState);
       final subtitle = hasNfcSupport && isNfcEnabled
           ? l10n.l_insert_or_tap_yk
           : l10n.l_insert_yk;
