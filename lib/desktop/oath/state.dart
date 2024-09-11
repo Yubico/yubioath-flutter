@@ -196,8 +196,11 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
           .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-      notifier._notifyWindowState(windowState);
+      notifier._rescheduleTimer(windowState.active);
     }, fireImmediately: true);
+    ref.listen(currentSectionProvider, (_, section) {
+      notifier._rescheduleTimer(section == Section.accounts);
+    });
 
     return notifier;
   },
@@ -231,9 +234,9 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
       : super();
 
-  void _notifyWindowState(WindowState windowState) {
+  void _rescheduleTimer(bool active) {
     if (_locked) return;
-    if (windowState.active) {
+    if (active) {
       _scheduleRefresh();
     } else {
       _timer?.cancel();
