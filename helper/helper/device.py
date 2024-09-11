@@ -278,7 +278,7 @@ class AbstractDeviceNode(RpcNode):
             return response
 
         except (SmartcardException, OSError):
-            logger.exception("Device error")
+            logger.exception("Device error", exc_info=True)
 
             self._child = None
             name = self._child_name

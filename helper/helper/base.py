@@ -132,6 +132,8 @@ class RpcNode:
                 response = self.get_child(action)(
                     "get", [], params, event, signal, traversed
                 )
+            else:
+                raise NoSuchActionException(action)
 
             if isinstance(response, RpcResponse):
                 return response
@@ -143,7 +145,6 @@ class RpcNode:
             raise  # Prevent catching this as a ValueError below
         except ValueError as e:
             raise InvalidParametersException(e)
-        raise NoSuchActionException(action)
 
     def close(self):
         if self._child:
