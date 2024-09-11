@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ data class Credential(
     @SerialName("name")
     val accountName: String,
     @SerialName("touch_required")
-    val touchRequired: Boolean
+    val touchRequired: Boolean,
+    @kotlinx.serialization.Transient
+    val data: YubiKitCredential? = null
 ) {
-
     constructor(credential: YubiKitCredential, deviceId: String) : this(
         deviceId = deviceId,
         id = credential.id.asString(),
@@ -48,7 +49,8 @@ data class Credential(
         period = credential.period,
         issuer = credential.issuer,
         accountName = credential.accountName,
-        touchRequired = credential.isTouchRequired
+        touchRequired = credential.isTouchRequired,
+        data = credential
     )
 
     override fun equals(other: Any?): Boolean =

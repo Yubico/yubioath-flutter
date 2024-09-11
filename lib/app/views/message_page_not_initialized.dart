@@ -46,7 +46,7 @@ class MessagePageNotInitialized extends ConsumerWidget {
 
     if (isAndroid) {
       var hasNfcSupport = ref.watch(androidNfcSupportProvider);
-      var isNfcEnabled = ref.watch(androidNfcStateProvider);
+      var isNfcEnabled = ref.watch(androidNfcAdapterState);
       var isUsbYubiKey =
           ref.watch(attachedDevicesProvider).firstOrNull?.transport ==
               Transport.usb;

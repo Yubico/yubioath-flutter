@@ -30,6 +30,7 @@ import '../state.dart';
 class PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
   final DeviceNode _deviceNode;
+
   const PinEntryForm(this._state, this._deviceNode, {super.key});
 
   @override
@@ -58,6 +59,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   }
 
   void _submit() async {
+    _pinFocus.unfocus();
+
     setState(() {
       _pinIsWrong = false;
       _isObscure = true;

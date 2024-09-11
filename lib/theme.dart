@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2021-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const defaultPrimaryColor = Colors.lightGreen;
 
@@ -50,6 +51,9 @@ class AppTheme {
       fontFamily: 'Roboto',
       appBarTheme: const AppBarTheme(
         color: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarIconBrightness: Brightness.dark,
+            statusBarColor: Colors.transparent),
       ),
       listTileTheme: const ListTileThemeData(
         // For alignment under menu button
@@ -81,6 +85,9 @@ class AppTheme {
       scaffoldBackgroundColor: colorScheme.surface,
       appBarTheme: const AppBarTheme(
         color: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarIconBrightness: Brightness.light,
+            statusBarColor: Colors.transparent),
       ),
       listTileTheme: const ListTileThemeData(
         // For alignment under menu button

@@ -28,7 +28,6 @@ import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
-import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -93,7 +92,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
         } on CancellationException catch (_) {
           // ignored
         } catch (e) {
-          _log.error('Failed to add account', e);
+          _log.error('Failed to rename account', e);
           final String errorMessage;
           // TODO: Make this cleaner than importing desktop specific RpcError.
           if (e is RpcError) {
@@ -118,6 +117,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   late String _issuer;
   late String _name;
 
+  final _issuerFocus = FocusNode();
+  final _nameFocus = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -125,8 +127,16 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     _name = widget.name.trim();
   }
 
+  @override
+  void dispose() {
+    _issuerFocus.dispose();
+    _nameFocus.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
-    FocusUtils.unfocus(context);
+    _issuerFocus.unfocus();
+    _nameFocus.unfocus();
     final nav = Navigator.of(context);
     final renamed =
         await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
@@ -188,6 +198,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 prefixIcon: const Icon(Symbols.business),
               ),
               textInputAction: TextInputAction.next,
+              focusNode: _issuerFocus,
+              autofocus: true,
               onChanged: (value) {
                 setState(() {
                   _issuer = value.trim();
@@ -212,6 +224,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 prefixIcon: const Icon(Symbols.people_alt),
               ),
               textInputAction: TextInputAction.done,
+              focusNode: _nameFocus,
               onChanged: (value) {
                 setState(() {
                   _name = value.trim();

@@ -52,12 +52,21 @@ class MainPage extends ConsumerWidget {
     );
 
     if (isAndroid) {
-      isNfcEnabled().then((value) =>
-          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+      isNfcEnabled().then(
+          (value) => ref.read(androidNfcAdapterState.notifier).enable(value));
     }
 
     // If the current device changes, we need to pop any open dialogs.
-    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, __) {
+    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
+        (prev, next) {
+      final serial = next.hasValue == true ? next.value?.info.serial : null;
+      final prevSerial =
+          prev?.hasValue == true ? prev?.value?.info.serial : null;
+      if ((serial != null && serial == prevSerial) ||
+          (next.hasValue && (prev != null && prev.isLoading))) {
+        return;
+      }
+
       Navigator.of(context).popUntil((route) {
         return route.isFirst ||
             [
@@ -69,7 +78,6 @@ class MainPage extends ConsumerWidget {
               'oath_add_account',
               'oath_icon_pack_dialog',
               'android_qr_scanner_view',
-              'android_alert_dialog'
             ].contains(route.settings.name);
       });
     });
@@ -84,7 +92,7 @@ class MainPage extends ConsumerWidget {
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
-        var isNfcEnabled = ref.watch(androidNfcStateProvider);
+        var isNfcEnabled = ref.watch(androidNfcAdapterState);
         return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,
@@ -103,6 +111,10 @@ class MainPage extends ConsumerWidget {
                 label: Text(l10n.s_add_account),
                 icon: const Icon(Symbols.person_add_alt),
                 onPressed: () async {
+                  // make sure we execute the "Add account" in OATH section
+                  ref
+                      .read(currentSectionProvider.notifier)
+                      .setCurrentSection(Section.accounts);
                   await addOathAccount(context, ref);
                 })
           ],

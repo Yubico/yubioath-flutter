@@ -40,7 +40,6 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
-import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -74,6 +73,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   final _issuerController = TextEditingController();
   final _accountController = TextEditingController();
   final _secretController = TextEditingController();
+  final _issuerFocus = FocusNode();
+  final _accountFocus = FocusNode();
+  final _secretFocus = FocusNode();
   final _periodController = TextEditingController(text: '$defaultPeriod');
   UserInteractionController? _promptController;
   Uri? _otpauthUri;
@@ -88,6 +90,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
   List<int> _periodValues = [20, 30, 45, 60];
   List<int> _digitsValues = [6, 8];
   List<OathCredential>? _credentials;
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -95,6 +98,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     _accountController.dispose();
     _secretController.dispose();
     _periodController.dispose();
+    _issuerFocus.dispose();
+    _accountFocus.dispose();
+    _secretFocus.dispose();
     super.dispose();
   }
 
@@ -121,6 +127,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       _counter = data.counter;
       _isObscure = true;
       _dataLoaded = true;
+      _submitting = false;
     });
   }
 
@@ -128,8 +135,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
       {DevicePath? devicePath, required Uri credUri}) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      FocusUtils.unfocus(context);
-
       if (devicePath == null) {
         assert(isAndroid, 'devicePath is only optional for Android');
         await ref
@@ -272,6 +277,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
 
     void submit() async {
       if (secretLengthValid && secretFormatValid) {
+        _issuerFocus.unfocus();
+        _accountFocus.unfocus();
+        _secretFocus.unfocus();
+
+        setState(() {
+          _submitting = true;
+        });
+
         final cred = CredentialData(
           issuer: issuerText.isEmpty ? null : issuerText,
           name: nameText,
@@ -302,6 +315,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
             },
           );
         }
+
+        setState(() {
+          _submitting = false;
+        });
       } else {
         setState(() {
           _validateSecret = true;
@@ -372,8 +389,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_issuer_optional,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
+                        helperText: '', // Prevents dialog resizing when
                         errorText: (byteLength(issuerText) > issuerMaxLength)
                             ? '' // needs empty string to render as error
                             : issuerNoColon
@@ -382,6 +398,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         prefixIcon: const Icon(Symbols.business),
                       ),
                       textInputAction: TextInputAction.next,
+                      focusNode: _issuerFocus,
                       onChanged: (value) {
                         setState(() {
                           // Update maxlengths
@@ -400,19 +417,22 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_account_name,
-                        helperText: '',
-                        // Prevents dialog resizing when disabled
-                        errorText: (byteLength(nameText) > nameMaxLength)
-                            ? '' // needs empty string to render as error
-                            : isUnique
-                                ? null
-                                : l10n.l_name_already_exists,
+                        helperText:
+                            '', // Prevents dialog resizing when disabled
+                        errorText: _submitting
+                            ? null
+                            : (byteLength(nameText) > nameMaxLength)
+                                ? '' // needs empty string to render as error
+                                : isUnique
+                                    ? null
+                                    : l10n.l_name_already_exists,
                         prefixIcon: const Icon(Symbols.person),
                       ),
                       textInputAction: TextInputAction.next,
+                      focusNode: _accountFocus,
                       onChanged: (value) {
                         setState(() {
-                          // Update maxlengths
+                          // Update max lengths
                         });
                       },
                       onSubmitted: (_) {
@@ -452,6 +472,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                           )),
                       readOnly: _dataLoaded,
                       textInputAction: TextInputAction.done,
+                      focusNode: _secretFocus,
                       onChanged: (value) {
                         setState(() {
                           _validateSecret = false;
