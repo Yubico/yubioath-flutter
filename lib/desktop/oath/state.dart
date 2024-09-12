@@ -28,6 +28,7 @@ import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
+import '../../management/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
@@ -37,8 +38,16 @@ final _log = Logger('desktop.oath.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) => RpcNodeSession(
-      ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'oath']),
+  (ref, devicePath) {
+    // Reset state if the OATH capability is toggled.
+    ref.watch(currentDeviceDataProvider.select((value) =>
+        (value.valueOrNull?.info.config
+                .enabledCapabilities[value.valueOrNull?.node.transport] ??
+            0) &
+        Capability.oath.value));
+    return RpcNodeSession(
+        ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'oath']);
+  },
 );
 
 // This remembers the key for all devices for the duration of the process.

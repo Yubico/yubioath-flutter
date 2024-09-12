@@ -168,7 +168,7 @@ class ReadersNode(RpcNode):
         return self._readers
 
     def create_child(self, name):
-        return ReaderDeviceNode(self._reader_mapping[name], None)
+        return ReaderDeviceNode(self._reader_mapping[name])
 
 
 class _ScanDevices:
@@ -238,7 +238,7 @@ class DevicesNode(RpcNode):
                     dev_id = str(info.serial)
                 else:
                     dev_id = _id_from_fingerprint(dev.fingerprint)
-                self._device_mapping[dev_id] = (dev, info)
+                self._device_mapping[dev_id] = dev
                 name = get_name(info, dev.pid.yubikey_type if dev.pid else None)
                 self._devices[dev_id] = dict(pid=dev.pid, name=name, serial=info.serial)
 
@@ -255,16 +255,16 @@ class DevicesNode(RpcNode):
         if name not in self._device_mapping and self._list_state == 0:
             self.list_children()
         try:
-            return UsbDeviceNode(*self._device_mapping[name])
+            return UsbDeviceNode(self._device_mapping[name])
         except KeyError:
             raise NoSuchNodeException(name)
 
 
 class AbstractDeviceNode(RpcNode):
-    def __init__(self, device, info):
+    def __init__(self, device):
         super().__init__()
         self._device = device
-        self._info = info
+        self._info = None
         self._data = None
 
     def __call__(self, *args, **kwargs):
@@ -383,8 +383,8 @@ RESTRICTED_NDEF = bytes.fromhex("001fd1011b5504") + b"yubico.com/getting-started
 
 
 class ReaderDeviceNode(AbstractDeviceNode):
-    def __init__(self, device, info):
-        super().__init__(device, info)
+    def __init__(self, device):
+        super().__init__(device)
         self._observer = _ReaderObserver(device)
         self._monitor = CardMonitor()
         self._monitor.addObserver(self._observer)

@@ -148,6 +148,7 @@ class RpcNode:
             raise InvalidParametersException(e)
 
     def close(self):
+        logger.debug(f"Closing node {self}")
         self._closed = True
         if self._child:
             self._close_child()
