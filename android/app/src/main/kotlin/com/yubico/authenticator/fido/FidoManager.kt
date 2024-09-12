@@ -174,9 +174,9 @@ class FidoManager(
         }
     }
 
-    override fun onError() {
-        super.onError()
-        logger.debug("Cancel any pending action because of upstream error")
+    override fun onError(e: Exception) {
+        super.onError(e)
+        logger.error("Cancelling pending action. Cause: ", e)
         connectionHelper.cancelPending()
     }
 
@@ -204,13 +204,12 @@ class FidoManager(
             }
 
             if (updateDeviceInfo.getAndSet(false)) {
-                deviceManager.setDeviceInfo(getDeviceInfo(device))
+                deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
             }
         } catch (e: Exception) {
-            // something went wrong, try to get DeviceInfo from any available connection type
-            logger.error("Failure when processing YubiKey: ", e)
 
-            connectionHelper.failPending(e)
+            logger.error("Cancelling pending action. Cause: ", e)
+            connectionHelper.cancelPending()
 
             if (e !is IOException) {
                 // we don't clear the session on IOExceptions so that the session is ready for
@@ -240,7 +239,7 @@ class FidoManager(
             currentSession
         )
 
-        val sameDevice = currentSession == previousSession
+        val sameDevice = currentSession.sameDevice(previousSession)
 
         if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
             requestHandled = connectionHelper.invokePending(fidoSession)

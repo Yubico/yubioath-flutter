@@ -22,6 +22,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -71,23 +72,28 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   _submit() async {
     _removeFocus();
 
-    final result = await ref
-        .read(oathStateProvider(widget.path).notifier)
-        .setPassword(_currentPasswordController.text, _newPassword);
-    if (result) {
-      if (mounted) {
-        await ref.read(withContextProvider)((context) async {
-          Navigator.of(context).pop();
-          showMessage(context, AppLocalizations.of(context)!.s_password_set);
+    try {
+      final result = await ref
+          .read(oathStateProvider(widget.path).notifier)
+          .setPassword(_currentPasswordController.text, _newPassword);
+      if (result) {
+        if (mounted) {
+          await ref.read(withContextProvider)((context) async {
+            Navigator.of(context).pop();
+            showMessage(context, AppLocalizations.of(context)!.s_password_set);
+          });
+        }
+      } else {
+        _currentPasswordController.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: _currentPasswordController.text.length);
+        _currentPasswordFocus.requestFocus();
+        setState(() {
+          _currentIsWrong = true;
         });
       }
-    } else {
-      _currentPasswordController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _currentPasswordController.text.length);
-      _currentPasswordFocus.requestFocus();
-      setState(() {
-        _currentIsWrong = true;
-      });
+    } on CancellationException catch (_) {
+      // ignored
     }
   }
 

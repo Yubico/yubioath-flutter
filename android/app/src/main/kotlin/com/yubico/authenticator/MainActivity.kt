@@ -79,6 +79,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.Closeable
+import java.io.IOException
 import java.security.NoSuchAlgorithmException
 import java.util.concurrent.Executors
 import javax.crypto.Mac
@@ -310,43 +311,58 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private suspend fun processYubiKey(device: YubiKeyDevice) {
-        val deviceInfo = getDeviceInfo(device)
+        val deviceInfo = try {
 
-        if (deviceInfo == null) {
-            deviceManager.setDeviceInfo(null)
-            return
-        }
-
-        if (device is NfcYubiKeyDevice) {
-            appMethodChannel.nfcStateChanged(NfcState.ONGOING)
-        }
-
-        deviceManager.scpKeyParams = null
-        // If NFC and FIPS check for SCP11b key
-        if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
-            logger.debug("Checking for usable SCP11b key...")
-            deviceManager.scpKeyParams = try {
-                device.withConnection<SmartCardConnection, ScpKeyParams?> { connection ->
-                    val scp = SecurityDomainSession(connection)
-                    val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
-                    keyRef?.let {
-                        val certs = scp.getCertificateBundle(it)
-                        if (certs.isNotEmpty()) Scp11KeyParams(
-                            keyRef,
-                            certs[certs.size - 1].publicKey
-                        ) else null
-                    }?.also {
-                        logger.debug("Found SCP11b key: {}", keyRef)
-                    }
-                }
-            } catch (e: Exception) {
-                logger.debug("Exception while getting scp keys: ", e)
-                contextManager?.onError()
-                if (device is NfcYubiKeyDevice) {
-                    appMethodChannel.nfcStateChanged(NfcState.FAILURE)
-                }
-                null
+            if (device is NfcYubiKeyDevice) {
+                appMethodChannel.nfcStateChanged(NfcState.ONGOING)
             }
+
+            val deviceInfo = getDeviceInfo(device)
+
+            deviceManager.scpKeyParams = null
+            // If NFC and FIPS check for SCP11b key
+            if (device.transport == Transport.NFC && deviceInfo.fipsCapable != 0) {
+                logger.debug("Checking for usable SCP11b key...")
+                deviceManager.scpKeyParams = try {
+                    device.withConnection<SmartCardConnection, ScpKeyParams?> { connection ->
+                        val scp = SecurityDomainSession(connection)
+                        val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
+                        keyRef?.let {
+                            val certs = scp.getCertificateBundle(it)
+                            if (certs.isNotEmpty()) Scp11KeyParams(
+                                keyRef,
+                                certs[certs.size - 1].publicKey
+                            ) else null
+                        }?.also {
+                            logger.debug("Found SCP11b key: {}", keyRef)
+                        }
+                    }
+                } catch (e: Exception) {
+                    logger.error("Exception when reading SCP key information: ", e)
+                    // we throw IO exception to unify handling failures as we don't want
+                    // th clear device info
+                    throw IOException("Failure getting SCP keys")
+                }
+            }
+            deviceInfo
+        } catch (e: Exception) {
+            logger.debug("Exception while getting device info and scp keys: ", e)
+            contextManager?.onError(e)
+            if (device is NfcYubiKeyDevice) {
+                logger.debug("Setting NFC state to failure")
+                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+            }
+
+            // do not clear the device info when IOException's occur,
+            // this allows for retries of failed actions
+            if (e !is IOException) {
+                logger.debug("Resetting device info")
+                deviceManager.setDeviceInfo(null)
+            } else {
+                logger.debug("Keeping device info")
+            }
+
+            return
         }
 
         // this YubiKey provides SCP11b key but the phone cannot perform AESCMAC

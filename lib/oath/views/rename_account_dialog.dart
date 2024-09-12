@@ -90,7 +90,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
               context, AppLocalizations.of(context)!.s_account_renamed));
           return renamed;
         } on CancellationException catch (_) {
-          // ignored
+          return CancellationException();
         } catch (e) {
           _log.error('Failed to rename account', e);
           final String errorMessage;
@@ -140,7 +140,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final nav = Navigator.of(context);
     final renamed =
         await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
-    nav.pop(renamed);
+    if (renamed is! CancellationException) {
+      nav.pop(renamed);
+    }
   }
 
   @override

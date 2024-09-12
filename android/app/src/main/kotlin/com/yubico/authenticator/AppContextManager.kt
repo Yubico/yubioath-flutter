@@ -28,7 +28,7 @@ abstract class AppContextManager {
 
     open fun onPause() {}
 
-    open fun onError() {}
+    open fun onError(e: Exception) {}
 }
 
 class ContextDisposedException : Exception()
