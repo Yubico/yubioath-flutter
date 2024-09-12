@@ -349,17 +349,14 @@ class MainActivity : FlutterFragmentActivity() {
             logger.debug("Exception while getting device info and scp keys: ", e)
             contextManager?.onError(e)
             if (device is NfcYubiKeyDevice) {
-                logger.debug("Setting NFC state to failure")
                 appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             }
 
-            // do not clear the device info when IOException's occur,
+            // do not clear deviceInfo on IOExceptions,
             // this allows for retries of failed actions
             if (e !is IOException) {
                 logger.debug("Resetting device info")
                 deviceManager.setDeviceInfo(null)
-            } else {
-                logger.debug("Keeping device info")
             }
 
             return
