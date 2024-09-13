@@ -110,9 +110,9 @@ class OathManager(
     private val updateDeviceInfo = AtomicBoolean(false)
     private var deviceInfoTimer: TimerTask? = null
 
-    override fun onError() {
-        super.onError()
-        logger.debug("Cancel any pending action because of upstream error")
+    override fun onError(e: Exception) {
+        super.onError(e)
+        logger.error("Cancelling pending action in onError. Cause: ", e)
         pendingAction?.let { action ->
             action.invoke(Result.failure(CancellationException()))
             pendingAction = null
@@ -343,16 +343,16 @@ class OathManager(
             )
 
             if (updateDeviceInfo.getAndSet(false)) {
-                deviceManager.setDeviceInfo(getDeviceInfo(device))
+                deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
             }
         } catch (e: Exception) {
             // OATH not enabled/supported, try to get DeviceInfo over other USB interfaces
             logger.error("Exception during SmartCard connection/OATH session creation: ", e)
 
-            // Remove any pending action
+            // Cancel any pending action
             pendingAction?.let { action ->
-                logger.error("Failing pending action with {}", e.message)
-                action.invoke(Result.failure(e))
+                logger.error("Cancelling pending action. Cause: ", e)
+                action.invoke(Result.failure(CancellationException()))
                 pendingAction = null
             }
 
@@ -782,7 +782,7 @@ class OathManager(
         block(getOathSession(it))
     }.also {
         if (updateDeviceInfo) {
-            deviceManager.setDeviceInfo(getDeviceInfo(device))
+            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
         }
     }
 

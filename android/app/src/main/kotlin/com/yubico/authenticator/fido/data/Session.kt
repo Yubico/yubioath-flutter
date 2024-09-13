@@ -41,6 +41,19 @@ data class Options(
         infoData.getOptionsBoolean("ep"),
     )
 
+    fun sameDevice(other: Options) : Boolean {
+        if (this === other) return true
+
+        if (clientPin != other.clientPin) return false
+        if (credMgmt != other.credMgmt) return false
+        if (credentialMgmtPreview != other.credentialMgmtPreview) return false
+        if (bioEnroll != other.bioEnroll) return false
+        // alwaysUv may differ
+        // ep may differ
+
+        return true
+    }
+
     companion object {
         private fun InfoData.getOptionsBoolean(
             key: String
@@ -66,6 +79,21 @@ data class SessionInfo(
         infoData.forcePinChange,
         infoData.remainingDiscoverableCredentials
     )
+
+    // this is a more permissive comparison, which does not take in an account properties,
+    // which might change by using the FIDO authenticator
+    fun sameDevice(other: SessionInfo?): Boolean {
+        if (other == null) return false
+        if (this === other) return true
+
+        if (!options.sameDevice(other.options)) return false
+        if (!aaguid.contentEquals(other.aaguid)) return false
+        // minPinLength may differ
+        // forcePinChange may differ
+        // remainingDiscoverableCredentials may differ
+
+        return true
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

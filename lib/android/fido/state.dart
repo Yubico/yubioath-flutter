@@ -365,9 +365,8 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
         _log.debug('User cancelled delete credential FIDO operation');
-      } else {
-        throw decodedException;
       }
+      throw decodedException;
     }
   }
 }
