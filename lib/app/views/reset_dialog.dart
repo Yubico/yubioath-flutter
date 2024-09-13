@@ -126,9 +126,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     // show the progress widgets on desktop, or on Android when using USB
     final showResetProgress = _resetting &&
         (!Platform.isAndroid ||
-            (Platform.isAndroid &&
-                (ref.read(currentDeviceProvider)?.transport == Transport.usb ||
-                    _currentStep == _totalSteps)));
+            ref.read(currentDeviceProvider)?.transport == Transport.usb ||
+            _currentStep == _totalSteps);
 
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
