@@ -265,15 +265,14 @@ class AbstractDeviceNode(RpcNode):
         super().__init__()
         self._device = device
         self._info = None
-        self._data = None
+        self._data = self._refresh_data()
 
     def __call__(self, *args, **kwargs):
         try:
             response = super().__call__(*args, **kwargs)
             if "device_info" in response.flags:
                 old_info = self._info
-                # Refresh data, and close any open child
-                self._close_child()
+                # Refresh data
                 self._data = self._refresh_data()
                 if old_info == self._info:
                     # No change to DeviceInfo, further propagation not needed.
@@ -297,8 +296,6 @@ class AbstractDeviceNode(RpcNode):
             raise NoSuchNodeException(name)
 
     def get_data(self):
-        if not self._data:
-            self._data = self._refresh_data()
         return self._data
 
     def _refresh_data(self):
@@ -322,7 +319,6 @@ class UsbDeviceNode(AbstractDeviceNode):
 
     def _create_connection(self, conn_type):
         connection = self._device.open_connection(conn_type)
-        self._data = self._read_data(connection)
         return ConnectionNode(self._device, connection, self._info)
 
     def _refresh_data(self):
@@ -332,7 +328,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             self._child._close_child()
             return self._read_data(self._child._connection)
 
-        # New connection
+        # No child, open new connection
         for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
             if self._supports_connection(conn_type):
                 try:
@@ -396,10 +392,10 @@ RESTRICTED_NDEF = bytes.fromhex("001fd1011b5504") + b"yubico.com/getting-started
 
 class ReaderDeviceNode(AbstractDeviceNode):
     def __init__(self, device):
-        super().__init__(device)
         self._observer = _ReaderObserver(device)
         self._monitor = CardMonitor()
         self._monitor.addObserver(self._observer)
+        super().__init__(device)
 
     def close(self):
         self._monitor.deleteObserver(self._observer)
@@ -407,7 +403,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
 
     def get_data(self):
         if self._observer.needs_refresh:
-            self._data = None
+            self._data = self._refresh_data()
         return super().get_data()
 
     def _read_data(self, conn):
@@ -418,6 +414,7 @@ class ReaderDeviceNode(AbstractDeviceNode):
         if card is None:
             return dict(present=False, status="no-card")
         try:
+            self._close_child()
             with self._device.open_connection(SmartCardConnection) as conn:
                 try:
                     data = self._read_data(conn)
@@ -449,7 +446,6 @@ class ReaderDeviceNode(AbstractDeviceNode):
     def ccid(self):
         try:
             connection = self._device.open_connection(SmartCardConnection)
-            self._data = self._read_data(connection)
             return ScpConnectionNode(self._device, connection, self._info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
@@ -458,8 +454,6 @@ class ReaderDeviceNode(AbstractDeviceNode):
     @child
     def fido(self):
         try:
-            with self._device.open_connection(SmartCardConnection) as conn:
-                self._data = self._read_data(conn)
             connection = self._device.open_connection(FidoConnection)
             return ConnectionNode(self._device, connection, self._info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
