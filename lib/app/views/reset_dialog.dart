@@ -123,6 +123,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         _application == Capability.fido2 &&
         !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
 
+    // show the progress widgets on desktop, or on Android when using USB
+    final showFidoResetProgress = !Platform.isAndroid ||
+        (Platform.isAndroid &&
+            (ref.read(currentDeviceProvider)?.transport == Transport.usb ||
+                _currentStep == _totalSteps));
+
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
       key: factoryResetCancel,
@@ -323,10 +329,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
               ),
             ],
             if (_resetting)
-              if (_application == Capability.fido2 && _currentStep >= 0) ...[
+              if (_application == Capability.fido2 &&
+                  _currentStep >= 0 &&
+                  showFidoResetProgress) ...[
                 Text('${l10n.s_status}: ${_getMessage()}'),
                 LinearProgressIndicator(value: progress),
-              ] else
+              ] else if (showFidoResetProgress)
                 const LinearProgressIndicator()
           ]
               .map((e) => Padding(
