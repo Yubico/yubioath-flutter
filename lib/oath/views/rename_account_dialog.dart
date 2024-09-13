@@ -67,49 +67,15 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
       OathCredential credential,
       List<(String? issuer, String name)> existing) {
     return RenameAccountDialog(
-      devicePath: devicePath,
-      issuer: credential.issuer,
-      name: credential.name,
-      oathType: credential.oathType,
-      period: credential.period,
-      existing: existing,
-      rename: (issuer, name) async {
-        final withContext = ref.read(withContextProvider);
-        try {
-          // Rename credentials
-          final renamed = await ref
-              .read(credentialListProvider(devicePath).notifier)
-              .renameAccount(credential, issuer, name);
-
-          // Update favorite
-          ref
-              .read(favoritesProvider.notifier)
-              .renameCredential(credential.id, renamed.id);
-
-          await withContext((context) async => showMessage(
-              context, AppLocalizations.of(context)!.s_account_renamed));
-          return renamed;
-        } on CancellationException catch (_) {
-          return CancellationException();
-        } catch (e) {
-          _log.error('Failed to rename account', e);
-          final String errorMessage;
-          // TODO: Make this cleaner than importing desktop specific RpcError.
-          if (e is RpcError) {
-            errorMessage = e.message;
-          } else {
-            errorMessage = e.toString();
-          }
-          await withContext((context) async => showMessage(
-                context,
-                AppLocalizations.of(context)!
-                    .l_rename_account_failed(errorMessage),
-                duration: const Duration(seconds: 4),
-              ));
-          return null;
-        }
-      },
-    );
+        devicePath: devicePath,
+        issuer: credential.issuer,
+        name: credential.name,
+        oathType: credential.oathType,
+        period: credential.period,
+        existing: existing,
+        rename: (issuer, name) async => await ref
+            .read(credentialListProvider(devicePath).notifier)
+            .renameAccount(credential, issuer, name));
   }
 }
 
@@ -138,10 +104,38 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     _issuerFocus.unfocus();
     _nameFocus.unfocus();
     final nav = Navigator.of(context);
-    final renamed =
-        await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
-    if (renamed is! CancellationException) {
+    final withContext = ref.read(withContextProvider);
+
+    try {
+      // Rename credentials
+      final renamed =
+          await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
+
+      // Update favorite
+      ref
+          .read(favoritesProvider.notifier)
+          .renameCredential(renamed.id, renamed.id);
+
+      await withContext((context) async => showMessage(
+          context, AppLocalizations.of(context)!.s_account_renamed));
+
       nav.pop(renamed);
+    } on CancellationException catch (_) {
+      // ignored
+    } catch (e) {
+      _log.error('Failed to rename account', e);
+      final String errorMessage;
+      // TODO: Make this cleaner than importing desktop specific RpcError.
+      if (e is RpcError) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = e.toString();
+      }
+      await withContext((context) async => showMessage(
+            context,
+            AppLocalizations.of(context)!.l_rename_account_failed(errorMessage),
+            duration: const Duration(seconds: 4),
+          ));
     }
   }
 
