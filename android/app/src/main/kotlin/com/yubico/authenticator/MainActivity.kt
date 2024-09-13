@@ -129,10 +129,11 @@ class MainActivity : FlutterFragmentActivity() {
 
         allowScreenshots(false)
 
-        yubikit = YubiKitManager(
-            UsbYubiKeyManager(this),
+        val nfcManager = if (NfcAdapter.getDefaultAdapter(this) != null) {
             NfcYubiKeyManager(this, NfcStateDispatcher(nfcStateListener))
-        )
+        } else null
+
+        yubikit = YubiKitManager(UsbYubiKeyManager(this), nfcManager)
     }
 
     override fun onNewIntent(intent: Intent) {
