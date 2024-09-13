@@ -202,7 +202,12 @@ class DevicesNode(RpcNode):
     def __call__(self, *args, **kwargs):
         with self._get_state:
             try:
-                return super().__call__(*args, **kwargs)
+                response = super().__call__(*args, **kwargs)
+                if "device_closed" in response.flags:
+                    self._list_state = 0
+                    self._device_mapping = {}
+                    response.flags.remove("device_closed")
+                return response
             except ConnectionException as e:
                 if self._failing_connection == e.body:
                     self._retries += 1
@@ -270,6 +275,13 @@ class AbstractDeviceNode(RpcNode):
     def __call__(self, *args, **kwargs):
         try:
             response = super().__call__(*args, **kwargs)
+
+            # The command resulted in the device closing
+            if "device_closed" in response.flags:
+                self.close()
+                return response
+
+            # The command resulted in device_info modification
             if "device_info" in response.flags:
                 old_info = self._info
                 # Refresh data
@@ -296,7 +308,9 @@ class AbstractDeviceNode(RpcNode):
             raise NoSuchNodeException(name)
 
     def get_data(self):
-        return self._data
+        if self._data:
+            return self._data
+        raise ChildResetException("Unable to read device data")
 
     def _refresh_data(self):
         ...
@@ -326,7 +340,12 @@ class UsbDeviceNode(AbstractDeviceNode):
         if self._child and not self._child.closed:
             # Make sure to close any open session
             self._child._close_child()
-            return self._read_data(self._child._connection)
+            try:
+                return self._read_data(self._child._connection)
+            except Exception:
+                logger.warning(
+                    f"Unable to use {self._child._connection}", exc_info=True
+                )
 
         # No child, open new connection
         for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
@@ -336,7 +355,9 @@ class UsbDeviceNode(AbstractDeviceNode):
                         return self._read_data(conn)
                 except Exception:
                     logger.warning(f"Unable to connect via {conn_type}", exc_info=True)
-        raise ValueError("No supported connections")
+        # Failed to refresh, close
+        self.close()
+        return None
 
     @child(condition=lambda self: self._supports_connection(SmartCardConnection))
     def ccid(self):

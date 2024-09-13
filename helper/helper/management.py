@@ -51,20 +51,20 @@ class ManagementNode(RpcNode):
     def _await_reboot(self, serial, usb_enabled):
         ifaces = CAPABILITY(usb_enabled or 0).usb_interfaces
 
+        types: list[Type[Connection]] = [
+            SmartCardConnection,
+            OtpConnection,
+            # mypy doesn't support ABC.register()
+            FidoConnection,  # type: ignore
+        ]
+        connection_types = [t for t in types if t.usb_interface in ifaces]
         # Prefer to use the "same" connection type as before
-        if self._connection_type.usb_interface in ifaces:
-            connection_types = [self._connection_type]
-        else:
-            types: list[Type[Connection]] = [
-                SmartCardConnection,
-                OtpConnection,
-                # mypy doesn't support ABC.register()
-                FidoConnection,  # type: ignore
-            ]
-            connection_types = [t for t in types if t.usb_interface in ifaces]
+        if self._connection_type in connection_types:
+            connection_types.remove(self._connection_type)
+            connection_types.insert(0, self._connection_type)
 
         self.session.close()
-        logger.debug("Waiting for device to re-appear...")
+        logger.debug(f"Waiting for device to re-appear over {connection_types}...")
         for _ in range(10):
             sleep(0.2)  # Always sleep initially
             for dev, info in list_all_devices(connection_types):
@@ -87,10 +87,12 @@ class ManagementNode(RpcNode):
         )
         serial = self.session.read_device_info().serial
         self.session.write_device_config(config, reboot, cur_lock_code, new_lock_code)
+        flags = ["device_info"]
         if reboot:
             enabled = config.enabled_capabilities.get(TRANSPORT.USB)
+            flags.append("device_closed")
             self._await_reboot(serial, enabled)
-        return RpcResponse(dict(), ["device_info"])
+        return RpcResponse(dict(), flags)
 
     @action
     def set_mode(self, params, event, signal):

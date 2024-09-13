@@ -203,7 +203,7 @@ class Ctap2Node(RpcNode):
             raise
         self._info = self.ctap.get_info()
         self._token = None
-        return RpcResponse(dict(), ["device_info"])
+        return RpcResponse(dict(), ["device_info", "device_closed"])
 
     @action(condition=lambda self: self._info.options["clientPin"])
     def unlock(self, params, event, signal):
