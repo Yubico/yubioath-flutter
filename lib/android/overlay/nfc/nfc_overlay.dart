@@ -37,6 +37,7 @@ final nfcOverlay =
 class _NfcOverlayNotifier extends Notifier<int> {
   Timer? processingViewTimeout;
   late final l10n = ref.read(l10nProvider);
+  late final eventNotifier = ref.read(nfcEventNotifier.notifier);
 
   @override
   int build() {
@@ -76,10 +77,9 @@ class _NfcOverlayNotifier extends Notifier<int> {
     });
 
     _channel.setMethodCallHandler((call) async {
-      final notifier = ref.read(nfcEventNotifier.notifier);
       switch (call.method) {
         case 'show':
-          notifier.send(showTapYourYubiKey());
+          eventNotifier.send(showTapYourYubiKey());
           break;
 
         case 'close':
@@ -97,12 +97,13 @@ class _NfcOverlayNotifier extends Notifier<int> {
   }
 
   NfcEvent showTapYourYubiKey() {
+    final nfcAvailable = ref.watch(androidNfcAdapterState);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: true);
     return NfcSetViewEvent(
         child: NfcContentWidget(
       title: l10n.s_nfc_ready_to_scan,
-      subtitle: l10n.s_nfc_tap_your_yubikey,
-      icon: const NfcIconProgressBar(false),
+      subtitle: nfcAvailable ? l10n.s_nfc_tap_your_yubikey : l10n.l_insert_yk,
+      icon: nfcAvailable ? const NfcIconProgressBar(false) : const UsbIcon(),
     ));
   }
 

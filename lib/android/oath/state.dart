@@ -36,7 +36,6 @@ import '../../exception/platform_exception_decoder.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../../widgets/toast.dart';
-import '../app_methods.dart';
 import '../overlay/nfc/method_channel_notifier.dart';
 import '../overlay/nfc/nfc_overlay.dart';
 
@@ -192,7 +191,6 @@ final addCredentialToAnyProvider =
     Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
           final oath = ref.watch(_oathMethodsProvider.notifier);
           try {
-            await preserveConnectedDeviceWhenPaused();
             var result = jsonDecode(await oath.invoke('addAccountToAny', {
               'uri': credentialUri.toString(),
               'requireTouch': requireTouch
@@ -208,7 +206,6 @@ final addCredentialsToAnyProvider = Provider(
     (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
           final oath = ref.read(_oathMethodsProvider.notifier);
           try {
-            await preserveConnectedDeviceWhenPaused();
             _log.debug(
                 'Calling android with ${credentialUris.length} credentials to be added');
             var result = jsonDecode(await oath.invoke('addAccountsToAny',

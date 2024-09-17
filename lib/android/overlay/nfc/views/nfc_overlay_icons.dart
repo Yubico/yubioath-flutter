@@ -56,6 +56,17 @@ class NfcIconProgressBar extends StatelessWidget {
       );
 }
 
+class UsbIcon extends StatelessWidget {
+  const UsbIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) => Icon(
+        Symbols.usb,
+        size: 64,
+        color: Theme.of(context).colorScheme.primary,
+      );
+}
+
 class NfcIconSuccess extends StatelessWidget {
   const NfcIconSuccess({super.key});
 
