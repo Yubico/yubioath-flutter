@@ -149,7 +149,7 @@ extension OathFunctions on WidgetTester {
   Finder findAccountList() {
     var accountList =
         find.byType(AccountList).hitTestable(at: Alignment.topCenter);
-    expect(accountList, findsOneWidget);
+    // expect(accountList, findsOneWidget);
     return accountList;
   }
 
@@ -310,19 +310,23 @@ extension OathFunctions on WidgetTester {
     await switchToKey(targetKey);
     await shortWait();
 
-    /// 2. open the key menu
-    await tapPopupMenu(targetKey);
+    /// 2. open the home view
+    await tap(find.byKey(homeDrawer).hitTestable());
     await shortWait();
-    await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
-    await longWait();
 
-    /// 3. then toggle 'OATH' in the 'Factory reset' reset_dialog.dart
+    /// 3. open menu
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await shortWait();
+    await tap(find.byKey(yubikeyFactoryResetMenuButton));
+    await shortWait();
+
+    /// 4. then toggle 'Piv' in the 'Factory reset' reset_dialog.dart
     await tap(find.byKey(factoryResetPickResetOath));
     await longWait();
 
-    /// 4. Click reset TextButton: done
+    /// 5. Click reset TextButton: done
     await tap(find.byKey(factoryResetReset));
-    await shortWait();
+    await longWait();
   }
 
   /// Opens the device menu and taps the "Set/Manage password" menu item

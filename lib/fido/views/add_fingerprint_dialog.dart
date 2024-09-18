@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,6 +123,8 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       });
     }, onError: (error, stacktrace) {
       _log.error('Error adding fingerprint', error, stacktrace);
+
+      if (!mounted) return;
       Navigator.of(context).pop();
       final l10n = AppLocalizations.of(context)!;
       final String errorMessage;
@@ -255,7 +257,11 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                         });
                       },
                       onFieldSubmitted: (_) {
-                        _submit();
+                        if (_label.isNotEmpty) {
+                          _submit();
+                        } else {
+                          _nameFocus.requestFocus();
+                        }
                       },
                     ).init(),
                   )

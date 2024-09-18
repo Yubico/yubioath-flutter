@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,27 @@ class DeviceErrorScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.error,
             ),
             header: l10n.s_unknown_device,
+          ),
+        'restricted-nfc' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.contactless,
+              size: 96,
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+            header: l10n.l_deactivate_restricted_nfc,
+            message: l10n.p_deactivate_restricted_nfc_desc,
+            footnote: l10n.p_deactivate_restricted_nfc_footer,
+          ),
+        'no-scp11b-nfc-support' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.contactless,
+              size: 96,
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+            header: l10n.l_configuration_unsupported,
+            message: l10n.p_scp_unsupported,
           ),
         _ => HomeMessagePage(
             centered: true,

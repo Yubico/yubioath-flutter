@@ -37,7 +37,7 @@ import android.os.Build
  * @param sdkVersion the version this instance uses for compatibility checking. The release app
  * uses `Build.VERSION.SDK_INT`, tests use appropriate other values.
  */
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate")
 class CompatUtil(private val sdkVersion: Int) {
     /**
      * Wrapper class holding values computed by [CompatUtil]

@@ -155,6 +155,7 @@ List<String> _getDeviceStrings(
         error: (error, _) => switch (error) {
           'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
           'unknown-device' => [l10n.s_unknown_device],
+          'restricted-nfc' => [l10n.s_restricted_nfc],
           _ => null,
         },
       ) ??

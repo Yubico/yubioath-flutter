@@ -13,7 +13,7 @@ _$OathCredentialImpl _$$OathCredentialImplFromJson(Map<String, dynamic> json) =>
       const _IssuerConverter().fromJson(json['issuer'] as String?),
       json['name'] as String,
       $enumDecode(_$OathTypeEnumMap, json['oath_type']),
-      json['period'] as int,
+      (json['period'] as num).toInt(),
       json['touch_required'] as bool,
     );
 
@@ -37,8 +37,8 @@ const _$OathTypeEnumMap = {
 _$OathCodeImpl _$$OathCodeImplFromJson(Map<String, dynamic> json) =>
     _$OathCodeImpl(
       json['value'] as String,
-      json['valid_from'] as int,
-      json['valid_to'] as int,
+      (json['valid_from'] as num).toInt(),
+      (json['valid_to'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$OathCodeImplToJson(_$OathCodeImpl instance) =>
@@ -98,9 +98,9 @@ _$CredentialDataImpl _$$CredentialDataImplFromJson(Map<String, dynamic> json) =>
       hashAlgorithm:
           $enumDecodeNullable(_$HashAlgorithmEnumMap, json['hash_algorithm']) ??
               defaultHashAlgorithm,
-      digits: json['digits'] as int? ?? defaultDigits,
-      period: json['period'] as int? ?? defaultPeriod,
-      counter: json['counter'] as int? ?? defaultCounter,
+      digits: (json['digits'] as num?)?.toInt() ?? defaultDigits,
+      period: (json['period'] as num?)?.toInt() ?? defaultPeriod,
+      counter: (json['counter'] as num?)?.toInt() ?? defaultCounter,
     );
 
 Map<String, dynamic> _$$CredentialDataImplToJson(

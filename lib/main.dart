@@ -15,6 +15,7 @@
  */
 
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ import 'app/state.dart';
 import 'core/state.dart';
 import 'desktop/init.dart' as desktop;
 import 'error_page.dart';
+import 'version.dart';
 
 final _log = Logger('main');
 
@@ -43,6 +45,12 @@ void main(List<String> argv) async {
       _initializeDebugLogging();
       throw UnimplementedError('Platform not supported');
     }
+    _log.info('Running Yubico Authenticator...', {
+      'app_version': version,
+      'dart': Platform.version,
+      'os': Platform.operatingSystem,
+      'os_version': Platform.operatingSystemVersion,
+    });
     runApp(initializedApp);
   } catch (e) {
     _log.warning('Platform initialization failed: $e');

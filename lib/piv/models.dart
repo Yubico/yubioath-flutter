@@ -270,6 +270,7 @@ class PivState with _$PivState {
     required bool derivedKey,
     required bool storedKey,
     required int pinAttempts,
+    required bool supportsBio,
     String? chuid,
     String? ccc,
     PivStateMetadata? metadata,

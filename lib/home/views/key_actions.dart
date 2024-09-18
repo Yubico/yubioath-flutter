@@ -25,6 +25,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/action_list.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/reset_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
@@ -34,6 +35,7 @@ Widget homeBuildActions(
     BuildContext context, YubiKeyData? deviceData, WidgetRef ref) {
   final l10n = AppLocalizations.of(context)!;
   final hasFeature = ref.watch(featureProvider);
+  final interfacesLocked = deviceData?.info.resetBlocked != 0;
   final managementAvailability = hasFeature(features.management) &&
       switch (deviceData?.info.version) {
         Version version => (version.major > 4 || // YK5 and up
@@ -56,16 +58,22 @@ Widget homeBuildActions(
                 title: deviceData.info.version.major > 4
                     ? l10n.s_toggle_applications
                     : l10n.s_toggle_interfaces,
-                subtitle: deviceData.info.version.major > 4
-                    ? l10n.l_toggle_applications_desc
-                    : l10n.l_toggle_interfaces_desc,
-                onTap: (context) {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ManagementScreen(deviceData),
-                  );
-                },
+                key: yubikeyApplicationToggleMenuButton,
+                subtitle: interfacesLocked
+                    ? l10n.l_factory_reset_required
+                    : (deviceData.info.version.major > 4
+                        ? l10n.l_toggle_applications_desc
+                        : l10n.l_toggle_interfaces_desc),
+                onTap: interfacesLocked
+                    ? null
+                    : (context) {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        showBlurDialog(
+                          context: context,
+                          builder: (context) => ManagementScreen(deviceData),
+                        );
+                      },
               ),
             if (getResetCapabilities(hasFeature).any((c) =>
                 c.value &
@@ -76,6 +84,7 @@ Widget homeBuildActions(
               ActionListItem(
                 icon: const Icon(Symbols.delete_forever),
                 title: l10n.s_factory_reset,
+                key: yubikeyFactoryResetMenuButton,
                 subtitle: l10n.l_factory_reset_desc,
                 actionStyle: ActionStyle.primary,
                 onTap: (context) {
@@ -91,6 +100,7 @@ Widget homeBuildActions(
       ActionListSection(l10n.s_application, children: [
         ActionListItem(
           icon: const Icon(Symbols.settings),
+          key: settingDrawerIcon,
           title: l10n.s_settings,
           subtitle: l10n.l_settings_desc,
           actionStyle: ActionStyle.primary,
@@ -101,6 +111,7 @@ Widget homeBuildActions(
         ),
         ActionListItem(
           icon: const Icon(Symbols.help),
+          key: helpDrawerIcon,
           title: l10n.s_help_and_about,
           subtitle: l10n.l_help_and_about_desc,
           actionStyle: ActionStyle.primary,

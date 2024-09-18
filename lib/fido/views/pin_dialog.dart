@@ -26,9 +26,11 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
@@ -50,6 +52,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   final _currentPinFocus = FocusNode();
   final _newPinController = TextEditingController();
   final _newPinFocus = FocusNode();
+  final _confirmPinFocus = FocusNode();
   String _confirmPin = '';
   String? _currentPinError;
   String? _newPinError;
@@ -66,6 +69,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     _currentPinFocus.dispose();
     _newPinController.dispose();
     _newPinFocus.dispose();
+    _confirmPinFocus.dispose();
     super.dispose();
   }
 
@@ -84,11 +88,21 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final isValid =
         currentPinLenOk && newPinLenOk && _newPinController.text == _confirmPin;
 
-    final hasPinComplexity =
-        ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
-            false;
+    final newPinEnabled = !_isBlocked && currentPinLenOk;
+    final confirmPinEnabled = !_isBlocked && currentPinLenOk && newPinLenOk;
+
+    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+
+    final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final pinRetries = ref.watch(fidoStateProvider(widget.devicePath)
         .select((s) => s.whenOrNull(data: (state) => state.pinRetries)));
+
+    final isBio = widget.state.bioEnroll != null;
+    final enabled = deviceData
+            ?.info.config.enabledCapabilities[deviceData.node.transport] ??
+        0;
+    final maxPinLength =
+        isBio && (enabled & Capability.piv.value) != 0 ? 8 : 63;
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
@@ -110,6 +124,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 key: currentPin,
                 controller: _currentPinController,
                 focusNode: _currentPinFocus,
+                maxLength: maxPinLength,
+                inputFormatters: [limitBytesLength(maxPinLength)],
+                buildCounter: buildByteCounterFor(_currentPinController.text),
                 autofocus: true,
                 obscureText: _isObscureCurrent,
                 autofillHints: const [AutofillHints.password],
@@ -136,72 +153,100 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         _isObscureCurrent ? l10n.s_show_pin : l10n.s_hide_pin,
                   ),
                 ),
+                textInputAction: TextInputAction.next,
                 onChanged: (value) {
                   setState(() {
                     _currentIsWrong = false;
                   });
                 },
+                onFieldSubmitted: (_) {
+                  if (_currentPinController.text.length < minPinLength) {
+                    _currentPinFocus.requestFocus();
+                  } else {
+                    _newPinFocus.requestFocus();
+                  }
+                },
               ).init(),
             ],
             Text(hasPinComplexity
                 ? l10n.p_enter_new_fido2_pin_complexity_active(
-                    minPinLength, 2, '123456')
-                : l10n.p_enter_new_fido2_pin(minPinLength)),
-            // TODO: Set max characters based on UTF-8 bytes
+                    minPinLength, maxPinLength, 2, '123456')
+                : l10n.p_enter_new_fido2_pin(minPinLength, maxPinLength)),
             AppTextFormField(
               key: newPin,
               controller: _newPinController,
               focusNode: _newPinFocus,
+              maxLength: maxPinLength,
+              inputFormatters: [limitBytesLength(maxPinLength)],
+              buildCounter: buildByteCounterFor(_newPinController.text),
               autofocus: !hasPin,
               obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.password],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
-                enabled: !_isBlocked && currentPinLenOk,
+                enabled: newPinEnabled,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 prefixIcon: const Icon(Symbols.pin),
-                suffixIcon: IconButton(
-                  icon: Icon(_isObscureNew
-                      ? Symbols.visibility
-                      : Symbols.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _isObscureNew = !_isObscureNew;
-                    });
-                  },
-                  tooltip: _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
+                suffixIcon: ExcludeFocusTraversal(
+                  excluding: !newPinEnabled,
+                  child: IconButton(
+                    icon: Icon(_isObscureNew
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureNew = !_isObscureNew;
+                      });
+                    },
+                    tooltip: _isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin,
+                  ),
                 ),
               ),
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 setState(() {
                   _newIsWrong = false;
                 });
               },
+              onFieldSubmitted: (_) {
+                if (_newPinController.text.length < minPinLength) {
+                  _newPinFocus.requestFocus();
+                } else {
+                  _confirmPinFocus.requestFocus();
+                }
+              },
             ).init(),
             AppTextFormField(
               key: confirmPin,
               initialValue: _confirmPin,
+              focusNode: _confirmPinFocus,
+              maxLength: maxPinLength,
+              inputFormatters: [limitBytesLength(maxPinLength)],
+              buildCounter: buildByteCounterFor(_confirmPin),
               obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.password],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
                 prefixIcon: const Icon(Symbols.pin),
-                suffixIcon: IconButton(
-                  icon: Icon(_isObscureConfirm
-                      ? Symbols.visibility
-                      : Symbols.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _isObscureConfirm = !_isObscureConfirm;
-                    });
-                  },
-                  tooltip:
-                      _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
+                suffixIcon: ExcludeFocusTraversal(
+                  excluding: !confirmPinEnabled,
+                  child: IconButton(
+                    icon: Icon(_isObscureConfirm
+                        ? Symbols.visibility
+                        : Symbols.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscureConfirm = !_isObscureConfirm;
+                      });
+                    },
+                    tooltip:
+                        _isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin,
+                  ),
                 ),
-                enabled: !_isBlocked && currentPinLenOk && newPinLenOk,
+                enabled: confirmPinEnabled,
                 errorText:
                     _newPinController.text.length == _confirmPin.length &&
                             _newPinController.text != _confirmPin
@@ -209,6 +254,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         : null,
                 helperText: '', // Prevents resizing when errorText shown
               ),
+              textInputAction: TextInputAction.done,
               onChanged: (value) {
                 setState(() {
                   _confirmPin = value;
@@ -217,6 +263,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               onFieldSubmitted: (_) {
                 if (isValid) {
                   _submit();
+                } else {
+                  _confirmPinFocus.requestFocus();
                 }
               },
             ).init(),

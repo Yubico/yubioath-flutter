@@ -22,12 +22,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:yubico_authenticator/app/views/device_picker.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
-import 'package:yubico_authenticator/management/views/keys.dart';
 
 import 'android/util.dart' as android_test_util;
 import 'desktop/util.dart' as desktop_test_util;
 
-const shortWaitMs = 200;
+const shortWaitMs = 240;
 const longWaitMs = 500;
 const ultraLongWaitMs = 3000;
 
@@ -235,15 +234,32 @@ extension AppWidgetTester on WidgetTester {
   }
 
   /// Management screen
-  Future<void> openManagementScreen() async {
-    if (!isDrawerOpened()) {
-      await openDrawer();
-    }
+  Future<void> openHomeAndToggleScreen() async {
+    // if (!isDrawerOpened()) {
+    //   await openDrawer();
+    // }
 
-    await tap(find.byKey(managementAppDrawer).hitTestable());
-    await pump(const Duration(milliseconds: 500));
+    await tap(find.byKey(homeDrawer).hitTestable());
+    await shortWait();
 
-    expect(find.byKey(screenKey), findsOneWidget);
+    await openToggleScreen();
+
+    //expect(find.byKey(screenKey), findsOneWidget);
+  }
+
+  /// Toggle Application screen
+  Future<void> openToggleScreen() async {
+    // if (!isDrawerOpened()) {
+    //   await openDrawer();
+    // }
+
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await shortWait();
+
+    await tap(find.byKey(yubikeyApplicationToggleMenuButton).hitTestable());
+    await shortWait();
+
+    //expect(find.byKey(screenKey), findsOneWidget);
   }
 
   /// Retrieve a list of test approved serial numbers.

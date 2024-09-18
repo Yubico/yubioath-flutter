@@ -40,6 +40,7 @@ const unlockButton = Key('$_prefix.unlock');
 const resetButton = Key('$_prefix.reset');
 
 const managementKeyField = Key('$_prefix.management_key');
+const newManagementKeyField = Key('$_prefix.management_key');
 const managementKeyRefresh = Key('$_prefix.management_key_refresh');
 
 const pinPukField = Key('$_prefix.pin_puk');
@@ -99,6 +100,7 @@ const appListItem95 = Key('$_prefix.95.applistitem');
 
 // SlotMetadata body keys
 const slotMetadataKeyType = Key('$_prefix.slotMetadata.keyType');
+const slotMetadataBiometrics = Key('$_prefix.slotMetadata.biometrics');
 
 // CertInfo body keys
 const certInfoKeyType = Key('$_prefix.certInfo.keyType');

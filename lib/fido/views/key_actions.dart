@@ -25,6 +25,7 @@ import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
 import 'add_fingerprint_dialog.dart';
+import 'enterprise_attestation_dialog.dart';
 import 'pin_dialog.dart';
 
 bool passkeysShowActionsNotifier(FidoState state) {
@@ -49,6 +50,13 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
   final authBlocked = state.pinBlocked;
+
+  final enterpriseAttestation = state.enterpriseAttestation;
+  final showEnterpriseAttestation =
+      enterpriseAttestation != null && fingerprints == null;
+  final canEnableEnterpriseAttestation = enterpriseAttestation == false &&
+      !(state.alwaysUv && !state.hasPin) &&
+      !(!state.unlocked && state.hasPin);
 
   return Column(
     children: [
@@ -115,8 +123,30 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
                   }
                 : null,
           ),
+          if (showEnterpriseAttestation)
+            ActionListItem(
+              key: keys.enableEnterpriseAttestation,
+              feature: features.enableEnterpriseAttestation,
+              icon: const Icon(Symbols.local_police),
+              title: l10n.s_ep_attestation,
+              subtitle: enterpriseAttestation
+                  ? l10n.s_enabled
+                  : (state.alwaysUv && !state.hasPin)
+                      ? l10n.l_set_pin_first
+                      : l10n.s_disabled,
+              onTap: canEnableEnterpriseAttestation
+                  ? (context) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      showBlurDialog(
+                        context: context,
+                        builder: (context) =>
+                            EnableEnterpriseAttestationDialog(node.path),
+                      );
+                    }
+                  : null,
+            )
         ],
-      )
+      ),
     ],
   );
 }

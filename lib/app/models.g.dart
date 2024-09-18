@@ -9,9 +9,9 @@ part of 'models.dart';
 _$KeyCustomizationImpl _$$KeyCustomizationImplFromJson(
         Map<String, dynamic> json) =>
     _$KeyCustomizationImpl(
-      serial: json['serial'] as int,
+      serial: (json['serial'] as num).toInt(),
       name: json['name'] as String?,
-      color: const _ColorConverter().fromJson(json['color'] as int?),
+      color: const _ColorConverter().fromJson((json['color'] as num?)?.toInt()),
     );
 
 Map<String, dynamic> _$$KeyCustomizationImplToJson(

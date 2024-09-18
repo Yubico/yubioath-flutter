@@ -30,11 +30,15 @@
     "s_delete": "削除",
     "s_move": "移動",
     "s_quit": "終了",
+    "s_enable": null,
+    "s_enabled": null,
+    "s_disabled": null,
     "s_status": "ステータス",
     "s_unlock": "ロック解除",
     "s_calculate": "計算",
     "s_import": "インポート",
     "s_overwrite": "上書き",
+    "s_done": null,
     "s_label": "ラベル",
     "s_name": "名前",
     "s_usb": "USB",
@@ -43,8 +47,11 @@
     "s_details": "詳細",
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを非表示",
+    "s_show_navigation": null,
     "s_expand_navigation": "ナビゲーションを展開",
     "s_collapse_navigation": "ナビゲーションを閉じる",
+    "s_show_menu": null,
+    "s_hide_menu": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
@@ -82,7 +89,6 @@
     "s_terms_of_use": "利用規約",
     "s_privacy_policy": "プライバシーポリシー",
     "s_open_src_licenses": "オープンソースライセンス",
-    "s_configure_yk": "YubiKeyを設定",
     "s_please_wait": "お待ちください\u2026",
     "s_secret_key": "秘密鍵",
     "s_show_secret_key": "秘密鍵を表示",
@@ -121,6 +127,12 @@
     "s_light_mode": "ライトモード",
     "s_dark_mode": "ダークモード",
 
+    "@_layout": {},
+    "s_list_layout": null,
+    "s_grid_layout": null,
+    "s_mixed_layout": null,
+    "s_select_layout": null,
+
     "@_yubikey_selection": {},
     "s_select_to_scan": "選択してスキャン",
     "s_hide_device": "デバイスを非表示",
@@ -149,6 +161,8 @@
         }
     },
     "l_firmware_version": "ファームウェアバージョン: {version}",
+    "l_fips_capable": null,
+    "l_fips_approved": null,
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "YubiKeyを挿入してください",
@@ -216,9 +230,15 @@
     "l_no_yk_present": "YubiKeyがありません",
     "s_unknown_type": "不明なタイプ",
     "s_unknown_device": "認識されないデバイス",
+    "s_restricted_nfc": null,
+    "l_deactivate_restricted_nfc": null,
+    "p_deactivate_restricted_nfc_desc": null,
+    "p_deactivate_restricted_nfc_footer": null,
     "s_unsupported_yk": "サポートされていないYubiKey",
     "s_yk_not_recognized": "デバイスが認識されません",
     "p_operation_failed_try_again": "操作に失敗しました。もう一度やり直してください。",
+    "l_configuration_unsupported": null,
+    "p_scp_unsupported": null,
 
     "@_general_errors": {},
     "l_error_occurred": "エラーが発生しました",
@@ -285,34 +305,43 @@
     "p_enter_current_pin_or_reset": "現在のPINを入力してください。PINがわからない場合は、PUKでブロックを解除するか、YubiKeyをリセットする必要があります。",
     "p_enter_current_pin_or_reset_no_puk": "現在のPINを入力してください。PINがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_enter_current_puk_or_reset": "現在のPUKを入力してください。PUKがわからない場合は、YubiKeyをリセットする必要があります。",
-    "p_enter_new_fido2_pin": "新しいPINを入力してください。PINは{length}文字以上にする必要があり、文字、数字、特殊文字を含めることができます。",
+    "p_enter_new_fido2_pin": null,
     "@p_enter_new_fido2_pin": {
         "placeholders": {
-            "length": {}
+            "min_length": {},
+            "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "新しいPINを入力します。PINは少なくとも{length} 文字以上で、少なくとも{unique_characters} ユニークな文字を含み、「{common_pin}」のようなよく使われるPINであってはなりません。文字、数字、特殊文字を含むことができます。",
+    "p_enter_new_fido2_pin_complexity_active": null,
     "@p_enter_new_fido2_pin_complexity_active": {
         "placeholders": {
-            "length": {},
+            "min_length": {},
+            "max_length": {},
             "unique_characters": {},
             "common_pin": {}
         }
     },
+    "s_ep_attestation": null,
+    "s_ep_attestation_enabled": null,
+    "s_enable_ep_attestation": null,
+    "p_enable_ep_attestation_desc": null,
+    "p_enable_ep_attestation_disable_with_factory_reset": null,
     "s_pin_required": "PINが必要",
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
     "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットする必要があります",
-    "p_enter_new_piv_pin_puk": "設定する新しい{name}を入力してください。6～8文字にする必要があります。",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {},
+            "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "設定する新しい {name} を入力します。6-8文字で、少なくとも2つのユニークな文字を含み、\"{common}\"のようなよく使われる{name} であってはいけません。",
+    "p_enter_new_piv_pin_puk_complexity_active": null,
     "@p_enter_new_piv_pin_puk_complexity_active": {
         "placeholders": {
             "name": {},
+            "length": {},
             "common": {}
         }
     },
@@ -326,6 +355,7 @@
     "l_warning_default_puk": "警告: デフォルトのPUKが使用されています",
     "l_default_pin_used": "デフォルトのPINが使用されています",
     "l_default_puk_used": "既定のPUKを使用",
+    "l_pin_complexity": null,
 
     "@_passwords": {},
     "s_password": "パスワード",
@@ -335,6 +365,7 @@
     "s_show_password": "パスワードを表示",
     "s_hide_password": "パスワードを非表示",
     "l_optional_password_protection": "オプションのパスワード保護",
+    "l_password_protection": null,
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
     "s_confirm_password": "パスワードを確認",
@@ -348,6 +379,7 @@
     "l_keystore_unavailable": "OSのキーストアを利用できません",
     "l_remember_pw_failed": "パスワードを記憶できませんでした",
     "l_unlock_first": "最初にパスワードでロックを解除",
+    "l_set_password_first": null,
     "l_enter_oath_pw": "YubiKeyのOATHパスワードを入力",
     "p_enter_current_password_or_reset": "現在のパスワードを入力してください。パスワードがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_enter_new_password": "新しいパスワードを入力してください。パスワードには文字、数字、特殊文字を含めることができます。",
@@ -398,6 +430,10 @@
             "message": {}
         }
     },
+    "l_add_account_password_required": null,
+    "l_add_account_unlock_required": null,
+    "l_add_account_already_exists": null,
+    "l_add_account_func_missing": null,
     "l_account_name_required": "アカウントには名前が必要です",
     "l_name_already_exists": "この名前は発行者にすでに存在します",
     "l_account_already_exists": "このアカウントはYubiKeyにすでに存在します",
@@ -406,10 +442,17 @@
     "s_pin_account": "アカウントをピン留めする",
     "s_unpin_account": "アカウントのピン留めを解除",
     "s_no_pinned_accounts": "ピン留めされたアカウントはありません",
+    "s_pinned": null,
     "l_pin_account_desc": "重要なアカウントをまとめて保持",
     "s_rename_account": "アカウント名を変更",
     "l_rename_account_desc": "アカウントの発行者/名前を編集",
     "s_account_renamed": "アカウントの名前が変更されました",
+    "l_rename_account_failed": null,
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {}
+        }
+    },
     "p_rename_will_change_account_displayed": "これにより、リスト内のアカウントの表示が変更されます。",
     "s_delete_account": "アカウントを削除",
     "l_delete_account_desc": "YubiKeyからアカウントを削除",
@@ -474,6 +517,7 @@
         }
     },
     "@_fingerprints": {},
+    "s_biometrics": null,
     "l_fingerprint": "指紋：{label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -556,6 +600,7 @@
     "l_delete_certificate_or_key_desc": "YubiKey から証明書または鍵を削除する",
     "l_move_key": "キーを移動",
     "l_move_key_desc": "あるPIVスロットから別のスロットにキーを移動する",
+    "l_change_defaults": null,
     "s_issuer": "発行者",
     "s_serial": "シリアル",
     "s_certificate_fingerprint": "フィンガープリント",
@@ -631,7 +676,10 @@
     "p_subject_desc": "RFC 4514仕様に準拠した形式の識別名（DN）。",
     "l_rfc4514_invalid": "無効なRFC 4514形式",
     "rfc4514_examples": "例：\nCN=Example Name CN=jsmith,DC=example,\nDC=net",
+    "s_allow_fingerprint": null,
     "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限（証明書のみ）。",
+    "p_cert_options_bio_desc": null,
+    "p_key_options_bio_desc": null,
     "s_overwrite_slot": "スロットを上書き",
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
     "@p_overwrite_slot_desc": {
@@ -774,6 +822,7 @@
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷時の状態にリセット",
     "l_factory_reset_desc": "YubiKey の既定値を復元",
+    "l_factory_reset_required": null,
     "l_oath_application_reset": "OATHアプリケーションのリセット",
     "l_fido_app_reset": "FIDOアプリケーションのリセット",
     "l_reset_failed": "リセットの実行エラー：{message}",
@@ -873,6 +922,12 @@
     "s_nfc_dialog_fido_rename_fingerprint": "アクション: 指紋の名前を変更する",
     "s_nfc_dialog_fido_failure": "FIDO操作に失敗しました",
 
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": null,
+    "s_nfc_hold_still": null,
+    "s_nfc_tap_your_yubikey": null,
+    "l_nfc_failed_to_scan": null,
+
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",
     "p_ndef_set_password": "パスワードがYubiKeyからクリップボードに正常にコピーされました。",
@@ -881,6 +936,7 @@
 
     "@_key_customization": {},
     "s_set_label": "ラベルを設定",
+    "s_set_color": null,
     "s_change_label": "ラベルを変更",
     "s_color": "色",
     "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",

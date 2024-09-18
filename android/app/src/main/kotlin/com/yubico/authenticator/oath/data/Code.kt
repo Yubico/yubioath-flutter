@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,8 @@ typealias YubiKitCode = com.yubico.yubikit.oath.Code
 data class Code(
     val value: String? = null,
     @SerialName("valid_from")
-    @Suppress("unused")
     val validFrom: Long,
     @SerialName("valid_to")
-    @Suppress("unused")
     val validTo: Long
 ) {
 

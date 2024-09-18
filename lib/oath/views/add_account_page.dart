@@ -470,8 +470,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
                         if (oathState?.version.isAtLeast(4, 2) ?? true)
                           FilterChip(
                             key: keys.requireTouchFilterChip,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceVariant,
                             label: Text(l10n.s_require_touch),
                             selected: _touch,
                             onSelected: (value) {

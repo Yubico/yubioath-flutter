@@ -175,7 +175,7 @@ UserInteractionController _dialogUserInteraction(
       builder: (context) {
         return PopScope(
             canPop: onCancel != null,
-            onPopInvoked: (didPop) {
+            onPopInvokedWithResult: (didPop, _) {
               if (didPop) {
                 wasPopped = true;
                 if (!completed && onCancel != null) {

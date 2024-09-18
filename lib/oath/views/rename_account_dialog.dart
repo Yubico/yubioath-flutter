@@ -104,7 +104,7 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
           await withContext((context) async => showMessage(
                 context,
                 AppLocalizations.of(context)!
-                    .l_account_add_failed(errorMessage),
+                    .l_rename_account_failed(errorMessage),
                 duration: const Duration(seconds: 4),
               ));
           return null;

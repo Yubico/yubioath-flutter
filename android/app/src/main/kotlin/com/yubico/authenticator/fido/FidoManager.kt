@@ -30,6 +30,7 @@ import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.SessionInfo
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.setHandler
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyConnection
@@ -42,6 +43,7 @@ import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.fido.ctap.BioEnrollment
 import com.yubico.yubikit.fido.ctap.ClientPin
+import com.yubico.yubikit.fido.ctap.Config
 import com.yubico.yubikit.fido.ctap.CredentialManagement
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
 import com.yubico.yubikit.fido.ctap.FingerprintBioEnrollment
@@ -60,6 +62,7 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.Arrays
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
@@ -79,6 +82,7 @@ class FidoManager(
     }
 
     companion object {
+        val updateDeviceInfo = AtomicBoolean(false)
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
             val pinUvAuthProtocols = infoData.pinUvAuthProtocols
             val pinSupported = infoData.options["clientPin"] != null
@@ -118,6 +122,8 @@ class FidoManager(
             connectionHelper,
             pinStore
         )
+
+
 
     init {
         pinRetries = null
@@ -159,6 +165,8 @@ class FidoManager(
 
                 "cancelRegisterFingerprint" -> cancelRegisterFingerprint()
 
+                "enableEnterpriseAttestation" -> enableEnterpriseAttestation()
+
                 else -> throw NotImplementedError()
             }
         }
@@ -170,6 +178,7 @@ class FidoManager(
         fidoChannel.setMethodCallHandler(null)
         fidoViewModel.clearSessionState()
         fidoViewModel.updateCredentials(null)
+        connectionHelper.cancelPending()
         coroutineScope.cancel()
     }
 
@@ -183,6 +192,10 @@ class FidoManager(
                 device.withConnection<SmartCardConnection, Unit> { connection ->
                     processYubiKey(connection, device)
                 }
+            }
+
+            if (updateDeviceInfo.getAndSet(false)) {
+                deviceManager.setDeviceInfo(getDeviceInfo(device))
             }
         } catch (e: Exception) {
             // something went wrong, try to get DeviceInfo from any available connection type
@@ -210,7 +223,7 @@ class FidoManager(
             currentSession
         )
 
-        val sameDevice = currentSession.equals(previousSession)
+        val sameDevice = currentSession == previousSession
 
         if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress)) {
             connectionHelper.invokePending(fidoSession)
@@ -377,7 +390,7 @@ class FidoManager(
     }
 
     private suspend fun setPin(pin: CharArray?, newPin: CharArray): String =
-        connectionHelper.useSession(FidoActionDescription.SetPin) { fidoSession ->
+        connectionHelper.useSession(FidoActionDescription.SetPin, updateDeviceInfo = true) { fidoSession ->
             try {
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
@@ -603,6 +616,42 @@ class FidoManager(
             ).toString()
         }
 
+    private suspend fun enableEnterpriseAttestation(): String =
+        connectionHelper.useSession(FidoActionDescription.EnableEnterpriseAttestation) { fidoSession ->
+            try {
+                val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
+                val clientPin = ClientPin(fidoSession, uvAuthProtocol)
+                val token = if (pinStore.hasPin()) {
+                    clientPin.getPinToken(
+                        pinStore.getPin(),
+                        ClientPin.PIN_PERMISSION_ACFG,
+                        null
+                    )
+                } else null
+
+                val config = Config(fidoSession, uvAuthProtocol, token)
+                config.enableEnterpriseAttestation()
+                fidoViewModel.setSessionState(
+                    Session(
+                        fidoSession.info,
+                        pinStore.hasPin(),
+                        pinRetries
+                    )
+                )
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to true,
+                    )
+                ).toString()
+            } catch (e: Exception) {
+                logger.error("Failed to enable enterprise attestation. ", e)
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to false,
+                    )
+                ).toString()
+            }
+        }
 
     override fun onDisconnected() {
         if (!resetHelper.inProgress) {

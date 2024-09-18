@@ -39,9 +39,10 @@ class ImportFileDialog extends ConsumerStatefulWidget {
   final PivState pivState;
   final PivSlot pivSlot;
   final File file;
-  const ImportFileDialog(
-      this.devicePath, this.pivState, this.pivSlot, this.file,
-      {super.key});
+  final bool showMatch;
+  ImportFileDialog(this.devicePath, this.pivState, this.pivSlot, this.file,
+      {super.key})
+      : showMatch = pivSlot.slot != SlotId.cardAuth && pivState.supportsBio;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -50,6 +51,7 @@ class ImportFileDialog extends ConsumerStatefulWidget {
 
 class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   late String _data;
+  late bool _allowMatch;
   PivExamineResult? _state;
   String _password = '';
   bool _passwordIsWrong = false;
@@ -59,6 +61,8 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   @override
   void initState() {
     super.initState();
+
+    _allowMatch = widget.showMatch;
     _init();
   }
 
@@ -214,9 +218,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                                 ));
                         await ref
                             .read(pivSlotsProvider(widget.devicePath).notifier)
-                            .import(widget.pivSlot.slot, _data,
-                                password:
-                                    _password.isNotEmpty ? _password : null);
+                            .import(
+                              widget.pivSlot.slot,
+                              _data,
+                              password: _password.isNotEmpty ? _password : null,
+                              pinPolicy: getPinPolicy(
+                                  widget.pivSlot.slot, _allowMatch),
+                            );
                         await withContext(
                           (context) async {
                             Navigator.of(context).pop(true);
@@ -297,7 +305,25 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                         140, // Needed for layout, adapt if text sizes changes
                     child: CertInfoTable(certInfo, null),
                   ),
-                ]
+                ],
+                if (keyType != null && !unsupportedKey && widget.showMatch) ...[
+                  Text(
+                    l10n.s_options,
+                    style: textTheme.bodyLarge,
+                  ),
+                  Text(l10n.p_key_options_bio_desc),
+                  FilterChip(
+                    label: Text(l10n.s_allow_fingerprint),
+                    selected: _allowMatch,
+                    onSelected: _importing
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _allowMatch = value;
+                            });
+                          },
+                  ),
+                ],
               ]
                   .map((e) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),

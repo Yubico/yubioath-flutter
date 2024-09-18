@@ -35,7 +35,7 @@ extension Fido2Functions on WidgetTester {
     await shortWait();
   }
 
-  /// Factory reset Fido2 application
+  /// Factory reset FIDO application
   Future<void> resetFido2() async {
     final targetKey = approvedKeys[0]; // only reset approved keys!
 
@@ -43,24 +43,55 @@ extension Fido2Functions on WidgetTester {
     await switchToKey(targetKey);
     await shortWait();
 
-    /// 2. open the key menu
-    await tapPopupMenu(targetKey);
+    /// 2. open the home view
+    await tap(find.byKey(homeDrawer).hitTestable());
     await shortWait();
-    await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
-    await longWait();
 
-    /// 3. then toggle 'Fido2' in the 'Factory reset' reset_dialog.dart
+    /// 3. open menu
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
+    await shortWait();
+    await tap(find.byKey(yubikeyFactoryResetMenuButton));
+    await shortWait();
+
+    /// 4. then toggle 'Piv' in the 'Factory reset' reset_dialog.dart
     await tap(find.byKey(factoryResetPickResetFido2));
     await longWait();
 
-    /// 4. Click reset TextButton: done
+    /// 5. Click reset TextButton: done
     await tap(find.byKey(factoryResetReset));
     await fido2DanceWait();
 
-    /// 5. Click the 'Close' button
+    /// 6. Click the close button
     await tap(find.text('Close').hitTestable());
     await shortWait();
-
-    /// TODO 6. Verify Resetedness
   }
+
+  // /// Factory reset Fido2 application
+  // Future<void> resetFido2() async {
+  //   final targetKey = approvedKeys[0]; // only reset approved keys!
+  //
+  //   /// 1. make sure we are using approved key
+  //   await switchToKey(targetKey);
+  //   await shortWait();
+  //
+  //   /// 2. open the key menu
+  //   await tapPopupMenu(targetKey);
+  //   await shortWait();
+  //   await tap(find.byKey(yubikeyFactoryResetMenuButton).hitTestable());
+  //   await longWait();
+  //
+  //   /// 3. then toggle 'Fido2' in the 'Factory reset' reset_dialog.dart
+  //   await tap(find.byKey(factoryResetPickResetFido2));
+  //   await longWait();
+  //
+  //   /// 4. Click reset TextButton: done
+  //   await tap(find.byKey(factoryResetReset));
+  //   await fido2DanceWait();
+  //
+  //   /// 5. Click the 'Close' button
+  //   await tap(find.text('Close').hitTestable());
+  //   await shortWait();
+  //
+  //   /// TODO 6. Verify Resetedness
+  // }
 }

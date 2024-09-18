@@ -57,6 +57,7 @@ class UseRecommendedWidget extends DartLintRule {
   ) {
     context.registry.addInstanceCreationExpression((node) {
       if (node.constructorName.toString() == discouraged) {
+        // ignore: deprecated_member_use
         reporter.reportErrorForNode(code, node.constructorName);
       }
     });
@@ -89,6 +90,7 @@ class CallInitAfterCreation extends DartLintRule {
             return;
           }
         }
+        // ignore: deprecated_member_use
         reporter.reportErrorForNode(code, node.constructorName);
       }
     });

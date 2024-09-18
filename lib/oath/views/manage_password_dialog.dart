@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
@@ -33,6 +34,7 @@ import '../state.dart';
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
   final OathState state;
+
   const ManagePasswordDialog(this.path, this.state, {super.key});
 
   @override
@@ -43,6 +45,8 @@ class ManagePasswordDialog extends ConsumerStatefulWidget {
 class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   final _currentPasswordController = TextEditingController();
   final _currentPasswordFocus = FocusNode();
+  final _newPasswordFocus = FocusNode();
+  final _confirmPasswordFocus = FocusNode();
   String _newPassword = '';
   String _confirmPassword = '';
   bool _currentIsWrong = false;
@@ -54,6 +58,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   void dispose() {
     _currentPasswordController.dispose();
     _currentPasswordFocus.dispose();
+    _newPasswordFocus.dispose();
+    _confirmPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -82,11 +88,21 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final fipsCapable = ref.watch(currentDeviceDataProvider).maybeWhen(
+        data: (data) => data.info.getFipsStatus(Capability.oath).$1,
+        orElse: () => false);
     final l10n = AppLocalizations.of(context)!;
     final isValid = !_currentIsWrong &&
         _newPassword.isNotEmpty &&
         _newPassword == _confirmPassword &&
         (!widget.state.hasKey || _currentPasswordController.text.isNotEmpty);
+
+    final newPasswordEnabled =
+        !widget.state.hasKey || _currentPasswordController.text.isNotEmpty;
+
+    final confirmPasswordEnabled =
+        (!widget.state.hasKey || _currentPasswordController.text.isNotEmpty) &&
+            _newPassword.isNotEmpty;
 
     return ResponsiveDialog(
       title: Text(
@@ -137,42 +153,52 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                     _currentIsWrong = false;
                   });
                 },
+                onSubmitted: (_) {
+                  if (_currentPasswordController.text.isEmpty) {
+                    _currentPasswordFocus.requestFocus();
+                  } else {
+                    _newPasswordFocus.requestFocus();
+                  }
+                },
               ).init(),
               Wrap(
                 spacing: 4.0,
                 runSpacing: 8.0,
                 children: [
-                  OutlinedButton(
-                    key: keys.removePasswordButton,
-                    onPressed: _currentPasswordController.text.isNotEmpty &&
-                            !_currentIsWrong
-                        ? () async {
-                            final result = await ref
-                                .read(oathStateProvider(widget.path).notifier)
-                                .unsetPassword(_currentPasswordController.text);
-                            if (result) {
-                              if (mounted) {
-                                await ref.read(withContextProvider)(
-                                    (context) async {
-                                  Navigator.of(context).pop();
-                                  showMessage(context, l10n.s_password_removed);
+                  if (!fipsCapable)
+                    OutlinedButton(
+                      key: keys.removePasswordButton,
+                      onPressed: _currentPasswordController.text.isNotEmpty &&
+                              !_currentIsWrong
+                          ? () async {
+                              final result = await ref
+                                  .read(oathStateProvider(widget.path).notifier)
+                                  .unsetPassword(
+                                      _currentPasswordController.text);
+                              if (result) {
+                                if (mounted) {
+                                  await ref.read(withContextProvider)(
+                                      (context) async {
+                                    Navigator.of(context).pop();
+                                    showMessage(
+                                        context, l10n.s_password_removed);
+                                  });
+                                }
+                              } else {
+                                _currentPasswordController.selection =
+                                    TextSelection(
+                                        baseOffset: 0,
+                                        extentOffset: _currentPasswordController
+                                            .text.length);
+                                _currentPasswordFocus.requestFocus();
+                                setState(() {
+                                  _currentIsWrong = true;
                                 });
                               }
-                            } else {
-                              _currentPasswordController.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: _currentPasswordController
-                                          .text.length);
-                              _currentPasswordFocus.requestFocus();
-                              setState(() {
-                                _currentIsWrong = true;
-                              });
                             }
-                          }
-                        : null,
-                    child: Text(l10n.s_remove_password),
-                  ),
+                          : null,
+                      child: Text(l10n.s_remove_password),
+                    ),
                   if (widget.state.remembered)
                     OutlinedButton(
                       child: Text(l10n.s_clear_saved_password),
@@ -197,24 +223,27 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               autofocus: !widget.state.hasKey,
               obscureText: _isObscureNew,
               autofillHints: const [AutofillHints.newPassword],
+              focusNode: _newPasswordFocus,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_password,
                 prefixIcon: const Icon(Symbols.password),
-                suffixIcon: IconButton(
-                    icon: Icon(_isObscureNew
-                        ? Symbols.visibility
-                        : Symbols.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscureNew = !_isObscureNew;
-                      });
-                    },
-                    tooltip: _isObscureNew
-                        ? l10n.s_show_password
-                        : l10n.s_hide_password),
-                enabled: !widget.state.hasKey ||
-                    _currentPasswordController.text.isNotEmpty,
+                suffixIcon: ExcludeFocusTraversal(
+                  excluding: !newPasswordEnabled,
+                  child: IconButton(
+                      icon: Icon(_isObscureNew
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscureNew = !_isObscureNew;
+                        });
+                      },
+                      tooltip: _isObscureNew
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password),
+                ),
+                enabled: newPasswordEnabled,
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -223,34 +252,38 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 });
               },
               onSubmitted: (_) {
-                if (isValid) {
-                  _submit();
+                if (_newPassword.isNotEmpty) {
+                  _confirmPasswordFocus.requestFocus();
+                } else if (_newPassword.isEmpty) {
+                  _newPasswordFocus.requestFocus();
                 }
               },
             ).init(),
             AppTextField(
               key: keys.confirmPasswordField,
               obscureText: _isObscureConfirm,
+              focusNode: _confirmPasswordFocus,
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_password,
                 prefixIcon: const Icon(Symbols.password),
-                suffixIcon: IconButton(
-                    icon: Icon(_isObscureConfirm
-                        ? Symbols.visibility
-                        : Symbols.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscureConfirm = !_isObscureConfirm;
-                      });
-                    },
-                    tooltip: _isObscureConfirm
-                        ? l10n.s_show_password
-                        : l10n.s_hide_password),
-                enabled: (!widget.state.hasKey ||
-                        _currentPasswordController.text.isNotEmpty) &&
-                    _newPassword.isNotEmpty,
+                suffixIcon: ExcludeFocusTraversal(
+                  excluding: !confirmPasswordEnabled,
+                  child: IconButton(
+                      icon: Icon(_isObscureConfirm
+                          ? Symbols.visibility
+                          : Symbols.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscureConfirm = !_isObscureConfirm;
+                        });
+                      },
+                      tooltip: _isObscureConfirm
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password),
+                ),
+                enabled: confirmPasswordEnabled,
                 errorText: _newPassword.length == _confirmPassword.length &&
                         _newPassword != _confirmPassword
                     ? l10n.l_password_mismatch
@@ -266,6 +299,8 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               onSubmitted: (_) {
                 if (isValid) {
                   _submit();
+                } else {
+                  _confirmPasswordFocus.requestFocus();
                 }
               },
             ).init(),

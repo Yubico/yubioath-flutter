@@ -40,9 +40,9 @@ _FAIL_MSG = (
 
 
 class YubiOtpNode(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = YubiOtpSession(connection)
+        self.session = YubiOtpSession(connection, scp_params)
 
     def get_data(self):
         state = self.session.get_config_state()
@@ -154,6 +154,7 @@ class SlotNode(RpcNode):
             access_code = params.pop("curr_acc_code", None)
             access_code = bytes.fromhex(access_code) if access_code else None
             self.session.delete_slot(self.slot, access_code)
+            return dict()
         except CommandError:
             raise ValueError(_FAIL_MSG)
 

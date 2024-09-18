@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class SkyHelperTest {
     fun `supports three specific UsbPids`() {
         val skyHelper = SkyHelper(CompatUtil(33))
 
-        for (pid in UsbPid.values()) {
+        for (pid in UsbPid.entries) {
             val ykDevice = getUsbYubiKeyDeviceMock().also {
                 `when`(it.pid).thenReturn(pid)
             }

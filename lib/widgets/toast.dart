@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class Toast extends StatefulWidget {
   final String message;
@@ -148,6 +149,8 @@ void Function() showToast(
   Timer.run(() {
     Overlay.of(context).insert(entry!);
   });
+
+  SemanticsService.announce(message, TextDirection.ltr);
 
   return close;
 }

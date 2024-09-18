@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 
 // global keys
 final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+final headerSliverGlobalKey = GlobalKey();
 // This is global so we can access it from the global Ctrl+F shortcut.
 final searchField = GlobalKey();
 
@@ -25,6 +26,8 @@ const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');
 const noDeviceAvatar = Key('$_prefix.no_device_avatar');
 const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
+const toggleDetailViewIconButtonKey =
+    Key('$_prefix.toggle_detail_view_icon_button');
 
 // drawer items
 const homeDrawer = Key('$_prefix.drawer.home');

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,7 @@ class MainPage extends ConsumerWidget {
               'oath_add_account',
               'oath_icon_pack_dialog',
               'android_qr_scanner_view',
+              'android_alert_dialog'
             ].contains(route.settings.name);
       });
     });
@@ -119,19 +120,7 @@ class MainPage extends ConsumerWidget {
             data: (data) {
               final section = ref.watch(currentSectionProvider);
               final capabilities = section.capabilities;
-              if (data.info.supportedCapabilities.isEmpty &&
-                  data.name == 'Unrecognized device') {
-                return HomeMessagePage(
-                  centered: true,
-                  graphic: Icon(
-                    Symbols.help,
-                    size: 96,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  header: l10n.s_yk_not_recognized,
-                );
-              } else if (section.getAvailability(data) ==
-                  Availability.unsupported) {
+              if (section.getAvailability(data) == Availability.unsupported) {
                 return MessagePage(
                   title: section.getDisplayName(l10n),
                   capabilities: capabilities,

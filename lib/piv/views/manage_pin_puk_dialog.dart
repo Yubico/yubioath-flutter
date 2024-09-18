@@ -22,6 +22,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -60,14 +61,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   bool _isObscureConfirm = true;
   late final bool _defaultPinUsed;
   late final bool _defaultPukUsed;
-  late final int _minPinLen;
 
   @override
   void initState() {
     super.initState();
 
-    // Old YubiKeys allowed a 4 digit PIN
-    _minPinLen = widget.pivState.version.isAtLeast(4, 3, 1) ? 6 : 4;
     _defaultPinUsed =
         widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
     _defaultPukUsed =
@@ -162,9 +160,21 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final showDefaultPukUsed =
         widget.target != ManageTarget.pin && _defaultPukUsed;
 
-    final hasPinComplexity =
-        ref.read(currentDeviceDataProvider).valueOrNull?.info.pinComplexity ??
-            false;
+    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
+    final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
+        .contains(deviceData?.info.formFactor);
+
+    final isFipsCapable =
+        deviceData?.info.getFipsStatus(Capability.piv).$1 ?? false;
+
+    // Old YubiKeys allowed a 4 digit PIN
+    final currentMinPinLen = isFipsCapable
+        ? 8
+        : widget.pivState.version.isAtLeast(4, 3, 1)
+            ? 6
+            : 4;
+    final newMinPinLen = currentMinPinLen > 4 ? currentMinPinLen : 6;
 
     return ResponsiveDialog(
       title: Text(titleText),
@@ -206,7 +216,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     ? l10n.s_current_pin
                     : l10n.s_current_puk,
                 errorText: _pinIsBlocked
-                    ? (widget.target == ManageTarget.pin
+                    ? (widget.target == ManageTarget.pin && !isBio
                         ? l10n.l_piv_pin_blocked
                         : l10n.l_piv_pin_puk_blocked)
                     : (_currentIsWrong
@@ -242,10 +252,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
             Text(hasPinComplexity
                 ? l10n.p_enter_new_piv_pin_puk_complexity_active(
                     widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                    newMinPinLen,
                     '123456')
-                : l10n.p_enter_new_piv_pin_puk(widget.target == ManageTarget.puk
-                    ? l10n.s_puk
-                    : l10n.s_pin)),
+                : l10n.p_enter_new_piv_pin_puk(
+                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                    newMinPinLen)),
             AppTextField(
               key: keys.newPinPukField,
               autofocus: showDefaultPinUsed || showDefaultPukUsed,
@@ -276,7 +287,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureNew ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureNew ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                enabled: currentPinLen >= _minPinLen,
+                enabled: currentPinLen >= currentMinPinLen ||
+                    (isFipsCapable && showDefaultPinUsed),
               ),
               textInputAction: TextInputAction.next,
               onChanged: (value) {
@@ -316,7 +328,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       ? (_isObscureConfirm ? l10n.s_show_pin : l10n.s_hide_pin)
                       : (_isObscureConfirm ? l10n.s_show_puk : l10n.s_hide_puk),
                 ),
-                enabled: currentPinLen >= _minPinLen && newPinLen >= 6,
+                enabled: newPinLen >= newMinPinLen,
                 errorText:
                     newPinLen == _confirmPin.length && newPin != _confirmPin
                         ? (widget.target == ManageTarget.pin ||

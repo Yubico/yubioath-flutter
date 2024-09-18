@@ -310,7 +310,26 @@ class PivActions extends ConsumerWidget {
 }
 
 List<ActionItem> buildSlotActions(
-    PivState pivState, PivSlot slot, AppLocalizations l10n) {
+    PivState pivState, PivSlot slot, bool fipsUnready, AppLocalizations l10n) {
+  if (fipsUnready) {
+    return [
+      ActionItem(
+        key: keys.generateAction,
+        feature: features.slotsGenerate,
+        icon: const Icon(Symbols.add),
+        actionStyle: ActionStyle.primary,
+        title: l10n.s_generate_key,
+        subtitle: l10n.l_change_defaults,
+      ),
+      ActionItem(
+        key: keys.importAction,
+        feature: features.slotsImport,
+        icon: const Icon(Symbols.file_download),
+        title: l10n.l_import_file,
+        subtitle: l10n.l_change_defaults,
+      ),
+    ];
+  }
   final hasCert = slot.certInfo != null;
   final hasKey = slot.metadata != null;
   final canDeleteOrMoveKey = hasKey && pivState.version.isAtLeast(5, 7);

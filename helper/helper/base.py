@@ -27,6 +27,12 @@ def encode_bytes(value: bytes) -> str:
 decode_bytes = bytes.fromhex
 
 
+class RpcResponse:
+    def __init__(self, body, flags=None):
+        self.body = body
+        self.flags = flags or []
+
+
 class RpcException(Exception):
     """An exception that is returned as the result of an RPC command.i
 
@@ -116,16 +122,20 @@ class RpcNode:
         try:
             if target:
                 traversed += [target[0]]
-                return self.get_child(target[0])(
+                response = self.get_child(target[0])(
                     action, target[1:], params, event, signal, traversed
                 )
-            if action in self.list_actions():
-                return self.get_action(action)(params, event, signal)
-            if action in self.list_children():
+            elif action in self.list_actions():
+                response = self.get_action(action)(params, event, signal)
+            elif action in self.list_children():
                 traversed += [action]
-                return self.get_child(action)(
+                response = self.get_child(action)(
                     "get", [], params, event, signal, traversed
                 )
+
+            if isinstance(response, RpcResponse):
+                return response
+            return RpcResponse(response)
         except ChildResetException as e:
             self._close_child()
             raise StateResetException(e.message, traversed)
