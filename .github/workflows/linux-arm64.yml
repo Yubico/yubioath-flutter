@@ -34,8 +34,8 @@ jobs:
         which python
         which python3
         echo $PATH
-        python -m ensurepip --user
-        python -m pip install -U pip pipx
+        python3 -m ensurepip --user
+        python3 -m pip install -U pip pipx
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
@@ -49,7 +49,7 @@ jobs:
 
     - name: Check app versions
       run: |
-        python set-version.py
+        python3 set-version.py
         git diff --exit-code
 
     - name: Cache helper
