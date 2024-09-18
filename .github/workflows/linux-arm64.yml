@@ -32,7 +32,7 @@ jobs:
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
         python -m ensurepip --user
-        python -m pip install -U pip pipx
+        python -m pip install -U pip pipx setuptools
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
