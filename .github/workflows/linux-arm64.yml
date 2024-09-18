@@ -19,7 +19,7 @@ jobs:
       run: |
         export PYVER_MINOR=${PYVER%.*}
         echo "PYVER_MINOR: $PYVER_MINOR"
-        apt-get update
+        sudo apt-get update
         sudo apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         sudo add-apt-repository -y ppa:git-core/ppa
         sudo add-apt-repository -y ppa:deadsnakes/ppa
@@ -31,11 +31,9 @@ jobs:
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
-        which python
-        which python3
-        echo $PATH
-        python3 -m ensurepip --user
-        python3 -m pip install -U pip pipx
+        py -m pip install --upgrade pip
+        python -m ensurepip --user
+        python -m pip install -U pip pipx
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
