@@ -23,7 +23,7 @@ jobs:
         sudo apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         sudo add-apt-repository -y ppa:git-core/ppa
         sudo add-apt-repository -y ppa:deadsnakes/ppa
-        sudo apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv ython$PYVER_MINOR-distutils
+        sudo apt-get install -qq git python3.12-dev python3.12-venv python3.12-distutils
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python
         sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
@@ -31,7 +31,6 @@ jobs:
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
-        py -m pip install --upgrade pip
         python -m ensurepip --user
         python -m pip install -U pip pipx
 
