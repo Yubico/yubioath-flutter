@@ -31,8 +31,11 @@ jobs:
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
+        which python
+        which python3
+        echo $PATH
         python -m ensurepip --user
-        python -m pip install -U pip pipx setuptools
+        python -m pip install -U pip pipx
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
