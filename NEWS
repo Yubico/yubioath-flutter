@@ -1,3 +1,17 @@
+* Version 7.1.0 (released 2024-09-25)
+ ** Improved support for YubiKey Bio - Multi-protocol Edition.
+ ** Improved support for YubiKey 5.7 FIPS:
+  *** Use secure messaging (SCP11b) when needed over NFC.
+  *** Add FIPS status information to Home screen and application pages.
+  *** Disable locked features in UI while not in FIPS approved mode.
+ ** Android: Improve UI for NFC communication.
+ ** Android: Improve error messages shown in UI.
+ ** FIDO: Add button to enable Enterprise Attestation on supported devices.
+ ** UI: Add instructions for enabling NFC for NFC-restricted devices.
+ ** UI: Display PIN complexity info on Home screen for applicable devices.
+ ** UI: Add grid views for OATH and Passkey credential lists.
+ ** UI: Add toggling of visibility to the right sidebar menu.
+
 * Version 7.0.1 (released 2024-05-30) Android only release
  ** Fix: Opening the app by NFC tap needs another tap to reveal accounts.
  ** Fix: NFC devices attached to mobile phone prevent usage of USB YubiKeys.
