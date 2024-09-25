@@ -38,7 +38,7 @@
     "s_calculate": "Berechnen",
     "s_import": "Importieren",
     "s_overwrite": "Überschreiben",
-    "s_done": null,
+    "s_done": "Erledigt",
     "s_label": "Beschriftung",
     "s_name": "Name",
     "s_usb": "USB",
@@ -47,11 +47,11 @@
     "s_details": "Details",
     "s_show_window": "Fenster anzeigen",
     "s_hide_window": "Fenster verstecken",
-    "s_show_navigation": null,
+    "s_show_navigation": "Navigation anzeigen",
     "s_expand_navigation": "Navigation erweitern",
     "s_collapse_navigation": "Navigation einklappen",
-    "s_show_menu": null,
-    "s_hide_menu": null,
+    "s_show_menu": "Menü anzeigen",
+    "s_hide_menu": "Menü ausblenden",
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {
         "placeholders": {
@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Anwendung deaktiviert",
     "l_app_disabled_desc": "Aktivieren Sie die Anwendung '{app}' auf Ihrem YubiKey für Zugriff",
     "@l_app_disabled_desc": {
         "placeholders": {
@@ -230,15 +229,15 @@
     "l_no_yk_present": "Kein YubiKey vorhanden",
     "s_unknown_type": "Unbekannter Typ",
     "s_unknown_device": "Unbekanntes Gerät",
-    "s_restricted_nfc": null,
-    "l_deactivate_restricted_nfc": null,
-    "p_deactivate_restricted_nfc_desc": null,
-    "p_deactivate_restricted_nfc_footer": null,
+    "s_restricted_nfc": "NFC-Aktivierung",
+    "l_deactivate_restricted_nfc": "So aktivieren Sie NFC",
+    "p_deactivate_restricted_nfc_desc": "Verbinden Sie Ihren YubiKey für mindestens 3 Sekunden mit einer USB-Stromquelle, z. B. einem Computer.\n\nSobald er mit Strom versorgt wird, wird NFC aktiviert und ist einsatzbereit.",
+    "p_deactivate_restricted_nfc_footer": "Ihr YubiKey ist mit Restricted NFC ausgestattet, einer Funktion zum Schutz vor drahtloser Manipulation während des Transports. Dies bedeutet, dass die NFC-Funktionen vorübergehend deaktiviert sind, bis Sie sie aktivieren.",
     "s_unsupported_yk": "Nicht unterstützter YubiKey",
     "s_yk_not_recognized": "Geräte nicht erkannt",
     "p_operation_failed_try_again": "Die Aktion ist fehlgeschlagen, bitte versuchen Sie es erneut.",
-    "l_configuration_unsupported": null,
-    "p_scp_unsupported": null,
+    "l_configuration_unsupported": "Konfiguration nicht unterstützt",
+    "p_scp_unsupported": "Um über NFC zu kommunizieren, benötigt der YubiKey eine Technologie, die von diesem Telefon nicht unterstützt wird. Bitte schließen Sie den YubiKey an den USB-Anschluss des Telefons an.",
 
     "@_general_errors": {},
     "l_error_occurred": "Es ist ein Fehler aufgetreten",
@@ -325,7 +324,7 @@
     "s_ep_attestation_enabled": "Unternehmens-Beglaubigung aktiviert",
     "s_enable_ep_attestation": "Unternehmens-Beglaubigung aktivieren",
     "p_enable_ep_attestation_desc": "Dies aktiviert die Unternehmens-Beglaubigung, die es berechtigten Domains ermöglicht Ihren YubiKey eindeutig zu identifizieren.",
-    "p_enable_ep_attestation_disable_with_factory_reset": null,
+    "p_enable_ep_attestation_disable_with_factory_reset": "Einmal aktiviert, kann Enterprise Attestation nur durch einen FIDO-Werksreset deaktiviert werden.",
     "s_pin_required": "PIN erforderlich",
     "p_pin_required_desc": "Die ausgeführte Aktion erfordert die Eingabe des PIV PINs.",
     "l_piv_pin_blocked": "Gesperrt, verwenden Sie den PUK zum Zurücksetzen",
@@ -430,10 +429,10 @@
             "message": {}
         }
     },
-    "l_add_account_password_required": null,
-    "l_add_account_unlock_required": null,
-    "l_add_account_already_exists": null,
-    "l_add_account_func_missing": null,
+    "l_add_account_password_required": "Passwort erforderlich",
+    "l_add_account_unlock_required": "Freischaltung erforderlich",
+    "l_add_account_already_exists": "Konto existiert bereits",
+    "l_add_account_func_missing": "Funktionalitäten fehlen oder sind deaktiviert",
     "l_account_name_required": "Ihr Konto muss einen Namen haben",
     "l_name_already_exists": "Für diesen Aussteller existiert dieser Name bereits",
     "l_account_already_exists": "Dieses Konto existiert bereits auf dem YubiKey",
@@ -447,7 +446,7 @@
     "s_rename_account": "Konto umbenennen",
     "l_rename_account_desc": "Bearbeiten Sie den Aussteller/Namen des Kontos",
     "s_account_renamed": "Konto umbenannt",
-    "l_rename_account_failed": null,
+    "l_rename_account_failed": "Umbenennung des Kontos fehlgeschlagen: {message}",
     "@l_rename_account_failed": {
         "placeholders": {
             "message": {}
@@ -517,7 +516,7 @@
         }
     },
     "@_fingerprints": {},
-    "s_biometrics": null,
+    "s_biometrics": "Biometrische Daten",
     "l_fingerprint": "Fingerabdruck: {label}",
     "@l_fingerprint": {
         "placeholders": {
@@ -600,7 +599,7 @@
     "l_delete_certificate_or_key_desc": "Entfernen Sie das Zertifikat oder den Schlüssel von Ihrem YubiKey",
     "l_move_key": "Schlüssel verschieben",
     "l_move_key_desc": "Verschieben Sie einen Schlüssel von einem PIV-Slot in einen anderen",
-    "l_change_defaults": null,
+    "l_change_defaults": "Standard-Zugangscodes ändern",
     "s_issuer": "Aussteller",
     "s_serial": "Serial",
     "s_certificate_fingerprint": "Fingerprint",
@@ -676,10 +675,10 @@
     "p_subject_desc": "Ein Distinguished Name (DN) formtiert nach RFC 4514 Spezifikationen.",
     "l_rfc4514_invalid": "Ungültiges RFC 4514-Format",
     "rfc4514_examples": "Beispiele:\nCN=Beispielname\nCN=jschmitt,DC=beispiel,DC=net",
-    "s_allow_fingerprint": null,
+    "s_allow_fingerprint": "Fingerabdruck zulassen",
     "p_cert_options_desc": "Verwendeter Schlüssel-Algorithmus, Ausgabeformat und Ablaufdatum (nur Zertifikat).",
-    "p_cert_options_bio_desc": null,
-    "p_key_options_bio_desc": null,
+    "p_cert_options_bio_desc": "Zu verwendender Schlüsselalgorithmus, Ausgabeformat, Ablaufdatum (nur bei Zertifikaten) und ob biometrische Daten anstelle der PIN verwendet werden können.",
+    "p_key_options_bio_desc": "Erlauben Sie die Verwendung biometrischer Daten anstelle der PIN.",
     "s_overwrite_slot": "Slot überschreiben",
     "p_overwrite_slot_desc": "Damit wird vorhandener Inhalt im Slot {slot} dauerhaft überschrieben.",
     "@p_overwrite_slot_desc": {
@@ -822,7 +821,7 @@
     "s_reset": "Zurücksetzen",
     "s_factory_reset": "Werkseinstellungen",
     "l_factory_reset_desc": "YubiKey-Standardeinstellungen wiederherstellen",
-    "l_factory_reset_required": null,
+    "l_factory_reset_required": "Werksreset erforderlich",
     "l_oath_application_reset": "OATH Anwendung zurücksetzen",
     "l_fido_app_reset": "FIDO Anwendung zurückgesetzt",
     "l_reset_failed": "Fehler beim Zurücksetzen: {message}",
@@ -899,34 +898,11 @@
     "l_launch_app_on_usb_off": "Andere Anwendungen können den YubiKey über USB nutzen",
     "s_allow_screenshots": "Bildschirmfotos erlauben",
 
-    "l_nfc_dialog_tap_key": "Halten Sie Ihren Schlüssel dagegen",
-    "s_nfc_dialog_operation_success": "Erfolgreich",
-    "s_nfc_dialog_operation_failed": "Fehlgeschlagen",
-
-    "s_nfc_dialog_oath_reset": "Aktion: OATH-Anwendung zurücksetzen",
-    "s_nfc_dialog_oath_unlock": "Aktion: OATH-Anwendung entsperren",
-    "s_nfc_dialog_oath_set_password": "Aktion: OATH-Passwort setzen",
-    "s_nfc_dialog_oath_unset_password": "Aktion: OATH-Passwort entfernen",
-    "s_nfc_dialog_oath_add_account": "Aktion: neues Konto hinzufügen",
-    "s_nfc_dialog_oath_rename_account": "Aktion: Konto umbenennen",
-    "s_nfc_dialog_oath_delete_account": "Aktion: Konto löschen",
-    "s_nfc_dialog_oath_calculate_code": "Aktion: OATH-Code berechnen",
-    "s_nfc_dialog_oath_failure": "OATH-Operation fehlgeschlagen",
-    "s_nfc_dialog_oath_add_multiple_accounts": "Aktion: mehrere Konten hinzufügen",
-
-    "s_nfc_dialog_fido_reset": "Aktion: FIDO-Anwendung zurücksetzen",
-    "s_nfc_dialog_fido_unlock": "Aktion: FIDO-Anwendung entsperren",
-    "l_nfc_dialog_fido_set_pin": "Aktion: FIDO-PIN setzen oder ändern",
-    "s_nfc_dialog_fido_delete_credential": "Aktion: Passkey löschen",
-    "s_nfc_dialog_fido_delete_fingerprint": "Aktion: Fingerabdruck löschen",
-    "s_nfc_dialog_fido_rename_fingerprint": "Aktion: Fingerabdruck umbenennen",
-    "s_nfc_dialog_fido_failure": "FIDO-Operation fehlgeschlagen",
-
     "@_nfc": {},
-    "s_nfc_ready_to_scan": null,
-    "s_nfc_hold_still": null,
-    "s_nfc_tap_your_yubikey": null,
-    "l_nfc_failed_to_scan": null,
+    "s_nfc_ready_to_scan": "Bereit zum Scannen",
+    "s_nfc_hold_still": "Stillhalten\u2026",
+    "s_nfc_tap_your_yubikey": "Tippen Sie auf Ihren YubiKey",
+    "l_nfc_failed_to_scan": "Scanvorgang fehlgeschlagen, erneut versuchen",
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTP-Code wurde erfolgreich von Ihrem YubiKey in die Zwischenablage kopiert.",

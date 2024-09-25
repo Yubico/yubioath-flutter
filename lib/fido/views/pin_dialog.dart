@@ -280,6 +280,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   }
 
   void _submit() async {
+    _currentPinFocus.unfocus();
+    _newPinFocus.unfocus();
+    _confirmPinFocus.unfocus();
+
     final l10n = AppLocalizations.of(context)!;
     final oldPin = _currentPinController.text.isNotEmpty
         ? _currentPinController.text

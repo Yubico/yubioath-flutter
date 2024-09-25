@@ -114,6 +114,7 @@ def child(func=None, *, condition=None):
 
 class RpcNode:
     def __init__(self):
+        self._closed = False
         self._child = None
         self._child_name = None
 
@@ -132,6 +133,8 @@ class RpcNode:
                 response = self.get_child(action)(
                     "get", [], params, event, signal, traversed
                 )
+            else:
+                raise NoSuchActionException(action)
 
             if isinstance(response, RpcResponse):
                 return response
@@ -143,11 +146,16 @@ class RpcNode:
             raise  # Prevent catching this as a ValueError below
         except ValueError as e:
             raise InvalidParametersException(e)
-        raise NoSuchActionException(action)
 
     def close(self):
+        logger.debug(f"Closing node {self}")
+        self._closed = True
         if self._child:
             self._close_child()
+
+    @property
+    def closed(self):
+        return self._closed
 
     def get_data(self):
         return dict()
@@ -208,7 +216,7 @@ class RpcNode:
         if self._child and self._child_name != name:
             self._close_child()
 
-        if not self._child:
+        if not self._child or self._child.closed:
             self._child = self.create_child(name)
             self._child_name = name
             logger.debug("created child: %s", name)

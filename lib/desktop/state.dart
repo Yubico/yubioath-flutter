@@ -261,15 +261,10 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
         state.getAvailability(data) != Availability.enabled) {
       state = Section.passkeys;
     }
-    if (state.getAvailability(data) != Availability.unsupported) {
-      // Keep current app
-      return;
+    if (state.getAvailability(data) != Availability.enabled) {
+      // Default to home if app is not enabled
+      state = Section.home;
     }
-
-    state = _supportedSections.firstWhere(
-      (app) => app.getAvailability(data) == Availability.enabled,
-      orElse: () => _supportedSections.first,
-    );
   }
 
   static Section _fromName(String? name, List<Section> supportedSections) =>

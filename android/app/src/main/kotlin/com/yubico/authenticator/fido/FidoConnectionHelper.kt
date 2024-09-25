@@ -16,9 +16,6 @@
 
 package com.yubico.authenticator.fido
 
-import com.yubico.authenticator.DialogIcon
-import com.yubico.authenticator.DialogManager
-import com.yubico.authenticator.DialogTitle
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
@@ -27,20 +24,22 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.util.Result
 import org.slf4j.LoggerFactory
+import java.util.TimerTask
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
 
-class FidoConnectionHelper(
-    private val deviceManager: DeviceManager,
-    private val dialogManager: DialogManager
-) {
+class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: FidoAction? = null
 
-    fun invokePending(fidoSession: YubiKitFidoSession) {
+    fun invokePending(fidoSession: YubiKitFidoSession): Boolean {
+        var requestHandled = true
         pendingAction?.let { action ->
-            action.invoke(Result.success(fidoSession))
             pendingAction = null
+            // it is the pending action who handles this request
+            requestHandled = false
+            action.invoke(Result.success(fidoSession))
         }
+        return requestHandled
     }
 
     fun cancelPending() {
@@ -51,14 +50,18 @@ class FidoConnectionHelper(
     }
 
     suspend fun <T> useSession(
-        actionDescription: FidoActionDescription,
         updateDeviceInfo: Boolean = false,
-        action: (YubiKitFidoSession) -> T
+        block: (YubiKitFidoSession) -> T
     ): T {
         FidoManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
-            onNfc = { useSessionNfc(actionDescription,action) },
-            onUsb = { useSessionUsb(it, updateDeviceInfo, action) })
+            onUsb = { useSessionUsb(it, updateDeviceInfo, block) },
+            onNfc = { useSessionNfc(block) },
+            onCancelled = {
+                pendingAction?.invoke(Result.failure(CancellationException()))
+                pendingAction = null
+            }
+        )
     }
 
     suspend fun <T> useSessionUsb(
@@ -69,14 +72,13 @@ class FidoConnectionHelper(
         block(YubiKitFidoSession(it))
     }.also {
         if (updateDeviceInfo) {
-            deviceManager.setDeviceInfo(getDeviceInfo(device))
+            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
         }
     }
 
     suspend fun <T> useSessionNfc(
-        actionDescription: FidoActionDescription,
         block: (YubiKitFidoSession) -> T
-    ): T {
+    ): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
@@ -84,23 +86,13 @@ class FidoConnectionHelper(
                         block.invoke(it.value)
                     })
                 }
-                dialogManager.showDialog(
-                    DialogIcon.Nfc,
-                    DialogTitle.TapKey,
-                    actionDescription.id
-                ) {
-                    logger.debug("Cancelled Dialog {}", actionDescription.name)
-                    pendingAction?.invoke(Result.failure(CancellationException()))
-                    pendingAction = null
-                }
             }
-            return result
+            return Result.success(result!!)
         } catch (cancelled: CancellationException) {
-            throw cancelled
+            return Result.failure(cancelled)
         } catch (error: Throwable) {
-            throw error
-        } finally {
-            dialogManager.closeDialog()
+            logger.error("Exception during action: ", error)
+            return Result.failure(error)
         }
     }
 

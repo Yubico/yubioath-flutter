@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Application disabled",
     "l_app_disabled_desc": "Enable the '{app}' application on your YubiKey to access",
     "@l_app_disabled_desc": {
         "placeholders": {
@@ -898,29 +897,6 @@
     "l_launch_app_on_usb_on": "This prevents other apps from using the YubiKey over USB",
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
-
-    "l_nfc_dialog_tap_key": "Tap and hold your key",
-    "s_nfc_dialog_operation_success": "Success",
-    "s_nfc_dialog_operation_failed": "Failed",
-
-    "s_nfc_dialog_oath_reset": "Action: reset OATH application",
-    "s_nfc_dialog_oath_unlock": "Action: unlock OATH application",
-    "s_nfc_dialog_oath_set_password": "Action: set OATH password",
-    "s_nfc_dialog_oath_unset_password": "Action: remove OATH password",
-    "s_nfc_dialog_oath_add_account": "Action: add new account",
-    "s_nfc_dialog_oath_rename_account": "Action: rename account",
-    "s_nfc_dialog_oath_delete_account": "Action: delete account",
-    "s_nfc_dialog_oath_calculate_code": "Action: calculate OATH code",
-    "s_nfc_dialog_oath_failure": "OATH operation failed",
-    "s_nfc_dialog_oath_add_multiple_accounts": "Action: add multiple accounts",
-
-    "s_nfc_dialog_fido_reset": "Action: reset FIDO application",
-    "s_nfc_dialog_fido_unlock": "Action: unlock FIDO application",
-    "l_nfc_dialog_fido_set_pin": "Action: set or change the FIDO PIN",
-    "s_nfc_dialog_fido_delete_credential": "Action: delete Passkey",
-    "s_nfc_dialog_fido_delete_fingerprint": "Action: delete fingerprint",
-    "s_nfc_dialog_fido_rename_fingerprint": "Action: rename fingerprint",
-    "s_nfc_dialog_fido_failure": "FIDO operation failed",
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Ready to scan",

@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.fido
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const val dialogDescriptionFidoIndex = 200
+import 'nfc_overlay.dart';
 
-enum class FidoActionDescription(private val value: Int) {
-    Reset(0),
-    Unlock(1),
-    SetPin(2),
-    DeleteCredential(3),
-    DeleteFingerprint(4),
-    RenameFingerprint(5),
-    RegisterFingerprint(6),
-    EnableEnterpriseAttestation(7),
-    ActionFailure(8);
+class MethodChannelNotifier extends Notifier<void> {
+  final MethodChannel _channel;
 
-    val id: Int
-        get() = value + dialogDescriptionFidoIndex
+  MethodChannelNotifier(this._channel);
+
+  @override
+  void build() {}
+
+  Future<dynamic> invoke(String name,
+      [Map<String, dynamic> args = const {}]) async {
+    final result = await _channel.invokeMethod(name, args);
+    await ref.read(nfcOverlay.notifier).waitForHide();
+    return result;
+  }
 }

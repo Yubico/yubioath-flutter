@@ -38,7 +38,7 @@
     "s_calculate": "Tính toán",
     "s_import": "Nhập khẩu",
     "s_overwrite": "Ghi đè",
-    "s_done": null,
+    "s_done": "Xong",
     "s_label": "Nhãn",
     "s_name": "Tên",
     "s_usb": "USB",
@@ -47,11 +47,11 @@
     "s_details": "Chi tiết",
     "s_show_window": "Hiển thị cửa sổ",
     "s_hide_window": "Ẩn cửa sổ",
-    "s_show_navigation": null,
+    "s_show_navigation": "Hiển thị điều hướng",
     "s_expand_navigation": "Mở rộng điều hướng",
     "s_collapse_navigation": "Thu gọn điều hướng",
-    "s_show_menu": null,
-    "s_hide_menu": null,
+    "s_show_menu": "Hiển thị thực đơn",
+    "s_hide_menu": "Ẩn thực đơn",
     "q_rename_target": "Đổi tên {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -203,7 +203,6 @@
             "app": {}
         }
     },
-    "s_app_disabled": "Ứng dụng đã bị tắt",
     "l_app_disabled_desc": "Bật ứng dụng '{app}' trên YubiKey của bạn để truy cập",
     "@l_app_disabled_desc": {
         "placeholders": {
@@ -237,8 +236,8 @@
     "s_unsupported_yk": "YubiKey không được hỗ trợ",
     "s_yk_not_recognized": "Thiết bị không được nhận diện",
     "p_operation_failed_try_again": "Thao tác không thành công, vui lòng thử lại.",
-    "l_configuration_unsupported": null,
-    "p_scp_unsupported": null,
+    "l_configuration_unsupported": "Cấu hình không được hỗ trợ",
+    "p_scp_unsupported": "Để giao tiếp qua NFC, YubiKey yêu cầu công nghệ không được điện thoại này hỗ trợ. Vui lòng cắm YubiKey vào cổng USB của điện thoại.",
 
     "@_general_errors": {},
     "l_error_occurred": "Đã xảy ra lỗi",
@@ -430,10 +429,10 @@
             "message": {}
         }
     },
-    "l_add_account_password_required": null,
-    "l_add_account_unlock_required": null,
-    "l_add_account_already_exists": null,
-    "l_add_account_func_missing": null,
+    "l_add_account_password_required": "Yêu cầu mật khẩu",
+    "l_add_account_unlock_required": "Yêu cầu mở khóa",
+    "l_add_account_already_exists": "Tài khoản đã tồn tại",
+    "l_add_account_func_missing": "Chức năng bị thiếu hoặc bị vô hiệu hóa",
     "l_account_name_required": "Tài khoản của bạn phải có tên",
     "l_name_already_exists": "Tên này đã tồn tại cho nhà phát hành",
     "l_account_already_exists": "Tài khoản này đã tồn tại trên YubiKey",
@@ -447,7 +446,7 @@
     "s_rename_account": "Đổi tên tài khoản",
     "l_rename_account_desc": "Chỉnh sửa nhà phát hành/tên của tài khoản",
     "s_account_renamed": "Tài khoản đã được đổi tên",
-    "l_rename_account_failed": null,
+    "l_rename_account_failed": "Đổi tên tài khoản không thành công: {message}",
     "@l_rename_account_failed": {
         "placeholders": {
             "message": {}
@@ -600,7 +599,7 @@
     "l_delete_certificate_or_key_desc": "Xóa chứng chỉ hoặc khóa khỏi YubiKey",
     "l_move_key": "Di chuyển khóa",
     "l_move_key_desc": "Di chuyển một khóa từ khe PIV này sang khe khác",
-    "l_change_defaults": null,
+    "l_change_defaults": "Thay đổi mã truy cập mặc định",
     "s_issuer": "Nhà phát hành",
     "s_serial": "Số serial",
     "s_certificate_fingerprint": "Dấu vân tay",
@@ -899,34 +898,11 @@
     "l_launch_app_on_usb_off": "Các ứng dụng khác có thể sử dụng YubiKey qua USB",
     "s_allow_screenshots": "Cho phép chụp ảnh màn hình",
 
-    "l_nfc_dialog_tap_key": "Chạm và giữ khóa của bạn",
-    "s_nfc_dialog_operation_success": "Thành công",
-    "s_nfc_dialog_operation_failed": "Thất bại",
-
-    "s_nfc_dialog_oath_reset": "Hành động: đặt lại ứng dụng OATH",
-    "s_nfc_dialog_oath_unlock": "Hành động: mở khóa ứng dụng OATH",
-    "s_nfc_dialog_oath_set_password": "Hành động: đặt mật khẩu OATH",
-    "s_nfc_dialog_oath_unset_password": "Hành động: xóa mật khẩu OATH",
-    "s_nfc_dialog_oath_add_account": "Hành động: thêm tài khoản mới",
-    "s_nfc_dialog_oath_rename_account": "Hành động: đổi tên tài khoản",
-    "s_nfc_dialog_oath_delete_account": "Hành động: xóa tài khoản",
-    "s_nfc_dialog_oath_calculate_code": "Hành động: tính toán mã OATH",
-    "s_nfc_dialog_oath_failure": "Hành động OATH thất bại",
-    "s_nfc_dialog_oath_add_multiple_accounts": "Hành động: thêm nhiều tài khoản",
-
-    "s_nfc_dialog_fido_reset": "Hành động: đặt lại ứng dụng FIDO",
-    "s_nfc_dialog_fido_unlock": "Hành động: mở khóa ứng dụng FIDO",
-    "l_nfc_dialog_fido_set_pin": "Hành động: đặt hoặc thay đổi PIN FIDO",
-    "s_nfc_dialog_fido_delete_credential": "Hành động: xóa Passkey",
-    "s_nfc_dialog_fido_delete_fingerprint": "Hành động: xóa dấu vân tay",
-    "s_nfc_dialog_fido_rename_fingerprint": "Hành động: đổi tên dấu vân tay",
-    "s_nfc_dialog_fido_failure": "Hành động FIDO thất bại",
-
     "@_nfc": {},
-    "s_nfc_ready_to_scan": null,
-    "s_nfc_hold_still": null,
-    "s_nfc_tap_your_yubikey": null,
-    "l_nfc_failed_to_scan": null,
+    "s_nfc_ready_to_scan": "Sẵn sàng để quét",
+    "s_nfc_hold_still": "Giữ yên\u2026",
+    "s_nfc_tap_your_yubikey": "Nhấn vào YubiKey của bạn",
+    "l_nfc_failed_to_scan": "Không quét được, hãy thử lại",
 
     "@_ndef": {},
     "p_ndef_set_otp": "Đã sao chép mã OTP từ YubiKey vào clipboard.",

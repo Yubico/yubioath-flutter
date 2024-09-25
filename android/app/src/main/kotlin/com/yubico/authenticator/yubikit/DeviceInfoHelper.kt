@@ -47,17 +47,17 @@ class DeviceInfoHelper {
         private val restrictedNfcBytes =
             byteArrayOf(0x00, 0x1F, 0xD1.toByte(), 0x01, 0x1b, 0x55, 0x04) + uri
 
-        suspend fun getDeviceInfo(device: YubiKeyDevice): Info? {
+        suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
             SessionVersionOverride.set(null)
             var deviceInfo = readDeviceInfo(device)
-            if (deviceInfo?.version?.major == 0.toByte()) {
+            if (deviceInfo.version.major == 0.toByte()) {
                 SessionVersionOverride.set(Version(5, 7, 2))
                 deviceInfo = readDeviceInfo(device)
             }
             return deviceInfo
         }
 
-        private suspend fun readDeviceInfo(device: YubiKeyDevice): Info? {
+        private suspend fun readDeviceInfo(device: YubiKeyDevice): Info {
             val pid = (device as? UsbYubiKeyDevice)?.pid
 
             val deviceInfo = runCatching {
@@ -106,8 +106,8 @@ class DeviceInfoHelper {
                         }
                 } catch (e: Exception) {
                     // no smart card connectivity
-                    logger.error("Failure getting device info", e)
-                    return null
+                    logger.error("Failure getting device info: ", e)
+                    throw e
                 }
             }
 

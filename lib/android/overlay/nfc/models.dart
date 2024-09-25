@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator
+import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-import com.yubico.yubikit.core.YubiKeyDevice
+part 'models.freezed.dart';
 
-/**
- * Provides behavior to run when a YubiKey is inserted/tapped for a specific view of the app.
- */
-abstract class AppContextManager {
-    abstract suspend fun processYubiKey(device: YubiKeyDevice): Boolean
-
-    open fun dispose() {}
-
-    open fun onPause() {}
-
-    open fun onError(e: Exception) {}
+@freezed
+class NfcOverlayWidgetProperties with _$NfcOverlayWidgetProperties {
+  factory NfcOverlayWidgetProperties({
+    required Widget child,
+    @Default(false) bool visible,
+    @Default(false) bool hasCloseButton,
+  }) = _NfcOverlayWidgetProperties;
 }
-
-class ContextDisposedException : Exception()

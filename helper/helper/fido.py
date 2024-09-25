@@ -91,6 +91,14 @@ class Ctap2Node(RpcNode):
         self.client_pin = ClientPin(self.ctap)
         self._token = None
 
+    def __call__(self, *args, **kwargs):
+        try:
+            return super().__call__(*args, **kwargs)
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_INVALID:
+                raise AuthRequiredException()
+            raise
+
     def get_data(self):
         self._info = self.ctap.get_info()
         logger.debug(f"Info: {self._info}")
@@ -195,7 +203,7 @@ class Ctap2Node(RpcNode):
             raise
         self._info = self.ctap.get_info()
         self._token = None
-        return RpcResponse(dict(), ["device_info"])
+        return RpcResponse(dict(), ["device_info", "device_closed"])
 
     @action(condition=lambda self: self._info.options["clientPin"])
     def unlock(self, params, event, signal):

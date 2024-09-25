@@ -69,11 +69,36 @@ class _AndroidClipboard extends AppClipboard {
   }
 }
 
-class NfcStateNotifier extends StateNotifier<bool> {
-  NfcStateNotifier() : super(false);
+class NfcAdapterState extends StateNotifier<bool> {
+  NfcAdapterState() : super(false);
 
-  void setNfcEnabled(bool value) {
+  void enable(bool value) {
     state = value;
+  }
+}
+
+enum NfcState {
+  disabled,
+  idle,
+  ongoing,
+  success,
+  failure,
+}
+
+class NfcStateNotifier extends StateNotifier<NfcState> {
+  NfcStateNotifier() : super(NfcState.disabled);
+
+  void set(int stateValue) {
+    var newState = switch (stateValue) {
+      0 => NfcState.disabled,
+      1 => NfcState.idle,
+      2 => NfcState.ongoing,
+      3 => NfcState.success,
+      4 => NfcState.failure,
+      _ => NfcState.disabled
+    };
+
+    state = newState;
   }
 }
 
@@ -83,8 +108,11 @@ final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
 
-final androidNfcStateProvider =
-    StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());
+final androidNfcAdapterState =
+    StateNotifierProvider<NfcAdapterState, bool>((ref) => NfcAdapterState());
+
+final androidNfcState = StateNotifierProvider<NfcStateNotifier, NfcState>(
+    (ref) => NfcStateNotifier());
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
@@ -191,6 +219,7 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   static const _prefNfcOpenApp = 'prefNfcOpenApp';
   static const _prefNfcCopyOtp = 'prefNfcCopyOtp';
   final SharedPreferences _prefs;
+
   NfcTapActionNotifier._(this._prefs, super._state);
 
   factory NfcTapActionNotifier(SharedPreferences prefs) {
@@ -232,6 +261,7 @@ class NfcKbdLayoutNotifier extends StateNotifier<String> {
   static const String _defaultClipKbdLayout = 'US';
   static const _prefClipKbdLayout = 'prefClipKbdLayout';
   final SharedPreferences _prefs;
+
   NfcKbdLayoutNotifier(this._prefs)
       : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
 
@@ -250,6 +280,7 @@ final androidNfcBypassTouchProvider =
 class NfcBypassTouchNotifier extends StateNotifier<bool> {
   static const _prefNfcBypassTouch = 'prefNfcBypassTouch';
   final SharedPreferences _prefs;
+
   NfcBypassTouchNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
 
@@ -268,6 +299,7 @@ final androidNfcSilenceSoundsProvider =
 class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
   static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
   final SharedPreferences _prefs;
+
   NfcSilenceSoundsNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
 
@@ -286,6 +318,7 @@ final androidUsbLaunchAppProvider =
 class UsbLaunchAppNotifier extends StateNotifier<bool> {
   static const _prefUsbOpenApp = 'prefUsbOpenApp';
   final SharedPreferences _prefs;
+
   UsbLaunchAppNotifier(this._prefs)
       : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
 

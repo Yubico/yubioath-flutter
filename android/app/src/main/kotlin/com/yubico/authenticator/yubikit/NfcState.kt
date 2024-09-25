@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package com.yubico.authenticator.oath
+package com.yubico.authenticator.yubikit
 
-const val dialogDescriptionOathIndex = 100
-
-enum class OathActionDescription(private val value: Int) {
-    Reset(0),
-    Unlock(1),
-    SetPassword(2),
-    UnsetPassword(3),
-    AddAccount(4),
-    RenameAccount(5),
-    DeleteAccount(6),
-    CalculateCode(7),
-    ActionFailure(8),
-    AddMultipleAccounts(9);
-
-    val id: Int
-        get() = value + dialogDescriptionOathIndex
+enum class NfcState(val value: Int) {
+    DISABLED(0),
+    IDLE(1),
+    ONGOING(2),
+    SUCCESS(3),
+    FAILURE(4)
 }
