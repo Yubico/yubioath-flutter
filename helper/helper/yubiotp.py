@@ -30,7 +30,6 @@ from ykman.otp import generate_static_pw, format_csv
 from yubikit.oath import parse_b32_key
 from ykman.scancodes import KEYBOARD_LAYOUT, encode
 
-from typing import Dict
 import struct
 
 _FAIL_MSG = (
@@ -46,7 +45,7 @@ class YubiOtpNode(RpcNode):
 
     def get_data(self):
         state = self.session.get_config_state()
-        data: Dict[str, bool] = {}
+        data: dict[str, bool] = {}
         try:
             data.update(
                 slot1_configured=state.is_configured(SLOT.ONE),
@@ -64,7 +63,7 @@ class YubiOtpNode(RpcNode):
         return data
 
     @action
-    def swap(self, params, event, signal):
+    def swap(self):
         try:
             self.session.swap_slots()
         except CommandError:
@@ -80,27 +79,33 @@ class YubiOtpNode(RpcNode):
         return SlotNode(self.session, SLOT.TWO)
 
     @action(closes_child=False)
-    def serial_modhex(self, params, event, signal):
-        serial = params["serial"]
+    def serial_modhex(self, serial: int):
         return dict(encoded=modhex_encode(b"\xff\x00" + struct.pack(b">I", serial)))
 
     @action(closes_child=False)
-    def generate_static(self, params, event, signal):
-        layout, length = params["layout"], int(params["length"])
+    def generate_static(self, length: int, layout: str):
         return dict(password=generate_static_pw(length, KEYBOARD_LAYOUT[layout]))
 
     @action(closes_child=False)
-    def keyboard_layouts(self, params, event, signal):
+    def keyboard_layouts(self):
         return {layout.name: [sc for sc in layout.value] for layout in KEYBOARD_LAYOUT}
 
     @action(closes_child=False)
-    def format_yubiotp_csv(self, params, even, signal):
-        serial = params["serial"]
-        public_id = modhex_decode(params["public_id"])
-        private_id = bytes.fromhex(params["private_id"])
-        key = bytes.fromhex(params["key"])
-
-        return dict(csv=format_csv(serial, public_id, private_id, key))
+    def format_yubiotp_csv(
+        self,
+        serial: int,
+        public_id: str,
+        private_id: str,
+        key: str,
+    ):
+        return dict(
+            csv=format_csv(
+                serial,
+                modhex_decode(public_id),
+                bytes.fromhex(private_id),
+                bytes.fromhex(key),
+            )
+        )
 
 
 _CONFIG_TYPES = dict(
@@ -121,7 +126,7 @@ class SlotNode(RpcNode):
 
     def get_data(self):
         self._state = self.session.get_config_state()
-        data: Dict[str, bool] = {}
+        data: dict[str, bool] = {}
         try:
             data.update(is_configured=self._state.is_configured(self.slot))
             data.update(is_touch_triggered=self._state.is_touch_triggered(self.slot))
@@ -149,19 +154,19 @@ class SlotNode(RpcNode):
             return False
 
     @action(condition=lambda self: self._maybe_configured(self.slot))
-    def delete(self, params, event, signal):
+    def delete(self, curr_acc_code: str | None = None):
         try:
-            access_code = params.pop("curr_acc_code", None)
-            access_code = bytes.fromhex(access_code) if access_code else None
+            access_code = bytes.fromhex(curr_acc_code) if curr_acc_code else None
             self.session.delete_slot(self.slot, access_code)
             return dict()
         except CommandError:
             raise ValueError(_FAIL_MSG)
 
     @action(condition=lambda self: self._can_calculate(self.slot))
-    def calculate(self, params, event, signal):
-        challenge = bytes.fromhex(params.pop("challenge"))
-        response = self.session.calculate_hmac_sha1(self.slot, challenge, event)
+    def calculate(self, event, challenge: str):
+        response = self.session.calculate_hmac_sha1(
+            self.slot, bytes.fromhex(challenge), event
+        )
         return dict(response=response)
 
     def _apply_options(self, config, options):
@@ -221,14 +226,11 @@ class SlotNode(RpcNode):
         return config
 
     @action
-    def put(self, params, event, signal):
-        type = params.pop("type")
-        options = params.pop("options", {})
-        access_code = params.pop("curr_acc_code", None)
-        access_code = bytes.fromhex(access_code) if access_code else None
-        args = params
-
-        config = self._get_config(type, **args)
+    def put(
+        self, type: str, options: dict = {}, curr_acc_code: str | None = None, **kwargs
+    ):
+        access_code = bytes.fromhex(curr_acc_code) if curr_acc_code else None
+        config = self._get_config(type, **kwargs)
         self._apply_options(config, options)
         try:
             self.session.put_configuration(
@@ -245,13 +247,19 @@ class SlotNode(RpcNode):
         condition=lambda self: self._state.version >= (2, 2, 0)
         and self._maybe_configured(self.slot)
     )
-    def update(self, params, event, signal):
+    def update(
+        self,
+        params,
+        acc_code: str | None = None,
+        curr_acc_code: str | None = None,
+        **kwargs
+    ):
         config = UpdateConfiguration()
-        self._apply_options(config, params)
+        self._apply_options(config, kwargs)
         self.session.update_configuration(
             self.slot,
             config,
-            params.pop("acc_code", None),
-            params.pop("cur_acc_code", None),
+            bytes.fromhex(acc_code) if acc_code else None,
+            bytes.fromhex(curr_acc_code) if curr_acc_code else None,
         )
         return dict()
