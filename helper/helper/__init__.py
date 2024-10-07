@@ -52,20 +52,21 @@ def _handle_incoming(event, recv, error, cmd_queue):
         if not request:
             break
         try:
-            kind = request["kind"]
-            if kind == "signal":
-                # Cancel signals are handled here, the rest forwarded
-                if request["status"] == "cancel":
-                    event.set()
-                else:
-                    # Ignore other signals
-                    logger.error("Unhandled signal: %r", request)
-            elif kind == "command":
-                cmd_queue.join()  # Wait for existing command to complete
-                event.clear()  # Reset event for next command
-                cmd_queue.put(request)
-            else:
-                error("invalid-command", "Unsupported request type")
+            match request["kind"]:
+                case "signal":
+                    # Cancel signals are handled here, the rest forwarded
+                    if request["status"] == "cancel":
+                        logger.debug("Got cancel signal!")
+                        event.set()
+                    else:
+                        # Ignore other signals
+                        logger.error("Unhandled signal: %r", request)
+                case "command":
+                    cmd_queue.join()  # Wait for existing command to complete
+                    event.clear()  # Reset event for next command
+                    cmd_queue.put(request)
+                case _:
+                    error("invalid-command", "Unsupported request type")
         except KeyError as e:
             error("invalid-command", str(e))
         except RpcException as e:
@@ -171,7 +172,10 @@ def run_rpc_socket(sock):
     def recv():
         line = b""
         while not line.endswith(b"\n"):
-            chunk = sock.recv(1024)
+            try:
+                chunk = sock.recv(1024)
+            except ConnectionError:
+                return None
             if not chunk:
                 return None
             line += chunk
