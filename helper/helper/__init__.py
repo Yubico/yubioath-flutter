@@ -17,7 +17,7 @@ from .device import RootNode
 
 from queue import Queue
 from threading import Thread, Event
-from typing import Callable, Dict, List
+from typing import Callable
 
 import json
 import logging
@@ -78,14 +78,14 @@ def _handle_incoming(event, recv, error, cmd_queue):
 
 
 def process(
-    send: Callable[[Dict], None],
-    recv: Callable[[], Dict],
-    handler: Callable[[str, List, Dict, Event, Callable[[str], None]], RpcResponse],
+    send: Callable[[dict], None],
+    recv: Callable[[], dict],
+    handler: Callable[[str, list, dict, Event, Callable[[str], None]], RpcResponse],
 ) -> None:
-    def error(status: str, message: str, body: Dict = {}):
+    def error(status: str, message: str, body: dict = {}):
         send(dict(kind="error", status=status, message=message, body=body))
 
-    def signal(status: str, body: Dict = {}):
+    def signal(status: str, body: dict = {}):
         send(dict(kind="signal", status=status, body=body))
 
     def success(response: RpcResponse):
@@ -121,8 +121,8 @@ def process(
 
 
 def run_rpc(
-    send: Callable[[Dict], None],
-    recv: Callable[[], Dict],
+    send: Callable[[dict], None],
+    recv: Callable[[], dict],
 ) -> None:
     process(send, recv, RootNode())
 

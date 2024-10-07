@@ -15,6 +15,7 @@
 from yubikit.core import InvalidPinError
 from functools import partial
 
+import inspect
 import logging
 
 logger = logging.getLogger(__name__)
@@ -127,7 +128,13 @@ class RpcNode:
                     action, target[1:], params, event, signal, traversed
                 )
             elif action in self.list_actions():
-                response = self.get_action(action)(params, event, signal)
+                action_f = self.get_action(action)
+                args = inspect.signature(action_f).parameters
+                if "event" in args:
+                    params["event"] = event
+                if "signal" in args:
+                    params["signal"] = signal
+                response = action_f(**params)
             elif action in self.list_children():
                 traversed += [action]
                 response = self.get_child(action)(
@@ -224,7 +231,7 @@ class RpcNode:
         return self._child
 
     @action
-    def get(self, params, event, signal):
+    def get(self):
         return dict(
             data=self.get_data(),
             actions=self.list_actions(),
