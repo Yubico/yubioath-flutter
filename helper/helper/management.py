@@ -90,15 +90,13 @@ class ManagementNode(RpcNode):
     def configure(
         self,
         reboot: bool = False,
-        cur_lock_code: str = "",
-        new_lock_code: str = "",
+        cur_lock_code: bytes | None = None,
+        new_lock_code: bytes | None = None,
         enabled_capabilities: dict = {},
         auto_eject_timeout: int | None = None,
         challenge_response_timeout: int | None = None,
         device_flags: int | None = None,
     ):
-        cur_code = bytes.fromhex(cur_lock_code) or None
-        new_code = bytes.fromhex(new_lock_code) or None
         config = DeviceConfig(
             enabled_capabilities,
             auto_eject_timeout,
@@ -106,7 +104,7 @@ class ManagementNode(RpcNode):
             DEVICE_FLAG(device_flags) if device_flags else None,
         )
         serial = self.session.read_device_info().serial
-        self.session.write_device_config(config, reboot, cur_code, new_code)
+        self.session.write_device_config(config, reboot, cur_lock_code, new_lock_code)
         flags = ["device_info"]
         if reboot:
             enabled = config.enabled_capabilities.get(TRANSPORT.USB)

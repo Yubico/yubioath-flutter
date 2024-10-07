@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcNode, action, child
+from .base import RpcNode, action, child, decode_bytes
 
 from yubikit.core import NotSupportedError, CommandError
 from yubikit.core.otp import modhex_encode, modhex_decode
@@ -95,15 +95,15 @@ class YubiOtpNode(RpcNode):
         self,
         serial: int,
         public_id: str,
-        private_id: str,
-        key: str,
+        private_id: bytes,
+        key: bytes,
     ):
         return dict(
             csv=format_csv(
                 serial,
                 modhex_decode(public_id),
-                bytes.fromhex(private_id),
-                bytes.fromhex(key),
+                private_id,
+                key,
             )
         )
 
@@ -145,19 +145,16 @@ class SlotNode(RpcNode):
             return False
 
     @action(condition=lambda self: self._maybe_configured(self.slot))
-    def delete(self, curr_acc_code: str | None = None):
+    def delete(self, curr_acc_code: bytes | None = None):
         try:
-            access_code = bytes.fromhex(curr_acc_code) if curr_acc_code else None
-            self.session.delete_slot(self.slot, access_code)
+            self.session.delete_slot(self.slot, curr_acc_code)
             return dict()
         except CommandError:
             raise ValueError(_FAIL_MSG)
 
     @action(condition=lambda self: self._can_calculate(self.slot))
-    def calculate(self, event, challenge: str):
-        response = self.session.calculate_hmac_sha1(
-            self.slot, bytes.fromhex(challenge), event
-        )
+    def calculate(self, event, challenge: bytes):
+        response = self.session.calculate_hmac_sha1(self.slot, challenge, event)
         return dict(response=response)
 
     @staticmethod
@@ -189,13 +186,13 @@ class SlotNode(RpcNode):
 
         if "token_id" in options:
             token_id, *args = options.pop("token_id")
-            config.token_id(bytes.fromhex(token_id), *args)
+            config.token_id(decode_bytes(token_id), *args)
 
     @staticmethod
     def _get_config(cfg_type: str, **kwargs) -> SlotConfiguration:
         match cfg_type:
             case "hmac_sha1":
-                return HmacSha1SlotConfiguration(bytes.fromhex(kwargs["key"]))
+                return HmacSha1SlotConfiguration(decode_bytes(kwargs["key"]))
             case "hotp":
                 return HotpSlotConfiguration(parse_b32_key(kwargs["key"]))
             case "static_password":
@@ -207,8 +204,8 @@ class SlotNode(RpcNode):
             case "yubiotp":
                 return YubiOtpSlotConfiguration(
                     fixed=modhex_decode(kwargs["public_id"]),
-                    uid=bytes.fromhex(kwargs["private_id"]),
-                    key=bytes.fromhex(kwargs["key"]),
+                    uid=decode_bytes(kwargs["private_id"]),
+                    key=decode_bytes(kwargs["key"]),
                 )
             case unsupported:
                 raise ValueError(
@@ -217,17 +214,20 @@ class SlotNode(RpcNode):
 
     @action
     def put(
-        self, type: str, options: dict = {}, curr_acc_code: str | None = None, **kwargs
+        self,
+        type: str,
+        options: dict = {},
+        curr_acc_code: bytes | None = None,
+        **kwargs,
     ):
-        access_code = bytes.fromhex(curr_acc_code) if curr_acc_code else None
         config = self._get_config(type, **kwargs)
         self._apply_options(config, options)
         try:
             self.session.put_configuration(
                 self.slot,
                 config,
-                access_code,
-                access_code,
+                curr_acc_code,
+                curr_acc_code,
             )
             return dict()
         except CommandError:
@@ -240,8 +240,8 @@ class SlotNode(RpcNode):
     def update(
         self,
         params,
-        acc_code: str | None = None,
-        curr_acc_code: str | None = None,
+        acc_code: bytes | None = None,
+        curr_acc_code: bytes | None = None,
         **kwargs,
     ):
         config = UpdateConfiguration()
@@ -249,7 +249,7 @@ class SlotNode(RpcNode):
         self.session.update_configuration(
             self.slot,
             config,
-            bytes.fromhex(acc_code) if acc_code else None,
-            bytes.fromhex(curr_acc_code) if curr_acc_code else None,
+            acc_code,
+            curr_acc_code,
         )
         return dict()

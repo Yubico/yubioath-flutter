@@ -142,13 +142,13 @@ class OathNode(RpcNode):
         else:
             return False
 
-    def _get_key(self, key: str | None, password: str | None):
+    def _get_key(self, key: bytes | None, password: str | None):
         if key and password:
             raise ValueError("Only one of 'key' and 'password' can be provided.")
         if password:
             return self.session.derive_key(password)
         if key:
-            return decode_bytes(key)
+            return key
         raise ValueError("One of 'key' and 'password' must be provided.")
 
     def _set_key_verifier(self, key):
@@ -163,7 +163,7 @@ class OathNode(RpcNode):
     @action
     def validate(
         self,
-        key: str | None = None,
+        key: bytes | None = None,
         password: str | None = None,
         remember: bool = False,
     ):
@@ -192,7 +192,7 @@ class OathNode(RpcNode):
     @action
     def set_key(
         self,
-        key: str | None = None,
+        key: bytes | None = None,
         password: str | None = None,
         remember: bool = False,
     ):
