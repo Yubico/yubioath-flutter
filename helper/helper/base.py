@@ -130,6 +130,13 @@ class RpcNode:
             elif action in self.list_actions():
                 action_f = self.get_action(action)
                 args = inspect.signature(action_f).parameters
+                # Decode any serialized bytes parameters
+                for key, param in args.items():
+                    if param.annotation in (bytes, bytes | None):
+                        value = params.get(key, None)
+                        if value is not None:
+                            params[key] = decode_bytes(value)
+                # Add event and signal if requested
                 if "event" in args:
                     params["event"] = event
                 if "signal" in args:

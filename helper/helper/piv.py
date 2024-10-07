@@ -201,9 +201,9 @@ class PivNode(RpcNode):
         return dict(status=True, authenticated=self._authenticated)
 
     @action
-    def authenticate(self, signal, key: str):
+    def authenticate(self, signal, key: bytes):
         try:
-            self._authenticate(bytes.fromhex(key), signal)
+            self._authenticate(key, signal)
             return dict(status=True)
         except ApduError as e:
             if e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED:
@@ -213,14 +213,13 @@ class PivNode(RpcNode):
     @action(condition=lambda self: self._authenticated)
     def set_key(
         self,
-        params,
-        key: str,
+        key: bytes,
         key_type: int = MANAGEMENT_KEY_TYPE.TDES,
         store_key: bool = False,
     ):
         pivman_set_mgm_key(
             self.session,
-            bytes.fromhex(key),
+            key,
             MANAGEMENT_KEY_TYPE(key_type),
             False,
             store_key,
@@ -264,9 +263,9 @@ class PivNode(RpcNode):
         return SlotsNode(self.session)
 
     @action(closes_child=False)
-    def examine_file(self, data: str, password: str | None = None):
+    def examine_file(self, data: bytes, password: str | None = None):
         try:
-            private_key, certs = _parse_file(bytes.fromhex(data), password)
+            private_key, certs = _parse_file(data, password)
             certificate = _choose_cert(certs)
 
             return dict(
@@ -461,9 +460,9 @@ class SlotNode(RpcNode):
         return dict()
 
     @action
-    def import_file(self, data: str, password: str | None = None, **kwargs):
+    def import_file(self, data: bytes, password: str | None = None, **kwargs):
         try:
-            private_key, certs = _parse_file(bytes.fromhex(data), password)
+            private_key, certs = _parse_file(data, password)
         except InvalidPasswordError:
             logger.debug("Invalid or missing password", exc_info=True)
             raise ValueError("Wrong/Missing password")
