@@ -35,6 +35,10 @@ jobs:
         echo $PATH
         python -m site
         python -m ensurepip --user
+        ls -al /usr/local/lib/python3.12 | grep dist-packages
+        ls -al /usr/lib/python3 | grep dist-packages
+        sudo chmod +775 /usr/local/lib/python3.12/dist-packages
+        sudo chmod +775 /usr/lib/python3/dist-packages
         python -m pip install -U pip pipx
 
     - name: Verify Python version
