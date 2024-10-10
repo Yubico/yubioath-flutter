@@ -33,6 +33,8 @@ jobs:
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
         echo $PATH
+        python --version
+        python3 --version
         python -m ensurepip --user
         python -m pip install -U pip pipx
 
