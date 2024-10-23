@@ -505,8 +505,13 @@ class ConnectionNode(RpcNode):
                 raise ChildResetException(str(e))
             raise
         except Exception as e:  # TODO: Replace with ConnectionError once added
-            if "Wrong" in str(e):
-                raise ChildResetException(str(e))
+            words = str(e).split()
+            try:
+                word = words[words.index("Wrong") + 1]
+                if word in ("nonce", "channel", "sequence"):
+                    raise ChildResetException(str(e))
+            except ValueError:
+                pass
             raise
 
     @property
