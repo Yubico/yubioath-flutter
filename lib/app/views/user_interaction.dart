@@ -140,8 +140,6 @@ UserInteractionController promptUserInteraction(
   void Function()? onCancel,
   bool headless = false,
 }) {
-  String a11yLabel = title + description;
-  SemanticsService.announce(a11yLabel, TextDirection.ltr);
   if (headless) {
     // No support for icon or onCancel.
     return _notificationUserInteraction(context,
@@ -159,6 +157,8 @@ UserInteractionController _dialogUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
+  String a11yLabel = '$title $description';
+  SemanticsService.announce(a11yLabel, TextDirection.ltr);
   var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(
