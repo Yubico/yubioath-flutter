@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:local_notifier/local_notifier.dart';
 
 import '../message.dart';
@@ -156,6 +157,8 @@ UserInteractionController _dialogUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
+  String a11yLabel = '$title $description';
+  SemanticsService.announce(a11yLabel, TextDirection.ltr);
   var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(
