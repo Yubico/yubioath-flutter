@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:local_notifier/local_notifier.dart';
 
 import '../message.dart';
@@ -139,6 +140,8 @@ UserInteractionController promptUserInteraction(
   void Function()? onCancel,
   bool headless = false,
 }) {
+  String a11yLabel = title + description;
+  SemanticsService.announce(a11yLabel, TextDirection.ltr);
   if (headless) {
     // No support for icon or onCancel.
     return _notificationUserInteraction(context,
