@@ -32,7 +32,7 @@
     "s_quit": "Wyjdź",
     "s_enable": "Włącz",
     "s_enabled": "Włączone",
-    "s_disabled": "Wyłączony",
+    "s_disabled": "Wyłączone",
     "s_status": "Status",
     "s_unlock": "Odblokuj",
     "s_calculate": "Oblicz",
@@ -191,8 +191,8 @@
     "s_toggle_interfaces": "Przełączanie interfejsów",
     "p_toggle_applications_desc": "Włącz lub wyłącz aplikacje przez dostępne interfejsy.",
     "p_toggle_interfaces_desc": "Włącz lub wyłącz interfejs USB.",
-    "l_toggle_applications_desc": "Włącz / wyłącz aplikacje",
-    "l_toggle_interfaces_desc": "Włącz / wyłącz interfejsy",
+    "l_toggle_applications_desc": "Włącz lub wyłącz aplikacje",
+    "l_toggle_interfaces_desc": "Włącz lub wyłącz interfejsy",
     "s_reconfiguring_yk": "Rekonfigurowanie klucza YubiKey\u2026",
     "s_config_updated": "Konfiguracja została zaktualizowana",
     "l_config_updated_reinsert": "Konfiguracja została zaktualizowana. Podłącz ponownie klucz YubiKey",
@@ -508,7 +508,7 @@
     "s_passkey_deleted": "Klucz dostępu został usunięty",
     "p_warning_delete_passkey": "Spowoduje to usunięcie klucza dostępu z YubiKey.",
     "s_search_passkeys": "Szukaj kluczy dostępu",
-    "p_passkeys_used": "{used} użytych kluczy dostępu {max} .",
+    "p_passkeys_used": "Użyto {used} z {max} kluczy dostępu.",
     "@p_passkeys_used": {
         "placeholders": {
             "used": {},
@@ -556,7 +556,7 @@
         }
     },
     "l_add_one_or_more_fps": "Dodaj do 5 odcisków palców",
-    "l_fingerprints_used": "Zarejestrowano {used}/5 odcisków palców",
+    "l_fingerprints_used": "Zarejestrowano {used} z 5 odcisków palców",
     "@l_fingerprints_used": {
         "placeholders": {
             "used": {}
@@ -586,7 +586,7 @@
     "l_certificate_exported": "Certyfikat został wyeksportowany",
     "l_select_import_file": "Wybierz plik do zaimportowania",
     "l_import_file": "Importuj plik",
-    "l_import_desc": "Importuj klucz i / lub certyfikat",
+    "l_import_desc": "Importuj klucz lub certyfikat",
     "l_import_nothing": "Nic do zaimportowania",
     "l_importing_file": "Importowanie pliku\u2026",
     "s_file_imported": "Plik został zaimportowany",
@@ -595,7 +595,7 @@
     "l_delete_certificate_desc": "Usuń certyfikat z klucza YubiKey",
     "l_delete_key": "Usuń klucz",
     "l_delete_key_desc": "Usuń klucz z YubiKey",
-    "l_delete_certificate_or_key": "Usuń certyfikat / klucz",
+    "l_delete_certificate_or_key": "Usuń certyfikat lub klucz",
     "l_delete_certificate_or_key_desc": "Usuń certyfikat lub klucz z YubiKey",
     "l_move_key": "Przenieś klucz",
     "l_move_key_desc": "Przenieś klucz pomiędzy slotami PIV",
@@ -618,8 +618,8 @@
     "s_private_key_generated": "Klucz prywatny został wygeneroewany",
     "p_select_what_to_delete": "Wybierz, co usunąć ze slotu.",
     "p_warning_delete_certificate": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu z klucza YubiKey.",
-    "p_warning_delete_key": "Uwaga! Ta czynność spowoduje usunięcie klucza prywatnego z YubiKey.",
-    "p_warning_delete_certificate_and_key": "Uwaga! Ta czynność spowoduje usunięcie certyfikatu i klucza prywatnego z YubiKey.",
+    "p_warning_delete_key": "Uwaga! Spowoduje to usunięcie klucza prywatnego z YubiKey.",
+    "p_warning_delete_certificate_and_key": "Uwaga! Spowoduje to usunięcie certyfikatu i klucza prywatnego z YubiKey.",
     "q_delete_certificate_confirm": "Usunąć certyfikat ze slotu PIV {slot}?",
     "@q_delete_certificate_confirm": {
         "placeholders": {
@@ -711,13 +711,13 @@
     "l_otp_slot_configured": "Slot jest skonfigurowany",
 
     "@_otp_slot_configurations": {},
-    "l_yubiotp_desc": "Zaprogramuj poświadczenie Yubico OTP",
+    "l_yubiotp_desc": "Skonfiguruj poświadczenie Yubico OTP",
     "s_challenge_response": "Challenge-response",
-    "l_challenge_response_desc": "Zaprogramuj poświadczenie challenge-response",
+    "l_challenge_response_desc": "Skonfiguruj poświadczenie challenge-response",
     "s_static_password": "Hasło statyczne",
     "l_static_password_desc": "Skonfiguruj hasło statyczne",
     "s_hotp": "OATH-HOTP",
-    "l_hotp_desc": "Zaprogramuj poświadczenie HMAC-SHA1",
+    "l_hotp_desc": "Skonfiguruj poświadczenie HMAC-SHA1",
     "s_public_id": "Public ID",
     "s_private_id": "Private ID",
     "s_use_serial": "Użyj numeru seryjnego",
@@ -745,7 +745,7 @@
     "l_slot_deleted": "Poświadczenie zostało usunięte",
     "s_swap": "Zmień",
     "s_swap_slots": "Zmień sloty",
-    "l_swap_slots_desc": "Zmień krótkie / długie dotknięcie",
+    "l_swap_slots_desc": "Zmień krótkie i długie dotknięcie",
     "p_swap_slots_desc": "Spowoduje to zmianę miejsc slotów.",
     "l_slots_swapped": "Sloty zostały zmienione",
     "l_slot_credential_configured": "Poświadczenie {type} zostało skonfigurowane",
@@ -765,7 +765,7 @@
     "l_append_enter_desc": "Dołącz klawisz Enter po wysłaniu kodu OTP",
 
     "@_otp_errors": {},
-    "p_otp_swap_error": "Nie udało się zamienić gniazd! Upewnij się, że klucz YubiKey nie ma ograniczonego dostępu.",
+    "p_otp_swap_error": "Nie udało się zmienić slotów! Upewnij się, że klucz YubiKey nie ma ograniczonego dostępu.",
     "l_wrong_access_code": "Kod dostępu jest nieprawidłowy",
 
     "@_otp_access_code": {},
@@ -894,7 +894,7 @@
     "l_silence_nfc_sounds_off": "Dźwięk zbliżenia NFC będzie odtwarzany",
     "s_usb_options": "Opcje USB",
     "l_launch_app_on_usb": "Uruchom po podłączeniu klucza YubiKey",
-    "l_launch_app_on_usb_on": "Inne aplikacje mogą korzystać z klucza YubiKey przez USB",
+    "l_launch_app_on_usb_on": "Inne aplikacje nie mogą korzystać z klucza YubiKey przez USB",
     "l_launch_app_on_usb_off": "Inne aplikacje mogą korzystać z klucza YubiKey przez USB",
     "s_allow_screenshots": "Zezwalaj na zrzuty ekranu",
 
