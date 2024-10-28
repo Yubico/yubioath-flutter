@@ -1,3 +1,7 @@
+* Version 7.1.1 (unreleased) Desktop-only release
+ ** Fix: Entering the wrong PIV PIN/PUK when attempting to change PIN/PUK was not handled correctly, causing extra PIN/PUK attempts to be wasted.
+ ** Fix: Add explicit screen reader announcement for "Touch your YubiKey" which wasn't being read on Windows.
+
 * Version 7.1.0 (released 2024-09-25)
  ** Improved support for YubiKey Bio - Multi-protocol Edition.
  ** Improved support for YubiKey 5.7 FIPS:
@@ -12,7 +16,7 @@
  ** UI: Add grid views for OATH and Passkey credential lists.
  ** UI: Add toggling of visibility to the right sidebar menu.
 
-* Version 7.0.1 (released 2024-05-30) Android only release
+* Version 7.0.1 (released 2024-05-30) Android-only release
  ** Fix: Opening the app by NFC tap needs another tap to reveal accounts.
  ** Fix: NFC devices attached to mobile phone prevent usage of USB YubiKeys.
  ** Fix: Invalid colors shown in customization views for Android Dynamic color.
