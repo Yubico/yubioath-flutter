@@ -99,10 +99,12 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
     _session.setErrorHandler('state-reset', (_) async {
       ref.invalidate(_sessionProvider(devicePath));
     });
-    _session.setErrorHandler('auth-required', (_) async {
+    _session.setErrorHandler('auth-required', (e) async {
       final pin = ref.read(_pinProvider(devicePath));
       if (pin != null) {
         await unlock(pin);
+      } else {
+        throw e;
       }
     });
     ref.onDispose(() {
@@ -153,6 +155,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       return unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
+        ref.invalidate(_pinProvider);
         ref.invalidateSelf();
         return PinResult.failed(FidoPinFailureReason.invalidPin(
             e.body['retries'], e.body['auth_blocked']));
