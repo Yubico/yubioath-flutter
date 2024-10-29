@@ -85,8 +85,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final currentPinLenOk =
         _currentPinController.text.length >= currentMinPinLen;
     final newPinLenOk = _newPinController.text.length >= minPinLength;
-    final isValid =
-        currentPinLenOk && newPinLenOk && _newPinController.text == _confirmPin;
+    final isValid = currentPinLenOk &&
+        newPinLenOk &&
+        _newPinController.text == _confirmPin &&
+        !_currentIsWrong;
 
     final newPinEnabled = !_isBlocked && currentPinLenOk;
     final confirmPinEnabled = !_isBlocked && currentPinLenOk && newPinLenOk;
