@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">OTP kód sa úspešne skopíroval z YubiKey do schránky.</string>
+    <string name="p_ndef_set_password">Heslo bolo úspešne skopírované z YubiKey do schránky.</string>
+    <string name="p_ndef_parse_failure">Nepodarilo sa spracovať OTP kód z YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Nepodarilo sa získať prístup k schránke pri pokuse o skopírovanie OTP kódu z YubiKey.</string>
+</resources>

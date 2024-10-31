@@ -242,6 +242,7 @@ class Ctap2Node(RpcNode):
             self._info = self.ctap.get_info()
             return RpcResponse(dict(), ["device_info"])
         except CtapError as e:
+            self._token = None
             return _handle_pin_error(e, self.client_pin)
 
     @action(condition=lambda self: Config.is_supported(self._info))
