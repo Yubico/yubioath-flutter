@@ -548,10 +548,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_symbols_icons
-      sha256: "66416c4e30bd363508e12669634fc4f3250b83b69e862de67f4f9c480cf42414"
+      sha256: a783133f87c58e10b1cc19797f7c3192ff9c2bab301c4ade90312d8f2aed01b2
       url: "https://pub.dev"
     source: hosted
-    version: "4.2785.1"
+    version: "4.2800.2"
   menu_base:
     dependency: transitive
     description:
