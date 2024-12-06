@@ -27,6 +27,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider_linux/path_provider_linux.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -125,7 +128,34 @@ Future<Widget> initialize(List<String> argv) async {
   _initLogging(args);
 
   await windowManager.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs;
+  try {
+    prefs = await SharedPreferences.getInstance();
+  } catch (error) {
+    // Attempt to repair the broken preferences file
+    String? directory;
+    if (Platform.isWindows) {
+      PathProviderWindows pathProvider = PathProviderWindows();
+      directory = await pathProvider.getApplicationSupportPath();
+    } else if (Platform.isLinux) {
+      PathProviderLinux pathProvider = PathProviderLinux();
+      directory = await pathProvider.getApplicationSupportPath();
+    }
+    if (directory == null) {
+      throw FormatException('Unable to find correct directory');
+    }
+    String appDataPath = path.join(directory, 'shared_preferences.json');
+    List<int> repairedPreferences = await _repairPreferences(appDataPath);
+    await File(appDataPath).writeAsBytes(repairedPreferences);
+
+    try {
+      prefs = await SharedPreferences.getInstance();
+    } catch (error) {
+      // Unable to repair the preferences file, therefore delete it
+      await File(appDataPath).delete();
+      prefs = await SharedPreferences.getInstance();
+    }
+  }
   final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
   final isHidden = _getIsHidden(args, prefs);
 
@@ -412,4 +442,14 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
       );
     }
   }
+}
+
+Future<List<int>> _repairPreferences(String appDataPath) async {
+  List<int> contents = await File(appDataPath).readAsBytes();
+  var contentsGrowable = new List<int>.from(contents); // Make the list growable
+
+  // Remove any NUL characters
+  contentsGrowable.removeWhere((item) => item == 0);
+
+  return contentsGrowable;
 }
