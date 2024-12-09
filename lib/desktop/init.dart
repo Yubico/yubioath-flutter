@@ -132,11 +132,7 @@ Future<Widget> initialize(List<String> argv) async {
     prefs = await SharedPreferences.getInstance();
   } catch (error) {
     // Attempt to repair the broken preferences file
-    Directory? appSupportDirectory = await getApplicationSupportDirectory();
-    var doesDirectoryExist = await appSupportDirectory.exists();
-    if (!doesDirectoryExist) {
-      throw const FormatException('Unable to find correct directory');
-    }
+    Directory appSupportDirectory = await getApplicationSupportDirectory();
     String appDataPath =
         path.join(appSupportDirectory.path, 'shared_preferences.json');
     await _repairPreferences(appDataPath);
