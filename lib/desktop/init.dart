@@ -131,16 +131,18 @@ Future<Widget> initialize(List<String> argv) async {
   try {
     prefs = await SharedPreferences.getInstance();
   } catch (error) {
-    // Attempt to repair the broken preferences file
     Directory appSupportDirectory = await getApplicationSupportDirectory();
     String appDataPath =
         path.join(appSupportDirectory.path, 'shared_preferences.json');
+    _log.warning(
+        'Failed to load the preferences file at $appDataPath. Attempting to repair it.');
     await _repairPreferences(appDataPath);
 
     try {
       prefs = await SharedPreferences.getInstance();
     } catch (error) {
-      // Unable to repair the preferences file, therefore delete it
+      _log.warning(
+          'Failed to repair the preferences file. Deleting the file and proceeding with a fresh configuration.');
       await File(appDataPath).delete();
       prefs = await SharedPreferences.getInstance();
     }
