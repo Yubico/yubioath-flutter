@@ -79,6 +79,9 @@ https://github.com/Yubico/yubikey-manager/[YubiKey Manager CLI] tool.
 The iOS version of this app is available
 https://github.com/Yubico/yubioath-ios[here].
 
+=== Localization
+If you are interested in helping out with translations for any language, you are welcome to join us at https://crowdin.com/project/yubico-authenticator[Crowdin] (no programming skills needed).
+
 === Build instructions (for developers)
 Instructions on building and packaging the app is available
 link:doc/Development.adoc[here].
