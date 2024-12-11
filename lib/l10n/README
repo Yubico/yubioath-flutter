@@ -1,0 +1,5 @@
+Yubico Authenticator is using Crowdin for all localization efforts.
+
+If you are interested in helping out with translations for any language, you are welcome to join us at https://crowdin.com/project/yubico-authenticator (no programming skills needed).
+
+NOTE: No manual editing of any non-english .arb files on GitHub. All translations go through Crowdin.
