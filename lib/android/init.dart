@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@ Future<Widget> initialize() async {
         Section.accounts,
         Section.fingerprints,
         Section.passkeys,
+        Section.home,
       ]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
@@ -121,7 +122,7 @@ Future<Widget> initialize() async {
                 // Disable unimplemented feature
                 ..setFeature(features.piv, false)
                 ..setFeature(features.otp, false)
-                ..setFeature(features.management, false);
+                ..setFeature(features.management, true);
             });
 
             // activates window state provider

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
+import '../management/models.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
@@ -36,6 +37,23 @@ final androidAllowScreenshotsProvider =
     StateNotifierProvider<AllowScreenshotsNotifier, bool>(
       (ref) => AllowScreenshotsNotifier(),
     );
+
+class DeviceInfoComparator {
+  static bool areSame(DeviceInfo? prev, DeviceInfo? next) {
+    if (prev != null && next != null) {
+      if (prev.serial == null && next.serial == null) {
+        // compare without config
+        final simpleConfig = DeviceConfig({}, 0, 0, 0);
+        return next.copyWith(config: simpleConfig) ==
+            prev.copyWith(config: simpleConfig);
+      } else {
+        // serial number based comparison
+        return prev.serial == next.serial;
+      }
+    }
+    return prev == null && next == null;
+  }
+}
 
 class AllowScreenshotsNotifier extends StateNotifier<bool> {
   AllowScreenshotsNotifier() : super(false);

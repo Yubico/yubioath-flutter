@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.*
 import com.yubico.authenticator.device.Capabilities
-import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.UnknownDevice
 import com.yubico.authenticator.oath.data.Code
@@ -59,32 +58,27 @@ import com.yubico.yubikit.oath.CredentialData
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
-import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.URI
 import java.util.TimerTask
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
 
 class OathManager(
-    private val lifecycleOwner: LifecycleOwner,
     messenger: BinaryMessenger,
-    private val deviceManager: DeviceManager,
+    deviceManager: DeviceManager,
+    private val lifecycleOwner: LifecycleOwner,
     private val oathViewModel: OathViewModel,
     private val nfcOverlayManager: NfcOverlayManager,
     private val appPreferences: AppPreferences
-) : AppContextManager(), DeviceListener {
+) : AppContextManager(deviceManager) {
 
     companion object {
         private val memoryKeyProvider = ClearingMemProvider()
     }
-
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private val oathChannel = MethodChannel(messenger, "android.oath.methods")
 
@@ -108,19 +102,21 @@ class OathManager(
     private var refreshJob: Job? = null
     private var addToAny = false
     private val updateDeviceInfo = AtomicBoolean(false)
-    private var deviceInfoTimer: TimerTask? = null
 
     override fun onError(e: Exception) {
         super.onError(e)
-        logger.error("Cancelling pending action in onError. Cause: ", e)
         pendingAction?.let { action ->
+            logger.error("Cancelling pending action in onError. Cause: ", e)
             action.invoke(Result.failure(CancellationException()))
             pendingAction = null
         }
     }
 
+    override fun hasPending(): Boolean {
+        return pendingAction != null
+    }
+
     override fun onPause() {
-        deviceInfoTimer?.cancel()
         // cancel any pending actions, except for addToAny
         if (!addToAny) {
             pendingAction?.let {
@@ -165,8 +161,7 @@ class OathManager(
     }
 
     init {
-        deviceManager.addDeviceListener(this)
-        oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
+        logger.debug("OathManager initialized")
 
         // OATH methods callable from Flutter:
         oathChannel.setHandler(coroutineScope) { method, args ->
@@ -214,16 +209,26 @@ class OathManager(
         }
     }
 
-    override fun dispose() {
-        super.dispose()
-        deviceManager.removeDeviceListener(this)
+    override fun activate() {
+        super.activate()
+        oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
+        logger.debug("OathManager activated")
+    }
+
+    override fun deactivate() {
         oathViewModel.credentials.removeObserver(credentialObserver)
-        oathChannel.setMethodCallHandler(null)
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
         pendingAction?.invoke(Result.failure(ContextDisposedException()))
         pendingAction = null
-        coroutineScope.cancel()
+        super.deactivate()
+        logger.debug("OathManager deactivated")
+    }
+
+    override fun dispose() {
+        deactivate()
+        oathChannel.setMethodCallHandler(null)
+        super.dispose()
     }
 
     override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {

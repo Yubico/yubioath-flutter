@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import com.yubico.yubikit.core.smartcard.Apdu
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.smartcard.SmartCardProtocol
 import com.yubico.yubikit.fido.ctap.Ctap2Session
-import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.oath.OathSession
 import com.yubico.yubikit.support.DeviceUtil
 import org.slf4j.LoggerFactory
@@ -47,7 +46,7 @@ class DeviceInfoHelper {
         private val restrictedNfcBytes =
             byteArrayOf(0x00, 0x1F, 0xD1.toByte(), 0x01, 0x1b, 0x55, 0x04) + uri
 
-        suspend fun getDeviceInfo(device: YubiKeyDevice): Info {
+        fun getDeviceInfo(device: YubiKeyDevice): Info {
             SessionVersionOverride.set(null)
             var deviceInfo = readDeviceInfo(device)
             if (deviceInfo.version.major == 0.toByte()) {
@@ -57,22 +56,20 @@ class DeviceInfoHelper {
             return deviceInfo
         }
 
-        private suspend fun readDeviceInfo(device: YubiKeyDevice): Info {
+        private fun readDeviceInfo(device: YubiKeyDevice): Info {
             val pid = (device as? UsbYubiKeyDevice)?.pid
 
             val deviceInfo = runCatching {
-                device.withConnection<SmartCardConnection, DeviceInfo> {
-                    DeviceUtil.readInfo(
-                        it,
-                        pid
-                    )
-                }
+                device.openConnection(SmartCardConnection::class.java)
+                    .use { DeviceUtil.readInfo(it, pid) }
             }.recoverCatching { t ->
                 logger.debug("Smart card connection not available: {}", t.message)
-                device.withConnection<OtpConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+                device.openConnection(OtpConnection::class.java)
+                    .use { DeviceUtil.readInfo(it, pid) }
             }.recoverCatching { t ->
                 logger.debug("OTP connection not available: {}", t.message)
-                device.withConnection<FidoConnection, DeviceInfo> { DeviceUtil.readInfo(it, pid) }
+                device.openConnection(FidoConnection::class.java)
+                    .use { DeviceUtil.readInfo(it, pid) }
             }.recoverCatching { t ->
                 logger.debug("FIDO connection not available: {}", t.message)
                 return SkyHelper(compatUtil).getDeviceInfo(device)
