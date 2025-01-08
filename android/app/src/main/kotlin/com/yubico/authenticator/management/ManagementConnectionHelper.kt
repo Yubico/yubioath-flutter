@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,43 +17,60 @@
 package com.yubico.authenticator.management
 
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
-import com.yubico.yubikit.core.smartcard.SmartCardConnection
+import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.util.Result
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
 
-typealias YubiKitManagementSession = com.yubico.yubikit.management.ManagementSession
-typealias ManagementAction = (Result<YubiKitManagementSession, Exception>) -> Unit
+typealias Action = (Result<YubiKeyDevice, Exception>) -> Unit
 
 class ManagementConnectionHelper(
     private val deviceManager: DeviceManager
 ) {
-    private var action: ManagementAction? = null
+    private var pendingAction: Action? = null
 
-    suspend fun <T> useSession(block: (YubiKitManagementSession) -> T): T =
+    fun hasPending(): Boolean {
+        return pendingAction != null
+    }
+
+    fun invokePending(device: YubiKeyDevice) {
+        pendingAction?.let {
+            pendingAction = null
+            it.invoke(Result.success(device))
+        }
+    }
+
+    fun cancelPending() {
+        pendingAction?.let { it ->
+            pendingAction = null
+            it.invoke(Result.failure(CancellationException()))
+        }
+    }
+
+    suspend fun <T> useDevice(block: (YubiKeyDevice) -> T): T =
         deviceManager.withKey(
-            onUsb = { useSessionUsb(it, block) },
-            onNfc = { useSessionNfc(block) },
+            onUsb = { useUsbDevice(it, block) },
+            onNfc = { useNfcDevice(block) },
             onCancelled = {
-                action?.invoke(Result.failure(CancellationException()))
-                action = null
+                pendingAction?.let {
+                    pendingAction = null
+                    it.invoke(Result.failure(CancellationException()))
+                }
             }
         )
 
-    private suspend fun <T> useSessionUsb(
+    private suspend fun <T> useUsbDevice(
         device: UsbYubiKeyDevice,
-        block: (YubiKitManagementSession) -> T
-    ): T = device.withConnection<SmartCardConnection, T> {
-        block(YubiKitManagementSession(it))
-    }
+        block: suspend (YubiKeyDevice) -> T
+    ): T = block(device)
 
-    private suspend fun <T> useSessionNfc(
-        block: (YubiKitManagementSession) -> T): Result<T, Throwable> {
+    private suspend fun <T> useNfcDevice(
+        block: (YubiKeyDevice) -> T
+    ): Result<T, Throwable> {
         try {
             val result = suspendCoroutine<T> { outer ->
-                action = {
+                pendingAction = {
                     outer.resumeWith(runCatching {
                         block.invoke(it.value)
                     })

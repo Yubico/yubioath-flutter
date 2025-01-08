@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.asString
-import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.FidoCredential
 import com.yubico.authenticator.fido.data.FidoFingerprint
@@ -54,28 +53,23 @@ import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV1
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV2
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.Arrays
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
 class FidoManager(
     messenger: BinaryMessenger,
+    deviceManager: DeviceManager,
     lifecycleOwner: LifecycleOwner,
-    private val deviceManager: DeviceManager,
-    private val appMethodChannel: MainActivity.AppMethodChannel,
-    private val nfcOverlayManager: NfcOverlayManager,
+    appMethodChannel: MainActivity.AppMethodChannel,
+    nfcOverlayManager: NfcOverlayManager,
     private val fidoViewModel: FidoViewModel,
     mainViewModel: MainViewModel
-) : AppContextManager(), DeviceListener {
+) : AppContextManager(deviceManager) {
 
     @OptIn(ExperimentalStdlibApi::class)
     private object HexCodec {
@@ -104,9 +98,6 @@ class FidoManager(
 
     private val connectionHelper = FidoConnectionHelper(deviceManager)
 
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
-
     private val fidoChannel = MethodChannel(messenger, "android.fido.methods")
 
     private val logger = LoggerFactory.getLogger(FidoManager::class.java)
@@ -128,9 +119,8 @@ class FidoManager(
         )
 
     init {
+        logger.debug("FidoManager initialized")
         pinRetries = null
-
-        deviceManager.addDeviceListener(this)
 
         fidoChannel.setHandler(coroutineScope) { method, args ->
             when (method) {
@@ -174,20 +164,35 @@ class FidoManager(
         }
     }
 
+    override fun activate() {
+        super.activate()
+        logger.debug("FidoManager activated")
+    }
+
+    override fun deactivate() {
+        fidoViewModel.clearSessionState()
+        fidoViewModel.updateCredentials(null)
+        connectionHelper.cancelPending()
+        logger.debug("FidoManager deactivated")
+        super.deactivate()
+    }
+
     override fun onError(e: Exception) {
         super.onError(e)
-        logger.error("Cancelling pending action. Cause: ", e)
-        connectionHelper.cancelPending()
+        if (connectionHelper.hasPending()) {
+            logger.error("Cancelling pending action. Cause: ", e)
+            connectionHelper.cancelPending()
+        }
+    }
+
+    override fun hasPending(): Boolean {
+        return connectionHelper.hasPending()
     }
 
     override fun dispose() {
         super.dispose()
-        deviceManager.removeDeviceListener(this)
         fidoChannel.setMethodCallHandler(null)
-        fidoViewModel.clearSessionState()
-        fidoViewModel.updateCredentials(null)
-        connectionHelper.cancelPending()
-        coroutineScope.cancel()
+        logger.debug("XXX FIDO app context disposed")
     }
 
     override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {

@@ -16,13 +16,13 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -42,6 +42,7 @@ class _CapabilityForm extends StatelessWidget {
   final int capabilities;
   final int enabled;
   final Function(int) onChanged;
+
   const _CapabilityForm({
     required this.type,
     required this.capabilities,
@@ -76,6 +77,7 @@ class _CapabilityForm extends StatelessWidget {
 class _ModeForm extends StatelessWidget {
   final int interfaces;
   final Function(int) onChanged;
+
   const _ModeForm(this.interfaces, {required this.onChanged});
 
   @override
@@ -454,7 +456,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     maintainSize: true,
                     maintainAnimation: true,
                     maintainState: true,
-                    child: const LinearProgressIndicator(),
+                    child: !isAndroid
+                        ? const LinearProgressIndicator()
+                        : const SizedBox(),
                   ),
                 ),
               ],
