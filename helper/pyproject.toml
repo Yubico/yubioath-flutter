@@ -3,7 +3,7 @@ name = "authenticator-helper"
 version = "0.1.0"
 description = "Yubico Authenticator Helper"
 authors = [{ name = "Dain Nilsson", email = "dain@yubico.com" }]
-requires-python = ">=3.8, <4"
+requires-python = ">=3.10, <4"
 dependencies = [
   "yubikey-manager (>=5.5, <6)",
   "mss (>=9.0.1, <10)",

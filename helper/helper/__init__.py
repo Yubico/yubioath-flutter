@@ -17,7 +17,7 @@ from .device import RootNode
 
 from queue import Queue
 from threading import Thread, Event
-from typing import Callable, Dict, List
+from typing import Callable
 
 import json
 import logging
@@ -52,20 +52,21 @@ def _handle_incoming(event, recv, error, cmd_queue):
         if not request:
             break
         try:
-            kind = request["kind"]
-            if kind == "signal":
-                # Cancel signals are handled here, the rest forwarded
-                if request["status"] == "cancel":
-                    event.set()
-                else:
-                    # Ignore other signals
-                    logger.error("Unhandled signal: %r", request)
-            elif kind == "command":
-                cmd_queue.join()  # Wait for existing command to complete
-                event.clear()  # Reset event for next command
-                cmd_queue.put(request)
-            else:
-                error("invalid-command", "Unsupported request type")
+            match request["kind"]:
+                case "signal":
+                    # Cancel signals are handled here, the rest forwarded
+                    if request["status"] == "cancel":
+                        logger.debug("Got cancel signal!")
+                        event.set()
+                    else:
+                        # Ignore other signals
+                        logger.error("Unhandled signal: %r", request)
+                case "command":
+                    cmd_queue.join()  # Wait for existing command to complete
+                    event.clear()  # Reset event for next command
+                    cmd_queue.put(request)
+                case _:
+                    error("invalid-command", "Unsupported request type")
         except KeyError as e:
             error("invalid-command", str(e))
         except RpcException as e:
@@ -78,14 +79,14 @@ def _handle_incoming(event, recv, error, cmd_queue):
 
 
 def process(
-    send: Callable[[Dict], None],
-    recv: Callable[[], Dict],
-    handler: Callable[[str, List, Dict, Event, Callable[[str], None]], RpcResponse],
+    send: Callable[[dict], None],
+    recv: Callable[[], dict],
+    handler: Callable[[str, list, dict, Event, Callable[[str], None]], RpcResponse],
 ) -> None:
-    def error(status: str, message: str, body: Dict = {}):
+    def error(status: str, message: str, body: dict = {}):
         send(dict(kind="error", status=status, message=message, body=body))
 
-    def signal(status: str, body: Dict = {}):
+    def signal(status: str, body: dict = {}):
         send(dict(kind="signal", status=status, body=body))
 
     def success(response: RpcResponse):
@@ -121,8 +122,8 @@ def process(
 
 
 def run_rpc(
-    send: Callable[[Dict], None],
-    recv: Callable[[], Dict],
+    send: Callable[[dict], None],
+    recv: Callable[[], dict],
 ) -> None:
     process(send, recv, RootNode())
 
@@ -171,7 +172,10 @@ def run_rpc_socket(sock):
     def recv():
         line = b""
         while not line.endswith(b"\n"):
-            chunk = sock.recv(1024)
+            try:
+                chunk = sock.recv(1024)
+            except ConnectionError:
+                return None
             if not chunk:
                 return None
             line += chunk

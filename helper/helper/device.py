@@ -55,7 +55,7 @@ from fido2.ctap import CtapError
 from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
 from hashlib import sha256
 from dataclasses import asdict
-from typing import Mapping, Tuple
+from typing import Mapping
 
 import os
 import sys
@@ -113,19 +113,19 @@ class RootNode(RpcNode):
         return self._readers
 
     @action
-    def diagnose(self, *ignored):
+    def diagnose(self):
         return dict(diagnostics=get_diagnostics())
 
     @action(closes_child=False)
-    def logging(self, params, event, signal):
-        level = LOG_LEVEL[params["level"].upper()]
-        set_log_level(level)
-        logger.info(f"Log level set to: {level.name}")
+    def logging(self, level: str):
+        lvl = LOG_LEVEL[level.upper()]
+        set_log_level(lvl)
+        logger.info(f"Log level set to: {lvl.name}")
         return dict()
 
     @action(closes_child=False)
-    def qr(self, params, event, signal):
-        return dict(result=scan_qr(params.get("image")))
+    def qr(self, image: str | None = None):
+        return dict(result=scan_qr(image))
 
 
 def _id_from_fingerprint(fp):
@@ -142,7 +142,7 @@ class ReadersNode(RpcNode):
         self._reader_mapping = {}
 
     @action(closes_child=False)
-    def scan(self, *ignored):
+    def scan(self):
         return self.list_children()
 
     def list_children(self):
@@ -173,7 +173,7 @@ class ReadersNode(RpcNode):
 
 class _ScanDevices:
     def __init__(self):
-        self._state: Tuple[Mapping[PID, int], int] = ({}, 0)
+        self._state: tuple[Mapping[PID, int], int] = ({}, 0)
         self._caching = False
 
     def __call__(self):
@@ -225,7 +225,7 @@ class DevicesNode(RpcNode):
         super().close()
 
     @action(closes_child=False)
-    def scan(self, *ignored):
+    def scan(self):
         return self.get_data()
 
     def get_data(self):
@@ -460,8 +460,8 @@ class ReaderDeviceNode(AbstractDeviceNode):
             return dict(present=False, status="no-card")
 
     @action(closes_child=False)
-    def get(self, params, event, signal):
-        return super().get(params, event, signal)
+    def get(self):
+        return super().get()
 
     @child
     def ccid(self):

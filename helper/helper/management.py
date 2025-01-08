@@ -13,11 +13,23 @@
 #  limitations under the License.
 
 from .base import RpcResponse, RpcNode, action
-from yubikit.core import require_version, NotSupportedError, TRANSPORT, Connection
+from yubikit.core import (
+    require_version,
+    NotSupportedError,
+    TRANSPORT,
+    USB_INTERFACE,
+    Connection,
+)
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
-from yubikit.management import ManagementSession, DeviceConfig, Mode, CAPABILITY
+from yubikit.management import (
+    ManagementSession,
+    DeviceConfig,
+    Mode,
+    CAPABILITY,
+    DEVICE_FLAG,
+)
 from ykman.device import list_all_devices
 from dataclasses import asdict
 from time import sleep
@@ -75,15 +87,21 @@ class ManagementNode(RpcNode):
             logger.warning("Timed out waiting for device")
 
     @action
-    def configure(self, params, event, signal):
-        reboot = params.pop("reboot", False)
-        cur_lock_code = bytes.fromhex(params.pop("cur_lock_code", "")) or None
-        new_lock_code = bytes.fromhex(params.pop("new_lock_code", "")) or None
+    def configure(
+        self,
+        reboot: bool = False,
+        cur_lock_code: bytes | None = None,
+        new_lock_code: bytes | None = None,
+        enabled_capabilities: dict = {},
+        auto_eject_timeout: int | None = None,
+        challenge_response_timeout: int | None = None,
+        device_flags: int | None = None,
+    ):
         config = DeviceConfig(
-            params.pop("enabled_capabilities", {}),
-            params.pop("auto_eject_timeout", None),
-            params.pop("challenge_response_timeout", None),
-            params.pop("device_flags", None),
+            enabled_capabilities,
+            auto_eject_timeout,
+            challenge_response_timeout,
+            DEVICE_FLAG(device_flags) if device_flags else None,
         )
         serial = self.session.read_device_info().serial
         self.session.write_device_config(config, reboot, cur_lock_code, new_lock_code)
@@ -95,17 +113,22 @@ class ManagementNode(RpcNode):
         return RpcResponse(dict(), flags)
 
     @action
-    def set_mode(self, params, event, signal):
+    def set_mode(
+        self,
+        interfaces: int,
+        challenge_response_timeout: int = 0,
+        auto_eject_timeout: int | None = None,
+    ):
         self.session.set_mode(
-            Mode(params["interfaces"]),
-            params.pop("challenge_response_timeout", 0),
-            params.pop("auto_eject_timeout"),
+            Mode(USB_INTERFACE(interfaces)),
+            challenge_response_timeout,
+            auto_eject_timeout,
         )
         return dict()
 
     @action(
         condition=lambda self: issubclass(self._connection_type, SmartCardConnection)
     )
-    def device_reset(self, params, event, signal):
+    def device_reset(self):
         self.session.device_reset()
         return RpcResponse(dict(), ["device_info"])

@@ -48,8 +48,8 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
 
   @override
   Future<void> writeConfig(DeviceConfig config,
-      {String currentLockCode = '',
-      String newLockCode = '',
+      {String? currentLockCode,
+      String? newLockCode,
       bool reboot = false}) async {
     if (reboot) {
       state = const AsyncValue.loading();
