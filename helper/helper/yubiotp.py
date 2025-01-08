@@ -239,7 +239,6 @@ class SlotNode(RpcNode):
     )
     def update(
         self,
-        params,
         acc_code: bytes | None = None,
         curr_acc_code: bytes | None = None,
         **kwargs,

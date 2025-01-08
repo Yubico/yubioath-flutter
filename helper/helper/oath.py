@@ -128,7 +128,7 @@ class OathNode(RpcNode):
         keys.write()
         return dict()
 
-    def _remember_key(self, key):
+    def _remember_key(self, key: bytes | None):
         keys = self._get_keys()
         if key is None:
             if self.session.device_id in keys:
@@ -151,12 +151,12 @@ class OathNode(RpcNode):
             return key
         raise ValueError("One of 'key' and 'password' must be provided.")
 
-    def _set_key_verifier(self, key):
+    def _set_key_verifier(self, key: bytes):
         salt = os.urandom(32)
         digest = hmac.new(salt, key, "sha256").digest()
         self._key_verifier = (salt, digest)
 
-    def _do_validate(self, key):
+    def _do_validate(self, key: bytes):
         self.session.validate(key)
         self._set_key_verifier(key)
 

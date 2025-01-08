@@ -109,7 +109,7 @@ class PivNode(RpcNode):
         except InvalidPinError as e:
             raise InvalidPinException(cause=e)
 
-    def _get_object(self, object_id):
+    def _get_object(self, object_id: int):
         try:
             return self.session.get_object(object_id)
         except ApduError as e:
@@ -153,7 +153,7 @@ class PivNode(RpcNode):
             metadata=metadata,
         )
 
-    def _authenticate(self, key, signal):
+    def _authenticate(self, key: bytes, signal):
         try:
             metadata = self.session.get_management_key_metadata()
             key_type = metadata.key_type
