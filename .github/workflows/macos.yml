@@ -44,6 +44,7 @@ jobs:
         brew install swig
         python -m pip install --upgrade pip
         pip install poetry
+        pipx inject poetry poetry-plugin-export
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
