@@ -279,11 +279,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                           ? Theme.of(context)
                               .colorScheme
                               .onSurfaceVariant
-                              .withOpacity(0.4)
+                              .withValues(alpha: 0.4)
                           : Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.9),
+                              .withValues(alpha: 0.9),
                     ),
                 overflow: TextOverflow.ellipsis,
               ),

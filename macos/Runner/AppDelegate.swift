@@ -7,4 +7,8 @@ class AppDelegate: FlutterAppDelegate {
     // Keep app running if window closes
     return false
   }
+
+  override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+    return true
+  }
 }

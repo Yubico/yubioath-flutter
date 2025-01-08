@@ -109,7 +109,8 @@ void Function() showToast(
   final Color backgroundColor = isThemeDark
       ? colorScheme.onSurface
       : Color.alphaBlend(
-          colorScheme.onSurface.withOpacity(0.80), colorScheme.surface);
+          colorScheme.onSurface.withValues(alpha: 0.80), colorScheme.surface);
+
   final textStyle =
       ThemeData(brightness: isThemeDark ? Brightness.light : Brightness.dark)
           .textTheme

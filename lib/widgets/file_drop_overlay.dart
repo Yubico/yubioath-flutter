@@ -15,7 +15,7 @@ class FileDropOverlay extends StatelessWidget {
           color: Theme.of(context)
               .colorScheme
               .secondaryContainer
-              .withOpacity(0.95),
+              .withValues(alpha: 0.95),
           border: Border.all(color: Theme.of(context).colorScheme.primary),
           borderRadius: const BorderRadius.all(Radius.circular(20.0))),
       child: Column(

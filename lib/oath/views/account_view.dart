@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,7 +41,7 @@ class AccountView extends ConsumerStatefulWidget {
 }
 
 String _a11yCredentialLabel(String? issuer, String name, String? code) {
-  return [issuer, name, code].whereNotNull().join(' ');
+  return [issuer, name, code].nonNulls.join(' ');
 }
 
 class _AccountViewState extends ConsumerState<AccountView> {

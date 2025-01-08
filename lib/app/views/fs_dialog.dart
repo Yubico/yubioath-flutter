@@ -28,7 +28,8 @@ class FsDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Dialog.fullscreen(
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.7),
+      backgroundColor:
+          Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
       child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
