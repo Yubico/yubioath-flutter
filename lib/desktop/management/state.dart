@@ -97,8 +97,8 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
 
   @override
   Future<void> writeConfig(DeviceConfig config,
-      {String currentLockCode = '',
-      String newLockCode = '',
+      {String? currentLockCode,
+      String? newLockCode,
       bool reboot = false}) async {
     await _session.command('configure', target: _subpath, params: {
       ...config.toJson(),

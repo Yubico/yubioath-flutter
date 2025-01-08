@@ -308,7 +308,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               widget.deviceData.info.config
                   .copyWith(enabledCapabilities: _enabled),
               reboot: reboot,
-              currentLockCode: _lockCodeController.text);
+              currentLockCode: isLocked ? _lockCodeController.text : null);
       if (!mounted) return;
       Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
