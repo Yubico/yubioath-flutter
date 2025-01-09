@@ -27,7 +27,7 @@ import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -80,8 +80,8 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
 }
 
 class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
-  late String _issuer;
-  late String _name;
+  late TextEditingController _issuerController;
+  late TextEditingController _nameController;
 
   final _issuerFocus = FocusNode();
   final _nameFocus = FocusNode();
@@ -89,12 +89,14 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   @override
   void initState() {
     super.initState();
-    _issuer = widget.issuer?.trim() ?? '';
-    _name = widget.name.trim();
+    _issuerController = TextEditingController(text: widget.issuer?.trim());
+    _nameController = TextEditingController(text: widget.name.trim());
   }
 
   @override
   void dispose() {
+    _issuerController.dispose();
+    _nameController.dispose();
     _issuerFocus.dispose();
     _nameFocus.dispose();
     super.dispose();
@@ -105,11 +107,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     _nameFocus.unfocus();
     final nav = Navigator.of(context);
     final withContext = ref.read(withContextProvider);
+    final issuer = _issuerController.text.trim();
+    final name = _nameController.text.trim();
 
     try {
       // Rename credentials
       final renamed =
-          await widget.rename(_issuer.isNotEmpty ? _issuer : null, _name);
+          await widget.rename(issuer.isNotEmpty ? issuer : null, name);
 
       // Update favorite
       ref
@@ -142,22 +146,24 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final issuer = _issuerController.text.trim();
+    final name = _nameController.text.trim();
 
     final (issuerRemaining, nameRemaining) = getRemainingKeySpace(
       oathType: widget.oathType,
       period: widget.period,
-      issuer: _issuer,
-      name: _name,
+      issuer: issuer,
+      name: name,
     );
 
     // are the name/issuer values different from original
-    final didChange = (widget.issuer ?? '') != _issuer || widget.name != _name;
+    final didChange = (widget.issuer ?? '') != issuer || widget.name != name;
 
     // is this credentials name/issuer pair different from all other, or initial value?
-    final isUnique = !widget.existing.contains((_issuer, _name)) || !didChange;
+    final isUnique = !widget.existing.contains((issuer, name)) || !didChange;
 
     // is this credential name/issuer of valid format
-    final nameNotEmpty = _name.isNotEmpty;
+    final nameNotEmpty = name.isNotEmpty;
 
     // can we rename with the new values
     final isValid = isUnique && nameNotEmpty;
@@ -180,11 +186,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 ? '${widget.issuer} (${widget.name})'
                 : widget.name)),
             Text(l10n.p_rename_will_change_account_displayed),
-            AppTextFormField(
-              initialValue: _issuer,
+            AppTextField(
+              controller: _issuerController,
               enabled: issuerRemaining > 0,
               maxLength: issuerRemaining > 0 ? issuerRemaining : null,
-              buildCounter: buildByteCounterFor(_issuer),
+              buildCounter: buildByteCounterFor(issuer),
               inputFormatters: [limitBytesLength(issuerRemaining)],
               key: keys.issuerField,
               decoration: AppInputDecoration(
@@ -197,16 +203,14 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               focusNode: _issuerFocus,
               autofocus: true,
               onChanged: (value) {
-                setState(() {
-                  _issuer = value.trim();
-                });
+                setState(() {});
               },
             ).init(),
-            AppTextFormField(
-              initialValue: _name,
+            AppTextField(
+              controller: _nameController,
               maxLength: nameRemaining,
               inputFormatters: [limitBytesLength(nameRemaining)],
-              buildCounter: buildByteCounterFor(_name),
+              buildCounter: buildByteCounterFor(name),
               key: keys.nameField,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -222,11 +226,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               textInputAction: TextInputAction.done,
               focusNode: _nameFocus,
               onChanged: (value) {
-                setState(() {
-                  _name = value.trim();
-                });
+                setState(() {});
               },
-              onFieldSubmitted: (_) {
+              onSubmitted: (_) {
                 if (didChange && isValid) {
                   _submit();
                 }

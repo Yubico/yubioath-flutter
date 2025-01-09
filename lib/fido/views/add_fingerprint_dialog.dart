@@ -30,7 +30,7 @@ import '../../app/models.dart';
 import '../../desktop/models.dart';
 import '../../fido/models.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../state.dart';
@@ -240,7 +240,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                   const SizedBox(height: 16),
                   Container(
                     constraints: const BoxConstraints(maxWidth: 360),
-                    child: AppTextFormField(
+                    child: AppTextField(
                       focusNode: _nameFocus,
                       maxLength: 15,
                       inputFormatters: [limitBytesLength(15)],
@@ -256,7 +256,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                           _label = value.trim();
                         });
                       },
-                      onFieldSubmitted: (_) {
+                      onSubmitted: (_) {
                         if (_label.isNotEmpty) {
                           _submit();
                         } else {

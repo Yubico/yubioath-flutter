@@ -28,7 +28,6 @@ import '../../core/models.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
-import '../../widgets/app_text_form_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
@@ -246,7 +245,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 },
               ).init(),
             if (!_usesStoredKey)
-              AppTextFormField(
+              AppTextField(
                 key: keys.managementKeyField,
                 autofocus: !_defaultKeyUsed,
                 autofillHints: const [AutofillHints.password],

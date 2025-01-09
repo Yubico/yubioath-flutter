@@ -28,7 +28,7 @@ import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart';
@@ -52,8 +52,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   final _currentPinFocus = FocusNode();
   final _newPinController = TextEditingController();
   final _newPinFocus = FocusNode();
+  final _confirmPinController = TextEditingController();
   final _confirmPinFocus = FocusNode();
-  String _confirmPin = '';
   String? _currentPinError;
   String? _newPinError;
   bool _currentIsWrong = false;
@@ -87,7 +87,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final newPinLenOk = _newPinController.text.length >= minPinLength;
     final isValid = currentPinLenOk &&
         newPinLenOk &&
-        _newPinController.text == _confirmPin &&
+        _newPinController.text == _confirmPinController.text &&
         !_currentIsWrong;
 
     final newPinEnabled = !_isBlocked && currentPinLenOk;
@@ -122,7 +122,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           children: [
             if (hasPin) ...[
               Text(l10n.p_enter_current_pin_or_reset_no_puk),
-              AppTextFormField(
+              AppTextField(
                 key: currentPin,
                 controller: _currentPinController,
                 focusNode: _currentPinFocus,
@@ -161,7 +161,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                     _currentIsWrong = false;
                   });
                 },
-                onFieldSubmitted: (_) {
+                onSubmitted: (_) {
                   if (_currentPinController.text.length < minPinLength) {
                     _currentPinFocus.requestFocus();
                   } else {
@@ -174,7 +174,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 ? l10n.p_enter_new_fido2_pin_complexity_active(
                     minPinLength, maxPinLength, 2, '123456')
                 : l10n.p_enter_new_fido2_pin(minPinLength, maxPinLength)),
-            AppTextFormField(
+            AppTextField(
               key: newPin,
               controller: _newPinController,
               focusNode: _newPinFocus,
@@ -212,7 +212,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   _newIsWrong = false;
                 });
               },
-              onFieldSubmitted: (_) {
+              onSubmitted: (_) {
                 if (_newPinController.text.length < minPinLength) {
                   _newPinFocus.requestFocus();
                 } else {
@@ -220,13 +220,13 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 }
               },
             ).init(),
-            AppTextFormField(
+            AppTextField(
               key: confirmPin,
-              initialValue: _confirmPin,
+              controller: _confirmPinController,
               focusNode: _confirmPinFocus,
               maxLength: maxPinLength,
               inputFormatters: [limitBytesLength(maxPinLength)],
-              buildCounter: buildByteCounterFor(_confirmPin),
+              buildCounter: buildByteCounterFor(_confirmPinController.text),
               obscureText: _isObscureConfirm,
               autofillHints: const [AutofillHints.password],
               decoration: AppInputDecoration(
@@ -249,20 +249,18 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   ),
                 ),
                 enabled: confirmPinEnabled,
-                errorText:
-                    _newPinController.text.length == _confirmPin.length &&
-                            _newPinController.text != _confirmPin
-                        ? l10n.l_pin_mismatch
-                        : null,
+                errorText: _newPinController.text.length ==
+                            _confirmPinController.text.length &&
+                        _newPinController.text != _confirmPinController.text
+                    ? l10n.l_pin_mismatch
+                    : null,
                 helperText: '', // Prevents resizing when errorText shown
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {
-                setState(() {
-                  _confirmPin = value;
-                });
+                setState(() {});
               },
-              onFieldSubmitted: (_) {
+              onSubmitted: (_) {
                 if (isValid) {
                   _submit();
                 } else {
