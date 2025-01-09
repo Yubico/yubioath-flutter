@@ -28,7 +28,7 @@ android {
 
     namespace 'com.yubico.authenticator.flutter_plugins.qrscanner_zxing'
 
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -45,7 +45,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdk 34
+        targetSdk 35
     }
 }
 
