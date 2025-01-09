@@ -47,7 +47,7 @@ if [ "$OS" = "macos" ]; then
 		poetry run pip download -r $HELPER/cryptography.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip install -r $HELPER/cryptography.txt --no-cache-dir --no-index --find-links $HELPER
 		# Combine wheels of pillow to get universal build
-		poetry run pip download -r $HELPER/pillow.txt --platform macosx_10_10_x86_64 --only-binary :all: --no-deps --dest $HELPER
+		poetry run pip download -r $HELPER/pillow.txt --platform macosx_10_13_x86_64 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip install delocate
 		poetry run delocate-merge $HELPER/pillow*.whl
