@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
+import '../../app/color_extension.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -264,7 +265,7 @@ class _DeviceContent extends ConsumerWidget {
                                     ].map((e) => _ColorButton(
                                           color: e,
                                           isSelected:
-                                              customColor?.value == e.value,
+                                              customColor?.toInt32 == e.toInt32,
                                           onPressed: () {
                                             _updateColor(e, ref, serial);
                                             Navigator.of(context).pop();
@@ -315,7 +316,7 @@ class _DeviceContent extends ConsumerWidget {
                             color: Theme.of(context)
                                 .colorScheme
                                 .primary
-                                .withOpacity(0.9)),
+                                .withValues(alpha: 0.9)),
                       )
                     ],
                   ),
@@ -438,11 +439,11 @@ class _HeroAvatar extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            color.withOpacity(0.6),
-            color.withOpacity(0.25),
+            color.withValues(alpha: 0.6),
+            color.withValues(alpha: 0.25),
             (DialogTheme.of(context).backgroundColor ??
                     theme.dialogBackgroundColor)
-                .withOpacity(0),
+                .withValues(alpha: 0),
           ],
         ),
       ),

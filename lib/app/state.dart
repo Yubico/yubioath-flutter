@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/state.dart';
 import '../theme.dart';
+import 'color_extension.dart';
 import 'features.dart' as features;
 import 'logging.dart';
 import 'models.dart';
@@ -159,7 +160,7 @@ final primaryColorProvider = Provider<Color>((ref) {
       final customization = ref.watch(keyCustomizationManagerProvider)[serial];
       final deviceColor = customization?.color;
       if (deviceColor != null) {
-        prefs.setInt(prefLastUsedColor, deviceColor.value);
+        prefs.setInt(prefLastUsedColor, deviceColor.toInt32);
         return deviceColor;
       } else {
         prefs.remove(prefLastUsedColor);

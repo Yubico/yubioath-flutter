@@ -22,9 +22,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../management/models.dart';
 import '../core/models.dart';
 import '../core/state.dart';
+import 'color_extension.dart';
 
 part 'models.freezed.dart';
-
 part 'models.g.dart';
 
 const _listEquality = ListEquality();
@@ -168,5 +168,5 @@ class _ColorConverter implements JsonConverter<Color?, int?> {
   Color? fromJson(int? json) => json != null ? Color(json) : null;
 
   @override
-  int? toJson(Color? object) => object?.value;
+  int? toJson(Color? object) => object?.toInt32;
 }
