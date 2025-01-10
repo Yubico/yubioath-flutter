@@ -27,20 +27,12 @@ _$SlotConfigurationOptionsImpl _$$SlotConfigurationOptionsImplFromJson(
     );
 
 Map<String, dynamic> _$$SlotConfigurationOptionsImplToJson(
-    _$SlotConfigurationOptionsImpl instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('digits8', instance.digits8);
-  writeNotNull('require_touch', instance.requireTouch);
-  writeNotNull('append_cr', instance.appendCr);
-  return val;
-}
+        _$SlotConfigurationOptionsImpl instance) =>
+    <String, dynamic>{
+      if (instance.digits8 case final value?) 'digits8': value,
+      if (instance.requireTouch case final value?) 'require_touch': value,
+      if (instance.appendCr case final value?) 'append_cr': value,
+    };
 
 _$SlotConfigurationHotpImpl _$$SlotConfigurationHotpImplFromJson(
         Map<String, dynamic> json) =>
@@ -54,21 +46,12 @@ _$SlotConfigurationHotpImpl _$$SlotConfigurationHotpImplFromJson(
     );
 
 Map<String, dynamic> _$$SlotConfigurationHotpImplToJson(
-    _$SlotConfigurationHotpImpl instance) {
-  final val = <String, dynamic>{
-    'key': instance.key,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('options', instance.options?.toJson());
-  val['type'] = instance.$type;
-  return val;
-}
+        _$SlotConfigurationHotpImpl instance) =>
+    <String, dynamic>{
+      'key': instance.key,
+      if (instance.options?.toJson() case final value?) 'options': value,
+      'type': instance.$type,
+    };
 
 _$SlotConfigurationHmacSha1Impl _$$SlotConfigurationHmacSha1ImplFromJson(
         Map<String, dynamic> json) =>
@@ -82,21 +65,12 @@ _$SlotConfigurationHmacSha1Impl _$$SlotConfigurationHmacSha1ImplFromJson(
     );
 
 Map<String, dynamic> _$$SlotConfigurationHmacSha1ImplToJson(
-    _$SlotConfigurationHmacSha1Impl instance) {
-  final val = <String, dynamic>{
-    'key': instance.key,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('options', instance.options?.toJson());
-  val['type'] = instance.$type;
-  return val;
-}
+        _$SlotConfigurationHmacSha1Impl instance) =>
+    <String, dynamic>{
+      'key': instance.key,
+      if (instance.options?.toJson() case final value?) 'options': value,
+      'type': instance.$type,
+    };
 
 _$SlotConfigurationStaticPasswordImpl
     _$$SlotConfigurationStaticPasswordImplFromJson(Map<String, dynamic> json) =>
@@ -111,22 +85,13 @@ _$SlotConfigurationStaticPasswordImpl
         );
 
 Map<String, dynamic> _$$SlotConfigurationStaticPasswordImplToJson(
-    _$SlotConfigurationStaticPasswordImpl instance) {
-  final val = <String, dynamic>{
-    'password': instance.password,
-    'keyboard_layout': instance.keyboardLayout,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('options', instance.options?.toJson());
-  val['type'] = instance.$type;
-  return val;
-}
+        _$SlotConfigurationStaticPasswordImpl instance) =>
+    <String, dynamic>{
+      'password': instance.password,
+      'keyboard_layout': instance.keyboardLayout,
+      if (instance.options?.toJson() case final value?) 'options': value,
+      'type': instance.$type,
+    };
 
 _$SlotConfigurationYubiOtpImpl _$$SlotConfigurationYubiOtpImplFromJson(
         Map<String, dynamic> json) =>
@@ -142,20 +107,11 @@ _$SlotConfigurationYubiOtpImpl _$$SlotConfigurationYubiOtpImplFromJson(
     );
 
 Map<String, dynamic> _$$SlotConfigurationYubiOtpImplToJson(
-    _$SlotConfigurationYubiOtpImpl instance) {
-  final val = <String, dynamic>{
-    'public_id': instance.publicId,
-    'private_id': instance.privateId,
-    'key': instance.key,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('options', instance.options?.toJson());
-  val['type'] = instance.$type;
-  return val;
-}
+        _$SlotConfigurationYubiOtpImpl instance) =>
+    <String, dynamic>{
+      'public_id': instance.publicId,
+      'private_id': instance.privateId,
+      'key': instance.key,
+      if (instance.options?.toJson() case final value?) 'options': value,
+      'type': instance.$type,
+    };
