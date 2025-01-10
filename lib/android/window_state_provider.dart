@@ -35,7 +35,7 @@ final androidWindowStateProvider = Provider<WindowState>(
 
 class _WindowStateNotifier extends StateNotifier<WindowState>
     with WidgetsBindingObserver {
-  final StateNotifierProviderRef<_WindowStateNotifier, WindowState> _ref;
+  final Ref<WindowState> _ref;
   _WindowStateNotifier(this._ref)
       : super(WindowState(focused: true, visible: true, active: true)) {
     _init();
