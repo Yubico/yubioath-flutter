@@ -54,6 +54,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   @override
   void dispose() {
     _labelFocus.dispose();
+    _labelController.dispose();
     super.dispose();
   }
 

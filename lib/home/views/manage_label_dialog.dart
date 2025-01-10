@@ -46,6 +46,12 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
   }
 
   @override
+  void dispose() {
+    _labelController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final initialLabel = widget.initialCustomization.name;

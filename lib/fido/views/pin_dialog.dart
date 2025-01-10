@@ -69,6 +69,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     _currentPinFocus.dispose();
     _newPinController.dispose();
     _newPinFocus.dispose();
+    _confirmPinController.dispose();
     _confirmPinFocus.dispose();
     super.dispose();
   }
