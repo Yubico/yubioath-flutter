@@ -430,7 +430,9 @@ internal class QRScannerView(
             if (cameraOpened && t.type == CameraState.Type.CLOSED) {
                 Log.v(TAG, "Camera closed")
                 val stateChangedIntent =
-                    Intent("com.yubico.authenticator.QRScannerView.CameraClosed")
+                    Intent("com.yubico.authenticator.QRScannerView.CameraClosed").apply {
+                        setPackage("com.yubico.yubioath")
+                    }
                 context.sendBroadcast(stateChangedIntent)
                 cameraOpened = false
             }
