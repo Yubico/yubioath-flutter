@@ -935,10 +935,10 @@ packages:
     dependency: "direct main"
     description:
       name: tray_manager
-      sha256: c9a63fd88bd3546287a7eb8ccc978d707eef82c775397af17dda3a4f4c039e64
+      sha256: f231031c5c0eb4ad514e18ddaab27a912ddbe50335c594bc28fb0f9972ab6a84
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.3"
+    version: "0.3.1"
   typed_data:
     dependency: transitive
     description:
