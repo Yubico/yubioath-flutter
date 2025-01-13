@@ -22,7 +22,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
 
@@ -36,19 +36,28 @@ class ManageLabelDialog extends ConsumerStatefulWidget {
 }
 
 class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
-  String? _label;
+  late TextEditingController _labelController;
 
   @override
   void initState() {
     super.initState();
-    _label = widget.initialCustomization.name;
+    _labelController =
+        TextEditingController(text: widget.initialCustomization.name);
+  }
+
+  @override
+  void dispose() {
+    _labelController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final initialLabel = widget.initialCustomization.name;
-    final didChange = initialLabel != _label;
+    final trimmed = _labelController.text.trim();
+    final label = trimmed.isEmpty ? null : trimmed;
+    final didChange = initialLabel != label;
     return ResponsiveDialog(
       title:
           Text(initialLabel != null ? l10n.s_change_label : l10n.s_set_label),
@@ -67,9 +76,9 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
             Text(initialLabel == null
                 ? l10n.p_set_will_add_custom_name
                 : l10n.p_rename_will_change_custom_name),
-            AppTextFormField(
+            AppTextField(
               autofocus: true,
-              initialValue: _label,
+              controller: _labelController,
               maxLength: 20,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -79,12 +88,9 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {
-                setState(() {
-                  final trimmed = value.trim();
-                  _label = trimmed.isEmpty ? null : trimmed;
-                });
+                setState(() {});
               },
-              onFieldSubmitted: (_) {
+              onSubmitted: (_) {
                 _submit();
               },
             ).init()
@@ -101,9 +107,11 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
 
   void _submit() async {
     final manager = ref.read(keyCustomizationManagerProvider.notifier);
+    final trimmed = _labelController.text.trim();
+    final label = trimmed.isEmpty ? null : trimmed;
     await manager.set(
         serial: widget.initialCustomization.serial,
-        name: _label,
+        name: label,
         color: widget.initialCustomization.color);
 
     await ref.read(withContextProvider)((context) async {

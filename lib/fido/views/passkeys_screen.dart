@@ -37,7 +37,7 @@ import '../../core/state.dart';
 import '../../exception/no_data_exception.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/flex_box.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -401,7 +401,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10.0, vertical: 8.0),
-                  child: AppTextFormField(
+                  child: AppTextField(
                     key: searchField,
                     controller: searchController,
                     canRequestFocus: _canRequestFocus,
@@ -538,7 +538,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                       setState(() {});
                     },
                     textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (value) {
+                    onSubmitted: (value) {
                       Focus.of(context)
                           .focusInDirection(TraversalDirection.down);
                     },

@@ -27,12 +27,7 @@ class _AppLinter extends PluginBase {
           discouraged: 'TextField',
           recommended: 'AppTextField',
         ),
-        UseRecommendedWidget(
-          discouraged: 'TextFormField',
-          recommended: 'AppTextFormField',
-        ),
         const CallInitAfterCreation(className: 'AppTextField'),
-        const CallInitAfterCreation(className: 'AppTextFormField'),
       ];
 }
 

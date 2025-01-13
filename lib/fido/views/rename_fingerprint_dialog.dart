@@ -23,7 +23,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../desktop/models.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../models.dart';
@@ -40,20 +40,21 @@ class RenameFingerprintDialog extends ConsumerStatefulWidget {
 }
 
 class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
-  late String _label;
+  late TextEditingController _labelController;
   late FocusNode _labelFocus;
   _RenameAccountDialogState();
 
   @override
   void initState() {
     super.initState();
-    _label = widget.fingerprint.name ?? '';
+    _labelController = TextEditingController(text: widget.fingerprint.name);
     _labelFocus = FocusNode();
   }
 
   @override
   void dispose() {
     _labelFocus.dispose();
+    _labelController.dispose();
     super.dispose();
   }
 
@@ -62,7 +63,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
     try {
       final renamed = await ref
           .read(fingerprintProvider(widget.devicePath).notifier)
-          .renameFingerprint(widget.fingerprint, _label);
+          .renameFingerprint(widget.fingerprint, _labelController.text.trim());
       if (!mounted) return;
       Navigator.of(context).pop(renamed);
       showMessage(context, l10n.s_fingerprint_renamed);
@@ -85,11 +86,12 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final label = _labelController.text.trim();
     return ResponsiveDialog(
       title: Text(l10n.s_rename_fp),
       actions: [
         TextButton(
-          onPressed: _label.isNotEmpty ? _submit : null,
+          onPressed: label.isNotEmpty ? _submit : null,
           child: Text(l10n.s_save),
         ),
       ],
@@ -100,25 +102,23 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           children: [
             Text(l10n.q_rename_target(widget.fingerprint.label)),
             Text(l10n.p_will_change_label_fp),
-            AppTextFormField(
+            AppTextField(
               autofocus: true,
-              initialValue: _label,
+              controller: _labelController,
               focusNode: _labelFocus,
               maxLength: 15,
               inputFormatters: [limitBytesLength(15)],
-              buildCounter: buildByteCounterFor(_label),
+              buildCounter: buildByteCounterFor(label),
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_name,
                 prefixIcon: const Icon(Symbols.fingerprint),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _label = value.trim();
-                });
+              onChanged: (_) {
+                setState(() {});
               },
-              onFieldSubmitted: (_) {
-                if (_label.isNotEmpty) {
+              onSubmitted: (_) {
+                if (label.isNotEmpty) {
                   _submit();
                 } else {
                   _labelFocus.requestFocus();
