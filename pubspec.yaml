@@ -43,11 +43,11 @@ dependencies:
 
   args: ^2.4.2
   async: ^2.8.2
-  logging: ^1.2.0
-  collection: ^1.17.2
-  shared_preferences: ^2.2.2
-  flutter_riverpod: ^2.5.1
-  json_annotation: ^4.8.1
+  logging: ^1.3.0
+  collection: ^1.19.0
+  shared_preferences: ^2.3.5
+  flutter_riverpod: ^2.6.1
+  json_annotation: ^4.9.0
   freezed_annotation: ^2.4.1
   window_manager:
     git:
@@ -55,22 +55,22 @@ dependencies:
       ref: 2272d45bcf46d7e2b452a038906fbc85df3ce83d
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
-  screen_retriever: ^0.1.6
-  desktop_drop: ^0.4.4
-  url_launcher: ^6.2.1
-  path_provider: ^2.1.1
-  vector_graphics: ^1.1.9+1
-  vector_graphics_compiler: ^1.1.9+1
+  screen_retriever: ^0.1.9
+  desktop_drop: ^0.5.0
+  url_launcher: ^6.3.1
+  path_provider: ^2.1.5
+  vector_graphics: ^1.1.15
+  vector_graphics_compiler: ^1.1.16
   path: ^1.8.2
-  file_picker: ^8.0.0+1
+  file_picker: ^8.1.7
   archive: ^3.4.9
   crypto: ^3.0.2
-  tray_manager: ^0.2.0
+  tray_manager: ^0.3.1
   local_notifier: ^0.1.5
   io: ^1.0.4
   base32: ^2.1.3
   convert: ^3.1.1
-  material_symbols_icons: ^4.2741.0
+  material_symbols_icons: ^4.2801.1
 
 dev_dependencies:
   integration_test:
@@ -85,11 +85,11 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
-  build_runner: ^2.4.8
-  freezed: ^2.4.7
-  json_serializable: ^6.7.1
+  build_runner: ^2.4.14
+  freezed: ^2.5.7
+  json_serializable: ^6.9.2
   analyzer:
   analyzer_plugin:
   custom_lint_builder:

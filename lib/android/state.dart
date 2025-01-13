@@ -54,7 +54,7 @@ final androidClipboardProvider = Provider<AppClipboard>(
 );
 
 class _AndroidClipboard extends AppClipboard {
-  final ProviderRef<AppClipboard> _ref;
+  final Ref<AppClipboard> _ref;
 
   const _AndroidClipboard(this._ref);
 

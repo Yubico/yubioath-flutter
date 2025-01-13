@@ -60,7 +60,7 @@ final nfcEventNotifierListener = Provider<_NfcEventNotifierListener>(
     (ref) => _NfcEventNotifierListener(ref));
 
 class _NfcEventNotifierListener {
-  final ProviderRef _ref;
+  final Ref _ref;
   ProviderSubscription<NfcEvent>? listener;
 
   _NfcEventNotifierListener(this._ref);

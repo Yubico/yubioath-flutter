@@ -15,18 +15,10 @@ _$KeyCustomizationImpl _$$KeyCustomizationImplFromJson(
     );
 
 Map<String, dynamic> _$$KeyCustomizationImplToJson(
-    _$KeyCustomizationImpl instance) {
-  final val = <String, dynamic>{
-    'serial': instance.serial,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('name', instance.name);
-  writeNotNull('color', const _ColorConverter().toJson(instance.color));
-  return val;
-}
+        _$KeyCustomizationImpl instance) =>
+    <String, dynamic>{
+      'serial': instance.serial,
+      if (instance.name case final value?) 'name': value,
+      if (const _ColorConverter().toJson(instance.color) case final value?)
+        'color': value,
+    };
