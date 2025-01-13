@@ -237,7 +237,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage> {
     final issuerMaxLength = max(issuerRemaining, 1);
     final nameMaxLength = max(nameRemaining, 1);
 
-    final secret = _secretController.text.replaceAll(' ', '');
+    // Remove whitespace and padding
+    final secret = _secretController.text
+        .replaceAll(' ', '')
+        .replaceFirst(RegExp(r'=+$'), '');
     final secretLengthValid = secret.length * 5 % 8 < 5;
     final secretFormatValid = Format.base32.isValid(secret);
 
