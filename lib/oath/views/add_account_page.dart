@@ -370,6 +370,40 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       ),
       child: ResponsiveDialog(
         title: Text(l10n.s_add_account),
+        infoText: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(text: 'There is 3 ways of adding accounts.\n\n'),
+              TextSpan(
+                text: 'Scanning (recommended)\n',
+                style:
+                    textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              TextSpan(
+                text:
+                    'Before scanning a QR code, make sure the full code is visible on the screen.\n\n',
+              ),
+              TextSpan(
+                text: 'Drag and Drop\n',
+                style:
+                    textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              TextSpan(
+                text:
+                    'An image containing a QR code may be dropped anywhere in the Accounts application.\n\n',
+              ),
+              TextSpan(
+                text: 'Manually\n',
+                style:
+                    textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              TextSpan(
+                text:
+                    'Account credential details may be entered manually in the form.',
+              ),
+            ],
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: isValid ? submit : null,
