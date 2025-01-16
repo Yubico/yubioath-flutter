@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -79,7 +80,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
   final _accountFocus = FocusNode();
   final _secretFocus = FocusNode();
   final _periodController = TextEditingController(text: '$defaultPeriod');
-  late AnimationController _animationController;
   UserInteractionController? _promptController;
   Uri? _otpauthUri;
   bool _touch = false;
@@ -106,15 +106,13 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     _issuerFocus.dispose();
     _accountFocus.dispose();
     _secretFocus.dispose();
-    _animationController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        duration: const Duration(milliseconds: 3000), vsync: this);
+
     final cred = widget.credentialData;
     if (cred != null) {
       _loadCredentialData(cred);
@@ -345,58 +343,63 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
         _hashAlgorithm = defaultHashAlgorithm;
         _digits = defaultDigits;
         _counter = defaultCounter;
+        _periodValues = [20, 30, 45, 60];
+        _digitsValues = [6, 8];
         _dataLoaded = false;
       });
     }
 
-    void handleQrData(String? qrData, WithContext withContext) async {
-      final withContext = ref.read(withContextProvider);
-      await withContext(
-        (context) async {
-          if (qrData != null) {
-            try {
-              final creds = CredentialData.fromUri(Uri.parse(qrData));
+    void scanQrCode({File? file}) async {
+      final qrScanner = ref.read(qrScannerProvider);
+      if (qrScanner != null) {
+        final withContext = ref.read(withContextProvider);
+        setState(() {
+          _scanning = true;
+        });
+        String? qrData;
+        if (file != null) {
+          // Scan QR code from file
+          qrData = await handleQrFile(file, context, withContext, qrScanner);
+        } else {
+          qrData = await qrScanner.scanQr();
+        }
+        await withContext(
+          (context) async {
+            if (qrData != null) {
+              try {
+                final creds = CredentialData.fromUri(Uri.parse(qrData));
 
-              if (creds.length == 1) {
-                _loadCredentialData(creds[0]);
-                setState(() {
-                  _qrScanSuccess = true;
-                });
-              } else {
-                Navigator.of(context).pop();
-                await handleUri(context, widget.credentials, qrData,
-                    widget.devicePath, widget.state, l10n);
-                return;
+                if (creds.length == 1) {
+                  _loadCredentialData(creds[0]);
+                  setState(() {
+                    _qrScanSuccess = true;
+                  });
+                } else {
+                  Navigator.of(context).pop();
+                  await handleUri(context, widget.credentials, qrData,
+                      widget.devicePath, widget.state, l10n);
+                  return;
+                }
+              } catch (_) {
+                showMessage(context, l10n.l_invalid_qr);
               }
-            } catch (_) {
-              showMessage(context, l10n.l_invalid_qr);
+            } else {
+              showMessage(context, l10n.l_qr_not_found);
             }
-          } else {
-            showMessage(context, l10n.l_qr_not_found);
-          }
-          setState(() {
-            _scanning = false;
-          });
-        },
-      );
+            setState(() {
+              _scanning = false;
+            });
+          },
+        );
+      }
     }
-
-    final qrScanner = ref.read(qrScannerProvider);
-    final withContext = ref.read(withContextProvider);
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return FileDropTarget(
-      onFileDropped: (file) async {
-        if (qrScanner != null) {
-          setState(() {
-            _scanning = true;
-          });
-          final qrData =
-              await handleQrFile(file, context, withContext, qrScanner);
-          handleQrData(qrData, withContext);
-        }
+      onFileDropped: (file) {
+        scanQrCode(file: file);
       },
       overlay: FileDropOverlay(
         title: l10n.s_add_account,
@@ -450,7 +453,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                       ? l10n.l_qr_scanned
                                       : l10n.s_qr_scan,
                                 ),
-                                onPressed: () async {
+                                onPressed: () {
                                   if (_qrScanSuccess) {
                                     clearCredentialData();
                                     setState(() {
@@ -458,13 +461,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     });
                                     return;
                                   }
-                                  if (qrScanner != null) {
-                                    setState(() {
-                                      _scanning = true;
-                                    });
-                                    final qrData = await qrScanner.scanQr();
-                                    handleQrData(qrData, withContext);
-                                  }
+                                  scanQrCode();
                                 },
                               ),
                               ActionChip(
