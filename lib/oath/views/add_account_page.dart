@@ -421,7 +421,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                             spacing: 4.0,
                             runSpacing: 4.0,
                             children: [
-                              FilterChip(
+                              ActionChip(
                                 avatar: _scanning
                                     ? SizedBox(
                                         height: 16,
@@ -442,7 +442,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                       ? l10n.l_qr_scanned
                                       : l10n.s_qr_scan,
                                 ),
-                                onSelected: (_) async {
+                                onPressed: () async {
                                   if (_qrScanSuccess) {
                                     clearFields();
                                     setState(() {
@@ -459,10 +459,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                   }
                                 },
                               ),
-                              FilterChip(
+                              ActionChip(
                                 avatar: Icon(Symbols.help),
                                 label: Text(l10n.s_learn_more),
-                                onSelected: (_) {
+                                onPressed: () {
                                   launchDocumentationUrl();
                                 },
                               )
