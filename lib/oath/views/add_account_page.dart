@@ -338,6 +338,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       _issuerController.clear();
       _accountController.clear();
       _secretController.clear();
+      _periodController.text = '$defaultPeriod';
       setState(() {
         _touch = false;
         _oathType = defaultOathType;
