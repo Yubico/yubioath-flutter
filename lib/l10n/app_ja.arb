@@ -418,6 +418,7 @@
     "l_authenticator_get_started": "OTPアカウントの使用を開始",
     "l_no_accounts_desc": "OATH TOTP/HOTPをサポートするサービスプロバイダからYubiKeyにアカウントを追加",
     "s_add_account": "アカウントを追加",
+    "p_add_account_desc": null,
     "s_add_accounts": "アカウントを追加",
     "p_add_description": "QRコードをスキャンするには、画面にコード全体が表示されていることを確認してから下のボタンを押してください。保存した画像をフォルダからこのダイアログにドラッグすることもできます。アカウント認証情報の詳細を書面でお持ちの場合は、代わりに手動入力を使用してください。",
     "l_drop_qr_description": "QRコードをドロップしてアカウントを追加",
@@ -797,6 +798,7 @@
     "s_qr_scan": "QRコードをスキャン",
     "l_invalid_qr": "無効なQRコード",
     "l_qr_not_found": "QRコードが見つかりません",
+    "l_qr_scanned": null,
     "l_qr_file_too_large": "ファイルが大きすぎます（最大{max}）",
     "@l_qr_file_too_large": {
         "placeholders": {

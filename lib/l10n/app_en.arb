@@ -418,6 +418,7 @@
     "l_authenticator_get_started": "Get started with OTP accounts",
     "l_no_accounts_desc": "Add accounts to your YubiKey from any service provider supporting OATH TOTP/HOTP",
     "s_add_account": "Add account",
+    "p_add_account_desc": "Scan (recommended) OR enter the credential details manually below.",
     "s_add_accounts": "Add account(s)",
     "p_add_description": "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
     "l_drop_qr_description": "Drop QR code to add account(s)",
@@ -797,6 +798,7 @@
     "s_qr_scan": "Scan QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
+    "l_qr_scanned": "Scanned QR code",
     "l_qr_file_too_large": "File too large (max {max})",
     "@l_qr_file_too_large": {
         "placeholders": {

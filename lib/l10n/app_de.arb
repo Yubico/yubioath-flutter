@@ -418,6 +418,7 @@
     "l_authenticator_get_started": "Erste Schritte mit OTP Konten",
     "l_no_accounts_desc": "Füge Konten von Anbietern zu Deinem YubiKey hinzu, die OATH TOTP/HOTP unterstützen",
     "s_add_account": "Konto hinzufügen",
+    "p_add_account_desc": null,
     "s_add_accounts": "Konten hinzufügen",
     "p_add_description": "Um einen QR-Code zu scannen, stelle sicher, dass der komplette Code sichtbar ist und wähle die entsprechende Schaltfläche. Du kannst auch ein gespeichertes Bild auf diesen Dialog ziehen. Alternativ kannst du die Kontoinformation auch manuell hinzufügen.",
     "l_drop_qr_description": "QR-Code per Drag & Drop hierhin ziehen, um Konten hinzuzufügen",
@@ -797,6 +798,7 @@
     "s_qr_scan": "QR-Code aufnehmen",
     "l_invalid_qr": "Ungültiger QR-Code",
     "l_qr_not_found": "Kein QR-Code gefunden",
+    "l_qr_scanned": null,
     "l_qr_file_too_large": "Datei zu groß (max {max})",
     "@l_qr_file_too_large": {
         "placeholders": {

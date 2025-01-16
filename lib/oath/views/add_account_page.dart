@@ -24,6 +24,7 @@ import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
+import '../../app/app_url_launcher.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -94,7 +95,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
   List<OathCredential>? _credentials;
   bool _submitting = false;
   bool _scanning = false;
-  bool _qrScanError = false;
+  bool _qrScanSuccess = false;
 
   @override
   void dispose() {
@@ -333,6 +334,45 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       }
     }
 
+    void clearFields() {
+      _issuerController.clear();
+      _accountController.clear();
+      _secretController.clear();
+      setState(() {});
+    }
+
+    void handleQrData(String? qrData, WithContext withContext) async {
+      final withContext = ref.read(withContextProvider);
+      await withContext(
+        (context) async {
+          if (qrData != null) {
+            try {
+              final creds = CredentialData.fromUri(Uri.parse(qrData));
+
+              if (creds.length == 1) {
+                _loadCredentialData(creds[0]);
+                setState(() {
+                  _qrScanSuccess = true;
+                });
+              } else {
+                Navigator.of(context).pop();
+                await handleUri(context, widget.credentials, qrData,
+                    widget.devicePath, widget.state, l10n);
+                return;
+              }
+            } catch (_) {
+              showMessage(context, l10n.l_invalid_qr);
+            }
+          } else {
+            showMessage(context, l10n.l_qr_not_found);
+          }
+          setState(() {
+            _scanning = false;
+          });
+        },
+      );
+    }
+
     final qrScanner = ref.read(qrScannerProvider);
     final withContext = ref.read(withContextProvider);
 
@@ -342,26 +382,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     return FileDropTarget(
       onFileDropped: (file) async {
         if (qrScanner != null) {
+          setState(() {
+            _scanning = true;
+          });
           final qrData =
               await handleQrFile(file, context, withContext, qrScanner);
-          if (qrData != null) {
-            await withContext((context) async {
-              List<CredentialData> creds;
-              try {
-                creds = CredentialData.fromUri(Uri.parse(qrData));
-              } catch (_) {
-                showMessage(context, l10n.l_invalid_qr);
-                return;
-              }
-              if (creds.length == 1) {
-                _loadCredentialData(creds[0]);
-              } else {
-                Navigator.of(context).pop();
-                await handleUri(context, widget.credentials, qrData,
-                    widget.devicePath, widget.state, l10n);
-              }
-            });
-          }
+          handleQrData(qrData, withContext);
         }
       },
       overlay: FileDropOverlay(
@@ -370,40 +396,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       ),
       child: ResponsiveDialog(
         title: Text(l10n.s_add_account),
-        // infoText: RichText(
-        //   text: TextSpan(
-        //     children: [
-        //       TextSpan(text: 'There is 3 ways of adding accounts.\n\n'),
-        //       TextSpan(
-        //         text: 'Scanning (recommended)\n',
-        //         style:
-        //             textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-        //       ),
-        //       TextSpan(
-        //         text:
-        //             'Before scanning a QR code, make sure the full code is visible on the screen.\n\n',
-        //       ),
-        //       TextSpan(
-        //         text: 'Drag and Drop\n',
-        //         style:
-        //             textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-        //       ),
-        //       TextSpan(
-        //         text:
-        //             'An image containing a QR code may be dropped anywhere in the Accounts application.\n\n',
-        //       ),
-        //       TextSpan(
-        //         text: 'Manually\n',
-        //         style:
-        //             textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-        //       ),
-        //       TextSpan(
-        //         text:
-        //             'Account credential details may be entered manually in the form.',
-        //       ),
-        //     ],
-        //   ),
-        // ),
         actions: [
           TextButton(
             onPressed: isValid ? submit : null,
@@ -424,9 +416,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                     if (widget.credentialData == null)
                       Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            alignment: WrapAlignment.center,
                             spacing: 4.0,
+                            runSpacing: 4.0,
                             children: [
                               FilterChip(
                                 avatar: _scanning
@@ -437,88 +430,49 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                           strokeWidth: 2.0,
                                         ),
                                       )
-                                    : _animationController.isAnimating
+                                    : _qrScanSuccess
                                         ? Icon(
-                                            _qrScanError
-                                                ? Symbols.error
-                                                : Symbols.check_circle,
+                                            Symbols.check_circle,
                                             fill: 1,
-                                            color: _qrScanError
-                                                ? colorScheme.error
-                                                : colorScheme.primary,
+                                            color: colorScheme.primary,
                                           )
                                         : Icon(Symbols.qr_code_scanner),
                                 label: Text(
-                                  _animationController.isAnimating
-                                      ? _qrScanError
-                                          ? l10n.l_qr_not_found
-                                          : 'QR code found'
+                                  _qrScanSuccess && !_scanning
+                                      ? l10n.l_qr_scanned
                                       : l10n.s_qr_scan,
                                 ),
                                 onSelected: (_) async {
+                                  if (_qrScanSuccess) {
+                                    clearFields();
+                                    setState(() {
+                                      _qrScanSuccess = false;
+                                    });
+                                    return;
+                                  }
                                   if (qrScanner != null) {
                                     setState(() {
                                       _scanning = true;
-                                      _qrScanError = false;
                                     });
                                     final qrData = await qrScanner.scanQr();
-                                    await withContext(
-                                      (context) async {
-                                        if (qrData != null) {
-                                          try {
-                                            final creds =
-                                                CredentialData.fromUri(
-                                                    Uri.parse(qrData));
-                                            if (creds.isEmpty) {
-                                              setState(() {
-                                                _qrScanError = true;
-                                              });
-                                            }
-                                            if (creds.length == 1) {
-                                              _loadCredentialData(creds[0]);
-                                            } else {
-                                              Navigator.of(context).pop();
-                                              await handleUri(
-                                                context,
-                                                widget.credentials,
-                                                qrData,
-                                                widget.devicePath,
-                                                widget.state,
-                                                l10n,
-                                              );
-                                              return;
-                                            }
-                                          } catch (_) {
-                                            setState(() {
-                                              _qrScanError = true;
-                                            });
-                                          }
-                                        } else {
-                                          setState(() {
-                                            _qrScanError = true;
-                                          });
-                                        }
-                                        setState(() {
-                                          _scanning = false;
-                                        });
-                                        await _animationController.forward();
-                                        _animationController.reset();
-                                        setState(() {});
-                                      },
-                                    );
+                                    handleQrData(qrData, withContext);
                                   }
                                 },
                               ),
                               FilterChip(
                                 avatar: Icon(Symbols.help),
                                 label: Text(l10n.s_learn_more),
-                                onSelected: (_) {},
+                                onSelected: (_) {
+                                  launchDocumentationUrl();
+                                },
                               )
                             ],
                           ),
                           const SizedBox(height: 8.0),
                           Text(
-                              'Scan (recommended) OR enter the credential details manually below.'),
+                            l10n.p_add_account_desc,
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     const SizedBox(height: 8.0),

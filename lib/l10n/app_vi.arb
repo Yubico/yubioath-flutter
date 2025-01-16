@@ -418,6 +418,7 @@
     "l_authenticator_get_started": "Bắt đầu với các tài khoản OTP",
     "l_no_accounts_desc": "Thêm tài khoản vào YubiKey của bạn từ bất kỳ nhà cung cấp dịch vụ nào hỗ trợ OATH TOTP/HOTP",
     "s_add_account": "Thêm tài khoản",
+    "p_add_account_desc": null,
     "s_add_accounts": "Thêm tài khoản(s)",
     "p_add_description": "Để quét mã QR, hãy chắc chắn rằng mã QR được hiển thị đầy đủ trên màn hình và nhấn nút bên dưới. Bạn cũng có thể kéo một hình ảnh đã lưu từ thư mục vào hộp thoại này. Nếu bạn có thông tin tài khoản dưới dạng văn bản, hãy sử dụng nhập thủ công thay vào đó.",
     "l_drop_qr_description": "Kéo mã QR để thêm tài khoản(s)",
@@ -797,6 +798,7 @@
     "s_qr_scan": "Quét mã QR",
     "l_invalid_qr": "Mã QR không hợp lệ",
     "l_qr_not_found": "Không tìm thấy mã QR",
+    "l_qr_scanned": null,
     "l_qr_file_too_large": "Tệp quá lớn (tối đa {max})",
     "@l_qr_file_too_large": {
         "placeholders": {

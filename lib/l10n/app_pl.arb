@@ -418,6 +418,7 @@
     "l_authenticator_get_started": "Zacznij korzystać z kont OTP",
     "l_no_accounts_desc": "Dodaj do klucza YubiKey konta z dowolnej usługi wspierające kody OATH TOTP/HOTP",
     "s_add_account": "Dodaj konto",
+    "p_add_account_desc": null,
     "s_add_accounts": "Dodaj konta",
     "p_add_description": "W celu zeskanowania kodu QR, upewnij się, że pełny kod jest widoczny na ekranie a następnie naciśnij poniższy przycisk. Jeśli posiadasz dane uwierzytelniające do konta w tekstowej formie, skorzystaj z opcji ręcznego wprowadzania danych.",
     "l_drop_qr_description": "Upuść kod QR, aby dodać konto(a)",
@@ -797,6 +798,7 @@
     "s_qr_scan": "Zeskanuj kod QR",
     "l_invalid_qr": "Kod QR jest nieprawidłowy",
     "l_qr_not_found": "Nie znaleziono kodu QR",
+    "l_qr_scanned": null,
     "l_qr_file_too_large": "Plik jest zbyt duży (maksymalnie {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
