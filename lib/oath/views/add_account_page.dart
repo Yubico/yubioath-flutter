@@ -334,11 +334,18 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       }
     }
 
-    void clearFields() {
+    void clearCredentialData() {
       _issuerController.clear();
       _accountController.clear();
       _secretController.clear();
-      setState(() {});
+      setState(() {
+        _touch = false;
+        _oathType = defaultOathType;
+        _hashAlgorithm = defaultHashAlgorithm;
+        _digits = defaultDigits;
+        _counter = defaultCounter;
+        _dataLoaded = false;
+      });
     }
 
     void handleQrData(String? qrData, WithContext withContext) async {
@@ -444,7 +451,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                 ),
                                 onPressed: () async {
                                   if (_qrScanSuccess) {
-                                    clearFields();
+                                    clearCredentialData();
                                     setState(() {
                                       _qrScanSuccess = false;
                                     });
