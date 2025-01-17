@@ -610,7 +610,7 @@
     "l_key_no_certificate": "Key without certificate loaded",
     "s_generate_key": "Generate key",
     "l_generate_desc": "Generate a new certificate or CSR",
-    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be saved to file, embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
+    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}.",
     "@p_generate_desc": {
         "placeholders": {
             "slot": {}
@@ -677,6 +677,11 @@
     "l_rfc4514_invalid": "Invalid RFC 4514 format",
     "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "Allow fingerprint",
+    "s_output_format": "Output format",
+    "s_expiration_date": "Expiration date",
+    "p_algorithm_desc": "Key algorithm to use.",
+    "p_output_format_desc": "The public key can be:\n\t• Saved to file.\n\t• Embedded into a self-signed certificate stored on the YubiKey (default).\n\t• Saved to file in a certificate signing request (CSR).",
+    "p_expiration_date_desc": "Decide for how long the certificate will be valid (default 1 year).",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
     "p_key_options_bio_desc": "Allow biometrics to be used instead of PIN.",
