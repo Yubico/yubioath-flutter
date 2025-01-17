@@ -80,7 +80,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   Widget _buildFullscreen(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: widget.title,
-          centerTitle: true,
           actions: [
             if (widget.infoText != null)
               InfoPopupButton(

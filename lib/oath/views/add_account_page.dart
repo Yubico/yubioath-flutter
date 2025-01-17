@@ -15,7 +15,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -349,57 +348,50 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       });
     }
 
-    void scanQrCode({File? file}) async {
-      final qrScanner = ref.read(qrScannerProvider);
-      if (qrScanner != null) {
-        final withContext = ref.read(withContextProvider);
-        setState(() {
-          _scanning = true;
-        });
-        String? qrData;
-        if (file != null) {
-          // Scan QR code from file
-          qrData = await handleQrFile(file, context, withContext, qrScanner);
-        } else {
-          qrData = await qrScanner.scanQr();
-        }
-        await withContext(
-          (context) async {
-            if (qrData != null) {
-              try {
-                final creds = CredentialData.fromUri(Uri.parse(qrData));
+    void handleQrData(String qrData, WithContext withContext) async {
+      await withContext((context) async {
+        try {
+          final creds = CredentialData.fromUri(Uri.parse(qrData));
 
-                if (creds.length == 1) {
-                  _loadCredentialData(creds[0]);
-                  setState(() {
-                    _qrScanSuccess = true;
-                  });
-                } else {
-                  Navigator.of(context).pop();
-                  await handleUri(context, widget.credentials, qrData,
-                      widget.devicePath, widget.state, l10n);
-                  return;
-                }
-              } catch (_) {
-                showMessage(context, l10n.l_invalid_qr);
-              }
-            } else {
-              showMessage(context, l10n.l_qr_not_found);
-            }
+          if (creds.length == 1) {
+            _loadCredentialData(creds[0]);
             setState(() {
-              _scanning = false;
+              _qrScanSuccess = true;
             });
-          },
-        );
-      }
+          } else {
+            Navigator.of(context).pop();
+            await handleUri(context, widget.credentials, qrData,
+                widget.devicePath, widget.state, l10n);
+            return;
+          }
+        } catch (_) {
+          showMessage(context, l10n.l_invalid_qr);
+        }
+      });
     }
+
+    final qrScanner = ref.read(qrScannerProvider);
+    final withContext = ref.read(withContextProvider);
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return FileDropTarget(
-      onFileDropped: (file) {
-        scanQrCode(file: file);
+      onFileDropped: (file) async {
+        if (qrScanner != null) {
+          setState(() {
+            _scanning = true;
+          });
+          final qrData =
+              await handleQrFile(file, context, withContext, qrScanner);
+
+          if (qrData != null) {
+            handleQrData(qrData, withContext);
+          }
+          setState(() {
+            _scanning = false;
+          });
+        }
       },
       overlay: FileDropOverlay(
         title: l10n.s_add_account,
@@ -424,7 +416,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (widget.credentialData == null)
+                    if (widget.credentialData == null && !isAndroid)
                       Column(
                         children: [
                           Wrap(
@@ -453,7 +445,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                       ? l10n.l_qr_scanned
                                       : l10n.s_qr_scan,
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_qrScanSuccess) {
                                     clearCredentialData();
                                     setState(() {
@@ -461,7 +453,24 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     });
                                     return;
                                   }
-                                  scanQrCode();
+                                  if (qrScanner != null) {
+                                    setState(() {
+                                      _scanning = true;
+                                    });
+
+                                    final qrData = await qrScanner.scanQr();
+                                    if (qrData != null) {
+                                      handleQrData(qrData, withContext);
+                                    } else {
+                                      await withContext((context) async {
+                                        showMessage(
+                                            context, l10n.l_qr_not_found);
+                                      });
+                                    }
+                                    setState(() {
+                                      _scanning = false;
+                                    });
+                                  }
                                 },
                               ),
                               ActionChip(
@@ -473,14 +482,15 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               )
                             ],
                           ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            l10n.p_add_account_desc,
-                            textAlign: TextAlign.center,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              l10n.p_add_account_desc,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ],
                       ),
-                    const SizedBox(height: 8.0),
                     AppTextField(
                       key: keys.issuerField,
                       controller: _issuerController,
