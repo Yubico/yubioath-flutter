@@ -52,6 +52,7 @@
     "s_collapse_navigation": "Zwiń nawigację",
     "s_show_menu": "Pokaż menu",
     "s_hide_menu": "Ukryj menu",
+    "s_more_info": null,
     "q_rename_target": "Zmienić nazwę {label}?",
     "@q_rename_target": {
         "placeholders": {

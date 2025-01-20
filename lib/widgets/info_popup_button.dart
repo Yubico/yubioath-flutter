@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/message.dart';
 import 'responsive_dialog.dart';
@@ -27,32 +29,22 @@ class InfoPopupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (!showDialog) {
       return PopupMenuButton(
+        tooltip: l10n.s_more_info,
         constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
         key: _menuKey,
         popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
         menuPadding: EdgeInsets.zero,
-        padding: EdgeInsets.zero,
-        child: Material(
-          child: SizedBox(
-            height: size,
-            width: size,
-            child: IconButton(
-              constraints: size != null
-                  ? BoxConstraints(maxHeight: size!, maxWidth: size!)
-                  : null,
-              onPressed: () {
-                dynamic state = _menuKey.currentState;
-                state.showButtonMenu();
-              },
-              icon: Icon(
-                Icons.info,
-                size: iconSize,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              padding: EdgeInsets.zero,
-            ),
+        borderRadius: BorderRadius.circular(25),
+        child: SizedBox(
+          height: size,
+          width: size,
+          child: Icon(
+            Symbols.info,
+            size: iconSize,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         itemBuilder: (context) {
@@ -66,9 +58,7 @@ class InfoPopupButton extends StatelessWidget {
         height: size,
         width: size,
         child: IconButton(
-          constraints: size != null
-              ? BoxConstraints(maxHeight: size!, maxWidth: size!)
-              : null,
+          tooltip: l10n.s_more_info,
           onPressed: () {
             // Show info content in dialog on smaller screens and mobile
             showBlurDialog(
@@ -80,7 +70,7 @@ class InfoPopupButton extends StatelessWidget {
             );
           },
           icon: Icon(
-            Icons.info,
+            Symbols.info,
             size: iconSize,
             color: Theme.of(context).colorScheme.primary,
           ),

@@ -52,6 +52,7 @@
     "s_collapse_navigation": "ナビゲーションを閉じる",
     "s_show_menu": "メニューを表示する",
     "s_hide_menu": "メニューを隠す",
+    "s_more_info": null,
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {

@@ -52,6 +52,7 @@
     "s_collapse_navigation": "Collapse navigation",
     "s_show_menu": "Show menu",
     "s_hide_menu": "Hide menu",
+    "s_more_info": "More info",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {

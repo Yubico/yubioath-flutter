@@ -268,8 +268,8 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                       },
                               ),
                             InfoPopupButton(
-                              size: 28,
-                              iconSize: 18,
+                              size: 30,
+                              iconSize: 20,
                               showDialog: constraints.maxWidth < maxWidth,
                               infoText: RichText(
                                 text: TextSpan(
