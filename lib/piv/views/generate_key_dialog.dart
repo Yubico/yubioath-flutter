@@ -203,6 +203,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                           runSpacing: 8.0,
                           children: [
                             ChoiceFilterChip<KeyType>(
+                              tooltip: l10n.s_algorithm,
                               items: getSupportedKeyTypes(
                                   widget.pivState.version, isFips),
                               value: _keyType,
@@ -222,6 +223,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     },
                             ),
                             ChoiceFilterChip<GenerateType>(
+                              tooltip: l10n.s_output_format,
                               items: GenerateType.values,
                               value: _generateType,
                               selected: _generateType != defaultGenerateType,
@@ -238,6 +240,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                             ),
                             if (_generateType == GenerateType.certificate)
                               FilterChip(
+                                tooltip: l10n.s_expiration_date,
                                 label: Text(dateFormatter.format(_validTo)),
                                 onSelected: _generating
                                     ? null
@@ -297,7 +300,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                           fontWeight: FontWeight.w700),
                                     ),
                                     TextSpan(text: '\n'),
-                                    TextSpan(text: l10n.p_expiration_date_desc)
+                                    TextSpan(text: l10n.p_expiration_date_desc),
                                   ],
                                 ),
                               ),
