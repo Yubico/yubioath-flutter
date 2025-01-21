@@ -302,6 +302,12 @@
     "l_unlock_pin_first": "PIN でロック解除",
     "l_pin_soft_locked": "YubiKeyを取り外して再挿入するまで、PINがブロックされています",
     "l_pin_change_required_desc": "このアプリケーションを使用する前に新しいPINを設定する必要があります",
+    "p_enter_current_pin_or_puk": null,
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "現在のPINを入力してください。PINがわからない場合は、PUKでブロックを解除するか、YubiKeyをリセットする必要があります。",
     "p_enter_current_pin_or_reset_no_puk": "現在のPINを入力してください。PINがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_enter_current_puk_or_reset": "現在のPUKを入力してください。PUKがわからない場合は、YubiKeyをリセットする必要があります。",
@@ -330,8 +336,14 @@
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
     "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットする必要があります",
-    "p_enter_new_piv_pin_puk": "新しく設定したい {name} を入力してください。最低 {length} 文字です。",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_desc": null,
+    "@p_enter_new_piv_pin_puk_desc": {
         "placeholders": {
             "name": {},
             "length": {}

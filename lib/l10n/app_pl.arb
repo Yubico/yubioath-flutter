@@ -302,6 +302,12 @@
     "l_unlock_pin_first": "Najpierw odblokuj kodem PIN",
     "l_pin_soft_locked": "Kod PIN został zablokowany do momentu ponownego podłączenia klucza YubiKey",
     "l_pin_change_required_desc": "Przed użyciem tej aplikacji ustaw nowy kod PIN",
+    "p_enter_current_pin_or_puk": null,
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Wpisz obecny kod PIN. Jeśli go nie pamiętasz, zresetuj klucz YubiKey lub odblokuj go za pomocą kodu PUK.",
     "p_enter_current_pin_or_reset_no_puk": "Wpisz obecny kod PIN. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
     "p_enter_current_puk_or_reset": "Wpisz obecny kod PUK. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
@@ -330,8 +336,14 @@
     "p_pin_required_desc": "Działanie wymaga wpisania kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano, użyj kodu PUK, aby zresetować",
     "l_piv_pin_puk_blocked": "Zablokowano, zresetuj do ustawień fabrycznych",
-    "p_enter_new_piv_pin_puk": "Wprowadź nowy adres {name} do ustawienia. Musi mieć co najmniej {length} znaków.",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_desc": null,
+    "@p_enter_new_piv_pin_puk_desc": {
         "placeholders": {
             "name": {},
             "length": {}

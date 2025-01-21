@@ -302,6 +302,12 @@
     "l_unlock_pin_first": "Mở khóa bằng Mã PIN",
     "l_pin_soft_locked": "Mã PIN đã bị khóa cho đến khi YubiKey được tháo ra và cắm lại",
     "l_pin_change_required_desc": "Cần thiết lập một Mã PIN mới trước khi bạn có thể sử dụng ứng dụng này",
+    "p_enter_current_pin_or_puk": null,
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải mở khóa bằng Mã PUK hoặc khôi phục cài đặt gốc YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
     "p_enter_current_puk_or_reset": "Nhập Mã PUK hiện tại của bạn. Nếu bạn không biết Mã PUK, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
@@ -330,8 +336,14 @@
     "p_pin_required_desc": "Hành động bạn sắp thực hiện yêu cầu phải nhập Mã PIN PIV.",
     "l_piv_pin_blocked": "Bị khóa, sử dụng PUK để khôi phục",
     "l_piv_pin_puk_blocked": "Bị khóa, cần khôi phục cài đặt gốc",
-    "p_enter_new_piv_pin_puk": "Nhập một {name} mới để thiết lập. Phải có ít nhất {length} ký tự.",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_desc": null,
+    "@p_enter_new_piv_pin_puk_desc": {
         "placeholders": {
             "name": {},
             "length": {}

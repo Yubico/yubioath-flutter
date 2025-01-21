@@ -190,9 +190,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.target == ManageTarget.pin
-                ? l10n.p_enter_current_pin_or_reset
-                : l10n.p_enter_current_puk_or_reset),
+            Text(l10n.p_enter_current_pin_or_puk(
+                widget.target == ManageTarget.pin ? l10n.s_pin : l10n.s_puk)),
             AppTextField(
               autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
               obscureText: _isObscureCurrent,
@@ -227,7 +226,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                                 _attemptsRemaining))
                         : null),
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureCurrent
                       ? Symbols.visibility
@@ -254,9 +253,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
                     newMinPinLen,
                     '123456')
-                : l10n.p_enter_new_piv_pin_puk(
-                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
-                    newMinPinLen)),
+                : l10n.p_enter_new_piv_pin_puk(widget.target == ManageTarget.puk
+                    ? l10n.s_puk
+                    : l10n.s_pin)),
             AppTextField(
               key: keys.newPinPukField,
               autofocus: showDefaultPinUsed || showDefaultPukUsed,
@@ -269,11 +268,23 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
+                helperText: hasPinComplexity
+                    ? l10n.p_enter_new_piv_pin_puk_complexity_active(
+                        widget.target == ManageTarget.puk
+                            ? l10n.s_puk
+                            : l10n.s_pin,
+                        newMinPinLen,
+                        '123456')
+                    : l10n.p_enter_new_piv_pin_puk_desc(
+                        widget.target == ManageTarget.puk
+                            ? l10n.s_puk
+                            : l10n.s_pin,
+                        newMinPinLen),
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
                 errorText: _newIsWrong ? _newPinError : null,
-                prefixIcon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureNew
                       ? Symbols.visibility
@@ -314,7 +325,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_confirm_puk
                     : l10n.s_confirm_pin,
-                prefixIcon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.password),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureConfirm
                       ? Symbols.visibility

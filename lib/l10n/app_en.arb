@@ -302,6 +302,12 @@
     "l_unlock_pin_first": "Unlock with PIN",
     "l_pin_soft_locked": "PIN has been blocked until the YubiKey is removed and reinserted",
     "l_pin_change_required_desc": "A new PIN must be set before you can use this application",
+    "p_enter_current_pin_or_puk": "Enter your current {name}.",
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to unblock it with the PUK or reset the YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
     "p_enter_current_puk_or_reset": "Enter your current PUK. If you don't know your PUK, you'll need to reset the YubiKey.",
@@ -330,14 +336,20 @@
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
-    "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be at least {length} characters long.",
+    "p_enter_new_piv_pin_puk": "Enter a new {name} to set.",
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_desc": "A {name} must be at least {length} characters long.",
+    "@p_enter_new_piv_pin_puk_desc": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "Enter a new {name} to set. Must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
+    "p_enter_new_piv_pin_puk_complexity_active": "A {name} must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
     "@p_enter_new_piv_pin_puk_complexity_active": {
         "placeholders": {
             "name": {},

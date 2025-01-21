@@ -302,6 +302,12 @@
     "l_unlock_pin_first": "Mit PIN entsperren",
     "l_pin_soft_locked": "PIN ist geblockt bis der YubiKey entfernt und wieder angeschlossen wird",
     "l_pin_change_required_desc": "Vor Verwendung der Anwendung muss eine neue PIN gesetzt werden",
+    "p_enter_current_pin_or_puk": null,
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Gib deine aktuelle PIN ein. Falls du die PIN nicht kennst, musst du sie mit der PUK entsperren oder deinen YubiKey zurücksetzen.",
     "p_enter_current_pin_or_reset_no_puk": "Gib deine aktuelle PIN ein. Falls du die PIN nicht kennst, musst du deinen YubiKey zurücksetzen.",
     "p_enter_current_puk_or_reset": "Gib deine aktuelle PUK ein. Wenn du die PUK nicht kennst, musst du deinen YubiKey zurücksetzen.",
@@ -330,8 +336,14 @@
     "p_pin_required_desc": "Diese Aktion erfordert die PIV PIN.",
     "l_piv_pin_blocked": "Gesperrt, verwende die PUK zum Zurücksetzen",
     "l_piv_pin_puk_blocked": "Gesperrt, Zurücksetzen auf Werkseinstellungen erforderlich",
-    "p_enter_new_piv_pin_puk": "Gebe eine neue {name} ein. Sie muss mindestens {length} Zeichen lang sein.",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_desc": null,
+    "@p_enter_new_piv_pin_puk_desc": {
         "placeholders": {
             "name": {},
             "length": {}

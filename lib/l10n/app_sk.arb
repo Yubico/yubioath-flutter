@@ -302,6 +302,12 @@
     "l_unlock_pin_first": "Odomknúť pomocou PIN",
     "l_pin_soft_locked": "PIN bol zablokovaný, kým sa kľúč YubiKey nevyberie a nevloží znova",
     "l_pin_change_required_desc": "Pred použitím tejto aplikácie je potrebné nastaviť nový PIN kód",
+    "p_enter_current_pin_or_puk": null,
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Zadajte svoj aktuálny PIN kód. Ak nepoznáte svoj PIN, musíte ho odblokovať pomocou PUK alebo obnoviť YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Zadajte svoj aktuálny PIN kód. Ak nepoznáte svoj PIN kód, budete musieť YubiKey obnoviť.",
     "p_enter_current_puk_or_reset": "Zadajte svoj aktuálny PUK. Ak svoj PUK nepoznáte, budete musieť YubiKey obnoviť.",
@@ -330,8 +336,14 @@
     "p_pin_required_desc": "Akcia, ktorú sa chystáte vykonať, vyžaduje zadanie kódu PIV PIN.",
     "l_piv_pin_blocked": "Zablokované, na obnovenie použite PUK",
     "l_piv_pin_puk_blocked": "Zablokované, je potrebné obnovenie výrobných nastavení",
-    "p_enter_new_piv_pin_puk": "Zadajte nový {name}, ktorý chcete nastaviť. Musí mať dĺžku aspoň {length} znakov.",
+    "p_enter_new_piv_pin_puk": null,
     "@p_enter_new_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "p_enter_new_piv_pin_puk_desc": null,
+    "@p_enter_new_piv_pin_puk_desc": {
         "placeholders": {
             "name": {},
             "length": {}
