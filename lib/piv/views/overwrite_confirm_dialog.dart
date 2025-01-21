@@ -43,7 +43,7 @@ class _OverwriteConfirmDialog extends StatelessWidget {
             },
             child: Text(l10n.s_overwrite)),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

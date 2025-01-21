@@ -110,7 +110,7 @@ class SettingsPage extends ConsumerWidget {
 
     return ResponsiveDialog(
       title: Text(l10n.s_settings),
-      child: Column(
+      builder: (context, _) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

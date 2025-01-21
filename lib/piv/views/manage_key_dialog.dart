@@ -29,6 +29,7 @@ import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
+import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -167,6 +168,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final currentType =
         widget.pivState.metadata?.managementKeyMetadata.keyType ??
             defaultManagementKeyType;
@@ -198,12 +202,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
           child: Text(l10n.s_save),
         )
       ],
-      child: Padding(
+      builder: (_, fullScreen) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_change_management_key_desc),
             if (_usesStoredKey)
               AppTextField(
                 autofocus: true,
@@ -224,7 +227,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                       : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Symbols.pin),
+                  icon: const Icon(Symbols.pin),
                   suffixIcon: IconButton(
                       icon: Icon(_isObscure
                           ? Symbols.visibility
@@ -264,7 +267,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                               Format.hex.allowedCharacters)
                           : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Symbols.key),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: _hasMetadata
                       ? null
                       : IconButton(
@@ -304,7 +307,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         Format.hex.allowedCharacters)
                     : null,
                 enabled: currentLenOk,
-                prefixIcon: const Icon(Symbols.key),
+                icon: const Icon(Symbols.key),
                 suffixIcon: IconButton(
                   key: keys.managementKeyRefresh,
                   icon: const Icon(Symbols.refresh),
@@ -338,35 +341,73 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                 }
               },
             ).init(),
-            Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 4.0,
-                runSpacing: 8.0,
-                children: [
-                  if (widget.pivState.metadata != null)
-                    ChoiceFilterChip<ManagementKeyType>(
-                      items: managementKeyTypes,
-                      value: _keyType,
-                      selected: _keyType != currentType,
-                      itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                      onChanged: (value) {
-                        setState(() {
-                          _keyType = value;
-                        });
-                      },
-                    ),
-                  if (!fipsUnready)
-                    FilterChip(
-                      key: keys.pinLockManagementKeyChip,
-                      label: Text(l10n.s_protect_key),
-                      selected: _storeKey,
-                      onSelected: (value) {
-                        setState(() {
-                          _storeKey = value;
-                        });
-                      },
-                    ),
-                ]),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.start,
+                      spacing: 4.0,
+                      runSpacing: 8.0,
+                      children: [
+                        if (widget.pivState.metadata != null)
+                          ChoiceFilterChip<ManagementKeyType>(
+                            tooltip: l10n.s_management_key_algorithm,
+                            items: managementKeyTypes,
+                            value: _keyType,
+                            selected: _keyType != currentType,
+                            itemBuilder: (value) =>
+                                Text(value.getDisplayName(l10n)),
+                            onChanged: (value) {
+                              setState(() {
+                                _keyType = value;
+                              });
+                            },
+                          ),
+                        if (!fipsUnready)
+                          FilterChip(
+                            key: keys.pinLockManagementKeyChip,
+                            label: Text(l10n.s_protect_key),
+                            selected: _storeKey,
+                            onSelected: (value) {
+                              setState(() {
+                                _storeKey = value;
+                              });
+                            },
+                          ),
+                        InfoPopupButton(
+                          size: 30,
+                          iconSize: 20,
+                          showDialog: fullScreen,
+                          infoText: RichText(
+                            text: TextSpan(
+                              style: textTheme.bodySmall,
+                              children: [
+                                TextSpan(
+                                  text: l10n.s_management_key_algorithm,
+                                  style: textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                TextSpan(text: '\n'),
+                                TextSpan(
+                                  text: l10n.p_management_key_algorithm_desc,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ]),
+                ),
+              ],
+            ),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

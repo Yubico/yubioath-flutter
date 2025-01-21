@@ -23,7 +23,6 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
-import '../../core/state.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -86,249 +85,240 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     final canSave = !_generating &&
         (!_invalidSubject || _generateType == GenerateType.publicKey);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxWidth = isDesktop ? 400 : 600;
-        return ResponsiveDialog(
-          allowCancel: !_generating,
-          title: Text(l10n.s_generate_key),
-          actions: [
-            TextButton(
-              key: keys.saveButton,
-              onPressed: canSave
-                  ? () async {
-                      if (!await confirmOverwrite(
+    return ResponsiveDialog(
+      allowCancel: !_generating,
+      title: Text(l10n.s_generate_key),
+      actions: [
+        TextButton(
+          key: keys.saveButton,
+          onPressed: canSave
+              ? () async {
+                  if (!await confirmOverwrite(
+                    context,
+                    widget.pivSlot,
+                    writeKey: true,
+                    writeCert: _generateType == GenerateType.certificate,
+                  )) {
+                    return;
+                  }
+
+                  setState(() {
+                    _generating = true;
+                  });
+
+                  final pivNotifier =
+                      ref.read(pivSlotsProvider(widget.devicePath).notifier);
+
+                  if (!(_generateType == GenerateType.publicKey ||
+                      await pivNotifier.validateRfc4514(_subject))) {
+                    setState(() {
+                      _generating = false;
+                      _invalidSubject = true;
+                    });
+                    return;
+                  }
+
+                  final result = await pivNotifier.generate(
+                    widget.pivSlot.slot,
+                    _keyType,
+                    pinPolicy: getPinPolicy(widget.pivSlot.slot, _allowMatch),
+                    parameters: switch (_generateType) {
+                      GenerateType.publicKey =>
+                        PivGenerateParameters.publicKey(),
+                      GenerateType.certificate =>
+                        PivGenerateParameters.certificate(
+                            subject: _subject,
+                            validFrom: _validFrom,
+                            validTo: _validTo),
+                      GenerateType.csr =>
+                        PivGenerateParameters.csr(subject: _subject),
+                    },
+                  );
+
+                  await ref.read(withContextProvider)(
+                    (context) async {
+                      Navigator.of(context).pop(result);
+                      showMessage(
                         context,
-                        widget.pivSlot,
-                        writeKey: true,
-                        writeCert: _generateType == GenerateType.certificate,
-                      )) {
-                        return;
-                      }
-
-                      setState(() {
-                        _generating = true;
-                      });
-
-                      final pivNotifier = ref
-                          .read(pivSlotsProvider(widget.devicePath).notifier);
-
-                      if (!(_generateType == GenerateType.publicKey ||
-                          await pivNotifier.validateRfc4514(_subject))) {
-                        setState(() {
-                          _generating = false;
-                          _invalidSubject = true;
-                        });
-                        return;
-                      }
-
-                      final result = await pivNotifier.generate(
-                        widget.pivSlot.slot,
-                        _keyType,
-                        pinPolicy:
-                            getPinPolicy(widget.pivSlot.slot, _allowMatch),
-                        parameters: switch (_generateType) {
-                          GenerateType.publicKey =>
-                            PivGenerateParameters.publicKey(),
-                          GenerateType.certificate =>
-                            PivGenerateParameters.certificate(
-                                subject: _subject,
-                                validFrom: _validFrom,
-                                validTo: _validTo),
-                          GenerateType.csr =>
-                            PivGenerateParameters.csr(subject: _subject),
-                        },
+                        l10n.s_private_key_generated,
                       );
-
-                      await ref.read(withContextProvider)(
-                        (context) async {
-                          Navigator.of(context).pop(result);
-                          showMessage(
-                            context,
-                            l10n.s_private_key_generated,
-                          );
-                        },
-                      );
-                    }
-                  : null,
-              child: Text(l10n.s_save),
-            ),
-          ],
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
+                    },
+                  );
+                }
+              : null,
+          child: Text(l10n.s_save),
+        ),
+      ],
+      builder: (context, fullScreen) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                l10n.p_generate_desc(widget.pivSlot.slot.getDisplayName(l10n))),
+            AppTextField(
+              autofocus: true,
+              key: keys.subjectField,
+              decoration: AppInputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_subject,
+                helperText:
+                    '${l10n.p_subject_desc}\n\n${l10n.rfc4514_examples}',
+                helperMaxLines: 10,
+                errorText: _subject.isNotEmpty && _invalidSubject
+                    ? '${l10n.l_rfc4514_invalid}\n\n${l10n.rfc4514_examples}'
+                    : null,
+                icon: Icon(Symbols.subject),
+              ),
+              textInputAction: TextInputAction.next,
+              enabled: !_generating && _generateType != GenerateType.publicKey,
+              onChanged: (value) {
+                setState(() {
+                  _invalidSubject = value.isEmpty;
+                  _subject = value;
+                });
+              },
+            ).init(),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n
-                    .p_generate_desc(widget.pivSlot.slot.getDisplayName(l10n))),
-                AppTextField(
-                  autofocus: true,
-                  key: keys.subjectField,
-                  decoration: AppInputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_subject,
-                    helperText:
-                        '${l10n.p_subject_desc}\n\n${l10n.rfc4514_examples}',
-                    helperMaxLines: 10,
-                    errorText: _subject.isNotEmpty && _invalidSubject
-                        ? '${l10n.l_rfc4514_invalid}\n\n${l10n.rfc4514_examples}'
-                        : null,
-                    icon: Icon(Symbols.subject),
-                  ),
-                  textInputAction: TextInputAction.next,
-                  enabled:
-                      !_generating && _generateType != GenerateType.publicKey,
-                  onChanged: (value) {
-                    setState(() {
-                      _invalidSubject = value.isEmpty;
-                      _subject = value;
-                    });
-                  },
-                ).init(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Icon(
-                        Symbols.tune,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Flexible(
-                      child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.start,
-                          spacing: 4.0,
-                          runSpacing: 8.0,
-                          children: [
-                            ChoiceFilterChip<KeyType>(
-                              tooltip: l10n.s_algorithm,
-                              items: getSupportedKeyTypes(
-                                  widget.pivState.version, isFips),
-                              value: _keyType,
-                              selected: _keyType != defaultKeyType,
-                              itemBuilder: (value) =>
-                                  Text(value.getDisplayName(l10n)),
-                              onChanged: _generating
-                                  ? null
-                                  : (value) {
-                                      setState(() {
-                                        _keyType = value;
-                                        if (value == KeyType.x25519) {
-                                          _generateType =
-                                              GenerateType.publicKey;
-                                        }
-                                      });
-                                    },
-                            ),
-                            ChoiceFilterChip<GenerateType>(
-                              tooltip: l10n.s_output_format,
-                              items: GenerateType.values,
-                              value: _generateType,
-                              selected: _generateType != defaultGenerateType,
-                              itemBuilder: (value) =>
-                                  Text(value.getDisplayName(l10n)),
-                              onChanged:
-                                  _generating || _keyType == KeyType.x25519
-                                      ? null
-                                      : (value) {
-                                          setState(() {
-                                            _generateType = value;
-                                          });
-                                        },
-                            ),
-                            if (_generateType == GenerateType.certificate)
-                              FilterChip(
-                                tooltip: l10n.s_expiration_date,
-                                label: Text(dateFormatter.format(_validTo)),
-                                onSelected: _generating
-                                    ? null
-                                    : (value) async {
-                                        final selected = await showDatePicker(
-                                          context: context,
-                                          initialDate: _validTo,
-                                          firstDate: _validFrom,
-                                          lastDate: _validToMax,
-                                        );
-                                        if (selected != null) {
-                                          setState(() {
-                                            _validTo = selected;
-                                          });
-                                        }
-                                      },
-                              ),
-                            if (widget.showMatch)
-                              FilterChip(
-                                label: Text(l10n.s_allow_fingerprint),
-                                selected: _allowMatch,
-                                onSelected: _generating
-                                    ? null
-                                    : (value) {
-                                        setState(() {
-                                          _allowMatch = value;
-                                        });
-                                      },
-                              ),
-                            InfoPopupButton(
-                              size: 30,
-                              iconSize: 20,
-                              showDialog: constraints.maxWidth < maxWidth,
-                              infoText: RichText(
-                                text: TextSpan(
-                                  style: textTheme.bodySmall,
-                                  children: [
-                                    TextSpan(
-                                      text: l10n.s_algorithm,
-                                      style: textTheme.bodySmall?.copyWith(
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    TextSpan(text: '\n'),
-                                    TextSpan(text: l10n.p_algorithm_desc),
-                                    TextSpan(text: '\n' * 2),
-                                    TextSpan(
-                                      text: l10n.s_output_format,
-                                      style: textTheme.bodySmall?.copyWith(
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    TextSpan(text: '\n'),
-                                    TextSpan(text: l10n.p_output_format_desc),
-                                    TextSpan(text: '\n' * 2),
-                                    TextSpan(
-                                      text: l10n.s_expiration_date,
-                                      style: textTheme.bodySmall?.copyWith(
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    TextSpan(text: '\n'),
-                                    TextSpan(text: l10n.p_expiration_date_desc),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ]),
-                    ),
-                  ],
-                ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Visibility(
-                    visible: _generating,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: const LinearProgressIndicator(),
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-              ]
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: e,
-                      ))
-                  .toList(),
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.start,
+                      spacing: 4.0,
+                      runSpacing: 8.0,
+                      children: [
+                        ChoiceFilterChip<KeyType>(
+                          tooltip: l10n.s_algorithm,
+                          items: getSupportedKeyTypes(
+                              widget.pivState.version, isFips),
+                          value: _keyType,
+                          selected: _keyType != defaultKeyType,
+                          itemBuilder: (value) =>
+                              Text(value.getDisplayName(l10n)),
+                          onChanged: _generating
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    _keyType = value;
+                                    if (value == KeyType.x25519) {
+                                      _generateType = GenerateType.publicKey;
+                                    }
+                                  });
+                                },
+                        ),
+                        ChoiceFilterChip<GenerateType>(
+                          tooltip: l10n.s_output_format,
+                          items: GenerateType.values,
+                          value: _generateType,
+                          selected: _generateType != defaultGenerateType,
+                          itemBuilder: (value) =>
+                              Text(value.getDisplayName(l10n)),
+                          onChanged: _generating || _keyType == KeyType.x25519
+                              ? null
+                              : (value) {
+                                  setState(() {
+                                    _generateType = value;
+                                  });
+                                },
+                        ),
+                        if (_generateType == GenerateType.certificate)
+                          FilterChip(
+                            tooltip: l10n.s_expiration_date,
+                            label: Text(dateFormatter.format(_validTo)),
+                            onSelected: _generating
+                                ? null
+                                : (value) async {
+                                    final selected = await showDatePicker(
+                                      context: context,
+                                      initialDate: _validTo,
+                                      firstDate: _validFrom,
+                                      lastDate: _validToMax,
+                                    );
+                                    if (selected != null) {
+                                      setState(() {
+                                        _validTo = selected;
+                                      });
+                                    }
+                                  },
+                          ),
+                        if (widget.showMatch)
+                          FilterChip(
+                            label: Text(l10n.s_allow_fingerprint),
+                            selected: _allowMatch,
+                            onSelected: _generating
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      _allowMatch = value;
+                                    });
+                                  },
+                          ),
+                        InfoPopupButton(
+                          size: 30,
+                          iconSize: 20,
+                          showDialog: fullScreen,
+                          infoText: RichText(
+                            text: TextSpan(
+                              style: textTheme.bodySmall,
+                              children: [
+                                TextSpan(
+                                  text: l10n.s_algorithm,
+                                  style: textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                TextSpan(text: '\n'),
+                                TextSpan(text: l10n.p_algorithm_desc),
+                                TextSpan(text: '\n' * 2),
+                                TextSpan(
+                                  text: l10n.s_output_format,
+                                  style: textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                TextSpan(text: '\n'),
+                                TextSpan(text: l10n.p_output_format_desc),
+                                TextSpan(text: '\n' * 2),
+                                TextSpan(
+                                  text: l10n.s_expiration_date,
+                                  style: textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                TextSpan(text: '\n'),
+                                TextSpan(text: l10n.p_expiration_date_desc),
+                              ],
+                            ),
+                          ),
+                        )
+                      ]),
+                ),
+              ],
             ),
-          ),
-        );
-      },
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Visibility(
+                visible: _generating,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: const LinearProgressIndicator(),
+              ),
+            ),
+          ]
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: e,
+                  ))
+              .toList(),
+        ),
+      ),
     );
   }
 }

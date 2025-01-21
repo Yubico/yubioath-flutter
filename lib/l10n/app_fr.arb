@@ -408,6 +408,8 @@
     "s_use_default": "Utiliser clé par défaut",
     "l_warning_default_key": "Attention\u00a0: clé par défaut utilisée",
     "s_protect_key": "Protéger par PIN",
+    "s_management_key_algorithm": null,
+    "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "PIN peut être utilisé à la place",
     "l_wrong_key": "Clé incorrecte",
     "l_unlock_piv_management": "Débloquer gestion PIV",

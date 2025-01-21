@@ -5,8 +5,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../app/message.dart';
 import 'responsive_dialog.dart';
 
-final _menuKey = GlobalKey();
-
 class InfoPopupButton extends StatelessWidget {
   final RichText infoText;
   final bool showDialog;
@@ -34,7 +32,6 @@ class InfoPopupButton extends StatelessWidget {
       return PopupMenuButton(
         tooltip: l10n.s_more_info,
         constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
-        key: _menuKey,
         popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
         menuPadding: EdgeInsets.zero,
         borderRadius: BorderRadius.circular(25),
@@ -65,7 +62,7 @@ class InfoPopupButton extends StatelessWidget {
               context: context,
               builder: (context) => ResponsiveDialog(
                 forceDialog: true,
-                child: _buildInfoContent(context),
+                builder: (context, dialog) => _buildInfoContent(context),
               ),
             );
           },

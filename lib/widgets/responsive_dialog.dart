@@ -23,7 +23,7 @@ import 'info_popup_button.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
-  final Widget child;
+  final Widget Function(BuildContext context, bool fullScreen) builder;
   final RichText? infoText;
   final List<Widget> actions;
   final Function()? onCancel;
@@ -32,7 +32,7 @@ class ResponsiveDialog extends StatefulWidget {
 
   const ResponsiveDialog({
     super.key,
-    required this.child,
+    required this.builder,
     this.title,
     this.infoText,
     this.actions = const [],
@@ -99,8 +99,9 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
                   : null),
         ),
         body: SingleChildScrollView(
-          child:
-              SafeArea(child: Container(key: _childKey, child: widget.child)),
+          child: SafeArea(
+              child: Container(
+                  key: _childKey, child: widget.builder(context, true))),
         ),
       );
 
@@ -114,7 +115,8 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         content: SizedBox(
           width: 600,
-          child: Container(key: _childKey, child: widget.child),
+          child:
+              Container(key: _childKey, child: widget.builder(context, false)),
         ),
         actions: [
           TextButton(

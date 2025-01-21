@@ -408,6 +408,8 @@
     "s_use_default": "Použiť predvolené",
     "l_warning_default_key": "Varovanie: Používa sa predvolený kľúč",
     "s_protect_key": "Chrániť pomocou PIN kódu",
+    "s_management_key_algorithm": null,
+    "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "Namiesto toho je možné použiť PIN kód",
     "l_wrong_key": "Nesprávny kľúč",
     "l_unlock_piv_management": "Odomknúť spravovanie PIV",

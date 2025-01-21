@@ -191,7 +191,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

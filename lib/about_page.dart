@@ -45,7 +45,7 @@ class AboutPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return ResponsiveDialog(
       title: Text(l10n.s_about),
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,

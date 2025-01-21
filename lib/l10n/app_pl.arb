@@ -408,6 +408,8 @@
     "s_use_default": "Użyj domyślnego",
     "l_warning_default_key": "Ostrzeżenie: Używany jest domyślny klucz",
     "s_protect_key": "Zabezpiecz kodem PIN",
+    "s_management_key_algorithm": null,
+    "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "Zamiast tego można użyć kodu PIN",
     "l_wrong_key": "Klucz jest nieprawidłowy",
     "l_unlock_piv_management": "Odblokuj zarządzanie PIV",

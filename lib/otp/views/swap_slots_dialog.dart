@@ -55,7 +55,7 @@ class SwapSlotsDialog extends ConsumerWidget {
             },
             child: Text(l10n.s_swap))
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

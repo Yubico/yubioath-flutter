@@ -466,7 +466,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           child: Text(l10n.s_save),
         ),
       ],
-      child: child,
+      builder: (context, _) => child,
     );
   }
 }

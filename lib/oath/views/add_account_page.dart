@@ -405,7 +405,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
             child: Text(l10n.s_save, key: keys.saveButton),
           ),
         ],
-        child: isLocked
+        builder: (context, _) => isLocked
             ? Padding(
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 child:

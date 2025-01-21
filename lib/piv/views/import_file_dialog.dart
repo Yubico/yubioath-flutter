@@ -110,7 +110,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             child: Text(l10n.s_unlock),
           ),
         ],
-        child: const Padding(
+        builder: (context, _) => const Padding(
             padding: EdgeInsets.symmetric(horizontal: 18.0),
             child: Center(
               child: CircularProgressIndicator(),
@@ -128,7 +128,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             child: Text(l10n.s_unlock),
           ),
         ],
-        child: Padding(
+        builder: (context, _) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +244,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
               child: Text(l10n.s_import),
             ),
           ],
-          child: Padding(
+          builder: (context, _) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
