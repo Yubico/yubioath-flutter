@@ -679,7 +679,7 @@
             "to_slot": {}
         }
     },
-    "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
+    "p_password_protected_file": "The selected file is password protected.",
     "p_import_items_desc": "The following item(s) will be imported into PIV slot {slot}.",
     "@p_import_items_desc": {
         "placeholders": {
