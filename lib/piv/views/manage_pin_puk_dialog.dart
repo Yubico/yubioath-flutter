@@ -190,8 +190,6 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.p_enter_current_pin_or_puk(
-                widget.target == ManageTarget.pin ? l10n.s_pin : l10n.s_puk)),
             AppTextField(
               autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
               obscureText: _isObscureCurrent,
@@ -248,14 +246,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 });
               },
             ).init(),
-            Text(hasPinComplexity
-                ? l10n.p_enter_new_piv_pin_puk_complexity_active(
-                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
-                    newMinPinLen,
-                    '123456')
-                : l10n.p_enter_new_piv_pin_puk(widget.target == ManageTarget.puk
-                    ? l10n.s_puk
-                    : l10n.s_pin)),
+            // Used to add more spacing
+            const SizedBox(height: 0),
             AppTextField(
               key: keys.newPinPukField,
               autofocus: showDefaultPinUsed || showDefaultPukUsed,
