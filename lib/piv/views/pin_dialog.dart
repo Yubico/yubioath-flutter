@@ -118,7 +118,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                     ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
                     : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Symbols.pin),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(
                       _isObscure ? Symbols.visibility : Symbols.visibility_off),

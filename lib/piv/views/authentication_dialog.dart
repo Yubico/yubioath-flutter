@@ -133,7 +133,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                             Format.hex.allowedCharacters)
                         : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Symbols.key),
+                icon: const Icon(Symbols.key),
                 suffixIcon: hasMetadata
                     ? null
                     : IconButton(

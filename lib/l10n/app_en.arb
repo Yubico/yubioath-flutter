@@ -407,7 +407,7 @@
     "l_pin_protected_key": "PIN can be used instead",
     "l_wrong_key": "Wrong key",
     "l_unlock_piv_management": "Unlock PIV management",
-    "p_unlock_piv_management_desc": "The action you are about to perform requires the PIV management key. Provide this key to unlock management functionality for this session.",
+    "p_unlock_piv_management_desc": "The action you are about to perform requires the PIV management key.",
 
     "@_oath_accounts": {},
     "l_account": "Account: {label}",
