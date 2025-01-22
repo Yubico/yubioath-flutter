@@ -311,15 +311,15 @@
     "p_enter_current_pin_or_reset": "Saisissez votre PIN actuel. Vous ne connaissez pas votre PIN\u00a0? Débloquez-le avec le PUK ou réinitialisez la YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Saisissez votre PIN actuel. Vous ne connaissez pas votre PIN\u00a0? Réinitialisez la YubiKey.",
     "p_enter_current_puk_or_reset": "Saisissez votre PUK actuel. Vous ne connaissez pas votre PUK\u00a0? Réinitialisez la YubiKey.",
-    "p_enter_new_fido2_pin": "Saisissez votre nouveau code PIN. Le code PIN doit être composé de {min_length}-{max_length} caractères et peut contenir des lettres, des chiffres et des caractères spéciaux.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": null,
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Saisissez votre nouveau code PIN. Le code PIN doit être composé de {min_length}-{max_length} caractères, contenir au moins {unique_characters} caractères uniques et ne pas être un code PIN couramment utilisé, comme \"{common_pin}\". Il peut contenir des lettres, des chiffres et des caractères spéciaux.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": null,
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},

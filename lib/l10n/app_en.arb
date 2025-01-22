@@ -311,15 +311,15 @@
     "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to unblock it with the PUK or reset the YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
     "p_enter_current_puk_or_reset": "Enter your current PUK. If you don't know your PUK, you'll need to reset the YubiKey.",
-    "p_enter_new_fido2_pin": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": "A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": "A PIN must be {min_length}-{max_length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},

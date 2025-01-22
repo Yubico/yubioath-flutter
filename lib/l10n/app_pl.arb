@@ -311,15 +311,15 @@
     "p_enter_current_pin_or_reset": "Wpisz obecny kod PIN. Jeśli go nie pamiętasz, zresetuj klucz YubiKey lub odblokuj go za pomocą kodu PUK.",
     "p_enter_current_pin_or_reset_no_puk": "Wpisz obecny kod PIN. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
     "p_enter_current_puk_or_reset": "Wpisz obecny kod PUK. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
-    "p_enter_new_fido2_pin": "Wprowadź nowy kod PIN. Kod PIN musi mieć długość {min_length}-{max_length} znaków i może zawierać litery, cyfry i znaki specjalne.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": null,
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Wprowadź nowy kod PIN. Kod PIN musi mieć długość {min_length}-{max_length} znaków, zawierać co najmniej {unique_characters} unikalnych znaków i nie może być powszechnie używanym kodem PIN, takim jak \"{common_pin}\". Może zawierać litery, cyfry i znaki specjalne.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": null,
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},

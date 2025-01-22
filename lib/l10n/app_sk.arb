@@ -311,15 +311,15 @@
     "p_enter_current_pin_or_reset": "Zadajte svoj aktuálny PIN kód. Ak nepoznáte svoj PIN, musíte ho odblokovať pomocou PUK alebo obnoviť YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Zadajte svoj aktuálny PIN kód. Ak nepoznáte svoj PIN kód, budete musieť YubiKey obnoviť.",
     "p_enter_current_puk_or_reset": "Zadajte svoj aktuálny PUK. Ak svoj PUK nepoznáte, budete musieť YubiKey obnoviť.",
-    "p_enter_new_fido2_pin": "Zadajte nový PIN kód. PIN musí mať dĺžku {min_length}-{max_length} znakov a môže obsahovať písmená, číslice a špeciálne znaky.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": null,
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Zadajte nový PIN kód. PIN musí mať dĺžku {min_length}-{max_length} znakov, musí obsahovať aspoň {unique_characters} jedinečných znakov a nesmie to byť bežne používaný PIN, ako napríklad „{common_pin}“. Môže obsahovať písmená, číslice a špeciálne znaky.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": null,
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},

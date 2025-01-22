@@ -311,15 +311,15 @@
     "p_enter_current_pin_or_reset": "現在のPINを入力してください。PINがわからない場合は、PUKでブロックを解除するか、YubiKeyをリセットする必要があります。",
     "p_enter_current_pin_or_reset_no_puk": "現在のPINを入力してください。PINがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_enter_current_puk_or_reset": "現在のPUKを入力してください。PUKがわからない場合は、YubiKeyをリセットする必要があります。",
-    "p_enter_new_fido2_pin": "新しい PIN を入力してください。PIN は {min_length}-{max_length} 文字で、英数字と特殊文字を使用できます。",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": null,
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "新しいPINを入力してください。PINは {min_length}-{max_length} 文字で、少なくとも {unique_characters} のユニークな文字を含み、\"{common_pin}\"のような一般的に使用されているPINであってはなりません。文字、数字、特殊文字を含むことができます。",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": null,
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},

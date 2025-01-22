@@ -311,15 +311,15 @@
     "p_enter_current_pin_or_reset": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải mở khóa bằng Mã PUK hoặc khôi phục cài đặt gốc YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
     "p_enter_current_puk_or_reset": "Nhập Mã PUK hiện tại của bạn. Nếu bạn không biết Mã PUK, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
-    "p_enter_new_fido2_pin": "Nhập Mã PIN mới của bạn. Mã PIN phải có độ dài từ {min_length} đến {max_length} ký tự và có thể chứa chữ cái, số và ký tự đặc biệt.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": null,
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Nhập Mã PIN mới của bạn. Mã PIN phải có độ dài từ {min_length} đến {max_length} ký tự, chứa ít nhất {unique_characters} ký tự độc đáo, và không phải là Mã PIN thường dùng, như \"{common_pin}\". Nó có thể chứa chữ cái, số và ký tự đặc biệt.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": null,
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},
