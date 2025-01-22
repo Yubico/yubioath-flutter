@@ -330,6 +330,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   ),
                   Text(l10n.p_key_options_bio_desc),
                   FilterChip(
+                    tooltip: l10n.s_pin_policy,
                     label: Text(l10n.s_allow_fingerprint),
                     selected: _allowMatch,
                     onSelected: _importing

@@ -692,6 +692,7 @@
     "l_rfc4514_invalid": "Format RFC 4514 non valide",
     "rfc4514_examples": "Exemples\u00a0:\nCN=exemple de nom\nCN=jsmith,DC=exemple,DC=net",
     "s_allow_fingerprint": "Autoriser les empreintes digitales",
+    "s_pin_policy": null,
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,

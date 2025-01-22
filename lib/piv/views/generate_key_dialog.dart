@@ -252,6 +252,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                           ),
                         if (widget.showMatch)
                           FilterChip(
+                            tooltip: l10n.s_pin_policy,
                             label: Text(l10n.s_allow_fingerprint),
                             selected: _allowMatch,
                             onSelected: _generating
@@ -293,6 +294,16 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                 ),
                                 TextSpan(text: '\n'),
                                 TextSpan(text: l10n.p_expiration_date_desc),
+                                if (widget.showMatch) ...[
+                                  TextSpan(text: '\n' * 2),
+                                  TextSpan(
+                                    text: l10n.s_pin_policy,
+                                    style: textTheme.bodySmall
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                  TextSpan(text: '\n'),
+                                  TextSpan(text: l10n.p_key_options_bio_desc)
+                                ]
                               ],
                             ),
                           ),

@@ -692,6 +692,7 @@
     "l_rfc4514_invalid": "Invalid RFC 4514 format",
     "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "Allow fingerprint",
+    "s_pin_policy": "PIN policy",
     "s_output_format": "Output format",
     "s_expiration_date": "Expiration date",
     "p_algorithm_desc": "Key algorithm to use.",

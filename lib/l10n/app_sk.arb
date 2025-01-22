@@ -692,6 +692,7 @@
     "l_rfc4514_invalid": "Neplatný formát RFC 4514",
     "rfc4514_examples": "Príklady:\nCN=Vzorové Meno\nCN=jnovak,DC=priklad,DC=net",
     "s_allow_fingerprint": "Povoliť odtlačok prsta",
+    "s_pin_policy": null,
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,

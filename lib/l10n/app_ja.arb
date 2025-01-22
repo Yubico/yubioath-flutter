@@ -692,6 +692,7 @@
     "l_rfc4514_invalid": "無効なRFC 4514形式",
     "rfc4514_examples": "例：\nCN=Example Name CN=jsmith,DC=example,\nDC=net",
     "s_allow_fingerprint": "指紋認証を許可する",
+    "s_pin_policy": null,
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,

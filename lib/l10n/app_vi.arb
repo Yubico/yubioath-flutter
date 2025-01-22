@@ -692,6 +692,7 @@
     "l_rfc4514_invalid": "Định dạng RFC 4514 không hợp lệ",
     "rfc4514_examples": "Ví dụ:\nCN=Tên Ví dụ\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "Cho phép vân tay",
+    "s_pin_policy": null,
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,
