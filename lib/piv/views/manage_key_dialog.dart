@@ -386,7 +386,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         InfoPopupButton(
                           size: 30,
                           iconSize: 20,
-                          showDialog: fullScreen,
+                          displayDialog: fullScreen,
                           infoText: RichText(
                             text: TextSpan(
                               style: textTheme.bodySmall,

@@ -17,11 +17,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../widgets/basic_dialog.dart';
 import '../keys.dart';
 import '../state.dart';
 
@@ -32,8 +33,9 @@ class SwapSlotsDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    return ResponsiveDialog(
-      title: Text(l10n.s_swap_slots),
+    return BasicDialog(
+      icon: Icon(Symbols.swap_vert),
+      title: Text(l10n.q_swap_slots),
       actions: [
         TextButton(
             key: swapButton,
@@ -55,19 +57,12 @@ class SwapSlotsDialog extends ConsumerWidget {
             },
             child: Text(l10n.s_swap))
       ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_swap_slots_desc),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
+      content: Text(
+        l10n.p_swap_slots_desc,
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }

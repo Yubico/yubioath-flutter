@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation が有効",
-    "s_enable_ep_attestation": "Enterprise Attestation を有効にする",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Enterprise Attestation が有効になり、認可されたドメインが YubiKey を一意に識別できるようになります。",
     "p_enable_ep_attestation_disable_with_factory_reset": "一度 Enterprise Attestation を有効にすると、無効にするには FIDO の工場出荷時リセットを実行する必要があります。",
     "s_pin_required": "PINが必要",
@@ -464,6 +464,7 @@
     },
     "p_rename_will_change_account_displayed": "これにより、リスト内のアカウントの表示が変更されます。",
     "s_delete_account": "アカウントを削除",
+    "q_delete_account": null,
     "l_delete_account_desc": "YubiKeyからアカウントを削除",
     "s_account_deleted": "アカウントが削除されました",
     "p_warning_delete_account": "警告！このアクションにより、YubiKeyからアカウントが削除されます。",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "パスキーが保存されていません",
     "p_non_passkeys_note": "パスキー以外の資格情報が存在する可能性がありますが、一覧に表示されません。",
     "s_delete_passkey": "パスキーを削除",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "YubiKeyからパスキーを削除します",
     "s_passkey_deleted": "パスキーが削除されました",
     "p_warning_delete_passkey": "これにより、YubiKeyからパスキーが削除されます。",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "パスキーを検索",
     "p_passkeys_used": "パスキー {used} / {max} 個を使用中。",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "キーを使用する前に指紋を設定する必要があります。",
     "s_add_fingerprint": "指紋を追加",
     "s_delete_fingerprint": "指紋を削除",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "YubiKeyから指紋を削除します",
     "s_fingerprint_deleted": "指紋が削除されました",
     "p_warning_delete_fingerprint": "これにより、YubiKeyから指紋が削除されます。",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "最初にYubiKeyに指を押し付けてください。",
-    "p_will_change_label_fp": "これにより指紋の名前が変更されます。",
     "l_name_fingerprint": "この指紋に名前を付ける",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "ファイルがインポートされました",
     "l_unsupported_key_type": "サポートされていないキーの種類",
     "l_delete_certificate": "証明書を削除",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "YubiKeyから証明書を削除します",
     "l_delete_key": "キーを削除",
+    "q_delete_key": null,
     "l_delete_key_desc": "YubiKey からキーを削除する",
     "l_delete_certificate_or_key": "証明書/キーを削除",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "YubiKey から証明書または鍵を削除する",
     "l_move_key": "キーを移動",
     "l_move_key_desc": "あるPIVスロットから別のスロットにキーを移動する",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "警告！このアクションにより、YubiKeyから証明書が削除されます。",
     "p_warning_delete_key": "警告！この操作はあなたのYubiKeyから秘密鍵を削除します。",
     "p_warning_delete_certificate_and_key": "警告! この操作は証明書と秘密鍵をあなたのYubiKeyから削除します。",
-    "q_delete_certificate_confirm": "PIVスロット{slot}内の証明書を削除しますか？",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "PIVスロット {slot}の秘密鍵を削除しますか？",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "PIV スロット {slot} の証明書と秘密鍵を削除しますか？",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限（証明書のみ）。",
     "p_cert_options_bio_desc": "使用する鍵アルゴリズム、出力フォーマット、有効期限 (証明書のみ)、PIN の代わりに生体認証を使用できるようにするかを設定します。",
     "p_key_options_bio_desc": "PIN の代わりに生体認証を使用できるようにします。",
-    "s_overwrite_slot": "スロットを上書き",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "認証情報を削除",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "スロット内の認証情報を削除",
     "p_warning_delete_slot_configuration": "警告！このアクションにより、スロット{slot_id}から認証情報が完全に削除されます。",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "認証情報が削除されました",
     "s_swap": "交換",
     "s_swap_slots": "スロットを交換",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "短いタッチ/長いタッチを交換",
     "p_swap_slots_desc": "これにより、2つのスロットの構成が交換されます。",
     "l_slots_swapped": "スロット構成が交換されました",

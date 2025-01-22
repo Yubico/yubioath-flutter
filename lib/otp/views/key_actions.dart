@@ -19,7 +19,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/action_list.dart';
 import '../features.dart' as features;
@@ -43,7 +42,7 @@ Widget otpBuildActions(BuildContext context, DevicePath devicePath,
           onTap: (otpState.slot1Configured || otpState.slot2Configured)
               ? (context) {
                   Navigator.of(context).popUntil((route) => route.isFirst);
-                  showBlurDialog(
+                  showDialog(
                       context: context,
                       builder: (context) => SwapSlotsDialog(devicePath));
                 }

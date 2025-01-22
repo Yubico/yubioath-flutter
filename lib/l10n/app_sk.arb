@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Podniková atestácia",
     "s_ep_attestation_enabled": "Podniková atestácia povolená",
-    "s_enable_ep_attestation": "Povoliť podnikovú atestáciu",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Týmto sa umožní podniková atestácia, ktorá umožní autorizovaným doménam jednoznačne identifikovať váš YubiKey.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Po zapnutí podnikovej atestácie ju možno vypnúť len vykonaním obnovenia výrobných nastavení FIDO.",
     "s_pin_required": "Vyžaduje sa PIN kód",
@@ -464,6 +464,7 @@
     },
     "p_rename_will_change_account_displayed": "Týmto sa zmení spôsob zobrazenia účtu v zozname.",
     "s_delete_account": "Vymazať účet",
+    "q_delete_account": null,
     "l_delete_account_desc": "Odstrániť účet z vášho YubiKey",
     "s_account_deleted": "Účet bol odstránený",
     "p_warning_delete_account": "Varovanie! Táto akcia vymaže účet z vášho YubiKey.",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "Nie sú uložené žiadne prístupové kľúče",
     "p_non_passkeys_note": "Môžu existovať poverenia bez prístupového kľúča, ale nemôžu byť zobrazené v zozname.",
     "s_delete_passkey": "Vymazať prístupový kľúč",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "Odstrániť prístupový kľúč z YubiKey",
     "s_passkey_deleted": "Prístupový kľúč bol odstránený",
     "p_warning_delete_passkey": "Týmto sa odstráni prístupový kľúč z vášho YubiKey.",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "Vyhľadávanie prístupových kľúčov",
     "p_passkeys_used": "{used} z {max} prístupových kľúčov je použitých.",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "Pred použitím kľúča je potrebné nastaviť odtlačky prstov.",
     "s_add_fingerprint": "Pridať odtlačok prsta",
     "s_delete_fingerprint": "Odtlačok prsta bol odstránený",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "Odstrániť odtlačok prsta z kľúča YubiKey",
     "s_fingerprint_deleted": "Odtlačok prsta bol odstránený",
     "p_warning_delete_fingerprint": "Týmto sa odstráni odtlačok prsta z vášho YubiKey.",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "Začnite stlačením prsta na YubiKey.",
-    "p_will_change_label_fp": "Toto zmení názov odtlačku prsta.",
     "l_name_fingerprint": "Pomenujte tento odtlačok prsta",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "Súbor bol importovaný",
     "l_unsupported_key_type": "Nepodporovaný typ kľúča",
     "l_delete_certificate": "Odstrániť certifikát",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "Odstrániť certifikát z vášho YubiKey",
     "l_delete_key": "Vymazať kľúč",
+    "q_delete_key": null,
     "l_delete_key_desc": "Odstrániť kľúč z vášho YubiKey",
     "l_delete_certificate_or_key": "Vymazať certifikát/kľúč",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "Odstráňte certifikát alebo kľúč z vášho YubiKey",
     "l_move_key": "Presunúť kľúč",
     "l_move_key_desc": "Presunúť kľúč z jedného slotu PIV do druhého",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "Varovanie! Táto akcia vymaže certifikát z vášho YubiKey.",
     "p_warning_delete_key": "Varovanie! Táto akcia vymaže súkromný kľúč z vášho YubiKey.",
     "p_warning_delete_certificate_and_key": "Varovanie! Táto akcia vymaže certifikát a súkromný kľúč z vášho YubiKey.",
-    "q_delete_certificate_confirm": "Vymazať certifikát v slote PIV {slot}?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Vymazať súkromný kľúč v slote PIV {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Odstrániť certifikát a súkromný kľúč v slote PIV {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "Algoritmus kľúča, ktorý sa má použiť, formát výstupu a dátum platnosti (len certifikát).",
     "p_cert_options_bio_desc": "Algoritmus kľúča, ktorý sa má použiť, formát výstupu, dátum vypršania platnosti (len certifikát) a či sa namiesto PIN kódu môžu použiť biometrické údaje.",
     "p_key_options_bio_desc": "Umožniť používanie biometrických údajov namiesto PIN kódu.",
-    "s_overwrite_slot": "Prepísať slot",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "Tým sa natrvalo prepíše existujúci obsah v slote {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Odstrániť poverenie",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "Odstrániť poverenie v slote",
     "p_warning_delete_slot_configuration": "Varovanie! Táto akcia natrvalo odstráni poverenie zo slotu {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "Poverenie odstránené",
     "s_swap": "Vymeniť",
     "s_swap_slots": "Vymeniť sloty",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "Vymeniť krátky/dlhý dotyk",
     "p_swap_slots_desc": "Týmto sa vymení nastavenie oboch slotov.",
     "l_slots_swapped": "Nastavenie slotov bolo vymenené",

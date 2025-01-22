@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Attestation d'entreprise",
     "s_ep_attestation_enabled": "Attestation d'entreprise activée",
-    "s_enable_ep_attestation": "Permettre l'attestation de l'entreprise",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Cela permettra l'Attestation d'Entreprise, permettant aux domaines autorisés d'identifier votre YubiKey de manière unique.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Une fois activée, l'attestation d'entreprise ne peut être désactivée qu'en procédant à une réinitialisation d'usine de FIDO.",
     "s_pin_required": "PIN requis",
@@ -464,6 +464,7 @@
     },
     "p_rename_will_change_account_displayed": "Cela modifiera l'affichage du compte dans la liste.",
     "s_delete_account": "Supprimer compte",
+    "q_delete_account": null,
     "l_delete_account_desc": "Supprimer le compte de votre YubiKey",
     "s_account_deleted": "Compte supprimé",
     "p_warning_delete_account": "Attention\u00a0! Cela supprimera le compte de votre YubiKey.",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "Pas de passkey enregistré",
     "p_non_passkeys_note": "Des identifiants non-passkey peuvent exister, mais ne peuvent pas être listés.",
     "s_delete_passkey": "Supprimer passkey",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "Supprimer passkey de la YubiKey",
     "s_passkey_deleted": "Passkey supprimé",
     "p_warning_delete_passkey": "Cela supprimera la passkey de votre YubiKey.",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "Rechercher des passkeys",
     "p_passkeys_used": "{used} des clés {max} utilisées.",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "Les empreintes digitales doivent être configurées avant d'utiliser la clé.",
     "s_add_fingerprint": "Ajouter empreinte digitale",
     "s_delete_fingerprint": "Supprimer empreinte digitale",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "Retirer l'empreinte digitale de la YubiKey",
     "s_fingerprint_deleted": "Empreinte digitale supprimée",
     "p_warning_delete_fingerprint": "Cela supprimera l'empreinte digitale de votre YubiKey.",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "Appuyez votre doigt sur la YubiKey pour commencer.",
-    "p_will_change_label_fp": "L'empreinte sera renommée.",
     "l_name_fingerprint": "Nommer cette empreinte",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "Fichier importé",
     "l_unsupported_key_type": "Type de clé non pris en charge",
     "l_delete_certificate": "Supprimer certificat",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "Supprimer le certificat de votre YubiKey",
     "l_delete_key": "Supprimer la clé",
+    "q_delete_key": null,
     "l_delete_key_desc": "Supprimer la clé de votre YubiKey",
     "l_delete_certificate_or_key": "Supprimer le certificat/clé",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "Supprimer le certificat ou la clé de votre YubiKey",
     "l_move_key": "Déplacer la clé",
     "l_move_key_desc": "Déplacer une clé d'un emplacement PIV vers un autre",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "Attention\u00a0! Cela supprimera le certificat de votre YubiKey.",
     "p_warning_delete_key": "Attention! Cette action supprimera la clé privée de votre YubiKey.",
     "p_warning_delete_certificate_and_key": "Attention! Cette action supprimera le certificat et la clé privée de votre YubiKey.",
-    "q_delete_certificate_confirm": "Supprimer certificat dans le slot PIV {slot}\u00a0?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Supprimer la clé privée de l'emplacement PIV {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Supprimer le certificat et la clé privée dans l'emplacement PIV {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "Algorithme clé à utiliser, format de sortie et date d'expiration (certificat uniquement).",
     "p_cert_options_bio_desc": "Algorithme de clé à utiliser, format de sortie, date d'expiration (certificat uniquement) et possibilité d'utiliser des données biométriques à la place du code PIN.",
     "p_key_options_bio_desc": "Permettre l'utilisation de données biométriques au lieu d'un code PIN.",
-    "s_overwrite_slot": "Écraser slot",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "Cela écrasera définitivement le contenu du slot {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Supprimer les infos d'identification",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "Supprimer les infos d'identification dans le slot",
     "p_warning_delete_slot_configuration": "Attention\u00a0! Cela supprimera définitivement les infos d'identification du slot {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "Infos d'identification supprimées",
     "s_swap": "Permuter",
     "s_swap_slots": "Permuter slots",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "Permuter pression courte/longue",
     "p_swap_slots_desc": "Cela permutera la configuration des deux slots.",
     "l_slots_swapped": "Configurations de slot permutées",

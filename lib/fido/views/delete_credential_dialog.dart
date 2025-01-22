@@ -19,12 +19,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../widgets/basic_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -36,25 +37,21 @@ class DeleteCredentialDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final label = credential.userName;
 
-    return ResponsiveDialog(
-      title: Text(l10n.s_delete_passkey),
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_warning_delete_passkey),
-            Text(l10n.l_passkey(label)),
-          ]
-              .map((e) => Padding(
-                    child: e,
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  ))
-              .toList(),
+    return BasicDialog(
+      icon: Icon(Symbols.delete),
+      title: Text(l10n.q_delete_passkey),
+      content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          l10n.p_warning_delete_passkey,
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
-      ),
+        const SizedBox(height: 8.0),
+        Text(l10n.p_warning_delete_passkey_desc),
+      ]),
       actions: [
         TextButton(
           onPressed: () async {

@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation aktiviert",
-    "s_enable_ep_attestation": "Enterprise Attestation aktivieren",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Dies aktiviert Enterprise Attestation, eine Funktion die es berechtigten Domains ermöglicht deinen YubiKey eindeutig zu identifizieren.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Einmal aktiviert, kann Enterprise Attestation nur durch einen FIDO-Reset deaktiviert werden.",
     "s_pin_required": "PIN erforderlich",
@@ -464,6 +464,7 @@
     },
     "p_rename_will_change_account_displayed": "Dies ändert die Anzeige des Kontos in der Liste.",
     "s_delete_account": "Konto löschen",
+    "q_delete_account": null,
     "l_delete_account_desc": "Lösche das Konto von deinem YubiKey",
     "s_account_deleted": "Konto gelöscht",
     "p_warning_delete_account": "Achtung! Du bist dabei das Konto von deinem YubiKey zu löschen.",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "Keine Passkeys gespeichert",
     "p_non_passkeys_note": "Die Liste beinhaltet ausschließlich Passkeys. Weitere Anmeldedaten können existieren.",
     "s_delete_passkey": "Passkey löschen",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "Entfernen Sie den Passkey vom YubiKey",
     "s_passkey_deleted": "Passkey gelöscht",
     "p_warning_delete_passkey": "Diese Aktion entfernt den Passkey von deinem YubiKey.",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "Passkeys durchsuchen",
     "p_passkeys_used": "{used} von {max} Passkeys verwendet.",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "Fingerabdrücken müssen eingerichtet werden, bevor der Schlüssel verwendet werden kann.",
     "s_add_fingerprint": "Fingerabdruck hinzufügen",
     "s_delete_fingerprint": "Fingerabdruck löschen",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "Fingerabdruck vom YubiKey entfernen",
     "s_fingerprint_deleted": "Fingerabdruck gelöscht",
     "p_warning_delete_fingerprint": "Dies löscht den Fingerabdruck von deinem YubiKey.",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "Lege den Finger auf den Sensor deines YubiKeys um zu beginnen.",
-    "p_will_change_label_fp": "Dies ändert die Beschriftung des Fingerabdrucks.",
     "l_name_fingerprint": "Für diesen Fingerabdruck einen Namen vergeben",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "Datei importiert",
     "l_unsupported_key_type": "Schlüssel-Typ wird nicht unterstützt",
     "l_delete_certificate": "Zertifikat löschen",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "Entferne das Zertifikat von deinem YubiKey",
     "l_delete_key": "Schlüssel löschen",
+    "q_delete_key": null,
     "l_delete_key_desc": "Entferne den Schlüssel von deinem YubiKey",
     "l_delete_certificate_or_key": "Zertifikat/Schlüssel löschen",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "Entferne das Zertifikat oder den Schlüssel von deinem YubiKey",
     "l_move_key": "Schlüssel verschieben",
     "l_move_key_desc": "Verschiebe einen Schlüssel zwischen zwei  PIV Slots",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "Achtung! Diese Aktion löscht das Zertifikat von deinem YubiKey.",
     "p_warning_delete_key": "Achtung! Diese Aktion löscht den privaten Schlüssel von deinem YubiKey.",
     "p_warning_delete_certificate_and_key": "Achtung! Diese Aktion löscht das Zertifikat und den privaten Schlüssel von deinem YubiKey.",
-    "q_delete_certificate_confirm": "Soll das Zertifikat in PIV Slot {slot} gelöscht werden?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Soll der private Schlüssel in PIV Slot {slot} gelöscht werden?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Soll das Zertifikat und der private Schlüssel in PIV Slot {slot} gelöscht werden?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "Verwendeter Schlüssel-Algorithmus, Ausgabeformat und Ablaufdatum (nur bei  Zertifikat).",
     "p_cert_options_bio_desc": "Zu verwendender Schlüssel-Algorithmus, Ausgabeformat, Ablaufdatum (nur bei Zertifikaten) und ob Fingerabdrücke anstelle der PIN verwendet werden können.",
     "p_key_options_bio_desc": "Erlaube die Verwendung von Fingerabdrücken anstelle der PIN.",
-    "s_overwrite_slot": "Slot überschreiben",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "Dies überschreibt dauerhaft evtl. vorhandenen Inhalt in Slot {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Anmeldedaten löschen",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "Anmeldedaten in Slot löschen",
     "p_warning_delete_slot_configuration": "Achtung! Diese Aktion löscht die Anmeldedaten dauerhaft aus Slot {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "Anmeldedaten gelöscht",
     "s_swap": "Tauschen",
     "s_swap_slots": "Slots tauschen",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "Kurze/lange Berührung tauschen",
     "p_swap_slots_desc": "Dies tauscht die Konfiguration der beiden Slots.",
     "l_slots_swapped": "Slot Konfigurationen getauscht",

@@ -137,7 +137,7 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
               onTap: canEnableEnterpriseAttestation
                   ? (context) {
                       Navigator.of(context).popUntil((route) => route.isFirst);
-                      showBlurDialog(
+                      showDialog(
                         context: context,
                         builder: (context) =>
                             EnableEnterpriseAttestationDialog(node.path),

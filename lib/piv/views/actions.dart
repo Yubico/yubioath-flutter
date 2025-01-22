@@ -265,7 +265,7 @@ class PivActions extends ConsumerWidget {
             }
 
             final bool? deleted = await withContext((context) async =>
-                await showBlurDialog(
+                await showDialog(
                   context: context,
                   builder: (context) => DeleteCertificateDialog(
                     devicePath,

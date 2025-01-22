@@ -17,11 +17,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../widgets/basic_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -35,8 +36,9 @@ class DeleteSlotDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    return ResponsiveDialog(
-      title: Text(l10n.s_delete_slot),
+    return BasicDialog(
+      icon: Icon(Symbols.delete),
+      title: Text(l10n.q_delete_slot),
       actions: [
         TextButton(
           key: keys.deleteButton,
@@ -73,20 +75,11 @@ class DeleteSlotDialog extends ConsumerWidget {
           child: Text(l10n.s_delete),
         )
       ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n
-                .p_warning_delete_slot_configuration(otpSlot.slot.numberId)),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
+      content: Text(
+        l10n.p_warning_delete_slot_configuration(otpSlot.slot.numberId),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }

@@ -266,7 +266,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                         InfoPopupButton(
                           size: 30,
                           iconSize: 20,
-                          showDialog: fullScreen,
+                          displayDialog: fullScreen,
                           infoText: RichText(
                             text: TextSpan(
                               style: textTheme.bodySmall,

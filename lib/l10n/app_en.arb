@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation enabled",
-    "s_enable_ep_attestation": "Enable Enterprise Attestation",
+    "q_enable_ep_attestation": "Enable Enterprise Attestation?",
     "p_enable_ep_attestation_desc": "This will enable Enterprise Attestation, allowing authorized domains to uniquely identify your YubiKey.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Once enabled, Enterprise Attestation can only be disabled by performing a FIDO factory reset.",
     "s_pin_required": "PIN required",
@@ -464,10 +464,11 @@
     },
     "p_rename_will_change_account_displayed": "This will change how the account is displayed in the list.",
     "s_delete_account": "Delete account",
+    "q_delete_account": "Delete account?",
     "l_delete_account_desc": "Remove the account from your YubiKey",
     "s_account_deleted": "Account deleted",
     "p_warning_delete_account": "Warning! This action will delete the account from your YubiKey.",
-    "p_warning_disable_credential": "You will no longer be able to generate OTPs for this account. Make sure to disable this credential from the website to avoid being locked out of your account.",
+    "p_warning_disable_credential": "Make sure to disable this account from the service it is registered with to avoid being locked out.",
     "s_account_name": "Account name",
     "s_search_accounts": "Search accounts",
     "l_accounts_used": "{used} of {capacity} accounts used",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "No passkeys stored",
     "p_non_passkeys_note": "Non-passkey credentials may exist, but can not be listed.",
     "s_delete_passkey": "Delete passkey",
+    "q_delete_passkey": "Delete passkey?",
     "l_delete_passkey_desc": "Remove the passkey from the YubiKey",
     "s_passkey_deleted": "Passkey deleted",
-    "p_warning_delete_passkey": "This will delete the passkey from your YubiKey.",
+    "p_warning_delete_passkey": "Warning! This action will delete the passkey from your YubiKey.",
+    "p_warning_delete_passkey_desc": "You will no longer be able to use this passkey for the service where it is registered.",
     "s_search_passkeys": "Search passkeys",
     "p_passkeys_used": "{used} of {max} passkeys used.",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "Fingerprints need to be set up before the key can be used.",
     "s_add_fingerprint": "Add fingerprint",
     "s_delete_fingerprint": "Delete fingerprint",
+    "q_delete_fingerprint": "Delete fingerprint?",
     "l_delete_fingerprint_desc": "Remove the fingerprint from the YubiKey",
     "s_fingerprint_deleted": "Fingerprint deleted",
     "p_warning_delete_fingerprint": "This will delete the fingerprint from your YubiKey.",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
-    "p_will_change_label_fp": "This will change the name of the fingerprint.",
     "l_name_fingerprint": "Name this fingerprint",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "File imported",
     "l_unsupported_key_type": "Unsupported key type",
     "l_delete_certificate": "Delete certificate",
+    "q_delete_certificate": "Delete certificate?",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
     "l_delete_key": "Delete key",
+    "q_delete_key": "Delete key?",
     "l_delete_key_desc": "Remove the key from your YubiKey",
     "l_delete_certificate_or_key": "Delete certificate/key",
+    "q_delete_certificate_or_key": "Delete certificate/key?",
     "l_delete_certificate_or_key_desc": "Remove the certificate or key from your YubiKey",
     "l_move_key": "Move key",
     "l_move_key_desc": "Move a key from one PIV slot into another",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "p_warning_delete_key": "Warning! This action will delete the private key from your YubiKey.",
     "p_warning_delete_certificate_and_key": "Warning! This action will delete the certificate and private key from your YubiKey.",
-    "q_delete_certificate_confirm": "Delete the certificate in PIV slot {slot}?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": "This will delete the certificate in PIV slot {slot}.",
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Delete the private key in PIV slot {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": "This will delete the private key in PIV slot {slot}.",
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Delete the certificate and private key in PIV slot {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": "This will delete the certificate and private key in PIV slot {slot}.",
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
     "p_key_options_bio_desc": "Allow biometrics to be used instead of PIN.",
-    "s_overwrite_slot": "Overwrite slot",
+    "q_overwrite_slot": "Overwrite slot?",
     "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Delete credential",
+    "q_delete_slot": "Delete credential?",
     "l_delete_slot_desc": "Remove credential in slot",
     "p_warning_delete_slot_configuration": "Warning! This action will permanently remove the credential from slot {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "Credential deleted",
     "s_swap": "Swap",
     "s_swap_slots": "Swap slots",
+    "q_swap_slots": "Swap slots?",
     "l_swap_slots_desc": "Swap short/long touch",
     "p_swap_slots_desc": "This will swap the configuration of the two slots.",
     "l_slots_swapped": "Slot configurations swapped",

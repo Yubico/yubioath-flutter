@@ -2,33 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../app/message.dart';
-import 'responsive_dialog.dart';
+import 'basic_dialog.dart';
 
 class InfoPopupButton extends StatelessWidget {
   final RichText infoText;
-  final bool showDialog;
+  final bool displayDialog;
   final double? iconSize;
   final double? size;
   const InfoPopupButton({
     super.key,
     required this.infoText,
-    this.showDialog = false,
+    this.displayDialog = false,
     this.iconSize,
     this.size,
   });
 
   Widget _buildInfoContent(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(12.0),
-      child: SingleChildScrollView(child: infoText),
-    );
+    return SingleChildScrollView(child: infoText);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    if (!showDialog) {
+    if (!displayDialog) {
       return PopupMenuButton(
         tooltip: l10n.s_more_info,
         constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
@@ -58,11 +54,10 @@ class InfoPopupButton extends StatelessWidget {
           tooltip: l10n.s_more_info,
           onPressed: () {
             // Show info content in dialog on smaller screens and mobile
-            showBlurDialog(
+            showDialog(
               context: context,
-              builder: (context) => ResponsiveDialog(
-                forceDialog: true,
-                builder: (context, dialog) => _buildInfoContent(context),
+              builder: (context) => BasicDialog(
+                content: _buildInfoContent(context),
               ),
             );
           },

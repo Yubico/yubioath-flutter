@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Xác thực Doanh Nghiệp",
     "s_ep_attestation_enabled": "Xác thực Doanh Nghiệp đã được kích hoạt",
-    "s_enable_ep_attestation": "Kích hoạt Xác thực Doanh Nghiệp",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Điều này sẽ kích hoạt Xác thực Doanh Nghiệp, cho phép các miền được ủy quyền xác định YubiKey của bạn một cách duy nhất.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Khi đã kích hoạt, Xác thực Doanh Nghiệp chỉ có thể bị tắt bằng cách thực hiện khôi phục cài đặt gốc FIDO.",
     "s_pin_required": "Cần Mã PIN",
@@ -464,6 +464,7 @@
     },
     "p_rename_will_change_account_displayed": "Điều này sẽ thay đổi cách tài khoản được hiển thị trong danh sách.",
     "s_delete_account": "Xóa tài khoản",
+    "q_delete_account": null,
     "l_delete_account_desc": "Xóa tài khoản khỏi YubiKey của bạn",
     "s_account_deleted": "Tài khoản đã bị xóa",
     "p_warning_delete_account": "Cảnh báo! Hành động này sẽ xóa tài khoản khỏi YubiKey của bạn.",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "Không có mã bảo mật đã lưu",
     "p_non_passkeys_note": "Có thể có thông tin đăng nhập không phải là mã bảo mật, nhưng không thể được liệt kê.",
     "s_delete_passkey": "Xóa mã bảo mật",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "Xóa mã bảo mật khỏi YubiKey",
     "s_passkey_deleted": "Mã bảo mật đã bị xóa",
     "p_warning_delete_passkey": "Điều này sẽ xóa mã bảo mật khỏi YubiKey của bạn.",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "Tìm kiếm mã bảo mật",
     "p_passkeys_used": "{used} trong {max} mã bảo mật đã sử dụng.",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "Cần thiết lập vân tay trước khi có thể sử dụng khóa.",
     "s_add_fingerprint": "Thêm vân tay",
     "s_delete_fingerprint": "Xóa vân tay",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "Xóa vân tay khỏi YubiKey",
     "s_fingerprint_deleted": "Vân tay đã bị xóa",
     "p_warning_delete_fingerprint": "Điều này sẽ xóa vân tay khỏi YubiKey của bạn.",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "Ấn ngón tay của bạn vào YubiKey để bắt đầu.",
-    "p_will_change_label_fp": "Điều này sẽ thay đổi tên của vân tay.",
     "l_name_fingerprint": "Đặt tên cho vân tay này",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "Tập tin đã được nhập",
     "l_unsupported_key_type": "Loại khóa không được hỗ trợ",
     "l_delete_certificate": "Xóa chứng chỉ",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "Xóa chứng chỉ khỏi YubiKey của bạn",
     "l_delete_key": "Xóa khóa",
+    "q_delete_key": null,
     "l_delete_key_desc": "Xóa khóa khỏi YubiKey của bạn",
     "l_delete_certificate_or_key": "Xóa chứng chỉ/khóa",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "Xóa chứng chỉ hoặc khóa khỏi YubiKey",
     "l_move_key": "Di chuyển khóa",
     "l_move_key_desc": "Di chuyển một khóa từ khe PIV này sang khe khác",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "Cảnh báo! Hành động này sẽ xóa chứng chỉ khỏi YubiKey của bạn.",
     "p_warning_delete_key": "Cảnh báo! Hành động này sẽ xóa khóa riêng khỏi YubiKey của bạn.",
     "p_warning_delete_certificate_and_key": "Cảnh báo! Hành động này sẽ xóa chứng chỉ và khóa riêng khỏi YubiKey của bạn.",
-    "q_delete_certificate_confirm": "Xóa chứng chỉ trong khe PIV {slot}?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Xóa khóa riêng trong khe PIV {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Xóa chứng chỉ và khóa riêng trong khe PIV {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra và ngày hết hạn (chứng chỉ chỉ).",
     "p_cert_options_bio_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra, ngày hết hạn (chứng chỉ chỉ) và nếu sinh trắc học có thể được sử dụng thay cho PIN.",
     "p_key_options_bio_desc": "Cho phép sử dụng sinh trắc học thay cho PIN.",
-    "s_overwrite_slot": "Ghi đè khe",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "Điều này sẽ ghi đè vĩnh viễn nội dung hiện có trong khe {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Xóa thông tin xác thực",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "Xóa thông tin xác thực trong khe",
     "p_warning_delete_slot_configuration": "Cảnh báo! Hành động này sẽ xóa vĩnh viễn thông tin xác thực khỏi khe {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "Thông tin xác thực đã bị xóa",
     "s_swap": "Hoán đổi",
     "s_swap_slots": "Hoán đổi các khe",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "Hoán đổi chạm ngắn/dài",
     "p_swap_slots_desc": "Điều này sẽ hoán đổi cấu hình của hai khe.",
     "l_slots_swapped": "Cấu hình khe đã được hoán đổi",

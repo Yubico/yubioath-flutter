@@ -19,26 +19,21 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../core/state.dart';
-import 'info_popup_button.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
   final Widget Function(BuildContext context, bool fullScreen) builder;
-  final RichText? infoText;
   final List<Widget> actions;
   final Function()? onCancel;
   final bool allowCancel;
-  final bool forceDialog;
 
   const ResponsiveDialog({
     super.key,
     required this.builder,
     this.title,
-    this.infoText,
     this.actions = const [],
     this.onCancel,
     this.allowCancel = true,
-    this.forceDialog = false,
   });
 
   @override
@@ -63,31 +58,10 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         : l10n.s_cancel;
   }
 
-  Widget? _buildDialogTitle(BuildContext context) {
-    if (widget.title != null) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          widget.title!,
-          if (widget.infoText != null)
-            InfoPopupButton(infoText: widget.infoText!)
-        ],
-      );
-    }
-    return null;
-  }
-
   Widget _buildFullscreen(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: widget.title,
-          actions: [
-            if (widget.infoText != null)
-              InfoPopupButton(
-                infoText: widget.infoText!,
-                showDialog: true,
-              ),
-            ...widget.actions,
-          ],
+          actions: widget.actions,
           leading: IconButton(
               tooltip: _getCancelText(context),
               icon: const Icon(Symbols.close),
@@ -109,7 +83,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
     return PopScope(
       canPop: widget.allowCancel,
       child: AlertDialog(
-        title: _buildDialogTitle(context),
+        title: widget.title,
         titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
         scrollable: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -152,7 +126,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
               _hasLostFocus = true;
             }
           },
-          child: constraints.maxWidth < maxWidth && !widget.forceDialog
+          child: constraints.maxWidth < maxWidth
               ? _buildFullscreen(context)
               : _buildDialog(context),
         );

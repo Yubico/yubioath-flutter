@@ -329,7 +329,7 @@
     },
     "s_ep_attestation": "Atest przedsiębiorstwa",
     "s_ep_attestation_enabled": "Atestacja przedsiębiorstwa włączona",
-    "s_enable_ep_attestation": "Włącz zaświadczenia dla przedsiębiorstw",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Umożliwi to zaświadczenie Enterprise Attestation, pozwalające autoryzowanym domenom na jednoznaczną identyfikację klucza YubiKey.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Po włączeniu atest Enterprise Attestation można wyłączyć tylko poprzez przywrócenie ustawień fabrycznych FIDO.",
     "s_pin_required": "Kod PIN jest wymagany",
@@ -464,6 +464,7 @@
     },
     "p_rename_will_change_account_displayed": "Spowoduje to zmianę sposobu wyświetlania konta na liście.",
     "s_delete_account": "Usuń konto",
+    "q_delete_account": null,
     "l_delete_account_desc": "Usuń konto z klucza YubiKey",
     "s_account_deleted": "Konto zostało usunięte",
     "p_warning_delete_account": "Ostrzeżenie! Spowoduje to usunięcie konta z klucza YubiKey.",
@@ -514,9 +515,11 @@
     "l_no_discoverable_accounts": "Brak kluczy dostępu",
     "p_non_passkeys_note": "Poświadczenia bez klucza mogą istnieć, ale nie mogą być wymienione.",
     "s_delete_passkey": "Usuń klucz dostępu",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "Usuń klucz dostępu z klucza YubiKey",
     "s_passkey_deleted": "Klucz dostępu został usunięty",
     "p_warning_delete_passkey": "Spowoduje to usunięcie klucza dostępu z YubiKey.",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "Szukaj kluczy dostępu",
     "p_passkeys_used": "Użyto {used} z {max} kluczy dostępu.",
     "@p_passkeys_used": {
@@ -550,6 +553,7 @@
     "p_setup_fingerprints_desc": "Przed użyciem klucza należy skonfigurować odciski palców.",
     "s_add_fingerprint": "Dodaj odcisk palca",
     "s_delete_fingerprint": "Usuń odcisk palca",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "Usuń odcisk palca z klucza YubiKey",
     "s_fingerprint_deleted": "Odcisk palca został usunięty",
     "p_warning_delete_fingerprint": "Spowoduje to usunięcie odcisku palca z klucza YubiKey.",
@@ -573,7 +577,6 @@
         }
     },
     "p_press_fingerprint_begin": "Przytrzymaj palec na kluczu YubiKey, aby rozpocząć.",
-    "p_will_change_label_fp": "Spowoduje to zmianę nazwę odcisku palca.",
     "l_name_fingerprint": "Nazwij odcisk palca",
 
     "@_fido_errors": {},
@@ -602,10 +605,13 @@
     "s_file_imported": "Plik został zaimportowany",
     "l_unsupported_key_type": "Typ klucza jest nieobsługiwany",
     "l_delete_certificate": "Usuń certyfikat",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "Usuń certyfikat z klucza YubiKey",
     "l_delete_key": "Usuń klucz",
+    "q_delete_key": null,
     "l_delete_key_desc": "Usuń klucz z YubiKey",
     "l_delete_certificate_or_key": "Usuń certyfikat lub klucz",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "Usuń certyfikat lub klucz z YubiKey",
     "l_move_key": "Przenieś klucz",
     "l_move_key_desc": "Przenieś klucz pomiędzy slotami PIV",
@@ -630,20 +636,20 @@
     "p_warning_delete_certificate": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu z klucza YubiKey.",
     "p_warning_delete_key": "Uwaga! Spowoduje to usunięcie klucza prywatnego z YubiKey.",
     "p_warning_delete_certificate_and_key": "Uwaga! Spowoduje to usunięcie certyfikatu i klucza prywatnego z YubiKey.",
-    "q_delete_certificate_confirm": "Usunąć certyfikat ze slotu PIV {slot}?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Usunąć klucz prywatny ze slotu PIV {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Usunąć certyfikat i klucz prywatny ze slotu PIV {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -695,7 +701,7 @@
     "p_cert_options_desc": "Algorytm klucza do użycia, format wyjściowy i data wygaśnięcia (tylko certyfikat).",
     "p_cert_options_bio_desc": "Używany algorytm klucza, format wyjściowy, data wygaśnięcia (tylko certyfikat) i czy zamiast kodu PIN można użyć danych biometrycznych.",
     "p_key_options_bio_desc": "Umożliwienie korzystania z danych biometrycznych zamiast kodu PIN.",
-    "s_overwrite_slot": "Nadpisz slot",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "Spowoduje to trwałe nadpisanie obecnej zawartości w slocie {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -751,6 +757,7 @@
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Usuń poświadczenie",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "Usuń poświadczenie ze slotu",
     "p_warning_delete_slot_configuration": "Ostrzeżenie! Spowoduje to trwałe usunięcie poświadczenia ze slotu {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -761,6 +768,7 @@
     "l_slot_deleted": "Poświadczenie zostało usunięte",
     "s_swap": "Zmień",
     "s_swap_slots": "Zmień sloty",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "Zmień krótkie i długie dotknięcie",
     "p_swap_slots_desc": "Spowoduje to zmianę miejsc slotów.",
     "l_slots_swapped": "Sloty zostały zmienione",
