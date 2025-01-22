@@ -224,7 +224,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                                 _attemptsRemaining))
                         : null),
                 errorMaxLines: 3,
-                icon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureCurrent
                       ? Symbols.visibility
@@ -276,7 +276,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
                 errorText: _newIsWrong ? _newPinError : null,
-                icon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureNew
                       ? Symbols.visibility
@@ -317,7 +317,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_confirm_puk
                     : l10n.s_confirm_pin,
-                icon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscureConfirm
                       ? Symbols.visibility
