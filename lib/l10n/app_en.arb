@@ -336,21 +336,15 @@
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
-    "p_enter_new_piv_pin_puk": "Enter a new {name} to set.",
-    "@p_enter_new_piv_pin_puk": {
-        "placeholders": {
-            "name": {}
-        }
-    },
-    "p_enter_new_piv_pin_puk_desc": "A {name} must be at least {length} characters long.",
-    "@p_enter_new_piv_pin_puk_desc": {
+    "p_new_piv_pin_puk_requirements": "A {name} must be at least {length} characters long.",
+    "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "A {name} must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
-    "@p_enter_new_piv_pin_puk_complexity_active": {
+    "p_new_piv_pin_puk_complexity_active_requirements": "A {name} must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {},
             "length": {},

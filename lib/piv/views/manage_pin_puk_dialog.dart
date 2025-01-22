@@ -261,13 +261,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 helperText: hasPinComplexity
-                    ? l10n.p_enter_new_piv_pin_puk_complexity_active(
+                    ? l10n.p_new_piv_pin_puk_complexity_active_requirements(
                         widget.target == ManageTarget.puk
                             ? l10n.s_puk
                             : l10n.s_pin,
                         newMinPinLen,
                         '123456')
-                    : l10n.p_enter_new_piv_pin_puk_desc(
+                    : l10n.p_new_piv_pin_puk_requirements(
                         widget.target == ManageTarget.puk
                             ? l10n.s_puk
                             : l10n.s_pin,

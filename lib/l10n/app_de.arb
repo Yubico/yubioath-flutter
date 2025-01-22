@@ -336,21 +336,15 @@
     "p_pin_required_desc": "Diese Aktion erfordert die PIV PIN.",
     "l_piv_pin_blocked": "Gesperrt, verwende die PUK zum Zurücksetzen",
     "l_piv_pin_puk_blocked": "Gesperrt, Zurücksetzen auf Werkseinstellungen erforderlich",
-    "p_enter_new_piv_pin_puk": null,
-    "@p_enter_new_piv_pin_puk": {
-        "placeholders": {
-            "name": {}
-        }
-    },
-    "p_enter_new_piv_pin_puk_desc": null,
-    "@p_enter_new_piv_pin_puk_desc": {
+    "p_new_piv_pin_puk_requirements": null,
+    "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "Gebe eine neue {name} ein. Sie muss mindestens {length} Zeichen lang sein, mindestens 2 unterschiedliche Zeichen enthalten und darf keine gewöhnliche {name} wie z.B. \"{common}\" sein.",
-    "@p_enter_new_piv_pin_puk_complexity_active": {
+    "p_new_piv_pin_puk_complexity_active_requirements": null,
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {},
             "length": {},

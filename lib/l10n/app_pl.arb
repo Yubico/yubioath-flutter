@@ -336,21 +336,15 @@
     "p_pin_required_desc": "Działanie wymaga wpisania kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano, użyj kodu PUK, aby zresetować",
     "l_piv_pin_puk_blocked": "Zablokowano, zresetuj do ustawień fabrycznych",
-    "p_enter_new_piv_pin_puk": null,
-    "@p_enter_new_piv_pin_puk": {
-        "placeholders": {
-            "name": {}
-        }
-    },
-    "p_enter_new_piv_pin_puk_desc": null,
-    "@p_enter_new_piv_pin_puk_desc": {
+    "p_new_piv_pin_puk_requirements": null,
+    "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "Wprowadź nową nazwę {name} do ustawienia. Musi mieć co najmniej {length} znaków, zawierać co najmniej 2 unikalne znaki i nie może być powszechnie używanym {name}, takim jak \"{common}\".",
-    "@p_enter_new_piv_pin_puk_complexity_active": {
+    "p_new_piv_pin_puk_complexity_active_requirements": null,
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {},
             "length": {},

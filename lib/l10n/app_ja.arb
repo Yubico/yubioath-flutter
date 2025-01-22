@@ -336,21 +336,15 @@
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
     "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットする必要があります",
-    "p_enter_new_piv_pin_puk": null,
-    "@p_enter_new_piv_pin_puk": {
-        "placeholders": {
-            "name": {}
-        }
-    },
-    "p_enter_new_piv_pin_puk_desc": null,
-    "@p_enter_new_piv_pin_puk_desc": {
+    "p_new_piv_pin_puk_requirements": null,
+    "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "設定する新しい {name} を入力する。少なくとも {length} 文字の長さで、少なくとも 2 つのユニークな文字を含み、\"{common}\"のような一般的に使用される {name}ではない必要があります。",
-    "@p_enter_new_piv_pin_puk_complexity_active": {
+    "p_new_piv_pin_puk_complexity_active_requirements": null,
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {},
             "length": {},
