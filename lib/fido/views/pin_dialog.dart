@@ -191,7 +191,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         minPinLength, maxPinLength, 2, '123456')
                     : l10n.p_new_fido2_pin_requirements(
                         minPinLength, maxPinLength),
-                helperMaxLines: 5,
+                helperMaxLines: 7,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
                 icon: const Icon(Symbols.pin),

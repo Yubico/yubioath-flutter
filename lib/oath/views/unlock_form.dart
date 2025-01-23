@@ -110,7 +110,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     labelText: l10n.s_password,
                     errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                     helperText: '', // Prevents resizing when errorText shown
-                    prefixIcon: const Icon(Symbols.password),
+                    icon: const Icon(Symbols.password),
                     suffixIcon: IconButton(
                       icon: Icon(_isObscure
                           ? Symbols.visibility
@@ -132,48 +132,52 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                 ).init(),
               ),
               const SizedBox(height: 3.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 4.0,
-                    runSpacing: 8.0,
-                    children: [
-                      keystoreFailed
-                          ? Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: 4.0,
-                              runSpacing: 8.0,
-                              children: [
-                                Icon(Symbols.warning_amber,
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary),
-                                Text(l10n.l_keystore_unavailable)
-                              ],
-                            )
-                          : FilterChip(
-                              label: Text(l10n.s_remember_password),
-                              selected: _remember,
-                              onSelected: (value) {
-                                setState(() {
-                                  _remember = value;
-                                });
-                              },
-                            ),
-                      FilledButton.icon(
-                        key: keys.unlockButton,
-                        label: Text(l10n.s_unlock),
-                        icon: const Icon(Symbols.lock_open),
-                        onPressed: _passwordController.text.isNotEmpty &&
-                                !_passwordIsWrong
-                            ? _submit
-                            : null,
-                      ),
-                    ],
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(left: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 4.0,
+                      runSpacing: 8.0,
+                      children: [
+                        keystoreFailed
+                            ? Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 4.0,
+                                runSpacing: 8.0,
+                                children: [
+                                  Icon(Symbols.warning_amber,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary),
+                                  Text(l10n.l_keystore_unavailable)
+                                ],
+                              )
+                            : FilterChip(
+                                label: Text(l10n.s_remember_password),
+                                selected: _remember,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _remember = value;
+                                  });
+                                },
+                              ),
+                        FilledButton.icon(
+                          key: keys.unlockButton,
+                          label: Text(l10n.s_unlock),
+                          icon: const Icon(Symbols.lock_open),
+                          onPressed: _passwordController.text.isNotEmpty &&
+                                  !_passwordIsWrong
+                              ? _submit
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

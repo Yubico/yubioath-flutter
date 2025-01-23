@@ -272,6 +272,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             ? l10n.s_puk
                             : l10n.s_pin,
                         newMinPinLen),
+                helperMaxLines: 5,
                 labelText: widget.target == ManageTarget.puk
                     ? l10n.s_new_puk
                     : l10n.s_new_pin,
