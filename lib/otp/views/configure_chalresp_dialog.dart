@@ -156,7 +156,7 @@ class _ConfigureChalrespDialogState
                       : _validateSecret && !secretLengthValid
                           ? l10n.s_invalid_length
                           : null,
-                  prefixIcon: const Icon(Symbols.key),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generateSecretKey,
                     icon: const Icon(Symbols.refresh),
@@ -183,14 +183,27 @@ class _ConfigureChalrespDialogState
                 });
               },
             ).init(),
-            FilterChip(
-              label: Text(l10n.s_require_touch),
-              selected: _requireTouch,
-              onSelected: (value) {
-                setState(() {
-                  _requireTouch = value;
-                });
-              },
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                FilterChip(
+                  label: Text(l10n.s_require_touch),
+                  selected: _requireTouch,
+                  onSelected: (value) {
+                    setState(() {
+                      _requireTouch = value;
+                    });
+                  },
+                ),
+              ],
             )
           ]
               .map((e) => Padding(

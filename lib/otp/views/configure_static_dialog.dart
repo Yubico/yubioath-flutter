@@ -175,7 +175,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       : _validatePassword && !passwordFormatValid
                           ? l10n.l_invalid_keyboard_character
                           : null,
-                  prefixIcon: const Icon(Symbols.key),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
@@ -198,33 +198,48 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                 });
               },
             ).init(),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4.0,
-              runSpacing: 8.0,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FilterChip(
-                  label: Text(l10n.s_append_enter),
-                  tooltip: l10n.l_append_enter_desc,
-                  selected: _appendEnter,
-                  onSelected: (value) {
-                    setState(() {
-                      _appendEnter = value;
-                    });
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                ChoiceFilterChip(
-                    items: widget.keyboardLayouts.keys.toList(),
-                    value: _keyboardLayout,
-                    selected: _keyboardLayout != _defaultKeyboardLayout,
-                    labelBuilder: (value) => Text('Keyboard $value'),
-                    itemBuilder: (value) => Text(value),
-                    onChanged: (layout) {
-                      setState(() {
-                        _keyboardLayout = layout;
-                        _validatePassword = false;
-                      });
-                    }),
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    children: [
+                      FilterChip(
+                        label: Text(l10n.s_append_enter),
+                        tooltip: l10n.l_append_enter_desc,
+                        selected: _appendEnter,
+                        onSelected: (value) {
+                          setState(() {
+                            _appendEnter = value;
+                          });
+                        },
+                      ),
+                      ChoiceFilterChip(
+                          items: widget.keyboardLayouts.keys.toList(),
+                          value: _keyboardLayout,
+                          selected: _keyboardLayout != _defaultKeyboardLayout,
+                          labelBuilder: (value) => Text('Keyboard $value'),
+                          itemBuilder: (value) => Text(value),
+                          onChanged: (layout) {
+                            setState(() {
+                              _keyboardLayout = layout;
+                              _validatePassword = false;
+                            });
+                          }),
+                    ],
+                  ),
+                ),
               ],
             )
           ]

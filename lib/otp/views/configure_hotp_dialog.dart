@@ -154,7 +154,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       : _validateSecret && !secretLengthValid
                           ? l10n.s_invalid_length
                           : null,
-                  prefixIcon: const Icon(Symbols.key),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     icon: Icon(_isObscure
                         ? Symbols.visibility
@@ -175,31 +175,47 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                 });
               },
             ).init(),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4.0,
-              runSpacing: 8.0,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FilterChip(
-                  label: Text(l10n.s_append_enter),
-                  tooltip: l10n.l_append_enter_desc,
-                  selected: _appendEnter,
-                  onSelected: (value) {
-                    setState(() {
-                      _appendEnter = value;
-                    });
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                ChoiceFilterChip<int>(
-                    items: _digitsValues,
-                    value: _digits,
-                    selected: _digits != defaultDigits,
-                    itemBuilder: (value) => Text(l10n.s_num_digits(value)),
-                    onChanged: (digits) {
-                      setState(() {
-                        _digits = digits;
-                      });
-                    }),
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    children: [
+                      FilterChip(
+                        label: Text(l10n.s_append_enter),
+                        tooltip: l10n.l_append_enter_desc,
+                        selected: _appendEnter,
+                        onSelected: (value) {
+                          setState(() {
+                            _appendEnter = value;
+                          });
+                        },
+                      ),
+                      ChoiceFilterChip<int>(
+                          items: _digitsValues,
+                          value: _digits,
+                          selected: _digits != defaultDigits,
+                          itemBuilder: (value) =>
+                              Text(l10n.s_num_digits(value)),
+                          onChanged: (digits) {
+                            setState(() {
+                              _digits = digits;
+                            });
+                          }),
+                    ],
+                  ),
+                ),
               ],
             )
           ]
