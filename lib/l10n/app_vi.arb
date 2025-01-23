@@ -377,6 +377,7 @@
     "s_confirm_password": "Xác nhận mật khẩu",
     "l_password_mismatch": "Mật khẩu không khớp",
     "s_wrong_password": "Mật khẩu sai",
+    "p_wrong_password": null,
     "s_remove_password": "Xóa mật khẩu",
     "s_password_removed": "Mật khẩu đã bị xóa",
     "s_remember_password": "Nhớ mật khẩu",
@@ -387,8 +388,7 @@
     "l_unlock_first": "Mở khóa bằng mật khẩu",
     "l_set_password_first": "Đặt mật khẩu",
     "l_enter_oath_pw": "Nhập mật khẩu OATH cho YubiKey của bạn",
-    "p_enter_current_password_or_reset": "Nhập mật khẩu hiện tại của bạn. Nếu bạn không biết mật khẩu của mình, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
-    "p_enter_new_password": "Nhập mật khẩu mới của bạn. Mật khẩu có thể chứa chữ cái, số và ký tự đặc biệt.",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "Khóa quản lý",

@@ -131,7 +131,6 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.state.hasKey) ...[
-              Text(l10n.p_enter_current_password_or_reset),
               AppTextField(
                 autofocus: true,
                 obscureText: _isObscureCurrent,
@@ -142,9 +141,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                 decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_current_password,
-                  errorText: _currentIsWrong ? l10n.s_wrong_password : null,
+                  errorText: _currentIsWrong ? l10n.p_wrong_password : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Symbols.password),
+                  icon: const Icon(Symbols.password),
                   suffixIcon: IconButton(
                       icon: Icon(_isObscureCurrent
                           ? Symbols.visibility
@@ -172,65 +171,71 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   }
                 },
               ).init(),
-              Wrap(
-                spacing: 4.0,
-                runSpacing: 8.0,
-                children: [
-                  if (!fipsCapable)
-                    OutlinedButton(
-                      key: keys.removePasswordButton,
-                      onPressed: _currentPasswordController.text.isNotEmpty &&
-                              !_currentIsWrong
-                          ? () async {
-                              _removeFocus();
+              Padding(
+                padding: const EdgeInsets.only(left: 40),
+                child: Wrap(
+                  spacing: 4.0,
+                  runSpacing: 8.0,
+                  children: [
+                    if (!fipsCapable)
+                      OutlinedButton(
+                        key: keys.removePasswordButton,
+                        onPressed: _currentPasswordController.text.isNotEmpty &&
+                                !_currentIsWrong
+                            ? () async {
+                                _removeFocus();
 
-                              final result = await ref
-                                  .read(oathStateProvider(widget.path).notifier)
-                                  .unsetPassword(
-                                      _currentPasswordController.text);
-                              if (result) {
-                                if (mounted) {
-                                  await ref.read(withContextProvider)(
-                                      (context) async {
-                                    Navigator.of(context).pop();
-                                    showMessage(
-                                        context, l10n.s_password_removed);
+                                final result = await ref
+                                    .read(
+                                        oathStateProvider(widget.path).notifier)
+                                    .unsetPassword(
+                                        _currentPasswordController.text);
+                                if (result) {
+                                  if (mounted) {
+                                    await ref.read(withContextProvider)(
+                                        (context) async {
+                                      Navigator.of(context).pop();
+                                      showMessage(
+                                          context, l10n.s_password_removed);
+                                    });
+                                  }
+                                } else {
+                                  _currentPasswordController.selection =
+                                      TextSelection(
+                                          baseOffset: 0,
+                                          extentOffset:
+                                              _currentPasswordController
+                                                  .text.length);
+                                  _currentPasswordFocus.requestFocus();
+                                  setState(() {
+                                    _currentIsWrong = true;
                                   });
                                 }
-                              } else {
-                                _currentPasswordController.selection =
-                                    TextSelection(
-                                        baseOffset: 0,
-                                        extentOffset: _currentPasswordController
-                                            .text.length);
-                                _currentPasswordFocus.requestFocus();
-                                setState(() {
-                                  _currentIsWrong = true;
-                                });
                               }
-                            }
-                          : null,
-                      child: Text(l10n.s_remove_password),
-                    ),
-                  if (widget.state.remembered)
-                    OutlinedButton(
-                      child: Text(l10n.s_clear_saved_password),
-                      onPressed: () async {
-                        await ref
-                            .read(oathStateProvider(widget.path).notifier)
-                            .forgetPassword();
-                        if (mounted) {
-                          await ref.read(withContextProvider)((context) async {
-                            Navigator.of(context).pop();
-                            showMessage(context, l10n.s_password_forgotten);
-                          });
-                        }
-                      },
-                    ),
-                ],
+                            : null,
+                        child: Text(l10n.s_remove_password),
+                      ),
+                    if (widget.state.remembered)
+                      OutlinedButton(
+                        child: Text(l10n.s_clear_saved_password),
+                        onPressed: () async {
+                          await ref
+                              .read(oathStateProvider(widget.path).notifier)
+                              .forgetPassword();
+                          if (mounted) {
+                            await ref.read(withContextProvider)(
+                                (context) async {
+                              Navigator.of(context).pop();
+                              showMessage(context, l10n.s_password_forgotten);
+                            });
+                          }
+                        },
+                      ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 0),
             ],
-            Text(l10n.p_enter_new_password),
             AppTextField(
               key: keys.newPasswordField,
               autofocus: !widget.state.hasKey,
@@ -240,7 +245,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_password,
-                prefixIcon: const Icon(Symbols.password),
+                helperText: l10n.p_new_password_requirements,
+                helperMaxLines: 3,
+                icon: const Icon(Symbols.password),
                 suffixIcon: ExcludeFocusTraversal(
                   excluding: !newPasswordEnabled,
                   child: IconButton(
@@ -280,7 +287,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_password,
-                prefixIcon: const Icon(Symbols.password),
+                icon: const Icon(Symbols.password),
                 suffixIcon: ExcludeFocusTraversal(
                   excluding: !confirmPasswordEnabled,
                   child: IconButton(

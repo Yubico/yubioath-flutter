@@ -377,6 +377,7 @@
     "s_confirm_password": "Potvrdiť heslo",
     "l_password_mismatch": "Heslá sa nezhodujú",
     "s_wrong_password": "Nesprávne heslo",
+    "p_wrong_password": null,
     "s_remove_password": "Odstrániť heslo",
     "s_password_removed": "Heslo bolo odstránené",
     "s_remember_password": "Zapamätať si heslo",
@@ -387,8 +388,7 @@
     "l_unlock_first": "Odomknúť pomocou hesla",
     "l_set_password_first": "Nastaviť heslo",
     "l_enter_oath_pw": "Zadajte heslo OATH pre svoj YubiKey",
-    "p_enter_current_password_or_reset": "Zadajte svoje aktuálne heslo. Ak svoje heslo nepoznáte, budete musieť obnoviť YubiKey.",
-    "p_enter_new_password": "Zadajte nové heslo. Heslo môže obsahovať písmená, číslice a špeciálne znaky.",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "Spravovací kľúč",

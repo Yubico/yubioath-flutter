@@ -377,6 +377,7 @@
     "s_confirm_password": "パスワードを確認",
     "l_password_mismatch": "パスワードが一致しません",
     "s_wrong_password": "パスワードが正しくありません",
+    "p_wrong_password": null,
     "s_remove_password": "パスワードを削除",
     "s_password_removed": "パスワードが削除されました",
     "s_remember_password": "パスワードを記憶",
@@ -387,8 +388,7 @@
     "l_unlock_first": "パスワードでロック解除",
     "l_set_password_first": "パスワードを設定",
     "l_enter_oath_pw": "YubiKeyのOATHパスワードを入力",
-    "p_enter_current_password_or_reset": "現在のパスワードを入力してください。パスワードがわからない場合は、YubiKeyをリセットする必要があります。",
-    "p_enter_new_password": "新しいパスワードを入力してください。パスワードには文字、数字、特殊文字を含めることができます。",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "管理キー",

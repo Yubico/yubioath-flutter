@@ -377,6 +377,7 @@
     "s_confirm_password": "Passwort bestätigen",
     "l_password_mismatch": "Passwörter stimmen nicht überein",
     "s_wrong_password": "Falsches Passwort",
+    "p_wrong_password": null,
     "s_remove_password": "Passwort entfernen",
     "s_password_removed": "Passwort entfernt",
     "s_remember_password": "Passwort speichern",
@@ -387,8 +388,7 @@
     "l_unlock_first": "Mit Passwort entsperren",
     "l_set_password_first": "Passwort setzen",
     "l_enter_oath_pw": "Gib das OATH Passwort für deinen YubiKey ein",
-    "p_enter_current_password_or_reset": "Gib dein aktuelles Passwort ein. Wenn du dein Passwort nicht kennst, musst du den YubiKey zurücksetzen.",
-    "p_enter_new_password": "Gib dein neues Passwort ein. Ein Passwort kann Buchstaben, Ziffern und Sonderzeichen enthalten.",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "Management Key",

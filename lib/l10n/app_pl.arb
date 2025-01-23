@@ -377,6 +377,7 @@
     "s_confirm_password": "Potwierdź hasło",
     "l_password_mismatch": "Hasła nie pasują do siebie",
     "s_wrong_password": "Hasło jest nieprawidłowe",
+    "p_wrong_password": null,
     "s_remove_password": "Usuń hasło",
     "s_password_removed": "Hasło zostało usunięte",
     "s_remember_password": "Zapamiętaj hasło",
@@ -387,8 +388,7 @@
     "l_unlock_first": "Najpierw odblokuj hasłem",
     "l_set_password_first": "Ustaw hasło",
     "l_enter_oath_pw": "Wpisz hasło OATH dla klucza YubiKey",
-    "p_enter_current_password_or_reset": "Wpisz obecne hasło. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
-    "p_enter_new_password": "Wpisz nowe hasło. Hasło może zawierać litery, cyfry i znaki specjalne.",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "Klucz zarządzania",

@@ -377,6 +377,7 @@
     "s_confirm_password": "Confirmer mot de passe",
     "l_password_mismatch": "Les mots de passe ne correspondent pas",
     "s_wrong_password": "Mot de passe incorrect",
+    "p_wrong_password": null,
     "s_remove_password": "Supprimer mot de passe",
     "s_password_removed": "Mot de passe supprimé",
     "s_remember_password": "Mémoriser mot de passe",
@@ -387,8 +388,7 @@
     "l_unlock_first": "Déverrouillage par mot de passe",
     "l_set_password_first": "Définir un mot de passe",
     "l_enter_oath_pw": "Saisissez le mot de passe OATH de votre YubiKey",
-    "p_enter_current_password_or_reset": "Saisissez votre mot de passe actuel. Vous ne connaissez votre mot de passe\u00a0? Réinitialisez la YubiKey.",
-    "p_enter_new_password": "Saisissez votre nouveau mot de passe. Un mot de passe peut inclure des lettres, chiffres et caractères spéciaux.",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "Clé de gestion",
