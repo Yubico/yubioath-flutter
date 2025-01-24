@@ -269,7 +269,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                           displayDialog: fullScreen,
                           infoText: RichText(
                             text: TextSpan(
-                              style: textTheme.bodySmall,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                               children: [
                                 TextSpan(
                                   text: l10n.s_algorithm,

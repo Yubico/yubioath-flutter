@@ -389,7 +389,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                           displayDialog: fullScreen,
                           infoText: RichText(
                             text: TextSpan(
-                              style: textTheme.bodySmall,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                               children: [
                                 TextSpan(
                                   text: l10n.s_management_key_algorithm,

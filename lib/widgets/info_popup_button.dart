@@ -29,7 +29,6 @@ class InfoPopupButton extends StatelessWidget {
         tooltip: l10n.s_more_info,
         constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
         popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-        menuPadding: EdgeInsets.zero,
         borderRadius: BorderRadius.circular(25),
         child: SizedBox(
           height: size,
