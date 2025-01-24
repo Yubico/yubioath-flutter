@@ -170,3 +170,10 @@ class _ColorConverter implements JsonConverter<Color?, int?> {
   @override
   int? toJson(Color? object) => object?.toInt32;
 }
+
+class AppLocale {
+  final Locale locale;
+  final bool systemDefault;
+
+  const AppLocale(this.locale, this.systemDefault);
+}

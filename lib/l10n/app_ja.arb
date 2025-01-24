@@ -120,6 +120,15 @@
     "s_language": "言語",
     "l_enable_community_translations": "コミュニティ翻訳を有効にする",
     "p_community_translations_desc": "これらの翻訳はコミュニティによって提供され、更新されます。エラーが含まれているか、不完全である可能性があります。",
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "アプリケーションテーマ",

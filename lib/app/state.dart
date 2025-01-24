@@ -16,7 +16,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -71,53 +70,50 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
-final communityTranslationsProvider =
-    StateNotifierProvider<CommunityTranslationsNotifier, bool>(
-        (ref) => CommunityTranslationsNotifier(ref.watch(prefProvider)));
+final currentLocaleProvider =
+    StateNotifierProvider<CurrentLocaleProvider, AppLocale>(
+  (ref) => CurrentLocaleProvider(ref.watch(prefProvider)),
+);
 
-class CommunityTranslationsNotifier extends StateNotifier<bool> {
-  static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
+class CurrentLocaleProvider extends StateNotifier<AppLocale> {
+  static const String _key = 'APP_LOCALE';
   final SharedPreferences _prefs;
 
-  CommunityTranslationsNotifier(this._prefs)
-      : super(_prefs.getBool(_key) == true);
+  CurrentLocaleProvider(this._prefs) : super(_fromName(_prefs.getString(_key)));
 
-  void setEnableCommunityTranslations(bool value) {
-    state = value;
-    _prefs.setBool(_key, value);
+  void setLocale(Locale locale) {
+    _log.debug('Set locale to $locale');
+    state = AppLocale(locale, false);
+    _prefs.setString(_key, locale.languageCode);
   }
-}
 
-final supportedLocalesProvider = Provider<List<Locale>>((ref) {
-  final locales = [...officialLocales];
-  final localeStr = Platform.environment['_YA_LOCALE'];
-  if (localeStr != null) {
-    // Force locale
-    final locale = Locale(localeStr, '');
-    locales.add(locale);
+  void resetLocale() {
+    _log.debug('Resetting locale to system default');
+    state = _getDefaultLocale();
+    _prefs.remove(_key);
   }
-  return ref.watch(communityTranslationsProvider)
-      ? AppLocalizations.supportedLocales
-      : locales;
-});
 
-final currentLocaleProvider = Provider<Locale>(
-  (ref) {
-    final localeStr = Platform.environment['_YA_LOCALE'];
+  static AppLocale _getDefaultLocale() => AppLocale(
+        basicLocaleListResolution(PlatformDispatcher.instance.locales,
+            AppLocalizations.supportedLocales),
+        true,
+      );
+
+  static AppLocale _fromName(String? localeStr) {
     if (localeStr != null) {
       // Force locale
       final locale = Locale(localeStr, '');
-      return basicLocaleListResolution(
-          [locale], AppLocalizations.supportedLocales);
+      return AppLocale(
+        basicLocaleListResolution([locale], AppLocalizations.supportedLocales),
+        false,
+      );
     }
-    // Choose from supported
-    return basicLocaleListResolution(PlatformDispatcher.instance.locales,
-        ref.watch(supportedLocalesProvider));
-  },
-);
+    return _getDefaultLocale();
+  }
+}
 
 final l10nProvider = Provider<AppLocalizations>(
-  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
+  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider).locale),
 );
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(

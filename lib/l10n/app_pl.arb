@@ -120,6 +120,15 @@
     "s_language": "Język",
     "l_enable_community_translations": "Włącz tłumaczenia społecznościowe",
     "p_community_translations_desc": "Tłumaczenia są dostarczane i utrzymywane przez społeczność. Mogą zawierać błędy lub być niekompletne.",
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Motyw aplikacji",

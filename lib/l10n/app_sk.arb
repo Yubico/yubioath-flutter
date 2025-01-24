@@ -120,6 +120,15 @@
     "s_language": "Jazyk",
     "l_enable_community_translations": "Povoliť komunitné preklady",
     "p_community_translations_desc": "Tieto preklady zabezpečuje a udržiava komunita. Môžu obsahovať chyby alebo byť neúplné.",
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Téma aplikácie",

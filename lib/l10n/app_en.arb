@@ -120,6 +120,15 @@
     "s_language": "Language",
     "l_enable_community_translations": "Enable community translations",
     "p_community_translations_desc": "These translations are provided and maintained by the community. They may contain errors or be incomplete.",
+    "s_choose_language": "Choose language",
+    "s_english": "English",
+    "s_french": "French",
+    "s_german": "German",
+    "s_polish": "Polish",
+    "s_slovak": "Slovak",
+    "s_vietnamese": "Vietnamese",
+    "s_japanese": "Japanese",
+
 
     "@_theme": {},
     "s_app_theme": "Application theme",

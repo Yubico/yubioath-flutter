@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +23,7 @@ import '../../android/views/settings_views.dart';
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../models.dart';
 import '../state.dart';
 import 'keys.dart' as keys;
 
@@ -33,6 +32,19 @@ extension on ThemeMode {
         ThemeMode.system => l10n.s_system_default,
         ThemeMode.light => l10n.s_light_mode,
         ThemeMode.dark => l10n.s_dark_mode
+      };
+}
+
+extension on Locale {
+  String getDisplayName(AppLocalizations l10n) => switch (languageCode) {
+        'en' => l10n.s_english,
+        'de' => l10n.s_german,
+        'fr' => l10n.s_french,
+        'ja' => l10n.s_japanese,
+        'pl' => l10n.s_polish,
+        'sk' => l10n.s_slovak,
+        'vi' => l10n.s_vietnamese,
+        _ => languageCode
       };
 }
 
@@ -80,23 +92,61 @@ class _ThemeModeView extends ConsumerWidget {
   }
 }
 
-class _CommunityTranslationsView extends ConsumerWidget {
-  const _CommunityTranslationsView();
+class _LanguageView extends ConsumerWidget {
+  const _LanguageView();
+
+  void _selectLocale(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocale currentLocale,
+  ) async {
+    final groupValue =
+        currentLocale.systemDefault ? null : currentLocale.locale;
+    await showDialog(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return SimpleDialog(
+          title: Text('Choose language'),
+          children: [
+            RadioListTile(
+              title: Text(l10n.s_system_default),
+              value: null,
+              groupValue: groupValue,
+              toggleable: true,
+              onChanged: (_) {
+                ref.read(currentLocaleProvider.notifier).resetLocale();
+                Navigator.pop(context);
+              },
+            ),
+            ...AppLocalizations.supportedLocales.map(
+              (e) => RadioListTile(
+                title: Text(e.getDisplayName(l10n)),
+                value: e,
+                groupValue: groupValue,
+                toggleable: true,
+                onChanged: (value) {
+                  ref.read(currentLocaleProvider.notifier).setLocale(e);
+                  Navigator.pop(context);
+                },
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final enableTranslations = ref.watch(communityTranslationsProvider);
-    return SwitchListTile(
-        title: Text(l10n.l_enable_community_translations),
-        subtitle: Text(l10n.p_community_translations_desc),
-        isThreeLine: true,
-        value: enableTranslations,
-        onChanged: (value) {
-          ref
-              .read(communityTranslationsProvider.notifier)
-              .setEnableCommunityTranslations(value);
-        });
+    final currentLocale = ref.watch(currentLocaleProvider);
+    return ListTile(
+      title: Text(l10n.s_language),
+      subtitle: Text(currentLocale.locale.getDisplayName(l10n)),
+      key: keys.languageSetting,
+      onTap: () => _selectLocale(context, ref, currentLocale),
+    );
   }
 }
 
@@ -106,7 +156,6 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final enableTranslations = ref.watch(communityTranslationsProvider);
 
     return ResponsiveDialog(
       title: Text(l10n.s_settings),
@@ -128,14 +177,8 @@ class SettingsPage extends ConsumerWidget {
           ],
           ListTitle(l10n.s_appearance),
           const _ThemeModeView(),
-          if (enableTranslations ||
-              basicLocaleListResolution(
-                      PlatformDispatcher.instance.locales, officialLocales) !=
-                  basicLocaleListResolution(PlatformDispatcher.instance.locales,
-                      AppLocalizations.supportedLocales)) ...[
-            ListTitle(l10n.s_language),
-            const _CommunityTranslationsView(),
-          ],
+          ListTitle(l10n.s_options),
+          const _LanguageView()
         ],
       ),
     );

@@ -120,6 +120,15 @@
     "s_language": "Langue",
     "l_enable_community_translations": "Activer traductions communautaires",
     "p_community_translations_desc": "Ces traductions sont fournies et gérées par la communauté. Elles peuvent être erronées ou incomplètes.",
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Thème de l'application",

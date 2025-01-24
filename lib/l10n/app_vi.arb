@@ -120,6 +120,15 @@
     "s_language": "Ngôn ngữ",
     "l_enable_community_translations": "Bật dịch thuật cộng đồng",
     "p_community_translations_desc": "Các bản dịch này được cung cấp và duy trì bởi cộng đồng. Chúng có thể chứa lỗi hoặc chưa hoàn chỉnh.",
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Chủ đề ứng dụng",
