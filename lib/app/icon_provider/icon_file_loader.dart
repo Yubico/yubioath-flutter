@@ -25,7 +25,7 @@ import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 import 'package:vector_graphics_compiler/vector_graphics_compiler.dart';
 
-import '../../app/logging.dart';
+import '../logging.dart';
 import 'icon_cache.dart';
 
 final _log = Logger('icon_file_loader');

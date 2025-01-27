@@ -22,9 +22,9 @@ import 'package:path/path.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 import '../../widgets/delayed_visibility.dart';
-import '../icon_provider/icon_file_loader.dart';
-import '../icon_provider/icon_pack.dart';
-import '../icon_provider/icon_pack_manager.dart';
+import 'icon_file_loader.dart';
+import 'icon_pack.dart';
+import 'icon_pack_manager.dart';
 
 class AccountIcon extends ConsumerWidget {
   final String? issuer;

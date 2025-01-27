@@ -23,6 +23,7 @@ import '../../android/views/settings_views.dart';
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../icon_provider/icon_pack_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 import 'keys.dart' as keys;
@@ -150,6 +151,26 @@ class _LanguageView extends ConsumerWidget {
   }
 }
 
+class _IconsView extends ConsumerWidget {
+  const _IconsView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListTile(
+      title: Text(l10n.s_custom_icons),
+      subtitle: Text(l10n.l_set_icons_for_accounts),
+      onTap: () {
+        showDialog(
+          context: context,
+          routeSettings: const RouteSettings(name: 'icon_pack_dialog'),
+          builder: (context) => const IconPackDialog(),
+        );
+      },
+    );
+  }
+}
+
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -177,6 +198,7 @@ class SettingsPage extends ConsumerWidget {
           ],
           ListTitle(l10n.s_appearance),
           const _ThemeModeView(),
+          const _IconsView(),
           ListTitle(l10n.s_options),
           const _LanguageView()
         ],

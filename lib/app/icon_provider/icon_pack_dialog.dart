@@ -22,11 +22,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../app/message.dart';
-import '../../app/state.dart';
+import '../../widgets/basic_dialog.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../message.dart';
+import '../state.dart';
 import 'icon_pack.dart';
 import 'icon_pack_manager.dart';
 
@@ -63,24 +63,21 @@ class IconPackDialog extends ConsumerWidget {
                   l10n.s_load_icon_pack,
               loading: () => null),
         ),
-        child: ResponsiveDialog(
+        child: BasicDialog(
           title: Text(l10n.s_custom_icons),
-          builder: (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _DialogDescription(),
-                const SizedBox(height: 4),
-                _action(iconPack, l10n),
-                _loadedIconPackRow(iconPack),
-              ]
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: e,
-                      ))
-                  .toList(),
-            ),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _DialogDescription(),
+              const SizedBox(height: 4),
+              _action(iconPack, l10n),
+              _loadedIconPackRow(iconPack),
+            ]
+                .map((e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ))
+                .toList(),
           ),
         ));
   }

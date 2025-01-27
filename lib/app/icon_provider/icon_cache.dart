@@ -22,7 +22,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../app/logging.dart';
+import '../logging.dart';
 
 final _log = Logger('icon_cache');
 

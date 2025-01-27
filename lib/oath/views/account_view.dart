@@ -17,13 +17,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/icon_provider/account_icon.dart';
 import '../../app/shortcuts.dart';
 import '../../app/views/app_list_item.dart';
 import '../../core/state.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import 'account_helper.dart';
-import 'account_icon.dart';
 
 class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
