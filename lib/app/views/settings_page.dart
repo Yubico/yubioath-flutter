@@ -24,7 +24,6 @@ import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../icon_provider/icon_pack_dialog.dart';
-import '../models.dart';
 import '../state.dart';
 import 'keys.dart' as keys;
 
@@ -96,47 +95,33 @@ class _ThemeModeView extends ConsumerWidget {
 class _LanguageView extends ConsumerWidget {
   const _LanguageView();
 
-  void _selectLocale(
+  Future<Locale> _selectLocale(
     BuildContext context,
-    WidgetRef ref,
-    AppLocale currentLocale,
-  ) async {
-    final groupValue =
-        currentLocale.systemDefault ? null : currentLocale.locale;
-    await showDialog(
-      context: context,
-      builder: (context) {
-        final l10n = AppLocalizations.of(context)!;
-        return SimpleDialog(
-          title: Text('Choose language'),
-          children: [
-            RadioListTile(
-              title: Text(l10n.s_system_default),
-              value: null,
-              groupValue: groupValue,
-              toggleable: true,
-              onChanged: (_) {
-                ref.read(currentLocaleProvider.notifier).resetLocale();
-                Navigator.pop(context);
-              },
-            ),
-            ...AppLocalizations.supportedLocales.map(
-              (e) => RadioListTile(
-                title: Text(e.getDisplayName(l10n)),
-                value: e,
-                groupValue: groupValue,
-                toggleable: true,
-                onChanged: (value) {
-                  ref.read(currentLocaleProvider.notifier).setLocale(e);
-                  Navigator.pop(context);
-                },
-              ),
-            )
-          ],
-        );
-      },
-    );
-  }
+    List<Locale> supportedLocales,
+    Locale currentLocale,
+  ) async =>
+      await showDialog<Locale>(
+          context: context,
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return SimpleDialog(
+              title: Text(l10n.s_choose_language),
+              children: supportedLocales
+                  .map(
+                    (e) => RadioListTile(
+                      title: Text(e.getDisplayName(l10n)),
+                      value: e,
+                      groupValue: currentLocale,
+                      toggleable: true,
+                      onChanged: (value) {
+                        Navigator.pop(context, e);
+                      },
+                    ),
+                  )
+                  .toList(),
+            );
+          }) ??
+      currentLocale;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -144,9 +129,13 @@ class _LanguageView extends ConsumerWidget {
     final currentLocale = ref.watch(currentLocaleProvider);
     return ListTile(
       title: Text(l10n.s_language),
-      subtitle: Text(currentLocale.locale.getDisplayName(l10n)),
+      subtitle: Text(currentLocale.getDisplayName(l10n)),
       key: keys.languageSetting,
-      onTap: () => _selectLocale(context, ref, currentLocale),
+      onTap: () async {
+        final newLocale = await _selectLocale(
+            context, ref.read(supportedLocalesProvider), currentLocale);
+        ref.read(currentLocaleProvider.notifier).setLocale(newLocale);
+      },
     );
   }
 }

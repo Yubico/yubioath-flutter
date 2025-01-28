@@ -37,7 +37,7 @@ class CertInfoTable extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final dateFormat =
-        DateFormat.yMMMEd(ref.watch(currentLocaleProvider).locale.toString());
+        DateFormat.yMMMEd(ref.watch(currentLocaleProvider).toString());
 
     final certInfo = this.certInfo;
     final metadata = this.metadata;

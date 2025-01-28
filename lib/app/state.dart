@@ -70,50 +70,48 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
+final supportedLocalesProvider = Provider<List<Locale>>((_) {
+  final officialLocalesSet = officialLocales.toSet();
+  final allLocalesSet = AppLocalizations.supportedLocales.toSet();
+
+  // Ensure supported locales are in correct priority order
+  // (english has highest priority)
+  final supportedLocales = {...officialLocalesSet, ...allLocalesSet}.toList();
+  return supportedLocales;
+});
+
 final currentLocaleProvider =
-    StateNotifierProvider<CurrentLocaleProvider, AppLocale>(
-  (ref) => CurrentLocaleProvider(ref.watch(prefProvider)),
+    StateNotifierProvider<CurrentLocaleProvider, Locale>(
+  (ref) => CurrentLocaleProvider(
+      ref.watch(prefProvider), ref.read(supportedLocalesProvider)),
 );
 
-class CurrentLocaleProvider extends StateNotifier<AppLocale> {
+class CurrentLocaleProvider extends StateNotifier<Locale> {
   static const String _key = 'APP_LOCALE';
   final SharedPreferences _prefs;
 
-  CurrentLocaleProvider(this._prefs) : super(_fromName(_prefs.getString(_key)));
+  CurrentLocaleProvider(this._prefs, List<Locale> supportedLocales)
+      : super(_fromName(_prefs.getString(_key), supportedLocales));
 
   void setLocale(Locale locale) {
     _log.debug('Set locale to $locale');
-    state = AppLocale(locale, false);
+    state = locale;
     _prefs.setString(_key, locale.languageCode);
   }
 
-  void resetLocale() {
-    _log.debug('Resetting locale to system default');
-    state = _getDefaultLocale();
-    _prefs.remove(_key);
-  }
-
-  static AppLocale _getDefaultLocale() => AppLocale(
-        basicLocaleListResolution(PlatformDispatcher.instance.locales,
-            AppLocalizations.supportedLocales),
-        true,
-      );
-
-  static AppLocale _fromName(String? localeStr) {
+  static Locale _fromName(String? localeStr, List<Locale> supportedLocales) {
     if (localeStr != null) {
       // Force locale
       final locale = Locale(localeStr, '');
-      return AppLocale(
-        basicLocaleListResolution([locale], AppLocalizations.supportedLocales),
-        false,
-      );
+      return basicLocaleListResolution([locale], supportedLocales);
     }
-    return _getDefaultLocale();
+    return basicLocaleListResolution(
+        PlatformDispatcher.instance.locales, supportedLocales);
   }
 }
 
 final l10nProvider = Provider<AppLocalizations>(
-  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider).locale),
+  (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
 );
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
