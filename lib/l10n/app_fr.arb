@@ -710,6 +710,12 @@
             "slot": {}
         }
     },
+    "p_warning_public_key_mismatch": null,
+    "@p_warning_public_key_mismatch": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_key_moved": "Clé déplacée",
     "l_key_and_certificate_moved": "Clé et certificat déplacés",
     "p_subject_desc": "DN (nom distinctif) formaté conformément à la spécification RFC 4514.",

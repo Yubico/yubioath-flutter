@@ -710,6 +710,12 @@
             "slot": {}
         }
     },
+    "p_warning_public_key_mismatch": null,
+    "@p_warning_public_key_mismatch": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_key_moved": "Khóa đã được di chuyển",
     "l_key_and_certificate_moved": "Khóa và chứng chỉ đã được di chuyển",
     "p_subject_desc": "Tên phân biệt (DN) được định dạng theo tiêu chuẩn RFC 4514.",

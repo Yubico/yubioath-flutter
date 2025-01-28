@@ -2365,22 +2365,24 @@ PivExamineResult _$PivExamineResultFromJson(Map<String, dynamic> json) {
 mixin _$PivExamineResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            bool password, KeyType? keyType, CertInfo? certInfo)
+    required TResult Function(bool password, KeyType? keyType,
+            CertInfo? certInfo, bool? publicKeyMatch)
         result,
     required TResult Function() invalidPassword,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo,
+            bool? publicKeyMatch)?
         result,
     TResult? Function()? invalidPassword,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo,
+            bool? publicKeyMatch)?
         result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
@@ -2437,7 +2439,11 @@ abstract class _$$ExamineResultImplCopyWith<$Res> {
           _$ExamineResultImpl value, $Res Function(_$ExamineResultImpl) then) =
       __$$ExamineResultImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({bool password, KeyType? keyType, CertInfo? certInfo});
+  $Res call(
+      {bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch});
 
   $CertInfoCopyWith<$Res>? get certInfo;
 }
@@ -2458,6 +2464,7 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
     Object? password = null,
     Object? keyType = freezed,
     Object? certInfo = freezed,
+    Object? publicKeyMatch = freezed,
   }) {
     return _then(_$ExamineResultImpl(
       password: null == password
@@ -2472,6 +2479,10 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
           ? _value.certInfo
           : certInfo // ignore: cast_nullable_to_non_nullable
               as CertInfo?,
+      publicKeyMatch: freezed == publicKeyMatch
+          ? _value.publicKeyMatch
+          : publicKeyMatch // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 
@@ -2497,6 +2508,7 @@ class _$ExamineResultImpl implements _ExamineResult {
       {required this.password,
       required this.keyType,
       required this.certInfo,
+      this.publicKeyMatch,
       final String? $type})
       : $type = $type ?? 'result';
 
@@ -2509,13 +2521,15 @@ class _$ExamineResultImpl implements _ExamineResult {
   final KeyType? keyType;
   @override
   final CertInfo? certInfo;
+  @override
+  final bool? publicKeyMatch;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'PivExamineResult.result(password: $password, keyType: $keyType, certInfo: $certInfo)';
+    return 'PivExamineResult.result(password: $password, keyType: $keyType, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
   }
 
   @override
@@ -2527,12 +2541,15 @@ class _$ExamineResultImpl implements _ExamineResult {
                 other.password == password) &&
             (identical(other.keyType, keyType) || other.keyType == keyType) &&
             (identical(other.certInfo, certInfo) ||
-                other.certInfo == certInfo));
+                other.certInfo == certInfo) &&
+            (identical(other.publicKeyMatch, publicKeyMatch) ||
+                other.publicKeyMatch == publicKeyMatch));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, password, keyType, certInfo);
+  int get hashCode =>
+      Object.hash(runtimeType, password, keyType, certInfo, publicKeyMatch);
 
   /// Create a copy of PivExamineResult
   /// with the given fields replaced by the non-null parameter values.
@@ -2545,34 +2562,36 @@ class _$ExamineResultImpl implements _ExamineResult {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            bool password, KeyType? keyType, CertInfo? certInfo)
+    required TResult Function(bool password, KeyType? keyType,
+            CertInfo? certInfo, bool? publicKeyMatch)
         result,
     required TResult Function() invalidPassword,
   }) {
-    return result(password, keyType, certInfo);
+    return result(password, keyType, certInfo, publicKeyMatch);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo,
+            bool? publicKeyMatch)?
         result,
     TResult? Function()? invalidPassword,
   }) {
-    return result?.call(password, keyType, certInfo);
+    return result?.call(password, keyType, certInfo, publicKeyMatch);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo,
+            bool? publicKeyMatch)?
         result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
   }) {
     if (result != null) {
-      return result(password, keyType, certInfo);
+      return result(password, keyType, certInfo, publicKeyMatch);
     }
     return orElse();
   }
@@ -2620,7 +2639,8 @@ abstract class _ExamineResult implements PivExamineResult {
   factory _ExamineResult(
       {required final bool password,
       required final KeyType? keyType,
-      required final CertInfo? certInfo}) = _$ExamineResultImpl;
+      required final CertInfo? certInfo,
+      final bool? publicKeyMatch}) = _$ExamineResultImpl;
 
   factory _ExamineResult.fromJson(Map<String, dynamic> json) =
       _$ExamineResultImpl.fromJson;
@@ -2628,6 +2648,7 @@ abstract class _ExamineResult implements PivExamineResult {
   bool get password;
   KeyType? get keyType;
   CertInfo? get certInfo;
+  bool? get publicKeyMatch;
 
   /// Create a copy of PivExamineResult
   /// with the given fields replaced by the non-null parameter values.
@@ -2685,8 +2706,8 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            bool password, KeyType? keyType, CertInfo? certInfo)
+    required TResult Function(bool password, KeyType? keyType,
+            CertInfo? certInfo, bool? publicKeyMatch)
         result,
     required TResult Function() invalidPassword,
   }) {
@@ -2696,7 +2717,8 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo,
+            bool? publicKeyMatch)?
         result,
     TResult? Function()? invalidPassword,
   }) {
@@ -2706,7 +2728,8 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo)?
+    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo,
+            bool? publicKeyMatch)?
         result,
     TResult Function()? invalidPassword,
     required TResult orElse(),

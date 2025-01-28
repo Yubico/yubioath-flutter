@@ -263,26 +263,6 @@ class PivNode(RpcNode):
         return SlotsNode(self.session)
 
     @action(closes_child=False)
-    def examine_file(self, data: bytes, password: str | None = None):
-        try:
-            private_key, certs = _parse_file(data, password)
-            certificate = _choose_cert(certs)
-
-            return dict(
-                status=True,
-                password=password is not None,
-                key_type=(
-                    KEY_TYPE.from_public_key(private_key.public_key())
-                    if private_key
-                    else None
-                ),
-                cert_info=_get_cert_info(certificate),
-            )
-        except InvalidPasswordError:
-            logger.debug("Invalid or missing password", exc_info=True)
-            return dict(status=False)
-
-    @action(closes_child=False)
     def validate_rfc4514(self, data: str):
         try:
             parse_rfc4514_string(data)
@@ -458,6 +438,40 @@ class SlotNode(RpcNode):
             self.certificate = None
         self._refresh()
         return dict()
+
+    @action
+    def examine_file(self, data: bytes, password: str | None = None):
+        try:
+            private_key, certs = _parse_file(data, password)
+            certificate = _choose_cert(certs)
+
+            response = dict(
+                status=True,
+                password=password is not None,
+                key_type=(
+                    KEY_TYPE.from_public_key(private_key.public_key())
+                    if private_key
+                    else None
+                ),
+                cert_info=_get_cert_info(certificate),
+            )
+
+            if self.metadata and certificate and not private_key:
+                # Verify that the public key of a cert matches the
+                # private key in the slot
+                slot_public_key = self.metadata.public_key
+                cert_public_key = certificate.public_key()
+                public_key_match = slot_public_key.public_bytes(
+                    encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
+                ) == cert_public_key.public_bytes(
+                    encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
+                )
+                response["public_key_match"] = public_key_match
+
+            return response
+        except InvalidPasswordError:
+            logger.debug("Invalid or missing password", exc_info=True)
+            return dict(status=False)
 
     @action
     def import_file(self, data: bytes, password: str | None = None, **kwargs):

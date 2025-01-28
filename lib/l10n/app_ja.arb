@@ -710,6 +710,12 @@
             "slot": {}
         }
     },
+    "p_warning_public_key_mismatch": null,
+    "@p_warning_public_key_mismatch": {
+        "placeholders": {
+            "slot": {}
+        }
+    },
     "l_key_moved": "キーを移動しました",
     "l_key_and_certificate_moved": "キーと証明書が移動されました",
     "p_subject_desc": "RFC 4514仕様に準拠した形式の識別名（DN）。",

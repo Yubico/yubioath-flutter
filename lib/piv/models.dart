@@ -319,6 +319,7 @@ class PivExamineResult with _$PivExamineResult {
     required bool password,
     required KeyType? keyType,
     required CertInfo? certInfo,
+    bool? publicKeyMatch,
   }) = _ExamineResult;
   factory PivExamineResult.invalidPassword() = _InvalidPassword;
 
