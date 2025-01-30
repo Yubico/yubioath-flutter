@@ -585,6 +585,8 @@
     "l_failed_connecting_to_fido": "Zlyhalo pripojenie k rozhraniu FIDO",
 
     "@_certificates": {},
+    "l_self_signed_certificate": null,
+    "l_certificate_signing_request": null,
     "s_certificate": "Certifikát",
     "s_csr": "CSR",
     "s_subject": "Predmet",

@@ -585,6 +585,8 @@
     "l_failed_connecting_to_fido": "Połączenie z interfejsem FIDO nie powiodło się",
 
     "@_certificates": {},
+    "l_self_signed_certificate": null,
+    "l_certificate_signing_request": null,
     "s_certificate": "Certyfikat",
     "s_csr": "CSR",
     "s_subject": "Temat",

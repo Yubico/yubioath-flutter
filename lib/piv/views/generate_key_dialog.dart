@@ -182,6 +182,48 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Icon(
+                  Symbols.download,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 2.0),
+                      Text(
+                        l10n.s_output_format,
+                        style: textTheme.bodyLarge,
+                      ),
+                      ...GenerateType.values.map(
+                        (e) => ListTile(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 0.0),
+                          visualDensity: VisualDensity(vertical: -4),
+                          title: Text(
+                            e.getDisplayName(l10n),
+                            style: textTheme.bodyMedium,
+                          ),
+                          leading: Radio<GenerateType>(
+                            value: e,
+                            groupValue: _generateType,
+                            onChanged: (value) {
+                              setState(() {
+                                _generateType = e;
+                              });
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Icon(
@@ -215,41 +257,26 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                   });
                                 },
                         ),
-                        ChoiceFilterChip<GenerateType>(
-                          tooltip: l10n.s_output_format,
-                          items: GenerateType.values,
-                          value: _generateType,
-                          selected: _generateType != defaultGenerateType,
-                          itemBuilder: (value) =>
-                              Text(value.getDisplayName(l10n)),
-                          onChanged: _generating || _keyType == KeyType.x25519
+                        FilterChip(
+                          tooltip: l10n.s_expiration_date,
+                          label: Text(dateFormatter.format(_validTo)),
+                          onSelected: _generating ||
+                                  (_generateType != GenerateType.certificate)
                               ? null
-                              : (value) {
-                                  setState(() {
-                                    _generateType = value;
-                                  });
+                              : (value) async {
+                                  final selected = await showDatePicker(
+                                    context: context,
+                                    initialDate: _validTo,
+                                    firstDate: _validFrom,
+                                    lastDate: _validToMax,
+                                  );
+                                  if (selected != null) {
+                                    setState(() {
+                                      _validTo = selected;
+                                    });
+                                  }
                                 },
                         ),
-                        if (_generateType == GenerateType.certificate)
-                          FilterChip(
-                            tooltip: l10n.s_expiration_date,
-                            label: Text(dateFormatter.format(_validTo)),
-                            onSelected: _generating
-                                ? null
-                                : (value) async {
-                                    final selected = await showDatePicker(
-                                      context: context,
-                                      initialDate: _validTo,
-                                      firstDate: _validFrom,
-                                      lastDate: _validToMax,
-                                    );
-                                    if (selected != null) {
-                                      setState(() {
-                                        _validTo = selected;
-                                      });
-                                    }
-                                  },
-                          ),
                         if (widget.showMatch)
                           FilterChip(
                             tooltip: l10n.s_pin_policy,
@@ -280,14 +307,6 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                 ),
                                 TextSpan(text: '\n'),
                                 TextSpan(text: l10n.p_algorithm_desc),
-                                TextSpan(text: '\n' * 2),
-                                TextSpan(
-                                  text: l10n.s_output_format,
-                                  style: textTheme.bodySmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
-                                ),
-                                TextSpan(text: '\n'),
-                                TextSpan(text: l10n.p_output_format_desc),
                                 TextSpan(text: '\n' * 2),
                                 TextSpan(
                                   text: l10n.s_expiration_date,

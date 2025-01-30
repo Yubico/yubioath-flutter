@@ -585,6 +585,8 @@
     "l_failed_connecting_to_fido": "Kết nối với giao diện FIDO thất bại",
 
     "@_certificates": {},
+    "l_self_signed_certificate": null,
+    "l_certificate_signing_request": null,
     "s_certificate": "Chứng chỉ",
     "s_csr": "CSR",
     "s_subject": "Chủ thể",

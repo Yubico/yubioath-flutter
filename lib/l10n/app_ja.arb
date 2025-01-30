@@ -585,6 +585,8 @@
     "l_failed_connecting_to_fido": "FIDOインターフェイスへの接続に失敗しました",
 
     "@_certificates": {},
+    "l_self_signed_certificate": null,
+    "l_certificate_signing_request": null,
     "s_certificate": "証明書",
     "s_csr": "CSR",
     "s_subject": "サブジェクト",

@@ -585,6 +585,8 @@
     "l_failed_connecting_to_fido": "Die Verbindung zur FIDO-Schnittstelle ist fehlgeschlagen",
 
     "@_certificates": {},
+    "l_self_signed_certificate": null,
+    "l_certificate_signing_request": null,
     "s_certificate": "Zertifikat",
     "s_csr": "CSR",
     "s_subject": "Betreff",
