@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../android/state.dart';
 import '../../core/state.dart';
@@ -30,27 +29,6 @@ import 'device_avatar.dart';
 import 'keys.dart' as keys;
 import 'keys.dart';
 
-final _hiddenDevicesProvider =
-    StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
-        (ref) => _HiddenDevicesNotifier(ref.watch(prefProvider)));
-
-class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
-  static const String _key = 'DEVICE_PICKER_HIDDEN';
-  final SharedPreferences _prefs;
-
-  _HiddenDevicesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
-
-  void showAll() {
-    state = [];
-    _prefs.setStringList(_key, state);
-  }
-
-  void hideDevice(DevicePath devicePath) {
-    state = [...state, devicePath.key];
-    _prefs.setStringList(_key, state);
-  }
-}
-
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
 
@@ -59,7 +37,7 @@ class DevicePickerContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final hidden = ref.watch(_hiddenDevicesProvider);
+    final hidden = ref.watch(hiddenDevicesProvider);
     final devices = ref
         .watch(attachedDevicesProvider)
         .where((e) => !hidden.contains(e.path.key))
@@ -343,14 +321,14 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
   List<PopupMenuItem> _getMenuItems(
       BuildContext context, WidgetRef ref, DeviceNode? node) {
     final l10n = AppLocalizations.of(context)!;
-    final hidden = ref.watch(_hiddenDevicesProvider);
+    final hidden = ref.watch(hiddenDevicesProvider);
 
     return [
       if (isDesktop && hidden.isNotEmpty)
         PopupMenuItem(
           enabled: hidden.isNotEmpty,
           onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).showAll();
+            ref.read(hiddenDevicesProvider.notifier).showAll();
           },
           child: ListTile(
             title: Text(l10n.s_show_hidden_devices),
@@ -363,7 +341,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       if (isDesktop && node is NfcReaderNode)
         PopupMenuItem(
           onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
+            ref.read(hiddenDevicesProvider.notifier).hideDevice(node.path);
           },
           child: ListTile(
             title: Text(l10n.s_hide_device),

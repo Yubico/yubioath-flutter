@@ -152,6 +152,9 @@
     "s_select_to_scan": "Select to scan",
     "s_hide_device": "Hide device",
     "s_show_hidden_devices": "Show hidden devices",
+    "s_toggle_devices": "Toggle devices",
+    "l_toggle_devices_desc": "Show or hide devices",
+    "p_toggle_devices_desc": "Show or hide devices.",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

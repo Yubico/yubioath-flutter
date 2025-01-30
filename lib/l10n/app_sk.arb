@@ -152,6 +152,9 @@
     "s_select_to_scan": "Vyberte na skenovanie",
     "s_hide_device": "Skryť zariadenie",
     "s_show_hidden_devices": "Zobraziť skryté zariadenia",
+    "s_toggle_devices": null,
+    "l_toggle_devices_desc": null,
+    "p_toggle_devices_desc": null,
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
