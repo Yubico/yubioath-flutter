@@ -26,22 +26,25 @@ class AppTheme {
         Brightness.dark => getDarkTheme(primaryColor),
       };
 
-  static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) =>
-      switch (brightness) {
-        Brightness.dark => ColorScheme.fromSeed(
-            seedColor: primaryColor,
-            brightness: brightness,
-            surface: const Color(0xff282828),
-            onSurface: const Color(0xeeffffff),
-            onSurfaceVariant: const Color(0xaaffffff),
-          ),
-        Brightness.light => ColorScheme.fromSeed(
-            seedColor: primaryColor,
-            brightness: brightness,
-            onSurface: const Color(0xbb000000),
-            onSurfaceVariant: const Color(0x99000000),
-          )
-      };
+  static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) {
+    const darkSurface = Color(0xff282828);
+    return switch (brightness) {
+      Brightness.dark => ColorScheme.fromSeed(
+          seedColor: primaryColor,
+          brightness: brightness,
+          surface: darkSurface,
+          surfaceContainerHigh: darkSurface.withValues(alpha: 0.9),
+          onSurface: const Color(0xeeffffff),
+          onSurfaceVariant: const Color(0xaaffffff),
+        ),
+      Brightness.light => ColorScheme.fromSeed(
+          seedColor: primaryColor,
+          brightness: brightness,
+          onSurface: const Color(0xbb000000),
+          onSurfaceVariant: const Color(0x99000000),
+        )
+    };
+  }
 
   static ThemeData getLightTheme(Color primaryColor) {
     final colorScheme = _colorScheme(Brightness.light, primaryColor);
