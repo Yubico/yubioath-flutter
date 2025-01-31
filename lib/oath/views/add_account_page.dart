@@ -24,7 +24,6 @@ import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
-import '../../app/app_url_launcher.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -41,6 +40,7 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
+import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
@@ -374,6 +374,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     final withContext = ref.read(withContextProvider);
 
     final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
     return FileDropTarget(
@@ -405,7 +406,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
             child: Text(l10n.s_save, key: keys.saveButton),
           ),
         ],
-        builder: (context, _) => isLocked
+        builder: (context, fullScreen) => isLocked
             ? Padding(
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 child:
@@ -473,12 +474,46 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                   }
                                 },
                               ),
-                              ActionChip(
-                                avatar: Icon(Symbols.help),
-                                label: Text(l10n.s_learn_more),
-                                onPressed: () {
-                                  launchDocumentationUrl();
-                                },
+                              InfoPopupButton(
+                                size: 30,
+                                iconSize: 20,
+                                displayDialog: fullScreen,
+                                infoText: RichText(
+                                  text: TextSpan(
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: l10n.p_add_account_three_ways,
+                                      ),
+                                      TextSpan(text: '\n' * 2),
+                                      TextSpan(
+                                        text: l10n.s_scanning,
+                                        style: textTheme.bodySmall?.copyWith(
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      TextSpan(text: '\n'),
+                                      TextSpan(text: l10n.p_scanning_desc),
+                                      TextSpan(text: '\n' * 2),
+                                      TextSpan(
+                                        text: l10n.s_drag_and_drop,
+                                        style: textTheme.bodySmall?.copyWith(
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      TextSpan(text: '\n'),
+                                      TextSpan(text: l10n.p_drag_and_drop_desc),
+                                      TextSpan(text: '\n' * 2),
+                                      TextSpan(
+                                        text: l10n.s_manually,
+                                        style: textTheme.bodySmall?.copyWith(
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      TextSpan(text: '\n'),
+                                      TextSpan(text: l10n.p_manually_desc)
+                                    ],
+                                  ),
+                                ),
                               )
                             ],
                           ),
