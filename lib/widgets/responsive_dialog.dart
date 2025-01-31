@@ -26,6 +26,7 @@ class ResponsiveDialog extends StatefulWidget {
   final List<Widget> actions;
   final Function()? onCancel;
   final bool allowCancel;
+  final double dialogMaxWidth;
 
   const ResponsiveDialog({
     super.key,
@@ -34,6 +35,7 @@ class ResponsiveDialog extends StatefulWidget {
     this.actions = const [],
     this.onCancel,
     this.allowCancel = true,
+    this.dialogMaxWidth = 600,
   });
 
   @override
@@ -88,7 +90,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         scrollable: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         content: SizedBox(
-          width: 600,
+          width: widget.dialogMaxWidth,
           child:
               Container(key: _childKey, child: widget.builder(context, false)),
         ),

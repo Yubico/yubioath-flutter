@@ -909,6 +909,8 @@
     "s_custom_icons": "Biểu tượng tùy chỉnh",
     "l_set_icons_for_accounts": "Đặt biểu tượng cho các tài khoản",
     "p_custom_icons_description": "Các gói biểu tượng có thể làm cho các tài khoản của bạn dễ phân biệt hơn với các logo và màu sắc quen thuộc.",
+    "p_custom_icons_format_desc": null,
+    "s_download_icon_pack": null,
     "s_replace_icon_pack": "Thay thế gói biểu tượng",
     "l_loading_icon_pack": "Đang tải gói biểu tượng\u2026",
     "s_load_icon_pack": "Tải gói biểu tượng",

@@ -909,6 +909,8 @@
     "s_custom_icons": "Icônes personnalisées",
     "l_set_icons_for_accounts": "Définir des icônes pour les comptes",
     "p_custom_icons_description": "Les packs d'icônes permettent de distinguer plus facilement vos comptes avec des logos et couleurs familiers.",
+    "p_custom_icons_format_desc": null,
+    "s_download_icon_pack": null,
     "s_replace_icon_pack": "Remplacer le pack d'icônes",
     "l_loading_icon_pack": "Chargement du pack d'icônes\u2026",
     "s_load_icon_pack": "Charger le pack d'icônes",

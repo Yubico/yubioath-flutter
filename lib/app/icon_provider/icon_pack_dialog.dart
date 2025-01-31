@@ -22,9 +22,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../widgets/basic_dialog.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
+import '../../widgets/info_popup_button.dart';
+import '../../widgets/responsive_dialog.dart';
 import '../message.dart';
 import '../state.dart';
 import 'icon_pack.dart';
@@ -33,10 +34,16 @@ import 'icon_pack_manager.dart';
 class IconPackDialog extends ConsumerWidget {
   const IconPackDialog({super.key});
 
+  Uri get _downloadIconPacksUri => Uri.parse('https://aegis-icons.github.io');
+  Uri get _learnMoreAegisUri => Uri.parse(
+      'https://github.com/beemdevelopment/Aegis/blob/master/docs/iconpacks.md');
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final iconPack = ref.watch(iconPackProvider);
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     return FileDropTarget(
         onFileDropped: (file) async {
           final importStatus = await ref
@@ -63,21 +70,75 @@ class IconPackDialog extends ConsumerWidget {
                   l10n.s_load_icon_pack,
               loading: () => null),
         ),
-        child: BasicDialog(
+        child: ResponsiveDialog(
+          dialogMaxWidth: 400,
           title: Text(l10n.s_custom_icons),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _DialogDescription(),
-              const SizedBox(height: 4),
-              _action(iconPack, l10n),
-              _loadedIconPackRow(iconPack),
-            ]
-                .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: e,
-                    ))
-                .toList(),
+          builder: (context, fullScreen) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _DialogDescription(),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    _action(iconPack, l10n),
+                    const SizedBox(width: 4.0),
+                    InfoPopupButton(
+                      size: 30,
+                      iconSize: 20,
+                      displayDialog: fullScreen,
+                      infoText: RichText(
+                        text: TextSpan(
+                          style: textTheme.bodySmall,
+                          children: [
+                            TextSpan(text: l10n.p_custom_icons_format_desc),
+                            TextSpan(text: '\n' * 2),
+                            TextSpan(
+                              text: l10n.s_download_icon_pack,
+                              style: theme.textTheme.bodySmall
+                                  ?.copyWith(color: theme.colorScheme.primary),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  await launchUrl(_downloadIconPacksUri,
+                                      mode: LaunchMode.externalApplication);
+                                },
+                              children: const [
+                                TextSpan(
+                                    text:
+                                        ' ') // without this the recognizer takes over whole row
+                              ],
+                            ),
+                            TextSpan(text: '\n'),
+                            TextSpan(
+                              text: l10n.s_learn_more,
+                              style: theme.textTheme.bodySmall
+                                  ?.copyWith(color: theme.colorScheme.primary),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  await launchUrl(_learnMoreAegisUri,
+                                      mode: LaunchMode.externalApplication);
+                                },
+                              children: const [
+                                TextSpan(
+                                    text:
+                                        ' ') // without this the recognizer takes over whole row
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                _loadedIconPackRow(iconPack),
+              ]
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: e,
+                      ))
+                  .toList(),
+            ),
           ),
         ));
   }
@@ -94,16 +155,17 @@ class IconPackDialog extends ConsumerWidget {
             ));
   }
 
-  Widget? _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
+  Widget _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
       iconPack.when(
-          data: (IconPack? data) => _ImportActionChip(
-              data != null ? l10n.s_replace_icon_pack : l10n.s_load_icon_pack),
-          error: (Object error, StackTrace stackTrace) =>
-              _ImportActionChip(l10n.s_load_icon_pack),
-          loading: () => _ImportActionChip(
-                l10n.l_loading_icon_pack,
-                disabled: true,
-              ));
+        data: (IconPack? data) => _ImportActionChip(
+            data != null ? l10n.s_replace_icon_pack : l10n.s_load_icon_pack),
+        error: (Object error, StackTrace stackTrace) =>
+            _ImportActionChip(l10n.s_load_icon_pack),
+        loading: () => _ImportActionChip(
+          l10n.l_loading_icon_pack,
+          disabled: true,
+        ),
+      );
 }
 
 class _DialogDescription extends ConsumerWidget {
@@ -116,27 +178,7 @@ class _DialogDescription extends ConsumerWidget {
       text: TextSpan(
         text: l10n.p_custom_icons_description,
         style: theme.textTheme.bodyMedium,
-        children: [const TextSpan(text: ' '), _createLearnMoreLink(context)],
       ),
-    );
-  }
-
-  Uri get _learnMoreUri =>
-      Uri.parse('https://yubi.co/ya-custom-account-icons-doc');
-
-  TextSpan _createLearnMoreLink(BuildContext context) {
-    final theme = Theme.of(context);
-    return TextSpan(
-      text: AppLocalizations.of(context)!.s_learn_more,
-      style: theme.textTheme.bodyMedium
-          ?.copyWith(color: theme.colorScheme.primary),
-      recognizer: TapGestureRecognizer()
-        ..onTap = () async {
-          await launchUrl(_learnMoreUri, mode: LaunchMode.externalApplication);
-        },
-      children: const [
-        TextSpan(text: ' ') // without this the recognizer takes over whole row
-      ],
     );
   }
 }

@@ -909,6 +909,8 @@
     "s_custom_icons": "Eigene Icons",
     "l_set_icons_for_accounts": "Icons für Konten setzen",
     "p_custom_icons_description": "Icon-Pakete machen Ihre Konten mit bekannten Logos und Farben leichter unterscheidbar.",
+    "p_custom_icons_format_desc": null,
+    "s_download_icon_pack": null,
     "s_replace_icon_pack": "Icon-Paket ersetzen",
     "l_loading_icon_pack": "Lade Icon-Paket\u2026",
     "s_load_icon_pack": "Icon-Paket laden",
