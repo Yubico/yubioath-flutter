@@ -402,6 +402,7 @@
     "s_use_default": "デフォルトを使用",
     "l_warning_default_key": "警告：デフォルトのキーが使用されます",
     "s_protect_key": "PINで保護",
+    "p_protect_key_desc": null,
     "s_management_key_algorithm": null,
     "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "代わりにPINを使用できます",

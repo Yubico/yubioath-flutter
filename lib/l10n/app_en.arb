@@ -402,6 +402,7 @@
     "s_use_default": "Use default",
     "l_warning_default_key": "Warning: Default key used",
     "s_protect_key": "Protect with PIN",
+    "p_protect_key_desc": "Use the PIN in place of the management key during operations that require management key authentication.",
     "s_management_key_algorithm": "Management key algorithm",
     "p_management_key_algorithm_desc": "The algorithm to choose for the management key.",
     "l_pin_protected_key": "PIN can be used instead",

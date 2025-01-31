@@ -402,6 +402,7 @@
     "s_use_default": "Sử dụng mặc định",
     "l_warning_default_key": "Cảnh báo: Đã sử dụng khóa mặc định",
     "s_protect_key": "Bảo vệ bằng Mã PIN",
+    "p_protect_key_desc": null,
     "s_management_key_algorithm": null,
     "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "Mã PIN có thể được sử dụng thay thế",

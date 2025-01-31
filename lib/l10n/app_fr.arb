@@ -402,6 +402,7 @@
     "s_use_default": "Utiliser clé par défaut",
     "l_warning_default_key": "Attention\u00a0: clé par défaut utilisée",
     "s_protect_key": "Protéger par PIN",
+    "p_protect_key_desc": null,
     "s_management_key_algorithm": null,
     "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "PIN peut être utilisé à la place",

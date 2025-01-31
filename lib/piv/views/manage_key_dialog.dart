@@ -402,6 +402,16 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                 TextSpan(
                                   text: l10n.p_management_key_algorithm_desc,
                                 ),
+                                TextSpan(text: '\n' * 2),
+                                TextSpan(
+                                  text: l10n.s_protect_key,
+                                  style: textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                TextSpan(text: '\n'),
+                                TextSpan(
+                                  text: l10n.p_protect_key_desc,
+                                ),
                               ],
                             ),
                           ),

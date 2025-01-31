@@ -402,6 +402,7 @@
     "s_use_default": "Standard verwenden",
     "l_warning_default_key": "Vorsicht: Standard Key verwendet",
     "s_protect_key": "Mit PIN schützen",
+    "p_protect_key_desc": null,
     "s_management_key_algorithm": null,
     "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "PIN kann stattdessen verwendet werden",

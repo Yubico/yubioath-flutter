@@ -402,6 +402,7 @@
     "s_use_default": "Użyj domyślnego",
     "l_warning_default_key": "Ostrzeżenie: Używany jest domyślny klucz",
     "s_protect_key": "Zabezpiecz kodem PIN",
+    "p_protect_key_desc": null,
     "s_management_key_algorithm": null,
     "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "Zamiast tego można użyć kodu PIN",
