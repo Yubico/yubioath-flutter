@@ -706,7 +706,6 @@
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,
-    "p_output_format_desc": null,
     "p_expiration_date_desc": null,
     "p_cert_options_desc": "Algorithme clé à utiliser, format de sortie et date d'expiration (certificat uniquement).",
     "p_cert_options_bio_desc": "Algorithme de clé à utiliser, format de sortie, date d'expiration (certificat uniquement) et possibilité d'utiliser des données biométriques à la place du code PIN.",
@@ -762,6 +761,12 @@
     "@_export_can_be_uploaded_at": {
         "placeholders": {
             "url": {}
+        }
+    },
+    "l_keyboard_layout": null,
+    "@_keyboard_layout": {
+        "placeholder": {
+            "layout": {}
         }
     },
 

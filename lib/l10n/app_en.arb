@@ -428,15 +428,15 @@
     "l_authenticator_get_started": "Get started with OTP accounts",
     "l_no_accounts_desc": "Add accounts to your YubiKey from any service provider supporting OATH TOTP/HOTP",
     "s_add_account": "Add account",
-    "p_add_account_desc": "Scan QR code (recommended) or enter the credential details manually.",
+    "p_add_account_desc": "Scan QR code or enter the credential details manually.",
     "s_add_accounts": "Add account(s)",
     "p_add_description": "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
     "l_drop_qr_description": "Drop QR code to add account(s)",
-    "p_add_account_three_ways": "There's 3 ways of adding accounts.",
+    "p_add_account_three_ways": "There are three ways of adding accounts.",
     "s_scanning": "Scanning (recommended)",
     "p_scanning_desc": "Before scanning a QR code, make sure the full code is visible on screen.",
     "s_drag_and_drop": "Drag and drop",
-    "p_drag_and_drop_desc": "An image containing a QR code may be dropped anywhere in the Accounts application.",
+    "p_drag_and_drop_desc": "An image containing a QR code may be dropped anywhere in the Accounts view.",
     "s_manually": "Manually",
     "p_manually_desc": "Account credential details may be entered manually in the form.",
     "s_add_manually": "Add manually",
@@ -706,7 +706,6 @@
     "s_output_format": "Output format",
     "s_expiration_date": "Expiration date",
     "p_algorithm_desc": "Key algorithm to use.",
-    "p_output_format_desc": "The public key can be:\n\t• Saved to file.\n\t• Embedded into a self-signed certificate stored on the YubiKey (default).\n\t• Saved to file in a certificate signing request (CSR).",
     "p_expiration_date_desc": "Date when the certificate expires (default 1 year).",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
@@ -762,6 +761,12 @@
     "@_export_can_be_uploaded_at": {
         "placeholders": {
             "url": {}
+        }
+    },
+    "l_keyboard_layout": "Keyboard {layout}",
+    "@_keyboard_layout": {
+        "placeholder": {
+            "layout": {}
         }
     },
 

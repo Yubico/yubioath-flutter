@@ -706,7 +706,6 @@
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,
-    "p_output_format_desc": null,
     "p_expiration_date_desc": null,
     "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限（証明書のみ）。",
     "p_cert_options_bio_desc": "使用する鍵アルゴリズム、出力フォーマット、有効期限 (証明書のみ)、PIN の代わりに生体認証を使用できるようにするかを設定します。",
@@ -762,6 +761,12 @@
     "@_export_can_be_uploaded_at": {
         "placeholders": {
             "url": {}
+        }
+    },
+    "l_keyboard_layout": null,
+    "@_keyboard_layout": {
+        "placeholder": {
+            "layout": {}
         }
     },
 

@@ -706,7 +706,6 @@
     "s_output_format": null,
     "s_expiration_date": null,
     "p_algorithm_desc": null,
-    "p_output_format_desc": null,
     "p_expiration_date_desc": null,
     "p_cert_options_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra và ngày hết hạn (chứng chỉ chỉ).",
     "p_cert_options_bio_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra, ngày hết hạn (chứng chỉ chỉ) và nếu sinh trắc học có thể được sử dụng thay cho PIN.",
@@ -762,6 +761,12 @@
     "@_export_can_be_uploaded_at": {
         "placeholders": {
             "url": {}
+        }
+    },
+    "l_keyboard_layout": null,
+    "@_keyboard_layout": {
+        "placeholder": {
+            "layout": {}
         }
     },
 

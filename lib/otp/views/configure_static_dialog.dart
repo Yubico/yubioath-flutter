@@ -229,7 +229,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                           items: widget.keyboardLayouts.keys.toList(),
                           value: _keyboardLayout,
                           selected: _keyboardLayout != _defaultKeyboardLayout,
-                          labelBuilder: (value) => Text('Keyboard $value'),
+                          labelBuilder: (value) =>
+                              Text(l10n.l_keyboard_layout(value)),
                           itemBuilder: (value) => Text(value),
                           onChanged: (layout) {
                             setState(() {
