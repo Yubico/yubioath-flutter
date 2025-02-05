@@ -70,7 +70,7 @@ Future<bool> _authIfNeeded(BuildContext context, WidgetRef ref,
     return await showBlurDialog(
           context: context,
           builder: (context) => pivState.protectedKey
-              ? PinDialog(devicePath)
+              ? PinDialog(devicePath, pivState)
               : AuthenticationDialog(
                   devicePath,
                   pivState,
@@ -120,7 +120,8 @@ class PivActions extends ConsumerWidget {
                 verified = await withContext((context) async =>
                         await showBlurDialog(
                             context: context,
-                            builder: (context) => PinDialog(devicePath))) ??
+                            builder: (context) =>
+                                PinDialog(devicePath, pivState))) ??
                     false;
               }
 
@@ -333,6 +334,10 @@ List<ActionItem> buildSlotActions(
   final hasCert = slot.certInfo != null;
   final hasKey = slot.metadata != null;
   final canDeleteOrMoveKey = hasKey && pivState.version.isAtLeast(5, 7);
+  final pinIsBlocked = pivState.pinAttempts == 0;
+  final defaultPin = pivState.metadata?.pinMetadata.defaultValue == true;
+  final requiresPinAuth =
+      pivState.needsAuth && pivState.protectedKey && !defaultPin;
   return [
     if (!slot.slot.isRetired) ...[
       ActionItem(
@@ -342,7 +347,10 @@ List<ActionItem> buildSlotActions(
         actionStyle: ActionStyle.primary,
         title: l10n.s_generate_key,
         subtitle: l10n.l_generate_desc,
-        intent: GenerateIntent(slot),
+        intent: (pinIsBlocked &&
+                (requiresPinAuth || (!pivState.protectedKey && !defaultPin)))
+            ? null
+            : GenerateIntent(slot),
       ),
       ActionItem(
         key: keys.importAction,
@@ -350,7 +358,7 @@ List<ActionItem> buildSlotActions(
         icon: const Icon(Symbols.file_download),
         title: l10n.l_import_file,
         subtitle: l10n.l_import_desc,
-        intent: ImportIntent(slot),
+        intent: pinIsBlocked && requiresPinAuth ? null : ImportIntent(slot),
       ),
     ],
     if (hasCert) ...[
@@ -380,7 +388,7 @@ List<ActionItem> buildSlotActions(
         icon: const Icon(Symbols.move_item),
         title: l10n.l_move_key,
         subtitle: l10n.l_move_key_desc,
-        intent: MoveIntent(slot),
+        intent: pinIsBlocked && requiresPinAuth ? null : MoveIntent(slot),
       ),
     if (hasCert || canDeleteOrMoveKey)
       ActionItem(
@@ -398,7 +406,7 @@ List<ActionItem> buildSlotActions(
             : hasCert
                 ? l10n.l_delete_certificate_desc
                 : l10n.l_delete_key_desc,
-        intent: DeleteIntent(slot),
+        intent: pinIsBlocked && requiresPinAuth ? null : DeleteIntent(slot),
       ),
   ];
 }

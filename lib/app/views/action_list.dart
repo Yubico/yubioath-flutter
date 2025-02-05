@@ -54,31 +54,40 @@ class ActionListItem extends StatelessWidget {
     // };
     final theme = Theme.of(context);
 
-    return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-      title: TooltipIfTruncated(
-        text: title,
-        style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
-      ),
-      subtitle: subtitle != null
-          ? TooltipIfTruncated(
-              text: subtitle!,
-              style: TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            )
+    return GestureDetector(
+      onTap: onTap == null
+          ? () {
+              // Needed to avoid triggering escape intent when tapping
+              // on a disabled item
+            }
           : null,
-      leading: Opacity(
-        opacity: onTap != null ? 1.0 : 0.4,
-        child: CircleAvatar(
-          foregroundColor: theme.colorScheme.onSurfaceVariant,
-          backgroundColor: Colors.transparent,
-          child: icon,
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        title: TooltipIfTruncated(
+          text: title,
+          style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
         ),
+        subtitle: subtitle != null
+            ? TooltipIfTruncated(
+                text: subtitle!,
+                style:
+                    TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              )
+            : null,
+        leading: Opacity(
+          opacity: onTap != null ? 1.0 : 0.4,
+          child: CircleAvatar(
+            foregroundColor: theme.colorScheme.onSurfaceVariant,
+            backgroundColor: Colors.transparent,
+            child: icon,
+          ),
+        ),
+        trailing: trailing,
+        onTap: onTap != null ? () => onTap?.call(context) : null,
+        enabled: onTap != null,
       ),
-      trailing: trailing,
-      onTap: onTap != null ? () => onTap?.call(context) : null,
-      enabled: onTap != null,
     );
   }
 }
