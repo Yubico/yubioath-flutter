@@ -177,14 +177,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.q_rename_target(widget.issuer != null
-                ? '${widget.issuer} (${widget.name})'
-                : widget.name)),
             Text(l10n.p_rename_will_change_account_displayed),
             AppTextField(
               controller: _issuerController,
@@ -197,7 +194,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_issuer_optional,
                 helperText: '', // Prevents dialog resizing when disabled
-                prefixIcon: const Icon(Symbols.business),
+                icon: const Icon(Symbols.business),
               ),
               textInputAction: TextInputAction.next,
               focusNode: _issuerFocus,
@@ -221,7 +218,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                     : !isUnique
                         ? l10n.l_name_already_exists
                         : null,
-                prefixIcon: const Icon(Symbols.people_alt),
+                icon: const Icon(Symbols.people_alt),
               ),
               textInputAction: TextInputAction.done,
               focusNode: _nameFocus,

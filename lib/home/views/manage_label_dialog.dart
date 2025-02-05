@@ -67,12 +67,11 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
           child: Text(l10n.s_save),
         )
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (initialLabel != null) Text(l10n.q_rename_target(initialLabel)),
             Text(initialLabel == null
                 ? l10n.p_set_will_add_custom_name
                 : l10n.p_rename_will_change_custom_name),
@@ -84,7 +83,7 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_label,
                 helperText: '',
-                prefixIcon: const Icon(Symbols.key),
+                icon: const Icon(Symbols.key),
               ),
               textInputAction: TextInputAction.done,
               onChanged: (value) {

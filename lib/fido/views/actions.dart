@@ -54,7 +54,7 @@ class FidoActions extends ConsumerWidget {
                   onInvoke: (intent) async {
             final credential = intent.target;
             final deleted = await withContext(
-              (context) => showBlurDialog<bool?>(
+              (context) => showDialog<bool?>(
                 context: context,
                 builder: (context) => DeleteCredentialDialog(
                   devicePath,
@@ -83,7 +83,7 @@ class FidoActions extends ConsumerWidget {
             onInvoke: (intent) async {
               final fingerprint = intent.target;
               final deleted = await ref.read(withContextProvider)(
-                  (context) => showBlurDialog<bool?>(
+                  (context) => showDialog<bool?>(
                         context: context,
                         builder: (context) => DeleteFingerprintDialog(
                           devicePath,

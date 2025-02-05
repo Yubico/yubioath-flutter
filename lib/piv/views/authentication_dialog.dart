@@ -108,7 +108,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
           child: Text(l10n.s_unlock),
         ),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +133,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                             Format.hex.allowedCharacters)
                         : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Symbols.key),
+                icon: const Icon(Symbols.key),
                 suffixIcon: hasMetadata
                     ? null
                     : IconButton(

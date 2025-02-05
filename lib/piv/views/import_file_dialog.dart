@@ -110,7 +110,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             child: Text(l10n.s_unlock),
           ),
         ],
-        child: const Padding(
+        builder: (context, _) => const Padding(
             padding: EdgeInsets.symmetric(horizontal: 18.0),
             child: Center(
               child: CircularProgressIndicator(),
@@ -128,7 +128,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             child: Text(l10n.s_unlock),
           ),
         ],
-        child: Padding(
+        builder: (context, _) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +144,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   labelText: l10n.s_password,
                   errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Symbols.password),
+                  icon: const Icon(Symbols.password),
                   suffixIcon: IconButton(
                       icon: Icon(_isObscure
                           ? Symbols.visibility
@@ -244,7 +244,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
               child: Text(l10n.s_import),
             ),
           ],
-          child: Padding(
+          builder: (context, _) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,11 +264,16 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   ),
                 ],
                 if (keyType != null) ...[
-                  Text(
-                    l10n.s_private_key,
-                    style: textTheme.bodyLarge,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
+                  Row(
+                    children: [
+                      const Icon(Symbols.key),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.s_private_key,
+                        style: textTheme.bodyLarge,
+                        softWrap: true,
+                      ),
+                    ],
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -294,11 +299,17 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                     ),
                 ],
                 if (certInfo != null) ...[
-                  Text(
-                    l10n.s_certificate,
-                    style: textTheme.bodyLarge,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
+                  Row(
+                    children: [
+                      const Icon(Symbols.id_card),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        l10n.s_certificate,
+                        style: textTheme.bodyLarge,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height:
@@ -307,12 +318,19 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   ),
                 ],
                 if (keyType != null && !unsupportedKey && widget.showMatch) ...[
-                  Text(
-                    l10n.s_options,
-                    style: textTheme.bodyLarge,
+                  Row(
+                    children: [
+                      const Icon(Symbols.tune),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        l10n.s_options,
+                        style: textTheme.bodyLarge,
+                      ),
+                    ],
                   ),
                   Text(l10n.p_key_options_bio_desc),
                   FilterChip(
+                    tooltip: l10n.s_pin_policy,
                     label: Text(l10n.s_allow_fingerprint),
                     selected: _allowMatch,
                     onSelected: _importing

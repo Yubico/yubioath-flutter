@@ -244,6 +244,7 @@ class _DeviceContent extends ConsumerWidget {
                         itemBuilder: (context) {
                           return [
                             PopupMenuItem(
+                              enabled: false,
                               child: Center(
                                 child: Wrap(
                                   runSpacing: 8,

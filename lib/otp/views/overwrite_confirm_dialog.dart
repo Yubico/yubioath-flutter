@@ -16,9 +16,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/message.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../widgets/basic_dialog.dart';
 import '../models.dart';
 
 class _OverwriteConfirmDialog extends StatelessWidget {
@@ -30,8 +30,9 @@ class _OverwriteConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return ResponsiveDialog(
-      title: Text(l10n.s_overwrite_slot),
+    return BasicDialog(
+      icon: Icon(Symbols.warning),
+      title: Text(l10n.q_overwrite_slot),
       actions: [
         TextButton(
             onPressed: () {
@@ -39,15 +40,12 @@ class _OverwriteConfirmDialog extends StatelessWidget {
             },
             child: Text(l10n.s_overwrite)),
       ],
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_overwrite_slot_desc(otpSlot.slot.getDisplayName(l10n))),
-            const SizedBox(height: 12),
-          ],
-        ),
+      content: Text(
+        l10n.p_overwrite_slot_desc(otpSlot.slot.getDisplayName(l10n)),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -55,7 +53,7 @@ class _OverwriteConfirmDialog extends StatelessWidget {
 
 Future<bool> confirmOverwrite(BuildContext context, OtpSlot otpSlot) async {
   if (otpSlot.isConfigured) {
-    return await showBlurDialog(
+    return await showDialog(
             context: context,
             builder: (context) => _OverwriteConfirmDialog(
                   otpSlot: otpSlot,

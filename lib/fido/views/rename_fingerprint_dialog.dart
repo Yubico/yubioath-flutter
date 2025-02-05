@@ -95,13 +95,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.q_rename_target(widget.fingerprint.label)),
-            Text(l10n.p_will_change_label_fp),
             AppTextField(
               autofocus: true,
               controller: _labelController,
@@ -112,7 +110,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_name,
-                prefixIcon: const Icon(Symbols.fingerprint),
+                icon: const Icon(Symbols.fingerprint),
               ),
               onChanged: (_) {
                 setState(() {});

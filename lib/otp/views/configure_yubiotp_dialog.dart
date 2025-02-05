@@ -214,7 +214,7 @@ class _ConfigureYubiOtpDialogState
           child: Text(l10n.s_save),
         )
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +232,7 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.modhex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Symbols.public),
+                  icon: const Icon(Symbols.public),
                   suffixIcon: IconButton(
                     key: keys.useSerial,
                     tooltip: l10n.s_use_serial,
@@ -268,7 +268,7 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Symbols.key),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generatePrivateId,
                     tooltip: l10n.s_generate_random,
@@ -305,7 +305,7 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Symbols.key),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
                     key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
@@ -330,57 +330,75 @@ class _ConfigureYubiOtpDialogState
                 });
               },
             ).init(),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4.0,
-              runSpacing: 8.0,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FilterChip(
-                  label: Text(l10n.s_append_enter),
-                  tooltip: l10n.l_append_enter_desc,
-                  selected: _appendEnter,
-                  onSelected: (value) {
-                    setState(() {
-                      _appendEnter = value;
-                    });
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                ChoiceFilterChip<OutputActions>(
-                  tooltip: outputFile?.path ?? l10n.s_no_export,
-                  selected: outputFile != null,
-                  avatar: outputFile != null
-                      ? Icon(Symbols.check,
-                          color: Theme.of(context).colorScheme.secondary)
-                      : null,
-                  value: _action,
-                  items: OutputActions.values,
-                  itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                  labelBuilder: (_) {
-                    String? fileName = outputFile?.uri.pathSegments.last;
-                    return Container(
-                      constraints: const BoxConstraints(maxWidth: 140),
-                      child: Text(
-                        fileName != null
-                            ? '${l10n.s_export} $fileName'
-                            : _action.getDisplayName(l10n),
-                        overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    children: [
+                      FilterChip(
+                        label: Text(l10n.s_append_enter),
+                        tooltip: l10n.l_append_enter_desc,
+                        selected: _appendEnter,
+                        onSelected: (value) {
+                          setState(() {
+                            _appendEnter = value;
+                          });
+                        },
                       ),
-                    );
-                  },
-                  onChanged: (value) async {
-                    if (value == OutputActions.noOutput) {
-                      ref.read(yubiOtpOutputProvider.notifier).setOutput(null);
-                      setState(() {
-                        _action = value;
-                      });
-                    } else if (value == OutputActions.selectFile) {
-                      if (await selectFile()) {
-                        setState(() {
-                          _action = value;
-                        });
-                      }
-                    }
-                  },
+                      ChoiceFilterChip<OutputActions>(
+                        tooltip: outputFile?.path ?? l10n.s_no_export,
+                        selected: outputFile != null,
+                        avatar: outputFile != null
+                            ? Icon(Symbols.check,
+                                color: Theme.of(context).colorScheme.secondary)
+                            : null,
+                        value: _action,
+                        items: OutputActions.values,
+                        itemBuilder: (value) =>
+                            Text(value.getDisplayName(l10n)),
+                        labelBuilder: (_) {
+                          String? fileName = outputFile?.uri.pathSegments.last;
+                          return Container(
+                            constraints: const BoxConstraints(maxWidth: 140),
+                            child: Text(
+                              fileName != null
+                                  ? '${l10n.s_export} $fileName'
+                                  : _action.getDisplayName(l10n),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        },
+                        onChanged: (value) async {
+                          if (value == OutputActions.noOutput) {
+                            ref
+                                .read(yubiOtpOutputProvider.notifier)
+                                .setOutput(null);
+                            setState(() {
+                              _action = value;
+                            });
+                          } else if (value == OutputActions.selectFile) {
+                            if (await selectFile()) {
+                              setState(() {
+                                _action = value;
+                              });
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

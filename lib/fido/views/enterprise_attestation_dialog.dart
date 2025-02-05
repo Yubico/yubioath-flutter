@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../widgets/basic_dialog.dart';
 import '../state.dart';
 
 class EnableEnterpriseAttestationDialog extends ConsumerWidget {
@@ -15,8 +16,9 @@ class EnableEnterpriseAttestationDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    return ResponsiveDialog(
-      title: Text(l10n.s_enable_ep_attestation),
+    return BasicDialog(
+      icon: Icon(Symbols.local_police),
+      title: Text(l10n.q_enable_ep_attestation),
       actions: [
         TextButton(
           onPressed: () async {
@@ -31,27 +33,17 @@ class EnableEnterpriseAttestationDialog extends ConsumerWidget {
           child: Text(l10n.s_enable),
         ),
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.p_enable_ep_attestation_desc,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            Text(l10n.p_enable_ep_attestation_disable_with_factory_reset),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
+      content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          l10n.p_enable_ep_attestation_desc,
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
-      ),
+        const SizedBox(height: 8.0),
+        Text(l10n.p_enable_ep_attestation_disable_with_factory_reset),
+      ]),
     );
   }
 }

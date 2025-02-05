@@ -127,7 +127,7 @@ class OtpActions extends ConsumerWidget {
             }
 
             final bool? deleted = await withContext((context) async =>
-                await showBlurDialog(
+                await showDialog(
                     context: context,
                     builder: (context) => DeleteSlotDialog(devicePath, slot)) ??
                 false);

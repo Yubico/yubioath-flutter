@@ -65,7 +65,7 @@ class IconPackDialog extends ConsumerWidget {
         ),
         child: ResponsiveDialog(
           title: Text(l10n.s_custom_icons),
-          child: Padding(
+          builder: (context, _) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

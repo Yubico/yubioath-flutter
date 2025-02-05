@@ -124,7 +124,7 @@ class OathActions extends ConsumerWidget {
               CallbackAction<DeleteIntent<OathCredential>>(
             onInvoke: (intent) {
               return withContext((context) async =>
-                  await showBlurDialog(
+                  await showDialog(
                     context: context,
                     builder: (context) => DeleteAccountDialog(
                       devicePath,

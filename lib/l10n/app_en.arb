@@ -52,6 +52,7 @@
     "s_collapse_navigation": "Collapse navigation",
     "s_show_menu": "Show menu",
     "s_hide_menu": "Hide menu",
+    "s_more_info": "More info",
     "q_rename_target": "Rename {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -301,18 +302,24 @@
     "l_unlock_pin_first": "Unlock with PIN",
     "l_pin_soft_locked": "PIN has been blocked until the YubiKey is removed and reinserted",
     "l_pin_change_required_desc": "A new PIN must be set before you can use this application",
+    "p_enter_current_pin_or_puk": "Enter your current {name}.",
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Enter your current PIN. If you don't know your PIN, you'll need to unblock it with the PUK or reset the YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Enter your current PIN. If you don't know your PIN, you'll need to reset the YubiKey.",
     "p_enter_current_puk_or_reset": "Enter your current PUK. If you don't know your PUK, you'll need to reset the YubiKey.",
-    "p_enter_new_fido2_pin": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": "A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Enter your new PIN. A PIN must be {min_length}-{max_length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": "A PIN must be {min_length}-{max_length} characters long, contain at least {unique_characters} unique characters, and not be a commonly used PIN, like \"{common_pin}\". It may contain letters, numbers, and special characters.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},
@@ -322,22 +329,22 @@
     },
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation enabled",
-    "s_enable_ep_attestation": "Enable Enterprise Attestation",
+    "q_enable_ep_attestation": "Enable Enterprise Attestation?",
     "p_enable_ep_attestation_desc": "This will enable Enterprise Attestation, allowing authorized domains to uniquely identify your YubiKey.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Once enabled, Enterprise Attestation can only be disabled by performing a FIDO factory reset.",
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
-    "p_enter_new_piv_pin_puk": "Enter a new {name} to set. Must be at least {length} characters long.",
-    "@p_enter_new_piv_pin_puk": {
+    "p_new_piv_pin_puk_requirements": "A {name} must be at least {length} characters long.",
+    "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "Enter a new {name} to set. Must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
-    "@p_enter_new_piv_pin_puk_complexity_active": {
+    "p_new_piv_pin_puk_complexity_active_requirements": "A {name} must be at least {length} characters long, contain at least 2 unique characters, and not be a commonly used {name}, like \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {},
             "length": {},
@@ -370,6 +377,7 @@
     "s_confirm_password": "Confirm password",
     "l_password_mismatch": "Passwords do not match",
     "s_wrong_password": "Wrong password",
+    "p_wrong_password": "Wrong password. If you don't know your password, you'll need to reset the YubiKey.",
     "s_remove_password": "Remove password",
     "s_password_removed": "Password removed",
     "s_remember_password": "Remember password",
@@ -380,8 +388,7 @@
     "l_unlock_first": "Unlock with password",
     "l_set_password_first": "Set a password",
     "l_enter_oath_pw": "Enter the OATH password for your YubiKey",
-    "p_enter_current_password_or_reset": "Enter your current password. If you don't know your password, you'll need to reset the YubiKey.",
-    "p_enter_new_password": "Enter your new password. A password may contain letters, numbers and special characters.",
+    "p_new_password_requirements": "A password may contain letters, numbers and special characters.",
 
     "@_management_key": {},
     "s_management_key": "Management key",
@@ -395,10 +402,13 @@
     "s_use_default": "Use default",
     "l_warning_default_key": "Warning: Default key used",
     "s_protect_key": "Protect with PIN",
+    "p_protect_key_desc": "Use the PIN in place of the management key during operations that require management key authentication.",
+    "s_management_key_algorithm": "Management key algorithm",
+    "p_management_key_algorithm_desc": "The algorithm to choose for the management key.",
     "l_pin_protected_key": "PIN can be used instead",
     "l_wrong_key": "Wrong key",
     "l_unlock_piv_management": "Unlock PIV management",
-    "p_unlock_piv_management_desc": "The action you are about to perform requires the PIV management key. Provide this key to unlock management functionality for this session.",
+    "p_unlock_piv_management_desc": "The action you are about to perform requires the PIV management key.",
 
     "@_oath_accounts": {},
     "l_account": "Account: {label}",
@@ -418,9 +428,17 @@
     "l_authenticator_get_started": "Get started with OTP accounts",
     "l_no_accounts_desc": "Add accounts to your YubiKey from any service provider supporting OATH TOTP/HOTP",
     "s_add_account": "Add account",
+    "p_add_account_desc": "Scan QR code or enter the credential details manually.",
     "s_add_accounts": "Add account(s)",
     "p_add_description": "To scan a QR code, make sure the full code is visible on screen and press the button below. You can also drag a saved image from a folder onto this dialog. If you have the account credential details in writing, use the manual entry instead.",
     "l_drop_qr_description": "Drop QR code to add account(s)",
+    "p_add_account_three_ways": "There are three ways of adding accounts.",
+    "s_scanning": "Scanning (recommended)",
+    "p_scanning_desc": "Before scanning a QR code, make sure the full code is visible on screen.",
+    "s_drag_and_drop": "Drag and drop",
+    "p_drag_and_drop_desc": "An image containing a QR code may be dropped anywhere in the Accounts view.",
+    "s_manually": "Manually",
+    "p_manually_desc": "Account credential details may be entered manually in the form.",
     "s_add_manually": "Add manually",
     "s_account_added": "Account added",
     "l_account_add_failed": "Failed adding account: {message}",
@@ -454,10 +472,11 @@
     },
     "p_rename_will_change_account_displayed": "This will change how the account is displayed in the list.",
     "s_delete_account": "Delete account",
+    "q_delete_account": "Delete account?",
     "l_delete_account_desc": "Remove the account from your YubiKey",
     "s_account_deleted": "Account deleted",
     "p_warning_delete_account": "Warning! This action will delete the account from your YubiKey.",
-    "p_warning_disable_credential": "You will no longer be able to generate OTPs for this account. Make sure to disable this credential from the website to avoid being locked out of your account.",
+    "p_warning_disable_credential": "Make sure to disable this account from the service it is registered with to avoid being locked out.",
     "s_account_name": "Account name",
     "s_search_accounts": "Search accounts",
     "l_accounts_used": "{used} of {capacity} accounts used",
@@ -504,9 +523,11 @@
     "l_no_discoverable_accounts": "No passkeys stored",
     "p_non_passkeys_note": "Non-passkey credentials may exist, but can not be listed.",
     "s_delete_passkey": "Delete passkey",
+    "q_delete_passkey": "Delete passkey?",
     "l_delete_passkey_desc": "Remove the passkey from the YubiKey",
     "s_passkey_deleted": "Passkey deleted",
-    "p_warning_delete_passkey": "This will delete the passkey from your YubiKey.",
+    "p_warning_delete_passkey": "Warning! This action will delete the passkey from your YubiKey.",
+    "p_warning_delete_passkey_desc": "You will no longer be able to use this passkey for the service where it is registered.",
     "s_search_passkeys": "Search passkeys",
     "p_passkeys_used": "{used} of {max} passkeys used.",
     "@p_passkeys_used": {
@@ -540,6 +561,7 @@
     "p_setup_fingerprints_desc": "Fingerprints need to be set up before the key can be used.",
     "s_add_fingerprint": "Add fingerprint",
     "s_delete_fingerprint": "Delete fingerprint",
+    "q_delete_fingerprint": "Delete fingerprint?",
     "l_delete_fingerprint_desc": "Remove the fingerprint from the YubiKey",
     "s_fingerprint_deleted": "Fingerprint deleted",
     "p_warning_delete_fingerprint": "This will delete the fingerprint from your YubiKey.",
@@ -563,7 +585,6 @@
         }
     },
     "p_press_fingerprint_begin": "Press your finger against the YubiKey to begin.",
-    "p_will_change_label_fp": "This will change the name of the fingerprint.",
     "l_name_fingerprint": "Name this fingerprint",
 
     "@_fido_errors": {},
@@ -572,6 +593,8 @@
     "l_failed_connecting_to_fido": "Failed connecting to FIDO interface",
 
     "@_certificates": {},
+    "l_self_signed_certificate": "Self-signed certificate",
+    "l_certificate_signing_request": "Certificate Signing Request (CSR)",
     "s_certificate": "Certificate",
     "s_csr": "CSR",
     "s_subject": "Subject",
@@ -592,10 +615,13 @@
     "s_file_imported": "File imported",
     "l_unsupported_key_type": "Unsupported key type",
     "l_delete_certificate": "Delete certificate",
+    "q_delete_certificate": "Delete certificate?",
     "l_delete_certificate_desc": "Remove the certificate from your YubiKey",
     "l_delete_key": "Delete key",
+    "q_delete_key": "Delete key?",
     "l_delete_key_desc": "Remove the key from your YubiKey",
     "l_delete_certificate_or_key": "Delete certificate/key",
+    "q_delete_certificate_or_key": "Delete certificate/key?",
     "l_delete_certificate_or_key_desc": "Remove the certificate or key from your YubiKey",
     "l_move_key": "Move key",
     "l_move_key_desc": "Move a key from one PIV slot into another",
@@ -609,7 +635,7 @@
     "l_key_no_certificate": "Key without certificate loaded",
     "s_generate_key": "Generate key",
     "l_generate_desc": "Generate a new certificate or CSR",
-    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}. The public key will be saved to file, embedded into a self-signed certificate stored on the YubiKey, or in a certificate signing request (CSR) saved to file.",
+    "p_generate_desc": "This will generate a new key on the YubiKey in PIV slot {slot}.",
     "@p_generate_desc": {
         "placeholders": {
             "slot": {}
@@ -620,20 +646,20 @@
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "p_warning_delete_key": "Warning! This action will delete the private key from your YubiKey.",
     "p_warning_delete_certificate_and_key": "Warning! This action will delete the certificate and private key from your YubiKey.",
-    "q_delete_certificate_confirm": "Delete the certificate in PIV slot {slot}?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": "This will delete the certificate in PIV slot {slot}.",
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Delete the private key in PIV slot {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": "This will delete the private key in PIV slot {slot}.",
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Delete the certificate and private key in PIV slot {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": "This will delete the certificate and private key in PIV slot {slot}.",
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -663,7 +689,7 @@
             "to_slot": {}
         }
     },
-    "p_password_protected_file": "The selected file is password protected. Enter the password to proceed.",
+    "p_password_protected_file": "The selected file is password protected.",
     "p_import_items_desc": "The following item(s) will be imported into PIV slot {slot}.",
     "@p_import_items_desc": {
         "placeholders": {
@@ -676,10 +702,15 @@
     "l_rfc4514_invalid": "Invalid RFC 4514 format",
     "rfc4514_examples": "Examples:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "Allow fingerprint",
+    "s_pin_policy": "PIN policy",
+    "s_output_format": "Output format",
+    "s_expiration_date": "Expiration date",
+    "p_algorithm_desc": "Key algorithm to use.",
+    "p_expiration_date_desc": "Date when the certificate expires, default 1 year (certificate only).",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
     "p_key_options_bio_desc": "Allow biometrics to be used instead of PIN.",
-    "s_overwrite_slot": "Overwrite slot",
+    "q_overwrite_slot": "Overwrite slot?",
     "p_overwrite_slot_desc": "This will permanently overwrite existing content in slot {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -732,9 +763,16 @@
             "url": {}
         }
     },
+    "l_keyboard_layout": "Keyboard {layout}",
+    "@_keyboard_layout": {
+        "placeholder": {
+            "layout": {}
+        }
+    },
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Delete credential",
+    "q_delete_slot": "Delete credential?",
     "l_delete_slot_desc": "Remove credential in slot",
     "p_warning_delete_slot_configuration": "Warning! This action will permanently remove the credential from slot {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -745,6 +783,7 @@
     "l_slot_deleted": "Credential deleted",
     "s_swap": "Swap",
     "s_swap_slots": "Swap slots",
+    "q_swap_slots": "Swap slots?",
     "l_swap_slots_desc": "Swap short/long touch",
     "p_swap_slots_desc": "This will swap the configuration of the two slots.",
     "l_slots_swapped": "Slot configurations swapped",
@@ -797,6 +836,7 @@
     "s_qr_scan": "Scan QR code",
     "l_invalid_qr": "Invalid QR code",
     "l_qr_not_found": "No QR code found",
+    "l_qr_scanned": "Scanned QR code",
     "l_qr_file_too_large": "File too large (max {max})",
     "@l_qr_file_too_large": {
         "placeholders": {

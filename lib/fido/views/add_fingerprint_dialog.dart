@@ -191,7 +191,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -239,31 +239,34 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    constraints: const BoxConstraints(maxWidth: 360),
-                    child: AppTextField(
-                      focusNode: _nameFocus,
-                      maxLength: 15,
-                      inputFormatters: [limitBytesLength(15)],
-                      buildCounter: buildByteCounterFor(_label),
-                      autofocus: true,
-                      decoration: AppInputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: l10n.s_name,
-                        prefixIcon: const Icon(Symbols.fingerprint),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _label = value.trim();
-                        });
-                      },
-                      onSubmitted: (_) {
-                        if (_label.isNotEmpty) {
-                          _submit();
-                        } else {
-                          _nameFocus.requestFocus();
-                        }
-                      },
-                    ).init(),
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 40),
+                      child: AppTextField(
+                        focusNode: _nameFocus,
+                        maxLength: 15,
+                        inputFormatters: [limitBytesLength(15)],
+                        buildCounter: buildByteCounterFor(_label),
+                        autofocus: true,
+                        decoration: AppInputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: l10n.s_name,
+                          icon: const Icon(Symbols.fingerprint),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _label = value.trim();
+                          });
+                        },
+                        onSubmitted: (_) {
+                          if (_label.isNotEmpty) {
+                            _submit();
+                          } else {
+                            _nameFocus.requestFocus();
+                          }
+                        },
+                      ).init(),
+                    ),
                   )
                 ]
               ],

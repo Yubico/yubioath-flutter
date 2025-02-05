@@ -37,8 +37,8 @@ enum GenerateType {
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       GenerateType.publicKey => l10n.s_public_key,
-      GenerateType.certificate => l10n.s_certificate,
-      GenerateType.csr => l10n.s_csr,
+      GenerateType.certificate => l10n.l_self_signed_certificate,
+      GenerateType.csr => l10n.l_certificate_signing_request
     };
   }
 }

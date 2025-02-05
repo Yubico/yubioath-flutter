@@ -52,6 +52,7 @@
     "s_collapse_navigation": "Thu gọn điều hướng",
     "s_show_menu": "Hiển thị thực đơn",
     "s_hide_menu": "Ẩn thực đơn",
+    "s_more_info": null,
     "q_rename_target": "Đổi tên {label}?",
     "@q_rename_target": {
         "placeholders": {
@@ -301,18 +302,24 @@
     "l_unlock_pin_first": "Mở khóa bằng Mã PIN",
     "l_pin_soft_locked": "Mã PIN đã bị khóa cho đến khi YubiKey được tháo ra và cắm lại",
     "l_pin_change_required_desc": "Cần thiết lập một Mã PIN mới trước khi bạn có thể sử dụng ứng dụng này",
+    "p_enter_current_pin_or_puk": null,
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "p_enter_current_pin_or_reset": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải mở khóa bằng Mã PUK hoặc khôi phục cài đặt gốc YubiKey.",
     "p_enter_current_pin_or_reset_no_puk": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
     "p_enter_current_puk_or_reset": "Nhập Mã PUK hiện tại của bạn. Nếu bạn không biết Mã PUK, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
-    "p_enter_new_fido2_pin": "Nhập Mã PIN mới của bạn. Mã PIN phải có độ dài từ {min_length} đến {max_length} ký tự và có thể chứa chữ cái, số và ký tự đặc biệt.",
-    "@p_enter_new_fido2_pin": {
+    "p_new_fido2_pin_requirements": null,
+    "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {}
         }
     },
-    "p_enter_new_fido2_pin_complexity_active": "Nhập Mã PIN mới của bạn. Mã PIN phải có độ dài từ {min_length} đến {max_length} ký tự, chứa ít nhất {unique_characters} ký tự độc đáo, và không phải là Mã PIN thường dùng, như \"{common_pin}\". Nó có thể chứa chữ cái, số và ký tự đặc biệt.",
-    "@p_enter_new_fido2_pin_complexity_active": {
+    "p_new_fido2_pin_complexity_active_requirements": null,
+    "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {},
             "max_length": {},
@@ -322,22 +329,22 @@
     },
     "s_ep_attestation": "Xác thực Doanh Nghiệp",
     "s_ep_attestation_enabled": "Xác thực Doanh Nghiệp đã được kích hoạt",
-    "s_enable_ep_attestation": "Kích hoạt Xác thực Doanh Nghiệp",
+    "q_enable_ep_attestation": null,
     "p_enable_ep_attestation_desc": "Điều này sẽ kích hoạt Xác thực Doanh Nghiệp, cho phép các miền được ủy quyền xác định YubiKey của bạn một cách duy nhất.",
     "p_enable_ep_attestation_disable_with_factory_reset": "Khi đã kích hoạt, Xác thực Doanh Nghiệp chỉ có thể bị tắt bằng cách thực hiện khôi phục cài đặt gốc FIDO.",
     "s_pin_required": "Cần Mã PIN",
     "p_pin_required_desc": "Hành động bạn sắp thực hiện yêu cầu phải nhập Mã PIN PIV.",
     "l_piv_pin_blocked": "Bị khóa, sử dụng PUK để khôi phục",
     "l_piv_pin_puk_blocked": "Bị khóa, cần khôi phục cài đặt gốc",
-    "p_enter_new_piv_pin_puk": "Nhập một {name} mới để thiết lập. Phải có ít nhất {length} ký tự.",
-    "@p_enter_new_piv_pin_puk": {
+    "p_new_piv_pin_puk_requirements": null,
+    "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {},
             "length": {}
         }
     },
-    "p_enter_new_piv_pin_puk_complexity_active": "Nhập một {name} mới để thiết lập. Phải có ít nhất {length} ký tự, chứa ít nhất 2 ký tự độc đáo, và không phải là {name} thường dùng, như \"{common}\".",
-    "@p_enter_new_piv_pin_puk_complexity_active": {
+    "p_new_piv_pin_puk_complexity_active_requirements": null,
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {},
             "length": {},
@@ -370,6 +377,7 @@
     "s_confirm_password": "Xác nhận mật khẩu",
     "l_password_mismatch": "Mật khẩu không khớp",
     "s_wrong_password": "Mật khẩu sai",
+    "p_wrong_password": null,
     "s_remove_password": "Xóa mật khẩu",
     "s_password_removed": "Mật khẩu đã bị xóa",
     "s_remember_password": "Nhớ mật khẩu",
@@ -380,8 +388,7 @@
     "l_unlock_first": "Mở khóa bằng mật khẩu",
     "l_set_password_first": "Đặt mật khẩu",
     "l_enter_oath_pw": "Nhập mật khẩu OATH cho YubiKey của bạn",
-    "p_enter_current_password_or_reset": "Nhập mật khẩu hiện tại của bạn. Nếu bạn không biết mật khẩu của mình, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
-    "p_enter_new_password": "Nhập mật khẩu mới của bạn. Mật khẩu có thể chứa chữ cái, số và ký tự đặc biệt.",
+    "p_new_password_requirements": null,
 
     "@_management_key": {},
     "s_management_key": "Khóa quản lý",
@@ -395,6 +402,9 @@
     "s_use_default": "Sử dụng mặc định",
     "l_warning_default_key": "Cảnh báo: Đã sử dụng khóa mặc định",
     "s_protect_key": "Bảo vệ bằng Mã PIN",
+    "p_protect_key_desc": null,
+    "s_management_key_algorithm": null,
+    "p_management_key_algorithm_desc": null,
     "l_pin_protected_key": "Mã PIN có thể được sử dụng thay thế",
     "l_wrong_key": "Khóa sai",
     "l_unlock_piv_management": "Mở khóa quản lý PIV",
@@ -418,9 +428,17 @@
     "l_authenticator_get_started": "Bắt đầu với các tài khoản OTP",
     "l_no_accounts_desc": "Thêm tài khoản vào YubiKey của bạn từ bất kỳ nhà cung cấp dịch vụ nào hỗ trợ OATH TOTP/HOTP",
     "s_add_account": "Thêm tài khoản",
+    "p_add_account_desc": null,
     "s_add_accounts": "Thêm tài khoản(s)",
     "p_add_description": "Để quét mã QR, hãy chắc chắn rằng mã QR được hiển thị đầy đủ trên màn hình và nhấn nút bên dưới. Bạn cũng có thể kéo một hình ảnh đã lưu từ thư mục vào hộp thoại này. Nếu bạn có thông tin tài khoản dưới dạng văn bản, hãy sử dụng nhập thủ công thay vào đó.",
     "l_drop_qr_description": "Kéo mã QR để thêm tài khoản(s)",
+    "p_add_account_three_ways": null,
+    "s_scanning": null,
+    "p_scanning_desc": null,
+    "s_drag_and_drop": null,
+    "p_drag_and_drop_desc": null,
+    "s_manually": null,
+    "p_manually_desc": null,
     "s_add_manually": "Thêm thủ công",
     "s_account_added": "Tài khoản đã được thêm",
     "l_account_add_failed": "Thêm tài khoản thất bại: {message}",
@@ -454,6 +472,7 @@
     },
     "p_rename_will_change_account_displayed": "Điều này sẽ thay đổi cách tài khoản được hiển thị trong danh sách.",
     "s_delete_account": "Xóa tài khoản",
+    "q_delete_account": null,
     "l_delete_account_desc": "Xóa tài khoản khỏi YubiKey của bạn",
     "s_account_deleted": "Tài khoản đã bị xóa",
     "p_warning_delete_account": "Cảnh báo! Hành động này sẽ xóa tài khoản khỏi YubiKey của bạn.",
@@ -504,9 +523,11 @@
     "l_no_discoverable_accounts": "Không có mã bảo mật đã lưu",
     "p_non_passkeys_note": "Có thể có thông tin đăng nhập không phải là mã bảo mật, nhưng không thể được liệt kê.",
     "s_delete_passkey": "Xóa mã bảo mật",
+    "q_delete_passkey": null,
     "l_delete_passkey_desc": "Xóa mã bảo mật khỏi YubiKey",
     "s_passkey_deleted": "Mã bảo mật đã bị xóa",
     "p_warning_delete_passkey": "Điều này sẽ xóa mã bảo mật khỏi YubiKey của bạn.",
+    "p_warning_delete_passkey_desc": null,
     "s_search_passkeys": "Tìm kiếm mã bảo mật",
     "p_passkeys_used": "{used} trong {max} mã bảo mật đã sử dụng.",
     "@p_passkeys_used": {
@@ -540,6 +561,7 @@
     "p_setup_fingerprints_desc": "Cần thiết lập vân tay trước khi có thể sử dụng khóa.",
     "s_add_fingerprint": "Thêm vân tay",
     "s_delete_fingerprint": "Xóa vân tay",
+    "q_delete_fingerprint": null,
     "l_delete_fingerprint_desc": "Xóa vân tay khỏi YubiKey",
     "s_fingerprint_deleted": "Vân tay đã bị xóa",
     "p_warning_delete_fingerprint": "Điều này sẽ xóa vân tay khỏi YubiKey của bạn.",
@@ -563,7 +585,6 @@
         }
     },
     "p_press_fingerprint_begin": "Ấn ngón tay của bạn vào YubiKey để bắt đầu.",
-    "p_will_change_label_fp": "Điều này sẽ thay đổi tên của vân tay.",
     "l_name_fingerprint": "Đặt tên cho vân tay này",
 
     "@_fido_errors": {},
@@ -572,6 +593,8 @@
     "l_failed_connecting_to_fido": "Kết nối với giao diện FIDO thất bại",
 
     "@_certificates": {},
+    "l_self_signed_certificate": null,
+    "l_certificate_signing_request": null,
     "s_certificate": "Chứng chỉ",
     "s_csr": "CSR",
     "s_subject": "Chủ thể",
@@ -592,10 +615,13 @@
     "s_file_imported": "Tập tin đã được nhập",
     "l_unsupported_key_type": "Loại khóa không được hỗ trợ",
     "l_delete_certificate": "Xóa chứng chỉ",
+    "q_delete_certificate": null,
     "l_delete_certificate_desc": "Xóa chứng chỉ khỏi YubiKey của bạn",
     "l_delete_key": "Xóa khóa",
+    "q_delete_key": null,
     "l_delete_key_desc": "Xóa khóa khỏi YubiKey của bạn",
     "l_delete_certificate_or_key": "Xóa chứng chỉ/khóa",
+    "q_delete_certificate_or_key": null,
     "l_delete_certificate_or_key_desc": "Xóa chứng chỉ hoặc khóa khỏi YubiKey",
     "l_move_key": "Di chuyển khóa",
     "l_move_key_desc": "Di chuyển một khóa từ khe PIV này sang khe khác",
@@ -620,20 +646,20 @@
     "p_warning_delete_certificate": "Cảnh báo! Hành động này sẽ xóa chứng chỉ khỏi YubiKey của bạn.",
     "p_warning_delete_key": "Cảnh báo! Hành động này sẽ xóa khóa riêng khỏi YubiKey của bạn.",
     "p_warning_delete_certificate_and_key": "Cảnh báo! Hành động này sẽ xóa chứng chỉ và khóa riêng khỏi YubiKey của bạn.",
-    "q_delete_certificate_confirm": "Xóa chứng chỉ trong khe PIV {slot}?",
-    "@q_delete_certificate_confirm": {
+    "p_delete_certificate_desc": null,
+    "@p_delete_certificate_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_key_confirm": "Xóa khóa riêng trong khe PIV {slot}?",
-    "@q_delete_key_confirm": {
+    "p_delete_key_desc": null,
+    "@p_delete_key_desc": {
         "placeholders": {
             "slot": {}
         }
     },
-    "q_delete_certificate_and_key_confirm": "Xóa chứng chỉ và khóa riêng trong khe PIV {slot}?",
-    "@q_delete_certificate_and_key_confirm": {
+    "p_delete_certificate_and_key_desc": null,
+    "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {}
         }
@@ -676,10 +702,15 @@
     "l_rfc4514_invalid": "Định dạng RFC 4514 không hợp lệ",
     "rfc4514_examples": "Ví dụ:\nCN=Tên Ví dụ\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "Cho phép vân tay",
+    "s_pin_policy": null,
+    "s_output_format": null,
+    "s_expiration_date": null,
+    "p_algorithm_desc": null,
+    "p_expiration_date_desc": null,
     "p_cert_options_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra và ngày hết hạn (chứng chỉ chỉ).",
     "p_cert_options_bio_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra, ngày hết hạn (chứng chỉ chỉ) và nếu sinh trắc học có thể được sử dụng thay cho PIN.",
     "p_key_options_bio_desc": "Cho phép sử dụng sinh trắc học thay cho PIN.",
-    "s_overwrite_slot": "Ghi đè khe",
+    "q_overwrite_slot": null,
     "p_overwrite_slot_desc": "Điều này sẽ ghi đè vĩnh viễn nội dung hiện có trong khe {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
@@ -732,9 +763,16 @@
             "url": {}
         }
     },
+    "l_keyboard_layout": null,
+    "@_keyboard_layout": {
+        "placeholder": {
+            "layout": {}
+        }
+    },
 
     "@_otp_slot_actions": {},
     "s_delete_slot": "Xóa thông tin xác thực",
+    "q_delete_slot": null,
     "l_delete_slot_desc": "Xóa thông tin xác thực trong khe",
     "p_warning_delete_slot_configuration": "Cảnh báo! Hành động này sẽ xóa vĩnh viễn thông tin xác thực khỏi khe {slot_id}.",
     "@p_warning_delete_slot_configuration": {
@@ -745,6 +783,7 @@
     "l_slot_deleted": "Thông tin xác thực đã bị xóa",
     "s_swap": "Hoán đổi",
     "s_swap_slots": "Hoán đổi các khe",
+    "q_swap_slots": null,
     "l_swap_slots_desc": "Hoán đổi chạm ngắn/dài",
     "p_swap_slots_desc": "Điều này sẽ hoán đổi cấu hình của hai khe.",
     "l_slots_swapped": "Cấu hình khe đã được hoán đổi",
@@ -797,6 +836,7 @@
     "s_qr_scan": "Quét mã QR",
     "l_invalid_qr": "Mã QR không hợp lệ",
     "l_qr_not_found": "Không tìm thấy mã QR",
+    "l_qr_scanned": null,
     "l_qr_file_too_large": "Tệp quá lớn (tối đa {max})",
     "@l_qr_file_too_large": {
         "placeholders": {

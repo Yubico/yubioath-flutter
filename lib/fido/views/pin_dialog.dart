@@ -116,13 +116,12 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasPin) ...[
-              Text(l10n.p_enter_current_pin_or_reset_no_puk),
               AppTextField(
                 key: currentPin,
                 controller: _currentPinController,
@@ -142,7 +141,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       : '', // Prevents dialog resizing
                   errorText: _currentIsWrong ? _currentPinError : null,
                   errorMaxLines: 3,
-                  prefixIcon: const Icon(Symbols.pin),
+                  icon: const Icon(Symbols.pin),
                   suffixIcon: IconButton(
                     icon: Icon(_isObscureCurrent
                         ? Symbols.visibility
@@ -170,11 +169,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   }
                 },
               ).init(),
+              // Used to add more spacing
+              const SizedBox(height: 0),
             ],
-            Text(hasPinComplexity
-                ? l10n.p_enter_new_fido2_pin_complexity_active(
-                    minPinLength, maxPinLength, 2, '123456')
-                : l10n.p_enter_new_fido2_pin(minPinLength, maxPinLength)),
             AppTextField(
               key: newPin,
               controller: _newPinController,
@@ -189,9 +186,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_pin,
                 enabled: newPinEnabled,
+                helperText: hasPinComplexity
+                    ? l10n.p_new_fido2_pin_complexity_active_requirements(
+                        minPinLength, maxPinLength, 2, '123456')
+                    : l10n.p_new_fido2_pin_requirements(
+                        minPinLength, maxPinLength),
+                helperMaxLines: 7,
                 errorText: _newIsWrong ? _newPinError : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Symbols.pin),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: ExcludeFocusTraversal(
                   excluding: !newPinEnabled,
                   child: IconButton(
@@ -233,7 +236,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_confirm_pin,
-                prefixIcon: const Icon(Symbols.pin),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: ExcludeFocusTraversal(
                   excluding: !confirmPinEnabled,
                   child: IconButton(
