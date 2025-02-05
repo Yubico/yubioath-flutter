@@ -151,7 +151,13 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                   _pinIsWrong = false;
                 });
               }, // Update state on change
-              onSubmitted: (_) => _submit(),
+              onSubmitted: (_) {
+                if (_pinController.text.length >= widget._state.minPinLength) {
+                  _submit();
+                } else {
+                  _pinFocus.requestFocus();
+                }
+              },
             ).init(),
           ),
           ListTile(
