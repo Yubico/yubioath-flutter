@@ -706,7 +706,7 @@
     "s_output_format": "Output format",
     "s_expiration_date": "Expiration date",
     "p_algorithm_desc": "Key algorithm to use.",
-    "p_expiration_date_desc": "Date when the certificate expires (default 1 year).",
+    "p_expiration_date_desc": "Date when the certificate expires, default 1 year (certificate only).",
     "p_cert_options_desc": "Key algorithm to use, output format, and expiration date (certificate only).",
     "p_cert_options_bio_desc": "Key algorithm to use, output format, expiration date (certificate only), and if biometrics can be used instead of PIN.",
     "p_key_options_bio_desc": "Allow biometrics to be used instead of PIN.",
