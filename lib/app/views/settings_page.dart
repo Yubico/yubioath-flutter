@@ -221,6 +221,10 @@ class _IconsView extends ConsumerWidget {
       subtitle: Text(l10n.l_set_icons_for_accounts),
       onTap: () {
         showDialog(
+          // Avoid duplicate SafeAreas
+          // IconPackDialog is wrapped with ResponsiveDialog
+          // which wraps the content with SafeArea in full-screen mode
+          useSafeArea: false,
           context: context,
           routeSettings: const RouteSettings(name: 'icon_pack_dialog'),
           builder: (context) => const IconPackDialog(),
