@@ -915,7 +915,11 @@
     "l_set_icons_for_accounts": "アカウントのアイコンを設定",
     "p_custom_icons_description": "アイコンパックを使用すると、見慣れたロゴや色によりアカウントを識別しやすくなります。",
     "p_custom_icons_format_desc": null,
-    "s_download_icon_pack": null,
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "アイコンパックを交換",
     "l_loading_icon_pack": "アイコンパックをロードしています\u2026",
     "s_load_icon_pack": "アイコンパックをロード",

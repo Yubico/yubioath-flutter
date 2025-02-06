@@ -915,7 +915,11 @@
     "l_set_icons_for_accounts": "Nastaviť ikony pre účty",
     "p_custom_icons_description": "Vďaka balíkom ikon môžete svoje účty ľahšie rozlíšiť pomocou známych log a farieb.",
     "p_custom_icons_format_desc": null,
-    "s_download_icon_pack": null,
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "Nahradiť balík ikon",
     "l_loading_icon_pack": "Načítanie balíka ikon\u2026",
     "s_load_icon_pack": "Načítať balík ikon",

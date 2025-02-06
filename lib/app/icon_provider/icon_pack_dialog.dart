@@ -15,17 +15,16 @@
  */
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../l10n_utils.dart';
 import '../message.dart';
 import '../state.dart';
 import 'icon_pack.dart';
@@ -34,10 +33,9 @@ import 'icon_pack_manager.dart';
 class IconPackDialog extends ConsumerWidget {
   const IconPackDialog({super.key});
 
-  // TODO: create shortURLs for these
-  Uri get _downloadIconPacksUri => Uri.parse('https://aegis-icons.github.io');
+  // TODO: create shortURL this
   Uri get _learnMoreAegisUri => Uri.parse(
-      'https://github.com/beemdevelopment/Aegis/blob/master/docs/iconpacks.md');
+      'https://docs.yubico.com/software/yubikey/tools/authenticator/auth-guide/oath.html#custom-icons');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,50 +88,16 @@ class IconPackDialog extends ConsumerWidget {
                     _action(iconPack, l10n),
                     const SizedBox(width: 4.0),
                     InfoPopupButton(
-                      size: 30,
-                      iconSize: 20,
-                      displayDialog: fullScreen,
-                      infoText: RichText(
-                        text: TextSpan(
-                          style: textTheme.bodySmall,
-                          children: [
-                            TextSpan(text: l10n.p_custom_icons_format_desc),
-                            TextSpan(text: '\n' * 2),
-                            TextSpan(
-                              text: l10n.s_download_icon_pack,
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: theme.colorScheme.primary),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  await launchUrl(_downloadIconPacksUri,
-                                      mode: LaunchMode.externalApplication);
-                                },
-                              children: const [
-                                TextSpan(
-                                    text:
-                                        ' ') // without this the recognizer takes over whole row
-                              ],
-                            ),
-                            TextSpan(text: '\n'),
-                            TextSpan(
-                              text: l10n.s_learn_more,
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: theme.colorScheme.primary),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  await launchUrl(_learnMoreAegisUri,
-                                      mode: LaunchMode.externalApplication);
-                                },
-                              children: const [
-                                TextSpan(
-                                    text:
-                                        ' ') // without this the recognizer takes over whole row
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                        size: 30,
+                        iconSize: 20,
+                        displayDialog: fullScreen,
+                        infoText: injectLinksInText(
+                            // We don't want to translate 'Aegis Icon Pack'
+                            l10n.p_custom_icons_format_desc('Aegis Icon Pack'),
+                            {'Aegis Icon Pack': _learnMoreAegisUri},
+                            textStyle: textTheme.bodySmall,
+                            linkStyle: textTheme.bodySmall
+                                ?.copyWith(color: theme.colorScheme.primary)))
                   ],
                 ),
                 _loadedIconPackRow(iconPack),

@@ -914,8 +914,12 @@
     "s_custom_icons": "Custom icons",
     "l_set_icons_for_accounts": "Set icons for accounts",
     "p_custom_icons_description": "Icon packs can make your accounts more easily distinguishable with familiar logos and colors.",
-    "p_custom_icons_format_desc": "Icon packs must be in the Aegis Icon Pack format. Feel free to use a pre-built icon pack from Aegis or create your own.",
-    "s_download_icon_pack": "Download icon pack",
+    "p_custom_icons_format_desc": "Icon packs use the {aegis_icon_pack} format. You can download a pre-made icon pack, or you can create your own.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "Replace icon pack",
     "l_loading_icon_pack": "Loading icon pack\u2026",
     "s_load_icon_pack": "Load icon pack",
