@@ -79,7 +79,11 @@ class IconPackDialog extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _DialogDescription(),
+                Text(
+                  l10n.p_custom_icons_description,
+                  textScaler: MediaQuery.textScalerOf(context),
+                  style: theme.textTheme.bodyMedium,
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -167,21 +171,6 @@ class IconPackDialog extends ConsumerWidget {
           disabled: true,
         ),
       );
-}
-
-class _DialogDescription extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-    return RichText(
-      textScaler: MediaQuery.textScalerOf(context),
-      text: TextSpan(
-        text: l10n.p_custom_icons_description,
-        style: theme.textTheme.bodyMedium,
-      ),
-    );
-  }
 }
 
 class _IconPackDescription extends ConsumerWidget {
