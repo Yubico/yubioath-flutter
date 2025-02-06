@@ -710,12 +710,7 @@
             "slot": {}
         }
     },
-    "p_warning_public_key_mismatch": null,
-    "@p_warning_public_key_mismatch": {
-        "placeholders": {
-            "slot": {}
-        }
-    },
+    "l_warning_public_key_mismatch": null,
     "l_key_moved": "Kľúč bol presunutý",
     "l_key_and_certificate_moved": "Kľúč a certifikát boli presunuté",
     "p_subject_desc": "Rozlišujúci názov (DN) naformátovaný v súlade so špecifikáciou RFC 4514.",

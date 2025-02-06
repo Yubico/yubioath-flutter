@@ -2139,6 +2139,7 @@ mixin _$PivSlot {
   SlotId get slot => throw _privateConstructorUsedError;
   SlotMetadata? get metadata => throw _privateConstructorUsedError;
   CertInfo? get certInfo => throw _privateConstructorUsedError;
+  bool? get publicKeyMatch => throw _privateConstructorUsedError;
 
   /// Serializes this PivSlot to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2154,7 +2155,11 @@ abstract class $PivSlotCopyWith<$Res> {
   factory $PivSlotCopyWith(PivSlot value, $Res Function(PivSlot) then) =
       _$PivSlotCopyWithImpl<$Res, PivSlot>;
   @useResult
-  $Res call({SlotId slot, SlotMetadata? metadata, CertInfo? certInfo});
+  $Res call(
+      {SlotId slot,
+      SlotMetadata? metadata,
+      CertInfo? certInfo,
+      bool? publicKeyMatch});
 
   $SlotMetadataCopyWith<$Res>? get metadata;
   $CertInfoCopyWith<$Res>? get certInfo;
@@ -2178,6 +2183,7 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
     Object? slot = null,
     Object? metadata = freezed,
     Object? certInfo = freezed,
+    Object? publicKeyMatch = freezed,
   }) {
     return _then(_value.copyWith(
       slot: null == slot
@@ -2192,6 +2198,10 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
           ? _value.certInfo
           : certInfo // ignore: cast_nullable_to_non_nullable
               as CertInfo?,
+      publicKeyMatch: freezed == publicKeyMatch
+          ? _value.publicKeyMatch
+          : publicKeyMatch // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ) as $Val);
   }
 
@@ -2231,7 +2241,11 @@ abstract class _$$PivSlotImplCopyWith<$Res> implements $PivSlotCopyWith<$Res> {
       __$$PivSlotImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({SlotId slot, SlotMetadata? metadata, CertInfo? certInfo});
+  $Res call(
+      {SlotId slot,
+      SlotMetadata? metadata,
+      CertInfo? certInfo,
+      bool? publicKeyMatch});
 
   @override
   $SlotMetadataCopyWith<$Res>? get metadata;
@@ -2255,6 +2269,7 @@ class __$$PivSlotImplCopyWithImpl<$Res>
     Object? slot = null,
     Object? metadata = freezed,
     Object? certInfo = freezed,
+    Object? publicKeyMatch = freezed,
   }) {
     return _then(_$PivSlotImpl(
       slot: null == slot
@@ -2269,6 +2284,10 @@ class __$$PivSlotImplCopyWithImpl<$Res>
           ? _value.certInfo
           : certInfo // ignore: cast_nullable_to_non_nullable
               as CertInfo?,
+      publicKeyMatch: freezed == publicKeyMatch
+          ? _value.publicKeyMatch
+          : publicKeyMatch // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -2276,7 +2295,8 @@ class __$$PivSlotImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$PivSlotImpl implements _PivSlot {
-  _$PivSlotImpl({required this.slot, this.metadata, this.certInfo});
+  _$PivSlotImpl(
+      {required this.slot, this.metadata, this.certInfo, this.publicKeyMatch});
 
   factory _$PivSlotImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivSlotImplFromJson(json);
@@ -2287,10 +2307,12 @@ class _$PivSlotImpl implements _PivSlot {
   final SlotMetadata? metadata;
   @override
   final CertInfo? certInfo;
+  @override
+  final bool? publicKeyMatch;
 
   @override
   String toString() {
-    return 'PivSlot(slot: $slot, metadata: $metadata, certInfo: $certInfo)';
+    return 'PivSlot(slot: $slot, metadata: $metadata, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
   }
 
   @override
@@ -2302,12 +2324,15 @@ class _$PivSlotImpl implements _PivSlot {
             (identical(other.metadata, metadata) ||
                 other.metadata == metadata) &&
             (identical(other.certInfo, certInfo) ||
-                other.certInfo == certInfo));
+                other.certInfo == certInfo) &&
+            (identical(other.publicKeyMatch, publicKeyMatch) ||
+                other.publicKeyMatch == publicKeyMatch));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, slot, metadata, certInfo);
+  int get hashCode =>
+      Object.hash(runtimeType, slot, metadata, certInfo, publicKeyMatch);
 
   /// Create a copy of PivSlot
   /// with the given fields replaced by the non-null parameter values.
@@ -2329,7 +2354,8 @@ abstract class _PivSlot implements PivSlot {
   factory _PivSlot(
       {required final SlotId slot,
       final SlotMetadata? metadata,
-      final CertInfo? certInfo}) = _$PivSlotImpl;
+      final CertInfo? certInfo,
+      final bool? publicKeyMatch}) = _$PivSlotImpl;
 
   factory _PivSlot.fromJson(Map<String, dynamic> json) = _$PivSlotImpl.fromJson;
 
@@ -2339,6 +2365,8 @@ abstract class _PivSlot implements PivSlot {
   SlotMetadata? get metadata;
   @override
   CertInfo? get certInfo;
+  @override
+  bool? get publicKeyMatch;
 
   /// Create a copy of PivSlot
   /// with the given fields replaced by the non-null parameter values.

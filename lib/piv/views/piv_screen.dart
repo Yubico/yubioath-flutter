@@ -99,6 +99,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             final subtitleStyle = textTheme.bodyMedium!.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             );
+
             return PivActions(
               devicePath: widget.devicePath,
               pivState: pivState,
@@ -160,6 +161,31 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                                 pivState.supportsMetadata,
                                             supportsBio: pivState.supportsBio,
                                           ),
+                                          if (selected.publicKeyMatch ==
+                                              false) ...[
+                                            const SizedBox(height: 16.0),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Symbols.info,
+                                                  size: 16,
+                                                  color: theme.colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Flexible(
+                                                  child: Text(
+                                                    l10n.l_warning_public_key_mismatch,
+                                                    style: textTheme.bodySmall
+                                                        ?.copyWith(
+                                                            color: theme
+                                                                .colorScheme
+                                                                .onSurfaceVariant),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                           if (selected.certInfo == null)
                                             const SizedBox(height: 16)
                                         ],

@@ -327,6 +327,18 @@ def _get_cert_info(cert):
     )
 
 
+def _public_key_match(cert, metadata):
+    if not cert or not metadata:
+        return None
+    slot_public_key = metadata.public_key
+    cert_public_key = cert.public_key()
+    return slot_public_key.public_bytes(
+        encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
+    ) == cert_public_key.public_bytes(
+        encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
+    )
+
+
 class SlotsNode(RpcNode):
     def __init__(self, session):
         super().__init__()
@@ -363,6 +375,7 @@ class SlotsNode(RpcNode):
                 name=slot.name,
                 metadata=_metadata_dict(metadata),
                 cert_info=_get_cert_info(cert),
+                public_key_match=_public_key_match(cert, metadata),
             )
             for slot, (metadata, cert) in self._slots.items()
         }
@@ -459,14 +472,9 @@ class SlotNode(RpcNode):
             if self.metadata and certificate and not private_key:
                 # Verify that the public key of a cert matches the
                 # private key in the slot
-                slot_public_key = self.metadata.public_key
-                cert_public_key = certificate.public_key()
-                public_key_match = slot_public_key.public_bytes(
-                    encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
-                ) == cert_public_key.public_bytes(
-                    encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
+                response["public_key_match"] = _public_key_match(
+                    certificate, self.metadata
                 )
-                response["public_key_match"] = public_key_match
 
             return response
         except InvalidPasswordError:

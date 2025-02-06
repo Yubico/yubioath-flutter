@@ -331,8 +331,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
-                              l10n.p_warning_public_key_mismatch(
-                                  widget.pivSlot.slot.getDisplayName(l10n)),
+                              l10n.l_warning_public_key_mismatch,
                               style: textTheme.bodySmall
                                   ?.copyWith(color: colorScheme.onTertiary),
                             ),

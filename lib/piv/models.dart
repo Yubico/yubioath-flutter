@@ -307,6 +307,7 @@ class PivSlot with _$PivSlot {
     required SlotId slot,
     SlotMetadata? metadata,
     CertInfo? certInfo,
+    bool? publicKeyMatch,
   }) = _PivSlot;
 
   factory PivSlot.fromJson(Map<String, dynamic> json) =>
