@@ -36,7 +36,6 @@ final nfcOverlay =
 
 class _NfcOverlayNotifier extends Notifier<int> {
   Timer? processingViewTimeout;
-  late final l10n = ref.read(l10nProvider);
   late final eventNotifier = ref.read(nfcEventNotifier.notifier);
 
   @override
@@ -97,6 +96,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
   }
 
   NfcEvent showTapYourYubiKey() {
+    final l10n = ref.read(l10nProvider);
     final nfcAvailable = ref.watch(androidNfcAdapterState);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: true);
     return NfcSetViewEvent(
@@ -108,6 +108,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
   }
 
   NfcEvent showHoldStill() {
+    final l10n = ref.read(l10nProvider);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
@@ -118,6 +119,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
   }
 
   NfcEvent showDone() {
+    final l10n = ref.read(l10nProvider);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(
@@ -129,6 +131,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
   }
 
   NfcEvent showFailed() {
+    final l10n = ref.read(l10nProvider);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
         child: NfcContentWidget(

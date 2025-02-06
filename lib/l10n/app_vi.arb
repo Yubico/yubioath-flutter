@@ -119,7 +119,21 @@
     "@_language": {},
     "s_language": "Ngôn ngữ",
     "l_enable_community_translations": "Bật dịch thuật cộng đồng",
-    "p_community_translations_desc": "Các bản dịch này được cung cấp và duy trì bởi cộng đồng. Chúng có thể chứa lỗi hoặc chưa hoàn chỉnh.",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Chủ đề ứng dụng",
@@ -900,6 +914,12 @@
     "s_custom_icons": "Biểu tượng tùy chỉnh",
     "l_set_icons_for_accounts": "Đặt biểu tượng cho các tài khoản",
     "p_custom_icons_description": "Các gói biểu tượng có thể làm cho các tài khoản của bạn dễ phân biệt hơn với các logo và màu sắc quen thuộc.",
+    "p_custom_icons_format_desc": null,
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "Thay thế gói biểu tượng",
     "l_loading_icon_pack": "Đang tải gói biểu tượng\u2026",
     "s_load_icon_pack": "Tải gói biểu tượng",

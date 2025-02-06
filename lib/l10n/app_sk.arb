@@ -119,7 +119,21 @@
     "@_language": {},
     "s_language": "Jazyk",
     "l_enable_community_translations": "Povoliť komunitné preklady",
-    "p_community_translations_desc": "Tieto preklady zabezpečuje a udržiava komunita. Môžu obsahovať chyby alebo byť neúplné.",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Téma aplikácie",
@@ -900,6 +914,12 @@
     "s_custom_icons": "Vlastné ikony",
     "l_set_icons_for_accounts": "Nastaviť ikony pre účty",
     "p_custom_icons_description": "Vďaka balíkom ikon môžete svoje účty ľahšie rozlíšiť pomocou známych log a farieb.",
+    "p_custom_icons_format_desc": null,
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "Nahradiť balík ikon",
     "l_loading_icon_pack": "Načítanie balíka ikon\u2026",
     "s_load_icon_pack": "Načítať balík ikon",

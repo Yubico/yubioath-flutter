@@ -119,7 +119,21 @@
     "@_language": {},
     "s_language": "言語",
     "l_enable_community_translations": "コミュニティ翻訳を有効にする",
-    "p_community_translations_desc": "これらの翻訳はコミュニティによって提供され、更新されます。エラーが含まれているか、不完全である可能性があります。",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "アプリケーションテーマ",
@@ -900,6 +914,12 @@
     "s_custom_icons": "カスタムアイコン",
     "l_set_icons_for_accounts": "アカウントのアイコンを設定",
     "p_custom_icons_description": "アイコンパックを使用すると、見慣れたロゴや色によりアカウントを識別しやすくなります。",
+    "p_custom_icons_format_desc": null,
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "アイコンパックを交換",
     "l_loading_icon_pack": "アイコンパックをロードしています\u2026",
     "s_load_icon_pack": "アイコンパックをロード",

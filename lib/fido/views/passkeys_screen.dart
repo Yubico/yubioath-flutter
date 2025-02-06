@@ -47,6 +47,7 @@ import 'actions.dart';
 import 'credential_dialog.dart';
 import 'credential_info_view.dart';
 import 'key_actions.dart';
+import 'passkeys_icon.dart';
 import 'pin_dialog.dart';
 import 'pin_entry_form.dart';
 
@@ -660,13 +661,17 @@ class _CredentialListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final circleAvatar = CircleAvatar(
+      foregroundColor: colorScheme.onSecondary,
+      backgroundColor: colorScheme.secondary,
+      child: const Icon(Symbols.passkey),
+    );
     return AppListItem(
       credential,
       selected: selected,
-      leading: CircleAvatar(
-        foregroundColor: colorScheme.onSecondary,
-        backgroundColor: colorScheme.secondary,
-        child: const Icon(Symbols.passkey),
+      leading: PasskeyIcon(
+        rpId: credential.rpId,
+        defaultWidget: circleAvatar,
       ),
       tileColor: tileColor,
       title: credential.rpId,

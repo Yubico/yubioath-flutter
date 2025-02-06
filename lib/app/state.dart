@@ -16,7 +16,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -33,13 +32,6 @@ import 'logging.dart';
 import 'models.dart';
 
 final _log = Logger('app.state');
-
-// Officially supported translations
-const officialLocales = [
-  Locale('en', ''),
-  Locale('fr', ''),
-  Locale('ja', ''),
-];
 
 extension on Section {
   Feature get _feature => switch (this) {
@@ -71,50 +63,45 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
-final communityTranslationsProvider =
-    StateNotifierProvider<CommunityTranslationsNotifier, bool>(
-        (ref) => CommunityTranslationsNotifier(ref.watch(prefProvider)));
-
-class CommunityTranslationsNotifier extends StateNotifier<bool> {
-  static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
-  final SharedPreferences _prefs;
-
-  CommunityTranslationsNotifier(this._prefs)
-      : super(_prefs.getBool(_key) == true);
-
-  void setEnableCommunityTranslations(bool value) {
-    state = value;
-    _prefs.setBool(_key, value);
-  }
-}
-
-final supportedLocalesProvider = Provider<List<Locale>>((ref) {
-  final locales = [...officialLocales];
-  final localeStr = Platform.environment['_YA_LOCALE'];
-  if (localeStr != null) {
-    // Force locale
-    final locale = Locale(localeStr, '');
-    locales.add(locale);
-  }
-  return ref.watch(communityTranslationsProvider)
-      ? AppLocalizations.supportedLocales
-      : locales;
+final supportedLocalesProvider = Provider<List<Locale>>((_) {
+  // Ensure english has the highest priority
+  final supportedLocales = [
+    const Locale('en', ''),
+    ...AppLocalizations.supportedLocales
+        .where((locale) => locale.languageCode != 'en')
+  ];
+  return supportedLocales;
 });
 
-final currentLocaleProvider = Provider<Locale>(
-  (ref) {
-    final localeStr = Platform.environment['_YA_LOCALE'];
+final currentLocaleProvider =
+    StateNotifierProvider<CurrentLocaleProvider, Locale>(
+  (ref) => CurrentLocaleProvider(
+      ref.watch(prefProvider), ref.read(supportedLocalesProvider)),
+);
+
+class CurrentLocaleProvider extends StateNotifier<Locale> {
+  static const String _key = 'APP_LOCALE';
+  final SharedPreferences _prefs;
+
+  CurrentLocaleProvider(this._prefs, List<Locale> supportedLocales)
+      : super(_fromName(_prefs.getString(_key), supportedLocales));
+
+  void setLocale(Locale locale) {
+    _log.debug('Set locale to $locale');
+    state = locale;
+    _prefs.setString(_key, locale.languageCode);
+  }
+
+  static Locale _fromName(String? localeStr, List<Locale> supportedLocales) {
     if (localeStr != null) {
       // Force locale
       final locale = Locale(localeStr, '');
-      return basicLocaleListResolution(
-          [locale], AppLocalizations.supportedLocales);
+      return basicLocaleListResolution([locale], supportedLocales);
     }
-    // Choose from supported
-    return basicLocaleListResolution(PlatformDispatcher.instance.locales,
-        ref.watch(supportedLocalesProvider));
-  },
-);
+    return basicLocaleListResolution(
+        PlatformDispatcher.instance.locales, supportedLocales);
+  }
+}
 
 final l10nProvider = Provider<AppLocalizations>(
   (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),

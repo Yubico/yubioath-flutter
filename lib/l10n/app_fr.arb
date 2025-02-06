@@ -119,7 +119,21 @@
     "@_language": {},
     "s_language": "Langue",
     "l_enable_community_translations": "Activer traductions communautaires",
-    "p_community_translations_desc": "Ces traductions sont fournies et gérées par la communauté. Elles peuvent être erronées ou incomplètes.",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
+    "s_choose_language": null,
+    "s_english": null,
+    "s_french": null,
+    "s_german": null,
+    "s_polish": null,
+    "s_slovak": null,
+    "s_vietnamese": null,
+    "s_japanese": null,
+
 
     "@_theme": {},
     "s_app_theme": "Thème de l'application",
@@ -900,6 +914,12 @@
     "s_custom_icons": "Icônes personnalisées",
     "l_set_icons_for_accounts": "Définir des icônes pour les comptes",
     "p_custom_icons_description": "Les packs d'icônes permettent de distinguer plus facilement vos comptes avec des logos et couleurs familiers.",
+    "p_custom_icons_format_desc": null,
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {}
+        }
+    },
     "s_replace_icon_pack": "Remplacer le pack d'icônes",
     "l_loading_icon_pack": "Chargement du pack d'icônes\u2026",
     "s_load_icon_pack": "Charger le pack d'icônes",

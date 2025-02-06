@@ -61,6 +61,7 @@ const factoryResetReset = Key('$_prefix.yubikey_factory_reset_reset');
 const settingDrawerIcon = Key('$_prefix.settings_drawer_icon');
 const helpDrawerIcon = Key('$_prefix.setting_drawer_icon');
 const themeModeSetting = Key('$_prefix.settings.theme_mode');
+const languageSetting = Key('$_prefix.settings.language');
 Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
 const tosButton = Key('$_prefix.tos_button');
 const privacyButton = Key('$_prefix.privacy_button');

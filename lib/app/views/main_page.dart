@@ -74,7 +74,7 @@ class MainPage extends ConsumerWidget {
               'licenses',
               'user_interaction_prompt',
               'oath_add_account',
-              'oath_icon_pack_dialog',
+              'icon_pack_dialog',
               'android_qr_scanner_view',
             ].contains(route.settings.name);
       });

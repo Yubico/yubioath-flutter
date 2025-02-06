@@ -68,7 +68,7 @@ class AppInputDecoration extends InputDecoration {
     final icons = [
       if (super.suffixIcon != null) super.suffixIcon!,
       if (suffixIcons != null) ...suffixIcons!,
-      if (errorText != null) const Icon(Symbols.error),
+      if (errorText != null) const Icon(Symbols.error, fill: 1),
     ];
 
     return switch (icons.length) {

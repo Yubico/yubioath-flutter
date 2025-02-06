@@ -41,7 +41,7 @@ class YubicoAuthenticatorApp extends StatelessWidget {
               home: page,
               debugShowCheckedModeBanner: false,
               locale: ref.watch(currentLocaleProvider),
-              supportedLocales: ref.watch(supportedLocalesProvider),
+              supportedLocales: AppLocalizations.supportedLocales,
               localizationsDelegates: const [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,

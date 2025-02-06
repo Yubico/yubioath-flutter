@@ -25,12 +25,12 @@ String getLocalIconFileName(String iconPackFileName) {
   return sha.substring(0, sha.length ~/ 2) + extension(iconPackFileName);
 }
 
-class IconPackIcon {
+class IconPackIconData {
   final String filename;
   final String? category;
   final List<String> issuer;
 
-  const IconPackIcon({
+  const IconPackIconData({
     required this.filename,
     required this.category,
     required this.issuer,
@@ -42,7 +42,7 @@ class IconPack {
   final String name;
   final int version;
   final Directory directory;
-  final List<IconPackIcon> icons;
+  final List<IconPackIconData> icons;
 
   const IconPack({
     required this.uuid,
@@ -52,14 +52,7 @@ class IconPack {
     required this.icons,
   });
 
-  File? getFileForIssuer(String? issuer) {
-    if (issuer == null) {
-      return null;
-    }
-
-    final matching = icons.where((element) =>
-        element.issuer.any((element) => element == issuer.toUpperCase()));
-
+  File? getFileFromMatching(Iterable<IconPackIconData> matching) {
     final issuerImageFile = matching.isNotEmpty
         ? File(
             join(directory.path, getLocalIconFileName(matching.first.filename)))

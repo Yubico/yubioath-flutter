@@ -19,13 +19,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../management/models.dart';
 import '../features.dart' as features;
-import '../icon_provider/icon_pack_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import 'utils.dart';
@@ -93,21 +91,6 @@ Widget oathBuildActions(
                 : null),
       ]),
       ActionListSection(l10n.s_manage, children: [
-        ActionListItem(
-            key: keys.customIconsAction,
-            feature: features.actionsIcons,
-            title: l10n.s_custom_icons,
-            subtitle: l10n.l_set_icons_for_accounts,
-            icon: const Icon(Symbols.image),
-            onTap: (context) async {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              await ref.read(withContextProvider)((context) => showBlurDialog(
-                    context: context,
-                    routeSettings:
-                        const RouteSettings(name: 'oath_icon_pack_dialog'),
-                    builder: (context) => const IconPackDialog(),
-                  ));
-            }),
         ActionListItem(
             key: keys.setOrManagePasswordAction,
             feature: features.actionsPassword,

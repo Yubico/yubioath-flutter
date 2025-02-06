@@ -25,7 +25,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../app/logging.dart';
+import '../logging.dart';
 import 'icon_cache.dart';
 import 'icon_pack.dart';
 
@@ -61,8 +61,8 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       var packContent = await packFile.readAsString();
       Map<String, dynamic> pack = const JsonDecoder().convert(packContent);
 
-      final icons = List<IconPackIcon>.from(pack['icons'].map((icon) =>
-          IconPackIcon(
+      final icons = List<IconPackIconData>.from(pack['icons'].map((icon) =>
+          IconPackIconData(
               filename: icon['filename'],
               category: icon['category'],
               issuer: List<String>.from(icon['issuer'])

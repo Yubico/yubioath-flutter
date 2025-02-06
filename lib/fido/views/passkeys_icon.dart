@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023, 2025 Yubico.
+ * Copyright (C) 2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,19 @@ import 'package:flutter/material.dart';
 import '../../app/icon_provider/icon_pack.dart';
 import '../../app/icon_provider/icon_pack_icon.dart';
 
-class AccountIcon extends StatelessWidget {
-  final String? issuer;
+class PasskeyIcon extends StatelessWidget {
+  final String rpId;
   final Widget defaultWidget;
 
-  const AccountIcon(
-      {super.key, required this.issuer, required this.defaultWidget});
+  const PasskeyIcon(
+      {super.key, required this.rpId, required this.defaultWidget});
 
-  File? _getFileForIssuer(IconPack iconPack) {
-    if (issuer == null) {
-      return null;
-    }
+  File? _getFileForRpID(IconPack iconPack) {
+    final parts = rpId.split('.');
+    final reversed = parts.reversed.toList();
 
-    final matching = iconPack.icons.where((element) =>
-        element.issuer.any((element) => element == issuer?.toUpperCase()));
+    final matching = iconPack.icons.where((element) => element.issuer
+        .any((element) => reversed.any((e) => e.toUpperCase() == element)));
 
     return iconPack.getFileFromMatching(matching);
   }
@@ -43,7 +42,7 @@ class AccountIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconPackIcon(
       defaultWidget: defaultWidget,
-      matchFunction: (iconPack) => _getFileForIssuer(iconPack),
+      matchFunction: (iconPack) => _getFileForRpID(iconPack),
     );
   }
 }
