@@ -34,6 +34,7 @@ import 'icon_pack_manager.dart';
 class IconPackDialog extends ConsumerWidget {
   const IconPackDialog({super.key});
 
+  // TODO: create shortURLs for these
   Uri get _downloadIconPacksUri => Uri.parse('https://aegis-icons.github.io');
   Uri get _learnMoreAegisUri => Uri.parse(
       'https://github.com/beemdevelopment/Aegis/blob/master/docs/iconpacks.md');

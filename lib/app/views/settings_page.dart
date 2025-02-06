@@ -97,6 +97,7 @@ class _ThemeModeView extends ConsumerWidget {
 class _LanguageView extends ConsumerWidget {
   const _LanguageView();
 
+  // TODO: create shortURL for this
   Uri get _crowdinUri =>
       Uri.parse('https://crowdin.com/project/yubico-authenticator');
 
