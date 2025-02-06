@@ -34,7 +34,7 @@ class InfoPopupButton extends StatelessWidget {
           height: size,
           width: size,
           child: Icon(
-            Symbols.info,
+            Symbols.help,
             size: iconSize,
             color: Theme.of(context).colorScheme.primary,
           ),
