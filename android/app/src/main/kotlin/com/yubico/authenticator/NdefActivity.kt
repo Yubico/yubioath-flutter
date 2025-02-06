@@ -103,14 +103,7 @@ class NdefActivity : Activity() {
     }
 
     private fun showToast(value: ResourceId, length: Int) {
-        val context = if (appPreferences.communityTranslationsEnabled)
-            this
-        else {
-            val configuration = resources.configuration
-            configuration.setLocale(getLocale())
-            createConfigurationContext(configuration)
-        }
-        Toast.makeText(context, value, length).show()
+        Toast.makeText(this, value, length).show()
     }
 
     private fun getLocale() : Locale =
