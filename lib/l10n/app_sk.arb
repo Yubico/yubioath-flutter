@@ -119,7 +119,12 @@
     "@_language": {},
     "s_language": "Jazyk",
     "l_enable_community_translations": "Povoliť komunitné preklady",
-    "p_community_translations_desc": "Tieto preklady zabezpečuje a udržiava komunita. Môžu obsahovať chyby alebo byť neúplné.",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
     "s_choose_language": null,
     "s_english": null,
     "s_french": null,

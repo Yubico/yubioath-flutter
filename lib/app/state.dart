@@ -33,13 +33,6 @@ import 'models.dart';
 
 final _log = Logger('app.state');
 
-// Officially supported translations
-const officialLocales = [
-  Locale('en', ''),
-  Locale('fr', ''),
-  Locale('ja', ''),
-];
-
 extension on Section {
   Feature get _feature => switch (this) {
         Section.home => features.home,
@@ -71,12 +64,12 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
 );
 
 final supportedLocalesProvider = Provider<List<Locale>>((_) {
-  final officialLocalesSet = officialLocales.toSet();
-  final allLocalesSet = AppLocalizations.supportedLocales.toSet();
-
-  // Ensure supported locales are in correct priority order
-  // (english has highest priority)
-  final supportedLocales = {...officialLocalesSet, ...allLocalesSet}.toList();
+  // Ensure english has the highest priority
+  final supportedLocales = [
+    const Locale('en', ''),
+    ...AppLocalizations.supportedLocales
+        .where((locale) => locale.languageCode != 'en')
+  ];
   return supportedLocales;
 });
 

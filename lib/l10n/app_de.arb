@@ -119,7 +119,12 @@
     "@_language": {},
     "s_language": "Sprache",
     "l_enable_community_translations": "Community-Übersetzungen aktivieren",
-    "p_community_translations_desc": "Diese Übersetzungen werden von der Community bereitgestellt und gepflegt. Sie können Fehler enthalten oder unvollständig sein.",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
     "s_choose_language": null,
     "s_english": null,
     "s_french": null,

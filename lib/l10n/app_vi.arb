@@ -119,7 +119,12 @@
     "@_language": {},
     "s_language": "Ngôn ngữ",
     "l_enable_community_translations": "Bật dịch thuật cộng đồng",
-    "p_community_translations_desc": "Các bản dịch này được cung cấp và duy trì bởi cộng đồng. Chúng có thể chứa lỗi hoặc chưa hoàn chỉnh.",
+    "p_community_translations_desc": null,
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {}
+        }
+    },
     "s_choose_language": null,
     "s_english": null,
     "s_french": null,

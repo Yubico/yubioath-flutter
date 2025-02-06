@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../android/state.dart';
 import '../../android/views/settings_views.dart';
@@ -95,6 +97,52 @@ class _ThemeModeView extends ConsumerWidget {
 class _LanguageView extends ConsumerWidget {
   const _LanguageView();
 
+  Uri get _crowdinUri =>
+      Uri.parse('https://crowdin.com/project/yubico-authenticator');
+
+  /// Creates [RichText] from [text] where the keys of [urls] are replaced
+  /// with clickable links.
+  RichText _injectLinksInText(String text, Map<String, Uri> urls,
+      {TextStyle? textStyle, TextStyle? linkStyle}) {
+    final keys = urls.keys.toList();
+    // Split text by keys and keep the keys
+    final pattern =
+        RegExp(r'(?=(' + keys.join('|') + r'))|(?<=(' + keys.join('|') + r'))');
+    final parts = text.split(pattern);
+
+    List<TextSpan> spans = [];
+    int index = 0;
+    for (var part in parts) {
+      if (keys.contains(part)) {
+        spans.add(
+          TextSpan(
+            text: part,
+            style: linkStyle,
+            recognizer: TapGestureRecognizer()
+              ..onTap = () async {
+                await launchUrl(urls[part]!,
+                    mode: LaunchMode.externalApplication);
+              },
+            children: [
+              if (index == parts.length - 1)
+                // without this the recognizer takes over whole row
+                TextSpan(text: ' ')
+            ],
+          ),
+        );
+      } else {
+        spans.add(TextSpan(text: part));
+      }
+      index += 1;
+    }
+    return RichText(
+      text: TextSpan(
+        style: textStyle,
+        children: spans,
+      ),
+    );
+  }
+
   Future<Locale> _selectLocale(
     BuildContext context,
     List<Locale> supportedLocales,
@@ -104,21 +152,40 @@ class _LanguageView extends ConsumerWidget {
           context: context,
           builder: (context) {
             final l10n = AppLocalizations.of(context)!;
+            final theme = Theme.of(context);
+            final textTheme = theme.textTheme;
+            final colorScheme = theme.colorScheme;
+            // Sort locales alphabetically
+            supportedLocales.sort((a, b) =>
+                a.getDisplayName(l10n).compareTo(b.getDisplayName(l10n)));
             return SimpleDialog(
               title: Text(l10n.s_choose_language),
-              children: supportedLocales
-                  .map(
-                    (e) => RadioListTile(
-                      title: Text(e.getDisplayName(l10n)),
-                      value: e,
-                      groupValue: currentLocale,
-                      toggleable: true,
-                      onChanged: (value) {
-                        Navigator.pop(context, e);
-                      },
-                    ),
-                  )
-                  .toList(),
+              children: [
+                ...supportedLocales.map(
+                  (e) => RadioListTile(
+                    title: Text(e.getDisplayName(l10n)),
+                    value: e,
+                    groupValue: currentLocale,
+                    toggleable: true,
+                    onChanged: (value) {
+                      Navigator.pop(context, e);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8.0),
+                  child: _injectLinksInText(
+                    // We don't want to translate 'Crowdin'
+                    l10n.p_community_translations_desc('Crowdin'),
+                    {'Crowdin': _crowdinUri},
+                    textStyle: textTheme.labelSmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                    linkStyle: textTheme.labelSmall
+                        ?.copyWith(color: colorScheme.primary),
+                  ),
+                )
+              ],
             );
           }) ??
       currentLocale;
@@ -134,7 +201,9 @@ class _LanguageView extends ConsumerWidget {
       onTap: () async {
         final newLocale = await _selectLocale(
             context, ref.read(supportedLocalesProvider), currentLocale);
-        ref.read(currentLocaleProvider.notifier).setLocale(newLocale);
+        if (newLocale != currentLocale) {
+          ref.read(currentLocaleProvider.notifier).setLocale(newLocale);
+        }
       },
     );
   }
