@@ -710,6 +710,7 @@
             "slot": {}
         }
     },
+    "l_warning_public_key_mismatch": null,
     "l_key_moved": "Schlüssel verschoben",
     "l_key_and_certificate_moved": "Schlüssel und Zertifikat verschoben",
     "p_subject_desc": "Distinguished Name (DN) RFC 4514 konform formatiert.",

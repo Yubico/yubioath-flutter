@@ -710,6 +710,7 @@
             "slot": {}
         }
     },
+    "l_warning_public_key_mismatch": "The public key of the certificate does not match the private key in the slot",
     "l_key_moved": "Key moved",
     "l_key_and_certificate_moved": "Key and certificate moved",
     "p_subject_desc": "A distinguished name (DN) formatted in accordance to the RFC 4514 specification.",

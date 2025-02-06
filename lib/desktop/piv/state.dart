@@ -436,8 +436,12 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   }
 
   @override
-  Future<PivExamineResult> examine(String data, {String? password}) async {
-    final result = await _session.command('examine_file', params: {
+  Future<PivExamineResult> examine(SlotId slot, String data,
+      {String? password}) async {
+    final result = await _session.command('examine_file', target: [
+      'slots',
+      slot.hexId
+    ], params: {
       'data': data,
       'password': password,
     });

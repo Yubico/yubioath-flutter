@@ -78,7 +78,9 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     });
     final result = await ref
         .read(pivSlotsProvider(widget.devicePath).notifier)
-        .examine(_data, password: _password.isNotEmpty ? _password : null);
+        .examine(widget.pivSlot.slot, _data,
+            password: _password.isNotEmpty ? _password : null);
+
     setState(() {
       _state = result;
       _passwordIsWrong = result.maybeWhen(
@@ -176,7 +178,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           ),
         ),
       ),
-      result: (_, keyType, certInfo) {
+      result: (_, keyType, certInfo, publicKeyMatch) {
         final isFips =
             ref.watch(currentDeviceDataProvider).valueOrNull?.info.isFips ??
                 false;
@@ -311,6 +313,32 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                       ),
                     ],
                   ),
+                  if (publicKeyMatch == false)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Symbols.warning_amber,
+                            fill: 1,
+                            size: 16,
+                            color: colorScheme.onTertiary,
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              l10n.l_warning_public_key_mismatch,
+                              style: textTheme.bodySmall
+                                  ?.copyWith(color: colorScheme.onTertiary),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   SizedBox(
                     height:
                         140, // Needed for layout, adapt if text sizes changes

@@ -166,6 +166,7 @@ _$PivSlotImpl _$$PivSlotImplFromJson(Map<String, dynamic> json) =>
       certInfo: json['cert_info'] == null
           ? null
           : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
+      publicKeyMatch: json['public_key_match'] as bool?,
     );
 
 Map<String, dynamic> _$$PivSlotImplToJson(_$PivSlotImpl instance) =>
@@ -173,6 +174,7 @@ Map<String, dynamic> _$$PivSlotImplToJson(_$PivSlotImpl instance) =>
       'slot': _$SlotIdEnumMap[instance.slot]!,
       'metadata': instance.metadata,
       'cert_info': instance.certInfo,
+      'public_key_match': instance.publicKeyMatch,
     };
 
 const _$SlotIdEnumMap = {
@@ -209,6 +211,7 @@ _$ExamineResultImpl _$$ExamineResultImplFromJson(Map<String, dynamic> json) =>
       certInfo: json['cert_info'] == null
           ? null
           : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
+      publicKeyMatch: json['public_key_match'] as bool?,
       $type: json['runtimeType'] as String?,
     );
 
@@ -217,6 +220,7 @@ Map<String, dynamic> _$$ExamineResultImplToJson(_$ExamineResultImpl instance) =>
       'password': instance.password,
       'key_type': _$KeyTypeEnumMap[instance.keyType],
       'cert_info': instance.certInfo,
+      'public_key_match': instance.publicKeyMatch,
       'runtimeType': instance.$type,
     };
 

@@ -307,6 +307,7 @@ class PivSlot with _$PivSlot {
     required SlotId slot,
     SlotMetadata? metadata,
     CertInfo? certInfo,
+    bool? publicKeyMatch,
   }) = _PivSlot;
 
   factory PivSlot.fromJson(Map<String, dynamic> json) =>
@@ -319,6 +320,7 @@ class PivExamineResult with _$PivExamineResult {
     required bool password,
     required KeyType? keyType,
     required CertInfo? certInfo,
+    bool? publicKeyMatch,
   }) = _ExamineResult;
   factory PivExamineResult.invalidPassword() = _InvalidPassword;
 

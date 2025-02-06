@@ -48,7 +48,8 @@ final pivSlotsProvider = AsyncNotifierProvider.autoDispose
 
 abstract class PivSlotsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<PivSlot>, DevicePath> {
-  Future<PivExamineResult> examine(String data, {String? password});
+  Future<PivExamineResult> examine(SlotId slot, String data,
+      {String? password});
   Future<bool> validateRfc4514(String value);
   Future<(SlotMetadata?, String?)> read(SlotId slot);
   Future<PivGenerateResult> generate(

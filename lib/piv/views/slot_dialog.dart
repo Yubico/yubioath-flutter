@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
@@ -100,6 +101,31 @@ class SlotDialog extends ConsumerWidget {
                                 alwaysIncludePrivate: pivState.supportsMetadata,
                                 supportsBio: pivState.supportsBio,
                               ),
+                              if (slotData.publicKeyMatch == false) ...[
+                                const SizedBox(height: 16.0),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Symbols.info,
+                                      size: 16,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        l10n.l_warning_public_key_mismatch,
+                                        style: textTheme.bodySmall?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                               if (certInfo == null) const SizedBox(height: 16),
                             ],
                             if (certInfo == null) ...[

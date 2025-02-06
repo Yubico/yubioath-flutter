@@ -710,6 +710,7 @@
             "slot": {}
         }
     },
+    "l_warning_public_key_mismatch": null,
     "l_key_moved": "Klucz został przeniesiony",
     "l_key_and_certificate_moved": "Klucz i certyfikat został przeniesiony",
     "p_subject_desc": "Nazwa wyróżniająca (DN) sformatowana zgodnie ze specyfikacją RFC 4514.",
