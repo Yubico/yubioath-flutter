@@ -61,8 +61,8 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       var packContent = await packFile.readAsString();
       Map<String, dynamic> pack = const JsonDecoder().convert(packContent);
 
-      final icons = List<IconPackIcon>.from(pack['icons'].map((icon) =>
-          IconPackIcon(
+      final icons = List<IconPackIconData>.from(pack['icons'].map((icon) =>
+          IconPackIconData(
               filename: icon['filename'],
               category: icon['category'],
               issuer: List<String>.from(icon['issuer'])

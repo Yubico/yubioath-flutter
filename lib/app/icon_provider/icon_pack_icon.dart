@@ -26,17 +26,17 @@ import 'icon_file_loader.dart';
 import 'icon_pack.dart';
 import 'icon_pack_manager.dart';
 
-class AccountIcon extends ConsumerWidget {
-  final String? issuer;
+class IconPackIcon extends ConsumerWidget {
   final Widget defaultWidget;
+  final File? Function(IconPack) matchFunction;
 
   static const double _width = 40;
   static const double _height = 40;
 
-  const AccountIcon({
+  const IconPackIcon({
     super.key,
-    required this.issuer,
     required this.defaultWidget,
+    required this.matchFunction,
   });
 
   @override
@@ -44,7 +44,10 @@ class AccountIcon extends ConsumerWidget {
     final iconPack = ref.watch(iconPackProvider);
     return iconPack.when(
         data: (IconPack? iconPack) {
-          final issuerImageFile = iconPack?.getFileForIssuer(issuer);
+          File? issuerImageFile;
+          if (iconPack != null) {
+            issuerImageFile = matchFunction(iconPack);
+          }
           if (issuerImageFile == null) {
             return defaultWidget;
           }

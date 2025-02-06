@@ -22,7 +22,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/icon_provider/account_icon.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -48,6 +47,7 @@ import 'actions.dart';
 import 'credential_dialog.dart';
 import 'credential_info_view.dart';
 import 'key_actions.dart';
+import 'passkeys_icon.dart';
 import 'pin_dialog.dart';
 import 'pin_entry_form.dart';
 
@@ -658,15 +658,6 @@ class _CredentialListItem extends StatelessWidget {
   const _CredentialListItem(this.credential,
       {required this.expanded, required this.selected, this.tileColor});
 
-  String? _getRpDomainName(FidoCredential credential) {
-    final parts = credential.rpId.split('.');
-    // Ensure the RP ID has at least two parts
-    if (parts.length < 2) {
-      return null;
-    }
-    return parts[parts.length - 2];
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -678,8 +669,8 @@ class _CredentialListItem extends StatelessWidget {
     return AppListItem(
       credential,
       selected: selected,
-      leading: AccountIcon(
-        issuer: _getRpDomainName(credential),
+      leading: PasskeyIcon(
+        rpId: credential.rpId,
         defaultWidget: circleAvatar,
       ),
       tileColor: tileColor,
