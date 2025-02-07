@@ -207,6 +207,7 @@ class _ToggleDevicesDialog extends ConsumerWidget {
         .watch(attachedDevicesProvider)
         .where((e) => e.transport == Transport.nfc);
     if (nfcDevices.isEmpty) {
+      // Pop dialog if no NFC devices
       Navigator.of(context).pop();
     }
     return ResponsiveDialog(
@@ -218,7 +219,7 @@ class _ToggleDevicesDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.p_toggle_devices_desc),
+            Text(l10n.l_toggle_devices_desc),
             const SizedBox(height: 8.0),
             ...nfcDevices.map(
               (e) => Row(
