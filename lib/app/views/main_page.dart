@@ -75,7 +75,7 @@ class MainPage extends ConsumerWidget {
               'user_interaction_prompt',
               'oath_add_account',
               'icon_pack_dialog',
-              'toggle_devices_dialog',
+              'toggle_readers_dialog',
               'android_qr_scanner_view',
             ].contains(route.settings.name);
       });

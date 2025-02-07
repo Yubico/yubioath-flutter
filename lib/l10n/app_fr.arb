@@ -150,10 +150,10 @@
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Sélectionner pour scanner",
-    "s_hide_device": "Masquer appareil",
-    "s_show_hidden_devices": "Afficher appareils masqués",
-    "s_toggle_devices": null,
-    "l_toggle_devices_desc": null,
+    "s_hide_reader": null,
+    "s_show_hidden_readers": null,
+    "s_toggle_readers": null,
+    "l_toggle_readers_desc": null,
     "s_sn_serial": "N/S\u00a0: {serial}",
     "@s_sn_serial": {
         "placeholders": {

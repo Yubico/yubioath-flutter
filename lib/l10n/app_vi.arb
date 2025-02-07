@@ -150,10 +150,10 @@
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Chọn để quét",
-    "s_hide_device": "Ẩn thiết bị",
-    "s_show_hidden_devices": "Hiển thị các thiết bị ẩn",
-    "s_toggle_devices": null,
-    "l_toggle_devices_desc": null,
+    "s_hide_reader": null,
+    "s_show_hidden_readers": null,
+    "s_toggle_readers": null,
+    "l_toggle_readers_desc": null,
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

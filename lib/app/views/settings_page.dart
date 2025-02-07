@@ -193,8 +193,8 @@ class _IconsView extends ConsumerWidget {
   }
 }
 
-class _ToggleDevicesDialog extends ConsumerWidget {
-  const _ToggleDevicesDialog();
+class _ToggleReadersDialog extends ConsumerWidget {
+  const _ToggleReadersDialog();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -211,7 +211,7 @@ class _ToggleDevicesDialog extends ConsumerWidget {
       Navigator.of(context).pop();
     }
     return ResponsiveDialog(
-      title: Text(l10n.s_toggle_devices),
+      title: Text(l10n.s_toggle_readers),
       dialogMaxWidth: 500,
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -219,7 +219,7 @@ class _ToggleDevicesDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.l_toggle_devices_desc),
+            Text(l10n.l_toggle_readers_desc),
             const SizedBox(height: 8.0),
             ...nfcDevices.map(
               (e) => Row(
@@ -274,8 +274,8 @@ class _ToggleDevicesDialog extends ConsumerWidget {
   }
 }
 
-class _ToggleDevicesView extends ConsumerWidget {
-  const _ToggleDevicesView();
+class _ToggleReadersView extends ConsumerWidget {
+  const _ToggleReadersView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -285,15 +285,15 @@ class _ToggleDevicesView extends ConsumerWidget {
         .where((e) => e.transport == Transport.nfc);
 
     return ListTile(
-      title: Text(l10n.s_toggle_devices),
-      subtitle: Text(l10n.l_toggle_devices_desc),
+      title: Text(l10n.s_toggle_readers),
+      subtitle: Text(l10n.l_toggle_readers_desc),
       key: keys.toggleDevicesSetting,
       enabled: nfcDevices.isNotEmpty,
       onTap: () {
         showDialog(
           context: context,
-          routeSettings: const RouteSettings(name: 'toggle_devices_dialog'),
-          builder: (context) => _ToggleDevicesDialog(),
+          routeSettings: const RouteSettings(name: 'toggle_readers_dialog'),
+          builder: (context) => _ToggleReadersDialog(),
         );
       },
     );
@@ -329,7 +329,7 @@ class SettingsPage extends ConsumerWidget {
           const _ThemeModeView(),
           const _IconsView(),
           ListTitle(l10n.s_options),
-          if (!isAndroid) const _ToggleDevicesView(),
+          if (!isAndroid) const _ToggleReadersView(),
           const _LanguageView()
         ],
       ),

@@ -331,7 +331,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             ref.read(hiddenDevicesProvider.notifier).showAll();
           },
           child: ListTile(
-            title: Text(l10n.s_show_hidden_devices),
+            title: Text(l10n.s_show_hidden_readers),
             leading: const Icon(Symbols.visibility),
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -344,7 +344,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             ref.read(hiddenDevicesProvider.notifier).hideDevice(node.path);
           },
           child: ListTile(
-            title: Text(l10n.s_hide_device),
+            title: Text(l10n.s_hide_reader),
             leading: const Icon(Symbols.visibility_off),
             dense: true,
             contentPadding: EdgeInsets.zero,
