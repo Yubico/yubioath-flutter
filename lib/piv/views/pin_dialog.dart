@@ -94,7 +94,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final minPinLen =
         widget.pivState.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
     final currentPinLen = byteLength(_pinController.text);

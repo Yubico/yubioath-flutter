@@ -229,6 +229,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
               onSubmitted: (_) {
                 if (didChange && isValid) {
                   _submit();
+                } else {
+                  _nameFocus.requestFocus();
                 }
               },
             ).init(),
