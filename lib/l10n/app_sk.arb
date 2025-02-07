@@ -150,8 +150,10 @@
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "Vyberte na skenovanie",
-    "s_hide_device": "Skryť zariadenie",
-    "s_show_hidden_devices": "Zobraziť skryté zariadenia",
+    "s_hide_reader": null,
+    "s_show_hidden_readers": null,
+    "s_toggle_readers": null,
+    "l_toggle_readers_desc": null,
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

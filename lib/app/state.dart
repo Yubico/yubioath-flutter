@@ -160,6 +160,32 @@ final primaryColorProvider = Provider<Color>((ref) {
   return lastUsedColor != null ? Color(lastUsedColor) : defaultColor;
 });
 
+final hiddenDevicesProvider =
+    StateNotifierProvider<HiddenDevicesNotifier, List<String>>(
+        (ref) => HiddenDevicesNotifier(ref.watch(prefProvider)));
+
+class HiddenDevicesNotifier extends StateNotifier<List<String>> {
+  static const String _key = 'DEVICE_PICKER_HIDDEN';
+  final SharedPreferences _prefs;
+
+  HiddenDevicesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
+
+  void showAll() {
+    state = [];
+    _prefs.setStringList(_key, state);
+  }
+
+  void hideDevice(DevicePath devicePath) {
+    state = [...state, devicePath.key];
+    _prefs.setStringList(_key, state);
+  }
+
+  void showDevice(DevicePath devicePath) {
+    state = state.where((e) => e != devicePath.key).toList();
+    _prefs.setStringList(_key, state);
+  }
+}
+
 // Override with platform implementation
 final attachedDevicesProvider =
     NotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(

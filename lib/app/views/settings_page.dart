@@ -17,9 +17,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
 import '../../android/views/settings_views.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -175,6 +177,7 @@ class _IconsView extends ConsumerWidget {
     return ListTile(
       title: Text(l10n.s_custom_icons),
       subtitle: Text(l10n.l_set_icons_for_accounts),
+      key: keys.customIconSetting,
       onTap: () {
         showDialog(
           // Avoid duplicate SafeAreas
@@ -184,6 +187,113 @@ class _IconsView extends ConsumerWidget {
           context: context,
           routeSettings: const RouteSettings(name: 'icon_pack_dialog'),
           builder: (context) => const IconPackDialog(),
+        );
+      },
+    );
+  }
+}
+
+class _ToggleReadersDialog extends ConsumerWidget {
+  const _ToggleReadersDialog();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    final hidden = ref.watch(hiddenDevicesProvider);
+    final nfcDevices = ref
+        .watch(attachedDevicesProvider)
+        .where((e) => e.transport == Transport.nfc);
+    if (nfcDevices.isEmpty) {
+      // Pop dialog if no NFC devices
+      Navigator.of(context).pop();
+    }
+    return ResponsiveDialog(
+      title: Text(l10n.s_toggle_readers),
+      dialogMaxWidth: 500,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.l_toggle_readers_desc),
+            const SizedBox(height: 8.0),
+            ...nfcDevices.map(
+              (e) => Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Symbols.contactless,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 12.0),
+                        Flexible(
+                          child: Text(
+                            e.name,
+                            style: textTheme.bodyMedium
+                                ?.copyWith(color: colorScheme.onSurfaceVariant),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12.0,
+                        )
+                      ],
+                    ),
+                  ),
+                  Switch(
+                    value: !hidden.contains(e.path.key),
+                    onChanged: (show) {
+                      if (!show) {
+                        ref
+                            .read(hiddenDevicesProvider.notifier)
+                            .hideDevice(e.path);
+                      } else {
+                        ref
+                            .read(hiddenDevicesProvider.notifier)
+                            .showDevice(e.path);
+                      }
+                    },
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleReadersView extends ConsumerWidget {
+  const _ToggleReadersView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final nfcDevices = ref
+        .watch(attachedDevicesProvider)
+        .where((e) => e.transport == Transport.nfc);
+
+    return ListTile(
+      title: Text(l10n.s_toggle_readers),
+      subtitle: Text(l10n.l_toggle_readers_desc),
+      key: keys.toggleDevicesSetting,
+      enabled: nfcDevices.isNotEmpty,
+      onTap: () {
+        showDialog(
+          context: context,
+          routeSettings: const RouteSettings(name: 'toggle_readers_dialog'),
+          builder: (context) => _ToggleReadersDialog(),
         );
       },
     );
@@ -219,6 +329,7 @@ class SettingsPage extends ConsumerWidget {
           const _ThemeModeView(),
           const _IconsView(),
           ListTitle(l10n.s_options),
+          if (!isAndroid) const _ToggleReadersView(),
           const _LanguageView()
         ],
       ),
