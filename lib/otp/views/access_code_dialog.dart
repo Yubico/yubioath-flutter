@@ -71,8 +71,7 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final accessCode = _accessCodeController.text.replaceAll(' ', '');
-    final accessCodeLengthValid =
-        accessCode.isNotEmpty && accessCode.length == accessCodeLength;
+    final accessCodeLengthValid = accessCode.length == accessCodeLength;
     return ResponsiveDialog(
       title: Text(l10n.s_access_code),
       actions: [
@@ -121,7 +120,13 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                     _accessCodeIsWrong = false;
                   });
                 },
-                onSubmitted: (_) => _submit(),
+                onSubmitted: (_) {
+                  if (accessCodeLengthValid) {
+                    _submit();
+                  } else {
+                    _accessCodeFocus.requestFocus();
+                  }
+                },
               ).init(),
             ]
                 .map((e) => Padding(

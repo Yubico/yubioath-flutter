@@ -200,7 +200,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     super.dispose();
   }
 
-  Widget _buildLockCodeForm(BuildContext context) {
+  Widget _buildLockCodeForm(BuildContext context, bool canSave) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +236,13 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               _lockCodeIsWrong = false;
             });
           },
-          onSubmitted: (_) => _submitForm,
+          onSubmitted: (_) {
+            if (canSave) {
+              _submitForm();
+            } else {
+              _lockCodeFocus.requestFocus();
+            }
+          },
         ).init()
       ]
           .map((e) => Padding(
@@ -434,7 +440,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18.0)
                         .copyWith(top: 20),
-                    child: _buildLockCodeForm(context),
+                    child: _buildLockCodeForm(context, canSave),
                   ),
                 Padding(
                   padding: EdgeInsets.only(

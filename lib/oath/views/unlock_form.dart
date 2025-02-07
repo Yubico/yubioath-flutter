@@ -128,7 +128,14 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   onChanged: (_) => setState(() {
                     _passwordIsWrong = false;
                   }), // Update state on change
-                  onSubmitted: (_) => _submit(),
+                  onSubmitted: (_) {
+                    if (_passwordController.text.isNotEmpty &&
+                        !_passwordIsWrong) {
+                      _submit();
+                    } else {
+                      _passwordFocus.requestFocus();
+                    }
+                  },
                 ).init(),
               ),
               const SizedBox(height: 3.0),
