@@ -943,10 +943,10 @@ packages:
     dependency: "direct main"
     description:
       name: tray_manager
-      sha256: f231031c5c0eb4ad514e18ddaab27a912ddbe50335c594bc28fb0f9972ab6a84
+      sha256: "80be6c508159a6f3c57983de795209ac13453e9832fd574143b06dceee188ed2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.3.2"
   typed_data:
     dependency: transitive
     description:
