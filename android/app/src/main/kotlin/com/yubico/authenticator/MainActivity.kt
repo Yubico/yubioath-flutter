@@ -127,6 +127,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            window.setHideOverlayWindows(true)
+        }
         allowScreenshots(false)
 
         val nfcManager = if (NfcAdapter.getDefaultAdapter(this) != null) {

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
 
     <uses-feature
         android:name="android.hardware.usb.host"
