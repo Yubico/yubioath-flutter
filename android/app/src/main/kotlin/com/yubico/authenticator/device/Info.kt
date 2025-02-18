@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.management.DeviceInfo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.UInt
 
 private fun DeviceInfo.capabilitiesFor(transport: Transport): Int? =
     when {
@@ -32,7 +33,7 @@ data class Info(
     @SerialName("config")
     val config: Config,
     @SerialName("serial")
-    val serialNumber: Int?,
+    val serialNumber: UInt?,
     @SerialName("version")
     val version: Version,
     @SerialName("form_factor")
@@ -62,7 +63,7 @@ data class Info(
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
-        serialNumber = deviceInfo.serialNumber,
+        serialNumber = deviceInfo.serialNumber?.toUInt(),
         version = Version(
             deviceInfo.version.major,
             deviceInfo.version.minor,

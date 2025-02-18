@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class InfoTest {
         val info = Info(name = "TestD", isNfc = true, usbPid = null, deviceInfo = deviceInfo)
 
         assertEquals(Config(deviceConfigMock), info.config)
-        assertEquals(1234, info.serialNumber)
+        assertEquals(1234u, info.serialNumber)
         assertEquals(Version(1, 2, 3).major, info.version.major)
         assertEquals(Version(1, 2, 3).minor, info.version.minor)
         assertEquals(Version(1, 2, 3).micro, info.version.micro)
