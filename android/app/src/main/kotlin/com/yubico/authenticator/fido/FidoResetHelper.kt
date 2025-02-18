@@ -111,8 +111,9 @@ class FidoResetHelper(
                 resetOverNfc()
             }
             logger.info("FIDO reset complete")
-        } catch (_: CancellationException) {
+        } catch (cancellationException: CancellationException) {
             logger.debug("FIDO reset cancelled")
+            throw cancellationException
         } finally {
             withContext(Dispatchers.Main) {
                 lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
@@ -216,7 +217,7 @@ class FidoResetHelper(
     private suspend fun resetOverNfc() = suspendCoroutine { continuation ->
         coroutineScope.launch {
             nfcOverlayManager.show {
-
+                connectionHelper.cancelPending()
             }
             fidoViewModel.updateResetState(FidoResetState.Touch)
             try {
@@ -226,6 +227,9 @@ class FidoResetHelper(
                     appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
                     continuation.resume(Unit)
                 }.value
+            } catch (cancellationException: CancellationException) {
+                appMethodChannel.nfcStateChanged(NfcState.IDLE)
+                continuation.resumeWithException(cancellationException)
             } catch (e: Throwable) {
                 // on NFC, clean device info in this situation
                 mainViewModel.setDeviceInfo(null)
