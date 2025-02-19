@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../../management/models.dart';
@@ -117,6 +118,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         .contains(widget.data.info.formFactor);
     final globalReset = isBio && (enabled & Capability.piv.value) != 0;
     final l10n = AppLocalizations.of(context)!;
+    final usbTransport = widget.data.node.transport == Transport.usb;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);
     final needsElevation = Platform.isWindows &&
@@ -124,10 +126,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
 
     // show the progress widgets on desktop, or on Android when using USB
-    final showResetProgress = _resetting &&
-        (!Platform.isAndroid ||
-            ref.read(currentDeviceProvider)?.transport == Transport.usb ||
-            _currentStep == _totalSteps);
+    final showResetProgress =
+        _resetting && (!Platform.isAndroid || usbTransport);
 
     return ResponsiveDialog(
       title: Text(l10n.s_factory_reset),
@@ -165,12 +165,29 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                             _currentStep++;
                             _interaction = event;
                           });
-                        }, onDone: () {
+                        }, onDone: () async {
                           setState(() {
                             _currentStep++;
                           });
                           _subscription = null;
+                          if (isAndroid && !usbTransport) {
+                            // close the dialog after reset over NFC on Android
+                            await ref.read(withContextProvider)(
+                                (context) async {
+                              Navigator.of(context).pop();
+                              showMessage(context, l10n.l_fido_app_reset);
+                            });
+                          }
                         }, onError: (e) {
+                          if (e is CancellationException) {
+                            setState(() {
+                              _resetting = false;
+                              _currentStep = -1;
+                              _application = null;
+                            });
+                            return;
+                          }
+
                           _log.error('Error performing FIDO reset', e);
 
                           if (!context.mounted) return;
@@ -201,14 +218,25 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                         setState(() {
                           _resetting = true;
                         });
-                        await ref
-                            .read(oathStateProvider(widget.data.node.path)
-                                .notifier)
-                            .reset();
-                        await ref.read(withContextProvider)((context) async {
-                          Navigator.of(context).pop();
-                          showMessage(context, l10n.l_oath_application_reset);
-                        });
+                        try {
+                          await ref
+                              .read(oathStateProvider(widget.data.node.path)
+                                  .notifier)
+                              .reset();
+                          await ref.read(withContextProvider)((context) async {
+                            Navigator.of(context).pop();
+                            showMessage(context, l10n.l_oath_application_reset);
+                          });
+                        } catch (e) {
+                          if (e is CancellationException) {
+                            setState(() {
+                              _resetting = false;
+                              _currentStep = -1;
+                              _application = null;
+                            });
+                            return;
+                          }
+                        }
                       },
                     Capability.piv => () async {
                         setState(() {

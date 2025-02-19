@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,12 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
     try {
       await oath.invoke('reset');
     } catch (e) {
+      if (e is PlatformException) {
+        final decoded = e.decode();
+        if (decoded is CancellationException) {
+          throw decoded;
+        }
+      }
       _log.debug('Calling reset failed with exception: $e');
     }
   }
