@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
 import android.nfc.NdefMessage
@@ -31,17 +30,12 @@ import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 import java.util.Locale
 
-
 typealias ResourceId = Int
 
 class NdefActivity : Activity() {
     private lateinit var appPreferences: AppPreferences
 
     private val logger = LoggerFactory.getLogger(NdefActivity::class.java)
-
-    companion object {
-        private val officialLocalization = arrayOf(Locale.JAPAN, Locale.FRANCE, Locale.US)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,25 +96,15 @@ class NdefActivity : Activity() {
         }
     }
 
-    private fun showToast(value: ResourceId, length: Int) {
-        Toast.makeText(this, value, length).show()
+    private fun showToast(value: ResourceId, length: Int) = resources.configuration.apply {
+        setLocale(getLocale(appPreferences.appLocale).also {
+            logger.debug("Using locale '{}' for native toasts", it)
+        })
+        Toast.makeText(createConfigurationContext(this), value, length).show()
     }
 
-    private fun getLocale() : Locale =
-        compatUtil.from(Build.VERSION_CODES.N) {
-            getLocaleN()
-        }.otherwise {
-            @Suppress("deprecation")
-            officialLocalization.firstOrNull {
-                it == resources.configuration.locale
-            } ?: Locale.US
-        }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    private fun getLocaleN() : Locale =
-        resources.configuration.locales.getFirstMatch(
-            officialLocalization.map { it.toLanguageTag() }.toTypedArray()
-        ) ?: Locale.US
+    private fun getLocale(languageTag: String): Locale = Locale.getAvailableLocales()
+        .firstOrNull { it -> it.toLanguageTag() == languageTag } ?: Locale.US
 
     private fun parseOtpFromIntent(): OtpSlotValue {
         val parcelable = intent.parcelableArrayExtra<NdefMessage>(NfcAdapter.EXTRA_NDEF_MESSAGES)
