@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val oathViewModel: OathViewModel by viewModels()
     private val fidoViewModel: FidoViewModel by viewModels()
 
-    private val nfcConfiguration = NfcConfiguration().timeout(2000)
+    private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
     private var hasNfc: Boolean = false
 
@@ -127,6 +127,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            window.setHideOverlayWindows(true)
+        }
         allowScreenshots(false)
 
         val nfcManager = if (NfcAdapter.getDefaultAdapter(this) != null) {
