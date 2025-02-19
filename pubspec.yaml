@@ -52,10 +52,11 @@ dependencies:
   window_manager:
     git:
       url: https://github.com/fdennis/window_manager.git
-      ref: 2272d45bcf46d7e2b452a038906fbc85df3ce83d
+      path: packages/window_manager
+      ref: af74247d3c1616968ec281435f7410bcc7f9355c
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
-  screen_retriever: ^0.1.9
+  screen_retriever: ^0.2.0
   desktop_drop: ^0.5.0
   url_launcher: ^6.3.1
   path_provider: ^2.1.5
