@@ -90,9 +90,9 @@ jobs:
         SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
         export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
+        flutter gen-l10n
         pipx install pre-commit
         pre-commit run --all-files
-        flutter gen-l10n
         flutter test
 
     - name: Build the app

@@ -53,9 +53,9 @@ jobs:
         env:
           SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
         run: |
+          flutter gen-l10n
           pip install pre-commit
           pre-commit run --all-files
-          flutter gen-l10n
           flutter test
 
       - name: Build the app

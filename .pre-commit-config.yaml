@@ -8,6 +8,7 @@ repos:
       exclude: lib/generated
       require_serial: true
     - id: flutter-analyze
+      exclude: lib/generated
       require_serial: true
 - repo: local
   hooks:
