@@ -92,6 +92,7 @@ jobs:
         export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
         pipx install pre-commit
         pre-commit run --all-files
+        flutter gen-l10n
         flutter test
 
     - name: Build the app

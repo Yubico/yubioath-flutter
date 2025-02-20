@@ -55,6 +55,7 @@ jobs:
         run: |
           pip install pre-commit
           pre-commit run --all-files
+          flutter gen-l10n
           flutter test
 
       - name: Build the app

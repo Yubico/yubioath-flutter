@@ -38,6 +38,7 @@ jobs:
 
       - name: Run flutter tests
         run: |
+          flutter gen-l10n
           flutter test
           flutter analyze
         working-directory: ./app
