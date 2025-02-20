@@ -291,19 +291,19 @@
             "message": {}
         }
     },
-    "l_attempts_remaining": "{retries} attempt(s) remaining",
+    "l_attempts_remaining": "{retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
     "@l_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
-    "l_wrong_pin_attempts_remaining": "Wrong PIN, {retries} attempt(s) remaining",
+    "l_wrong_pin_attempts_remaining": "Wrong PIN, {retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {}
         }
     },
-    "l_wrong_puk_attempts_remaining": "Wrong PUK, {retries} attempt(s) remaining",
+    "l_wrong_puk_attempts_remaining": "Wrong PUK, {retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {}
