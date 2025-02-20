@@ -39,8 +39,10 @@ jobs:
       - name: Run flutter tests
         run: |
           flutter gen-l10n
+          export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
+          pipx install pre-commit
+          pre-commit run --all-files
           flutter test
-          flutter analyze
         working-directory: ./app
 
       - name: Build the App
