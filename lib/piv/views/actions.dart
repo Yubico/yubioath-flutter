@@ -18,7 +18,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -27,6 +27,7 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -130,7 +131,7 @@ class PivActions extends ConsumerWidget {
             }
 
             return await withContext((context) async {
-              final l10n = AppLocalizations.of(context)!;
+              final l10n = AppLocalizations.of(context);
               final PivGenerateResult? result = await showBlurDialog(
                 context: context,
                 builder: (context) => GenerateKeyDialog(
@@ -181,7 +182,7 @@ class PivActions extends ConsumerWidget {
 
             final picked = await withContext(
               (context) async {
-                final l10n = AppLocalizations.of(context)!;
+                final l10n = AppLocalizations.of(context);
                 return await FilePicker.platform.pickFiles(
                     allowedExtensions: [
                       'pem',
@@ -215,7 +216,7 @@ class PivActions extends ConsumerWidget {
           }),
         if (hasFeature(features.slotsExport))
           ExportIntent: CallbackAction<ExportIntent>(onInvoke: (intent) async {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             final (metadata, cert) = await ref
                 .read(pivSlotsProvider(devicePath).notifier)
                 .read(intent.slot.slot);

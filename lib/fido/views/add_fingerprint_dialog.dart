@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -29,6 +28,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../desktop/models.dart';
 import '../../fido/models.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -39,6 +39,7 @@ final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
+
   const AddFingerprintDialog(this.devicePath, {super.key});
 
   @override
@@ -126,7 +127,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
       if (!mounted) return;
       Navigator.of(context).pop();
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
       if (error is RpcError) {
@@ -149,7 +150,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   String _getMessage() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (_samples == 0) {
       return l10n.p_press_fingerprint_begin;
     }
@@ -161,7 +162,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   void _submit() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     try {
       await ref
           .read(fingerprintProvider(widget.devicePath).notifier)
@@ -187,7 +188,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),

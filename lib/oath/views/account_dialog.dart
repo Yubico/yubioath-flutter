@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -27,6 +27,7 @@ import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
 import '../models.dart';
@@ -159,7 +160,7 @@ class AccountDialog extends ConsumerWidget {
                   ),
                   ActionListSection.fromMenuActions(
                     context,
-                    AppLocalizations.of(context)!.s_actions,
+                    AppLocalizations.of(context).s_actions,
                     actions: helper.buildActions(),
                   ),
                 ],

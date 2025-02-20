@@ -5,11 +5,18 @@ repos:
   hooks:
     - id: dart-format
       files: \.dart$
+      exclude: lib/generated
       require_serial: true
     - id: flutter-analyze
       require_serial: true
 - repo: local
   hooks:
+    - id: flutter-l10n-gen
+      name: generate-l10n
+      language: system
+      entry: flutter gen-l10n
+      pass_filenames: false
+      require_serial: true
     - id: arb-reformatter
       name: reformat-strings
       files: \.arb$

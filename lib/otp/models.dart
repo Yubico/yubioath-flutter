@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../generated/l10n/app_localizations.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
@@ -26,6 +27,7 @@ enum SlotId {
 
   final String id;
   final int numberId;
+
   const SlotId(this.id, this.numberId);
 
   String getDisplayName(AppLocalizations l10n) {
@@ -42,6 +44,7 @@ enum SlotId {
 @freezed
 class OtpState with _$OtpState {
   const OtpState._();
+
   factory OtpState({
     required bool slot1Configured,
     required bool slot2Configured,

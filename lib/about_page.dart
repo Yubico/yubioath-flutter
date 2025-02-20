@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -31,6 +30,7 @@ import 'app/state.dart';
 import 'app/views/keys.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'generated/l10n/app_localizations.dart';
 import 'version.dart';
 import 'widgets/choice_filter_chip.dart';
 import 'widgets/responsive_dialog.dart';
@@ -42,7 +42,7 @@ class AboutPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return ResponsiveDialog(
       title: Text(l10n.s_about),
       builder: (context, _) => Padding(
@@ -207,7 +207,7 @@ class LoggingPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     return Wrap(
       alignment: WrapAlignment.center,

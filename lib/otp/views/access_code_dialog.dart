@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2024-2025 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../core/models.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -14,6 +30,7 @@ class AccessCodeDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
   final Future<void> Function(String accessCode) action;
+
   const AccessCodeDialog(
       {super.key,
       required this.devicePath,
@@ -40,7 +57,7 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
   }
 
   void _submit() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (!Format.hex.isValid(_accessCodeController.text)) {
       _accessCodeController.selection = TextSelection(
           baseOffset: 0, extentOffset: _accessCodeController.text.length);
@@ -69,7 +86,7 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final accessCode = _accessCodeController.text.replaceAll(' ', '');
     final accessCodeLengthValid =
         accessCode.isNotEmpty && accessCode.length == accessCodeLength;

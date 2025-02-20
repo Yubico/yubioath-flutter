@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -24,6 +23,7 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -36,21 +36,25 @@ import 'delete_slot_dialog.dart';
 
 class ConfigureChalRespIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureChalRespIntent(this.slot);
 }
 
 class ConfigureHotpIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureHotpIntent(this.slot);
 }
 
 class ConfigureStaticIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureStaticIntent(this.slot);
 }
 
 class ConfigureYubiOtpIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureYubiOtpIntent(this.slot);
 }
 
@@ -58,6 +62,7 @@ class OtpActions extends ConsumerWidget {
   final DevicePath devicePath;
   final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
   final Widget Function(BuildContext context) builder;
+
   const OtpActions(
       {super.key,
       required this.devicePath,

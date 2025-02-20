@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023   Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../generated/l10n/app_localizations.dart';
 import '../keys.dart' as keys;
 import 'qr_scanner_provider.dart';
 import 'qr_scanner_scan_status.dart';
@@ -35,7 +35,7 @@ class QRScannerUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Stack(
       fit: StackFit.expand,

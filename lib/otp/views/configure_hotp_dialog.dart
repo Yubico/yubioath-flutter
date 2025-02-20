@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -26,6 +25,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -42,6 +42,7 @@ final _log = Logger('otp.view.configure_hotp_dialog');
 class ConfigureHotpDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
+
   const ConfigureHotpDialog(this.devicePath, this.otpSlot, {super.key});
 
   @override
@@ -65,7 +66,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final secret = _secretController.text.replaceAll(' ', '');
     final secretLengthValid = secret.isNotEmpty && secret.length * 5 % 8 < 5;
@@ -147,7 +148,8 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_secret_key,
-                  helperText: '', // Prevents resizing when errorText shown
+                  helperText: '',
+                  // Prevents resizing when errorText shown
                   errorText: _validateSecret && !secretFormatValid
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.base32.allowedCharacters)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -28,6 +28,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
 import '../models.dart';
@@ -142,7 +143,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         if (signal.status == 'touch') {
           controller = await withContext(
             (context) async {
-              final l10n = AppLocalizations.of(context)!;
+              final l10n = AppLocalizations.of(context);
               return promptUserInteraction(
                 context,
                 icon: const Icon(Symbols.touch_app),
@@ -190,7 +191,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
           if (signal.status == 'touch') {
             controller = await withContext(
               (context) async {
-                final l10n = AppLocalizations.of(context)!;
+                final l10n = AppLocalizations.of(context);
                 return promptUserInteraction(
                   context,
                   icon: const Icon(Symbols.touch_app),
@@ -372,7 +373,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
         if (signal.status == 'touch') {
           controller = await withContext(
             (context) async {
-              final l10n = AppLocalizations.of(context)!;
+              final l10n = AppLocalizations.of(context);
               return promptUserInteraction(
                 context,
                 icon: const Icon(Symbols.touch_app),

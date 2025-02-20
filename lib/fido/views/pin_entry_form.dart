@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../keys.dart';
@@ -90,7 +91,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   }
 
   String? _getErrorText() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (widget._state.pinBlocked || _retries == 0) {
       return l10n.l_pin_blocked_reset;
     }
@@ -105,7 +106,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final noFingerprints = widget._state.bioEnroll == false;
     final authBlocked = widget._state.pinBlocked;
     final pinRetries = widget._state.pinRetries;

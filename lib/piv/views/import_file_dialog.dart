@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -40,6 +40,7 @@ class ImportFileDialog extends ConsumerStatefulWidget {
   final PivSlot pivSlot;
   final File file;
   final bool showMatch;
+
   ImportFileDialog(this.devicePath, this.pivState, this.pivSlot, this.file,
       {super.key})
       : showMatch = pivSlot.slot != SlotId.cardAuth && pivState.supportsBio;
@@ -92,7 +93,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     // This is what ListTile uses for subtitle

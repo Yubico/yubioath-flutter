@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -29,6 +28,7 @@ import '../../app/state.dart';
 import '../../app/views/app_page.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/product_image.dart';
 import 'key_actions.dart';
@@ -36,6 +36,7 @@ import 'manage_label_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
+
   const HomeScreen(this.deviceData, {super.key});
 
   @override
@@ -47,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final serial = widget.deviceData.info.serial;
     final keyCustomization = ref.watch(keyCustomizationManagerProvider)[serial];
@@ -132,7 +133,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 class _FipsLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Opacity(
       opacity: 0.6,
       child: Wrap(
@@ -188,11 +189,12 @@ class _FipsLegend extends StatelessWidget {
 class _DeviceContent extends ConsumerWidget {
   final YubiKeyData deviceData;
   final KeyCustomization? initialCustomization;
+
   const _DeviceContent(this.deviceData, this.initialCustomization);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final name = deviceData.name;
     final serial = deviceData.info.serial;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../generated/l10n/app_localizations.dart';
 import 'keys.dart' as keys;
 
 class FsDialog extends StatelessWidget {
@@ -26,7 +27,7 @@ class FsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Dialog.fullscreen(
       backgroundColor:
           Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),

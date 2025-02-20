@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -33,6 +33,7 @@ import '../../app/views/message_page_not_initialized.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../exception/no_data_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -60,7 +61,7 @@ class FingerprintsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final capabilities = _getCapabilities(deviceData);
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
@@ -109,7 +110,7 @@ class _FidoLockedPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
 
@@ -202,7 +203,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final capabilities = _getCapabilities(widget.deviceData);
@@ -375,7 +376,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   Widget _buildLoadingPage(
           BuildContext context, List<Capability> capabilities) =>
       AppPage(
-        title: AppLocalizations.of(context)!.s_fingerprints,
+        title: AppLocalizations.of(context).s_fingerprints,
         capabilities: capabilities,
         centered: true,
         delayedContent: true,
@@ -411,7 +412,7 @@ class _FingerprintListItem extends StatelessWidget {
       tapIntent: isDesktop && !expanded ? null : OpenIntent(fingerprint),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(fingerprint) : null,
       buildPopupActions: (context) =>
-          buildFingerprintActions(fingerprint, AppLocalizations.of(context)!),
+          buildFingerprintActions(fingerprint, AppLocalizations.of(context)),
     );
   }
 }

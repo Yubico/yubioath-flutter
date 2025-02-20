@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
@@ -42,6 +42,7 @@ import '../app/views/main_page.dart';
 import '../app/views/message_page.dart';
 import '../core/state.dart';
 import '../fido/state.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import '../otp/state.dart';
@@ -397,7 +398,7 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
   @override
   Widget build(BuildContext context) {
     if (slow) {
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       return MessagePage(
         centered: true,
         graphic: const CircularProgressIndicator(),

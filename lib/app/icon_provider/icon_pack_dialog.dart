@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
 import '../../widgets/info_popup_button.dart';
@@ -39,7 +40,7 @@ class IconPackDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final iconPack = ref.watch(iconPackProvider);
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
@@ -144,7 +145,7 @@ class _IconPackDescription extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Row(
         mainAxisSize: MainAxisSize.max,
@@ -207,7 +208,7 @@ class _ImportActionChip extends ConsumerWidget {
   }
 
   void _importAction(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final result = await FilePicker.platform.pickFiles(
         allowedExtensions: ['zip'],
         type: FileType.custom,

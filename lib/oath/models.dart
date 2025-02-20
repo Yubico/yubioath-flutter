@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:base32/base32.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../core/models.dart';
+import '../generated/l10n/app_localizations.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';

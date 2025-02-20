@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../management/models.dart';
 import '../core/models.dart';
 import '../core/state.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'color_extension.dart';
 
 part 'models.freezed.dart';

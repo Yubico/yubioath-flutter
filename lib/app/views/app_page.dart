@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
@@ -516,7 +517,7 @@ class _AppPageState extends ConsumerState<AppPage> {
 
   Scaffold _buildScaffold(
       BuildContext context, bool hasDrawer, bool hasRail, bool hasManage) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
     final showNavigation = ref.watch(_navigationVisibilityProvider);
     final showDetailView = ref.watch(_detailViewVisibilityProvider);
@@ -784,7 +785,7 @@ class CapabilityBadge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final text = Text(capability.getDisplayName(l10n));
     final (fipsCapable, fipsApproved) = ref

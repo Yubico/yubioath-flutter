@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -25,6 +25,7 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/circle_timer.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
@@ -62,7 +63,7 @@ class AccountHelper {
               credential.touchRequired || credential.oathType == OathType.hotp;
           final ready = expired || credential.oathType == OathType.hotp;
           final pinned = _ref.watch(favoritesProvider).contains(credential.id);
-          final l10n = AppLocalizations.of(_context)!;
+          final l10n = AppLocalizations.of(_context);
           final canCopy = code != null && !expired;
 
           return [

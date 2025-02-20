@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -34,6 +34,7 @@ import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -138,7 +139,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
   Future<void> _doAddCredential(
       {DevicePath? devicePath, required Uri credUri}) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     try {
       if (devicePath == null) {
         assert(isAndroid, 'devicePath is only optional for Android');
@@ -176,7 +177,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final deviceNode = ref.watch(currentDeviceProvider);
     if (widget.devicePath != null && widget.devicePath != deviceNode?.path) {
       // If the dialog was started for a specific device and it was

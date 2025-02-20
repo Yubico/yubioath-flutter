@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -35,6 +35,7 @@ import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
 import '../../exception/no_data_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -58,7 +59,7 @@ class PasskeysScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
               title: l10n.s_passkeys,
@@ -107,7 +108,7 @@ class _FidoLockedPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final isBio = state.bioEnroll != null;
@@ -261,7 +262,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final noFingerprints = widget.state.bioEnroll == false;
@@ -641,7 +642,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
-        title: AppLocalizations.of(context)!.s_passkeys,
+        title: AppLocalizations.of(context).s_passkeys,
         capabilities: const [Capability.fido2],
         centered: true,
         delayedContent: true,
@@ -685,7 +686,7 @@ class _CredentialListItem extends StatelessWidget {
       tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,
       buildPopupActions: (context) =>
-          buildCredentialActions(credential, AppLocalizations.of(context)!),
+          buildCredentialActions(credential, AppLocalizations.of(context)),
     );
   }
 }

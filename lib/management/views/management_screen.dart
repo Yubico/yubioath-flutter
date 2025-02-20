@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../core/models.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/delayed_visibility.dart';
@@ -50,7 +51,7 @@ class _CapabilityForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final keyPrefix = (type == _CapabilityType.usb)
         ? management_keys.usbCapabilityKeyPrefix
         : management_keys.nfcCapabilityKeyPrefix;
@@ -79,7 +80,7 @@ class _ModeForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ListTile(
         leading: const Icon(Symbols.usb),
@@ -117,7 +118,7 @@ class _CapabilitiesForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final usbCapabilities = supported[Transport.usb] ?? 0;
     final nfcCapabilities = supported[Transport.nfc] ?? 0;
 
@@ -201,7 +202,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   }
 
   Widget _buildLockCodeForm(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -261,7 +262,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   }
 
   void _submitCapabilitiesForm() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isLocked = widget.deviceData.info.isLocked;
 
     if (isLocked && !Format.hex.isValid(_lockCodeController.text)) {
@@ -339,7 +340,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       );
 
   void _submitModeForm() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _configuring = true;
     });
@@ -365,7 +366,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     var canSave = false;
     bool hasConfig = false;
     final child = ref
