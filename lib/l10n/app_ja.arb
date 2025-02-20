@@ -56,13 +56,17 @@
     "q_rename_target": "{label}の名前を変更しますか？",
     "@q_rename_target": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
-            "item": {}
+            "item": {
+                "type": "String"
+            }
         }
     },
     "s_none": "<なし>",
@@ -100,7 +104,9 @@
     "l_invalid_format_allowed_chars": "無効な形式です。使用できる文字：{characters}",
     "@l_invalid_format_allowed_chars": {
         "placeholders": {
-            "characters": {}
+            "characters": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_keyboard_character": "選択したキーボードで無効な文字",
@@ -110,7 +116,9 @@
     "s_log_level": "ログレベル：{level}",
     "@s_log_level": {
         "placeholders": {
-            "level": {}
+            "level": {
+                "type": "String"
+            }
         }
     },
     "s_character_count": "文字数",
@@ -122,7 +130,9 @@
     "p_community_translations_desc": null,
     "@p_community_translations_desc": {
         "placeholders": {
-            "crowdin": {}
+            "crowdin": {
+                "type": "String"
+            }
         }
     },
     "s_choose_language": null,
@@ -157,27 +167,35 @@
     "s_sn_serial": "S/N：{serial}",
     "@s_sn_serial": {
         "placeholders": {
-            "serial": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "s_fw_version": "F/W：{version}",
     "@s_fw_version": {
         "placeholders": {
-            "version": {}
-        }
-    },
-    "@l_serial_number": {
-        "placeholders": {
-            "serial": {}
+            "version": {
+                "type": "Object"
+            }
         }
     },
     "l_serial_number": "シリアル番号: {serial}",
-    "@l_firmware_version": {
+    "@l_serial_number": {
         "placeholders": {
-            "version": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "l_firmware_version": "ファームウェアバージョン: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
     "l_fips_capable": "FIPS対応",
     "l_fips_approved": "FIPS承認済み",
 
@@ -217,13 +235,17 @@
     "l_app_not_supported_on_yk": "ご使用のYubiKeyでは{app}アプリケーションはサポートされていません",
     "@l_app_not_supported_on_yk": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "l_app_disabled_desc": "アクセスするにはYubiKeyで{app}アプリケーションを有効にしてください",
     "@l_app_disabled_desc": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "s_fido_disabled": "FIDO2が無効です",
@@ -233,7 +255,6 @@
     "s_show_lock_code": "ロックコードを表示",
     "s_hide_lock_code": "ロックコードを隠す",
     "p_lock_code_required_desc": "実行しようとしているアクションには、設定ロックコードを入力する必要があります。",
-
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "ヘルパープロセスが応答していません",
@@ -288,25 +309,33 @@
     "l_set_pin_failed": "PINを設定できませんでした：{message}",
     "@l_set_pin_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_attempts_remaining": "残りの試行回数は{retries}回です",
     "@l_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_pin_attempts_remaining": "PINが正しくありません。残りの試行回数は{retries}回です",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_puk_attempts_remaining": "PUKが正しくありません。残りの試行回数は{retries}回です",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "s_fido_pin_protection": "FIDO PIN保護",
@@ -321,7 +350,9 @@
     "p_enter_current_pin_or_puk": null,
     "@p_enter_current_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "p_enter_current_pin_or_reset": "現在のPINを入力してください。PINがわからない場合は、PUKでブロックを解除するか、YubiKeyをリセットする必要があります。",
@@ -330,17 +361,29 @@
     "p_new_fido2_pin_requirements": null,
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
         }
     },
     "p_new_fido2_pin_complexity_active_requirements": null,
     "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {},
-            "unique_characters": {},
-            "common_pin": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
         }
     },
     "s_ep_attestation": "Enterprise Attestation",
@@ -355,22 +398,34 @@
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
         }
     },
     "p_new_piv_pin_puk_complexity_active_requirements": null,
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {},
-            "common": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
         }
     },
     "p_pin_puk_complexity_failure": "新しい {name} は複雑な要件を満たしていません。",
     "@p_pin_puk_complexity_failure": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "l_warning_default_pin": "警告: デフォルトのPINが使用されています",
@@ -430,7 +485,9 @@
     "l_account": "アカウント：{label}",
     "@l_account": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_accounts": "アカウント",
@@ -438,7 +495,9 @@
     "l_results_for": "\"{query} \"の結果",
     "@l_results_for": {
         "placeholders": {
-            "query": {}
+            "query": {
+                "type": "String"
+            }
         }
     },
     "l_authenticator_get_started": "OTPアカウントの使用を開始",
@@ -460,7 +519,9 @@
     "l_account_add_failed": "アカウントを追加できませんでした：{message}",
     "@l_account_add_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_account_password_required": "パスワードが必要です",
@@ -483,7 +544,9 @@
     "l_rename_account_failed": "アカウント名の変更に失敗しました: {message}",
     "@l_rename_account_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "p_rename_will_change_account_displayed": "これにより、リスト内のアカウントの表示が変更されます。",
@@ -498,20 +561,28 @@
     "l_accounts_used": "アカウント {used} / {capacity} 個を使用中",
     "@l_accounts_used": {
         "placeholders": {
-            "used": {},
-            "capacity": {}
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
         }
     },
     "s_num_digits": "{num}桁",
     "@s_num_digits": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_num_sec": "{num}秒",
     "@s_num_sec": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_issuer_optional": "発行者（オプション）",
@@ -529,7 +600,9 @@
     "l_passkey": "パスキー：{label}",
     "@l_passkey": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_passkeys": "パスキー",
@@ -548,8 +621,12 @@
     "p_passkeys_used": "パスキー {used} / {max} 個を使用中。",
     "@p_passkeys_used": {
         "placeholders": {
-            "used": {},
-            "max": {}
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
         }
     },
     "@_fingerprints": {},
@@ -557,7 +634,9 @@
     "l_fingerprint": "指紋：{label}",
     "@l_fingerprint": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_fingerprints": "指紋",
@@ -565,12 +644,18 @@
     "s_fingerprint_added": "指紋が追加されました",
     "l_adding_fingerprint_failed": "指紋の追加エラー：{message}",
     "@l_adding_fingerprint_failed": {
-        "placeholders": {}
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
     },
     "l_setting_name_failed": "名前の設定エラー：{message}",
     "@l_setting_name_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "s_setup_fingerprints": "指紋を設定",
@@ -590,14 +675,18 @@
     "l_rename_fp_failed": "名前変更エラー：{message}",
     "@l_rename_fp_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_one_or_more_fps": "指紋を1つ以上（最大5つ）追加してください",
     "l_fingerprints_used": "{used}/5の指紋が登録されています",
     "@l_fingerprints_used": {
         "placeholders": {
-            "used": {}
+            "used": {
+                "type": "int"
+            }
         }
     },
     "p_press_fingerprint_begin": "最初にYubiKeyに指を押し付けてください。",
@@ -654,7 +743,9 @@
     "p_generate_desc": "これにより、YubiKeyのPIVスロット{slot}に新しい鍵が生成されます。公開鍵は、YubiKeyに保存された自己署名証明書、またはファイルに保存された証明書署名要求（CSR）に埋め込まれます。",
     "@p_generate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "s_private_key_generated": "秘密鍵が生成されました",
@@ -665,19 +756,25 @@
     "p_delete_certificate_desc": null,
     "@p_delete_certificate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_key_desc": null,
     "@p_delete_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_certificate_and_key_desc": null,
     "@p_delete_certificate_and_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_certificate_deleted": "証明書が削除されました",
@@ -688,28 +785,40 @@
     "q_move_key_confirm": "PIVスロット {from_slot}で秘密鍵を移動しますか？",
     "@q_move_key_confirm": {
         "placeholders": {
-            "from_slot": {}
+            "from_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_to_slot_confirm": "PIVスロット {from_slot} の秘密鍵をスロット {to_slot}に移動しますか？",
     "@q_move_key_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_and_certificate_to_slot_confirm": "PIV スロット {from_slot} の秘密鍵と証明書をスロット {to_slot} に移動しますか？",
     "@q_move_key_and_certificate_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "p_password_protected_file": "選択したファイルはパスワードで保護されています。続行するにはパスワードを入力してください。",
     "p_import_items_desc": "以下のアイテムがPIVスロット{slot}にインポートされます。",
     "@p_import_items_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_warning_public_key_mismatch": null,
@@ -731,7 +840,9 @@
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
     "@p_overwrite_slot_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_overwrite_cert": "証明書が上書きされます",
@@ -742,8 +853,12 @@
     "s_slot_display_name": "{name}（{hexid}）",
     "@s_slot_display_name": {
         "placeholders": {
-            "name": {},
-            "hexid": {}
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
         }
     },
     "s_slot_9a": "認証",
@@ -775,15 +890,19 @@
     "s_export": "エクスポート",
     "l_export_configuration_file": "設定をファイルにエクスポート",
     "l_exported_can_be_uploaded_at": "エクスポートされた資格情報は {url} にアップロードできます",
-    "@_export_can_be_uploaded_at": {
+    "@l_exported_can_be_uploaded_at": {
         "placeholders": {
-            "url": {}
+            "url": {
+                "type": "String"
+            }
         }
     },
     "l_keyboard_layout": null,
-    "@_keyboard_layout": {
-        "placeholder": {
-            "layout": {}
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
         }
     },
 
@@ -794,7 +913,9 @@
     "p_warning_delete_slot_configuration": "警告！このアクションにより、スロット{slot_id}から認証情報が完全に削除されます。",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
-            "slot_id": {}
+            "slot_id": {
+                "type": "int"
+            }
         }
     },
     "l_slot_deleted": "認証情報が削除されました",
@@ -807,14 +928,20 @@
     "l_slot_credential_configured": "{type}認証情報を設定しました",
     "@l_slot_credential_configured": {
         "placeholders": {
-            "type": {}
+            "type": {
+                "type": "String"
+            }
         }
     },
     "l_slot_credential_configured_and_exported": "{type}認証情報を設定し、{file}にエクスポートしました",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
-            "type": {},
-            "file": {}
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
         }
     },
     "s_append_enter": "⏎を追加",
@@ -831,7 +958,9 @@
     "p_enter_access_code": "スロット {slot} のアクセスコードを入力してください。",
     "@p_enter_access_code": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
 
@@ -857,7 +986,9 @@
     "l_qr_file_too_large": "ファイルが大きすぎます（最大{max}）",
     "@l_qr_file_too_large": {
         "placeholders": {
-            "max": {}
+            "max": {
+                "type": "String"
+            }
         }
     },
     "l_qr_invalid_image_file": "無効な画像ファイル",
@@ -865,7 +996,9 @@
     "l_qr_not_read": "QRコードの読み取りに失敗しました：{message}",
     "@l_qr_not_read": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_point_camera_scan": "スキャンするにはカメラをQRコードに向けてください",
@@ -884,7 +1017,9 @@
     "l_reset_failed": "リセットの実行エラー：{message}",
     "@l_reset_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_piv_app_reset": "PIVアプリケーションのリセット",
@@ -909,7 +1044,9 @@
     "p_target_copied_clipboard": "{label}がクリップボードにコピーされました。",
     "@p_target_copied_clipboard": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
 
@@ -920,7 +1057,9 @@
     "p_custom_icons_format_desc": null,
     "@p_custom_icons_format_desc": {
         "placeholders": {
-            "aegis_icon_pack": {}
+            "aegis_icon_pack": {
+                "type": "String"
+            }
         }
     },
     "s_replace_icon_pack": "アイコンパックを交換",
@@ -934,7 +1073,9 @@
     "l_import_icon_pack_failed": "アイコンパックのインポートエラー：{message}",
     "@l_import_icon_pack_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_icon_pack": "無効なアイコンパック",

@@ -56,13 +56,17 @@
     "q_rename_target": "Renommer {label}\u00a0?",
     "@q_rename_target": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
-            "item": {}
+            "item": {
+                "type": "String"
+            }
         }
     },
     "s_none": "<aucun>",
@@ -100,7 +104,9 @@
     "l_invalid_format_allowed_chars": "Format invalide, caractères autorisés\u00a0: {characters}",
     "@l_invalid_format_allowed_chars": {
         "placeholders": {
-            "characters": {}
+            "characters": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_keyboard_character": "Caractères invalides pour clavier sélectionné",
@@ -110,7 +116,9 @@
     "s_log_level": "Niveau de journalisation\u00a0: {level}",
     "@s_log_level": {
         "placeholders": {
-            "level": {}
+            "level": {
+                "type": "String"
+            }
         }
     },
     "s_character_count": "Nombre caractères",
@@ -122,7 +130,9 @@
     "p_community_translations_desc": null,
     "@p_community_translations_desc": {
         "placeholders": {
-            "crowdin": {}
+            "crowdin": {
+                "type": "String"
+            }
         }
     },
     "s_choose_language": null,
@@ -157,27 +167,35 @@
     "s_sn_serial": "N/S\u00a0: {serial}",
     "@s_sn_serial": {
         "placeholders": {
-            "serial": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "s_fw_version": "F/W\u00a0: {version}",
     "@s_fw_version": {
         "placeholders": {
-            "version": {}
-        }
-    },
-    "@l_serial_number": {
-        "placeholders": {
-            "serial": {}
+            "version": {
+                "type": "Object"
+            }
         }
     },
     "l_serial_number": "Numéro de série : {serial}",
-    "@l_firmware_version": {
+    "@l_serial_number": {
         "placeholders": {
-            "version": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "l_firmware_version": "Version du firmware : {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
     "l_fips_capable": "Compatible FIPS",
     "l_fips_approved": "Approuvé par le FIPS",
 
@@ -217,13 +235,17 @@
     "l_app_not_supported_on_yk": "YubiKey utilisée incompatible avec l'application {app}",
     "@l_app_not_supported_on_yk": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "l_app_disabled_desc": "Activez l'application {app} sur votre YubiKey pour y accéder",
     "@l_app_disabled_desc": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "s_fido_disabled": "FIDO2 désactivé",
@@ -233,7 +255,6 @@
     "s_show_lock_code": "Afficher le code de verrouillage",
     "s_hide_lock_code": "Cacher le code de verrouillage",
     "p_lock_code_required_desc": "L'action que vous êtes sur le point d'effectuer nécessite la saisie du code de verrouillage de la configuration.",
-
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "Le processus d'aide ne répond pas",
@@ -288,25 +309,33 @@
     "l_set_pin_failed": "Impossible de définir PIN\u00a0: {message}",
     "@l_set_pin_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_attempts_remaining": "{retries} tentative(s) restante(s)",
     "@l_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_pin_attempts_remaining": "PIN incorrect, {retries} tentative(s) restante(s)",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_puk_attempts_remaining": "PUK incorrect, {retries} tentative(s) restante(s)",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "s_fido_pin_protection": "Protection PIN FIDO",
@@ -321,7 +350,9 @@
     "p_enter_current_pin_or_puk": null,
     "@p_enter_current_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "p_enter_current_pin_or_reset": "Saisissez votre PIN actuel. Vous ne connaissez pas votre PIN\u00a0? Débloquez-le avec le PUK ou réinitialisez la YubiKey.",
@@ -330,17 +361,29 @@
     "p_new_fido2_pin_requirements": null,
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
         }
     },
     "p_new_fido2_pin_complexity_active_requirements": null,
     "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {},
-            "unique_characters": {},
-            "common_pin": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
         }
     },
     "s_ep_attestation": "Attestation d'entreprise",
@@ -355,22 +398,34 @@
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
         }
     },
     "p_new_piv_pin_puk_complexity_active_requirements": null,
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {},
-            "common": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
         }
     },
     "p_pin_puk_complexity_failure": "Le nouveau {name} ne répond pas aux exigences de complexité.",
     "@p_pin_puk_complexity_failure": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "l_warning_default_pin": "Avertissement : Code PIN par défaut utilisé",
@@ -430,7 +485,9 @@
     "l_account": "Compte\u00a0: {label}",
     "@l_account": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_accounts": "Comptes",
@@ -438,7 +495,9 @@
     "l_results_for": "Résultats pour \"{query}\"",
     "@l_results_for": {
         "placeholders": {
-            "query": {}
+            "query": {
+                "type": "String"
+            }
         }
     },
     "l_authenticator_get_started": "Démarrer avec les comptes OTP",
@@ -460,7 +519,9 @@
     "l_account_add_failed": "Échec d'ajout du compte\u00a0: {message}",
     "@l_account_add_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_account_password_required": "Mot de passe requis",
@@ -483,7 +544,9 @@
     "l_rename_account_failed": "Échec du renommage du compte : {message}",
     "@l_rename_account_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "p_rename_will_change_account_displayed": "Cela modifiera l'affichage du compte dans la liste.",
@@ -498,20 +561,28 @@
     "l_accounts_used": "{used} comptes sur {capacity} utilisés",
     "@l_accounts_used": {
         "placeholders": {
-            "used": {},
-            "capacity": {}
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
         }
     },
     "s_num_digits": "{num} chiffres",
     "@s_num_digits": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_num_sec": "{num} s",
     "@s_num_sec": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_issuer_optional": "Émetteur (facultatif)",
@@ -529,7 +600,9 @@
     "l_passkey": "Passkey\u00a0: {label}",
     "@l_passkey": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_passkeys": "Passkeys",
@@ -548,8 +621,12 @@
     "p_passkeys_used": "{used} des clés {max} utilisées.",
     "@p_passkeys_used": {
         "placeholders": {
-            "used": {},
-            "max": {}
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
         }
     },
     "@_fingerprints": {},
@@ -557,7 +634,9 @@
     "l_fingerprint": "Empreinte digitale\u00a0: {label}",
     "@l_fingerprint": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_fingerprints": "Empreintes digitales",
@@ -565,12 +644,18 @@
     "s_fingerprint_added": "Empreinte digitale ajoutée",
     "l_adding_fingerprint_failed": "Erreur d'ajout d'empreinte\u00a0: {message}",
     "@l_adding_fingerprint_failed": {
-        "placeholders": {}
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
     },
     "l_setting_name_failed": "Erreur de définition du nom\u00a0: {message}",
     "@l_setting_name_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "s_setup_fingerprints": "Configurer empreintes digitales",
@@ -590,14 +675,18 @@
     "l_rename_fp_failed": "Erreur de renommage\u00a0: {message}",
     "@l_rename_fp_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_one_or_more_fps": "Ajouter une ou plusieurs empreintes (jusqu'à\u00a05)",
     "l_fingerprints_used": "{used}\u00a0empreintes sur 5 enregistrées",
     "@l_fingerprints_used": {
         "placeholders": {
-            "used": {}
+            "used": {
+                "type": "int"
+            }
         }
     },
     "p_press_fingerprint_begin": "Appuyez votre doigt sur la YubiKey pour commencer.",
@@ -654,7 +743,9 @@
     "p_generate_desc": "Cela génère une nouvelle clé sur la YubiKey dans le slot PIV {slot}. La clé publique intégrera un certificat auto-signé stocké sur la YubiKey ou le CSR enregistré dans un fichier.",
     "@p_generate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "s_private_key_generated": "Clé privée générée",
@@ -665,19 +756,25 @@
     "p_delete_certificate_desc": null,
     "@p_delete_certificate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_key_desc": null,
     "@p_delete_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_certificate_and_key_desc": null,
     "@p_delete_certificate_and_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_certificate_deleted": "Certificat supprimé",
@@ -688,28 +785,40 @@
     "q_move_key_confirm": "Déplacer la clé privée depuis l'emplacement PIV {from_slot}?",
     "@q_move_key_confirm": {
         "placeholders": {
-            "from_slot": {}
+            "from_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_to_slot_confirm": "Déplacer la clé privée depuis l'emplacement PIV {from_slot} vers l'emplacement {to_slot}?",
     "@q_move_key_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_and_certificate_to_slot_confirm": "Déplacer la clé privée et le certificat depuis l'emplacement PIV {from_slot} vers l'emplacement {to_slot}?",
     "@q_move_key_and_certificate_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "p_password_protected_file": "Le fichier sélectionné est protégé par mot de passe. Saisissez le mot de passe pour continuer.",
     "p_import_items_desc": "Les éléments suivants seront importés dans le slot PIV {slot}.",
     "@p_import_items_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_warning_public_key_mismatch": null,
@@ -731,7 +840,9 @@
     "p_overwrite_slot_desc": "Cela écrasera définitivement le contenu du slot {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_overwrite_cert": "Le certificat sera écrasé",
@@ -742,8 +853,12 @@
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
-            "name": {},
-            "hexid": {}
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
         }
     },
     "s_slot_9a": "Authentification",
@@ -775,15 +890,19 @@
     "s_export": "Exporter",
     "l_export_configuration_file": "Exporter configuration vers fichier",
     "l_exported_can_be_uploaded_at": "Les identifiants exportés peuvent être téléchargés sur {url}",
-    "@_export_can_be_uploaded_at": {
+    "@l_exported_can_be_uploaded_at": {
         "placeholders": {
-            "url": {}
+            "url": {
+                "type": "String"
+            }
         }
     },
     "l_keyboard_layout": null,
-    "@_keyboard_layout": {
-        "placeholder": {
-            "layout": {}
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
         }
     },
 
@@ -794,7 +913,9 @@
     "p_warning_delete_slot_configuration": "Attention\u00a0! Cela supprimera définitivement les infos d'identification du slot {slot_id}.",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
-            "slot_id": {}
+            "slot_id": {
+                "type": "int"
+            }
         }
     },
     "l_slot_deleted": "Infos d'identification supprimées",
@@ -807,14 +928,20 @@
     "l_slot_credential_configured": "Infos d'identification {type} configurées",
     "@l_slot_credential_configured": {
         "placeholders": {
-            "type": {}
+            "type": {
+                "type": "String"
+            }
         }
     },
     "l_slot_credential_configured_and_exported": "Infos d'identification {type} configurées et exportées vers {file}",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
-            "type": {},
-            "file": {}
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
         }
     },
     "s_append_enter": "Ajouter ⏎",
@@ -831,7 +958,9 @@
     "p_enter_access_code": "Entrez le code d'accès pour l'emplacement {slot}.",
     "@p_enter_access_code": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
 
@@ -857,7 +986,9 @@
     "l_qr_file_too_large": "Fichier trop gros (max. {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
-            "max": {}
+            "max": {
+                "type": "String"
+            }
         }
     },
     "l_qr_invalid_image_file": "Fichier image non valide",
@@ -865,7 +996,9 @@
     "l_qr_not_read": "Échec de lecture du code QR\u00a0: {message}",
     "@l_qr_not_read": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_point_camera_scan": "Pointez votre caméra vers le code QR pour le scanner",
@@ -884,7 +1017,9 @@
     "l_reset_failed": "Erreur de réinitialisation\u00a0: {message}",
     "@l_reset_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_piv_app_reset": "Réinitialisation PIV",
@@ -909,7 +1044,9 @@
     "p_target_copied_clipboard": "{label} copié dans le presse-papiers.",
     "@p_target_copied_clipboard": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
 
@@ -920,7 +1057,9 @@
     "p_custom_icons_format_desc": null,
     "@p_custom_icons_format_desc": {
         "placeholders": {
-            "aegis_icon_pack": {}
+            "aegis_icon_pack": {
+                "type": "String"
+            }
         }
     },
     "s_replace_icon_pack": "Remplacer le pack d'icônes",
@@ -934,7 +1073,9 @@
     "l_import_icon_pack_failed": "Erreur d'importation du pack d'icônes\u00a0: {message}",
     "@l_import_icon_pack_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_icon_pack": "Pack d'icônes non valide",

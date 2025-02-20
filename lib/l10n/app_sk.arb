@@ -56,13 +56,17 @@
     "q_rename_target": "Premenovať {label}?",
     "@q_rename_target": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
-            "item": {}
+            "item": {
+                "type": "String"
+            }
         }
     },
     "s_none": "<none>",
@@ -100,7 +104,9 @@
     "l_invalid_format_allowed_chars": "Neplatný formát, povolené znaky: {characters}",
     "@l_invalid_format_allowed_chars": {
         "placeholders": {
-            "characters": {}
+            "characters": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_keyboard_character": "Neplatné znaky pre vybranú klávesnicu",
@@ -110,7 +116,9 @@
     "s_log_level": "Úroveň záznamu: {level}",
     "@s_log_level": {
         "placeholders": {
-            "level": {}
+            "level": {
+                "type": "String"
+            }
         }
     },
     "s_character_count": "Počet znakov",
@@ -122,7 +130,9 @@
     "p_community_translations_desc": null,
     "@p_community_translations_desc": {
         "placeholders": {
-            "crowdin": {}
+            "crowdin": {
+                "type": "String"
+            }
         }
     },
     "s_choose_language": null,
@@ -157,27 +167,35 @@
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
-            "serial": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "s_fw_version": "F/W: {version}",
     "@s_fw_version": {
         "placeholders": {
-            "version": {}
-        }
-    },
-    "@l_serial_number": {
-        "placeholders": {
-            "serial": {}
+            "version": {
+                "type": "Object"
+            }
         }
     },
     "l_serial_number": "Sériové číslo: {serial}",
-    "@l_firmware_version": {
+    "@l_serial_number": {
         "placeholders": {
-            "version": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "l_firmware_version": "Verzia firmvéru: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
     "l_fips_capable": "Schopné využívať FIPS",
     "l_fips_approved": "Schválené FIPS",
 
@@ -217,13 +235,17 @@
     "l_app_not_supported_on_yk": "Použitý kľúč YubiKey nepodporuje aplikáciu '{app}'",
     "@l_app_not_supported_on_yk": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "l_app_disabled_desc": "Povoľte aplikáciu '{app}' na svojom YubiKey, aby ste mali prístup k",
     "@l_app_disabled_desc": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "s_fido_disabled": "FIDO2 vypnuté",
@@ -233,7 +255,6 @@
     "s_show_lock_code": "Zobraziť kód zámku",
     "s_hide_lock_code": "Skryť kód zámku",
     "p_lock_code_required_desc": "Akcia, ktorú sa chystáte vykonať, si vyžaduje zadanie kódu zámku nastavenia.",
-
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "Proces Helper nereaguje",
@@ -288,25 +309,33 @@
     "l_set_pin_failed": "Nepodarilo sa nastaviť PIN: {message}",
     "@l_set_pin_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_attempts_remaining": "{retries} zostávajúce pokusy",
     "@l_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_pin_attempts_remaining": "Nesprávny PIN kód, zostávajú {retries} pokusy",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_puk_attempts_remaining": "Nesprávny PUK, {retries} zostávajúce pokusy",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "s_fido_pin_protection": "Ochrana FIDO PIN kódom",
@@ -321,7 +350,9 @@
     "p_enter_current_pin_or_puk": null,
     "@p_enter_current_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "p_enter_current_pin_or_reset": "Zadajte svoj aktuálny PIN kód. Ak nepoznáte svoj PIN, musíte ho odblokovať pomocou PUK alebo obnoviť YubiKey.",
@@ -330,17 +361,29 @@
     "p_new_fido2_pin_requirements": null,
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
         }
     },
     "p_new_fido2_pin_complexity_active_requirements": null,
     "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {},
-            "unique_characters": {},
-            "common_pin": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
         }
     },
     "s_ep_attestation": "Podniková atestácia",
@@ -355,22 +398,34 @@
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
         }
     },
     "p_new_piv_pin_puk_complexity_active_requirements": null,
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {},
-            "common": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
         }
     },
     "p_pin_puk_complexity_failure": "Nový {name} nespĺňa požiadavky na komplexnosť.",
     "@p_pin_puk_complexity_failure": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "l_warning_default_pin": "Varovanie: Používa sa predvolený PIN kód",
@@ -430,7 +485,9 @@
     "l_account": "Účet: {label}",
     "@l_account": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_accounts": "Účty",
@@ -438,7 +495,9 @@
     "l_results_for": "Výsledky pre \"{query}\"",
     "@l_results_for": {
         "placeholders": {
-            "query": {}
+            "query": {
+                "type": "String"
+            }
         }
     },
     "l_authenticator_get_started": "Začnite s účtami OTP",
@@ -460,7 +519,9 @@
     "l_account_add_failed": "Nepodarilo sa pridať účet: {message}",
     "@l_account_add_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_account_password_required": "Vyžaduje sa heslo",
@@ -483,7 +544,9 @@
     "l_rename_account_failed": "Zlyhalo premenovanie účtu: {message}",
     "@l_rename_account_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "p_rename_will_change_account_displayed": "Týmto sa zmení spôsob zobrazenia účtu v zozname.",
@@ -498,20 +561,28 @@
     "l_accounts_used": "{used} z {capacity} účtov je využitých",
     "@l_accounts_used": {
         "placeholders": {
-            "used": {},
-            "capacity": {}
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
         }
     },
     "s_num_digits": "{num} číslic",
     "@s_num_digits": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_num_sec": "{num} sek",
     "@s_num_sec": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_issuer_optional": "Vydavateľ (nepovinné)",
@@ -529,7 +600,9 @@
     "l_passkey": "Prístupový kľúč: {label}",
     "@l_passkey": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_passkeys": "Prístupové kľúče (passkeys)",
@@ -548,8 +621,12 @@
     "p_passkeys_used": "{used} z {max} prístupových kľúčov je použitých.",
     "@p_passkeys_used": {
         "placeholders": {
-            "used": {},
-            "max": {}
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
         }
     },
     "@_fingerprints": {},
@@ -557,7 +634,9 @@
     "l_fingerprint": "Odtlačok prsta: {label}",
     "@l_fingerprint": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_fingerprints": "Odtlačky prstov",
@@ -565,12 +644,18 @@
     "s_fingerprint_added": "Odtlačok bol pridaný",
     "l_adding_fingerprint_failed": "Chyba pri pridávaní odtlačku prsta: {message}",
     "@l_adding_fingerprint_failed": {
-        "placeholders": {}
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
     },
     "l_setting_name_failed": "Chyba nastavenia názvu: {message}",
     "@l_setting_name_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "s_setup_fingerprints": "Nastaviť odtlačky prstov",
@@ -590,14 +675,18 @@
     "l_rename_fp_failed": "Chyba pri premenovaní: {message}",
     "@l_rename_fp_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_one_or_more_fps": "Pridajte jeden alebo viac (až päť) odtlačkov prstov",
     "l_fingerprints_used": "{used}/5 odtlačkov prstov je registrovaných",
     "@l_fingerprints_used": {
         "placeholders": {
-            "used": {}
+            "used": {
+                "type": "int"
+            }
         }
     },
     "p_press_fingerprint_begin": "Začnite stlačením prsta na YubiKey.",
@@ -654,7 +743,9 @@
     "p_generate_desc": "Týmto sa vygeneruje nový kľúč na YubiKey v slote PIV {slot}. Verejný kľúč sa uloží do súboru, vloží sa do samo-podpísaného certifikátu uloženého v zariadení YubiKey alebo do žiadosti o podpísanie certifikátu (CSR) uloženej do súboru.",
     "@p_generate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "s_private_key_generated": "Súkromný kľúč bol vygenerovaný",
@@ -665,19 +756,25 @@
     "p_delete_certificate_desc": null,
     "@p_delete_certificate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_key_desc": null,
     "@p_delete_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_certificate_and_key_desc": null,
     "@p_delete_certificate_and_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_certificate_deleted": "Certifikát bol vymazaný",
@@ -688,28 +785,40 @@
     "q_move_key_confirm": "Presunúť súkromný kľúč v slote PIV {from_slot}?",
     "@q_move_key_confirm": {
         "placeholders": {
-            "from_slot": {}
+            "from_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_to_slot_confirm": "Presunúť súkromný kľúč v slote PIV {from_slot} do slotu {to_slot}?",
     "@q_move_key_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_and_certificate_to_slot_confirm": "Premiestniť súkromný kľúč a certifikát v slote PIV {from_slot} do slotu {to_slot}?",
     "@q_move_key_and_certificate_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "p_password_protected_file": "Vybraný súbor je chránený heslom. Ak chcete pokračovať, zadajte heslo.",
     "p_import_items_desc": "Do slotu PIV {slot} sa naimportujú tieto položky.",
     "@p_import_items_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_warning_public_key_mismatch": null,
@@ -731,7 +840,9 @@
     "p_overwrite_slot_desc": "Tým sa natrvalo prepíše existujúci obsah v slote {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_overwrite_cert": "Certifikát bude prepísaný",
@@ -742,8 +853,12 @@
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
-            "name": {},
-            "hexid": {}
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
         }
     },
     "s_slot_9a": "Autentifikácia",
@@ -775,15 +890,19 @@
     "s_export": "Exportovať",
     "l_export_configuration_file": "Exportovať nastavenie do súboru",
     "l_exported_can_be_uploaded_at": "Exportované poverenia je možné nahrať na stránke {url}",
-    "@_export_can_be_uploaded_at": {
+    "@l_exported_can_be_uploaded_at": {
         "placeholders": {
-            "url": {}
+            "url": {
+                "type": "String"
+            }
         }
     },
     "l_keyboard_layout": null,
-    "@_keyboard_layout": {
-        "placeholder": {
-            "layout": {}
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
         }
     },
 
@@ -794,7 +913,9 @@
     "p_warning_delete_slot_configuration": "Varovanie! Táto akcia natrvalo odstráni poverenie zo slotu {slot_id}.",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
-            "slot_id": {}
+            "slot_id": {
+                "type": "int"
+            }
         }
     },
     "l_slot_deleted": "Poverenie odstránené",
@@ -807,14 +928,20 @@
     "l_slot_credential_configured": "Nastavené poverenie {type}",
     "@l_slot_credential_configured": {
         "placeholders": {
-            "type": {}
+            "type": {
+                "type": "String"
+            }
         }
     },
     "l_slot_credential_configured_and_exported": "Nastavené poverenie {type} a exportované do {file}",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
-            "type": {},
-            "file": {}
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
         }
     },
     "s_append_enter": "Pripojiť ⏎",
@@ -831,7 +958,9 @@
     "p_enter_access_code": "Zadajte prístupový kód pre slot {slot}.",
     "@p_enter_access_code": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
 
@@ -857,7 +986,9 @@
     "l_qr_file_too_large": "Príliš veľký súbor (max. {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
-            "max": {}
+            "max": {
+                "type": "String"
+            }
         }
     },
     "l_qr_invalid_image_file": "Neplatný obrázkový súbor",
@@ -865,7 +996,9 @@
     "l_qr_not_read": "Nepodarilo sa načítať QR kód: {message}",
     "@l_qr_not_read": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_point_camera_scan": "Nasmerujte kameru na QR kód a naskenujte ho",
@@ -884,7 +1017,9 @@
     "l_reset_failed": "Chyba pri vykonaní obnovenia: {message}",
     "@l_reset_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_piv_app_reset": "Obnovenie aplikácie PIV",
@@ -909,7 +1044,9 @@
     "p_target_copied_clipboard": "{label} skopírovaná do schránky.",
     "@p_target_copied_clipboard": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
 
@@ -920,7 +1057,9 @@
     "p_custom_icons_format_desc": null,
     "@p_custom_icons_format_desc": {
         "placeholders": {
-            "aegis_icon_pack": {}
+            "aegis_icon_pack": {
+                "type": "String"
+            }
         }
     },
     "s_replace_icon_pack": "Nahradiť balík ikon",
@@ -934,7 +1073,9 @@
     "l_import_icon_pack_failed": "Chyba pri importovaní balíka ikon: {message}",
     "@l_import_icon_pack_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_icon_pack": "Neplatný balík ikon",
