@@ -1,9 +1,9 @@
 == Instructions for Linux
 
 === Basic usage
-To run Yubico Authenticator, execute the yubico-authenticator binary by double clicking or running it from command line:
+To run Yubico Authenticator, execute the authenticator binary by double clicking or running it from command line:
 
-  ./yubico-authenticator
+  ./authenticator
 
 You will need to have pcscd installed and running for Yubico Authenticator to work.
 On Ubuntu:
