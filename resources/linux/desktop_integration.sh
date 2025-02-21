@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-DESKTOP_FILENAME="com.yubico.authenticator.desktop"
+DESKTOP_FILENAME="com.yubico.yubioath.desktop"
 DESKTOP_FILE="${HOME}/.local/share/applications/${DESKTOP_FILENAME}"
 
 EXEC_DIRNAME=$(dirname "$0")
@@ -30,7 +30,18 @@ help() {
   echo "       -h | --help       -- show usage"
 }
 
+uninstall_legacy() {
+  # uninstall legacy desktop file
+  LEGACY_DESKTOP_FILENAME="com.yubico.authenticator.desktop"
+  LEGACY_DESKTOP_FILE="${HOME}/.local/share/applications/${LEGACY_DESKTOP_FILENAME}"
+  if [ -f "${LEGACY_DESKTOP_FILE}" ]; then
+    rm "${LEGACY_DESKTOP_FILE}"
+    echo "Removed legacy desktop file: ${LEGACY_DESKTOP_FILE}"
+  fi
+}
+
 install() {
+  uninstall_legacy
   sed -e "s|@EXEC_PATH|${EXEC_PATH}|g" \
     <"${EXEC_PATH}/linux_support/${DESKTOP_FILENAME}" \
     >"${DESKTOP_FILE}"
@@ -38,6 +49,7 @@ install() {
 }
 
 uninstall() {
+  uninstall_legacy
   rm "${DESKTOP_FILE}"
   echo "Removed: ${DESKTOP_FILE}"
 }
