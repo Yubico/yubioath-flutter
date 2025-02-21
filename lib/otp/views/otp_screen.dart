@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -30,6 +30,7 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -54,7 +55,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
         loading: () => MessagePage(
@@ -210,7 +211,7 @@ class _SlotListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final slot = otpSlot.slot;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final isConfigured = otpSlot.isConfigured;
     final hasFeature = ref.watch(featureProvider);

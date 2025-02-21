@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/message.dart';
 import '../app/state.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'tooltip_if_truncated.dart';
 
 class InfoTable extends ConsumerWidget {
@@ -29,7 +30,7 @@ class InfoTable extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(

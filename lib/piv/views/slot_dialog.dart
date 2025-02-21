@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,6 +22,7 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
@@ -31,6 +31,7 @@ import 'cert_info_view.dart';
 
 class SlotDialog extends ConsumerWidget {
   final SlotId pivSlot;
+
   const SlotDialog(this.pivSlot, {super.key});
 
   @override
@@ -44,7 +45,7 @@ class SlotDialog extends ConsumerWidget {
     }
     final devicePath = keyData.node.path;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     // This is what ListTile uses for subtitle
     final subtitleStyle = textTheme.bodyMedium!.copyWith(

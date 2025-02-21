@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -26,6 +26,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -120,8 +121,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           .read(favoritesProvider.notifier)
           .renameCredential(renamed.id, renamed.id);
 
-      await withContext((context) async => showMessage(
-          context, AppLocalizations.of(context)!.s_account_renamed));
+      await withContext((context) async =>
+          showMessage(context, AppLocalizations.of(context).s_account_renamed));
 
       nav.pop(renamed);
     } on CancellationException catch (_) {
@@ -137,7 +138,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       }
       await withContext((context) async => showMessage(
             context,
-            AppLocalizations.of(context)!.l_rename_account_failed(errorMessage),
+            AppLocalizations.of(context).l_rename_account_failed(errorMessage),
             duration: const Duration(seconds: 4),
           ));
     }
@@ -145,7 +146,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final issuer = _issuerController.text.trim();
     final name = _nameController.text.trim();
 

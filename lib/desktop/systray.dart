@@ -19,7 +19,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
@@ -31,6 +31,7 @@ import '../app/models.dart';
 import '../app/shortcuts.dart';
 import '../app/state.dart';
 import '../exception/cancellation_exception.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';
 import '../oath/views/utils.dart';

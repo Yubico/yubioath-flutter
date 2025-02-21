@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -26,6 +26,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -76,7 +77,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasPin = widget.state.hasPin;
     final minPinLength = widget.state.minPinLength;
     final currentMinPinLen = !hasPin
@@ -288,7 +289,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     _newPinFocus.unfocus();
     _confirmPinFocus.unfocus();
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final oldPin = _currentPinController.text.isNotEmpty
         ? _currentPinController.text
         : null;

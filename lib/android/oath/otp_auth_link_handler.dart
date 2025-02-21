@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../generated/l10n/app_localizations.dart';
 import '../../oath/views/utils.dart';
 
 const _appLinkMethodsChannel = MethodChannel('app.link.methods');
@@ -30,7 +30,7 @@ void setupOtpAuthLinkHandler(BuildContext context) {
     switch (call.method) {
       case 'handleOtpAuthLink':
         Navigator.popUntil(context, ModalRoute.withName('/'));
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         final uri = args['link'];
         await handleUri(context, null, uri, null, null, l10n);
         break;

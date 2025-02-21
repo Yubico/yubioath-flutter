@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,6 +23,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
@@ -43,7 +44,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
     PivState pivState, WidgetRef ref) {
   final colors = Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
 
   final usingDefaultPin = pivState.metadata?.pinMetadata.defaultValue == true;
   final usingDefaultPuk = pivState.metadata?.pukMetadata.defaultValue == true;

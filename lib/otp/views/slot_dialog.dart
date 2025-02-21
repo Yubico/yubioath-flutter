@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -24,6 +24,7 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -42,7 +43,7 @@ class SlotDialog extends ConsumerWidget {
       return const SizedBox();
     }
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
 
     final otpState = ref.watch(otpStateProvider(node.path)).valueOrNull;

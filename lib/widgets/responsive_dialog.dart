@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../core/state.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
@@ -54,7 +55,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   }
 
   String _getCancelText(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return widget.onCancel == null && widget.actions.isEmpty
         ? l10n.s_close
         : l10n.s_cancel;

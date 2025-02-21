@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -35,6 +35,7 @@ import '../../app/views/message_page.dart';
 import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
 import '../../exception/no_data_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -73,10 +74,10 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return ref.watch(oathStateProvider(devicePath)).when(
         loading: () => MessagePage(
-              title: AppLocalizations.of(context)!.s_accounts,
+              title: AppLocalizations.of(context).s_accounts,
               capabilities: const [Capability.oath],
               centered: true,
               graphic: const CircularProgressIndicator(),
@@ -106,7 +107,7 @@ class _LockedView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
-      title: AppLocalizations.of(context)!.s_accounts,
+      title: AppLocalizations.of(context).s_accounts,
       capabilities: const [Capability.oath],
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
@@ -176,7 +177,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     // ONLY rebuild if the number of credentials changes.
     final numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
@@ -253,7 +254,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == null) {
       return AppPage(
-        title: AppLocalizations.of(context)!.s_accounts,
+        title: AppLocalizations.of(context).s_accounts,
         capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
@@ -401,7 +402,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                     ),
                     ActionListSection.fromMenuActions(
                       context,
-                      AppLocalizations.of(context)!.s_actions,
+                      AppLocalizations.of(context).s_actions,
                       actions: helper.buildActions(),
                     ),
                   ],

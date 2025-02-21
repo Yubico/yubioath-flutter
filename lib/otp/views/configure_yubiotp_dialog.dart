@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -32,6 +31,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -61,6 +61,7 @@ final uploadOtpUri = Uri.parse('https://upload.yubico.com');
 class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
+
   const ConfigureYubiOtpDialog(this.devicePath, this.otpSlot, {super.key});
 
   @override
@@ -92,7 +93,7 @@ class _ConfigureYubiOtpDialogState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final info = ref.watch(currentDeviceDataProvider).valueOrNull?.info;
 

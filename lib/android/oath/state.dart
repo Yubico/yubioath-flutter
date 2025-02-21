@@ -19,7 +19,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -33,6 +33,7 @@ import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/no_data_exception.dart';
 import '../../exception/platform_exception_decoder.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../../widgets/toast.dart';
@@ -265,7 +266,7 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
       void triggerTouchPrompt() async {
         controller = await _withContext(
           (context) async {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             return promptUserInteraction(
               context,
               icon: const Icon(Symbols.touch_app),

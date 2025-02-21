@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../models.dart';
 import '../state.dart';
@@ -36,7 +37,7 @@ class DevicePickerContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hidden = ref.watch(hiddenDevicesProvider);
     final devices = ref
         .watch(attachedDevicesProvider)
@@ -114,7 +115,7 @@ class DevicePickerContent extends ConsumerWidget {
 }
 
 String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   final serial = info.serial;
   return [
     if (serial != null) l10n.s_sn_serial(serial),
@@ -127,7 +128,7 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
 
 List<String> _getDeviceStrings(
     BuildContext context, DeviceNode node, AsyncValue<YubiKeyData> data) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   final messages = data.whenOrNull(
         data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
         error: (error, _) => switch (error) {
@@ -320,7 +321,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
 
   List<PopupMenuItem> _getMenuItems(
       BuildContext context, WidgetRef ref, DeviceNode? node) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hidden = ref.watch(hiddenDevicesProvider);
 
     return [
@@ -361,7 +362,7 @@ _DeviceRow _buildDeviceRow(
   DeviceInfo? info,
   bool extended,
 ) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   final subtitle = node.when(
     usbYubiKey: (_, __, ___, info) => info == null
         ? l10n.s_yk_inaccessible

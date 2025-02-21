@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,6 +23,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -80,7 +81,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         if (mounted) {
           await ref.read(withContextProvider)((context) async {
             Navigator.of(context).pop();
-            showMessage(context, AppLocalizations.of(context)!.s_password_set);
+            showMessage(context, AppLocalizations.of(context).s_password_set);
           });
         }
       } else {
@@ -102,7 +103,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     final fipsCapable = ref.watch(currentDeviceDataProvider).maybeWhen(
         data: (data) => data.info.getFipsStatus(Capability.oath).$1,
         orElse: () => false);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isValid = !_currentIsWrong &&
         _newPassword.isNotEmpty &&
         _newPassword == _confirmPassword &&

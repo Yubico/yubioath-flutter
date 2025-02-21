@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:qrscanner_zxing/qrscanner_zxing_method_channel.dart';
 
 import '../../app/message.dart';
 import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/utils.dart';
 import '../../theme.dart';

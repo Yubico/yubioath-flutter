@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,6 +23,7 @@ import '../../android/app_methods.dart';
 import '../../android/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../state.dart';
 import 'message_page.dart';
@@ -36,7 +37,7 @@ class MessagePageNotInitialized extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final noKeyImage = Image.asset(
       'assets/graphics/no-key.png',
       filterQuality: FilterQuality.medium,

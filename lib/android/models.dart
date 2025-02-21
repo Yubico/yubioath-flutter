@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../generated/l10n/app_localizations.dart';
 
 enum NfcTapAction {
   noAction,

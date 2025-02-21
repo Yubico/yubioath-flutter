@@ -15,13 +15,13 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/basic_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -31,11 +31,12 @@ import 'access_code_dialog.dart';
 class DeleteSlotDialog extends ConsumerWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
+
   const DeleteSlotDialog(this.devicePath, this.otpSlot, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return BasicDialog(
       icon: Icon(Symbols.delete),
       title: Text(l10n.q_delete_slot),

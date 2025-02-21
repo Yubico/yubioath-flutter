@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,6 +23,7 @@ import '../../android/state.dart';
 import '../../android/views/settings_views.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../icon_provider/icon_pack_dialog.dart';
@@ -59,7 +60,7 @@ class _ThemeModeView extends ConsumerWidget {
       await showDialog<ThemeMode>(
           context: context,
           builder: (BuildContext context) {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             return SimpleDialog(
               title: Text(l10n.s_choose_app_theme),
               children: supportedThemes
@@ -80,7 +81,7 @@ class _ThemeModeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     return ListTile(
       title: Text(l10n.s_app_theme),
@@ -110,7 +111,7 @@ class _LanguageView extends ConsumerWidget {
       await showDialog<Locale>(
           context: context,
           builder: (context) {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             final theme = Theme.of(context);
             final textTheme = theme.textTheme;
             final colorScheme = theme.colorScheme;
@@ -151,7 +152,7 @@ class _LanguageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final currentLocale = ref.watch(currentLocaleProvider);
     return ListTile(
       title: Text(l10n.s_language),
@@ -173,7 +174,7 @@ class _IconsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return ListTile(
       title: Text(l10n.s_custom_icons),
       subtitle: Text(l10n.l_set_icons_for_accounts),
@@ -198,7 +199,7 @@ class _ToggleReadersDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
@@ -279,7 +280,7 @@ class _ToggleReadersView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final nfcDevices = ref
         .watch(attachedDevicesProvider)
         .where((e) => e.transport == Transport.nfc);
@@ -305,7 +306,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return ResponsiveDialog(
       title: Text(l10n.s_settings),

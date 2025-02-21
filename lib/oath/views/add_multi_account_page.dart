@@ -1,5 +1,21 @@
+/*
+ * Copyright (C) 2023-2025 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -14,6 +30,7 @@ import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -52,7 +69,7 @@ class _OathAddMultiAccountPageState
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if (widget.devicePath != null) {
       _credentials = ref
@@ -265,7 +282,7 @@ class _OathAddMultiAccountPageState
 
   Future<void> _addCredentials(
       {required List<String> uris, required List<bool> touchRequired}) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     try {
       await ref.read(addCredentialsToAnyProvider).call(uris, touchRequired);
       if (!mounted) return;
@@ -290,7 +307,7 @@ class _OathAddMultiAccountPageState
   }
 
   void accept(CredentialData cred, bool touch) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final devicePath = widget.devicePath;
     try {
       if (devicePath == null) {

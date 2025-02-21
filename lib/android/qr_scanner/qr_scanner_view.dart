@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
+import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../app_methods.dart';
 import 'qr_scanner_overlay_view.dart';
@@ -102,7 +103,7 @@ class _QrScannerViewState extends State<QrScannerView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final screenSize = MediaQuery.of(context).size;
     final overlayWidgetKey = GlobalKey();
     return Scaffold(

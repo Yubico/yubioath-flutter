@@ -18,7 +18,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -31,6 +31,7 @@ import '../../desktop/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../management/state.dart';
 import '../../oath/state.dart';
@@ -90,7 +91,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   }
 
   String _getMessage() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final nfc = widget.data.node.transport == Transport.nfc;
     if (_currentStep == _totalSteps) {
       return l10n.l_fido_app_reset;
@@ -117,7 +118,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
         .contains(widget.data.info.formFactor);
     final globalReset = isBio && (enabled & Capability.piv.value) != 0;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final usbTransport = widget.data.node.transport == Transport.usb;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app/views/message_page.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 
 class WebAuthnScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _WebAuthnScreenState extends State<WebAuthnScreen> {
   bool hide = true;
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     // We need this to avoid unwanted app switch animation
     if (hide) {
