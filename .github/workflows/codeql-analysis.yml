@@ -56,10 +56,15 @@ jobs:
           flutter config
           flutter --version
 
-      - name: Run flutter tests
+      - if: matrix.language == 'kotlin'
+        name: Run flutter tests
         run: |
+          export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
+          pipx install pre-commit
+          pre-commit run flutter-l10n-gen --all-files
+          pre-commit run dart-format --all-files
+          pre-commit run flutter-analyze --all-files
           flutter test
-          flutter analyze
         working-directory: ./app
 
       - if: matrix.language == 'kotlin'
@@ -71,7 +76,6 @@ jobs:
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
-
 
       - if: matrix.language == 'python'
         name: autobuild
