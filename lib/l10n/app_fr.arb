@@ -351,7 +351,9 @@
     "s_pin_required": "PIN requis",
     "p_pin_required_desc": "L'action que vous allez effectuer nécessite la saisie du PIN PIV.",
     "l_piv_pin_blocked": "Bloqué, utilisez PUK pour réinitialiser",
+    "p_piv_pin_blocked_desc": null,
     "l_piv_pin_puk_blocked": "Bloqué, réinitialisation aux paramètres d'usine nécessaire",
+    "p_piv_pin_puk_blocked_desc": null,
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -373,6 +375,8 @@
             "name": {}
         }
     },
+    "s_dismiss": null,
+    "p_default_pin_puk_key_desc": null,
     "l_warning_default_pin": "Avertissement : Code PIN par défaut utilisé",
     "l_warning_default_puk": "Attention : PUK par défaut utilisé",
     "l_default_pin_used": "Code PIN par défaut utilisé",

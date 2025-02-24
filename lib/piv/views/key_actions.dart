@@ -67,7 +67,7 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
           ActionListItem(
               key: keys.managePinAction,
               feature: features.actionsPin,
-              title: l10n.s_change_pin,
+              title: pinBlocked ? l10n.s_unblock_pin : l10n.s_change_pin,
               subtitle: pinBlocked
                   ? (pukAttempts != 0
                       ? l10n.l_piv_pin_blocked

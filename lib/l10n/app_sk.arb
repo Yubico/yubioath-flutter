@@ -351,7 +351,9 @@
     "s_pin_required": "Vyžaduje sa PIN kód",
     "p_pin_required_desc": "Akcia, ktorú sa chystáte vykonať, vyžaduje zadanie kódu PIV PIN.",
     "l_piv_pin_blocked": "Zablokované, na obnovenie použite PUK",
+    "p_piv_pin_blocked_desc": null,
     "l_piv_pin_puk_blocked": "Zablokované, je potrebné obnovenie výrobných nastavení",
+    "p_piv_pin_puk_blocked_desc": null,
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -373,6 +375,8 @@
             "name": {}
         }
     },
+    "s_dismiss": null,
+    "p_default_pin_puk_key_desc": null,
     "l_warning_default_pin": "Varovanie: Používa sa predvolený PIN kód",
     "l_warning_default_puk": "Varovanie: Používa sa predvolený PUK kód",
     "l_default_pin_used": "Používa sa predvolený PIN",
