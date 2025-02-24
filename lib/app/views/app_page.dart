@@ -464,20 +464,15 @@ class _AppPageState extends ConsumerState<AppPage> {
           slivers: [
             SliverMainAxisGroup(
               slivers: [
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _SliverTitleDelegate(
-                    child: ColoredBox(
-                      color: Theme.of(context).colorScheme.surface,
-                      child: Padding(
-                        key: _sliverTitleWrapperGlobalKey,
-                        padding: const EdgeInsets.only(
-                            left: 18.0, right: 18.0, bottom: 12.0, top: 4.0),
-                        child: _buildTitle(context),
-                      ),
+                PinnedHeaderSliver(
+                  child: ColoredBox(
+                    color: Theme.of(context).colorScheme.surface,
+                    child: Padding(
+                      key: _sliverTitleWrapperGlobalKey,
+                      padding: const EdgeInsets.only(
+                          left: 18.0, right: 18.0, bottom: 12.0, top: 4.0),
+                      child: _buildTitle(context),
                     ),
-                    // Header height = title height + vertical padding
-                    height: _getTitleHeight(context) + 16,
                   ),
                 ),
                 if (widget.headerSliver != null)
@@ -1022,29 +1017,6 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
       return _Visibility.visible;
     }
   }
-}
-
-class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
-  _SliverTitleDelegate({
-    required this.height,
-    required this.child,
-  });
-  final double height;
-  final Widget child;
-
-  @override
-  double get minExtent => height;
-  @override
-  double get maxExtent => height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
-  }
-
-  @override
-  bool shouldRebuild(_SliverTitleDelegate oldDelegate) => true;
 }
 
 class _NoImplicitScrollPhysics extends ScrollPhysics {
