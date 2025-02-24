@@ -351,7 +351,9 @@
     "s_pin_required": "Kod PIN jest wymagany",
     "p_pin_required_desc": "Działanie wymaga wpisania kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano, użyj kodu PUK, aby zresetować",
+    "p_piv_pin_blocked_desc": null,
     "l_piv_pin_puk_blocked": "Zablokowano, zresetuj do ustawień fabrycznych",
+    "p_piv_pin_puk_blocked_desc": null,
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -373,6 +375,8 @@
             "name": {}
         }
     },
+    "s_dismiss": null,
+    "p_default_pin_puk_key_desc": null,
     "l_warning_default_pin": "Ostrzeżenie: Używany jest domyślny kod PIN",
     "l_warning_default_puk": "Ostrzeżenie: Używany jest domyślny kod PUK",
     "l_default_pin_used": "Używany jest domyślny kod PIN",

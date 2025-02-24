@@ -351,7 +351,9 @@
     "s_pin_required": "PIN required",
     "p_pin_required_desc": "The action you are about to perform requires the PIV PIN to be entered.",
     "l_piv_pin_blocked": "Blocked, use PUK to reset",
+    "p_piv_pin_blocked_desc": "The PIN is blocked. Use the PUK to unblock the PIN.",
     "l_piv_pin_puk_blocked": "Blocked, factory reset needed",
+    "p_piv_pin_puk_blocked_desc": "Both the PIN and PUK are blocked. Factory reset of the PIV application is needed.",
     "p_new_piv_pin_puk_requirements": "A {name} must be at least {length} characters long.",
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -373,6 +375,8 @@
             "name": {}
         }
     },
+    "s_dismiss": "Dismiss",
+    "p_default_pin_puk_key_desc": "It's highly recommended to change default PIN, PUK and Management Key before using the PIV application.",
     "l_warning_default_pin": "Warning: Default PIN used",
     "l_warning_default_puk": "Warning: Default PUK used",
     "l_default_pin_used": "Default PIN used",

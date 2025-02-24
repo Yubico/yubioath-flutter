@@ -29,6 +29,7 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/reset_dialog.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
@@ -40,12 +41,13 @@ import '../state.dart';
 import 'actions.dart';
 import 'cert_info_view.dart';
 import 'key_actions.dart';
+import 'manage_pin_puk_dialog.dart';
 import 'slot_dialog.dart';
 
 class PivScreen extends ConsumerStatefulWidget {
-  final DevicePath devicePath;
+  final YubiKeyData data;
 
-  PivScreen(this.devicePath) : super(key: ObjectKey(devicePath));
+  PivScreen(this.data) : super(key: ObjectKey(data));
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PivScreenState();
@@ -66,7 +68,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
         (false, false);
     final fipsUnready = fipsCapable && !fipsApproved;
 
-    return ref.watch(pivStateProvider(widget.devicePath)).when(
+    return ref.watch(pivStateProvider(widget.data.node.path)).when(
           loading: () => MessagePage(
             title: l10n.s_certificates,
             capabilities: const [Capability.piv],
@@ -79,7 +81,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
           ),
           data: (pivState) {
             final pivSlots =
-                ref.watch(pivSlotsProvider(widget.devicePath)).asData;
+                ref.watch(pivSlotsProvider(widget.data.node.path)).asData;
             final selected = _selected != null
                 ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
                 : null;
@@ -101,7 +103,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             );
 
             return PivActions(
-              devicePath: widget.devicePath,
+              devicePath: widget.data.node.path,
               pivState: pivState,
               builder: (context) => Actions(
                 actions: {
@@ -212,7 +214,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       : null,
                   keyActionsBuilder: hasFeature(features.actions)
                       ? (context) => pivBuildActions(
-                          context, widget.devicePath, pivState, ref)
+                          context, widget.data.node.path, pivState, ref)
                       : null,
                   keyActionsBadge: pivShowActionsNotifier(pivState),
                   builder: (context, expanded) {
@@ -224,6 +226,20 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                         });
                       });
                     }
+
+                    final usingDefaultPin =
+                        pivState.metadata?.pinMetadata.defaultValue == true;
+                    final pinBlocked = pivState.pinAttempts == 0;
+                    final pukAttempts =
+                        pivState.metadata?.pukMetadata.attemptsRemaining;
+
+                    final dismissedBanners = ref
+                        .watch(dismissedBannersProvider(widget.data.node.path));
+
+                    final showPinDefaultBanner =
+                        !dismissedBanners.contains(pivPinDefaultBannerKey) &&
+                            (usingDefaultPin && !pinBlocked);
+
                     return Actions(
                       actions: {
                         if (expanded)
@@ -236,30 +252,109 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                             return null;
                           }),
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Column(
-                          children: [
-                            ...normalSlots.map(
-                              (e) => _CertificateListItem(
-                                pivState,
-                                e,
-                                expanded: expanded,
-                                selected: e == selected,
-                                fipsUnready: fipsUnready,
+                      child: Column(
+                        children: [
+                          if (pinBlocked)
+                            MaterialBanner(
+                              padding: EdgeInsets.all(18),
+                              content: Text(pukAttempts == 0
+                                  ? l10n.p_piv_pin_puk_blocked_desc
+                                  : l10n.p_piv_pin_blocked_desc),
+                              leading: Icon(
+                                Icons.warning_amber,
+                                color: theme.colorScheme.primary,
                               ),
+                              backgroundColor: theme.hoverColor,
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .popUntil((route) => route.isFirst);
+                                    showBlurDialog(
+                                      context: context,
+                                      builder: (context) => pukAttempts == 0
+                                          ? ResetDialog(
+                                              widget.data,
+                                              capability: Capability.piv,
+                                            )
+                                          : ManagePinPukDialog(
+                                              widget.data.node.path,
+                                              pivState,
+                                              target: ManageTarget.unblock,
+                                            ),
+                                    );
+                                  },
+                                  child: Text(pukAttempts == 0
+                                      ? l10n.s_reset
+                                      : l10n.s_unblock_pin),
+                                )
+                              ],
                             ),
-                            ...shownRetiredSlots.map(
-                              (e) => _CertificateListItem(
-                                pivState,
-                                e,
-                                expanded: expanded,
-                                selected: e == selected,
-                                fipsUnready: fipsUnready,
+                          if (showPinDefaultBanner)
+                            MaterialBanner(
+                              padding: EdgeInsets.all(18),
+                              content: Text(l10n.p_default_pin_puk_key_desc),
+                              leading: Icon(
+                                Icons.warning_amber,
+                                color: theme.colorScheme.primary,
                               ),
-                            )
-                          ],
-                        ),
+                              backgroundColor: theme.hoverColor,
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    ref
+                                        .read(dismissedBannersProvider(
+                                                widget.data.node.path)
+                                            .notifier)
+                                        .dismissBanner(pivPinDefaultBannerKey);
+                                  },
+                                  child: Text(l10n.s_dismiss),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .popUntil((route) => route.isFirst);
+                                    showBlurDialog(
+                                      context: context,
+                                      builder: (context) => ManagePinPukDialog(
+                                        widget.data.node.path,
+                                        pivState,
+                                        target: ManageTarget.pin,
+                                      ),
+                                    );
+                                  },
+                                  child: Text(l10n.s_change_pin),
+                                )
+                              ],
+                            ),
+                          const SizedBox(height: 8.0),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(
+                              children: [
+                                ...normalSlots.map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                    fipsUnready: fipsUnready,
+                                  ),
+                                ),
+                                ...shownRetiredSlots.map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                    fipsUnready: fipsUnready,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },

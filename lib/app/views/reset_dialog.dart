@@ -35,6 +35,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../management/state.dart';
 import '../../oath/state.dart';
+import '../../piv/keys.dart';
 import '../../piv/state.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../features.dart' as features;
@@ -63,14 +64,15 @@ List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
 
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
-  const ResetDialog(this.data, {super.key});
+  final Capability? capability;
+  const ResetDialog(this.data, {super.key, this.capability});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ResetDialogState();
 }
 
 class _ResetDialogState extends ConsumerState<ResetDialog> {
-  Capability? _application;
+  late Capability? _application;
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
@@ -82,6 +84,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     super.initState();
     final nfc = widget.data.node.transport == Transport.nfc;
     _totalSteps = nfc ? 2 : 3;
+    _application = widget.capability;
   }
 
   @override
@@ -247,6 +250,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                             .read(pivStateProvider(widget.data.node.path)
                                 .notifier)
                             .reset();
+
+                        // Show dismissed banner upon reset
+                        ref
+                            .read(
+                                dismissedBannersProvider(widget.data.node.path)
+                                    .notifier)
+                            .showBanner(pivPinDefaultBannerKey);
+
                         await ref.read(withContextProvider)((context) async {
                           Navigator.of(context).pop();
                           showMessage(context, l10n.l_piv_app_reset);

@@ -327,3 +327,30 @@ class KeyCustomizationNotifier
         _prefKeyCustomizations, json.encode(state.values.toList()));
   }
 }
+
+final dismissedBannersProvider =
+    StateNotifierProvider.family<DismissedBanners, List<String>, DevicePath>(
+        (ref, devicePath) =>
+            DismissedBanners(ref.watch(prefProvider), devicePath));
+
+class DismissedBanners extends StateNotifier<List<String>> {
+  static const String _baseKey = 'BANNERS_DISMISSED';
+  final SharedPreferences _prefs;
+  final DevicePath _devicePath;
+
+  DismissedBanners(this._prefs, this._devicePath)
+      : super(_prefs.getStringList(getFullKey(_devicePath)) ?? []);
+
+  static String getFullKey(DevicePath devicePath) =>
+      '${_baseKey}_${devicePath.key}';
+
+  void dismissBanner(String banner) {
+    state = [...state, banner];
+    _prefs.setStringList(getFullKey(_devicePath), state);
+  }
+
+  void showBanner(String banner) {
+    state = state.where((e) => e != banner).toList();
+    _prefs.setStringList(getFullKey(_devicePath), state);
+  }
+}
