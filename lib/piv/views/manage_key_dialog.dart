@@ -147,7 +147,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         final verified = await withContext((context) async =>
                 await showBlurDialog(
                     context: context,
-                    builder: (context) => PinDialog(widget.path))) ??
+                    builder: (context) =>
+                        PinDialog(widget.path, widget.pivState))) ??
             false;
 
         if (!verified) {
