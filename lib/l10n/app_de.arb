@@ -85,12 +85,16 @@
     "s_security_key": "Sicherheitsschlüssel",
     "s_slots": "Slots",
     "s_help_and_about": "Hilfe und Info",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "Fehlerbehebung",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "Problembehebung und Unterstützung",
     "s_help_and_feedback": "Hilfe und Feedback",
     "s_home": "Start",
     "s_user_guide": "Nutzeranleitung",
     "s_i_need_help": "Ich brauche Hilfe",
-    "s_troubleshooting": "Fehlerbehebung",
     "s_terms_of_use": "Nutzungsbedingungen",
     "s_privacy_policy": "Datenschutzerklärung",
     "s_open_src_licenses": "Open Source Lizenzen",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "Starten, wenn YubiKey angesteckt wird",
     "l_launch_app_on_usb_on": "Das verhindert, dass andere Anwendungen den YubiKey über USB nutzen",
     "l_launch_app_on_usb_off": "Andere Anwendungen können den YubiKey über USB nutzen",
+    "s_privacy_options": null,
     "s_allow_screenshots": "Bildschirmfotos erlauben",
+    "l_allow_screenshots_desc": null,
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Bereit zum Scannen",
@@ -1125,6 +1131,5 @@
     "s_color": "Farbe",
     "p_set_will_add_custom_name": "Dies gibt deinem YubiKey einen eigenen Namen.",
     "p_rename_will_change_custom_name": "Dies ändert das Label deines YubiKeys.",
-
     "@_eof": {}
 }

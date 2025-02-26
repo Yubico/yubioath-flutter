@@ -85,12 +85,16 @@
     "s_security_key": "Klucz bezpieczeństwa",
     "s_slots": "Sloty",
     "s_help_and_about": "Pomoc i informacje",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "Rozwiązywanie problemów",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "Rozwiązywanie problemów i wsparcie",
     "s_help_and_feedback": "Pomoc i opinie",
     "s_home": "Strona główna",
     "s_user_guide": "Przewodnik użytkownika",
     "s_i_need_help": "Pomoc",
-    "s_troubleshooting": "Rozwiązywanie problemów",
     "s_terms_of_use": "Warunki użytkowania",
     "s_privacy_policy": "Polityka prywatności",
     "s_open_src_licenses": "Licencje open source",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "Uruchom po podłączeniu klucza YubiKey",
     "l_launch_app_on_usb_on": "Inne aplikacje nie mogą korzystać z klucza YubiKey przez USB",
     "l_launch_app_on_usb_off": "Inne aplikacje mogą korzystać z klucza YubiKey przez USB",
+    "s_privacy_options": null,
     "s_allow_screenshots": "Zezwalaj na zrzuty ekranu",
+    "l_allow_screenshots_desc": null,
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Gotowy do skanowania",
@@ -1125,6 +1131,5 @@
     "s_color": "Kolor",
     "p_set_will_add_custom_name": "Spowoduje to nazwanie klucza YubiKey.",
     "p_rename_will_change_custom_name": "Spowoduje to zmianę etykiety klucza YubiKey.",
-
     "@_eof": {}
 }

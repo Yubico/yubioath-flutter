@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../theme.dart';
-import 'logging.dart';
 import 'shortcuts.dart';
 import 'state.dart';
 
@@ -31,9 +30,7 @@ class YubicoAuthenticatorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlobalShortcuts(
-    child: LogWarningOverlay(
-      child: Consumer(
-        builder: (context, ref, _) {
+        child: Consumer(builder: (context, ref, _) {
           final primaryColor = ref.watch(primaryColorProvider);
           return MaterialApp(
             title: ref.watch(l10nProvider).app_name,
@@ -51,8 +48,6 @@ class YubicoAuthenticatorApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
           );
-        },
-      ),
-    ),
-  );
+        }),
+      );
 }

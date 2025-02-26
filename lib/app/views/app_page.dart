@@ -29,6 +29,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
+import '../logging.dart';
 import '../message.dart';
 import '../shortcuts.dart';
 import '../state.dart';
@@ -820,6 +821,18 @@ class _AppPageState extends ConsumerState<AppPage> {
                 padding: const EdgeInsets.only(right: 12),
                 child: widget.actionButtonBuilder!.call(context),
               ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Column(
+          key: loggingPanelKey,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 4.0,
+          children: [
+            Flexible(child: WarningPanel()),
+            Flexible(child: LoggingPanel()),
           ],
         ),
       ),

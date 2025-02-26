@@ -16,10 +16,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/features.dart' as features;
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -31,87 +33,80 @@ import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/views/management_screen.dart';
 
-Widget homeBuildActions(
-  BuildContext context,
-  YubiKeyData? deviceData,
-  WidgetRef ref,
-) {
-  final l10n = AppLocalizations.of(context);
-  final hasFeature = ref.watch(featureProvider);
-  final interfacesLocked = deviceData?.info.resetBlocked != 0;
-  final managementAvailability =
-      hasFeature(features.management) &&
-      switch (deviceData?.info.version) {
-        Version version =>
-          (version.major > 4 || // YK5 and up
+class HomeActions extends ConsumerWidget {
+  final YubiKeyData? deviceData;
+  const HomeActions({super.key, this.deviceData});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final hasFeature = ref.watch(featureProvider);
+    final interfacesLocked = deviceData?.info.resetBlocked != 0;
+    final managementAvailability = hasFeature(features.management) &&
+        switch (deviceData?.info.version) {
+          Version version => (version.major > 4 || // YK5 and up
               (version.major == 4 && version.minor >= 1) || // YK4.1 and up
               version.major == 3), // NEO,
-        null => false,
-      };
+          null => false,
+        };
+    final logPanelVisible = ref.watch(logPanelVisibilityProvider);
+    final sensitiveLogs = ref.watch(
+        logLevelProvider.select((level) => level.value <= Level.CONFIG.value));
 
-  return Column(
-    children: [
-      if (deviceData != null)
-        ActionListSection(
-          l10n.s_device,
-          children: [
-            if (managementAvailability)
-              ActionListItem(
-                feature: features.management,
-                icon: const Icon(Symbols.construction),
-                actionStyle: ActionStyle.primary,
-                title:
-                    deviceData.info.version.major > 4
-                        ? l10n.s_toggle_applications
-                        : l10n.s_toggle_interfaces,
-                key: yubikeyApplicationToggleMenuButton,
-                subtitle:
-                    interfacesLocked
-                        ? l10n.l_factory_reset_required
-                        : (deviceData.info.version.major > 4
-                            ? l10n.l_toggle_applications_desc
-                            : l10n.l_toggle_interfaces_desc),
-                onTap:
-                    interfacesLocked
-                        ? null
-                        : (context) {
-                          Navigator.of(
-                            context,
-                          ).popUntil((route) => route.isFirst);
+    return Column(
+      children: [
+        if (deviceData != null)
+          ActionListSection(
+            l10n.s_device,
+            children: [
+              if (managementAvailability)
+                ActionListItem(
+                  feature: features.management,
+                  icon: const Icon(Symbols.construction),
+                  actionStyle: ActionStyle.primary,
+                  title: deviceData!.info.version.major > 4
+                      ? l10n.s_toggle_applications
+                      : l10n.s_toggle_interfaces,
+                  key: yubikeyApplicationToggleMenuButton,
+                  subtitle: interfacesLocked
+                      ? l10n.l_factory_reset_required
+                      : (deviceData!.info.version.major > 4
+                          ? l10n.l_toggle_applications_desc
+                          : l10n.l_toggle_interfaces_desc),
+                  onTap: interfacesLocked
+                      ? null
+                      : (context) {
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
                           showBlurDialog(
                             context: context,
-                            builder: (context) => ManagementScreen(deviceData),
+                            builder: (context) => ManagementScreen(deviceData!),
                           );
                         },
-              ),
-            if (getResetCapabilities(hasFeature).any(
-              (c) =>
+                ),
+              if (getResetCapabilities(hasFeature).any((c) =>
                   c.value &
-                      (deviceData.info.supportedCapabilities[deviceData
-                              .node
-                              .transport] ??
+                      (deviceData!.info.supportedCapabilities[
+                              deviceData!.node.transport] ??
                           0) !=
-                  0,
-            ))
-              ActionListItem(
-                icon: const Icon(Symbols.delete_forever),
-                title: l10n.s_factory_reset,
-                key: yubikeyFactoryResetMenuButton,
-                subtitle: l10n.l_factory_reset_desc,
-                actionStyle: ActionStyle.primary,
-                onTap: (context) {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  showBlurDialog(
-                    context: context,
-                    builder: (context) => ResetDialog(deviceData),
-                  );
-                },
-              ),
-          ],
-        ),
-      ActionListSection(
-        l10n.s_application,
-        children: [
+                  0))
+                ActionListItem(
+                  icon: const Icon(Symbols.delete_forever),
+                  title: l10n.s_factory_reset,
+                  key: yubikeyFactoryResetMenuButton,
+                  subtitle: l10n.l_factory_reset_desc,
+                  actionStyle: ActionStyle.primary,
+                  onTap: (context) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    showBlurDialog(
+                      context: context,
+                      builder: (context) => ResetDialog(deviceData!),
+                    );
+                  },
+                )
+            ],
+          ),
+        ActionListSection(l10n.s_application, children: [
           ActionListItem(
             icon: const Icon(Symbols.settings),
             key: settingDrawerIcon,
@@ -124,6 +119,24 @@ Widget homeBuildActions(
             },
           ),
           ActionListItem(
+            icon: Icon(
+              Symbols.analytics,
+              fill: logPanelVisible ? 1 : 0,
+            ),
+            key: loggingPanelButton,
+            title:
+                logPanelVisible ? l10n.s_hide_log_panel : l10n.s_show_log_panel,
+            subtitle: l10n.s_troubleshooting,
+            actionStyle: ActionStyle.primary,
+            onTap: !sensitiveLogs
+                ? (context) {
+                    ref
+                        .read(logPanelVisibilityProvider.notifier)
+                        .setVisibility(!logPanelVisible);
+                  }
+                : null,
+          ),
+          ActionListItem(
             icon: const Icon(Symbols.help),
             key: helpDrawerIcon,
             title: l10n.s_help_and_about,
@@ -134,8 +147,8 @@ Widget homeBuildActions(
               Actions.maybeInvoke(context, const AboutIntent());
             },
           ),
-        ],
-      ),
-    ],
-  );
+        ])
+      ],
+    );
+  }
 }
