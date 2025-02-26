@@ -19,6 +19,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../app/views/keys.dart';
+
 class Toast extends StatefulWidget {
   final String message;
   final Duration duration;
@@ -123,9 +125,13 @@ void Function() showToast(
     }
   }
 
+  final RenderBox? panelBox =
+      loggingPanelKey.currentContext?.findRenderObject() as RenderBox?;
+  final panelHeight = panelBox?.size.height ?? 0.0;
+
   entry = OverlayEntry(builder: (context) {
     return Positioned(
-      bottom: MediaQuery.of(context).viewInsets.bottom,
+      bottom: MediaQuery.of(context).viewInsets.bottom + panelHeight,
       left: 0,
       right: 0,
       child: SafeArea(

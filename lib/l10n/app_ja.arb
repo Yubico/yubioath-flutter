@@ -81,12 +81,16 @@
     "s_security_key": "セキュリティキー",
     "s_slots": "スロット",
     "s_help_and_about": "ヘルプと概要",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "トラブルシューティング",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "トラブルシューティングとサポート",
     "s_help_and_feedback": "ヘルプとフィードバック",
     "s_home": "ホーム",
     "s_user_guide": "ユーザーガイド",
     "s_i_need_help": "ヘルプが必要",
-    "s_troubleshooting": "トラブルシューティング",
     "s_terms_of_use": "利用規約",
     "s_privacy_policy": "プライバシーポリシー",
     "s_open_src_licenses": "オープンソースライセンス",
@@ -115,8 +119,8 @@
     },
     "s_character_count": "文字数",
     "s_learn_more": "詳細情報\u00a0",
-
     "@_language": {},
+
     "s_language": "言語",
     "l_enable_community_translations": "コミュニティ翻訳を有効にする",
     "p_community_translations_desc": null,
@@ -133,22 +137,22 @@
     "s_slovak": null,
     "s_vietnamese": null,
     "s_japanese": null,
-
-
     "@_theme": {},
+
+
     "s_app_theme": "アプリケーションテーマ",
     "s_choose_app_theme": "テーマを選択",
     "s_system_default": "システムデフォルト",
     "s_light_mode": "ライトモード",
     "s_dark_mode": "ダークモード",
-
     "@_layout": {},
+
     "s_list_layout": "リストレイアウト",
     "s_grid_layout": "グリッドレイアウト",
     "s_mixed_layout": "ミックスレイアウト",
     "s_select_layout": "レイアウトを選択",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "選択してスキャン",
     "s_hide_reader": null,
     "s_show_hidden_readers": null,
@@ -180,8 +184,8 @@
     "l_firmware_version": "ファームウェアバージョン: {version}",
     "l_fips_capable": "FIPS対応",
     "l_fips_approved": "FIPS承認済み",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "YubiKeyを挿入してください",
     "l_insert_or_tap_yk": "YubiKeyを挿入またはタップしてください",
     "l_unplug_yk": "YubiKeyを抜いてください",
@@ -193,8 +197,8 @@
     "s_touch_required": "タッチが必要",
     "l_touch_button_now": "ここでYubiKeyのボタンをタッチしてください",
     "l_keep_touching_yk": "YubiKeyを繰り返しタッチしてください\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -202,8 +206,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Auth",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "アプリケーションを切り替える",
     "s_toggle_interfaces": "インターフェイスを切り替える",
     "p_toggle_applications_desc": "利用可能なトランスポート上でアプリケーションを有効または無効にします。",
@@ -233,9 +237,9 @@
     "s_show_lock_code": "ロックコードを表示",
     "s_hide_lock_code": "ロックコードを隠す",
     "p_lock_code_required_desc": "実行しようとしているアクションには、設定ロックコードを入力する必要があります。",
-
-
     "@_connectivity_issues": {},
+
+
     "l_helper_not_responding": "ヘルパープロセスが応答していません",
     "l_yk_no_access": "このYubiKeyにアクセスできません",
     "s_yk_inaccessible": "デバイスにアクセスできません",
@@ -255,16 +259,16 @@
     "p_operation_failed_try_again": "操作に失敗しました。もう一度やり直してください。",
     "l_configuration_unsupported": "設定に対応していません",
     "p_scp_unsupported": "YubiKey が NFCで通信するには、この携帯電話が対応していない技術が必要です。YubiKey を携帯電話の USB ポートに接続してください。",
-
     "@_general_errors": {},
+
     "l_error_occurred": "エラーが発生しました",
     "s_application_error": "アプリケーションエラー",
     "l_import_error": "インポートエラー",
     "l_file_not_found": "ファイルが見つかりません",
     "l_file_too_big": "ファイルサイズが大きすぎます",
     "l_filesystem_error": "ファイルのシステム操作エラー",
-
     "@_pins": {},
+
     "s_pin": "PIN",
     "s_puk": "PUK",
     "s_set_pin": "PINを設定",
@@ -378,8 +382,8 @@
     "l_default_pin_used": "デフォルトのPINが使用されています",
     "l_default_puk_used": "既定のPUKを使用",
     "l_pin_complexity": "複雑な PIN ルール",
-
     "@_passwords": {},
+
     "s_password": "パスワード",
     "s_manage_password": "パスワードを管理",
     "s_set_password": "パスワードを設定",
@@ -405,8 +409,8 @@
     "l_set_password_first": "パスワードを設定",
     "l_enter_oath_pw": "YubiKeyのOATHパスワードを入力",
     "p_new_password_requirements": null,
-
     "@_management_key": {},
+
     "s_management_key": "管理キー",
     "s_current_management_key": "現在の管理キー",
     "s_new_management_key": "新しい管理キー",
@@ -425,8 +429,8 @@
     "l_wrong_key": "キーが正しくありません",
     "l_unlock_piv_management": "PIV管理をロック解除",
     "p_unlock_piv_management_desc": "実行しようとしているアクションでは、PIV管理キーが必要です。このセッションの管理機能をロック解除するには、このキーを入力してください。",
-
     "@_oath_accounts": {},
+
     "l_account": "アカウント：{label}",
     "@l_account": {
         "placeholders": {
@@ -519,8 +523,8 @@
     "s_time_based": "時間ベース",
     "l_copy_code_desc": "コードを別のアプリケーションに貼り付け",
     "l_calculate_code_desc": "YubiKeyから新しいコードを取得",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP ID",
     "s_user_id": "ユーザー ID",
     "s_credential_id": "証明書ID",
@@ -602,13 +606,13 @@
     },
     "p_press_fingerprint_begin": "最初にYubiKeyに指を押し付けてください。",
     "l_name_fingerprint": "この指紋に名前を付ける",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "ユーザーの操作がないため失敗しました",
     "l_wrong_inserted_yk_error": "再挿入されたYubiKeyが初期デバイスと一致しません",
     "l_failed_connecting_to_fido": "FIDOインターフェイスへの接続に失敗しました",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": null,
     "l_certificate_signing_request": null,
     "s_certificate": "証明書",
@@ -737,8 +741,8 @@
     "l_overwrite_cert": "証明書が上書きされます",
     "l_overwrite_key": "秘密鍵が上書きされます",
     "l_overwrite_key_maybe": "スロット内の既存の秘密鍵がすべて上書きされます",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name}（{hexid}）",
     "@s_slot_display_name": {
         "placeholders": {
@@ -751,14 +755,14 @@
     "s_slot_9d": "鍵管理",
     "s_slot_9e": "カード認証",
     "s_retired_slot": "退職した鍵管理",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "短いタッチ",
     "s_otp_slot_two": "長いタッチ",
     "l_otp_slot_empty": "スロットが空です",
     "l_otp_slot_configured": "スロットが構成されています",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "Yubico OTP認証情報をプログラムします",
     "s_challenge_response": "チャレンジレスポンス",
     "l_challenge_response_desc": "チャレンジレスポンス認証情報をプログラムします",
@@ -786,8 +790,8 @@
             "layout": {}
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "認証情報を削除",
     "q_delete_slot": null,
     "l_delete_slot_desc": "スロット内の認証情報を削除",
@@ -819,12 +823,12 @@
     },
     "s_append_enter": "⏎を追加",
     "l_append_enter_desc": "OTPを発行した後にEnterキーストロークを追加します",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "スロットの交換に失敗しました！YubiKeyが制限されたアクセスを持っていないことを確認してください。",
     "l_wrong_access_code": "アクセスコードが間違っています",
-
     "@_otp_access_code": {},
+
     "s_access_code": "アクセスコード：",
     "s_show_access_code": "アクセスコードを表示",
     "s_hide_access_code": "アクセスコードを隠す",
@@ -834,9 +838,9 @@
             "slot": {}
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "NFCを有効にする",
     "s_request_access": "アクセスを要求する",
     "s_permission_denied": "権限が拒否されました",
@@ -848,8 +852,8 @@
     "p_webauthn_elevated_permissions_required": "WebAuthn管理には昇格された権限が必要です。",
     "l_ms_store_permission_note": "Microsoft Storeアプリのバージョンは、権限を高めることができない可能性があります",
     "p_need_camera_permission": "Yubico AuthenticatorでQRコードをスキャンするには、カメラへのアクセス許可が必要です。",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "QRコードをスキャン",
     "l_invalid_qr": "無効なQRコード",
     "l_qr_not_found": "QRコードが見つかりません",
@@ -873,8 +877,8 @@
     "q_no_qr": "QRコードがありませんか？",
     "s_enter_manually": "手動で入力",
     "s_read_from_file": "ファイルから読み込む",
-
     "@_factory_reset": {},
+
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷時の状態にリセット",
     "l_factory_reset_desc": "YubiKey の既定値を復元",
@@ -898,8 +902,8 @@
     "p_warning_piv_reset_desc": "これには、秘密鍵と証明書が含まれます。PIN、PUK、および管理キーが工場出荷時のデフォルト値にリセットされます。",
     "p_warning_global_reset": "警告！これにより、すべての保存済みデータが認証情報を含めてYubiKeyから削除されます。削除は取り消すことができません。",
     "p_warning_global_reset_desc": "YubiKey のアプリケーションを工場出荷時の状態にリセットします。PIN は工場出荷時のデフォルト値にリセットされ、登録されていた指紋は削除されます。鍵、証明書、その他の認証情報はすべて完全に削除されます。",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "クリップボードにコピー",
     "s_code_copied": "コードがコピーされました",
     "l_code_copied_clipboard": "コードがクリップボードにコピーされました",
@@ -912,8 +916,8 @@
             "label": {}
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "カスタムアイコン",
     "l_set_icons_for_accounts": "アカウントのアイコンを設定",
     "p_custom_icons_description": "アイコンパックを使用すると、見慣れたロゴや色によりアカウントを識別しやすくなります。",
@@ -939,8 +943,8 @@
     },
     "l_invalid_icon_pack": "無効なアイコンパック",
     "l_icon_pack_copy_failed": "アイコンパックファイルをコピーできませんでした",
-
     "@_android_settings": {},
+
     "s_nfc_options": "NFCオプション",
     "l_on_yk_nfc_tap": "YubiKey NFCのタップ時の動作",
     "l_do_nothing": "何もしない",
@@ -959,27 +963,29 @@
     "l_launch_app_on_usb": "YubiKeyの接続時に起動",
     "l_launch_app_on_usb_on": "これにより、他のアプリがUSB経由でYubiKeyを使用できなくなります",
     "l_launch_app_on_usb_off": "他のアプリがUSB経由でYubiKeyを使用できます",
+    "s_privacy_options": null,
     "s_allow_screenshots": "スクリーンショットを許可",
-
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "スキャンの準備完了",
     "s_nfc_hold_still": "そのまま保持してください\u2026",
     "s_nfc_tap_your_yubikey": "YubiKey をタップしてください",
     "l_nfc_failed_to_scan": "スキャンに失敗しました。もう一度お試しください",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",
     "p_ndef_set_password": "パスワードがYubiKeyからクリップボードに正常にコピーされました。",
     "p_ndef_parse_failure": "YubiKeyからのOTPコードを解析できませんでした。",
     "p_ndef_set_clip_failure": "YubiKeyからのOTPコードのコピー試行時にクリップボードにアクセスできませんでした。",
-
     "@_key_customization": {},
+
     "s_set_label": "ラベルを設定",
     "s_set_color": "色を設定",
     "s_change_label": "ラベルを変更",
     "s_color": "色",
     "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",
     "p_rename_will_change_custom_name": "YubiKeyのラベルが変更されます。",
-
     "@_eof": {}
+
 }
