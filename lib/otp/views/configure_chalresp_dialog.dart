@@ -53,6 +53,7 @@ class ConfigureChalrespDialog extends ConsumerStatefulWidget {
 class _ConfigureChalrespDialogState
     extends ConsumerState<ConfigureChalrespDialog> {
   final _secretController = TextEditingController();
+  final _secretFocus = FocusNode();
   bool _validateSecret = false;
   bool _requireTouch = false;
   final int secretMaxLength = 40;
@@ -60,6 +61,7 @@ class _ConfigureChalrespDialogState
   @override
   void dispose() {
     _secretController.dispose();
+    _secretFocus.dispose();
     super.dispose();
   }
 
@@ -73,67 +75,62 @@ class _ConfigureChalrespDialogState
         secret.length <= secretMaxLength;
     final secretFormatValid = Format.hex.isValid(secret);
 
+    void submit() async {
+      if (!secretLengthValid || !secretFormatValid) {
+        setState(() {
+          _validateSecret = true;
+        });
+        return;
+      }
+
+      if (!await confirmOverwrite(context, widget.otpSlot)) {
+        return;
+      }
+
+      final otpNotifier =
+          ref.read(otpStateProvider(widget.devicePath).notifier);
+      final configuration = SlotConfiguration.chalresp(
+          key: secret,
+          options: SlotConfigurationOptions(requireTouch: _requireTouch));
+
+      bool configurationSucceeded = false;
+      try {
+        await otpNotifier.configureSlot(widget.otpSlot.slot,
+            configuration: configuration);
+        configurationSucceeded = true;
+      } catch (e) {
+        _log.error('Failed to program credential', e);
+        // Access code required
+        await ref.read(withContextProvider)((context) async {
+          final result = await showBlurDialog(
+              context: context,
+              builder: (context) => AccessCodeDialog(
+                    devicePath: widget.devicePath,
+                    otpSlot: widget.otpSlot,
+                    action: (accessCode) async {
+                      await otpNotifier.configureSlot(widget.otpSlot.slot,
+                          configuration: configuration, accessCode: accessCode);
+                    },
+                  ));
+          configurationSucceeded = result ?? false;
+        });
+      }
+
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+        if (configurationSucceeded) {
+          showMessage(context,
+              l10n.l_slot_credential_configured(l10n.s_challenge_response));
+        }
+      });
+    }
+
     return ResponsiveDialog(
       title: Text(l10n.s_challenge_response),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecret
-              ? () async {
-                  if (!secretLengthValid || !secretFormatValid) {
-                    setState(() {
-                      _validateSecret = true;
-                    });
-                    return;
-                  }
-
-                  if (!await confirmOverwrite(context, widget.otpSlot)) {
-                    return;
-                  }
-
-                  final otpNotifier =
-                      ref.read(otpStateProvider(widget.devicePath).notifier);
-                  final configuration = SlotConfiguration.chalresp(
-                      key: secret,
-                      options: SlotConfigurationOptions(
-                          requireTouch: _requireTouch));
-
-                  bool configurationSucceeded = false;
-                  try {
-                    await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: configuration);
-                    configurationSucceeded = true;
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    // Access code required
-                    await ref.read(withContextProvider)((context) async {
-                      final result = await showBlurDialog(
-                          context: context,
-                          builder: (context) => AccessCodeDialog(
-                                devicePath: widget.devicePath,
-                                otpSlot: widget.otpSlot,
-                                action: (accessCode) async {
-                                  await otpNotifier.configureSlot(
-                                      widget.otpSlot.slot,
-                                      configuration: configuration,
-                                      accessCode: accessCode);
-                                },
-                              ));
-                      configurationSucceeded = result ?? false;
-                    });
-                  }
-
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop();
-                    if (configurationSucceeded) {
-                      showMessage(
-                          context,
-                          l10n.l_slot_credential_configured(
-                              l10n.s_challenge_response));
-                    }
-                  });
-                }
-              : null,
+          onPressed: !_validateSecret ? submit : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -146,6 +143,7 @@ class _ConfigureChalrespDialogState
               key: keys.secretField,
               autofocus: true,
               controller: _secretController,
+              focusNode: _secretFocus,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretMaxLength,
               decoration: AppInputDecoration(
@@ -172,6 +170,7 @@ class _ConfigureChalrespDialogState
                                 .padLeft(2, '0')).join();
                         setState(() {
                           _secretController.text = key;
+                          _validateSecret = false;
                         });
                       });
                     },
@@ -182,6 +181,13 @@ class _ConfigureChalrespDialogState
                 setState(() {
                   _validateSecret = false;
                 });
+              },
+              onSubmitted: (_) {
+                if (!_validateSecret) {
+                  submit();
+                } else {
+                  _secretFocus.requestFocus();
+                }
               },
             ).init(),
             Row(

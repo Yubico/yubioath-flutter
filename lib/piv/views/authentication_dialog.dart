@@ -63,48 +63,53 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
             .keyLength *
         2;
     final keyFormatInvalid = !Format.hex.isValid(_keyController.text);
+
+    void submit() async {
+      if (keyFormatInvalid) {
+        _keyController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _keyController.text.length);
+        _keyFocus.requestFocus();
+        setState(() {
+          _keyFormatInvalid = true;
+        });
+
+        return;
+      }
+      final navigator = Navigator.of(context);
+      try {
+        final status = await ref
+            .read(pivStateProvider(widget.devicePath).notifier)
+            .authenticate(_keyController.text);
+        if (status) {
+          navigator.pop(true);
+        } else {
+          _keyController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _keyController.text.length);
+          _keyFocus.requestFocus();
+          setState(() {
+            _keyIsWrong = true;
+          });
+        }
+      } on CancellationException catch (_) {
+        navigator.pop(false);
+      } catch (_) {
+        _keyController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _keyController.text.length);
+        _keyFocus.requestFocus();
+        // TODO: More error cases
+        setState(() {
+          _keyIsWrong = true;
+        });
+      }
+    }
+
     return ResponsiveDialog(
       title: Text(l10n.l_unlock_piv_management),
       actions: [
         TextButton(
           key: keys.unlockButton,
           onPressed: !_keyIsWrong && _keyController.text.length == keyLen
-              ? () async {
-                  if (keyFormatInvalid) {
-                    setState(() {
-                      _keyFormatInvalid = true;
-                    });
-                    return;
-                  }
-                  final navigator = Navigator.of(context);
-                  try {
-                    final status = await ref
-                        .read(pivStateProvider(widget.devicePath).notifier)
-                        .authenticate(_keyController.text);
-                    if (status) {
-                      navigator.pop(true);
-                    } else {
-                      _keyController.selection = TextSelection(
-                          baseOffset: 0,
-                          extentOffset: _keyController.text.length);
-                      _keyFocus.requestFocus();
-                      setState(() {
-                        _keyIsWrong = true;
-                      });
-                    }
-                  } on CancellationException catch (_) {
-                    navigator.pop(false);
-                  } catch (_) {
-                    _keyController.selection = TextSelection(
-                        baseOffset: 0,
-                        extentOffset: _keyController.text.length);
-                    _keyFocus.requestFocus();
-                    // TODO: More error cases
-                    setState(() {
-                      _keyIsWrong = true;
-                    });
-                  }
-                }
+              ? submit
               : null,
           child: Text(l10n.s_unlock),
         ),
@@ -160,6 +165,13 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                   _keyIsWrong = false;
                   _keyFormatInvalid = false;
                 });
+              },
+              onSubmitted: (_) {
+                if (!_keyIsWrong && _keyController.text.length == keyLen) {
+                  submit();
+                } else {
+                  _keyFocus.requestFocus();
+                }
               },
             ).init(),
           ]

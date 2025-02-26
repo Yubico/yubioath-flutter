@@ -61,6 +61,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   late ManagementKeyType _keyType;
   final _currentController = TextEditingController();
   final _currentFocus = FocusNode();
+  final _newFocus = FocusNode();
   final _keyController = TextEditingController();
   bool _isObscure = true;
 
@@ -89,6 +90,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     _keyController.dispose();
     _currentController.dispose();
     _currentFocus.dispose();
+    _newFocus.dispose();
     super.dispose();
   }
 
@@ -147,7 +149,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         final verified = await withContext((context) async =>
                 await showBlurDialog(
                     context: context,
-                    builder: (context) => PinDialog(widget.path))) ??
+                    builder: (context) =>
+                        PinDialog(widget.path, widget.pivState))) ??
             false;
 
         if (!verified) {
@@ -247,6 +250,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     _currentInvalidFormat = false;
                   });
                 },
+                onSubmitted: (_) {
+                  if (currentLenOk) {
+                    _newFocus.requestFocus();
+                  } else {
+                    _currentFocus.requestFocus();
+                  }
+                },
               ).init(),
             if (!_usesStoredKey)
               AppTextField(
@@ -293,6 +303,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     _currentIsWrong = false;
                   });
                 },
+                onSubmitted: (_) {
+                  if (currentLenOk) {
+                    _newFocus.requestFocus();
+                  } else {
+                    _currentFocus.requestFocus();
+                  }
+                },
               ).init(),
             AppTextField(
               key: keys.newManagementKeyField,
@@ -300,6 +317,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               autofillHints: const [AutofillHints.newPassword],
               maxLength: hexLength,
               controller: _keyController,
+              focusNode: _newFocus,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_new_management_key,
@@ -339,6 +357,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               onSubmitted: (_) {
                 if (currentLenOk && newLenOk) {
                   _submit();
+                } else {
+                  _newFocus.requestFocus();
                 }
               },
             ).init(),

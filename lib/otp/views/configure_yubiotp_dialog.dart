@@ -72,8 +72,11 @@ class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
 class _ConfigureYubiOtpDialogState
     extends ConsumerState<ConfigureYubiOtpDialog> {
   final _secretController = TextEditingController();
+  final _secretFocus = FocusNode();
   final _publicIdController = TextEditingController();
+  final _publicIdFocus = FocusNode();
   final _privateIdController = TextEditingController();
+  final _privateIdFocus = FocusNode();
   OutputActions _action = OutputActions.noOutput;
   bool _appendEnter = true;
   bool _validateSecretFormat = false;
@@ -88,6 +91,9 @@ class _ConfigureYubiOtpDialogState
     _secretController.dispose();
     _publicIdController.dispose();
     _privateIdController.dispose();
+    _secretFocus.dispose();
+    _publicIdFocus.dispose();
+    _privateIdFocus.dispose();
     super.dispose();
   }
 
@@ -116,6 +122,73 @@ class _ConfigureYubiOtpDialogState
 
     _createUploadText(context, l10n);
 
+    void submit() async {
+      if (!secretFormatValid || !publicIdFormatValid || !privateIdFormatValid) {
+        setState(() {
+          _validateSecretFormat = !secretFormatValid;
+          _validatePublicIdFormat = !publicIdFormatValid;
+          _validatePrivateIdFormat = !privateIdFormatValid;
+        });
+        return;
+      }
+
+      if (!await confirmOverwrite(context, widget.otpSlot)) {
+        return;
+      }
+
+      final otpNotifier =
+          ref.read(otpStateProvider(widget.devicePath).notifier);
+      final configuration = SlotConfiguration.yubiotp(
+          publicId: publicId,
+          privateId: privateId,
+          key: secret,
+          options: SlotConfigurationOptions(appendCr: _appendEnter));
+
+      bool configurationSucceeded = false;
+      try {
+        await otpNotifier.configureSlot(widget.otpSlot.slot,
+            configuration: configuration);
+        configurationSucceeded = true;
+      } catch (e) {
+        _log.error('Failed to program credential', e);
+        // Access code required
+        await ref.read(withContextProvider)((context) async {
+          final result = await showBlurDialog(
+              context: context,
+              builder: (context) => AccessCodeDialog(
+                    devicePath: widget.devicePath,
+                    otpSlot: widget.otpSlot,
+                    action: (accessCode) async {
+                      await otpNotifier.configureSlot(widget.otpSlot.slot,
+                          configuration: configuration, accessCode: accessCode);
+                    },
+                  ));
+          configurationSucceeded = result ?? false;
+        });
+      }
+
+      if (configurationSucceeded) {
+        if (outputFile != null) {
+          final csv = await otpNotifier.formatYubiOtpCsv(
+              info!.serial!, publicId, privateId, secret);
+
+          await outputFile.writeAsString('$csv${Platform.lineTerminator}',
+              mode: FileMode.append);
+        }
+      }
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+        if (configurationSucceeded) {
+          showMessage(
+              context,
+              outputFile != null
+                  ? l10n.l_slot_credential_configured_and_exported(
+                      l10n.s_capability_otp, outputFile.uri.pathSegments.last)
+                  : l10n.l_slot_credential_configured(l10n.s_capability_otp));
+        }
+      });
+    }
+
     Future<bool> selectFile() async {
       final filePath = await FilePicker.platform.saveFile(
           dialogTitle: l10n.l_export_configuration_file,
@@ -136,82 +209,7 @@ class _ConfigureYubiOtpDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: lengthsValid
-              ? () async {
-                  if (!secretFormatValid ||
-                      !publicIdFormatValid ||
-                      !privateIdFormatValid) {
-                    setState(() {
-                      _validateSecretFormat = !secretFormatValid;
-                      _validatePublicIdFormat = !publicIdFormatValid;
-                      _validatePrivateIdFormat = !privateIdFormatValid;
-                    });
-                    return;
-                  }
-
-                  if (!await confirmOverwrite(context, widget.otpSlot)) {
-                    return;
-                  }
-
-                  final otpNotifier =
-                      ref.read(otpStateProvider(widget.devicePath).notifier);
-                  final configuration = SlotConfiguration.yubiotp(
-                      publicId: publicId,
-                      privateId: privateId,
-                      key: secret,
-                      options:
-                          SlotConfigurationOptions(appendCr: _appendEnter));
-
-                  bool configurationSucceeded = false;
-                  try {
-                    await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: configuration);
-                    configurationSucceeded = true;
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    // Access code required
-                    await ref.read(withContextProvider)((context) async {
-                      final result = await showBlurDialog(
-                          context: context,
-                          builder: (context) => AccessCodeDialog(
-                                devicePath: widget.devicePath,
-                                otpSlot: widget.otpSlot,
-                                action: (accessCode) async {
-                                  await otpNotifier.configureSlot(
-                                      widget.otpSlot.slot,
-                                      configuration: configuration,
-                                      accessCode: accessCode);
-                                },
-                              ));
-                      configurationSucceeded = result ?? false;
-                    });
-                  }
-
-                  if (configurationSucceeded) {
-                    if (outputFile != null) {
-                      final csv = await otpNotifier.formatYubiOtpCsv(
-                          info!.serial!, publicId, privateId, secret);
-
-                      await outputFile.writeAsString(
-                          '$csv${Platform.lineTerminator}',
-                          mode: FileMode.append);
-                    }
-                  }
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop();
-                    if (configurationSucceeded) {
-                      showMessage(
-                          context,
-                          outputFile != null
-                              ? l10n.l_slot_credential_configured_and_exported(
-                                  l10n.s_capability_otp,
-                                  outputFile.uri.pathSegments.last)
-                              : l10n.l_slot_credential_configured(
-                                  l10n.s_capability_otp));
-                    }
-                  });
-                }
-              : null,
+          onPressed: lengthsValid ? submit : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -225,6 +223,7 @@ class _ConfigureYubiOtpDialogState
               autofocus: true,
               controller: _publicIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
+              focusNode: _publicIdFocus,
               maxLength: publicIdLength,
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
@@ -256,12 +255,20 @@ class _ConfigureYubiOtpDialogState
                   _validatePublicIdFormat = false;
                 });
               },
+              onSubmitted: (_) {
+                if (publicIdLengthValid) {
+                  _privateIdFocus.requestFocus();
+                } else {
+                  _publicIdFocus.requestFocus();
+                }
+              },
             ).init(),
             AppTextField(
               key: keys.privateIdField,
               controller: _privateIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: privateIdLength,
+              focusNode: _privateIdFocus,
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_private_id,
@@ -293,12 +300,20 @@ class _ConfigureYubiOtpDialogState
                   _validatePrivateIdFormat = false;
                 });
               },
+              onSubmitted: (_) {
+                if (privateIdLengthValid) {
+                  _secretFocus.requestFocus();
+                } else {
+                  _privateIdFocus.requestFocus();
+                }
+              },
             ).init(),
             AppTextField(
               key: keys.secretField,
               controller: _secretController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretLength,
+              focusNode: _secretFocus,
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_secret_key,
@@ -329,6 +344,13 @@ class _ConfigureYubiOtpDialogState
                 setState(() {
                   _validateSecretFormat = false;
                 });
+              },
+              onSubmitted: (_) {
+                if (lengthsValid) {
+                  submit();
+                } else {
+                  _secretFocus.requestFocus();
+                }
               },
             ).init(),
             Row(

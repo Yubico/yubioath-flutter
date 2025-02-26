@@ -52,6 +52,7 @@ class ConfigureHotpDialog extends ConsumerStatefulWidget {
 
 class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   final _secretController = TextEditingController();
+  final _secretFocus = FocusNode();
   bool _validateSecret = false;
   int _digits = defaultDigits;
   final List<int> _digitsValues = [6, 8];
@@ -61,6 +62,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   @override
   void dispose() {
     _secretController.dispose();
+    _secretFocus.dispose();
     super.dispose();
   }
 
@@ -72,65 +74,62 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
     final secretLengthValid = secret.isNotEmpty && secret.length * 5 % 8 < 5;
     final secretFormatValid = Format.base32.isValid(secret);
 
+    void submit() async {
+      if (!secretLengthValid || !secretFormatValid) {
+        setState(() {
+          _validateSecret = true;
+        });
+        return;
+      }
+
+      if (!await confirmOverwrite(context, widget.otpSlot)) {
+        return;
+      }
+
+      final otpNotifier =
+          ref.read(otpStateProvider(widget.devicePath).notifier);
+      final configuration = SlotConfiguration.hotp(
+          key: secret,
+          options: SlotConfigurationOptions(
+              digits8: _digits == 8, appendCr: _appendEnter));
+
+      bool configurationSucceeded = false;
+      try {
+        await otpNotifier.configureSlot(widget.otpSlot.slot,
+            configuration: configuration);
+        configurationSucceeded = true;
+      } catch (e) {
+        _log.error('Failed to program credential', e);
+        // Access code required
+        await ref.read(withContextProvider)((context) async {
+          final result = await showBlurDialog(
+              context: context,
+              builder: (context) => AccessCodeDialog(
+                    devicePath: widget.devicePath,
+                    otpSlot: widget.otpSlot,
+                    action: (accessCode) async {
+                      await otpNotifier.configureSlot(widget.otpSlot.slot,
+                          configuration: configuration, accessCode: accessCode);
+                    },
+                  ));
+          configurationSucceeded = result ?? false;
+        });
+      }
+
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+        if (configurationSucceeded) {
+          showMessage(context, l10n.l_slot_credential_configured(l10n.s_hotp));
+        }
+      });
+    }
+
     return ResponsiveDialog(
       title: Text(l10n.s_hotp),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecret
-              ? () async {
-                  if (!secretLengthValid || !secretFormatValid) {
-                    setState(() {
-                      _validateSecret = true;
-                    });
-                    return;
-                  }
-
-                  if (!await confirmOverwrite(context, widget.otpSlot)) {
-                    return;
-                  }
-
-                  final otpNotifier =
-                      ref.read(otpStateProvider(widget.devicePath).notifier);
-                  final configuration = SlotConfiguration.hotp(
-                      key: secret,
-                      options: SlotConfigurationOptions(
-                          digits8: _digits == 8, appendCr: _appendEnter));
-
-                  bool configurationSucceeded = false;
-                  try {
-                    await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: configuration);
-                    configurationSucceeded = true;
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    // Access code required
-                    await ref.read(withContextProvider)((context) async {
-                      final result = await showBlurDialog(
-                          context: context,
-                          builder: (context) => AccessCodeDialog(
-                                devicePath: widget.devicePath,
-                                otpSlot: widget.otpSlot,
-                                action: (accessCode) async {
-                                  await otpNotifier.configureSlot(
-                                      widget.otpSlot.slot,
-                                      configuration: configuration,
-                                      accessCode: accessCode);
-                                },
-                              ));
-                      configurationSucceeded = result ?? false;
-                    });
-                  }
-
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop();
-                    if (configurationSucceeded) {
-                      showMessage(context,
-                          l10n.l_slot_credential_configured(l10n.s_hotp));
-                    }
-                  });
-                }
-              : null,
+          onPressed: !_validateSecret ? submit : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -144,6 +143,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
               controller: _secretController,
               obscureText: _isObscure,
               autofocus: true,
+              focusNode: _secretFocus,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
@@ -175,6 +175,13 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                 setState(() {
                   _validateSecret = false;
                 });
+              },
+              onSubmitted: (_) {
+                if (!_validateSecret) {
+                  submit();
+                } else {
+                  _secretFocus.requestFocus();
+                }
               },
             ).init(),
             Row(

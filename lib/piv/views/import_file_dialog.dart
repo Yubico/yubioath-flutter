@@ -54,7 +54,8 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   late String _data;
   late bool _allowMatch;
   PivExamineResult? _state;
-  String _password = '';
+  final _passwordController = TextEditingController();
+  final _passwordFocus = FocusNode();
   bool _passwordIsWrong = false;
   bool _importing = false;
   bool _isObscure = true;
@@ -67,6 +68,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     _init();
   }
 
+  @override
+  void dispose() {
+    _passwordFocus.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   void _init() async {
     final bytes = await widget.file.readAsBytes();
     _data = bytes.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
@@ -77,17 +85,24 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     setState(() {
       _state = null;
     });
+    final password = _passwordController.text;
     final result = await ref
         .read(pivSlotsProvider(widget.devicePath).notifier)
         .examine(widget.pivSlot.slot, _data,
-            password: _password.isNotEmpty ? _password : null);
+            password: password.isNotEmpty ? password : null);
 
+    final passwordIsWrong = result.maybeWhen(
+      invalidPassword: () => password.isNotEmpty,
+      orElse: () => true,
+    );
+    if (passwordIsWrong) {
+      _passwordController.selection = TextSelection(
+          baseOffset: 0, extentOffset: _passwordController.text.length);
+      _passwordFocus.requestFocus();
+    }
     setState(() {
       _state = result;
-      _passwordIsWrong = result.maybeWhen(
-        invalidPassword: () => _password.isNotEmpty,
-        orElse: () => true,
-      );
+      _passwordIsWrong = passwordIsWrong;
     });
   }
 
@@ -120,6 +135,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             )),
       );
     }
+    final password = _passwordController.text;
 
     return state.when(
       invalidPassword: () => ResponsiveDialog(
@@ -127,7 +143,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
         actions: [
           TextButton(
             key: keys.unlockButton,
-            onPressed: () => _examine(),
+            onPressed: password.isNotEmpty ? _examine : null,
             child: Text(l10n.s_unlock),
           ),
         ],
@@ -139,6 +155,8 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
               Text(l10n.p_password_protected_file),
               AppTextField(
                 autofocus: true,
+                focusNode: _passwordFocus,
+                controller: _passwordController,
                 obscureText: _isObscure,
                 autofillHints: const [AutofillHints.password],
                 key: keys.managementKeyField,
@@ -165,10 +183,15 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                 onChanged: (value) {
                   setState(() {
                     _passwordIsWrong = false;
-                    _password = value;
                   });
                 },
-                onSubmitted: (_) => _examine(),
+                onSubmitted: (_) {
+                  if (password.isNotEmpty && !_passwordIsWrong) {
+                    _examine();
+                  } else {
+                    _passwordFocus.requestFocus();
+                  }
+                },
               ).init(),
             ]
                 .map((e) => Padding(
@@ -186,6 +209,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
         final unsupportedKey = keyType != null &&
             !getSupportedKeyTypes(widget.pivState.version, isFips)
                 .contains(keyType);
+
         return ResponsiveDialog(
           title: Text(l10n.l_import_file),
           actions: [
@@ -224,7 +248,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                             .import(
                               widget.pivSlot.slot,
                               _data,
-                              password: _password.isNotEmpty ? _password : null,
+                              password: password.isNotEmpty ? password : null,
                               pinPolicy: getPinPolicy(
                                   widget.pivSlot.slot, _allowMatch),
                             );

@@ -26,12 +26,13 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
 import '../state.dart';
 
 class PinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-
-  const PinDialog(this.devicePath, {super.key});
+  final PivState pivState;
+  const PinDialog(this.devicePath, this.pivState, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PinDialogState();
@@ -42,7 +43,14 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   final _pinFocus = FocusNode();
   bool _pinIsWrong = false;
   int _attemptsRemaining = -1;
+  late bool _pinIsBlocked;
   bool _isObscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _pinIsBlocked = widget.pivState.pinAttempts == 0;
+  }
 
   @override
   void dispose() {
@@ -70,6 +78,9 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               setState(() {
                 _attemptsRemaining = attemptsRemaining;
                 _pinIsWrong = true;
+                if (_attemptsRemaining == 0) {
+                  _pinIsBlocked = true;
+                }
               });
             },
             orElse: () {},
@@ -84,15 +95,16 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final version = ref.watch(pivStateProvider(widget.devicePath)).valueOrNull;
-    final minPinLen = version?.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
+    final minPinLen =
+        widget.pivState.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
     final currentPinLen = byteLength(_pinController.text);
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: currentPinLen >= minPinLen ? _submit : null,
+          onPressed:
+              currentPinLen >= minPinLen && !_pinIsBlocked ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -112,12 +124,16 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               key: keys.managementKeyField,
               controller: _pinController,
               focusNode: _pinFocus,
+              enabled: !_pinIsBlocked,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
-                errorText: _pinIsWrong
-                    ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                    : null,
+                errorText: _pinIsBlocked
+                    ? l10n.l_piv_pin_blocked
+                    : _pinIsWrong
+                        ? l10n
+                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                        : null,
                 errorMaxLines: 3,
                 icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
@@ -137,7 +153,13 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                   _pinIsWrong = false;
                 });
               },
-              onSubmitted: (_) => _submit(),
+              onSubmitted: (_) {
+                if (currentPinLen >= minPinLen) {
+                  _submit();
+                } else {
+                  _pinFocus.requestFocus();
+                }
+              },
             ).init(),
           ]
               .map((e) => Padding(
