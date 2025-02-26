@@ -51,6 +51,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   final _currentPinFocus = FocusNode();
   final _newPinController = TextEditingController();
   final _newPinFocus = FocusNode();
+  final _confirmPinFocus = FocusNode();
   String _confirmPin = '';
   bool _pinIsBlocked = false;
   bool _currentIsWrong = false;
@@ -85,6 +86,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     _currentPinFocus.dispose();
     _newPinController.dispose();
     _newPinFocus.dispose();
+    _confirmPinFocus.dispose();
     super.dispose();
   }
 
@@ -246,6 +248,14 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                   _currentIsWrong = false;
                 });
               },
+              onSubmitted: (_) {
+                if (currentPinLen >= currentMinPinLen ||
+                    (isFipsCapable && showDefaultPinUsed)) {
+                  _newPinFocus.requestFocus();
+                } else {
+                  _currentPinFocus.requestFocus();
+                }
+              },
             ).init(),
             // Used to add more spacing
             const SizedBox(height: 0),
@@ -302,8 +312,10 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 });
               },
               onSubmitted: (_) {
-                if (isValid) {
-                  _submit();
+                if (newPinLen >= newMinPinLen) {
+                  _confirmPinFocus.requestFocus();
+                } else {
+                  _newPinFocus.requestFocus();
                 }
               },
             ).init(),
@@ -313,6 +325,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               maxLength: 8,
               inputFormatters: [limitBytesLength(8)],
               buildCounter: buildByteCounterFor(_confirmPin),
+              focusNode: _confirmPinFocus,
               autofillHints: const [AutofillHints.newPassword],
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
@@ -352,6 +365,8 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
               onSubmitted: (_) {
                 if (isValid) {
                   _submit();
+                } else {
+                  _confirmPinFocus.requestFocus();
                 }
               },
             ).init(),

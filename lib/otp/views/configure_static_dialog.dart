@@ -53,6 +53,7 @@ class ConfigureStaticDialog extends ConsumerStatefulWidget {
 
 class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   final _passwordController = TextEditingController();
+  final _passwordFocus = FocusNode();
   final passwordMaxLength = 38;
   bool _validatePassword = false;
   bool _appendEnter = true;
@@ -70,6 +71,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   @override
   void dispose() {
     _passwordController.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -92,68 +94,63 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
     final passwordFormatValid =
         generateFormatterPattern(_keyboardLayout).hasMatch(password);
 
+    void submit() async {
+      if (!passwordLengthValid || !passwordFormatValid) {
+        setState(() {
+          _validatePassword = true;
+        });
+        return;
+      }
+
+      if (!await confirmOverwrite(context, widget.otpSlot)) {
+        return;
+      }
+
+      final otpNotifier =
+          ref.read(otpStateProvider(widget.devicePath).notifier);
+      final configuration = SlotConfiguration.static(
+          password: password,
+          keyboardLayout: _keyboardLayout,
+          options: SlotConfigurationOptions(appendCr: _appendEnter));
+
+      bool configurationSucceeded = false;
+      try {
+        await otpNotifier.configureSlot(widget.otpSlot.slot,
+            configuration: configuration);
+        configurationSucceeded = true;
+      } catch (e) {
+        _log.error('Failed to program credential', e);
+        // Access code required
+        await ref.read(withContextProvider)((context) async {
+          final result = await showBlurDialog(
+              context: context,
+              builder: (context) => AccessCodeDialog(
+                    devicePath: widget.devicePath,
+                    otpSlot: widget.otpSlot,
+                    action: (accessCode) async {
+                      await otpNotifier.configureSlot(widget.otpSlot.slot,
+                          configuration: configuration, accessCode: accessCode);
+                    },
+                  ));
+          configurationSucceeded = result ?? false;
+        });
+      }
+
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+        if (configurationSucceeded) {
+          showMessage(context,
+              l10n.l_slot_credential_configured(l10n.s_static_password));
+        }
+      });
+    }
+
     return ResponsiveDialog(
       title: Text(l10n.s_static_password),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validatePassword
-              ? () async {
-                  if (!passwordLengthValid || !passwordFormatValid) {
-                    setState(() {
-                      _validatePassword = true;
-                    });
-                    return;
-                  }
-
-                  if (!await confirmOverwrite(context, widget.otpSlot)) {
-                    return;
-                  }
-
-                  final otpNotifier =
-                      ref.read(otpStateProvider(widget.devicePath).notifier);
-                  final configuration = SlotConfiguration.static(
-                      password: password,
-                      keyboardLayout: _keyboardLayout,
-                      options:
-                          SlotConfigurationOptions(appendCr: _appendEnter));
-
-                  bool configurationSucceeded = false;
-                  try {
-                    await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: configuration);
-                    configurationSucceeded = true;
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    // Access code required
-                    await ref.read(withContextProvider)((context) async {
-                      final result = await showBlurDialog(
-                          context: context,
-                          builder: (context) => AccessCodeDialog(
-                                devicePath: widget.devicePath,
-                                otpSlot: widget.otpSlot,
-                                action: (accessCode) async {
-                                  await otpNotifier.configureSlot(
-                                      widget.otpSlot.slot,
-                                      configuration: configuration,
-                                      accessCode: accessCode);
-                                },
-                              ));
-                      configurationSucceeded = result ?? false;
-                    });
-                  }
-
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop();
-                    if (configurationSucceeded) {
-                      showMessage(
-                          context,
-                          l10n.l_slot_credential_configured(
-                              l10n.s_static_password));
-                    }
-                  });
-                }
-              : null,
+          onPressed: !_validatePassword ? submit : null,
           child: Text(l10n.s_save),
         )
       ],
@@ -166,6 +163,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
               key: keys.secretField,
               autofocus: true,
               controller: _passwordController,
+              focusNode: _passwordFocus,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: passwordMaxLength,
               decoration: AppInputDecoration(
@@ -197,6 +195,13 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                 setState(() {
                   _validatePassword = false;
                 });
+              },
+              onSubmitted: (_) {
+                if (!_validatePassword) {
+                  submit();
+                } else {
+                  _passwordFocus.requestFocus();
+                }
               },
             ).init(),
             Row(

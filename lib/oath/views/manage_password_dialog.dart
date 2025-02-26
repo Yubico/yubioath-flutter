@@ -165,10 +165,10 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                   });
                 },
                 onSubmitted: (_) {
-                  if (_currentPasswordController.text.isEmpty) {
-                    _currentPasswordFocus.requestFocus();
-                  } else {
+                  if (_currentPasswordController.text.isNotEmpty) {
                     _newPasswordFocus.requestFocus();
+                  } else {
+                    _currentPasswordFocus.requestFocus();
                   }
                 },
               ).init(),

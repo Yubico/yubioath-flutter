@@ -558,9 +558,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                           // Update maxlengths
                         });
                       },
-                      onSubmitted: (_) {
-                        if (isValid) submit();
-                      },
                     ).init(),
                     AppTextField(
                       key: keys.nameField,
@@ -588,9 +585,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                         setState(() {
                           // Update max lengths
                         });
-                      },
-                      onSubmitted: (_) {
-                        if (isValid) submit();
                       },
                     ).init(),
                     AppTextField(
