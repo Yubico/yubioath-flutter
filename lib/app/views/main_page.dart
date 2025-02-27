@@ -59,9 +59,13 @@ class MainPage extends ConsumerWidget {
       final serial = next.hasValue == true ? next.value?.info.serial : null;
       final prevSerial =
           prev?.hasValue == true ? prev?.value?.info.serial : null;
-      if ((serial != null && serial == prevSerial) ||
-          (next.hasValue && (prev != null && prev.isLoading)) ||
-          next.isLoading) {
+
+      if (serial != null && serial == prevSerial) {
+        return;
+      }
+
+      if (isAndroid &&
+          ((next.hasValue && prev?.isLoading == true) || next.isLoading)) {
         return;
       }
 
