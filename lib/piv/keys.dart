@@ -20,6 +20,9 @@ const _prefix = 'piv.keys';
 const _keyAction = '$_prefix.actions';
 const _slotAction = '$_prefix.slot.actions';
 
+// Banner keys
+const pivPinDefaultBannerKey = 'PIV_DEFAULT_BANNER';
+
 // Key actions
 const managePinAction = Key('$_keyAction.manage_pin');
 const managePukAction = Key('$_keyAction.manage_puk');

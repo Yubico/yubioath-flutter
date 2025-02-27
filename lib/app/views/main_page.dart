@@ -141,7 +141,7 @@ class MainPage extends ConsumerWidget {
                 Section.securityKey => const WebAuthnScreen(),
                 Section.passkeys => PasskeysScreen(data),
                 Section.fingerprints => FingerprintsScreen(data),
-                Section.certificates => PivScreen(data.node.path),
+                Section.certificates => PivScreen(data),
                 Section.slots => OtpScreen(data.node.path),
               };
             },

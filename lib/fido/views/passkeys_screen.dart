@@ -94,17 +94,17 @@ class PasskeysScreen extends ConsumerWidget {
         },
         data: (fidoState) {
           return fidoState.unlocked
-              ? _FidoUnlockedPage(deviceData.node, fidoState)
-              : _FidoLockedPage(deviceData.node, fidoState);
+              ? _FidoUnlockedPage(deviceData, fidoState)
+              : _FidoLockedPage(deviceData, fidoState);
         });
   }
 }
 
 class _FidoLockedPage extends ConsumerWidget {
-  final DeviceNode node;
+  final YubiKeyData deviceData;
   final FidoState state;
 
-  const _FidoLockedPage(this.node, this.state);
+  const _FidoLockedPage(this.deviceData, this.state);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -136,7 +136,8 @@ class _FidoLockedPage extends ConsumerWidget {
                 onPressed: () async {
                   await showBlurDialog(
                       context: context,
-                      builder: (context) => FidoPinDialog(node.path, state));
+                      builder: (context) =>
+                          FidoPinDialog(deviceData.node.path, state));
                 },
                 avatar: const Icon(Symbols.pin),
               )
@@ -177,7 +178,8 @@ class _FidoLockedPage extends ConsumerWidget {
               onPressed: () async {
                 await showBlurDialog(
                     context: context,
-                    builder: (context) => FidoPinDialog(node.path, state));
+                    builder: (context) =>
+                        FidoPinDialog(deviceData.node.path, state));
               },
               avatar: const Icon(Symbols.pin),
             )
@@ -197,21 +199,22 @@ class _FidoLockedPage extends ConsumerWidget {
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
-          PinEntryForm(state, node),
+          PinEntryForm(state, deviceData),
         ],
       ),
     );
   }
 
   Widget _buildActions(BuildContext context) =>
-      passkeysBuildActions(context, node, state);
+      passkeysBuildActions(context, deviceData.node, state);
 }
 
 class _FidoUnlockedPage extends ConsumerStatefulWidget {
-  final DeviceNode node;
+  final YubiKeyData deviceData;
   final FidoState state;
 
-  _FidoUnlockedPage(this.node, this.state) : super(key: ObjectKey(node.path));
+  _FidoUnlockedPage(this.deviceData, this.state)
+      : super(key: ObjectKey(deviceData.node.path));
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -276,14 +279,15 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         message: l10n.l_register_sk_on_websites,
         footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions
-            ? (context) =>
-                passkeysBuildActions(context, widget.node, widget.state)
+            ? (context) => passkeysBuildActions(
+                context, widget.deviceData.node, widget.state)
             : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
       );
     }
 
-    final data = ref.watch(credentialProvider(widget.node.path)).asData;
+    final data =
+        ref.watch(credentialProvider(widget.deviceData.node.path)).asData;
     if (data == null) {
       return _buildLoadingPage(context);
     }
@@ -319,8 +323,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             ? l10n.p_setup_fingerprints_desc
             : l10n.l_register_sk_on_websites,
         keyActionsBuilder: hasActions
-            ? (context) =>
-                passkeysBuildActions(context, widget.node, widget.state)
+            ? (context) => passkeysBuildActions(
+                context, widget.deviceData.node, widget.state)
             : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
         footnote: l10n.p_non_passkeys_note,
@@ -330,7 +334,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final credential = _selected;
     final searchText = searchController.text;
     return FidoActions(
-      devicePath: widget.node.path,
+      devicePath: widget.deviceData.node.path,
       actions: (context) => {
         SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
           searchController.selection = TextSelection(
@@ -576,8 +580,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 )
             : null,
         keyActionsBuilder: hasActions
-            ? (context) =>
-                passkeysBuildActions(context, widget.node, widget.state)
+            ? (context) => passkeysBuildActions(
+                context, widget.deviceData.node, widget.state)
             : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
         builder: (context, expanded) {

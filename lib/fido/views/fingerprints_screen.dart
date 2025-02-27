@@ -176,7 +176,7 @@ class _FidoLockedPage extends ConsumerWidget {
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
-          PinEntryForm(state, deviceData.node),
+          PinEntryForm(state, deviceData),
         ],
       ),
     );

@@ -19,9 +19,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/views/reset_dialog.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
+import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../keys.dart';
@@ -30,9 +33,9 @@ import '../state.dart';
 
 class PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
-  final DeviceNode _deviceNode;
+  final YubiKeyData _deviceData;
 
-  const PinEntryForm(this._state, this._deviceNode, {super.key});
+  const PinEntryForm(this._state, this._deviceData, {super.key});
 
   @override
   ConsumerState<PinEntryForm> createState() => _PinEntryFormState();
@@ -68,7 +71,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     });
     try {
       final result = await ref
-          .read(fidoStateProvider(widget._deviceNode.path).notifier)
+          .read(fidoStateProvider(widget._deviceData.node.path).notifier)
           .unlock(_pinController.text);
       result.whenOrNull(failed: (reason) {
         reason.maybeWhen(
@@ -92,9 +95,6 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context);
-    if (widget._state.pinBlocked || _retries == 0) {
-      return l10n.l_pin_blocked_reset;
-    }
     if (_blocked) {
       return l10n.l_pin_soft_locked;
     }
@@ -107,6 +107,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     final noFingerprints = widget._state.bioEnroll == false;
     final authBlocked = widget._state.pinBlocked;
     final pinRetries = widget._state.pinRetries;
@@ -115,6 +116,32 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (authBlocked || _retries == 0) ...[
+            MaterialBanner(
+              padding: EdgeInsets.all(18),
+              content: Text(l10n.l_pin_blocked_reset),
+              leading: Icon(
+                Icons.warning_amber,
+                color: theme.colorScheme.primary,
+              ),
+              backgroundColor: theme.hoverColor,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    showBlurDialog(
+                        context: context,
+                        builder: (context) => ResetDialog(
+                              widget._deviceData,
+                              application: Capability.fido2,
+                            ));
+                  },
+                  child: Text(l10n.s_reset),
+                )
+              ],
+            ),
+            const SizedBox(height: 16.0),
+          ],
           Text(l10n.l_enter_fido2_pin),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
@@ -132,7 +159,10 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                 helperText: pinRetries != null && pinRetries <= 3
                     ? l10n.l_attempts_remaining(pinRetries)
                     : '', // Prevents dialog resizing
-                errorText: _pinIsWrong || authBlocked ? _getErrorText() : null,
+                errorText: (_pinIsWrong || authBlocked) &&
+                        !(authBlocked || _retries == 0)
+                    ? _getErrorText()
+                    : null,
                 errorMaxLines: 3,
                 icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
