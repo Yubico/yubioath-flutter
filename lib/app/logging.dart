@@ -118,14 +118,15 @@ class LogPanelVisibilityNotifier extends StateNotifier<bool> {
   }
 }
 
-class LoggingPanel extends ConsumerStatefulWidget {
-  const LoggingPanel({super.key});
+class _LoggingPanel extends ConsumerStatefulWidget {
+  final bool safeArea;
+  const _LoggingPanel({this.safeArea = false});
 
   @override
-  ConsumerState<LoggingPanel> createState() => _LoggingPanelState();
+  ConsumerState<_LoggingPanel> createState() => _LoggingPanelState();
 }
 
-class _LoggingPanelState extends ConsumerState<LoggingPanel> {
+class _LoggingPanelState extends ConsumerState<_LoggingPanel> {
   bool _runningDiagnostics = false;
 
   List<Widget> _buildChipsList(Level logLevel) {
@@ -217,14 +218,10 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
     final logLevel = ref.watch(logLevelProvider);
     final sensitiveLogs = ref.watch(
         logLevelProvider.select((level) => level.value <= Level.CONFIG.value));
-    final visible = ref.watch(logPanelVisibilityProvider);
-
-    if (!visible) {
-      return const SizedBox();
-    }
 
     return _Panel(
       sensitive: sensitiveLogs,
+      safeArea: widget.safeArea,
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
         runSpacing: 4.0,
@@ -269,43 +266,40 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
   }
 }
 
-class WarningPanel extends ConsumerWidget {
-  const WarningPanel({super.key});
+class _WarningPanel extends StatelessWidget {
+  final bool safeArea;
+  const _WarningPanel({this.safeArea = false});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final allowScreenshots =
-        isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
-
-    if (!allowScreenshots) {
-      return SizedBox();
-    }
 
     return _Panel(
-      sensitive: allowScreenshots,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
-            child: Icon(
-              Symbols.warning_amber,
-              size: 24,
+        sensitive: true,
+        safeArea: safeArea,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+              child: Icon(
+                Symbols.warning_amber,
+                size: 24,
+              ),
             ),
-          ),
-          const SizedBox(width: 8.0),
-          Flexible(child: Text(l10n.l_warning_allow_screenshots))
-        ],
-      ),
-    );
+            const SizedBox(width: 8.0),
+            Flexible(child: Text(l10n.l_warning_allow_screenshots))
+          ],
+        ));
   }
 }
 
 class _Panel extends StatelessWidget {
   final Widget child;
   final bool sensitive;
-  const _Panel({required this.child, required this.sensitive});
+  final bool safeArea;
+  const _Panel(
+      {required this.child, required this.sensitive, this.safeArea = true});
 
   @override
   Widget build(BuildContext context) {
@@ -346,18 +340,48 @@ class _Panel extends StatelessWidget {
         ? sensitiveColor.withValues(alpha: 0.3)
         : colorScheme.secondaryContainer.withValues(alpha: 0.3);
 
+    final content = Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: child,
+    );
+
     return ColoredBox(
       color: colorScheme.surface,
       child: Theme(
         data: localThemeData,
         child: ColoredBox(
           color: panelBackgroundColor,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: child,
-          ),
+          child: safeArea ? SafeArea(child: content) : content,
         ),
       ),
+    );
+  }
+}
+
+class PanelList extends ConsumerWidget {
+  const PanelList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final logPanelVisible = ref.watch(logPanelVisibilityProvider);
+    final allowScreenshots =
+        isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (allowScreenshots)
+          Flexible(
+            child: _WarningPanel(
+              safeArea: !logPanelVisible,
+            ),
+          ),
+        if (allowScreenshots && logPanelVisible) const SizedBox(height: 4.0),
+        if (logPanelVisible)
+          Flexible(
+            child: _LoggingPanel(safeArea: true),
+          )
+      ],
     );
   }
 }
