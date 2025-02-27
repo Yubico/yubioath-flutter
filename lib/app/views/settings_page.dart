@@ -33,23 +33,23 @@ import 'keys.dart' as keys;
 
 extension on ThemeMode {
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        ThemeMode.system => l10n.s_system_default,
-        ThemeMode.light => l10n.s_light_mode,
-        ThemeMode.dark => l10n.s_dark_mode,
-      };
+    ThemeMode.system => l10n.s_system_default,
+    ThemeMode.light => l10n.s_light_mode,
+    ThemeMode.dark => l10n.s_dark_mode,
+  };
 }
 
 extension on Locale {
   String getDisplayName(AppLocalizations l10n) => switch (languageCode) {
-        'en' => l10n.s_english,
-        'de' => l10n.s_german,
-        'fr' => l10n.s_french,
-        'ja' => l10n.s_japanese,
-        'pl' => l10n.s_polish,
-        'sk' => l10n.s_slovak,
-        'vi' => l10n.s_vietnamese,
-        _ => languageCode,
-      };
+    'en' => l10n.s_english,
+    'de' => l10n.s_german,
+    'fr' => l10n.s_french,
+    'ja' => l10n.s_japanese,
+    'pl' => l10n.s_polish,
+    'sk' => l10n.s_slovak,
+    'vi' => l10n.s_vietnamese,
+    _ => languageCode,
+  };
 }
 
 class _ThemeModeView extends ConsumerWidget {
@@ -66,20 +66,21 @@ class _ThemeModeView extends ConsumerWidget {
           final l10n = AppLocalizations.of(context);
           return SimpleDialog(
             title: Text(l10n.s_choose_app_theme),
-            children: supportedThemes
-                .map(
-                  (e) => RadioListTile(
-                    title: Text(e.getDisplayName(l10n)),
-                    value: e,
-                    key: keys.themeModeOption(e),
-                    groupValue: themeMode,
-                    toggleable: true,
-                    onChanged: (mode) {
-                      Navigator.pop(context, e);
-                    },
-                  ),
-                )
-                .toList(),
+            children:
+                supportedThemes
+                    .map(
+                      (e) => RadioListTile(
+                        title: Text(e.getDisplayName(l10n)),
+                        value: e,
+                        key: keys.themeModeOption(e),
+                        groupValue: themeMode,
+                        toggleable: true,
+                        onChanged: (mode) {
+                          Navigator.pop(context, e);
+                        },
+                      ),
+                    )
+                    .toList(),
           );
         },
       ) ??
@@ -232,62 +233,63 @@ class _ToggleReadersDialog extends ConsumerWidget {
     return ResponsiveDialog(
       title: Text(l10n.s_toggle_readers),
       dialogMaxWidth: 500,
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.l_toggle_readers_desc),
-            const SizedBox(height: 8.0),
-            ...nfcDevices.map(
-              (e) => Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Symbols.contactless,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 12.0),
-                        Flexible(
-                          child: Text(
-                            e.name,
-                            style: textTheme.bodyMedium?.copyWith(
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l10n.l_toggle_readers_desc),
+                const SizedBox(height: 8.0),
+                ...nfcDevices.map(
+                  (e) => Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Symbols.contactless,
                               color: colorScheme.onSurfaceVariant,
                             ),
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                            const SizedBox(width: 12.0),
+                            Flexible(
+                              child: Text(
+                                e.name,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 12.0),
+                          ],
                         ),
-                        const SizedBox(width: 12.0),
-                      ],
-                    ),
+                      ),
+                      Switch(
+                        value: !hidden.contains(e.path.key),
+                        onChanged: (show) {
+                          if (!show) {
+                            ref
+                                .read(hiddenDevicesProvider.notifier)
+                                .hideDevice(e.path);
+                          } else {
+                            ref
+                                .read(hiddenDevicesProvider.notifier)
+                                .showDevice(e.path);
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                  Switch(
-                    value: !hidden.contains(e.path.key),
-                    onChanged: (show) {
-                      if (!show) {
-                        ref
-                            .read(hiddenDevicesProvider.notifier)
-                            .hideDevice(e.path);
-                      } else {
-                        ref
-                            .read(hiddenDevicesProvider.notifier)
-                            .showDevice(e.path);
-                      }
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -327,34 +329,35 @@ class SettingsPage extends ConsumerWidget {
 
     return ResponsiveDialog(
       title: Text(l10n.s_settings),
-      builder: (context, _) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // add nfc options only on devices with NFC capability
-          if (isAndroid && ref.watch(androidNfcSupportProvider)) ...[
-            ListTitle(l10n.s_nfc_options),
-            const NfcTapActionView(),
-            const NfcKbdLayoutView(),
-            const NfcBypassTouchView(),
-            const NfcSilenceSoundsView(),
-          ],
-          if (isAndroid) ...[
-            ListTitle(l10n.s_usb_options),
-            const UsbOpenAppView(),
-          ],
-          if (isAndroid) ...[
-            ListTitle(l10n.s_privacy_options),
-            const AllowScreenshotsView(),
-          ],
-          ListTitle(l10n.s_appearance),
-          const _ThemeModeView(),
-          const _IconsView(),
-          ListTitle(l10n.s_options),
-          if (!isAndroid) const _ToggleReadersView(),
-          const _LanguageView()
-        ],
-      ),
+      builder:
+          (context, _) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // add nfc options only on devices with NFC capability
+              if (isAndroid && ref.watch(androidNfcSupportProvider)) ...[
+                ListTitle(l10n.s_nfc_options),
+                const NfcTapActionView(),
+                const NfcKbdLayoutView(),
+                const NfcBypassTouchView(),
+                const NfcSilenceSoundsView(),
+              ],
+              if (isAndroid) ...[
+                ListTitle(l10n.s_usb_options),
+                const UsbOpenAppView(),
+              ],
+              if (isAndroid) ...[
+                ListTitle(l10n.s_privacy_options),
+                const AllowScreenshotsView(),
+              ],
+              ListTitle(l10n.s_appearance),
+              const _ThemeModeView(),
+              const _IconsView(),
+              ListTitle(l10n.s_options),
+              if (!isAndroid) const _ToggleReadersView(),
+              const _LanguageView(),
+            ],
+          ),
     );
   }
 }

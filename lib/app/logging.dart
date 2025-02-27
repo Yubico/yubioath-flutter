@@ -103,8 +103,8 @@ class LogLevelNotifier extends StateNotifier<Level> {
 
 final logPanelVisibilityProvider =
     StateNotifierProvider<LogPanelVisibilityNotifier, bool>((ref) {
-  return LogPanelVisibilityNotifier(false);
-});
+      return LogPanelVisibilityNotifier(false);
+    });
 
 class LogPanelVisibilityNotifier extends StateNotifier<bool> {
   LogPanelVisibilityNotifier(super.initialVisiblity);
@@ -114,30 +114,35 @@ class LogPanelVisibilityNotifier extends StateNotifier<bool> {
   }
 }
 
-class LoggingPanel extends ConsumerStatefulWidget {
-  const LoggingPanel({super.key});
+class _LoggingPanel extends ConsumerStatefulWidget {
+  final bool safeArea;
+  const _LoggingPanel({this.safeArea = false});
 
   @override
-  ConsumerState<LoggingPanel> createState() => _LoggingPanelState();
+  ConsumerState<_LoggingPanel> createState() => _LoggingPanelState();
 }
 
-class _LoggingPanelState extends ConsumerState<LoggingPanel> {
+class _LoggingPanelState extends ConsumerState<_LoggingPanel> {
   bool _runningDiagnostics = false;
 
   List<Widget> _buildChipsList(Level logLevel) {
     final l10n = AppLocalizations.of(context);
     return [
       ChoiceFilterChip<Level>(
-        avatar: Icon(
-          Symbols.insights,
-        ),
+        avatar: Icon(Symbols.insights),
         value: logLevel,
         items: Levels.LEVELS,
         selected: logLevel != Level.INFO,
-        labelBuilder: (value) => Text(l10n.s_log_level(
-            value.name[0] + value.name.substring(1).toLowerCase())),
-        itemBuilder: (value) =>
-            Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+        labelBuilder:
+            (value) => Text(
+              l10n.s_log_level(
+                value.name[0] + value.name.substring(1).toLowerCase(),
+              ),
+            ),
+        itemBuilder:
+            (value) => Text(
+              '${value.name[0]}${value.name.substring(1).toLowerCase()}',
+            ),
         onChanged: (level) {
           ref.read(logLevelProvider.notifier).setLogLevel(level);
           _log.debug('Log level set to $level');
@@ -153,26 +158,23 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
           var clipboard = ref.read(clipboardProvider);
           await clipboard.setText(logs.join('\n'));
           if (!clipboard.platformGivesFeedback()) {
-            await ref.read(withContextProvider)(
-              (context) async {
-                showMessage(context, l10n.l_log_copied);
-              },
-            );
+            await ref.read(withContextProvider)((context) async {
+              showMessage(context, l10n.l_log_copied);
+            });
           }
         },
       ),
       if (isDesktop) ...[
         ActionChip(
           key: diagnosticsChip,
-          avatar: _runningDiagnostics
-              ? SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.0,
-                  ),
-                )
-              : const Icon(Symbols.bug_report),
+          avatar:
+              _runningDiagnostics
+                  ? SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2.0),
+                  )
+                  : const Icon(Symbols.bug_report),
           label: Text(l10n.s_run_diagnostics),
           onPressed: () async {
             setState(() {
@@ -196,14 +198,12 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
             setState(() {
               _runningDiagnostics = false;
             });
-            await ref.read(withContextProvider)(
-              (context) async {
-                showMessage(context, l10n.l_diagnostics_copied);
-              },
-            );
+            await ref.read(withContextProvider)((context) async {
+              showMessage(context, l10n.l_diagnostics_copied);
+            });
           },
         ),
-      ]
+      ],
     ];
   }
 
@@ -212,15 +212,12 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     final sensitiveLogs = ref.watch(
-        logLevelProvider.select((level) => level.value <= Level.CONFIG.value));
-    final visible = ref.watch(logPanelVisibilityProvider);
-
-    if (!visible) {
-      return const SizedBox();
-    }
+      logLevelProvider.select((level) => level.value <= Level.CONFIG.value),
+    );
 
     return _Panel(
       sensitive: sensitiveLogs,
+      safeArea: widget.safeArea,
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
         runSpacing: 4.0,
@@ -232,17 +229,17 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
-                  child: Icon(
-                    Symbols.warning_amber,
-                    size: 24,
+                  padding: const EdgeInsets.only(
+                    left: 12.0,
+                    top: 8.0,
+                    bottom: 8.0,
                   ),
+                  child: Icon(Symbols.warning_amber, size: 24),
                 ),
                 if (sensitiveLogs) ...[
                   const SizedBox(width: 8.0),
-                  Flexible(child: Text(l10n.l_sensitive_data_logged))
-                ]
+                  Flexible(child: Text(l10n.l_sensitive_data_logged)),
+                ],
               ],
             ),
           if (!sensitiveLogs)
@@ -258,40 +255,33 @@ class _LoggingPanelState extends ConsumerState<LoggingPanel> {
             spacing: 4.0,
             runSpacing: 4.0,
             children: _buildChipsList(logLevel),
-          )
+          ),
         ],
       ),
     );
   }
 }
 
-class WarningPanel extends ConsumerWidget {
-  const WarningPanel({super.key});
+class _WarningPanel extends StatelessWidget {
+  final bool safeArea;
+  const _WarningPanel({this.safeArea = false});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final allowScreenshots =
-        isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
-
-    if (!allowScreenshots) {
-      return SizedBox();
-    }
 
     return _Panel(
-      sensitive: allowScreenshots,
+      sensitive: true,
+      safeArea: safeArea,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
-            child: Icon(
-              Symbols.warning_amber,
-              size: 24,
-            ),
+            child: Icon(Symbols.warning_amber, size: 24),
           ),
           const SizedBox(width: 8.0),
-          Flexible(child: Text(l10n.l_warning_allow_screenshots))
+          Flexible(child: Text(l10n.l_warning_allow_screenshots)),
         ],
       ),
     );
@@ -301,19 +291,26 @@ class WarningPanel extends ConsumerWidget {
 class _Panel extends StatelessWidget {
   final Widget child;
   final bool sensitive;
-  const _Panel({required this.child, required this.sensitive});
+  final bool safeArea;
+  const _Panel({
+    required this.child,
+    required this.sensitive,
+    this.safeArea = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
     final sensitiveColor = Color(0xFFFF1A1A);
-    final sensitiveChipColor = themeData.brightness == Brightness.dark
-        ? Color(0xFF832E2E)
-        : Color.fromARGB(255, 223, 134, 134);
-    final sensitiveChipBorderColor = themeData.brightness == Brightness.dark
-        ? Color(0xFFA24848)
-        : Color.fromARGB(255, 191, 98, 98);
+    final sensitiveChipColor =
+        themeData.brightness == Brightness.dark
+            ? Color(0xFF832E2E)
+            : Color.fromARGB(255, 223, 134, 134);
+    final sensitiveChipBorderColor =
+        themeData.brightness == Brightness.dark
+            ? Color(0xFFA24848)
+            : Color.fromARGB(255, 191, 98, 98);
     final seedColor =
         sensitive ? sensitiveColor : themeData.colorScheme.primary;
     final colorScheme = ColorScheme.fromSeed(
@@ -327,20 +324,22 @@ class _Panel extends StatelessWidget {
         backgroundColor:
             sensitive ? sensitiveChipColor : colorScheme.secondaryContainer,
         selectedColor: sensitive ? sensitiveChipColor : null,
-        shape: sensitive
-            ? RoundedRectangleBorder(
-                side: BorderSide(
-                  color: sensitiveChipBorderColor,
-                ),
-                borderRadius: BorderRadius.circular(8.0),
-              )
-            : null,
+        shape:
+            sensitive
+                ? RoundedRectangleBorder(
+                  side: BorderSide(color: sensitiveChipBorderColor),
+                  borderRadius: BorderRadius.circular(8.0),
+                )
+                : null,
       ),
     );
 
-    final panelBackgroundColor = sensitive
-        ? sensitiveColor.withValues(alpha: 0.3)
-        : colorScheme.secondaryContainer.withValues(alpha: 0.3);
+    final panelBackgroundColor =
+        sensitive
+            ? sensitiveColor.withValues(alpha: 0.3)
+            : colorScheme.secondaryContainer.withValues(alpha: 0.3);
+
+    final content = Padding(padding: const EdgeInsets.all(4.0), child: child);
 
     return ColoredBox(
       color: colorScheme.surface,
@@ -348,12 +347,30 @@ class _Panel extends StatelessWidget {
         data: localThemeData,
         child: ColoredBox(
           color: panelBackgroundColor,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: child,
-          ),
+          child: safeArea ? SafeArea(child: content) : content,
         ),
       ),
+    );
+  }
+}
+
+class PanelList extends ConsumerWidget {
+  const PanelList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final logPanelVisible = ref.watch(logPanelVisibilityProvider);
+    final allowScreenshots =
+        isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (allowScreenshots)
+          Flexible(child: _WarningPanel(safeArea: !logPanelVisible)),
+        if (allowScreenshots && logPanelVisible) const SizedBox(height: 4.0),
+        if (logPanelVisible) Flexible(child: _LoggingPanel(safeArea: true)),
+      ],
     );
   }
 }

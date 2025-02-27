@@ -824,18 +824,7 @@ class _AppPageState extends ConsumerState<AppPage> {
           ],
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Column(
-          key: loggingPanelKey,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 4.0,
-          children: [
-            Flexible(child: WarningPanel()),
-            Flexible(child: LoggingPanel()),
-          ],
-        ),
-      ),
+      bottomNavigationBar: PanelList(key: loggingPanelKey),
       drawer: hasDrawer ? _buildDrawer(context) : null,
       body: body,
     );

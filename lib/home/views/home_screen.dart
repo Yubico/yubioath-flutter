@@ -52,8 +52,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final serial = widget.deviceData.info.serial;
     final keyCustomization = ref.watch(keyCustomizationManagerProvider)[serial];
-    final enabledCapabilities = widget.deviceData.info.config
-            .enabledCapabilities[widget.deviceData.node.transport] ??
+    final enabledCapabilities =
+        widget.deviceData.info.config.enabledCapabilities[widget
+            .deviceData
+            .node
+            .transport] ??
         0;
     final primaryColor = ref.watch(primaryColorProvider);
 
@@ -69,9 +72,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return AppPage(
       title: hide ? null : l10n.s_home,
       delayedContent: hide,
-      keyActionsBuilder: (context) => HomeActions(
-        deviceData: widget.deviceData,
-      ),
+      keyActionsBuilder:
+          (context) => HomeActions(deviceData: widget.deviceData),
       builder: (context, expanded) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -92,14 +94,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Wrap(
                           spacing: 4,
                           runSpacing: 8,
-                          children: Capability.values
-                              .where(
-                                (c) => enabledCapabilities & c.value != 0,
-                              )
-                              .map(
-                                (c) => CapabilityBadge(c, noTooltip: true),
-                              )
-                              .toList(),
+                          children:
+                              Capability.values
+                                  .where(
+                                    (c) => enabledCapabilities & c.value != 0,
+                                  )
+                                  .map(
+                                    (c) => CapabilityBadge(c, noTooltip: true),
+                                  )
+                                  .toList(),
                         ),
                         if (widget.deviceData.info.fipsCapable != 0)
                           Padding(
@@ -298,10 +301,12 @@ class _DeviceContent extends ConsumerWidget {
                                         size: 16,
                                         weight: 700,
                                         opticalSize: 20,
-                                        color: defaultColor.computeLuminance() >
-                                                0.7
-                                            ? Colors.grey // for bright colors
-                                            : Colors.white,
+                                        color:
+                                            defaultColor.computeLuminance() >
+                                                    0.7
+                                                ? Colors
+                                                    .grey // for bright colors
+                                                : Colors.white,
                                       ),
                                     ),
                                   ],
@@ -337,15 +342,15 @@ class _DeviceContent extends ConsumerWidget {
           Text(
             l10n.l_serial_number(serial),
             style: Theme.of(context).textTheme.titleSmall?.apply(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         if (version != const Version(0, 0, 0))
           Text(
             l10n.l_firmware_version(version),
             style: Theme.of(context).textTheme.titleSmall?.apply(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         if (deviceData.info.pinComplexity)
           Padding(
@@ -367,8 +372,8 @@ class _DeviceContent extends ConsumerWidget {
                   TextSpan(
                     text: l10n.l_pin_complexity,
                     style: Theme.of(context).textTheme.titleSmall?.apply(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -393,8 +398,9 @@ class _DeviceContent extends ConsumerWidget {
   ) async {
     await showBlurDialog(
       context: context,
-      builder: (context) =>
-          ManageLabelDialog(initialCustomization: keyCustomization),
+      builder:
+          (context) =>
+              ManageLabelDialog(initialCustomization: keyCustomization),
     );
   }
 }

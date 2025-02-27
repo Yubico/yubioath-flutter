@@ -31,107 +31,109 @@ class AboutPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     return ResponsiveDialog(
       title: Text(l10n.s_about),
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
-            Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: Text(
-                l10n.app_name,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            const Text(version),
-            const Text(''),
-            Row(
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
+                Padding(
+                  padding: const EdgeInsets.only(top: 24.0),
+                  child: Text(
+                    l10n.app_name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const Text(version),
+                const Text(''),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      child: Text(
+                        key: tosButton,
+                        l10n.s_terms_of_use,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onPressed: () {
+                        launchTermsUrl();
+                      },
+                    ),
+                    TextButton(
+                      child: Text(
+                        key: privacyButton,
+                        l10n.s_privacy_policy,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onPressed: () {
+                        launchPrivacyUrl();
+                      },
+                    ),
+                  ],
+                ),
                 TextButton(
                   child: Text(
-                    key: tosButton,
-                    l10n.s_terms_of_use,
+                    key: licensesButton,
+                    l10n.s_open_src_licenses,
                     style: const TextStyle(
                       decoration: TextDecoration.underline,
                     ),
                   ),
                   onPressed: () {
-                    launchTermsUrl();
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder:
+                            (BuildContext context) =>
+                                const LicensePage(applicationVersion: version),
+                        settings: const RouteSettings(name: 'licenses'),
+                      ),
+                    );
                   },
                 ),
-                TextButton(
+                const Padding(
+                  padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    key: privacyButton,
-                    l10n.s_privacy_policy,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                    ),
+                    key: helpButton,
+                    l10n.s_help_and_feedback,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  onPressed: () {
-                    launchPrivacyUrl();
-                  },
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      onPressed: launchDocumentationUrl,
+                      child: Text(
+                        key: userGuideButton,
+                        l10n.s_user_guide,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: launchHelpUrl,
+                      child: Text(
+                        l10n.s_i_need_help,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            TextButton(
-              child: Text(
-                key: licensesButton,
-                l10n.s_open_src_licenses,
-                style: const TextStyle(
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) =>
-                        const LicensePage(applicationVersion: version),
-                    settings: const RouteSettings(name: 'licenses'),
-                  ),
-                );
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
-              child: Divider(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                key: helpButton,
-                l10n.s_help_and_feedback,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextButton(
-                  onPressed: launchDocumentationUrl,
-                  child: Text(
-                    key: userGuideButton,
-                    l10n.s_user_guide,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: launchHelpUrl,
-                  child: Text(
-                    l10n.s_i_need_help,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
