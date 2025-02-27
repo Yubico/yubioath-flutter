@@ -64,8 +64,8 @@ List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
 
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
-  final Capability? capability;
-  const ResetDialog(this.data, {super.key, this.capability});
+  final Capability? application;
+  const ResetDialog(this.data, {super.key, this.application});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ResetDialogState();
@@ -84,7 +84,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     super.initState();
     final nfc = widget.data.node.transport == Transport.nfc;
     _totalSteps = nfc ? 2 : 3;
-    _application = widget.capability;
+    _application = widget.application;
   }
 
   @override

@@ -133,14 +133,14 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                         context: context,
                         builder: (context) => ResetDialog(
                               widget._deviceData,
-                              capability: Capability.fido2,
+                              application: Capability.fido2,
                             ));
                   },
                   child: Text(l10n.s_reset),
                 )
               ],
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 16.0),
           ],
           Text(l10n.l_enter_fido2_pin),
           Padding(

@@ -275,7 +275,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                       builder: (context) => pukAttempts == 0
                                           ? ResetDialog(
                                               widget.data,
-                                              capability: Capability.piv,
+                                              application: Capability.piv,
                                             )
                                           : ManagePinPukDialog(
                                               widget.data.node.path,
@@ -327,7 +327,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                 )
                               ],
                             ),
-                          const SizedBox(height: 8.0),
+                          const SizedBox(height: 16.0),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 10.0),
