@@ -329,28 +329,28 @@ class KeyCustomizationNotifier
 }
 
 final dismissedBannersProvider =
-    StateNotifierProvider.family<DismissedBanners, List<String>, DevicePath>(
-        (ref, devicePath) =>
-            DismissedBanners(ref.watch(prefProvider), devicePath));
+    StateNotifierProvider.family<DismissedBanners, List<String>, int?>(
+        (ref, serial) => DismissedBanners(ref.watch(prefProvider), serial));
 
 class DismissedBanners extends StateNotifier<List<String>> {
   static const String _baseKey = 'BANNERS_DISMISSED';
+  static const String _noSerialKey = 'NO_SERIAL';
   final SharedPreferences _prefs;
-  final DevicePath _devicePath;
+  final int? _serial;
 
-  DismissedBanners(this._prefs, this._devicePath)
-      : super(_prefs.getStringList(getFullKey(_devicePath)) ?? []);
+  DismissedBanners(this._prefs, this._serial)
+      : super(_prefs.getStringList(getFullKey(_serial)) ?? []);
 
-  static String getFullKey(DevicePath devicePath) =>
-      '${_baseKey}_${devicePath.key}';
+  static String getFullKey(int? serial) =>
+      '${_baseKey}_${serial ?? _noSerialKey}';
 
   void dismissBanner(String banner) {
     state = [...state, banner];
-    _prefs.setStringList(getFullKey(_devicePath), state);
+    _prefs.setStringList(getFullKey(_serial), state);
   }
 
   void showBanner(String banner) {
     state = state.where((e) => e != banner).toList();
-    _prefs.setStringList(getFullKey(_devicePath), state);
+    _prefs.setStringList(getFullKey(_serial), state);
   }
 }

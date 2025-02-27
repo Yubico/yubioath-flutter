@@ -253,9 +253,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
                         // Show dismissed banner upon reset
                         ref
-                            .read(
-                                dismissedBannersProvider(widget.data.node.path)
-                                    .notifier)
+                            .read(dismissedBannersProvider(
+                                    widget.data.info.serial)
+                                .notifier)
                             .showBanner(pivPinDefaultBannerKey);
 
                         await ref.read(withContextProvider)((context) async {

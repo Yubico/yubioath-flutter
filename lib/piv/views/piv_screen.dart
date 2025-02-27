@@ -233,8 +233,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                     final pukAttempts =
                         pivState.metadata?.pukMetadata.attemptsRemaining;
 
-                    final dismissedBanners = ref
-                        .watch(dismissedBannersProvider(widget.data.node.path));
+                    final dismissedBanners = ref.watch(
+                        dismissedBannersProvider(widget.data.info.serial));
 
                     final showPinDefaultBanner =
                         !dismissedBanners.contains(pivPinDefaultBannerKey) &&
@@ -304,7 +304,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                   onPressed: () {
                                     ref
                                         .read(dismissedBannersProvider(
-                                                widget.data.node.path)
+                                                widget.data.info.serial)
                                             .notifier)
                                         .dismissBanner(pivPinDefaultBannerKey);
                                   },
@@ -327,7 +327,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                 )
                               ],
                             ),
-                          const SizedBox(height: 16.0),
+                          if (pinBlocked || showPinDefaultBanner)
+                            const SizedBox(height: 16.0),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 10.0),
