@@ -81,12 +81,16 @@
     "s_security_key": "Klucz bezpieczeństwa",
     "s_slots": "Sloty",
     "s_help_and_about": "Pomoc i informacje",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "Rozwiązywanie problemów",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "Rozwiązywanie problemów i wsparcie",
     "s_help_and_feedback": "Pomoc i opinie",
     "s_home": "Strona główna",
     "s_user_guide": "Przewodnik użytkownika",
     "s_i_need_help": "Pomoc",
-    "s_troubleshooting": "Rozwiązywanie problemów",
     "s_terms_of_use": "Warunki użytkowania",
     "s_privacy_policy": "Polityka prywatności",
     "s_open_src_licenses": "Licencje open source",
@@ -115,8 +119,8 @@
     },
     "s_character_count": "Liczba znaków",
     "s_learn_more": "Dowiedz się więcej",
-
     "@_language": {},
+
     "s_language": "Język",
     "l_enable_community_translations": "Włącz tłumaczenia społecznościowe",
     "p_community_translations_desc": null,
@@ -133,22 +137,22 @@
     "s_slovak": null,
     "s_vietnamese": null,
     "s_japanese": null,
-
-
     "@_theme": {},
+
+
     "s_app_theme": "Motyw aplikacji",
     "s_choose_app_theme": "Wybierz motyw",
     "s_system_default": "Domyślny systemu",
     "s_light_mode": "Jasny",
     "s_dark_mode": "Ciemny",
-
     "@_layout": {},
+
     "s_list_layout": "Układ listy",
     "s_grid_layout": "Układ siatki",
     "s_mixed_layout": "Układ mieszany",
     "s_select_layout": "Wybierz układ",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "Wybierz, aby zeskanować",
     "s_hide_reader": null,
     "s_show_hidden_readers": null,
@@ -180,8 +184,8 @@
     "l_firmware_version": "Wersja oprogramowania: {version}",
     "l_fips_capable": "Zgodność ze standardem FIPS",
     "l_fips_approved": "Zatwierdzony przez FIPS",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "Podłącz klucz YubiKey",
     "l_insert_or_tap_yk": "Podłącz lub zbliż klucz YubiKey",
     "l_unplug_yk": "Odłącz klucz YubiKey",
@@ -193,8 +197,8 @@
     "s_touch_required": "Dotknięcie wymagane",
     "l_touch_button_now": "Dotknij przycisku na kluczu YubiKey",
     "l_keep_touching_yk": "Wielokrotnie dotykaj klucza YubiKey\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -202,8 +206,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Auth",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "Przełączanie aplikacji",
     "s_toggle_interfaces": "Przełączanie interfejsów",
     "p_toggle_applications_desc": "Włącz lub wyłącz aplikacje przez dostępne interfejsy.",
@@ -233,9 +237,9 @@
     "s_show_lock_code": "Pokaż kod blokady",
     "s_hide_lock_code": "Ukryj kod blokady",
     "p_lock_code_required_desc": "Działanie wymaga wpisania kodu blokady.",
-
-
     "@_connectivity_issues": {},
+
+
     "l_helper_not_responding": "Proces pomocnika nie odpowiada",
     "l_yk_no_access": "Dostęp do tego klucza YubiKey jest niemożliwy",
     "s_yk_inaccessible": "Urządzenie jest niedostępne",
@@ -255,16 +259,16 @@
     "p_operation_failed_try_again": "Operacja nie powiodła się. Spróbuj ponownie.",
     "l_configuration_unsupported": "Konfiguracja nie jest obsługiwana",
     "p_scp_unsupported": "Aby komunikować się przez NFC, YubiKey wymaga technologii, która nie jest obsługiwana przez ten telefon. Podłącz klawiaturę YubiKey do portu USB telefonu.",
-
     "@_general_errors": {},
+
     "l_error_occurred": "Wystąpił błąd",
     "s_application_error": "Błąd aplikacji",
     "l_import_error": "Błąd importowania",
     "l_file_not_found": "Plik nie został znaleziony",
     "l_file_too_big": "Plik jest zbyt duży",
     "l_filesystem_error": "Błąd operacji systemu plików",
-
     "@_pins": {},
+
     "s_pin": "PIN",
     "s_puk": "PUK",
     "s_set_pin": "Ustaw kod PIN",
@@ -382,8 +386,8 @@
     "l_default_pin_used": "Używany jest domyślny kod PIN",
     "l_default_puk_used": "Używany jest domyślny kod PUK",
     "l_pin_complexity": "Wymuszona złożoność kodu PIN",
-
     "@_passwords": {},
+
     "s_password": "Hasło",
     "s_manage_password": "Zarządzaj hasłem",
     "s_set_password": "Ustaw hasło",
@@ -409,8 +413,8 @@
     "l_set_password_first": "Ustaw hasło",
     "l_enter_oath_pw": "Wpisz hasło OATH dla klucza YubiKey",
     "p_new_password_requirements": null,
-
     "@_management_key": {},
+
     "s_management_key": "Klucz zarządzania",
     "s_current_management_key": "Obecny klucz zarządzania",
     "s_new_management_key": "Nowy klucz zarządzania",
@@ -429,8 +433,8 @@
     "l_wrong_key": "Klucz jest nieprawidłowy",
     "l_unlock_piv_management": "Odblokuj zarządzanie PIV",
     "p_unlock_piv_management_desc": "Działanie wymaga klucza zarządzania PIV. Wpisz ten klucz, aby odblokować funkcje zarządzania dla tej sesji.",
-
     "@_oath_accounts": {},
+
     "l_account": "Konto: {label}",
     "@l_account": {
         "placeholders": {
@@ -523,8 +527,8 @@
     "s_time_based": "Na podstawie czasu",
     "l_copy_code_desc": "Wklej kod do innej aplikacji",
     "l_calculate_code_desc": "Uzyskaj nowy kod z klucza YubiKey",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP ID",
     "s_user_id": "User ID",
     "s_credential_id": "Credential ID",
@@ -606,13 +610,13 @@
     },
     "p_press_fingerprint_begin": "Przytrzymaj palec na kluczu YubiKey, aby rozpocząć.",
     "l_name_fingerprint": "Nazwij odcisk palca",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "Nie powiodło się z powodu braku aktywności użytkownika",
     "l_wrong_inserted_yk_error": "Ponownie włożony klucz YubiKey nie pasuje do poprzedniego urządzenia",
     "l_failed_connecting_to_fido": "Połączenie z interfejsem FIDO nie powiodło się",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": null,
     "l_certificate_signing_request": null,
     "s_certificate": "Certyfikat",
@@ -741,8 +745,8 @@
     "l_overwrite_cert": "Certyfikat zostanie nadpisany",
     "l_overwrite_key": "Klucz prywatny zostanie nadpisany",
     "l_overwrite_key_maybe": "Każdy obecny klucz prywatny w slocie zostanie nadpisany",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
@@ -755,14 +759,14 @@
     "s_slot_9d": "Zarządzanie kluczem",
     "s_slot_9e": "Uwierzytelnianie kartą",
     "s_retired_slot": "Emerytowane kluczowe kierownictwo",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "Krótkie dotknięcie",
     "s_otp_slot_two": "Długie dotknięcie",
     "l_otp_slot_empty": "Slot jest pusty",
     "l_otp_slot_configured": "Slot jest skonfigurowany",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "Skonfiguruj poświadczenie Yubico OTP",
     "s_challenge_response": "Challenge-response",
     "l_challenge_response_desc": "Skonfiguruj poświadczenie challenge-response",
@@ -790,8 +794,8 @@
             "layout": {}
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "Usuń poświadczenie",
     "q_delete_slot": null,
     "l_delete_slot_desc": "Usuń poświadczenie ze slotu",
@@ -823,12 +827,12 @@
     },
     "s_append_enter": "Dołącz ⏎",
     "l_append_enter_desc": "Dołącz klawisz Enter po wysłaniu kodu OTP",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "Nie udało się zmienić slotów! Upewnij się, że klucz YubiKey nie ma ograniczonego dostępu.",
     "l_wrong_access_code": "Kod dostępu jest nieprawidłowy",
-
     "@_otp_access_code": {},
+
     "s_access_code": "Kod dostępu",
     "s_show_access_code": "Pokaż kod dostępu",
     "s_hide_access_code": "Ukryj kod dostępu",
@@ -838,9 +842,9 @@
             "slot": {}
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "Włącz NFC",
     "s_request_access": "Żądanie dostępu",
     "s_permission_denied": "Odmowa dostępu",
@@ -852,8 +856,8 @@
     "p_webauthn_elevated_permissions_required": "Zarządzanie WebAuthn wymaga podwyższonych uprawnień.",
     "l_ms_store_permission_note": "Wersja aplikacji ze sklepu Microsoft Store może nie być w stanie podnieść uprawnień",
     "p_need_camera_permission": "Yubico Authenticator wymaga dostępu do aparatu w celu skanowania kodów QR.",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "Zeskanuj kod QR",
     "l_invalid_qr": "Kod QR jest nieprawidłowy",
     "l_qr_not_found": "Nie znaleziono kodu QR",
@@ -877,8 +881,8 @@
     "q_no_qr": "Nie masz kodu QR?",
     "s_enter_manually": "Wpisz ręcznie",
     "s_read_from_file": "Odczytaj z pliku",
-
     "@_factory_reset": {},
+
     "s_reset": "Zresetuj",
     "s_factory_reset": "Ustawienia fabryczne",
     "l_factory_reset_desc": "Przywróć ustawienia domyślne klucza YubiKey",
@@ -902,8 +906,8 @@
     "p_warning_piv_reset_desc": "Obejmuje to klucze prywatne i certyfikaty. Kod PIN, PUK i klucz zarządzania zostaną zresetowane do domyślnych wartości fabrycznych.",
     "p_warning_global_reset": "Uwaga! Ta czynność nieodwracalnie usunie wszystkie zapisane dane, w tym dane uwierzytelniające, z klucza YubiKey.",
     "p_warning_global_reset_desc": "Zresetuj funkcje na swoim YubiKey. PIN zostanie zresetowany do wartości domyślnej i zarejestrowane odciski palców zostaną usunięte. Wszelkie klucze, certyfikaty czy inne dane uwierzytelniające zostaną trwale usunięte.",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "Kopiuj do schowka",
     "s_code_copied": "Kod został skopiowany",
     "l_code_copied_clipboard": "Kod został skopiowany do schowka",
@@ -916,8 +920,8 @@
             "label": {}
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "Niestandardowe ikony",
     "l_set_icons_for_accounts": "Ustaw ikony dla kont",
     "p_custom_icons_description": "Pakiety ikon mogą sprawić, że Twoje konta będą łatwiejsze do rozróżnienia dzięki znanym logo i kolorom.",
@@ -943,8 +947,8 @@
     },
     "l_invalid_icon_pack": "Pakiet ikon jest nieprawidłowy",
     "l_icon_pack_copy_failed": "Nie udało się skopiować plików pakietu ikon",
-
     "@_android_settings": {},
+
     "s_nfc_options": "Opcje NFC",
     "l_on_yk_nfc_tap": "Podczas zbliżenia klucza YubiKey przez NFC",
     "l_do_nothing": "Nic nie rób",
@@ -963,27 +967,29 @@
     "l_launch_app_on_usb": "Uruchom po podłączeniu klucza YubiKey",
     "l_launch_app_on_usb_on": "Inne aplikacje nie mogą korzystać z klucza YubiKey przez USB",
     "l_launch_app_on_usb_off": "Inne aplikacje mogą korzystać z klucza YubiKey przez USB",
+    "s_privacy_options": null,
     "s_allow_screenshots": "Zezwalaj na zrzuty ekranu",
-
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "Gotowy do skanowania",
     "s_nfc_hold_still": "Nie ruszaj się\u2026",
     "s_nfc_tap_your_yubikey": "Dotknij przycisku YubiKey",
     "l_nfc_failed_to_scan": "Skanowanie nie powiodło się, spróbuj ponownie",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "Kod OTP został skopiowany do schowka.",
     "p_ndef_set_password": "Hasło zostało skopiowane do schowka.",
     "p_ndef_parse_failure": "Nie udało się odczytać kodu OTP z klucza YubiKey.",
     "p_ndef_set_clip_failure": "Wystąpił błąd podczas kopiowania kodu OTP do schowka.",
-
     "@_key_customization": {},
+
     "s_set_label": "Ustaw etykietę",
     "s_set_color": "Ustaw kolor",
     "s_change_label": "Zmień etykietę",
     "s_color": "Kolor",
     "p_set_will_add_custom_name": "Spowoduje to nazwanie klucza YubiKey.",
     "p_rename_will_change_custom_name": "Spowoduje to zmianę etykiety klucza YubiKey.",
-
     "@_eof": {}
+
 }

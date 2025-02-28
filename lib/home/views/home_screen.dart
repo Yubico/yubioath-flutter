@@ -69,8 +69,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return AppPage(
       title: hide ? null : l10n.s_home,
       delayedContent: hide,
-      keyActionsBuilder: (context) =>
-          homeBuildActions(context, widget.deviceData, ref),
+      keyActionsBuilder: (context) => HomeActions(
+        deviceData: widget.deviceData,
+      ),
       builder: (context, expanded) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
