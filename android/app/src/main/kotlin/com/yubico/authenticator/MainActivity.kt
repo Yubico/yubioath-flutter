@@ -57,6 +57,7 @@ import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.NfcStateDispatcher
 import com.yubico.authenticator.yubikit.NfcStateListener
+import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -186,7 +187,6 @@ class MainActivity : FlutterFragmentActivity() {
         logger.debug("Stopped usb discovery")
     }
 
-    @SuppressLint("WrongConstant")
     override fun onStart() {
         super.onStart()
         ContextCompat.registerReceiver(
@@ -316,6 +316,9 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private suspend fun processYubiKey(device: YubiKeyDevice) {
+        if (!Workarounds.handleFidoReclaim(deviceManager, device)) {
+            return
+        }
         val deviceInfo = try {
             deviceManager.scpKeyParams = null
             if (device is NfcYubiKeyDevice) {

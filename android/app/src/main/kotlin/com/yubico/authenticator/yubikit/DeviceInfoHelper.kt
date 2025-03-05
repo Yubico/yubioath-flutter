@@ -22,7 +22,6 @@ import com.yubico.authenticator.device.restrictedNfcDeviceInfo
 import com.yubico.authenticator.device.unknownDeviceWithCapability
 import com.yubico.authenticator.device.unknownFido2DeviceInfo
 import com.yubico.authenticator.device.unknownOathDeviceInfo
-import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Version
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -63,15 +62,15 @@ class DeviceInfoHelper {
                 device.openConnection(SmartCardConnection::class.java)
                     .use { DeviceUtil.readInfo(it, pid) }
             }.recoverCatching { t ->
-                logger.debug("Smart card connection not available: {}", t.message)
+                logger.debug("SmartCard connection not available: {}", t.message)
+                device.openConnection(FidoConnection::class.java)
+                    .use { Workarounds.readInfo(it, pid) }
+            }.recoverCatching { t ->
+                logger.debug("FIDO connection not available: {}", t.message)
                 device.openConnection(OtpConnection::class.java)
                     .use { DeviceUtil.readInfo(it, pid) }
             }.recoverCatching { t ->
                 logger.debug("OTP connection not available: {}", t.message)
-                device.openConnection(FidoConnection::class.java)
-                    .use { DeviceUtil.readInfo(it, pid) }
-            }.recoverCatching { t ->
-                logger.debug("FIDO connection not available: {}", t.message)
                 return SkyHelper(compatUtil).getDeviceInfo(device)
             }.getOrElse {
                 // this is not a YubiKey
@@ -108,8 +107,7 @@ class DeviceInfoHelper {
                 }
             }
 
-            val name = DeviceUtil.getName(deviceInfo, pid?.type)
-            return Info(name, device is NfcYubiKeyDevice, pid?.value, deviceInfo)
+            return Workarounds.getDeviceInfo(device, deviceInfo, pid)
         }
 
         private fun isNfcRestricted(connection: SmartCardConnection): Boolean =
