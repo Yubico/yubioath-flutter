@@ -22,8 +22,8 @@ import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
+import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.core.Transport
-import com.yubico.yubikit.core.UsbInterface.Mode
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.otp.OtpConnection
@@ -87,16 +87,18 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
         interfaces: Int,
         challengeResponseTimeout: Int,
         autoEjectTimeout: Int?
-    ): String = connectionHelper.useDevice { yubikey ->
+    ): String = connectionHelper.useDevice { yubiKeyDevice ->
         try {
-            withManagementSession(yubikey) {
-                it.setMode(
-                    Mode.getMode(interfaces),
-                    challengeResponseTimeout.toByte(),
-                    autoEjectTimeout?.toShort() ?: 0
+            withManagementSession(yubiKeyDevice) {
+                Workarounds.setMode(
+                    it,
+                    yubiKeyDevice,
+                    interfaces,
+                    challengeResponseTimeout,
+                    autoEjectTimeout
                 )
             }
-            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(yubikey) }.getOrNull())
+            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(yubiKeyDevice) }.getOrNull())
             NULL
         } catch (t: Throwable) {
             logger.error("Failed to update device config: ", t)
