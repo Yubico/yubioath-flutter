@@ -5,6 +5,6 @@ jobs:
     platform: linux
     steps:
       - id: 1
-        action: gpg
+        action: windows
         files:
-          - yubioath-desktop-macos/yubioath-desktop.dmg
+          - yubioath-desktop-windows/yubioath-desktop.msi
