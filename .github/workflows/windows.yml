@@ -18,7 +18,6 @@ jobs:
         run: |
           python set-version.py
           git diff --exit-code
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -29,7 +28,7 @@ jobs:
 
       - name: Cache helper
         id: cache-helper
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             build/windows/helper
@@ -41,7 +40,6 @@ jobs:
         run: |
           pip install poetry
           .\build-helper.bat
-
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -56,12 +54,10 @@ jobs:
           pip install pre-commit
           pre-commit run --all-files
           flutter test
-
       - name: Build the app
         run: |
           $version = python set-version.py | select-object -first 1
           flutter build windows --build-name=$version
-
       - name: Check generated files
         run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
 
@@ -71,7 +67,6 @@ jobs:
           cp $dest\helper\_internal/MSVCP140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
-
       - name: Create an unsigned .msi installer package
         run: |
           $env:PATH += ";$env:WIX\bin"
@@ -79,7 +74,6 @@ jobs:
           heat dir .\build\windows\x64\runner\Release\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
-
       - name: Rename and archive app bundle
         run: |
           $arr = $env:GITHUB_REF -split '/'
@@ -90,7 +84,6 @@ jobs:
           mv yubioath-desktop.msi deploy
           mv resources\win\release-win.ps1 deploy
           mv resources deploy
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -120,7 +113,6 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-
     - name: list files
       run: ls -a
     
@@ -137,9 +129,16 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
+    - name: unpack signed artifacts
+      run: |
+        mkdir -p signed
+        mv scribe-download/*/sign-source/1.zip signed/
+        cd signed
+        unzip -j 1.zip || true
+        rm 1.zip
 
     - name: upload signed artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: signed
         path: signed/*
