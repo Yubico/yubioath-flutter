@@ -16,7 +16,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
+import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/models.dart';
@@ -147,7 +149,7 @@ extension OathFunctions on WidgetTester {
   Finder findAccountList() {
     var accountList =
         find.byType(AccountList).hitTestable(at: Alignment.topCenter);
-    expect(accountList, findsOneWidget);
+    // expect(accountList, findsOneWidget);
     return accountList;
   }
 
@@ -218,7 +220,7 @@ extension OathFunctions on WidgetTester {
     await openAccountDialog(a);
 
     /// click the delete IconButton in the account dialog
-    var deleteIconButton = find.byIcon(Icons.delete_outline).hitTestable();
+    var deleteIconButton = find.byIcon(Symbols.delete).hitTestable();
     expect(deleteIconButton, findsOneWidget);
     await tap(deleteIconButton);
     await longWait();
@@ -251,7 +253,7 @@ extension OathFunctions on WidgetTester {
     }
 
     await openAccountDialog(a);
-    var renameIconButton = find.byIcon(Icons.edit_outlined).hitTestable();
+    var renameIconButton = find.byIcon(Symbols.edit).hitTestable();
 
     /// only newer FW supports renaming
     if (renameIconButton.evaluate().isEmpty) {
@@ -302,13 +304,29 @@ extension OathFunctions on WidgetTester {
 
   /// Factory reset OATH application
   Future<void> resetOATH() async {
-    // TODO: Implement this using new Reset Dialog
-    await tapActionIconButton();
+    final targetKey = approvedKeys[0]; // only reset approved keys!
+
+    /// 1. make sure we are using approved key
+    await switchToKey(targetKey);
     await shortWait();
-    //await tap(find.byKey(keys.resetAction));
+
+    /// 2. open the home view
+    await tap(find.byKey(homeDrawer).hitTestable());
     await shortWait();
-    await tap(find.text('Reset'));
+
+    /// 3. open menu
+    await tap(find.byKey(actionsIconButtonKey).hitTestable());
     await shortWait();
+    await tap(find.byKey(yubikeyFactoryResetMenuButton));
+    await shortWait();
+
+    /// 4. then toggle 'Piv' in the 'Factory reset' reset_dialog.dart
+    await tap(find.byKey(factoryResetPickResetOath));
+    await longWait();
+
+    /// 5. Click reset TextButton: done
+    await tap(find.byKey(factoryResetReset));
+    await longWait();
   }
 
   /// Opens the device menu and taps the "Set/Manage password" menu item

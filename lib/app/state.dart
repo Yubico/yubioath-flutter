@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,52 +15,45 @@
  */
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/state.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../theme.dart';
+import 'color_extension.dart';
 import 'features.dart' as features;
-import 'key_customization/state.dart';
 import 'logging.dart';
 import 'models.dart';
 
 final _log = Logger('app.state');
 
-// Officially supported translations
-const officialLocales = [
-  Locale('en', ''),
-];
-
-// Override this to alter the set of supported apps.
-final supportedAppsProvider =
-    Provider<List<Application>>(implementedApps(Application.values));
-
-extension on Application {
+extension on Section {
   Feature get _feature => switch (this) {
-        Application.accounts => features.oath,
-        Application.webauthn => features.fido,
-        Application.passkeys => features.fido,
-        Application.fingerprints => features.fido,
-        Application.slots => features.otp,
-        Application.certificates => features.piv,
-        Application.management => features.management,
-        Application.openpgp => features.openpgp,
-        Application.hsmauth => features.oath,
+        Section.home => features.home,
+        Section.accounts => features.oath,
+        Section.securityKey => features.fido,
+        Section.passkeys => features.fido,
+        Section.fingerprints => features.fingerprints,
+        Section.slots => features.otp,
+        Section.certificates => features.piv,
       };
 }
 
-List<Application> Function(Ref) implementedApps(List<Application> apps) =>
-    (ref) {
-      final hasFeature = ref.watch(featureProvider);
-      return apps.where((app) => hasFeature(app._feature)).toList();
-    };
+final supportedSectionsProvider = Provider<List<Section>>(
+  (ref) {
+    final hasFeature = ref.watch(featureProvider);
+    return Section.values
+        .where((section) => hasFeature(section._feature))
+        .toList();
+  },
+);
 
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(
@@ -71,50 +64,45 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
-final communityTranslationsProvider =
-    StateNotifierProvider<CommunityTranslationsNotifier, bool>(
-        (ref) => CommunityTranslationsNotifier(ref.watch(prefProvider)));
-
-class CommunityTranslationsNotifier extends StateNotifier<bool> {
-  static const String _key = 'APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS';
-  final SharedPreferences _prefs;
-
-  CommunityTranslationsNotifier(this._prefs)
-      : super(_prefs.getBool(_key) == true);
-
-  void setEnableCommunityTranslations(bool value) {
-    state = value;
-    _prefs.setBool(_key, value);
-  }
-}
-
-final supportedLocalesProvider = Provider<List<Locale>>((ref) {
-  final locales = [...officialLocales];
-  final localeStr = Platform.environment['_YA_LOCALE'];
-  if (localeStr != null) {
-    // Force locale
-    final locale = Locale(localeStr, '');
-    locales.add(locale);
-  }
-  return ref.watch(communityTranslationsProvider)
-      ? AppLocalizations.supportedLocales
-      : locales;
+final supportedLocalesProvider = Provider<List<Locale>>((_) {
+  // Ensure english has the highest priority
+  final supportedLocales = [
+    const Locale('en', ''),
+    ...AppLocalizations.supportedLocales
+        .where((locale) => locale.languageCode != 'en')
+  ];
+  return supportedLocales;
 });
 
-final currentLocaleProvider = Provider<Locale>(
-  (ref) {
-    final localeStr = Platform.environment['_YA_LOCALE'];
+final currentLocaleProvider =
+    StateNotifierProvider<CurrentLocaleProvider, Locale>(
+  (ref) => CurrentLocaleProvider(
+      ref.watch(prefProvider), ref.read(supportedLocalesProvider)),
+);
+
+class CurrentLocaleProvider extends StateNotifier<Locale> {
+  static const String _key = 'APP_LOCALE';
+  final SharedPreferences _prefs;
+
+  CurrentLocaleProvider(this._prefs, List<Locale> supportedLocales)
+      : super(_fromName(_prefs.getString(_key), supportedLocales));
+
+  void setLocale(Locale locale) {
+    _log.debug('Set locale to $locale');
+    state = locale;
+    _prefs.setString(_key, locale.languageCode);
+  }
+
+  static Locale _fromName(String? localeStr, List<Locale> supportedLocales) {
     if (localeStr != null) {
       // Force locale
       final locale = Locale(localeStr, '');
-      return basicLocaleListResolution(
-          [locale], AppLocalizations.supportedLocales);
+      return basicLocaleListResolution([locale], supportedLocales);
     }
-    // Choose from supported
-    return basicLocaleListResolution(PlatformDispatcher.instance.locales,
-        ref.watch(supportedLocalesProvider));
-  },
-);
+    return basicLocaleListResolution(
+        PlatformDispatcher.instance.locales, supportedLocales);
+  }
+}
 
 final l10nProvider = Provider<AppLocalizations>(
   (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
@@ -155,30 +143,49 @@ final primaryColorProvider = Provider<Color>((ref) {
   final data = ref.watch(currentDeviceDataProvider).valueOrNull;
   final defaultColor = ref.watch(defaultColorProvider);
   if (data != null) {
-    // We have a device, use its color, or the default color
     final serial = data.info.serial;
     if (serial != null) {
       final customization = ref.watch(keyCustomizationManagerProvider)[serial];
       final deviceColor = customization?.color;
       if (deviceColor != null) {
-        prefs.setInt(prefLastUsedColor, deviceColor.value);
+        prefs.setInt(prefLastUsedColor, deviceColor.toInt32);
         return deviceColor;
       } else {
         prefs.remove(prefLastUsedColor);
         return defaultColor;
       }
     }
-  } else {
-    // We don't have a device, use the last used color, if saved
-    final lastUsedColor = prefs.getInt(prefLastUsedColor);
-    if (lastUsedColor != null) {
-      return Color(lastUsedColor);
-    }
   }
 
-  // Default color if nothing else
-  return defaultColor;
+  final lastUsedColor = prefs.getInt(prefLastUsedColor);
+  return lastUsedColor != null ? Color(lastUsedColor) : defaultColor;
 });
+
+final hiddenDevicesProvider =
+    StateNotifierProvider<HiddenDevicesNotifier, List<String>>(
+        (ref) => HiddenDevicesNotifier(ref.watch(prefProvider)));
+
+class HiddenDevicesNotifier extends StateNotifier<List<String>> {
+  static const String _key = 'DEVICE_PICKER_HIDDEN';
+  final SharedPreferences _prefs;
+
+  HiddenDevicesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
+
+  void showAll() {
+    state = [];
+    _prefs.setStringList(_key, state);
+  }
+
+  void hideDevice(DevicePath devicePath) {
+    state = [...state, devicePath.key];
+    _prefs.setStringList(_key, state);
+  }
+
+  void showDevice(DevicePath devicePath) {
+    state = state.where((e) => e != devicePath.key).toList();
+    _prefs.setStringList(_key, state);
+  }
+}
 
 // Override with platform implementation
 final attachedDevicesProvider =
@@ -205,36 +212,14 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
   setCurrentDevice(DeviceNode? device);
 }
 
-final currentAppProvider =
-    StateNotifierProvider<CurrentAppNotifier, Application>((ref) {
-  final notifier = CurrentAppNotifier(ref.watch(supportedAppsProvider));
-  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
-  }, fireImmediately: true);
-  return notifier;
-});
+final currentSectionProvider =
+    StateNotifierProvider<CurrentSectionNotifier, Section>(
+        (ref) => throw UnimplementedError());
 
-class CurrentAppNotifier extends StateNotifier<Application> {
-  final List<Application> _supportedApps;
+abstract class CurrentSectionNotifier extends StateNotifier<Section> {
+  CurrentSectionNotifier(super.initial);
 
-  CurrentAppNotifier(this._supportedApps) : super(_supportedApps.first);
-
-  void setCurrentApp(Application app) {
-    state = app;
-  }
-
-  void _notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null ||
-        state.getAvailability(data) != Availability.unsupported) {
-      // Keep current app
-      return;
-    }
-
-    state = _supportedApps.firstWhere(
-      (app) => app.getAvailability(data) == Availability.enabled,
-      orElse: () => _supportedApps.first,
-    );
-  }
+  setCurrentSection(Section section);
 }
 
 abstract class QrScanner {
@@ -290,3 +275,82 @@ typedef WithContext = Future<T> Function<T>(
 
 final withContextProvider = Provider<WithContext>(
     (ref) => ref.watch(contextConsumer.notifier).withContext);
+
+final keyCustomizationManagerProvider =
+    StateNotifierProvider<KeyCustomizationNotifier, Map<int, KeyCustomization>>(
+        (ref) => KeyCustomizationNotifier(ref.watch(prefProvider)));
+
+class KeyCustomizationNotifier
+    extends StateNotifier<Map<int, KeyCustomization>> {
+  static const _prefKeyCustomizations = 'KEY_CUSTOMIZATIONS';
+  final SharedPreferences _prefs;
+
+  KeyCustomizationNotifier(this._prefs)
+      : super(_readCustomizations(_prefs.getString(_prefKeyCustomizations)));
+
+  static Map<int, KeyCustomization> _readCustomizations(String? pref) {
+    if (pref == null) {
+      return {};
+    }
+
+    try {
+      final retval = <int, KeyCustomization>{};
+      for (var element in json.decode(pref)) {
+        final keyCustomization = KeyCustomization.fromJson(element);
+        retval[keyCustomization.serial] = keyCustomization;
+      }
+      return retval;
+    } catch (e) {
+      _log.error('Failure reading customizations: $e');
+      return {};
+    }
+  }
+
+  KeyCustomization? get(int serial) {
+    _log.debug('Getting key customization for $serial');
+    return state[serial];
+  }
+
+  Future<void> set({required int serial, String? name, Color? color}) async {
+    _log.debug('Setting key customization for $serial: $name, $color');
+    if (name == null && color == null) {
+      // remove this customization
+      state = {...state..remove(serial)};
+    } else {
+      state = {
+        ...state
+          ..[serial] =
+              KeyCustomization(serial: serial, name: name, color: color)
+      };
+    }
+    await _prefs.setString(
+        _prefKeyCustomizations, json.encode(state.values.toList()));
+  }
+}
+
+final dismissedBannersProvider =
+    StateNotifierProvider.family<DismissedBanners, List<String>, int?>(
+        (ref, serial) => DismissedBanners(ref.watch(prefProvider), serial));
+
+class DismissedBanners extends StateNotifier<List<String>> {
+  static const String _baseKey = 'BANNERS_DISMISSED';
+  static const String _noSerialKey = 'NO_SERIAL';
+  final SharedPreferences _prefs;
+  final int? _serial;
+
+  DismissedBanners(this._prefs, this._serial)
+      : super(_prefs.getStringList(getFullKey(_serial)) ?? []);
+
+  static String getFullKey(int? serial) =>
+      '${_baseKey}_${serial ?? _noSerialKey}';
+
+  void dismissBanner(String banner) {
+    state = [...state, banner];
+    _prefs.setStringList(getFullKey(_serial), state);
+  }
+
+  void showBanner(String banner) {
+    state = state.where((e) => e != banner).toList();
+    _prefs.setStringList(getFullKey(_serial), state);
+  }
+}

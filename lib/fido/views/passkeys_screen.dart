@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -28,33 +30,51 @@ import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
+import '../../widgets/app_input_decoration.dart';
+import '../../widgets/app_text_field.dart';
+import '../../widgets/flex_box.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
 import 'credential_dialog.dart';
+import 'credential_info_view.dart';
 import 'key_actions.dart';
+import 'passkeys_icon.dart';
 import 'pin_dialog.dart';
 import 'pin_entry_form.dart';
 
 class PasskeysScreen extends ConsumerWidget {
   final YubiKeyData deviceData;
+
   const PasskeysScreen(this.deviceData, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return ref.watch(fidoStateProvider(deviceData.node.path)).when(
         loading: () => AppPage(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
               centered: true,
               delayedContent: true,
               builder: (context, _) => const CircularProgressIndicator(),
             ),
         error: (error, _) {
+          if (error is NoDataException) {
+            return MessagePageNotInitialized(
+              title: l10n.s_passkeys,
+              capabilities: const [Capability.fido2],
+            );
+          }
           final enabled = deviceData
                   .info.config.enabledCapabilities[deviceData.node.transport] ??
               0;
@@ -74,64 +94,78 @@ class PasskeysScreen extends ConsumerWidget {
         },
         data: (fidoState) {
           return fidoState.unlocked
-              ? _FidoUnlockedPage(deviceData.node, fidoState)
-              : _FidoLockedPage(deviceData.node, fidoState);
+              ? _FidoUnlockedPage(deviceData, fidoState)
+              : _FidoLockedPage(deviceData, fidoState);
         });
   }
 }
 
 class _FidoLockedPage extends ConsumerWidget {
-  final DeviceNode node;
+  final YubiKeyData deviceData;
   final FidoState state;
 
-  const _FidoLockedPage(this.node, this.state);
+  const _FidoLockedPage(this.deviceData, this.state);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
     final isBio = state.bioEnroll != null;
+    final alwaysUv = state.alwaysUv;
 
     if (!state.hasPin) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
-        actionsBuilder: isBio
-            ? (context, expanded) {
-                return [
-                  ActionChip(
-                    label: Text(l10n.s_setup_fingerprints),
-                    onPressed: () async {
-                      ref
-                          .read(currentAppProvider.notifier)
-                          .setCurrentApp(Application.fingerprints);
-                    },
-                    avatar: const Icon(Icons.fingerprint_outlined),
-                  )
-                ];
-              }
-            : null,
+        actionsBuilder: (context, expanded) {
+          return [
+            if (isBio)
+              ActionChip(
+                label: Text(l10n.s_setup_fingerprints),
+                onPressed: () async {
+                  ref
+                      .read(currentSectionProvider.notifier)
+                      .setCurrentSection(Section.fingerprints);
+                },
+                avatar: const Icon(Symbols.fingerprint),
+              ),
+            if (!isBio && alwaysUv && !expanded)
+              ActionChip(
+                label: Text(l10n.s_set_pin),
+                onPressed: () async {
+                  await showBlurDialog(
+                      context: context,
+                      builder: (context) =>
+                          FidoPinDialog(deviceData.node.path, state));
+                },
+                avatar: const Icon(Symbols.pin),
+              )
+          ];
+        },
         header: state.credMgmt
             ? l10n.l_no_discoverable_accounts
             : l10n.l_ready_to_use,
         message: isBio
             ? l10n.p_setup_fingerprints_desc
-            : '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
-        keyActionsBuilder: hasActions && !isBio ? _buildActions : null,
-        keyActionsBadge: !isBio ? fidoShowActionsNotifier(state) : false,
+            : alwaysUv
+                ? l10n.l_pin_change_required_desc
+                : l10n.l_register_sk_on_websites,
+        footnote: isBio ? null : l10n.p_non_passkeys_note,
+        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
 
-    if (!state.credMgmt && state.bioEnroll == null) {
+    if (!state.credMgmt && !isBio) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_ready_to_use,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
+        footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
 
@@ -144,9 +178,10 @@ class _FidoLockedPage extends ConsumerWidget {
               onPressed: () async {
                 await showBlurDialog(
                     context: context,
-                    builder: (context) => FidoPinDialog(node.path, state));
+                    builder: (context) =>
+                        FidoPinDialog(deviceData.node.path, state));
               },
-              avatar: const Icon(Icons.pin_outlined),
+              avatar: const Icon(Symbols.pin),
             )
         ],
         title: l10n.s_passkeys,
@@ -154,7 +189,7 @@ class _FidoLockedPage extends ConsumerWidget {
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
-        keyActionsBadge: fidoShowActionsNotifier(state),
+        keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
 
@@ -164,21 +199,22 @@ class _FidoLockedPage extends ConsumerWidget {
       keyActionsBuilder: hasActions ? _buildActions : null,
       builder: (context, _) => Column(
         children: [
-          PinEntryForm(state, node),
+          PinEntryForm(state, deviceData),
         ],
       ),
     );
   }
 
   Widget _buildActions(BuildContext context) =>
-      passkeysBuildActions(context, node, state);
+      passkeysBuildActions(context, deviceData.node, state);
 }
 
 class _FidoUnlockedPage extends ConsumerStatefulWidget {
-  final DeviceNode node;
+  final YubiKeyData deviceData;
   final FidoState state;
 
-  _FidoUnlockedPage(this.node, this.state) : super(key: ObjectKey(node.path));
+  _FidoUnlockedPage(this.deviceData, this.state)
+      : super(key: ObjectKey(deviceData.node.path));
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -186,13 +222,53 @@ class _FidoUnlockedPage extends ConsumerStatefulWidget {
 }
 
 class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
+  late FocusNode searchFocus;
+  late TextEditingController searchController;
   FidoCredential? _selected;
+  bool _canRequestFocus = true;
+
+  @override
+  void initState() {
+    super.initState();
+    searchFocus = FocusNode();
+    searchController =
+        TextEditingController(text: ref.read(passkeysSearchProvider));
+    searchFocus.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    searchFocus.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _scrollSearchField() {
+    // Ensures the search field is fully visible when in focus
+    final headerSliverContext = headerSliverGlobalKey.currentContext;
+    if (searchFocus.hasFocus && headerSliverContext != null) {
+      final scrollable = Scrollable.of(headerSliverContext);
+      if (scrollable.deltaToScrollOrigin.dy > 0) {
+        scrollable.position.animateTo(
+          0,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.ease,
+        );
+      }
+    }
+  }
+
+  void _onFocusChange() {
+    _scrollSearchField();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
+    final noFingerprints = widget.state.bioEnroll == false;
 
     if (!widget.state.credMgmt) {
       // TODO: Special handling for credMgmt not supported
@@ -200,41 +276,73 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.l_no_discoverable_accounts,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
+        message: l10n.l_register_sk_on_websites,
+        footnote: l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions
-            ? (context) =>
-                passkeysBuildActions(context, widget.node, widget.state)
+            ? (context) => passkeysBuildActions(
+                context, widget.deviceData.node, widget.state)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
       );
     }
 
-    final data = ref.watch(credentialProvider(widget.node.path)).asData;
+    final data =
+        ref.watch(credentialProvider(widget.deviceData.node.path)).asData;
     if (data == null) {
       return _buildLoadingPage(context);
     }
     final credentials = data.value;
+    final filteredCredentials =
+        ref.watch(filteredFidoCredentialsProvider(credentials.toList()));
+
+    final remainingCreds = widget.state.remainingCreds;
+    final maxCreds =
+        remainingCreds != null ? remainingCreds + credentials.length : 25;
 
     if (credentials.isEmpty) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
-        header: l10n.l_no_discoverable_accounts,
-        message:
-            '${l10n.l_register_sk_on_websites}\n\n${l10n.l_non_passkeys_note}',
-        keyActionsBuilder: hasActions
-            ? (context) =>
-                passkeysBuildActions(context, widget.node, widget.state)
+        actionsBuilder: noFingerprints
+            ? (context, expanded) {
+                return [
+                  ActionChip(
+                    label: Text(l10n.s_setup_fingerprints),
+                    onPressed: () async {
+                      ref
+                          .read(currentSectionProvider.notifier)
+                          .setCurrentSection(Section.fingerprints);
+                    },
+                    avatar: const Icon(Symbols.fingerprint),
+                  )
+                ];
+              }
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        header: l10n.l_no_discoverable_accounts,
+        message: noFingerprints
+            ? l10n.p_setup_fingerprints_desc
+            : l10n.l_register_sk_on_websites,
+        keyActionsBuilder: hasActions
+            ? (context) => passkeysBuildActions(
+                context, widget.deviceData.node, widget.state)
+            : null,
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
+        footnote: l10n.p_non_passkeys_note,
       );
     }
 
     final credential = _selected;
+    final searchText = searchController.text;
     return FidoActions(
-      devicePath: widget.node.path,
+      devicePath: widget.deviceData.node.path,
       actions: (context) => {
+        SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
+          searchController.selection = TextSelection(
+              baseOffset: 0, extentOffset: searchController.text.length);
+          searchFocus.unfocus();
+          Timer.run(() => searchFocus.requestFocus());
+          return null;
+        }),
         EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
           if (_selected != null) {
             setState(() {
@@ -269,7 +377,183 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       },
       builder: (context) => AppPage(
         title: l10n.s_passkeys,
+        alternativeTitle:
+            searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.fido2],
+        footnote:
+            '${l10n.p_passkeys_used(credentials.length, maxCreds)} ${l10n.p_non_passkeys_note}',
+        headerSliver: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.escape) {
+              searchController.clear();
+              ref.read(passkeysSearchProvider.notifier).setFilter('');
+              node.unfocus();
+              setState(() {});
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: LayoutBuilder(builder: (context, constraints) {
+            final textTheme = Theme.of(context).textTheme;
+            final width = constraints.maxWidth;
+            return Consumer(
+              builder: (context, ref, child) {
+                final layout = ref.watch(passkeysLayoutProvider);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 8.0),
+                  child: AppTextField(
+                    key: searchField,
+                    controller: searchController,
+                    canRequestFocus: _canRequestFocus,
+                    focusNode: searchFocus,
+                    // Use the default style, but with a smaller font size:
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                    decoration: AppInputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(48),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: searchFocus.hasFocus
+                              ? BorderStyle.solid
+                              : BorderStyle.none,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                      fillColor: Theme.of(context).hoverColor,
+                      filled: true,
+                      hintText: l10n.s_search_passkeys,
+                      isDense: true,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsetsDirectional.only(start: 8.0),
+                        child: Icon(Icons.search_outlined),
+                      ),
+                      suffixIcons: [
+                        if (searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            iconSize: 16,
+                            onPressed: () {
+                              searchController.clear();
+                              ref
+                                  .read(passkeysSearchProvider.notifier)
+                                  .setFilter('');
+                              setState(() {});
+                            },
+                          ),
+                        if (searchController.text.isEmpty) ...[
+                          if (width >= 450)
+                            ...FlexLayout.values.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(passkeysLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e.icon,
+                                    color: e == layout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (width < 450)
+                            MouseRegion(
+                              onEnter: (event) {
+                                if (!searchFocus.hasFocus) {
+                                  setState(() {
+                                    _canRequestFocus = false;
+                                  });
+                                }
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  _canRequestFocus = true;
+                                });
+                              },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: l10n.s_select_layout,
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
+                                icon: Icon(
+                                  layout.icon,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                itemBuilder: (context) => [
+                                  ...FlexLayout.values.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e.icon,
+                                              color: e == layout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                                passkeysLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                        ]
+                      ],
+                    ),
+                    onChanged: (value) {
+                      ref
+                          .read(passkeysSearchProvider.notifier)
+                          .setFilter(value);
+                      _scrollSearchField();
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    onSubmitted: (value) {
+                      Focus.of(context)
+                          .focusInDirection(TraversalDirection.down);
+                    },
+                  ).init(),
+                );
+              },
+            );
+          }),
+        ),
         detailViewBuilder: credential != null
             ? (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -281,36 +565,9 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                         elevation: 0.0,
                         color: Theme.of(context).hoverColor,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          // TODO: Reuse from credential_dialog
-                          child: Column(
-                            children: [
-                              Text(
-                                credential.userName,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                credential.rpId,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                // This is what ListTile uses for subtitle
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .color,
-                                    ),
-                              ),
-                              const SizedBox(height: 16),
-                              const Icon(Icons.person, size: 72),
-                            ],
-                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
+                          child: CredentialInfoTable(credential),
                         ),
                       ),
                     ),
@@ -323,10 +580,10 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 )
             : null,
         keyActionsBuilder: hasActions
-            ? (context) =>
-                passkeysBuildActions(context, widget.node, widget.state)
+            ? (context) => passkeysBuildActions(
+                context, widget.deviceData.node, widget.state)
             : null,
-        keyActionsBadge: fidoShowActionsNotifier(widget.state),
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
         builder: (context, expanded) {
           // De-select if window is resized to be non-expanded.
           if (!expanded && _selected != null) {
@@ -349,26 +606,39 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                 }),
               }
             },
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ...credentials.map(
-                (cred) => _CredentialListItem(
-                  cred,
-                  expanded: expanded,
-                  selected: _selected == cred,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Opacity(
-                  opacity: 0.6,
-                  child: Text(
-                    l10n.l_non_passkeys_note,
-                    style: Theme.of(context).textTheme.bodySmall,
+            child: Consumer(
+              builder: (context, ref, child) {
+                final layout = ref.watch(passkeysLayoutProvider);
+                return Padding(
+                  padding:
+                      const EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (filteredCredentials.isEmpty)
+                        Center(
+                          child: Text(l10n.s_no_passkeys),
+                        ),
+                      FlexBox<FidoCredential>(
+                        items: filteredCredentials,
+                        itemBuilder: (cred) => _CredentialListItem(
+                          cred,
+                          expanded: expanded,
+                          selected: _selected == cred,
+                          tileColor: layout == FlexLayout.grid
+                              ? Theme.of(context).hoverColor
+                              : null,
+                        ),
+                        layout: layout,
+                        cellMinWidth: 265,
+                        spacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                        runSpacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                      )
+                    ],
                   ),
-                ),
-              ),
-            ]),
+                );
+              },
+            ),
           );
         },
       ),
@@ -376,6 +646,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   }
 
   Widget _buildLoadingPage(BuildContext context) => AppPage(
+        title: AppLocalizations.of(context).s_passkeys,
+        capabilities: const [Capability.fido2],
         centered: true,
         delayedContent: true,
         builder: (context, _) => const CircularProgressIndicator(),
@@ -386,32 +658,39 @@ class _CredentialListItem extends StatelessWidget {
   final FidoCredential credential;
   final bool selected;
   final bool expanded;
+  final Color? tileColor;
 
   const _CredentialListItem(this.credential,
-      {required this.expanded, required this.selected});
+      {required this.expanded, required this.selected, this.tileColor});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final circleAvatar = CircleAvatar(
+      foregroundColor: colorScheme.onSecondary,
+      backgroundColor: colorScheme.secondary,
+      child: const Icon(Symbols.passkey),
+    );
     return AppListItem(
       credential,
       selected: selected,
-      leading: CircleAvatar(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Icons.person),
+      leading: PasskeyIcon(
+        rpId: credential.rpId,
+        defaultWidget: circleAvatar,
       ),
-      title: credential.userName,
-      subtitle: credential.rpId,
+      tileColor: tileColor,
+      title: credential.rpId,
+      subtitle: credential.userName,
       trailing: expanded
           ? null
           : OutlinedButton(
               onPressed: Actions.handler(context, OpenIntent(credential)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,
       buildPopupActions: (context) =>
-          buildCredentialActions(credential, AppLocalizations.of(context)!),
+          buildCredentialActions(credential, AppLocalizations.of(context)),
     );
   }
 }

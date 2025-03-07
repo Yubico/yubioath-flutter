@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../core/models.dart';
+import '../generated/l10n/app_localizations.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
@@ -78,6 +78,8 @@ class DeviceConfig with _$DeviceConfig {
 
 @freezed
 class DeviceInfo with _$DeviceInfo {
+  const DeviceInfo._(); // Added constructor
+
   factory DeviceInfo(
       DeviceConfig config,
       int? serial,
@@ -86,8 +88,19 @@ class DeviceInfo with _$DeviceInfo {
       Map<Transport, int> supportedCapabilities,
       bool isLocked,
       bool isFips,
-      bool isSky) = _DeviceInfo;
+      bool isSky,
+      bool pinComplexity,
+      int fipsCapable,
+      int fipsApproved,
+      int resetBlocked) = _DeviceInfo;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);
+
+  /// Gets the tuple fipsCapable, fipsApproved for the given capability.
+  (bool fipsCapable, bool fipsApproved) getFipsStatus(Capability capability) {
+    final capable = fipsCapable & capability.value != 0;
+    final approved = capable && fipsApproved & capability.value != 0;
+    return (capable, approved);
+  }
 }

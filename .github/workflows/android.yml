@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: set up JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -38,8 +38,12 @@ jobs:
 
       - name: Run flutter tests
         run: |
+          export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
+          pipx install pre-commit
+          pre-commit run flutter-l10n-gen --all-files
+          pre-commit run dart-format --all-files
+          pre-commit run flutter-analyze --all-files
           flutter test
-          flutter analyze
         working-directory: ./app
 
       - name: Build the App

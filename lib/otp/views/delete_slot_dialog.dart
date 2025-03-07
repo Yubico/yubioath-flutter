@@ -15,68 +15,72 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/basic_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'access_code_dialog.dart';
 
 class DeleteSlotDialog extends ConsumerWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
+
   const DeleteSlotDialog(this.devicePath, this.otpSlot, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return ResponsiveDialog(
-      title: Text(l10n.s_delete_slot),
+    final l10n = AppLocalizations.of(context);
+    return BasicDialog(
+      icon: Icon(Symbols.delete),
+      title: Text(l10n.q_delete_slot),
       actions: [
         TextButton(
           key: keys.deleteButton,
           onPressed: () async {
+            final otpStateNotifier =
+                ref.read(otpStateProvider(devicePath).notifier);
+            bool deleteSucceeded = false;
             try {
-              await ref
-                  .read(otpStateProvider(devicePath).notifier)
-                  .deleteSlot(otpSlot.slot);
-              await ref.read(withContextProvider)((context) async {
-                Navigator.of(context).pop(true);
-                showMessage(context, l10n.l_slot_deleted);
-              });
+              await otpStateNotifier.deleteSlot(otpSlot.slot);
+              deleteSucceeded = true;
             } catch (e) {
+              // Access code required
               await ref.read(withContextProvider)((context) async {
-                Navigator.of(context).pop(true);
-                showMessage(
-                  context,
-                  l10n.p_otp_slot_configuration_error(
-                      otpSlot.slot.getDisplayName(l10n)),
-                  duration: const Duration(seconds: 4),
-                );
+                final result = await showBlurDialog(
+                    context: context,
+                    builder: (context) => AccessCodeDialog(
+                          devicePath: devicePath,
+                          otpSlot: otpSlot,
+                          action: (accessCode) async {
+                            await otpStateNotifier.deleteSlot(otpSlot.slot,
+                                accessCode: accessCode);
+                          },
+                        ));
+                deleteSucceeded = result ?? false;
               });
             }
+            await ref.read(withContextProvider)((context) async {
+              Navigator.of(context).pop(true);
+              if (deleteSucceeded) {
+                showMessage(context, l10n.l_slot_deleted);
+              }
+            });
           },
           child: Text(l10n.s_delete),
         )
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n
-                .p_warning_delete_slot_configuration(otpSlot.slot.numberId)),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
+      content: Text(
+        l10n.p_warning_delete_slot_configuration(otpSlot.slot.numberId),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }

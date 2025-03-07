@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../desktop/models.dart';
 import '../../fido/models.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
 import '../state.dart';
@@ -38,6 +39,7 @@ final _log = Logger('fido.views.add_fingerprint_dialog');
 
 class AddFingerprintDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
+
   const AddFingerprintDialog(this.devicePath, {super.key});
 
   @override
@@ -62,6 +64,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   void dispose() {
     _animator.dispose();
     _nameFocus.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -121,8 +124,10 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       });
     }, onError: (error, stacktrace) {
       _log.error('Error adding fingerprint', error, stacktrace);
+
+      if (!mounted) return;
       Navigator.of(context).pop();
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
       if (error is RpcError) {
@@ -145,7 +150,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   String _getMessage() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (_samples == 0) {
       return l10n.p_press_fingerprint_begin;
     }
@@ -157,7 +162,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   void _submit() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     try {
       await ref
           .read(fingerprintProvider(widget.devicePath).notifier)
@@ -183,11 +188,11 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -211,7 +216,9 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                     animation: _color,
                     builder: (context, _) {
                       return Icon(
-                        _fingerprint == null ? Icons.fingerprint : Icons.check,
+                        _fingerprint == null
+                            ? Symbols.fingerprint
+                            : Symbols.check,
                         size: 128.0,
                         color: _color.value,
                       );
@@ -233,26 +240,33 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    constraints: const BoxConstraints(maxWidth: 360),
-                    child: AppTextFormField(
-                      focusNode: _nameFocus,
-                      maxLength: 15,
-                      inputFormatters: [limitBytesLength(15)],
-                      buildCounter: buildByteCounterFor(_label),
-                      autofocus: true,
-                      decoration: AppInputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: l10n.s_name,
-                        prefixIcon: const Icon(Icons.fingerprint_outlined),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _label = value.trim();
-                        });
-                      },
-                      onFieldSubmitted: (_) {
-                        _submit();
-                      },
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 40),
+                      child: AppTextField(
+                        focusNode: _nameFocus,
+                        maxLength: 15,
+                        inputFormatters: [limitBytesLength(15)],
+                        buildCounter: buildByteCounterFor(_label),
+                        autofocus: true,
+                        decoration: AppInputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: l10n.s_name,
+                          icon: const Icon(Symbols.fingerprint),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _label = value.trim();
+                          });
+                        },
+                        onSubmitted: (_) {
+                          if (_label.isNotEmpty) {
+                            _submit();
+                          } else {
+                            _nameFocus.requestFocus();
+                          }
+                        },
+                      ).init(),
                     ),
                   )
                 ]

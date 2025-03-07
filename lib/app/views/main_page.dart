@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,32 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/app_methods.dart';
-import '../../android/qr_scanner/qr_scanner_provider.dart';
 import '../../android/state.dart';
 import '../../core/state.dart';
-import '../../exception/cancellation_exception.dart';
 import '../../fido/views/fingerprints_screen.dart';
 import '../../fido/views/passkeys_screen.dart';
 import '../../fido/views/webauthn_page.dart';
-import '../../management/views/management_screen.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../home/views/home_message_page.dart';
+import '../../home/views/home_screen.dart';
 import '../../oath/views/oath_screen.dart';
+import '../../oath/views/utils.dart';
 import '../../otp/views/otp_screen.dart';
 import '../../piv/views/piv_screen.dart';
-import '../../widgets/custom_icons.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
-import 'message_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     ref.listen<Function(BuildContext)?>(
       contextConsumer,
       (previous, next) {
@@ -51,12 +49,26 @@ class MainPage extends ConsumerWidget {
     );
 
     if (isAndroid) {
-      isNfcEnabled().then((value) =>
-          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+      isNfcEnabled().then(
+          (value) => ref.read(androidNfcAdapterState.notifier).enable(value));
     }
 
     // If the current device changes, we need to pop any open dialogs.
-    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, __) {
+    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
+        (prev, next) {
+      final serial = next.hasValue == true ? next.value?.info.serial : null;
+      final prevSerial =
+          prev?.hasValue == true ? prev?.value?.info.serial : null;
+
+      if (serial != null && serial == prevSerial) {
+        return;
+      }
+
+      if (isAndroid &&
+          ((next.hasValue && prev?.isLoading == true) || next.isLoading)) {
+        return;
+      }
+
       Navigator.of(context).popUntil((route) {
         return route.isFirst ||
             [
@@ -66,7 +78,8 @@ class MainPage extends ConsumerWidget {
               'licenses',
               'user_interaction_prompt',
               'oath_add_account',
-              'oath_icon_pack_dialog',
+              'icon_pack_dialog',
+              'toggle_readers_dialog',
               'android_qr_scanner_view',
             ].contains(route.settings.name);
       });
@@ -82,8 +95,8 @@ class MainPage extends ConsumerWidget {
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
-        var isNfcEnabled = ref.watch(androidNfcStateProvider);
-        return MessagePage(
+        var isNfcEnabled = ref.watch(androidNfcAdapterState);
+        return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,
           header: hasNfcSupport && isNfcEnabled
@@ -93,36 +106,24 @@ class MainPage extends ConsumerWidget {
             if (hasNfcSupport && !isNfcEnabled)
               ElevatedButton.icon(
                   label: Text(l10n.s_enable_nfc),
-                  icon: nfcIcon,
+                  icon: const Icon(Symbols.contactless),
                   onPressed: () async {
                     await openNfcSettings();
-                  })
+                  }),
+            ElevatedButton.icon(
+                label: Text(l10n.s_add_account),
+                icon: const Icon(Symbols.person_add_alt),
+                onPressed: () async {
+                  // make sure we execute the "Add account" in OATH section
+                  ref
+                      .read(currentSectionProvider.notifier)
+                      .setCurrentSection(Section.accounts);
+                  await addOathAccount(context, ref);
+                })
           ],
-          actionButtonBuilder: (context) => IconButton(
-            icon: const Icon(Icons.person_add_alt_1),
-            tooltip: l10n.s_add_account,
-            onPressed: () async {
-              final withContext = ref.read(withContextProvider);
-              final qrScanner = ref.read(qrScannerProvider);
-              if (qrScanner != null) {
-                try {
-                  final qrData = await qrScanner.scanQr();
-                  await AndroidQrScanner.handleScannedData(
-                      qrData, withContext, qrScanner, l10n);
-                } on CancellationException catch (_) {
-                  // ignored - user cancelled
-                  return;
-                }
-              } else {
-                // no QR scanner - enter data manually
-                await AndroidQrScanner.showAccountManualEntryDialog(
-                    withContext, l10n);
-              }
-            },
-          ),
         );
       } else {
-        return MessagePage(
+        return HomeMessagePage(
           centered: true,
           delayedContent: false,
           graphic: noKeyImage,
@@ -132,65 +133,16 @@ class MainPage extends ConsumerWidget {
     } else {
       return ref.watch(currentDeviceDataProvider).when(
             data: (data) {
-              final app = ref.watch(currentAppProvider);
-              final capabilities = app.getCapabilities();
-              if (data.info.supportedCapabilities.isEmpty &&
-                  data.name == 'Unrecognized device') {
-                return MessagePage(
-                  centered: true,
-                  graphic: Icon(
-                    Icons.help_outlined,
-                    size: 96,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  header: l10n.s_yk_not_recognized,
-                );
-              } else if (app.getAvailability(data) ==
-                  Availability.unsupported) {
-                return MessagePage(
-                  title: app.getDisplayName(l10n),
-                  capabilities: capabilities,
-                  header: l10n.s_app_not_supported,
-                  message: l10n.l_app_not_supported_on_yk(capabilities
-                      .map((c) => c.getDisplayName(l10n))
-                      .join(',')),
-                );
-              } else if (app.getAvailability(data) != Availability.enabled) {
-                return MessagePage(
-                  title: app.getDisplayName(l10n),
-                  capabilities: capabilities,
-                  header: l10n.s_app_disabled,
-                  message: l10n.l_app_disabled_desc(capabilities
-                      .map((c) => c.getDisplayName(l10n))
-                      .join(',')),
-                  actionsBuilder: (context, expanded) => [
-                    ActionChip(
-                      label: Text(data.info.version.major > 4
-                          ? l10n.s_toggle_applications
-                          : l10n.s_toggle_interfaces),
-                      onPressed: () async {
-                        await showBlurDialog(
-                          context: context,
-                          builder: (context) => ManagementScreen(data),
-                        );
-                      },
-                      avatar: const Icon(Icons.construction),
-                    )
-                  ],
-                );
-              }
+              final section = ref.watch(currentSectionProvider);
 
-              return switch (app) {
-                Application.accounts => OathScreen(data.node.path),
-                Application.webauthn => const WebAuthnScreen(),
-                Application.passkeys => PasskeysScreen(data),
-                Application.fingerprints => FingerprintsScreen(data),
-                Application.certificates => PivScreen(data.node.path),
-                Application.slots => OtpScreen(data.node.path),
-                _ => MessagePage(
-                    header: l10n.s_app_not_supported,
-                    message: l10n.l_app_not_supported_desc,
-                  ),
+              return switch (section) {
+                Section.home => HomeScreen(data),
+                Section.accounts => OathScreen(data.node.path),
+                Section.securityKey => const WebAuthnScreen(),
+                Section.passkeys => PasskeysScreen(data),
+                Section.fingerprints => FingerprintsScreen(data),
+                Section.certificates => PivScreen(data),
+                Section.slots => OtpScreen(data.node.path),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),

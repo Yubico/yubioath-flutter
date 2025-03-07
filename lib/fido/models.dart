@@ -27,7 +27,8 @@ class FidoState with _$FidoState {
 
   factory FidoState(
       {required Map<String, dynamic> info,
-      required bool unlocked}) = _FidoState;
+      required bool unlocked,
+      int? pinRetries}) = _FidoState;
 
   factory FidoState.fromJson(Map<String, dynamic> json) =>
       _$FidoStateFromJson(json);
@@ -40,17 +41,30 @@ class FidoState with _$FidoState {
       info['options']['credMgmt'] == true ||
       info['options']['credentialMgmtPreview'] == true;
 
+  int? get remainingCreds => info['remaining_disc_creds'];
+
   bool? get bioEnroll => info['options']['bioEnroll'];
 
   bool get alwaysUv => info['options']['alwaysUv'] == true;
 
   bool get forcePinChange => info['force_pin_change'] == true;
+
+  bool get pinBlocked => pinRetries == 0;
+
+  bool? get enterpriseAttestation => info['options']['ep'];
 }
 
 @freezed
 class PinResult with _$PinResult {
   factory PinResult.success() = _PinSuccess;
-  factory PinResult.failed(int retries, bool authBlocked) = _PinFailure;
+  factory PinResult.failed(FidoPinFailureReason reason) = _PinFailure;
+}
+
+@freezed
+class FidoPinFailureReason with _$FidoPinFailureReason {
+  factory FidoPinFailureReason.invalidPin(int retries, bool authBlocked) =
+      FidoInvalidPin;
+  const factory FidoPinFailureReason.weakPin() = FidoWeakPin;
 }
 
 @freezed
@@ -78,6 +92,7 @@ class FidoCredential with _$FidoCredential {
     required String credentialId,
     required String userId,
     required String userName,
+    String? displayName,
   }) = _FidoCredential;
 
   factory FidoCredential.fromJson(Map<String, dynamic> json) =>

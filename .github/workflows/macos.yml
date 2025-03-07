@@ -30,7 +30,7 @@ jobs:
 
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           build/macos/helper
@@ -43,7 +43,8 @@ jobs:
         brew update
         brew install swig
         python -m pip install --upgrade pip
-        pip install poetry
+        pipx install poetry
+        pipx inject poetry poetry-plugin-export
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
@@ -52,7 +53,6 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        architecture: 'x64'
         flutter-version: ${{ env.FLUTTER }}
     - run: flutter config --enable-macos-desktop
     - run: flutter --version

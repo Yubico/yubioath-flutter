@@ -31,20 +31,31 @@ from ykman.base import PID
 from ykman.device import scan_devices, list_all_devices
 from ykman.diagnostics import get_diagnostics
 from ykman.logging import set_log_level
-from yubikit.core import TRANSPORT
-from yubikit.core.smartcard import SmartCardConnection, ApduError, SW
+from yubikit.core import TRANSPORT, NotSupportedError
+from yubikit.core.smartcard import (
+    SmartCardConnection,
+    ApduError,
+    SW,
+    SmartCardProtocol,
+    ApplicationNotAvailableError,
+)
+from yubikit.core.smartcard.scp import Scp11KeyParams
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
 from yubikit.support import get_name, read_info
 from yubikit.management import CAPABILITY
+from yubikit.securitydomain import SecurityDomainSession
 from yubikit.logging import LOG_LEVEL
 
 from ykman.pcsc import list_devices, YK_READER_NAME
 from smartcard.Exceptions import SmartcardException, NoCardException
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
+from smartcard.CardMonitoring import CardObserver, CardMonitor
+from fido2.ctap import CtapError
+from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
 from hashlib import sha256
 from dataclasses import asdict
-from typing import Mapping, Tuple
+from typing import Mapping
 
 import os
 import sys
@@ -61,11 +72,15 @@ def _is_admin():
 
 
 class ConnectionException(RpcException):
-    def __init__(self, connection, exc_type):
+    def __init__(self, device, connection, exc_type):
         super().__init__(
             "connection-error",
             f"Error connecting to {connection} interface",
-            dict(connection=connection, exc_type=type(exc_type).__name__),
+            dict(
+                device=device,
+                connection=connection,
+                exc_type=type(exc_type).__name__,
+            ),
         )
 
 
@@ -98,19 +113,19 @@ class RootNode(RpcNode):
         return self._readers
 
     @action
-    def diagnose(self, *ignored):
+    def diagnose(self):
         return dict(diagnostics=get_diagnostics())
 
     @action(closes_child=False)
-    def logging(self, params, event, signal):
-        level = LOG_LEVEL[params["level"].upper()]
-        set_log_level(level)
-        logger.info(f"Log level set to: {level.name}")
+    def logging(self, level: str):
+        lvl = LOG_LEVEL[level.upper()]
+        set_log_level(lvl)
+        logger.info(f"Log level set to: {lvl.name}")
         return dict()
 
     @action(closes_child=False)
-    def qr(self, params, event, signal):
-        return dict(result=scan_qr(params.get("image")))
+    def qr(self, image: str | None = None):
+        return dict(result=scan_qr(image))
 
 
 def _id_from_fingerprint(fp):
@@ -127,7 +142,7 @@ class ReadersNode(RpcNode):
         self._reader_mapping = {}
 
     @action(closes_child=False)
-    def scan(self, *ignored):
+    def scan(self):
         return self.list_children()
 
     def list_children(self):
@@ -153,12 +168,12 @@ class ReadersNode(RpcNode):
         return self._readers
 
     def create_child(self, name):
-        return ReaderDeviceNode(self._reader_mapping[name], None)
+        return ReaderDeviceNode(self._reader_mapping[name])
 
 
 class _ScanDevices:
     def __init__(self):
-        self._state: Tuple[Mapping[PID, int], int] = ({}, 0)
+        self._state: tuple[Mapping[PID, int], int] = ({}, 0)
         self._caching = False
 
     def __call__(self):
@@ -181,13 +196,36 @@ class DevicesNode(RpcNode):
         self._list_state = 0
         self._devices = {}
         self._device_mapping = {}
+        self._failing_connection = {}
+        self._retries = 0
 
     def __call__(self, *args, **kwargs):
         with self._get_state:
-            return super().__call__(*args, **kwargs)
+            try:
+                response = super().__call__(*args, **kwargs)
+                if "device_closed" in response.flags:
+                    self._list_state = 0
+                    self._device_mapping = {}
+                    response.flags.remove("device_closed")
+                return response
+            except ConnectionException as e:
+                if self._failing_connection == e.body:
+                    self._retries += 1
+                else:
+                    self._failing_connection = e.body
+                    self._retries = 0
+                if self._retries > 2:
+                    raise
+                logger.debug("Connection failed, attempt to recover", exc_info=True)
+                raise ChildResetException(f"{e}")
+
+    def close(self):
+        self._list_state = 0
+        self._device_mapping = {}
+        super().close()
 
     @action(closes_child=False)
-    def scan(self, *ignored):
+    def scan(self):
         return self.get_data()
 
     def get_data(self):
@@ -205,7 +243,7 @@ class DevicesNode(RpcNode):
                     dev_id = str(info.serial)
                 else:
                     dev_id = _id_from_fingerprint(dev.fingerprint)
-                self._device_mapping[dev_id] = (dev, info)
+                self._device_mapping[dev_id] = dev
                 name = get_name(info, dev.pid.yubikey_type if dev.pid else None)
                 self._devices[dev_id] = dict(pid=dev.pid, name=name, serial=info.serial)
 
@@ -222,22 +260,41 @@ class DevicesNode(RpcNode):
         if name not in self._device_mapping and self._list_state == 0:
             self.list_children()
         try:
-            return UsbDeviceNode(*self._device_mapping[name])
+            return UsbDeviceNode(self._device_mapping[name])
         except KeyError:
             raise NoSuchNodeException(name)
 
 
 class AbstractDeviceNode(RpcNode):
-    def __init__(self, device, info):
+    def __init__(self, device):
         super().__init__()
         self._device = device
-        self._info = info
+        self._info = None
+        self._data = self._refresh_data()
 
     def __call__(self, *args, **kwargs):
         try:
-            return super().__call__(*args, **kwargs)
+            response = super().__call__(*args, **kwargs)
+
+            # The command resulted in the device closing
+            if "device_closed" in response.flags:
+                self.close()
+                return response
+
+            # The command resulted in device_info modification
+            if "device_info" in response.flags:
+                old_info = self._info
+                # Refresh data
+                self._data = self._refresh_data()
+                if old_info == self._info:
+                    # No change to DeviceInfo, further propagation not needed.
+                    response.flags.remove("device_info")
+
+            return response
+
         except (SmartcardException, OSError):
-            logger.exception("Device error")
+            logger.exception("Device error", exc_info=True)
+
             self._child = None
             name = self._child_name
             self._child_name = None
@@ -249,6 +306,14 @@ class AbstractDeviceNode(RpcNode):
         except (SmartcardException, OSError):
             logger.exception(f"Unable to create child {name}")
             raise NoSuchNodeException(name)
+
+    def get_data(self):
+        if self._data:
+            return self._data
+        raise ChildResetException("Unable to read device data")
+
+    def _refresh_data(self):
+        ...
 
     def _read_data(self, conn):
         pid = self._device.pid
@@ -263,9 +328,6 @@ class AbstractDeviceNode(RpcNode):
 
 
 class UsbDeviceNode(AbstractDeviceNode):
-    def __init__(self, device, info):
-        super().__init__(device, info)
-
     def _supports_connection(self, conn_type):
         return self._device.pid.supports_connection(conn_type)
 
@@ -273,7 +335,19 @@ class UsbDeviceNode(AbstractDeviceNode):
         connection = self._device.open_connection(conn_type)
         return ConnectionNode(self._device, connection, self._info)
 
-    def get_data(self):
+    def _refresh_data(self):
+        # Re-use existing connection if possible
+        if self._child and not self._child.closed:
+            # Make sure to close any open session
+            self._child._close_child()
+            try:
+                return self._read_data(self._child._connection)
+            except Exception:
+                logger.warning(
+                    f"Unable to use {self._child._connection}", exc_info=True
+                )
+
+        # No child, open new connection
         for conn_type in (SmartCardConnection, OtpConnection, FidoConnection):
             if self._supports_connection(conn_type):
                 try:
@@ -281,7 +355,9 @@ class UsbDeviceNode(AbstractDeviceNode):
                         return self._read_data(conn)
                 except Exception:
                     logger.warning(f"Unable to connect via {conn_type}", exc_info=True)
-        raise ValueError("No supported connections")
+        # Failed to refresh, close
+        self.close()
+        return None
 
     @child(condition=lambda self: self._supports_connection(SmartCardConnection))
     def ccid(self):
@@ -289,7 +365,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(SmartCardConnection)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("ccid", e)
+            raise ConnectionException(self._device.fingerprint, "ccid", e)
 
     @child(condition=lambda self: self._supports_connection(OtpConnection))
     def otp(self):
@@ -297,7 +373,7 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(OtpConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("otp", e)
+            raise ConnectionException(self._device.fingerprint, "otp", e)
 
     @child(condition=lambda self: self._supports_connection(FidoConnection))
     def fido(self):
@@ -305,39 +381,105 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(FidoConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("fido", e)
+            raise ConnectionException(self._device.fingerprint, "fido", e)
+        except Exception as e:  # TODO: Replace with ConnectionError once added
+            if "Wrong" in str(e):
+                logger.warning("Error opening connection", exc_info=True)
+                raise ConnectionException(self._device.fingerprint, "fido", e)
+            raise
+
+
+class _ReaderObserver(CardObserver):
+    def __init__(self, device):
+        self.device = device
+        self.card = None
+        self.needs_refresh = True
+
+    def update(self, observable, actions):
+        added, removed = actions
+        for card in added:
+            if card.reader == self.device.reader.name:
+                if card != self.card:
+                    self.card = card
+                break
+        else:
+            self.card = None
+        self.needs_refresh = True
+        logger.debug(f"NFC card: {self.card}")
+
+
+RESTRICTED_NDEF = bytes.fromhex("001fd1011b5504") + b"yubico.com/getting-started"
 
 
 class ReaderDeviceNode(AbstractDeviceNode):
+    def __init__(self, device):
+        self._observer = _ReaderObserver(device)
+        self._monitor = CardMonitor()
+        self._monitor.addObserver(self._observer)
+        super().__init__(device)
+
+    def close(self):
+        self._monitor.deleteObserver(self._observer)
+        super().close()
+
     def get_data(self):
+        if self._observer.needs_refresh:
+            self._data = self._refresh_data()
+        return super().get_data()
+
+    def _read_data(self, conn):
+        return dict(super()._read_data(conn), present=True)
+
+    def _refresh_data(self):
+        card = self._observer.card
+        if card is None:
+            return dict(present=False, status="no-card")
         try:
+            self._close_child()
             with self._device.open_connection(SmartCardConnection) as conn:
-                return dict(self._read_data(conn), present=True)
+                try:
+                    data = self._read_data(conn)
+                except ValueError:
+                    # Unknown device, maybe NFC restricted
+                    try:
+                        p = SmartCardProtocol(conn)
+                        p.select(bytes.fromhex("D2760000850101"))
+                        p.send_apdu(0, 0xA4, 0x00, 0x0C, bytes.fromhex("E104"))
+                        ndef = p.send_apdu(0, 0xB0, 0, 0)
+                    except (ApduError, ApplicationNotAvailableError):
+                        ndef = None
+
+                    if ndef == RESTRICTED_NDEF:
+                        data = dict(present=False, status="restricted-nfc")
+                    else:
+                        data = dict(present=False, status="unknown-device")
+
+            self._observer.needs_refresh = False
+            return data
         except NoCardException:
             return dict(present=False, status="no-card")
-        except ValueError:
-            return dict(present=False, status="unknown-device")
+
+    @action(closes_child=False)
+    def get(self):
+        return super().get()
 
     @child
     def ccid(self):
         try:
             connection = self._device.open_connection(SmartCardConnection)
-            info = read_info(connection)
-            return ConnectionNode(self._device, connection, info)
+            return ScpConnectionNode(self._device, connection, self._info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("ccid", e)
+            raise ConnectionException(self._device.fingerprint, "ccid", e)
 
     @child
     def fido(self):
         try:
-            with self._device.open_connection(SmartCardConnection) as conn:
-                info = read_info(conn)
             connection = self._device.open_connection(FidoConnection)
-            return ConnectionNode(self._device, connection, info)
+            return ConnectionNode(self._device, connection, self._info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
-            raise ConnectionException("fido", e)
+            raise ConnectionException(self._device.fingerprint, "fido", e)
 
 
 class ConnectionNode(RpcNode):
@@ -346,7 +488,7 @@ class ConnectionNode(RpcNode):
         self._device = device
         self._transport = device.transport
         self._connection = connection
-        self._info = info or read_info(self._connection, device.pid)
+        self._info = info
 
     def __call__(self, *args, **kwargs):
         try:
@@ -358,6 +500,19 @@ class ConnectionNode(RpcNode):
             if e.sw == SW.INVALID_INSTRUCTION:
                 raise ChildResetException(f"SW: {e.sw}")
             raise e
+        except CtapError as e:
+            if e.code == CtapError.ERR.CHANNEL_BUSY:
+                raise ChildResetException(str(e))
+            raise
+        except Exception as e:  # TODO: Replace with ConnectionError once added
+            words = str(e).split()
+            try:
+                word = words[words.index("Wrong") + 1]
+                if word in ("nonce", "channel", "sequence"):
+                    raise ChildResetException(str(e))
+            except ValueError:
+                pass
+            raise
 
     @property
     def capabilities(self):
@@ -371,40 +526,38 @@ class ConnectionNode(RpcNode):
             logger.warning("Error closing connection", exc_info=True)
 
     def get_data(self):
-        if (
-            isinstance(self._connection, SmartCardConnection)
-            or self._transport == TRANSPORT.USB
-        ):
-            self._info = read_info(self._connection, self._device.pid)
         return dict(version=self._info.version, serial=self._info.serial)
+
+    def _init_child_node(self, child_cls, capability=CAPABILITY(0)):
+        return child_cls(self._connection)
 
     @child(
         condition=lambda self: self._transport == TRANSPORT.USB
         or isinstance(self._connection, SmartCardConnection)
     )
     def management(self):
-        return ManagementNode(self._connection)
+        return self._init_child_node(ManagementNode)
 
     @child(
         condition=lambda self: isinstance(self._connection, SmartCardConnection)
         and CAPABILITY.OATH in self.capabilities
     )
     def oath(self):
-        return OathNode(self._connection)
+        return self._init_child_node(OathNode, CAPABILITY.OATH)
 
     @child(
         condition=lambda self: isinstance(self._connection, SmartCardConnection)
         and CAPABILITY.PIV in self.capabilities
     )
     def piv(self):
-        return PivNode(self._connection)
+        return self._init_child_node(PivNode, CAPABILITY.PIV)
 
     @child(
         condition=lambda self: isinstance(self._connection, FidoConnection)
         and CAPABILITY.FIDO2 in self.capabilities
     )
     def ctap2(self):
-        return Ctap2Node(self._connection)
+        return self._init_child_node(Ctap2Node)
 
     @child(
         condition=lambda self: CAPABILITY.OTP in self.capabilities
@@ -421,4 +574,31 @@ class ConnectionNode(RpcNode):
         )
     )
     def yubiotp(self):
-        return YubiOtpNode(self._connection)
+        return self._init_child_node(YubiOtpNode)
+
+
+class ScpConnectionNode(ConnectionNode):
+    def __init__(self, device, connection, info):
+        super().__init__(device, connection, info)
+
+        self.fips_capable = info.fips_capable
+        self.scp_params = None
+        try:
+            if self.fips_capable != 0:
+                scp = SecurityDomainSession(connection)
+
+                for ref in scp.get_key_information().keys():
+                    if ref.kid == 0x13:
+                        chain = scp.get_certificate_bundle(ref)
+                        if chain:
+                            pub_key = chain[-1].public_key()
+                            assert isinstance(pub_key, EllipticCurvePublicKey)  # nosec
+                            self.scp_params = Scp11KeyParams(ref, pub_key)
+                            break
+        except NotSupportedError:
+            pass
+
+    def _init_child_node(self, child_cls, capability=CAPABILITY(0)):
+        if capability in self.fips_capable:
+            return child_cls(self._connection, self.scp_params)
+        return child_cls(self._connection)

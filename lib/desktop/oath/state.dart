@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,17 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../management/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../rpc.dart';
@@ -36,8 +39,16 @@ final _log = Logger('desktop.oath.state');
 
 final _sessionProvider =
     Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) => RpcNodeSession(
-      ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'oath']),
+  (ref, devicePath) {
+    // Reset state if the OATH capability is toggled.
+    ref.watch(currentDeviceDataProvider.select((value) =>
+        (value.valueOrNull?.info.config
+                .enabledCapabilities[value.valueOrNull?.node.transport] ??
+            0) &
+        Capability.oath.value));
+    return RpcNodeSession(
+        ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'oath']);
+  },
 );
 
 // This remembers the key for all devices for the duration of the process.
@@ -195,8 +206,11 @@ final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
           .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),
     );
     ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-      notifier._notifyWindowState(windowState);
+      notifier._rescheduleTimer(windowState.active);
     }, fireImmediately: true);
+    ref.listen(currentSectionProvider, (_, section) {
+      notifier._rescheduleTimer(section == Section.accounts);
+    });
 
     return notifier;
   },
@@ -207,6 +221,7 @@ extension on OathCredential {
 }
 
 const String _steamCharTable = '23456789BCDFGHJKMNPQRTVWXY';
+
 String _formatSteam(String response) {
   final offset = int.parse(response.substring(response.length - 1), radix: 16);
   var number =
@@ -225,12 +240,13 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
+
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
       : super();
 
-  void _notifyWindowState(WindowState windowState) {
+  void _rescheduleTimer(bool active) {
     if (_locked) return;
-    if (windowState.active) {
+    if (active) {
       _scheduleRefresh();
     } else {
       _timer?.cancel();
@@ -260,10 +276,10 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
         if (signal.status == 'touch') {
           controller = await _withContext(
             (context) async {
-              final l10n = AppLocalizations.of(context)!;
+              final l10n = AppLocalizations.of(context);
               return promptUserInteraction(
                 context,
-                icon: const Icon(Icons.touch_app),
+                icon: const Icon(Symbols.touch_app),
                 title: l10n.s_touch_required,
                 description: l10n.l_touch_button_now,
                 headless: headless,
@@ -292,7 +308,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
         code = OathCode.fromJson(result);
       }
       _log.debug('Calculate', jsonEncode(code));
-      if (update && mounted) {
+      if (update && mounted && state != null) {
         final creds = state!.toList();
         final i = creds.indexWhere((e) => e.credential.id == credential.id);
         state = creds..[i] = creds[i].copyWith(code: code);

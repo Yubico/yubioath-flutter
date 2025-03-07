@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
+
+final _log = Logger('android.state');
 
 const _contextChannel = MethodChannel('android.state.appContext');
 
@@ -50,7 +54,7 @@ final androidClipboardProvider = Provider<AppClipboard>(
 );
 
 class _AndroidClipboard extends AppClipboard {
-  final ProviderRef<AppClipboard> _ref;
+  final Ref<AppClipboard> _ref;
 
   const _AndroidClipboard(this._ref);
 
@@ -65,20 +69,50 @@ class _AndroidClipboard extends AppClipboard {
   }
 }
 
-class NfcStateNotifier extends StateNotifier<bool> {
-  NfcStateNotifier() : super(false);
+class NfcAdapterState extends StateNotifier<bool> {
+  NfcAdapterState() : super(false);
 
-  void setNfcEnabled(bool value) {
+  void enable(bool value) {
     state = value;
   }
 }
+
+enum NfcState {
+  disabled,
+  idle,
+  ongoing,
+  success,
+  failure,
+}
+
+class NfcStateNotifier extends StateNotifier<NfcState> {
+  NfcStateNotifier() : super(NfcState.disabled);
+
+  void set(int stateValue) {
+    var newState = switch (stateValue) {
+      0 => NfcState.disabled,
+      1 => NfcState.idle,
+      2 => NfcState.ongoing,
+      3 => NfcState.success,
+      4 => NfcState.failure,
+      _ => NfcState.disabled
+    };
+
+    state = newState;
+  }
+}
+
+final androidSectionPriority = Provider<List<Section>>((ref) => []);
 
 final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
 
-final androidNfcStateProvider =
-    StateNotifierProvider<NfcStateNotifier, bool>((ref) => NfcStateNotifier());
+final androidNfcAdapterState =
+    StateNotifierProvider<NfcAdapterState, bool>((ref) => NfcAdapterState());
+
+final androidNfcState = StateNotifierProvider<NfcStateNotifier, NfcState>(
+    (ref) => NfcStateNotifier());
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
@@ -90,19 +124,57 @@ final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   }
 });
 
-class AndroidSubPageNotifier extends CurrentAppNotifier {
-  AndroidSubPageNotifier(super.supportedApps) {
-    _handleSubPage(state);
+class AndroidAppContextHandler {
+  Future<void> switchAppContext(Section section) async {
+    await _contextChannel.invokeMethod('setContext', {'index': section.index});
   }
+}
+
+final androidAppContextHandler =
+    Provider<AndroidAppContextHandler>((ref) => AndroidAppContextHandler());
+
+CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
+  final notifier = AndroidCurrentSectionNotifier(
+      ref.watch(androidSectionPriority), ref.watch(androidAppContextHandler));
+  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
+    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
+  }, fireImmediately: true);
+  return notifier;
+}
+
+class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
+  final List<Section> _supportedSectionsByPriority;
+  final AndroidAppContextHandler _appContextHandler;
+
+  AndroidCurrentSectionNotifier(
+    this._supportedSectionsByPriority,
+    this._appContextHandler,
+  ) : super(Section.home);
 
   @override
-  void setCurrentApp(Application app) {
-    super.setCurrentApp(app);
-    _handleSubPage(app);
+  void setCurrentSection(Section section) {
+    state = section;
+    _log.debug('Setting current section to $section');
+    _appContextHandler.switchAppContext(state);
   }
 
-  void _handleSubPage(Application subPage) async {
-    await _contextChannel.invokeMethod('setContext', {'index': subPage.index});
+  void _notifyDeviceChanged(YubiKeyData? data) {
+    if (data == null) {
+      _log.debug('Keeping current section because key was disconnected');
+      return;
+    }
+
+    final supportedSections = _supportedSectionsByPriority.where(
+      (e) => e.getAvailability(data) == Availability.enabled,
+    );
+
+    if (supportedSections.contains(state)) {
+      // the key supports current section
+      _log.debug('Keeping current section because new key support $state');
+      return;
+    }
+
+    setCurrentSection(supportedSections.firstOrNull ?? Section.home);
   }
 }
 
@@ -113,8 +185,20 @@ class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
       .maybeWhen(data: (data) => [data.node], orElse: () => []);
 }
 
-final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
-    (ref) => ref.watch(androidYubikeyProvider));
+final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
+  return ref.watch(androidYubikeyProvider).when(data: (d) {
+    if (d.name == 'restricted-nfc' ||
+        d.name == 'unknown-device' ||
+        d.name == 'no-scp11b-nfc-support') {
+      return AsyncError(d.name, StackTrace.current);
+    }
+    return AsyncData(d);
+  }, error: (Object error, StackTrace stackTrace) {
+    return AsyncError(error, stackTrace);
+  }, loading: () {
+    return const AsyncLoading();
+  });
+});
 
 class AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
   @override
@@ -135,6 +219,7 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   static const _prefNfcOpenApp = 'prefNfcOpenApp';
   static const _prefNfcCopyOtp = 'prefNfcCopyOtp';
   final SharedPreferences _prefs;
+
   NfcTapActionNotifier._(this._prefs, super._state);
 
   factory NfcTapActionNotifier(SharedPreferences prefs) {
@@ -176,6 +261,7 @@ class NfcKbdLayoutNotifier extends StateNotifier<String> {
   static const String _defaultClipKbdLayout = 'US';
   static const _prefClipKbdLayout = 'prefClipKbdLayout';
   final SharedPreferences _prefs;
+
   NfcKbdLayoutNotifier(this._prefs)
       : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
 
@@ -194,6 +280,7 @@ final androidNfcBypassTouchProvider =
 class NfcBypassTouchNotifier extends StateNotifier<bool> {
   static const _prefNfcBypassTouch = 'prefNfcBypassTouch';
   final SharedPreferences _prefs;
+
   NfcBypassTouchNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
 
@@ -212,6 +299,7 @@ final androidNfcSilenceSoundsProvider =
 class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
   static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
   final SharedPreferences _prefs;
+
   NfcSilenceSoundsNotifier(this._prefs)
       : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
 
@@ -230,6 +318,7 @@ final androidUsbLaunchAppProvider =
 class UsbLaunchAppNotifier extends StateNotifier<bool> {
   static const _prefUsbOpenApp = 'prefUsbOpenApp';
   final SharedPreferences _prefs;
+
   UsbLaunchAppNotifier(this._prefs)
       : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
 

@@ -55,7 +55,7 @@ jobs:
 
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           build/linux/helper
@@ -81,7 +81,7 @@ jobs:
 
     - name: Configure Flutter
       run: |
-        git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-$FLUTTER-x64
+        git config --global --add safe.directory $FLUTTER_ROOT
         flutter config --enable-linux-desktop
         flutter --version
 

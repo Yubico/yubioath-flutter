@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,28 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../core/state.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class ResponsiveDialog extends StatefulWidget {
   final Widget? title;
-  final Widget child;
+  final Widget Function(BuildContext context, bool fullScreen) builder;
   final List<Widget> actions;
   final Function()? onCancel;
   final bool allowCancel;
+  final double dialogMaxWidth;
 
   const ResponsiveDialog({
     super.key,
-    required this.child,
+    required this.builder,
     this.title,
     this.actions = const [],
     this.onCancel,
     this.allowCancel = true,
+    this.dialogMaxWidth = 600,
   });
 
   @override
@@ -50,13 +54,20 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
     _focus.dispose();
   }
 
+  String _getCancelText(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return widget.onCancel == null && widget.actions.isEmpty
+        ? l10n.s_close
+        : l10n.s_cancel;
+  }
+
   Widget _buildFullscreen(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: widget.title,
           actions: widget.actions,
           leading: IconButton(
-              tooltip: AppLocalizations.of(context)!.s_close,
-              icon: const Icon(Icons.close),
+              tooltip: _getCancelText(context),
+              icon: const Icon(Symbols.close),
               onPressed: widget.allowCancel
                   ? () {
                       widget.onCancel?.call();
@@ -65,37 +76,38 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
                   : null),
         ),
         body: SingleChildScrollView(
-          child:
-              SafeArea(child: Container(key: _childKey, child: widget.child)),
+          child: SafeArea(
+              child: Container(
+                  key: _childKey, child: widget.builder(context, true))),
         ),
       );
 
   Widget _buildDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final cancelText = widget.onCancel == null && widget.actions.isEmpty
-        ? l10n.s_close
-        : l10n.s_cancel;
     return PopScope(
+      canPop: widget.allowCancel,
       child: AlertDialog(
         title: widget.title,
         titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
         scrollable: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         content: SizedBox(
-          width: 600,
-          child: Container(key: _childKey, child: widget.child),
+          width: widget.dialogMaxWidth,
+          child:
+              Container(key: _childKey, child: widget.builder(context, false)),
         ),
         actions: [
           TextButton(
-            child: Text(cancelText),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: widget.allowCancel
+                ? () {
+                    Navigator.of(context).pop();
+                  }
+                : null,
+            child: Text(_getCancelText(context)),
           ),
           ...widget.actions
         ],
       ),
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
           widget.onCancel?.call();
         }

@@ -20,9 +20,6 @@ const _prefix = 'oath.keys';
 const _keyAction = '$_prefix.actions';
 const _accountAction = '$_prefix.account.actions';
 
-// This is global so we can access it from the global Ctrl+F shortcut.
-final searchAccountsField = GlobalKey();
-
 // Key actions
 const setOrManagePasswordAction =
     Key('$_keyAction.action.set_or_manage_password');

@@ -68,7 +68,7 @@ def collectLicenses(File rootDir, File ossPluginResDir, File outDir) {
     println "Created ${outFile.absolutePath}"
 
     // copy license assets to flutter resources
-    def licensesDir = new File(rootDir, "licenses/");
+    def licensesDir = new File(rootDir, "licenses/")
     copy {
         from(licensesDir.absolutePath) {
             include "**/*txt"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
+import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/reset_dialog.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
@@ -38,12 +41,13 @@ import '../state.dart';
 import 'actions.dart';
 import 'cert_info_view.dart';
 import 'key_actions.dart';
+import 'manage_pin_puk_dialog.dart';
 import 'slot_dialog.dart';
 
 class PivScreen extends ConsumerStatefulWidget {
-  final DevicePath devicePath;
+  final YubiKeyData data;
 
-  PivScreen(this.devicePath) : super(key: ObjectKey(devicePath));
+  PivScreen(this.data) : super(key: ObjectKey(data));
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PivScreenState();
@@ -54,12 +58,22 @@ class _PivScreenState extends ConsumerState<PivScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
-    return ref.watch(pivStateProvider(widget.devicePath)).when(
-          loading: () => const MessagePage(
+    final (fipsCapable, fipsApproved) = ref
+            .watch(currentDeviceDataProvider)
+            .valueOrNull
+            ?.info
+            .getFipsStatus(Capability.piv) ??
+        (false, false);
+    final fipsUnready = fipsCapable && !fipsApproved;
+
+    return ref.watch(pivStateProvider(widget.data.node.path)).when(
+          loading: () => MessagePage(
+            title: l10n.s_certificates,
+            capabilities: const [Capability.piv],
             centered: true,
-            graphic: CircularProgressIndicator(),
+            graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
           error: (error, _) => AppFailurePage(
@@ -67,18 +81,29 @@ class _PivScreenState extends ConsumerState<PivScreen> {
           ),
           data: (pivState) {
             final pivSlots =
-                ref.watch(pivSlotsProvider(widget.devicePath)).asData;
+                ref.watch(pivSlotsProvider(widget.data.node.path)).asData;
             final selected = _selected != null
                 ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
                 : null;
+            final normalSlots = pivSlots?.value
+                    .where((element) => !element.slot.isRetired)
+                    .toList() ??
+                [];
+            final shownRetiredSlots = pivSlots?.value
+                    .where((element) =>
+                        element.slot.isRetired &&
+                        (element.certInfo != null || element.metadata != null))
+                    .toList() ??
+                [];
             final theme = Theme.of(context);
             final textTheme = theme.textTheme;
             // This is what ListTile uses for subtitle
             final subtitleStyle = textTheme.bodyMedium!.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             );
+
             return PivActions(
-              devicePath: widget.devicePath,
+              devicePath: widget.data.node.path,
               pivState: pivState,
               builder: (context) => Actions(
                 actions: {
@@ -118,7 +143,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                   elevation: 0.0,
                                   color: Theme.of(context).hoverColor,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(16),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 24),
                                     child: Column(
                                       children: [
                                         Text(
@@ -128,14 +154,50 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                           textAlign: TextAlign.center,
                                         ),
                                         const SizedBox(height: 16),
-                                        selected.certInfo != null
-                                            ? CertInfoTable(selected.certInfo!)
-                                            : Text(
-                                                l10n.l_no_certificate,
-                                                softWrap: true,
-                                                textAlign: TextAlign.center,
-                                                style: subtitleStyle,
-                                              ),
+                                        if (selected.certInfo != null ||
+                                            selected.metadata != null) ...[
+                                          CertInfoTable(
+                                            selected.certInfo,
+                                            selected.metadata,
+                                            alwaysIncludePrivate:
+                                                pivState.supportsMetadata,
+                                            supportsBio: pivState.supportsBio,
+                                          ),
+                                          if (selected.publicKeyMatch ==
+                                              false) ...[
+                                            const SizedBox(height: 16.0),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Symbols.info,
+                                                  size: 16,
+                                                  color: theme.colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Flexible(
+                                                  child: Text(
+                                                    l10n.l_warning_public_key_mismatch,
+                                                    style: textTheme.bodySmall
+                                                        ?.copyWith(
+                                                            color: theme
+                                                                .colorScheme
+                                                                .onSurfaceVariant),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                          if (selected.certInfo == null)
+                                            const SizedBox(height: 16)
+                                        ],
+                                        if (selected.certInfo == null)
+                                          Text(
+                                            l10n.l_no_certificate,
+                                            softWrap: true,
+                                            textAlign: TextAlign.center,
+                                            style: subtitleStyle,
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -144,15 +206,17 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                               ActionListSection.fromMenuActions(
                                 context,
                                 l10n.s_actions,
-                                actions: buildSlotActions(selected, l10n),
+                                actions: buildSlotActions(
+                                    pivState, selected, fipsUnready, l10n),
                               ),
                             ],
                           )
                       : null,
                   keyActionsBuilder: hasFeature(features.actions)
                       ? (context) => pivBuildActions(
-                          context, widget.devicePath, pivState, ref)
+                          context, widget.data.node.path, pivState, ref)
                       : null,
+                  keyActionsBadge: pivShowActionsNotifier(pivState),
                   builder: (context, expanded) {
                     // De-select if window is resized to be non-expanded.
                     if (!expanded && _selected != null) {
@@ -162,6 +226,20 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                         });
                       });
                     }
+
+                    final usingDefaultPin =
+                        pivState.metadata?.pinMetadata.defaultValue == true;
+                    final pinBlocked = pivState.pinAttempts == 0;
+                    final pukAttempts =
+                        pivState.metadata?.pukMetadata.attemptsRemaining;
+
+                    final dismissedBanners = ref.watch(
+                        dismissedBannersProvider(widget.data.info.serial));
+
+                    final showPinDefaultBanner =
+                        !dismissedBanners.contains(pivPinDefaultBannerKey) &&
+                            (usingDefaultPin && !pinBlocked);
+
                     return Actions(
                       actions: {
                         if (expanded)
@@ -176,14 +254,107 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                       },
                       child: Column(
                         children: [
-                          if (pivSlots?.hasValue == true)
-                            ...pivSlots!.value.map(
-                              (e) => _CertificateListItem(
-                                e,
-                                expanded: expanded,
-                                selected: e == selected,
+                          if (pinBlocked)
+                            MaterialBanner(
+                              padding: EdgeInsets.all(18),
+                              content: Text(pukAttempts == 0
+                                  ? l10n.p_piv_pin_puk_blocked_desc
+                                  : l10n.p_piv_pin_blocked_desc),
+                              leading: Icon(
+                                Icons.warning_amber,
+                                color: theme.colorScheme.primary,
                               ),
+                              backgroundColor: theme.hoverColor,
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .popUntil((route) => route.isFirst);
+                                    showBlurDialog(
+                                      context: context,
+                                      builder: (context) => pukAttempts == 0
+                                          ? ResetDialog(
+                                              widget.data,
+                                              application: Capability.piv,
+                                            )
+                                          : ManagePinPukDialog(
+                                              widget.data.node.path,
+                                              pivState,
+                                              target: ManageTarget.unblock,
+                                            ),
+                                    );
+                                  },
+                                  child: Text(pukAttempts == 0
+                                      ? l10n.s_reset
+                                      : l10n.s_unblock_pin),
+                                )
+                              ],
                             ),
+                          if (showPinDefaultBanner)
+                            MaterialBanner(
+                              padding: EdgeInsets.all(18),
+                              content: Text(l10n.p_default_pin_puk_key_desc),
+                              leading: Icon(
+                                Icons.warning_amber,
+                                color: theme.colorScheme.primary,
+                              ),
+                              backgroundColor: theme.hoverColor,
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    ref
+                                        .read(dismissedBannersProvider(
+                                                widget.data.info.serial)
+                                            .notifier)
+                                        .dismissBanner(pivPinDefaultBannerKey);
+                                  },
+                                  child: Text(l10n.s_dismiss),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .popUntil((route) => route.isFirst);
+                                    showBlurDialog(
+                                      context: context,
+                                      builder: (context) => ManagePinPukDialog(
+                                        widget.data.node.path,
+                                        pivState,
+                                        target: ManageTarget.pin,
+                                      ),
+                                    );
+                                  },
+                                  child: Text(l10n.s_change_pin),
+                                )
+                              ],
+                            ),
+                          if (pinBlocked || showPinDefaultBanner)
+                            const SizedBox(height: 16.0),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(
+                              children: [
+                                ...normalSlots.map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                    fipsUnready: fipsUnready,
+                                  ),
+                                ),
+                                ...shownRetiredSlots.map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                    fipsUnready: fipsUnready,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     );
@@ -197,18 +368,22 @@ class _PivScreenState extends ConsumerState<PivScreen> {
 }
 
 class _CertificateListItem extends ConsumerWidget {
+  final PivState pivState;
   final PivSlot pivSlot;
   final bool expanded;
   final bool selected;
+  final bool fipsUnready;
 
-  const _CertificateListItem(this.pivSlot,
-      {required this.expanded, required this.selected});
+  const _CertificateListItem(this.pivState, this.pivSlot,
+      {required this.expanded,
+      required this.selected,
+      required this.fipsUnready});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final slot = pivSlot.slot;
     final certInfo = pivSlot.certInfo;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final hasFeature = ref.watch(featureProvider);
 
@@ -219,13 +394,13 @@ class _CertificateListItem extends ConsumerWidget {
       leading: CircleAvatar(
         foregroundColor: colorScheme.onSecondary,
         backgroundColor: colorScheme.secondary,
-        child: const Icon(Icons.approval),
+        child: Text(pivSlot.slot.hexId),
       ),
-      title: slot.getDisplayName(l10n),
+      title: slot.getSlotName(l10n),
       subtitle: certInfo != null
           // Simplify subtitle by stripping "CN=", etc.
           ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
-          : pivSlot.hasKey == true
+          : pivSlot.metadata != null
               ? l10n.l_key_no_certificate
               : l10n.l_no_certificate,
       trailing: expanded
@@ -233,12 +408,12 @@ class _CertificateListItem extends ConsumerWidget {
           : OutlinedButton(
               key: _getMeatballKey(slot),
               onPressed: Actions.handler(context, OpenIntent(pivSlot)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
-      buildPopupActions: hasFeature(features.slots)
-          ? (context) => buildSlotActions(pivSlot, l10n)
+      buildPopupActions: hasFeature(features.slots) && !fipsUnready
+          ? (context) => buildSlotActions(pivState, pivSlot, fipsUnready, l10n)
           : null,
     );
   }
@@ -248,12 +423,52 @@ class _CertificateListItem extends ConsumerWidget {
         SlotId.signature => meatballButton9c,
         SlotId.keyManagement => meatballButton9d,
         SlotId.cardAuth => meatballButton9e,
+        SlotId.retired1 => meatballButton82,
+        SlotId.retired2 => meatballButton83,
+        SlotId.retired3 => meatballButton84,
+        SlotId.retired4 => meatballButton85,
+        SlotId.retired5 => meatballButton86,
+        SlotId.retired6 => meatballButton87,
+        SlotId.retired7 => meatballButton88,
+        SlotId.retired8 => meatballButton89,
+        SlotId.retired9 => meatballButton8a,
+        SlotId.retired10 => meatballButton8b,
+        SlotId.retired11 => meatballButton8c,
+        SlotId.retired12 => meatballButton8d,
+        SlotId.retired13 => meatballButton8e,
+        SlotId.retired14 => meatballButton8f,
+        SlotId.retired15 => meatballButton90,
+        SlotId.retired16 => meatballButton91,
+        SlotId.retired17 => meatballButton92,
+        SlotId.retired18 => meatballButton93,
+        SlotId.retired19 => meatballButton94,
+        SlotId.retired20 => meatballButton95
       };
 
   Key _getAppListItemKey(SlotId slotId) => switch (slotId) {
         SlotId.authentication => appListItem9a,
         SlotId.signature => appListItem9c,
         SlotId.keyManagement => appListItem9d,
-        SlotId.cardAuth => appListItem9e
+        SlotId.cardAuth => appListItem9e,
+        SlotId.retired1 => appListItem82,
+        SlotId.retired2 => appListItem83,
+        SlotId.retired3 => appListItem84,
+        SlotId.retired4 => appListItem85,
+        SlotId.retired5 => appListItem86,
+        SlotId.retired6 => appListItem87,
+        SlotId.retired7 => appListItem88,
+        SlotId.retired8 => appListItem89,
+        SlotId.retired9 => appListItem8a,
+        SlotId.retired10 => appListItem8b,
+        SlotId.retired11 => appListItem8c,
+        SlotId.retired12 => appListItem8d,
+        SlotId.retired13 => appListItem8e,
+        SlotId.retired14 => appListItem8f,
+        SlotId.retired15 => appListItem90,
+        SlotId.retired16 => appListItem91,
+        SlotId.retired17 => appListItem92,
+        SlotId.retired18 => appListItem93,
+        SlotId.retired19 => appListItem94,
+        SlotId.retired20 => appListItem95
       };
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package com.yubico.authenticator
 import kotlinx.serialization.json.Json
 
 const val NULL = "null"
+
+const val LOADING = "\"loading\""
 
 val jsonSerializer = Json {
     // creates properties for default values

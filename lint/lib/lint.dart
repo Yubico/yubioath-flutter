@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 
@@ -26,10 +27,7 @@ class _AppLinter extends PluginBase {
           discouraged: 'TextField',
           recommended: 'AppTextField',
         ),
-        UseRecommendedWidget(
-          discouraged: 'TextFormField',
-          recommended: 'AppTextFormField',
-        ),
+        const CallInitAfterCreation(className: 'AppTextField'),
       ];
 }
 
@@ -54,7 +52,39 @@ class UseRecommendedWidget extends DartLintRule {
   ) {
     context.registry.addInstanceCreationExpression((node) {
       if (node.constructorName.toString() == discouraged) {
-        reporter.reportErrorForNode(code, node.constructorName);
+        reporter.atNode(node.constructorName, code);
+      }
+    });
+  }
+}
+
+class CallInitAfterCreation extends DartLintRule {
+  final String className;
+
+  const CallInitAfterCreation({required this.className})
+      : super(
+            code: const LintCode(
+          name: 'call_init_after_creation',
+          problemMessage: 'Call init() after creation',
+        ));
+
+  @override
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
+    context.registry.addInstanceCreationExpression((node) {
+      if (node.constructorName.toString() == className) {
+        final dot = node.endToken.next;
+        final next = dot?.next;
+        if (dot?.type == TokenType.PERIOD) {
+          if (next?.type == TokenType.IDENTIFIER &&
+              next?.toString() == 'init') {
+            return;
+          }
+        }
+        reporter.atNode(node.constructorName, code);
       }
     });
   }

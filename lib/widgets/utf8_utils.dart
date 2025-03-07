@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../generated/l10n/app_localizations.dart';
 
 /// Get the number of bytes used by a String when encoded to UTF-8.
 int byteLength(String value) => utf8.encode(value).length;
@@ -38,7 +39,7 @@ InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
       return Text(
         maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
         style: style,
-        semanticsLabel: AppLocalizations.of(context)!.s_character_count,
+        semanticsLabel: AppLocalizations.of(context).s_character_count,
       );
     };
 

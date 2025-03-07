@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,15 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -35,21 +36,25 @@ import 'delete_slot_dialog.dart';
 
 class ConfigureChalRespIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureChalRespIntent(this.slot);
 }
 
 class ConfigureHotpIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureHotpIntent(this.slot);
 }
 
 class ConfigureStaticIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureStaticIntent(this.slot);
 }
 
 class ConfigureYubiOtpIntent extends Intent {
   final OtpSlot slot;
+
   const ConfigureYubiOtpIntent(this.slot);
 }
 
@@ -57,6 +62,7 @@ class OtpActions extends ConsumerWidget {
   final DevicePath devicePath;
   final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
   final Widget Function(BuildContext context) builder;
+
   const OtpActions(
       {super.key,
       required this.devicePath,
@@ -126,7 +132,7 @@ class OtpActions extends ConsumerWidget {
             }
 
             final bool? deleted = await withContext((context) async =>
-                await showBlurDialog(
+                await showDialog(
                     context: context,
                     builder: (context) => DeleteSlotDialog(devicePath, slot)) ??
                 false);
@@ -151,7 +157,7 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
     ActionItem(
       key: keys.configureYubiOtp,
       feature: features.slotsConfigureYubiOtp,
-      icon: const Icon(Icons.shuffle_outlined),
+      icon: const Icon(Symbols.shuffle),
       title: l10n.s_capability_otp,
       subtitle: l10n.l_yubiotp_desc,
       intent: ConfigureYubiOtpIntent(slot),
@@ -159,21 +165,21 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
     ActionItem(
         key: keys.configureChalResp,
         feature: features.slotsConfigureChalResp,
-        icon: const Icon(Icons.key_outlined),
+        icon: const Icon(Symbols.key),
         title: l10n.s_challenge_response,
         subtitle: l10n.l_challenge_response_desc,
         intent: ConfigureChalRespIntent(slot)),
     ActionItem(
         key: keys.configureStatic,
         feature: features.slotsConfigureStatic,
-        icon: const Icon(Icons.password_outlined),
+        icon: const Icon(Symbols.password),
         title: l10n.s_static_password,
         subtitle: l10n.l_static_password_desc,
         intent: ConfigureStaticIntent(slot)),
     ActionItem(
         key: keys.configureHotp,
         feature: features.slotsConfigureHotp,
-        icon: const Icon(Icons.tag_outlined),
+        icon: const Icon(Symbols.tag),
         title: l10n.s_hotp,
         subtitle: l10n.l_hotp_desc,
         intent: ConfigureHotpIntent(slot)),
@@ -181,7 +187,7 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
       key: keys.deleteAction,
       feature: features.slotsDelete,
       actionStyle: ActionStyle.error,
-      icon: const Icon(Icons.delete_outline),
+      icon: const Icon(Symbols.delete),
       title: l10n.s_delete_slot,
       subtitle: l10n.l_delete_slot_desc,
       intent: slot.isConfigured ? DeleteIntent(slot) : null,

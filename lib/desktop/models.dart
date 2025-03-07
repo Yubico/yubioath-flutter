@@ -21,7 +21,8 @@ part 'models.g.dart';
 
 @Freezed(unionKey: 'kind')
 class RpcResponse with _$RpcResponse {
-  factory RpcResponse.success(Map<String, dynamic> body) = Success;
+  factory RpcResponse.success(Map<String, dynamic> body, List<String> flags) =
+      Success;
   factory RpcResponse.signal(String status, Map<String, dynamic> body) = Signal;
   factory RpcResponse.error(
       String status, String message, Map<String, dynamic> body) = RpcError;

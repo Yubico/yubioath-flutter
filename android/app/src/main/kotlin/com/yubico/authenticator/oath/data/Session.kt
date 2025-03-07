@@ -16,10 +16,13 @@
 
 package com.yubico.authenticator.oath.data
 
+import com.yubico.authenticator.JsonSerializable
 import com.yubico.authenticator.device.Version
+import com.yubico.authenticator.jsonSerializer
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 
 typealias YubiKitOathSession = com.yubico.yubikit.oath.OathSession
 
@@ -35,7 +38,7 @@ data class Session(
     val isRemembered: Boolean,
     @SerialName("locked")
     val isLocked: Boolean
-) {
+) : JsonSerializable {
     @SerialName("keystore")
     @Suppress("unused")
     val keystoreState: String = "unknown"
@@ -52,4 +55,8 @@ data class Session(
         isRemembered,
         oathSession.isLocked
     )
+
+    override fun toJson(): String {
+        return jsonSerializer.encodeToString(this)
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,19 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
-import '../../management/views/management_screen.dart';
-import '../key_customization/models.dart';
-import '../key_customization/state.dart';
-import '../key_customization/views/key_customization_dialog.dart';
-import '../message.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
 import 'keys.dart' as keys;
-import 'reset_dialog.dart';
-
-final _hiddenDevicesProvider =
-    StateNotifierProvider<_HiddenDevicesNotifier, List<String>>(
-        (ref) => _HiddenDevicesNotifier(ref.watch(prefProvider)));
-
-class _HiddenDevicesNotifier extends StateNotifier<List<String>> {
-  static const String _key = 'DEVICE_PICKER_HIDDEN';
-  final SharedPreferences _prefs;
-
-  _HiddenDevicesNotifier(this._prefs) : super(_prefs.getStringList(_key) ?? []);
-
-  void showAll() {
-    state = [];
-    _prefs.setStringList(_key, state);
-  }
-
-  void hideDevice(DevicePath devicePath) {
-    state = [...state, devicePath.key];
-    _prefs.setStringList(_key, state);
-  }
-}
+import 'keys.dart';
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
@@ -62,8 +37,8 @@ class DevicePickerContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final hidden = ref.watch(_hiddenDevicesProvider);
+    final l10n = AppLocalizations.of(context);
+    final hidden = ref.watch(hiddenDevicesProvider);
     final devices = ref
         .watch(attachedDevicesProvider)
         .where((e) => !hidden.contains(e.path.key))
@@ -75,13 +50,17 @@ class DevicePickerContent extends ConsumerWidget {
     Widget? androidNoKeyWidget;
     if (isAndroid && devices.isEmpty) {
       var hasNfcSupport = ref.watch(androidNfcSupportProvider);
-      var isNfcEnabled = ref.watch(androidNfcStateProvider);
+      var isNfcEnabled = ref.watch(androidNfcAdapterState);
       final subtitle = hasNfcSupport && isNfcEnabled
           ? l10n.l_insert_or_tap_yk
           : l10n.l_insert_yk;
 
       androidNoKeyWidget = _DeviceRow(
-        leading: const DeviceAvatar(child: Icon(Icons.usb)),
+        leading: const DeviceAvatar(
+            child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(Symbols.usb),
+        )),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -95,7 +74,11 @@ class DevicePickerContent extends ConsumerWidget {
     List<Widget> children = [
       if (showUsb)
         _DeviceRow(
-          leading: const DeviceAvatar(child: Icon(Icons.usb)),
+          leading: const DeviceAvatar(
+              child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.usb),
+          )),
           title: l10n.s_usb,
           subtitle: l10n.l_no_yk_present,
           onTap: () {
@@ -132,7 +115,7 @@ class DevicePickerContent extends ConsumerWidget {
 }
 
 String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   final serial = info.serial;
   return [
     if (serial != null) l10n.s_sn_serial(serial),
@@ -145,12 +128,13 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
 
 List<String> _getDeviceStrings(
     BuildContext context, DeviceNode node, AsyncValue<YubiKeyData> data) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   final messages = data.whenOrNull(
         data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
         error: (error, _) => switch (error) {
           'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
           'unknown-device' => [l10n.s_unknown_device],
+          'restricted-nfc' => [l10n.s_restricted_nfc],
           _ => null,
         },
       ) ??
@@ -177,13 +161,15 @@ class _DeviceMenuButton extends ConsumerWidget {
       child: Opacity(
         opacity: menuItems.isNotEmpty ? opacity : 0.0,
         child: PopupMenuButton(
+          key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
-          icon: const Icon(Icons.more_horiz_outlined),
+          icon: const Icon(Symbols.more_horiz),
           tooltip: '',
           iconColor: Theme.of(context).listTileTheme.textColor,
           itemBuilder: (context) {
             return menuItems;
           },
+          popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
         ),
       ),
     );
@@ -264,21 +250,26 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
               horizontalTitleGap: 8,
               leading: widget.leading,
-              trailing: _DeviceMenuButton(
-                menuItems: menuItems,
-                opacity: widget.selected
-                    ? 1.0
-                    : _showContextMenu
-                        ? 0.3
-                        : 0.0,
-              ),
+              trailing: menuItems.isNotEmpty
+                  ? _DeviceMenuButton(
+                      menuItems: menuItems,
+                      opacity: widget.selected
+                          ? 1.0
+                          : _showContextMenu
+                              ? 0.3
+                              : 0.0,
+                    )
+                  : null,
               title: Text(
                 widget.title,
                 overflow: TextOverflow.fade,
                 softWrap: false,
               ),
-              subtitle: Text(widget.subtitle,
-                  overflow: TextOverflow.fade, softWrap: false),
+              subtitle: Text(
+                widget.subtitle,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
               dense: true,
               onTap: widget.onTap,
             ),
@@ -306,19 +297,23 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
           child: widget.selected
-              ? IconButton.filled(
-                  tooltip: isDesktop ? tooltip : null,
-                  icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  onPressed: widget.onTap,
-                )
-              : IconButton(
-                  tooltip: isDesktop ? tooltip : null,
-                  icon: widget.leading,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onTap,
-                  color: colorScheme.secondary,
-                ),
+              ? Semantics(
+                  label: tooltip,
+                  child: IconButton.filled(
+                    tooltip: isDesktop ? tooltip : null,
+                    icon: widget.leading,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    onPressed: widget.onTap,
+                  ))
+              : Semantics(
+                  label: tooltip,
+                  child: IconButton(
+                    tooltip: isDesktop ? tooltip : null,
+                    icon: widget.leading,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    onPressed: widget.onTap,
+                    color: colorScheme.secondary,
+                  )),
         ),
       );
     }
@@ -326,51 +321,19 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
 
   List<PopupMenuItem> _getMenuItems(
       BuildContext context, WidgetRef ref, DeviceNode? node) {
-    final l10n = AppLocalizations.of(context)!;
-    final keyCustomizations = ref.watch(keyCustomizationManagerProvider);
-    final hidden = ref.watch(_hiddenDevicesProvider);
-
-    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
-    final managementAvailability = data != null
-        ? Application.management.getAvailability(data)
-        : Availability.unsupported;
-
-    final serial = node is UsbYubiKeyNode
-        ? node.info?.serial
-        : data != null
-            ? data.node.path == node?.path && node != null
-                ? data.info.serial
-                : null
-            : null;
+    final l10n = AppLocalizations.of(context);
+    final hidden = ref.watch(hiddenDevicesProvider);
 
     return [
-      if (serial != null)
-        PopupMenuItem(
-          enabled: true,
-          onTap: () async {
-            await ref.read(withContextProvider)((context) async {
-              await _showKeyCustomizationDialog(
-                  keyCustomizations[serial] ?? KeyCustomization(serial: serial),
-                  context,
-                  node);
-            });
-          },
-          child: ListTile(
-              title: Text(l10n.s_customize_key_action),
-              leading: const Icon(Icons.palette_outlined),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              enabled: true),
-        ),
       if (isDesktop && hidden.isNotEmpty)
         PopupMenuItem(
           enabled: hidden.isNotEmpty,
           onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).showAll();
+            ref.read(hiddenDevicesProvider.notifier).showAll();
           },
           child: ListTile(
-            title: Text(l10n.s_show_hidden_devices),
-            leading: const Icon(Icons.visibility_outlined),
+            title: Text(l10n.s_show_hidden_readers),
+            leading: const Icon(Symbols.visibility),
             dense: true,
             contentPadding: EdgeInsets.zero,
             enabled: hidden.isNotEmpty,
@@ -379,60 +342,16 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
       if (isDesktop && node is NfcReaderNode)
         PopupMenuItem(
           onTap: () {
-            ref.read(_hiddenDevicesProvider.notifier).hideDevice(node.path);
+            ref.read(hiddenDevicesProvider.notifier).hideDevice(node.path);
           },
           child: ListTile(
-            title: Text(l10n.s_hide_device),
-            leading: const Icon(Icons.visibility_off_outlined),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      if (node == data?.node && managementAvailability == Availability.enabled)
-        PopupMenuItem(
-          onTap: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ManagementScreen(data),
-            );
-          },
-          child: ListTile(
-            title: Text(data!.info.version.major > 4
-                ? l10n.s_toggle_applications
-                : l10n.s_toggle_interfaces),
-            leading: const Icon(Icons.construction),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      if (data != null && node == data.node)
-        PopupMenuItem(
-          onTap: () {
-            showBlurDialog(
-              context: context,
-              builder: (context) => ResetDialog(data),
-            );
-          },
-          child: ListTile(
-            title: Text(l10n.s_factory_reset),
-            leading: const Icon(Icons.delete_forever),
+            title: Text(l10n.s_hide_reader),
+            leading: const Icon(Symbols.visibility_off),
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
         ),
     ];
-  }
-
-  Future<void> _showKeyCustomizationDialog(KeyCustomization keyCustomization,
-      BuildContext context, DeviceNode? node) async {
-    await showBlurDialog(
-      context: context,
-      builder: (context) => KeyCustomizationDialog(
-        node: node,
-        initialCustomization: keyCustomization,
-      ),
-      routeSettings: const RouteSettings(name: 'customize'),
-    );
   }
 }
 
@@ -443,7 +362,7 @@ _DeviceRow _buildDeviceRow(
   DeviceInfo? info,
   bool extended,
 ) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   final subtitle = node.when(
     usbYubiKey: (_, __, ___, info) => info == null
         ? l10n.s_yk_inaccessible

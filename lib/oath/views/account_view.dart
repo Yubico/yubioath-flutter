@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,15 +29,19 @@ class AccountView extends ConsumerStatefulWidget {
   final OathCredential credential;
   final bool expanded;
   final bool selected;
+  final bool large;
   const AccountView(this.credential,
-      {super.key, required this.expanded, required this.selected});
+      {super.key,
+      required this.expanded,
+      required this.selected,
+      this.large = false});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AccountViewState();
 }
 
 String _a11yCredentialLabel(String? issuer, String name, String? code) {
-  return [issuer, name, code].whereNotNull().join(' ');
+  return [issuer, name, code].nonNulls.join(' ');
 }
 
 class _AccountViewState extends ConsumerState<AccountView> {
@@ -80,7 +83,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
     final helper = AccountHelper(context, ref, credential);
     final subtitle = helper.subtitle;
     final circleAvatar = CircleAvatar(
-      foregroundColor: Theme.of(context).colorScheme.background,
+      foregroundColor: Theme.of(context).colorScheme.surface,
       backgroundColor: _iconColor(400),
       child: Text(
         (credential.issuer ?? credential.name).characters.first.toUpperCase(),
@@ -116,6 +119,95 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ? CopyIntent<OathCredential>(credential)
           : null,
       buildPopupActions: (_) => helper.buildActions(),
+      itemBuilder: widget.large
+          ? (context) {
+              return ListTile(
+                mouseCursor: !(isDesktop && !widget.expanded)
+                    ? SystemMouseCursors.click
+                    : null,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                selectedTileColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
+                selectedColor:
+                    Theme.of(context).colorScheme.onSecondaryContainer,
+                selected: widget.selected,
+                tileColor: Theme.of(context).hoverColor,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                title: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AccountIcon(
+                            issuer: credential.issuer,
+                            defaultWidget: circleAvatar),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                helper.title,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface),
+                                overflow: TextOverflow.fade,
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                              if (subtitle != null)
+                                Text(
+                                  subtitle,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant),
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    Focus(
+                      skipTraversal: true,
+                      descendantsAreTraversable: false,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          helper.code != null
+                              ? FilledButton.tonalIcon(
+                                  icon: helper.buildCodeIcon(),
+                                  label: helper.buildCodeLabel(),
+                                  style: buttonStyle,
+                                  onPressed:
+                                      Actions.handler(context, openIntent),
+                                )
+                              : FilledButton.tonal(
+                                  style: buttonStyle,
+                                  onPressed:
+                                      Actions.handler(context, openIntent),
+                                  child: helper.buildCodeIcon()),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          : null,
     );
   }
 }

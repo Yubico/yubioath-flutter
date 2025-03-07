@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -20,6 +21,7 @@ from .base import (
     ChildResetException,
     TimeoutException,
     AuthRequiredException,
+    PinComplexityException,
 )
 from yubikit.core import NotSupportedError, BadResponseError, InvalidPinError
 from yubikit.core.smartcard import ApduError, SW
@@ -75,14 +77,24 @@ class InvalidPinException(RpcException):
 
 @unique
 class GENERATE_TYPE(str, Enum):
+    PUBLIC_KEY = "publicKey"
     CSR = "csr"
     CERTIFICATE = "certificate"
 
 
+def _handle_pin_puk_error(e):
+    if isinstance(e, ApduError):
+        if e.sw == SW.CONDITIONS_NOT_SATISFIED:
+            raise PinComplexityException()
+    if isinstance(e, InvalidPinError):
+        raise InvalidPinException(cause=e)
+    raise e
+
+
 class PivNode(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = PivSession(connection)
+        self.session = PivSession(connection, scp_params)
         self._pivman_data = get_pivman_data(self.session)
         self._authenticated = False
 
@@ -97,7 +109,7 @@ class PivNode(RpcNode):
         except InvalidPinError as e:
             raise InvalidPinException(cause=e)
 
-    def _get_object(self, object_id):
+    def _get_object(self, object_id: int):
         try:
             return self.session.get_object(object_id)
         except ApduError as e:
@@ -123,18 +135,25 @@ class PivNode(RpcNode):
             pin_attempts = self.session.get_pin_attempts()
             metadata = None
 
+        try:
+            self.session.get_bio_metadata()
+            supports_bio = True
+        except NotSupportedError:
+            supports_bio = False
+
         return dict(
             version=self.session.version,
             authenticated=self._authenticated,
             derived_key=self._pivman_data.has_derived_key,
             stored_key=self._pivman_data.has_stored_key,
+            supports_bio=supports_bio,
             chuid=self._get_object(OBJECT_ID.CHUID),
             ccc=self._get_object(OBJECT_ID.CAPABILITY),
             pin_attempts=pin_attempts,
             metadata=metadata,
         )
 
-    def _authenticate(self, key, signal):
+    def _authenticate(self, key: bytes, signal):
         try:
             metadata = self.session.get_management_key_metadata()
             key_type = metadata.key_type
@@ -159,9 +178,7 @@ class PivNode(RpcNode):
         self._authenticated = True
 
     @action
-    def verify_pin(self, params, event, signal):
-        pin = params.pop("pin")
-
+    def verify_pin(self, signal, pin: str):
         self.session.verify_pin(pin)
         key = None
 
@@ -184,8 +201,7 @@ class PivNode(RpcNode):
         return dict(status=True, authenticated=self._authenticated)
 
     @action
-    def authenticate(self, params, event, signal):
-        key = bytes.fromhex(params.pop("key"))
+    def authenticate(self, signal, key: bytes):
         try:
             self._authenticate(key, signal)
             return dict(status=True)
@@ -195,70 +211,61 @@ class PivNode(RpcNode):
             raise
 
     @action(condition=lambda self: self._authenticated)
-    def set_key(self, params, event, signal):
-        key_type = MANAGEMENT_KEY_TYPE(params.pop("key_type", MANAGEMENT_KEY_TYPE.TDES))
-        key = bytes.fromhex(params.pop("key"))
-        store_key = params.pop("store_key", False)
-        pivman_set_mgm_key(self.session, key, key_type, False, store_key)
+    def set_key(
+        self,
+        key: bytes,
+        key_type: int = MANAGEMENT_KEY_TYPE.TDES,
+        store_key: bool = False,
+    ):
+        pivman_set_mgm_key(
+            self.session,
+            key,
+            MANAGEMENT_KEY_TYPE(key_type),
+            False,
+            store_key,
+        )
         self._pivman_data = get_pivman_data(self.session)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @action
-    def change_pin(self, params, event, signal):
-        old_pin = params.pop("pin")
-        new_pin = params.pop("new_pin")
-        pivman_change_pin(self.session, old_pin, new_pin)
-        return dict()
+    def change_pin(self, pin: str, new_pin: str):
+        try:
+            pivman_change_pin(self.session, pin, new_pin)
+            return RpcResponse(dict(), ["device_info"])
+        except Exception as e:
+            _handle_pin_puk_error(e)
 
     @action
-    def change_puk(self, params, event, signal):
-        old_puk = params.pop("puk")
-        new_puk = params.pop("new_puk")
-        self.session.change_puk(old_puk, new_puk)
-        return dict()
+    def change_puk(self, puk: str, new_puk: str):
+        try:
+            self.session.change_puk(puk, new_puk)
+            return RpcResponse(dict(), ["device_info"])
+        except Exception as e:
+            _handle_pin_puk_error(e)
 
     @action
-    def unblock_pin(self, params, event, signal):
-        puk = params.pop("puk")
-        new_pin = params.pop("new_pin")
-        self.session.unblock_pin(puk, new_pin)
-        return dict()
+    def unblock_pin(self, puk: str, new_pin: str):
+        try:
+            self.session.unblock_pin(puk, new_pin)
+            return RpcResponse(dict(), ["device_info"])
+        except Exception as e:
+            _handle_pin_puk_error(e)
 
     @action
-    def reset(self, params, event, signal):
+    def reset(self):
         self.session.reset()
         self._authenticated = False
         self._pivman_data = get_pivman_data(self.session)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @child
     def slots(self):
         return SlotsNode(self.session)
 
     @action(closes_child=False)
-    def examine_file(self, params, event, signal):
-        data = bytes.fromhex(params.pop("data"))
-        password = params.pop("password", None)
+    def validate_rfc4514(self, data: str):
         try:
-            private_key, certs = _parse_file(data, password)
-            certificate = _choose_cert(certs)
-
-            return dict(
-                status=True,
-                password=password is not None,
-                key_type=KEY_TYPE.from_public_key(private_key.public_key())
-                if private_key
-                else None,
-                cert_info=_get_cert_info(certificate),
-            )
-        except InvalidPasswordError:
-            logger.debug("Invalid or missing password", exc_info=True)
-            return dict(status=False)
-
-    @action(closes_child=False)
-    def validate_rfc4514(self, params, event, signal):
-        try:
-            parse_rfc4514_string(params.pop("data"))
+            parse_rfc4514_string(data)
             return dict(status=True)
         except ValueError:
             return dict(status=False)
@@ -297,13 +304,38 @@ def _choose_cert(certs):
 def _get_cert_info(cert):
     if cert is None:
         return None
+    try:  # Prefer timezone-aware variant (cryptography >= 42)
+        not_before = cert.not_valid_before_utc
+        not_after = cert.not_valid_after_utc
+    except AttributeError:
+        not_before = cert.not_valid_before
+        not_after = cert.not_valid_after
+
+    try:
+        key_type = KEY_TYPE.from_public_key(cert.public_key())
+    except ValueError:
+        key_type = None
+
     return dict(
+        key_type=key_type,
         subject=cert.subject.rfc4514_string(),
         issuer=cert.issuer.rfc4514_string(),
         serial=hex(cert.serial_number)[2:],
-        not_valid_before=cert.not_valid_before.isoformat(),
-        not_valid_after=cert.not_valid_after.isoformat(),
+        not_valid_before=not_before.isoformat(),
+        not_valid_after=not_after.isoformat(),
         fingerprint=cert.fingerprint(hashes.SHA256()),
+    )
+
+
+def _public_key_match(cert, metadata):
+    if not cert or not metadata:
+        return None
+    slot_public_key = metadata.public_key
+    cert_public_key = cert.public_key()
+    return slot_public_key.public_bytes(
+        encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
+    ) == cert_public_key.public_bytes(
+        encoding=Encoding.DER, format=PublicFormat.SubjectPublicKeyInfo
     )
 
 
@@ -341,8 +373,9 @@ class SlotsNode(RpcNode):
             f"{int(slot):02x}": dict(
                 slot=int(slot),
                 name=slot.name,
-                has_key=metadata is not None if self._has_metadata else None,
+                metadata=_metadata_dict(metadata),
                 cert_info=_get_cert_info(cert),
+                public_key_match=_public_key_match(cert, metadata),
             )
             for slot, (metadata, cert) in self._slots.items()
         }
@@ -353,6 +386,17 @@ class SlotsNode(RpcNode):
             metadata, certificate = self._slots[slot]
             return SlotNode(self.session, slot, metadata, certificate, self.refresh)
         return super().create_child(name)
+
+
+def _metadata_dict(metadata):
+    if not metadata:
+        return None
+    data = asdict(metadata)
+    data["public_key"] = metadata.public_key.public_bytes(
+        encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+    ).decode()
+    del data["public_key_encoded"]
+    return data
 
 
 class SlotNode(RpcNode):
@@ -368,25 +412,77 @@ class SlotNode(RpcNode):
         return dict(
             id=f"{int(self.slot):02x}",
             name=self.slot.name,
-            metadata=asdict(self.metadata) if self.metadata else None,
-            certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
-            if self.certificate
-            else None,
+            metadata=_metadata_dict(self.metadata),
+            certificate=(
+                self.certificate.public_bytes(encoding=Encoding.PEM).decode()
+                if self.certificate
+                else None
+            ),
         )
 
-    @action(condition=lambda self: self.certificate)
-    def delete(self, params, event, signal):
-        self.session.delete_certificate(self.slot)
-        self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+    @action(condition=lambda self: self.certificate or self.metadata)
+    def delete(self, delete_cert: bool = False, delete_key: bool = False):
+        if not delete_cert and not delete_key:
+            raise ValueError("Missing delete option")
+
+        if delete_cert:
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        if delete_key:
+            self.session.delete_key(self.slot)
         self._refresh()
-        self.certificate = None
+        return dict()
+
+    @action(condition=lambda self: self.metadata)
+    def move_key(
+        self, destination: str, overwrite_key: bool, include_certificate: bool
+    ):
+        if include_certificate:
+            source_object = self.session.get_object(OBJECT_ID.from_slot(self.slot))
+        dest = SLOT(int(destination, base=16))
+        if overwrite_key:
+            self.session.delete_key(dest)
+        self.session.move_key(self.slot, dest)
+        if include_certificate:
+            self.session.put_object(OBJECT_ID.from_slot(dest), source_object)
+            self.session.delete_certificate(self.slot)
+            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            self.certificate = None
+        self._refresh()
         return dict()
 
     @action
-    def import_file(self, params, event, signal):
-        data = bytes.fromhex(params.pop("data"))
-        password = params.pop("password", None)
+    def examine_file(self, data: bytes, password: str | None = None):
+        try:
+            private_key, certs = _parse_file(data, password)
+            certificate = _choose_cert(certs)
 
+            response = dict(
+                status=True,
+                password=password is not None,
+                key_type=(
+                    KEY_TYPE.from_public_key(private_key.public_key())
+                    if private_key
+                    else None
+                ),
+                cert_info=_get_cert_info(certificate),
+            )
+
+            if self.metadata and certificate and not private_key:
+                # Verify that the public key of a cert matches the
+                # private key in the slot
+                response["public_key_match"] = _public_key_match(
+                    certificate, self.metadata
+                )
+
+            return response
+        except InvalidPasswordError:
+            logger.debug("Invalid or missing password", exc_info=True)
+            return dict(status=False)
+
+    @action
+    def import_file(self, data: bytes, password: str | None = None, **kwargs):
         try:
             private_key, certs = _parse_file(data, password)
         except InvalidPasswordError:
@@ -399,9 +495,9 @@ class SlotNode(RpcNode):
 
         metadata = None
         if private_key:
-            pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
+            pin_policy = PIN_POLICY(kwargs.pop("pin_policy", PIN_POLICY.DEFAULT))
             touch_policy = TOUCH_POLICY(
-                params.pop("touch_policy", TOUCH_POLICY.DEFAULT)
+                kwargs.pop("touch_policy", TOUCH_POLICY.DEFAULT)
             )
             self.session.put_key(self.slot, private_key, pin_policy, touch_policy)
             try:
@@ -417,68 +513,83 @@ class SlotNode(RpcNode):
 
         self._refresh()
 
-        return dict(
-            metadata=asdict(metadata) if metadata else None,
-            public_key=private_key.public_key()
-            .public_bytes(
-                encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
-            )
-            .decode()
-            if private_key
-            else None,
-            certificate=self.certificate.public_bytes(encoding=Encoding.PEM).decode()
-            if certs
-            else None,
+        response = dict(
+            metadata=_metadata_dict(metadata),
+            public_key=(
+                private_key.public_key()
+                .public_bytes(
+                    encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+                )
+                .decode()
+                if private_key
+                else None
+            ),
+            certificate=(
+                self.certificate.public_bytes(encoding=Encoding.PEM).decode()
+                if certs
+                else None
+            ),
         )
+        return RpcResponse(response, ["device_info"])
 
     @action
-    def generate(self, params, event, signal):
-        key_type = KEY_TYPE(params.pop("key_type"))
-        pin_policy = PIN_POLICY(params.pop("pin_policy", PIN_POLICY.DEFAULT))
-        touch_policy = TOUCH_POLICY(params.pop("touch_policy", TOUCH_POLICY.DEFAULT))
-        subject = params.pop("subject")
-        generate_type = GENERATE_TYPE(
-            params.pop("generate_type", GENERATE_TYPE.CERTIFICATE)
-        )
+    def generate(
+        self,
+        signal,
+        key_type: int,
+        pin_policy: int = PIN_POLICY.DEFAULT,
+        touch_policy: int = TOUCH_POLICY.DEFAULT,
+        generate_type: str = GENERATE_TYPE.CERTIFICATE,
+        subject: str | None = None,
+        pin: str | None = None,
+        **kwargs,
+    ):
+        generate_type = GENERATE_TYPE(generate_type)
         public_key = self.session.generate_key(
-            self.slot, key_type, pin_policy, touch_policy
+            self.slot,
+            KEY_TYPE(key_type),
+            PIN_POLICY(pin_policy),
+            TOUCH_POLICY(touch_policy),
         )
+        public_key_pem = public_key.public_bytes(
+            encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
+        ).decode()
 
         if pin_policy != PIN_POLICY.NEVER:
             # TODO: Check if verified?
-            pin = params.pop("pin")
             self.session.verify_pin(pin)
 
         if touch_policy in (TOUCH_POLICY.ALWAYS, TOUCH_POLICY.CACHED):
             signal("touch")
 
-        if generate_type == GENERATE_TYPE.CSR:
-            csr = generate_csr(self.session, self.slot, public_key, subject)
-            result = csr.public_bytes(encoding=Encoding.PEM).decode()
-        elif generate_type == GENERATE_TYPE.CERTIFICATE:
-            now = datetime.datetime.utcnow()
-            then = now + datetime.timedelta(days=365)
-            valid_from = params.pop("valid_from", now.strftime(_date_format))
-            valid_to = params.pop("valid_to", then.strftime(_date_format))
-            cert = generate_self_signed_certificate(
-                self.session,
-                self.slot,
-                public_key,
-                subject,
-                datetime.datetime.strptime(valid_from, _date_format),
-                datetime.datetime.strptime(valid_to, _date_format),
-            )
-            result = cert.public_bytes(encoding=Encoding.PEM).decode()
-            self.session.put_certificate(self.slot, cert)
-            self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
-        else:
-            raise ValueError("Unsupported GENERATE_TYPE")
+        match GENERATE_TYPE(generate_type):
+            case GENERATE_TYPE.PUBLIC_KEY:
+                result = public_key_pem
+            case GENERATE_TYPE.CSR:
+                assert subject  # nosec
+                csr = generate_csr(self.session, self.slot, public_key, subject)
+                result = csr.public_bytes(encoding=Encoding.PEM).decode()
+            case GENERATE_TYPE.CERTIFICATE:
+                assert subject  # nosec
+                now = datetime.datetime.utcnow()
+                then = now + datetime.timedelta(days=365)
+                valid_from = kwargs.pop("valid_from", now.strftime(_date_format))
+                valid_to = kwargs.pop("valid_to", then.strftime(_date_format))
+                cert = generate_self_signed_certificate(
+                    self.session,
+                    self.slot,
+                    public_key,
+                    subject,
+                    datetime.datetime.strptime(valid_from, _date_format),
+                    datetime.datetime.strptime(valid_to, _date_format),
+                )
+                result = cert.public_bytes(encoding=Encoding.PEM).decode()
+                self.session.put_certificate(self.slot, cert)
+                self.session.put_object(OBJECT_ID.CHUID, generate_chuid())
+            case other:
+                raise ValueError(f"Unsupported GENERATE_TYPE: {other}")
 
         self._refresh()
 
-        return dict(
-            public_key=public_key.public_bytes(
-                encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo
-            ).decode(),
-            result=result,
-        )
+        response = dict(public_key=public_key_pem, result=result)
+        return RpcResponse(response, ["device_info"])

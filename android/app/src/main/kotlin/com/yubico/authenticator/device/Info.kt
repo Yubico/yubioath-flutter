@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.management.DeviceInfo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.UInt
 
-private fun DeviceInfo.capabilitiesFor(transport: Transport) : Int? =
+private fun DeviceInfo.capabilitiesFor(transport: Transport): Int? =
     when {
         hasTransport(transport) -> getSupportedCapabilities(transport)
         else -> null
@@ -30,9 +31,9 @@ private fun DeviceInfo.capabilitiesFor(transport: Transport) : Int? =
 @Serializable
 data class Info(
     @SerialName("config")
-    val config : Config,
+    val config: Config,
     @SerialName("serial")
-    val serialNumber: Int?,
+    val serialNumber: UInt?,
     @SerialName("version")
     val version: Version,
     @SerialName("form_factor")
@@ -49,13 +50,25 @@ data class Info(
     val isNfc: Boolean,
     @SerialName("usb_pid")
     val usbPid: Int?,
+    @SerialName("pin_complexity")
+    val pinComplexity: Boolean,
     @SerialName("supported_capabilities")
-    val supportedCapabilities: Capabilities
+    val supportedCapabilities: Capabilities,
+    @SerialName("fips_capable")
+    val fipsCapable: Int,
+    @SerialName("fips_approved")
+    val fipsApproved: Int,
+    @SerialName("reset_blocked")
+    val resetBlocked: Int,
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
-        serialNumber = deviceInfo.serialNumber,
-        version = Version(deviceInfo.version.major, deviceInfo.version.minor, deviceInfo.version.micro),
+        serialNumber = deviceInfo.serialNumber?.toUInt(),
+        version = Version(
+            deviceInfo.version.major,
+            deviceInfo.version.minor,
+            deviceInfo.version.micro
+        ),
         formFactor = deviceInfo.formFactor.value,
         isLocked = deviceInfo.isLocked,
         isSky = deviceInfo.isSky,
@@ -63,9 +76,13 @@ data class Info(
         name = name,
         isNfc = isNfc,
         usbPid = usbPid,
+        pinComplexity = deviceInfo.pinComplexity,
         supportedCapabilities = Capabilities(
             nfc = deviceInfo.capabilitiesFor(Transport.NFC),
             usb = deviceInfo.capabilitiesFor(Transport.USB),
-        )
+        ),
+        fipsCapable = deviceInfo.fipsCapable,
+        fipsApproved = deviceInfo.fipsApproved,
+        resetBlocked = deviceInfo.resetBlocked,
     )
 }

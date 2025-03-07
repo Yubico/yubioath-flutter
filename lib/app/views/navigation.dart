@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+import '../../generated/l10n/app_localizations.dart';
 import '../models.dart';
-import '../shortcuts.dart';
 import '../state.dart';
 import 'device_picker.dart';
 import 'keys.dart';
@@ -85,41 +86,25 @@ class NavigationItem extends StatelessWidget {
   }
 }
 
-extension on Application {
+extension on Section {
   IconData get _icon => switch (this) {
-        Application.accounts => Icons.supervisor_account_outlined,
-        Application.webauthn => Icons.security_outlined,
-        Application.passkeys => Icons.security_outlined,
-        Application.fingerprints => Icons.fingerprint_outlined,
-        Application.slots => Icons.touch_app_outlined,
-        Application.certificates => Icons.approval_outlined,
-        Application.management => Icons.construction_outlined,
-        Application.openpgp => Icons.key_outlined,
-        Application.hsmauth => Icons.key_outlined,
-      };
-
-  IconData get _filledIcon => switch (this) {
-        Application.accounts => Icons.supervisor_account,
-        Application.webauthn => Icons.security,
-        Application.passkeys => Icons.security,
-        Application.fingerprints => Icons.fingerprint,
-        Application.slots => Icons.touch_app,
-        Application.certificates => Icons.approval,
-        Application.management => Icons.construction,
-        Application.openpgp => Icons.key,
-        Application.hsmauth => Icons.key,
+        Section.home => Symbols.home,
+        Section.accounts => Symbols.supervisor_account,
+        Section.securityKey => Symbols.security_key,
+        Section.passkeys => Symbols.passkey,
+        Section.fingerprints => Symbols.fingerprint,
+        Section.slots => Symbols.touch_app,
+        Section.certificates => Symbols.id_card,
       };
 
   Key get _key => switch (this) {
-        Application.accounts => oathAppDrawer,
-        Application.webauthn => u2fAppDrawer,
-        Application.passkeys => fidoPasskeysAppDrawer,
-        Application.fingerprints => fidoFingerprintsAppDrawer,
-        Application.slots => otpAppDrawer,
-        Application.certificates => pivAppDrawer,
-        Application.hsmauth => hsmauthAppDrawer,
-        Application.management => managementAppDrawer,
-        Application.openpgp => openpgpAppDrawer,
+        Section.home => homeDrawer,
+        Section.accounts => oathAppDrawer,
+        Section.securityKey => u2fAppDrawer,
+        Section.passkeys => fidoPasskeysAppDrawer,
+        Section.fingerprints => fidoFingerprintsAppDrawer,
+        Section.slots => otpAppDrawer,
+        Section.certificates => pivAppDrawer,
       };
 }
 
@@ -131,85 +116,60 @@ class NavigationContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final supportedApps = ref.watch(supportedAppsProvider);
+    final l10n = AppLocalizations.of(context);
+    final supportedSections = ref.watch(supportedSectionsProvider);
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
 
-    final availableApps = data != null
-        ? supportedApps
-            .where(
-                (app) => app.getAvailability(data) != Availability.unsupported)
+    final availableSections = data != null
+        ? supportedSections
+            .where((section) =>
+                section.getAvailability(data) != Availability.unsupported)
             .toList()
-        : <Application>[];
-    availableApps.remove(Application.management);
-    final currentApp = ref.watch(currentAppProvider);
+        : [Section.home];
+    final currentSection = ref.watch(currentSectionProvider);
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding:
+          const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0, top: 12),
       child: Column(
         children: [
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
             child: DevicePickerContent(extended: extended),
           ),
-
           const SizedBox(height: 32),
-
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
             child: Column(
               children: [
-                if (data != null) ...[
-                  // Normal YubiKey Applications
-                  ...availableApps.map((app) => NavigationItem(
-                        key: app._key,
-                        title: app.getDisplayName(l10n),
-                        leading: app == currentApp
-                            ? Icon(app._filledIcon)
-                            : Icon(app._icon),
-                        collapsed: !extended,
-                        selected: app == currentApp,
-                        onTap: app.getAvailability(data) == Availability.enabled
-                            ? () {
-                                ref
-                                    .read(currentAppProvider.notifier)
-                                    .setCurrentApp(app);
-                                if (shouldPop) {
-                                  Navigator.of(context).pop();
-                                }
+                // Normal YubiKey Applications
+                ...availableSections.map((app) => NavigationItem(
+                      key: app._key,
+                      title: app.getDisplayName(l10n),
+                      leading: Icon(
+                        app._icon,
+                        fill: app == currentSection ? 1.0 : 0.0,
+                        semanticLabel:
+                            !extended ? app.getDisplayName(l10n) : null,
+                      ),
+                      collapsed: !extended,
+                      selected: app == currentSection,
+                      onTap: data == null && currentSection == Section.home ||
+                              data != null &&
+                                  app.getAvailability(data) ==
+                                      Availability.enabled
+                          ? () {
+                              ref
+                                  .read(currentSectionProvider.notifier)
+                                  .setCurrentSection(app);
+                              if (shouldPop) {
+                                Navigator.of(context).pop();
                               }
-                            : null,
-                      )),
-                  const SizedBox(height: 32),
-                ],
+                            }
+                          : null,
+                    )),
               ],
             ),
-          ),
-
-          // Non-YubiKey pages
-          NavigationItem(
-            leading: const Icon(Icons.settings_outlined),
-            key: settingDrawerIcon,
-            title: l10n.s_settings,
-            collapsed: !extended,
-            onTap: () {
-              if (shouldPop) {
-                Navigator.of(context).pop();
-              }
-              Actions.maybeInvoke(context, const SettingsIntent());
-            },
-          ),
-          NavigationItem(
-            leading: const Icon(Icons.help_outline),
-            key: helpDrawerIcon,
-            title: l10n.s_help_and_about,
-            collapsed: !extended,
-            onTap: () {
-              if (shouldPop) {
-                Navigator.of(context).pop();
-              }
-              Actions.maybeInvoke(context, const AboutIntent());
-            },
           ),
         ],
       ),

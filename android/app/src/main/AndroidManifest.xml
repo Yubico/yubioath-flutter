@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
 
     <uses-feature
         android:name="android.hardware.usb.host"
@@ -22,8 +23,10 @@
 
     <application
         android:name="${applicationName}"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_label">
+        android:label="@string/app_label"
+        tools:targetApi="tiramisu">
 
         <activity
             android:name=".MainActivity"

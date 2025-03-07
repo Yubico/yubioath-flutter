@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
   return _FidoState.fromJson(json);
@@ -22,9 +22,14 @@ FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
 mixin _$FidoState {
   Map<String, dynamic> get info => throw _privateConstructorUsedError;
   bool get unlocked => throw _privateConstructorUsedError;
+  int? get pinRetries => throw _privateConstructorUsedError;
 
+  /// Serializes this FidoState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FidoState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $FidoStateCopyWith<FidoState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -34,7 +39,7 @@ abstract class $FidoStateCopyWith<$Res> {
   factory $FidoStateCopyWith(FidoState value, $Res Function(FidoState) then) =
       _$FidoStateCopyWithImpl<$Res, FidoState>;
   @useResult
-  $Res call({Map<String, dynamic> info, bool unlocked});
+  $Res call({Map<String, dynamic> info, bool unlocked, int? pinRetries});
 }
 
 /// @nodoc
@@ -47,11 +52,14 @@ class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of FidoState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? info = null,
     Object? unlocked = null,
+    Object? pinRetries = freezed,
   }) {
     return _then(_value.copyWith(
       info: null == info
@@ -62,6 +70,10 @@ class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
           ? _value.unlocked
           : unlocked // ignore: cast_nullable_to_non_nullable
               as bool,
+      pinRetries: freezed == pinRetries
+          ? _value.pinRetries
+          : pinRetries // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -74,7 +86,7 @@ abstract class _$$FidoStateImplCopyWith<$Res>
       __$$FidoStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Map<String, dynamic> info, bool unlocked});
+  $Res call({Map<String, dynamic> info, bool unlocked, int? pinRetries});
 }
 
 /// @nodoc
@@ -85,11 +97,14 @@ class __$$FidoStateImplCopyWithImpl<$Res>
       _$FidoStateImpl _value, $Res Function(_$FidoStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FidoState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? info = null,
     Object? unlocked = null,
+    Object? pinRetries = freezed,
   }) {
     return _then(_$FidoStateImpl(
       info: null == info
@@ -100,6 +115,10 @@ class __$$FidoStateImplCopyWithImpl<$Res>
           ? _value.unlocked
           : unlocked // ignore: cast_nullable_to_non_nullable
               as bool,
+      pinRetries: freezed == pinRetries
+          ? _value.pinRetries
+          : pinRetries // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -108,7 +127,9 @@ class __$$FidoStateImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$FidoStateImpl extends _FidoState {
   _$FidoStateImpl(
-      {required final Map<String, dynamic> info, required this.unlocked})
+      {required final Map<String, dynamic> info,
+      required this.unlocked,
+      this.pinRetries})
       : _info = info,
         super._();
 
@@ -125,28 +146,34 @@ class _$FidoStateImpl extends _FidoState {
 
   @override
   final bool unlocked;
+  @override
+  final int? pinRetries;
 
   @override
   String toString() {
-    return 'FidoState(info: $info, unlocked: $unlocked)';
+    return 'FidoState(info: $info, unlocked: $unlocked, pinRetries: $pinRetries)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FidoStateImpl &&
             const DeepCollectionEquality().equals(other._info, _info) &&
             (identical(other.unlocked, unlocked) ||
-                other.unlocked == unlocked));
+                other.unlocked == unlocked) &&
+            (identical(other.pinRetries, pinRetries) ||
+                other.pinRetries == pinRetries));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_info), unlocked);
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_info), unlocked, pinRetries);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FidoState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$FidoStateImplCopyWith<_$FidoStateImpl> get copyWith =>
@@ -163,7 +190,8 @@ class _$FidoStateImpl extends _FidoState {
 abstract class _FidoState extends FidoState {
   factory _FidoState(
       {required final Map<String, dynamic> info,
-      required final bool unlocked}) = _$FidoStateImpl;
+      required final bool unlocked,
+      final int? pinRetries}) = _$FidoStateImpl;
   _FidoState._() : super._();
 
   factory _FidoState.fromJson(Map<String, dynamic> json) =
@@ -174,7 +202,12 @@ abstract class _FidoState extends FidoState {
   @override
   bool get unlocked;
   @override
-  @JsonKey(ignore: true)
+  int? get pinRetries;
+
+  /// Create a copy of FidoState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FidoStateImplCopyWith<_$FidoStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -184,19 +217,19 @@ mixin _$PinResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int retries, bool authBlocked) failed,
+    required TResult Function(FidoPinFailureReason reason) failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int retries, bool authBlocked)? failed,
+    TResult? Function(FidoPinFailureReason reason)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -236,6 +269,9 @@ class _$PinResultCopyWithImpl<$Res, $Val extends PinResult>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of PinResult
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -252,6 +288,9 @@ class __$$PinSuccessImplCopyWithImpl<$Res>
   __$$PinSuccessImplCopyWithImpl(
       _$PinSuccessImpl _value, $Res Function(_$PinSuccessImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of PinResult
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -265,7 +304,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType && other is _$PinSuccessImpl);
   }
@@ -277,7 +316,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int retries, bool authBlocked) failed,
+    required TResult Function(FidoPinFailureReason reason) failed,
   }) {
     return success();
   }
@@ -286,7 +325,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int retries, bool authBlocked)? failed,
+    TResult? Function(FidoPinFailureReason reason)? failed,
   }) {
     return success?.call();
   }
@@ -295,7 +334,7 @@ class _$PinSuccessImpl implements _PinSuccess {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -346,7 +385,9 @@ abstract class _$$PinFailureImplCopyWith<$Res> {
           _$PinFailureImpl value, $Res Function(_$PinFailureImpl) then) =
       __$$PinFailureImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({int retries, bool authBlocked});
+  $Res call({FidoPinFailureReason reason});
+
+  $FidoPinFailureReasonCopyWith<$Res> get reason;
 }
 
 /// @nodoc
@@ -357,54 +398,59 @@ class __$$PinFailureImplCopyWithImpl<$Res>
       _$PinFailureImpl _value, $Res Function(_$PinFailureImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PinResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retries = null,
-    Object? authBlocked = null,
+    Object? reason = null,
   }) {
     return _then(_$PinFailureImpl(
-      null == retries
-          ? _value.retries
-          : retries // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == authBlocked
-          ? _value.authBlocked
-          : authBlocked // ignore: cast_nullable_to_non_nullable
-              as bool,
+      null == reason
+          ? _value.reason
+          : reason // ignore: cast_nullable_to_non_nullable
+              as FidoPinFailureReason,
     ));
+  }
+
+  /// Create a copy of PinResult
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $FidoPinFailureReasonCopyWith<$Res> get reason {
+    return $FidoPinFailureReasonCopyWith<$Res>(_value.reason, (value) {
+      return _then(_value.copyWith(reason: value));
+    });
   }
 }
 
 /// @nodoc
 
 class _$PinFailureImpl implements _PinFailure {
-  _$PinFailureImpl(this.retries, this.authBlocked);
+  _$PinFailureImpl(this.reason);
 
   @override
-  final int retries;
-  @override
-  final bool authBlocked;
+  final FidoPinFailureReason reason;
 
   @override
   String toString() {
-    return 'PinResult.failed(retries: $retries, authBlocked: $authBlocked)';
+    return 'PinResult.failed(reason: $reason)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PinFailureImpl &&
-            (identical(other.retries, retries) || other.retries == retries) &&
-            (identical(other.authBlocked, authBlocked) ||
-                other.authBlocked == authBlocked));
+            (identical(other.reason, reason) || other.reason == reason));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, retries, authBlocked);
+  int get hashCode => Object.hash(runtimeType, reason);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PinResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
@@ -414,29 +460,29 @@ class _$PinFailureImpl implements _PinFailure {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(int retries, bool authBlocked) failed,
+    required TResult Function(FidoPinFailureReason reason) failed,
   }) {
-    return failed(retries, authBlocked);
+    return failed(reason);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(int retries, bool authBlocked)? failed,
+    TResult? Function(FidoPinFailureReason reason)? failed,
   }) {
-    return failed?.call(retries, authBlocked);
+    return failed?.call(reason);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(int retries, bool authBlocked)? failed,
+    TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
   }) {
     if (failed != null) {
-      return failed(retries, authBlocked);
+      return failed(reason);
     }
     return orElse();
   }
@@ -474,14 +520,336 @@ class _$PinFailureImpl implements _PinFailure {
 }
 
 abstract class _PinFailure implements PinResult {
-  factory _PinFailure(final int retries, final bool authBlocked) =
-      _$PinFailureImpl;
+  factory _PinFailure(final FidoPinFailureReason reason) = _$PinFailureImpl;
+
+  FidoPinFailureReason get reason;
+
+  /// Create a copy of PinResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$FidoPinFailureReason {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int retries, bool authBlocked) invalidPin,
+    required TResult Function() weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int retries, bool authBlocked)? invalidPin,
+    TResult? Function()? weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int retries, bool authBlocked)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FidoInvalidPin value) invalidPin,
+    required TResult Function(FidoWeakPin value) weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FidoInvalidPin value)? invalidPin,
+    TResult? Function(FidoWeakPin value)? weakPin,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FidoInvalidPin value)? invalidPin,
+    TResult Function(FidoWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $FidoPinFailureReasonCopyWith<$Res> {
+  factory $FidoPinFailureReasonCopyWith(FidoPinFailureReason value,
+          $Res Function(FidoPinFailureReason) then) =
+      _$FidoPinFailureReasonCopyWithImpl<$Res, FidoPinFailureReason>;
+}
+
+/// @nodoc
+class _$FidoPinFailureReasonCopyWithImpl<$Res,
+        $Val extends FidoPinFailureReason>
+    implements $FidoPinFailureReasonCopyWith<$Res> {
+  _$FidoPinFailureReasonCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of FidoPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$FidoInvalidPinImplCopyWith<$Res> {
+  factory _$$FidoInvalidPinImplCopyWith(_$FidoInvalidPinImpl value,
+          $Res Function(_$FidoInvalidPinImpl) then) =
+      __$$FidoInvalidPinImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int retries, bool authBlocked});
+}
+
+/// @nodoc
+class __$$FidoInvalidPinImplCopyWithImpl<$Res>
+    extends _$FidoPinFailureReasonCopyWithImpl<$Res, _$FidoInvalidPinImpl>
+    implements _$$FidoInvalidPinImplCopyWith<$Res> {
+  __$$FidoInvalidPinImplCopyWithImpl(
+      _$FidoInvalidPinImpl _value, $Res Function(_$FidoInvalidPinImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of FidoPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? retries = null,
+    Object? authBlocked = null,
+  }) {
+    return _then(_$FidoInvalidPinImpl(
+      null == retries
+          ? _value.retries
+          : retries // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == authBlocked
+          ? _value.authBlocked
+          : authBlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$FidoInvalidPinImpl implements FidoInvalidPin {
+  _$FidoInvalidPinImpl(this.retries, this.authBlocked);
+
+  @override
+  final int retries;
+  @override
+  final bool authBlocked;
+
+  @override
+  String toString() {
+    return 'FidoPinFailureReason.invalidPin(retries: $retries, authBlocked: $authBlocked)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FidoInvalidPinImpl &&
+            (identical(other.retries, retries) || other.retries == retries) &&
+            (identical(other.authBlocked, authBlocked) ||
+                other.authBlocked == authBlocked));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, retries, authBlocked);
+
+  /// Create a copy of FidoPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FidoInvalidPinImplCopyWith<_$FidoInvalidPinImpl> get copyWith =>
+      __$$FidoInvalidPinImplCopyWithImpl<_$FidoInvalidPinImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int retries, bool authBlocked) invalidPin,
+    required TResult Function() weakPin,
+  }) {
+    return invalidPin(retries, authBlocked);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int retries, bool authBlocked)? invalidPin,
+    TResult? Function()? weakPin,
+  }) {
+    return invalidPin?.call(retries, authBlocked);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int retries, bool authBlocked)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) {
+    if (invalidPin != null) {
+      return invalidPin(retries, authBlocked);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FidoInvalidPin value) invalidPin,
+    required TResult Function(FidoWeakPin value) weakPin,
+  }) {
+    return invalidPin(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FidoInvalidPin value)? invalidPin,
+    TResult? Function(FidoWeakPin value)? weakPin,
+  }) {
+    return invalidPin?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FidoInvalidPin value)? invalidPin,
+    TResult Function(FidoWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) {
+    if (invalidPin != null) {
+      return invalidPin(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class FidoInvalidPin implements FidoPinFailureReason {
+  factory FidoInvalidPin(final int retries, final bool authBlocked) =
+      _$FidoInvalidPinImpl;
 
   int get retries;
   bool get authBlocked;
-  @JsonKey(ignore: true)
-  _$$PinFailureImplCopyWith<_$PinFailureImpl> get copyWith =>
+
+  /// Create a copy of FidoPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FidoInvalidPinImplCopyWith<_$FidoInvalidPinImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$FidoWeakPinImplCopyWith<$Res> {
+  factory _$$FidoWeakPinImplCopyWith(
+          _$FidoWeakPinImpl value, $Res Function(_$FidoWeakPinImpl) then) =
+      __$$FidoWeakPinImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$FidoWeakPinImplCopyWithImpl<$Res>
+    extends _$FidoPinFailureReasonCopyWithImpl<$Res, _$FidoWeakPinImpl>
+    implements _$$FidoWeakPinImplCopyWith<$Res> {
+  __$$FidoWeakPinImplCopyWithImpl(
+      _$FidoWeakPinImpl _value, $Res Function(_$FidoWeakPinImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of FidoPinFailureReason
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$FidoWeakPinImpl implements FidoWeakPin {
+  const _$FidoWeakPinImpl();
+
+  @override
+  String toString() {
+    return 'FidoPinFailureReason.weakPin()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$FidoWeakPinImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int retries, bool authBlocked) invalidPin,
+    required TResult Function() weakPin,
+  }) {
+    return weakPin();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int retries, bool authBlocked)? invalidPin,
+    TResult? Function()? weakPin,
+  }) {
+    return weakPin?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int retries, bool authBlocked)? invalidPin,
+    TResult Function()? weakPin,
+    required TResult orElse(),
+  }) {
+    if (weakPin != null) {
+      return weakPin();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FidoInvalidPin value) invalidPin,
+    required TResult Function(FidoWeakPin value) weakPin,
+  }) {
+    return weakPin(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FidoInvalidPin value)? invalidPin,
+    TResult? Function(FidoWeakPin value)? weakPin,
+  }) {
+    return weakPin?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FidoInvalidPin value)? invalidPin,
+    TResult Function(FidoWeakPin value)? weakPin,
+    required TResult orElse(),
+  }) {
+    if (weakPin != null) {
+      return weakPin(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class FidoWeakPin implements FidoPinFailureReason {
+  const factory FidoWeakPin() = _$FidoWeakPinImpl;
 }
 
 Fingerprint _$FingerprintFromJson(Map<String, dynamic> json) {
@@ -493,8 +861,12 @@ mixin _$Fingerprint {
   String get templateId => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
 
+  /// Serializes this Fingerprint to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Fingerprint
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $FingerprintCopyWith<Fingerprint> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -518,6 +890,8 @@ class _$FingerprintCopyWithImpl<$Res, $Val extends Fingerprint>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Fingerprint
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -556,6 +930,8 @@ class __$$FingerprintImplCopyWithImpl<$Res>
       _$FingerprintImpl _value, $Res Function(_$FingerprintImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Fingerprint
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -594,7 +970,7 @@ class _$FingerprintImpl extends _Fingerprint {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FingerprintImpl &&
@@ -603,11 +979,13 @@ class _$FingerprintImpl extends _Fingerprint {
             (identical(other.name, name) || other.name == name));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, templateId, name);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Fingerprint
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$FingerprintImplCopyWith<_$FingerprintImpl> get copyWith =>
@@ -633,8 +1011,11 @@ abstract class _Fingerprint extends Fingerprint {
   String get templateId;
   @override
   String? get name;
+
+  /// Create a copy of Fingerprint
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FingerprintImplCopyWith<_$FingerprintImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -703,6 +1084,9 @@ class _$FingerprintEventCopyWithImpl<$Res, $Val extends FingerprintEvent>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -722,6 +1106,8 @@ class __$$EventCaptureImplCopyWithImpl<$Res>
       _$EventCaptureImpl _value, $Res Function(_$EventCaptureImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -750,7 +1136,7 @@ class _$EventCaptureImpl implements _EventCapture {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventCaptureImpl &&
@@ -761,7 +1147,9 @@ class _$EventCaptureImpl implements _EventCapture {
   @override
   int get hashCode => Object.hash(runtimeType, remaining);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$EventCaptureImplCopyWith<_$EventCaptureImpl> get copyWith =>
@@ -840,7 +1228,10 @@ abstract class _EventCapture implements FingerprintEvent {
   factory _EventCapture(final int remaining) = _$EventCaptureImpl;
 
   int get remaining;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EventCaptureImplCopyWith<_$EventCaptureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -864,6 +1255,8 @@ class __$$EventCompleteImplCopyWithImpl<$Res>
       _$EventCompleteImpl _value, $Res Function(_$EventCompleteImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -877,6 +1270,8 @@ class __$$EventCompleteImplCopyWithImpl<$Res>
     ));
   }
 
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $FingerprintCopyWith<$Res> get fingerprint {
@@ -900,7 +1295,7 @@ class _$EventCompleteImpl implements _EventComplete {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventCompleteImpl &&
@@ -911,7 +1306,9 @@ class _$EventCompleteImpl implements _EventComplete {
   @override
   int get hashCode => Object.hash(runtimeType, fingerprint);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$EventCompleteImplCopyWith<_$EventCompleteImpl> get copyWith =>
@@ -990,7 +1387,10 @@ abstract class _EventComplete implements FingerprintEvent {
   factory _EventComplete(final Fingerprint fingerprint) = _$EventCompleteImpl;
 
   Fingerprint get fingerprint;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EventCompleteImplCopyWith<_$EventCompleteImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1012,6 +1412,8 @@ class __$$EventErrorImplCopyWithImpl<$Res>
       _$EventErrorImpl _value, $Res Function(_$EventErrorImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1040,7 +1442,7 @@ class _$EventErrorImpl implements _EventError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventErrorImpl &&
@@ -1050,7 +1452,9 @@ class _$EventErrorImpl implements _EventError {
   @override
   int get hashCode => Object.hash(runtimeType, code);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$EventErrorImplCopyWith<_$EventErrorImpl> get copyWith =>
@@ -1129,7 +1533,10 @@ abstract class _EventError implements FingerprintEvent {
   factory _EventError(final int code) = _$EventErrorImpl;
 
   int get code;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FingerprintEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EventErrorImplCopyWith<_$EventErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1144,9 +1551,14 @@ mixin _$FidoCredential {
   String get credentialId => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
+  String? get displayName => throw _privateConstructorUsedError;
 
+  /// Serializes this FidoCredential to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FidoCredential
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $FidoCredentialCopyWith<FidoCredential> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1157,7 +1569,12 @@ abstract class $FidoCredentialCopyWith<$Res> {
           FidoCredential value, $Res Function(FidoCredential) then) =
       _$FidoCredentialCopyWithImpl<$Res, FidoCredential>;
   @useResult
-  $Res call({String rpId, String credentialId, String userId, String userName});
+  $Res call(
+      {String rpId,
+      String credentialId,
+      String userId,
+      String userName,
+      String? displayName});
 }
 
 /// @nodoc
@@ -1170,6 +1587,8 @@ class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of FidoCredential
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1177,6 +1596,7 @@ class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
     Object? credentialId = null,
     Object? userId = null,
     Object? userName = null,
+    Object? displayName = freezed,
   }) {
     return _then(_value.copyWith(
       rpId: null == rpId
@@ -1195,6 +1615,10 @@ class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
+      displayName: freezed == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -1207,7 +1631,12 @@ abstract class _$$FidoCredentialImplCopyWith<$Res>
       __$$FidoCredentialImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String rpId, String credentialId, String userId, String userName});
+  $Res call(
+      {String rpId,
+      String credentialId,
+      String userId,
+      String userName,
+      String? displayName});
 }
 
 /// @nodoc
@@ -1218,6 +1647,8 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
       _$FidoCredentialImpl _value, $Res Function(_$FidoCredentialImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FidoCredential
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1225,6 +1656,7 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
     Object? credentialId = null,
     Object? userId = null,
     Object? userName = null,
+    Object? displayName = freezed,
   }) {
     return _then(_$FidoCredentialImpl(
       rpId: null == rpId
@@ -1243,6 +1675,10 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
+      displayName: freezed == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -1254,7 +1690,8 @@ class _$FidoCredentialImpl implements _FidoCredential {
       {required this.rpId,
       required this.credentialId,
       required this.userId,
-      required this.userName});
+      required this.userName,
+      this.displayName});
 
   factory _$FidoCredentialImpl.fromJson(Map<String, dynamic> json) =>
       _$$FidoCredentialImplFromJson(json);
@@ -1267,14 +1704,16 @@ class _$FidoCredentialImpl implements _FidoCredential {
   final String userId;
   @override
   final String userName;
+  @override
+  final String? displayName;
 
   @override
   String toString() {
-    return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userId: $userId, userName: $userName)';
+    return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userId: $userId, userName: $userName, displayName: $displayName)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FidoCredentialImpl &&
@@ -1283,15 +1722,19 @@ class _$FidoCredentialImpl implements _FidoCredential {
                 other.credentialId == credentialId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.userName, userName) ||
-                other.userName == userName));
+                other.userName == userName) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, rpId, credentialId, userId, userName);
+  int get hashCode => Object.hash(
+      runtimeType, rpId, credentialId, userId, userName, displayName);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FidoCredential
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$FidoCredentialImplCopyWith<_$FidoCredentialImpl> get copyWith =>
@@ -1311,7 +1754,8 @@ abstract class _FidoCredential implements FidoCredential {
       {required final String rpId,
       required final String credentialId,
       required final String userId,
-      required final String userName}) = _$FidoCredentialImpl;
+      required final String userName,
+      final String? displayName}) = _$FidoCredentialImpl;
 
   factory _FidoCredential.fromJson(Map<String, dynamic> json) =
       _$FidoCredentialImpl.fromJson;
@@ -1325,7 +1769,12 @@ abstract class _FidoCredential implements FidoCredential {
   @override
   String get userName;
   @override
-  @JsonKey(ignore: true)
+  String? get displayName;
+
+  /// Create a copy of FidoCredential
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FidoCredentialImplCopyWith<_$FidoCredentialImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

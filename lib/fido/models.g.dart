@@ -10,12 +10,14 @@ _$FidoStateImpl _$$FidoStateImplFromJson(Map<String, dynamic> json) =>
     _$FidoStateImpl(
       info: json['info'] as Map<String, dynamic>,
       unlocked: json['unlocked'] as bool,
+      pinRetries: (json['pin_retries'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$FidoStateImplToJson(_$FidoStateImpl instance) =>
     <String, dynamic>{
       'info': instance.info,
       'unlocked': instance.unlocked,
+      'pin_retries': instance.pinRetries,
     };
 
 _$FingerprintImpl _$$FingerprintImplFromJson(Map<String, dynamic> json) =>
@@ -36,6 +38,7 @@ _$FidoCredentialImpl _$$FidoCredentialImplFromJson(Map<String, dynamic> json) =>
       credentialId: json['credential_id'] as String,
       userId: json['user_id'] as String,
       userName: json['user_name'] as String,
+      displayName: json['display_name'] as String?,
     );
 
 Map<String, dynamic> _$$FidoCredentialImplToJson(
@@ -45,4 +48,5 @@ Map<String, dynamic> _$$FidoCredentialImplToJson(
       'credential_id': instance.credentialId,
       'user_id': instance.userId,
       'user_name': instance.userName,
+      'display_name': instance.displayName,
     };

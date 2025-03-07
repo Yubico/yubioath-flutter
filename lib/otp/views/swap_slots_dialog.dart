@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,16 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/basic_dialog.dart';
+import '../keys.dart';
 import '../state.dart';
 
 class SwapSlotsDialog extends ConsumerWidget {
@@ -30,33 +33,37 @@ class SwapSlotsDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return ResponsiveDialog(
-      title: Text(l10n.s_swap_slots),
+    final l10n = AppLocalizations.of(context);
+    return BasicDialog(
+      icon: Icon(Symbols.swap_vert),
+      title: Text(l10n.q_swap_slots),
       actions: [
         TextButton(
+            key: swapButton,
             onPressed: () async {
-              await ref.read(otpStateProvider(devicePath).notifier).swapSlots();
-              await ref.read(withContextProvider)((context) async {
-                Navigator.of(context).pop();
-                showMessage(context, l10n.l_slots_swapped);
-              });
+              try {
+                await ref
+                    .read(otpStateProvider(devicePath).notifier)
+                    .swapSlots();
+                await ref.read(withContextProvider)((context) async {
+                  Navigator.of(context).pop();
+                  showMessage(context, l10n.l_slots_swapped);
+                });
+              } catch (e) {
+                await ref.read(withContextProvider)((context) async {
+                  Navigator.of(context).pop();
+                  showMessage(context, l10n.p_otp_swap_error);
+                });
+              }
             },
             child: Text(l10n.s_swap))
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_swap_slots_desc),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
+      content: Text(
+        l10n.p_swap_slots_desc,
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }

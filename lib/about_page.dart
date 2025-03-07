@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import 'android/state.dart';
 import 'app/app_url_launcher.dart';
@@ -30,6 +30,7 @@ import 'app/state.dart';
 import 'app/views/keys.dart';
 import 'core/state.dart';
 import 'desktop/state.dart';
+import 'generated/l10n/app_localizations.dart';
 import 'version.dart';
 import 'widgets/choice_filter_chip.dart';
 import 'widgets/responsive_dialog.dart';
@@ -41,10 +42,10 @@ class AboutPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return ResponsiveDialog(
       title: Text(l10n.s_about),
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -117,25 +118,21 @@ class AboutPage extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextButton(
+                  onPressed: launchDocumentationUrl,
                   child: Text(
-                    key: feedbackButton,
-                    l10n.s_send_feedback,
+                    key: userGuideButton,
+                    l10n.s_user_guide,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
-                  onPressed: () {
-                    launchFeedbackUrl();
-                  },
                 ),
                 TextButton(
+                  onPressed: launchHelpUrl,
                   child: Text(
                     l10n.s_i_need_help,
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                   ),
-                  onPressed: () {
-                    launchHelpUrl();
-                  },
                 ),
               ],
             ),
@@ -157,8 +154,7 @@ class AboutPage extends ConsumerWidget {
               const SizedBox(height: 12.0),
               ActionChip(
                 key: diagnosticsChip,
-                avatar: const Icon(Icons.bug_report_outlined),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                avatar: const Icon(Symbols.bug_report),
                 label: Text(l10n.s_run_diagnostics),
                 onPressed: () async {
                   _log.info('Running diagnostics...');
@@ -191,7 +187,6 @@ class AboutPage extends ConsumerWidget {
               FilterChip(
                 key: screenshotChip,
                 label: Text(l10n.s_allow_screenshots),
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                 selected: ref.watch(androidAllowScreenshotsProvider),
                 onSelected: (value) async {
                   ref
@@ -212,7 +207,7 @@ class LoggingPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     return Wrap(
       alignment: WrapAlignment.center,
@@ -221,7 +216,7 @@ class LoggingPanel extends ConsumerWidget {
       children: [
         ChoiceFilterChip<Level>(
           avatar: Icon(
-            Icons.insights,
+            Symbols.insights,
             color: Theme.of(context).colorScheme.primary,
           ),
           value: logLevel,
@@ -238,8 +233,7 @@ class LoggingPanel extends ConsumerWidget {
         ),
         ActionChip(
           key: logChip,
-          avatar: const Icon(Icons.copy),
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          avatar: const Icon(Symbols.content_copy),
           label: Text(l10n.s_copy_log),
           onPressed: () async {
             _log.info('Copying log to clipboard ($version)...');

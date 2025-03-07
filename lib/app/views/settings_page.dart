@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
 import '../../android/views/settings_views.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../icon_provider/icon_pack_dialog.dart';
+import '../l10n_utils.dart';
 import '../state.dart';
 import 'keys.dart' as keys;
 
@@ -36,6 +39,19 @@ extension on ThemeMode {
       };
 }
 
+extension on Locale {
+  String getDisplayName(AppLocalizations l10n) => switch (languageCode) {
+        'en' => l10n.s_english,
+        'de' => l10n.s_german,
+        'fr' => l10n.s_french,
+        'ja' => l10n.s_japanese,
+        'pl' => l10n.s_polish,
+        'sk' => l10n.s_slovak,
+        'vi' => l10n.s_vietnamese,
+        _ => languageCode
+      };
+}
+
 class _ThemeModeView extends ConsumerWidget {
   const _ThemeModeView();
 
@@ -44,7 +60,7 @@ class _ThemeModeView extends ConsumerWidget {
       await showDialog<ThemeMode>(
           context: context,
           builder: (BuildContext context) {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             return SimpleDialog(
               title: Text(l10n.s_choose_app_theme),
               children: supportedThemes
@@ -65,7 +81,7 @@ class _ThemeModeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     return ListTile(
       title: Text(l10n.s_app_theme),
@@ -80,23 +96,208 @@ class _ThemeModeView extends ConsumerWidget {
   }
 }
 
-class _CommunityTranslationsView extends ConsumerWidget {
-  const _CommunityTranslationsView();
+class _LanguageView extends ConsumerWidget {
+  const _LanguageView();
+
+  // TODO: create shortURL for this
+  Uri get _crowdinUri =>
+      Uri.parse('https://crowdin.com/project/yubico-authenticator');
+
+  Future<Locale> _selectLocale(
+    BuildContext context,
+    List<Locale> supportedLocales,
+    Locale currentLocale,
+  ) async =>
+      await showDialog<Locale>(
+          context: context,
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            final theme = Theme.of(context);
+            final textTheme = theme.textTheme;
+            final colorScheme = theme.colorScheme;
+            // Sort locales alphabetically
+            supportedLocales.sort((a, b) =>
+                a.getDisplayName(l10n).compareTo(b.getDisplayName(l10n)));
+            return SimpleDialog(
+              title: Text(l10n.s_choose_language),
+              children: [
+                ...supportedLocales.map(
+                  (e) => RadioListTile(
+                    title: Text(e.getDisplayName(l10n)),
+                    value: e,
+                    groupValue: currentLocale,
+                    toggleable: true,
+                    onChanged: (value) {
+                      Navigator.pop(context, e);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8.0),
+                  child: injectLinksInText(
+                    // We don't want to translate 'Crowdin'
+                    l10n.p_community_translations_desc('Crowdin'),
+                    {'Crowdin': _crowdinUri},
+                    textStyle: textTheme.labelSmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                    linkStyle: textTheme.labelSmall
+                        ?.copyWith(color: colorScheme.primary),
+                  ),
+                )
+              ],
+            );
+          }) ??
+      currentLocale;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final enableTranslations = ref.watch(communityTranslationsProvider);
-    return SwitchListTile(
-        title: Text(l10n.l_enable_community_translations),
-        subtitle: Text(l10n.p_community_translations_desc),
-        isThreeLine: true,
-        value: enableTranslations,
-        onChanged: (value) {
-          ref
-              .read(communityTranslationsProvider.notifier)
-              .setEnableCommunityTranslations(value);
-        });
+    final l10n = AppLocalizations.of(context);
+    final currentLocale = ref.watch(currentLocaleProvider);
+    return ListTile(
+      title: Text(l10n.s_language),
+      subtitle: Text(currentLocale.getDisplayName(l10n)),
+      key: keys.languageSetting,
+      onTap: () async {
+        final newLocale = await _selectLocale(
+            context, ref.read(supportedLocalesProvider), currentLocale);
+        if (newLocale != currentLocale) {
+          ref.read(currentLocaleProvider.notifier).setLocale(newLocale);
+        }
+      },
+    );
+  }
+}
+
+class _IconsView extends ConsumerWidget {
+  const _IconsView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return ListTile(
+      title: Text(l10n.s_custom_icons),
+      subtitle: Text(l10n.l_set_icons_for_accounts),
+      key: keys.customIconSetting,
+      onTap: () {
+        showDialog(
+          // Avoid duplicate SafeAreas
+          // IconPackDialog is wrapped with ResponsiveDialog
+          // which wraps the content with SafeArea in full-screen mode
+          useSafeArea: false,
+          context: context,
+          routeSettings: const RouteSettings(name: 'icon_pack_dialog'),
+          builder: (context) => const IconPackDialog(),
+        );
+      },
+    );
+  }
+}
+
+class _ToggleReadersDialog extends ConsumerWidget {
+  const _ToggleReadersDialog();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    final hidden = ref.watch(hiddenDevicesProvider);
+    final nfcDevices = ref
+        .watch(attachedDevicesProvider)
+        .where((e) => e.transport == Transport.nfc);
+    if (nfcDevices.isEmpty) {
+      // Pop dialog if no NFC devices
+      Navigator.of(context).pop();
+    }
+    return ResponsiveDialog(
+      title: Text(l10n.s_toggle_readers),
+      dialogMaxWidth: 500,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.l_toggle_readers_desc),
+            const SizedBox(height: 8.0),
+            ...nfcDevices.map(
+              (e) => Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Symbols.contactless,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 12.0),
+                        Flexible(
+                          child: Text(
+                            e.name,
+                            style: textTheme.bodyMedium
+                                ?.copyWith(color: colorScheme.onSurfaceVariant),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12.0,
+                        )
+                      ],
+                    ),
+                  ),
+                  Switch(
+                    value: !hidden.contains(e.path.key),
+                    onChanged: (show) {
+                      if (!show) {
+                        ref
+                            .read(hiddenDevicesProvider.notifier)
+                            .hideDevice(e.path);
+                      } else {
+                        ref
+                            .read(hiddenDevicesProvider.notifier)
+                            .showDevice(e.path);
+                      }
+                    },
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleReadersView extends ConsumerWidget {
+  const _ToggleReadersView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final nfcDevices = ref
+        .watch(attachedDevicesProvider)
+        .where((e) => e.transport == Transport.nfc);
+
+    return ListTile(
+      title: Text(l10n.s_toggle_readers),
+      subtitle: Text(l10n.l_toggle_readers_desc),
+      key: keys.toggleDevicesSetting,
+      enabled: nfcDevices.isNotEmpty,
+      onTap: () {
+        showDialog(
+          context: context,
+          routeSettings: const RouteSettings(name: 'toggle_readers_dialog'),
+          builder: (context) => _ToggleReadersDialog(),
+        );
+      },
+    );
   }
 }
 
@@ -105,12 +306,11 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final enableTranslations = ref.watch(communityTranslationsProvider);
+    final l10n = AppLocalizations.of(context);
 
     return ResponsiveDialog(
       title: Text(l10n.s_settings),
-      child: Column(
+      builder: (context, _) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -128,14 +328,10 @@ class SettingsPage extends ConsumerWidget {
           ],
           ListTitle(l10n.s_appearance),
           const _ThemeModeView(),
-          if (enableTranslations ||
-              basicLocaleListResolution(
-                      PlatformDispatcher.instance.locales, officialLocales) !=
-                  basicLocaleListResolution(PlatformDispatcher.instance.locales,
-                      AppLocalizations.supportedLocales)) ...[
-            ListTitle(l10n.s_language),
-            const _CommunityTranslationsView(),
-          ],
+          const _IconsView(),
+          ListTitle(l10n.s_options),
+          if (!isAndroid) const _ToggleReadersView(),
+          const _LanguageView()
         ],
       ),
     );

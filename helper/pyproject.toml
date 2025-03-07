@@ -1,28 +1,30 @@
-[tool.poetry]
+[project]
 name = "authenticator-helper"
 version = "0.1.0"
 description = "Yubico Authenticator Helper"
-authors = ["Dain Nilsson <dain@yubico.com>"]
-packages = [
-  { include = "helper" },
+authors = [{ name = "Dain Nilsson", email = "dain@yubico.com" }]
+requires-python = ">=3.10, <4"
+dependencies = [
+  "yubikey-manager (>=5.5, <6)",
+  "mss (>=9.0.1, <10)",
+  "Pillow (>=10.2.0, <11)",
+  "zxing-cpp (>=2.2.0, <3)",
 ]
 
 
-[tool.poetry.dependencies]
-python = "^3.8"
-yubikey-manager = "^5.2"
-mss = "^9.0.1"
-Pillow = "^10.0.0"
-zxing-cpp = "^2.2.0"
+[tool.poetry]
+requires-poetry = ">=2.0"
+packages = [{ include = "helper" }]
 
-[tool.poetry.dev-dependencies]
-pyinstaller = {version = "^6.0", python = "<3.13"}
-pytest = "^7.4.0"
+
+[tool.poetry.group.dev.dependencies]
+pyinstaller = { version = "^6.10", python = "<3.14" }
+pytest = "^8.0.0"
 mypy = "^1.7.1"
-types-Pillow = "^10.0.0.0"
+types-Pillow = "^10.2.0.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]

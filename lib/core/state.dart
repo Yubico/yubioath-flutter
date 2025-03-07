@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
+import '../widgets/flex_box.dart';
 
-bool get isDesktop {
-  return const [
-    TargetPlatform.windows,
-    TargetPlatform.macOS,
-    TargetPlatform.linux
-  ].contains(defaultTargetPlatform);
-}
+bool get isDesktop => const [
+      TargetPlatform.windows,
+      TargetPlatform.macOS,
+      TargetPlatform.linux
+    ].contains(defaultTargetPlatform);
 
-bool get isAndroid {
-  return defaultTargetPlatform == TargetPlatform.android;
-}
+bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
+
+bool get isMicrosoftStore =>
+    Platform.isWindows &&
+    Platform.resolvedExecutable.contains('\\WindowsApps\\');
 
 // This must be initialized before use, in main.dart.
 final prefProvider = Provider<SharedPreferences>((ref) {
@@ -100,6 +103,10 @@ class FeatureFlagsNotifier extends StateNotifier<Map<String, bool>> {
     const falsey = [0, false, null];
     state = {for (final k in config.keys) k: !falsey.contains(config[k])};
   }
+
+  void setFeature(Feature feature, dynamic value) {
+    state = {...state, feature.path: value};
+  }
 }
 
 final featureProvider = Provider<FeatureProvider>((ref) {
@@ -113,3 +120,20 @@ final featureProvider = Provider<FeatureProvider>((ref) {
 
   return isEnabled;
 });
+
+class LayoutNotifier extends StateNotifier<FlexLayout> {
+  final String _key;
+  final SharedPreferences _prefs;
+  LayoutNotifier(this._key, this._prefs)
+      : super(_fromName(_prefs.getString(_key)));
+
+  void setLayout(FlexLayout layout) {
+    state = layout;
+    _prefs.setString(_key, layout.name);
+  }
+
+  static FlexLayout _fromName(String? name) => FlexLayout.values.firstWhere(
+        (element) => element.name == name,
+        orElse: () => FlexLayout.list,
+      );
+}

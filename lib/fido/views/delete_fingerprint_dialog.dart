@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,30 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../widgets/responsive_dialog.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/basic_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 
 class DeleteFingerprintDialog extends ConsumerWidget {
   final DevicePath devicePath;
   final Fingerprint fingerprint;
+
   const DeleteFingerprintDialog(this.devicePath, this.fingerprint, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final label = fingerprint.label;
+    final l10n = AppLocalizations.of(context);
 
-    return ResponsiveDialog(
-      title: Text(l10n.s_delete_fingerprint),
+    return BasicDialog(
+      icon: Icon(Symbols.delete),
+      title: Text(l10n.q_delete_fingerprint),
       actions: [
         TextButton(
           onPressed: () async {
@@ -51,21 +53,7 @@ class DeleteFingerprintDialog extends ConsumerWidget {
           child: Text(l10n.s_delete),
         ),
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_warning_delete_fingerprint),
-            Text(l10n.l_fingerprint(label)),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
-      ),
+      content: Text(l10n.p_warning_delete_fingerprint),
     );
   }
 }

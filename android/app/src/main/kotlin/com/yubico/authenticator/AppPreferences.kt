@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,8 @@ class AppPreferences(context: Context) {
         const val PREF_USB_OPEN_APP = "flutter.prefUsbOpenApp"
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
+        const val PREF_APP_LOCALE = "flutter.APP_LOCALE"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
-
-        const val PREF_ENABLE_COMMUNITY_TRANSLATIONS =
-            "flutter.APP_STATE_ENABLE_COMMUNITY_TRANSLATIONS"
     }
 
     private val logger = LoggerFactory.getLogger(AppPreferences::class.java)
@@ -69,8 +67,8 @@ class AppPreferences(context: Context) {
     val openAppOnUsb: Boolean
         get() = prefs.getBoolean(PREF_USB_OPEN_APP, false)
 
-    val communityTranslationsEnabled: Boolean
-        get() = prefs.getBoolean(PREF_ENABLE_COMMUNITY_TRANSLATIONS, false)
+    val appLocale: String
+        get() = prefs.getString(PREF_APP_LOCALE, "en")!!
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
         logger.debug("registering change listener")

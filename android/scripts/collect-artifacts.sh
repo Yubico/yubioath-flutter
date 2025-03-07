@@ -7,7 +7,7 @@ fi
 
 export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3,4,5,6,7 | sed -r 's/\//_/g')
 export FLUTTER_APK=build/app/outputs/flutter-apk
-export NATIVE_LIBS=build/app/intermediates/merged_native_libs/release/out/lib
+export NATIVE_LIBS=build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
 
 rm -rf artifacts
 mkdir artifacts

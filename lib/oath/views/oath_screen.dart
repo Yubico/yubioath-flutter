@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -29,13 +30,18 @@ import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_page.dart';
+import '../../app/views/keys.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
-import '../../widgets/app_text_form_field.dart';
+import '../../widgets/app_text_field.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -44,10 +50,22 @@ import 'account_dialog.dart';
 import 'account_helper.dart';
 import 'account_list.dart';
 import 'actions.dart';
-import 'add_account_dialog.dart';
 import 'key_actions.dart';
 import 'unlock_form.dart';
 import 'utils.dart';
+
+extension on OathLayout {
+  IconData get _icon => switch (this) {
+        OathLayout.list => Symbols.list,
+        OathLayout.grid => Symbols.grid_view,
+        OathLayout.mixed => Symbols.vertical_split
+      };
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+        OathLayout.list => l10n.s_list_layout,
+        OathLayout.grid => l10n.s_grid_layout,
+        OathLayout.mixed => l10n.s_mixed_layout
+      };
+}
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
@@ -56,19 +74,26 @@ class OathScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return ref.watch(oathStateProvider(devicePath)).when(
-          loading: () => const MessagePage(
-            centered: true,
-            graphic: CircularProgressIndicator(),
-            delayedContent: true,
-          ),
-          error: (error, _) => AppFailurePage(
-            cause: error,
-          ),
-          data: (oathState) => oathState.locked
-              ? _LockedView(devicePath, oathState)
-              : _UnlockedView(devicePath, oathState),
-        );
+        loading: () => MessagePage(
+              title: AppLocalizations.of(context).s_accounts,
+              capabilities: const [Capability.oath],
+              centered: true,
+              graphic: const CircularProgressIndicator(),
+              delayedContent: true,
+            ),
+        error: (error, _) => error is NoDataException
+            ? MessagePageNotInitialized(
+                title: l10n.s_accounts,
+                capabilities: const [Capability.oath],
+              )
+            : AppFailurePage(
+                cause: error,
+              ),
+        data: (oathState) => oathState.locked
+            ? _LockedView(devicePath, oathState)
+            : _UnlockedView(devicePath, oathState));
   }
 }
 
@@ -82,7 +107,7 @@ class _LockedView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
-      title: AppLocalizations.of(context)!.s_accounts,
+      title: AppLocalizations.of(context).s_accounts,
       capabilities: const [Capability.oath],
       keyActionsBuilder: hasActions
           ? (context) => oathBuildActions(context, devicePath, oathState, ref)
@@ -112,12 +137,14 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
   OathCredential? _selected;
+  bool _canRequestFocus = true;
 
   @override
   void initState() {
     super.initState();
     searchFocus = FocusNode();
-    searchController = TextEditingController(text: ref.read(searchProvider));
+    searchController =
+        TextEditingController(text: ref.read(accountsSearchProvider));
     searchFocus.addListener(_onFocusChange);
   }
 
@@ -128,19 +155,37 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     super.dispose();
   }
 
+  void _scrollSearchField() {
+    // Ensures the search field is fully visible when in focus
+    final headerSliverContext = headerSliverGlobalKey.currentContext;
+    if (searchFocus.hasFocus && headerSliverContext != null) {
+      final scrollable = Scrollable.of(headerSliverContext);
+      if (scrollable.deltaToScrollOrigin.dy > 0) {
+        scrollable.position.animateTo(
+          0,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.ease,
+        );
+      }
+    }
+  }
+
   void _onFocusChange() {
+    _scrollSearchField();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     // ONLY rebuild if the number of credentials changes.
     final numCreds = ref.watch(credentialListProvider(widget.devicePath)
         .select((value) => value?.length));
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
-
+    final searchText = searchController.text;
+    final deviceInfo =
+        ref.watch(currentDeviceDataProvider.select((s) => s.valueOrNull?.info));
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
@@ -159,22 +204,36 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
-        actionsBuilder: (context, expanded) => [
-          if (!expanded)
-            ActionChip(
-              label: Text(l10n.s_add_account),
-              onPressed: () async {
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) => AddAccountDialog(
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
+        actionsBuilder: (context, expanded) {
+          final (fipsCapable, fipsApproved) =
+              deviceInfo?.getFipsStatus(Capability.oath) ?? (false, false);
+
+          return [
+            if (!expanded && (!fipsCapable || (fipsCapable && fipsApproved)))
+              ActionChip(
+                label: Text(l10n.s_add_account),
+                onPressed: () async {
+                  await addOathAccount(
+                    context,
+                    ref,
                     widget.devicePath,
                     widget.oathState,
-                  ),
-                );
-              },
-              avatar: const Icon(Icons.person_add_alt_1_outlined),
-            )
-        ],
+                  );
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              ),
+            if (!expanded && fipsCapable && !fipsApproved)
+              ActionChip(
+                label: Text(l10n.s_set_password),
+                onPressed: () async {
+                  await managePassword(
+                      context, ref, widget.devicePath, widget.oathState);
+                },
+                avatar: const Icon(Symbols.person_add_alt),
+              )
+          ];
+        },
         title: l10n.s_accounts,
         capabilities: const [Capability.oath],
         key: keys.noAccountsView,
@@ -195,8 +254,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == null) {
       return AppPage(
+        title: AppLocalizations.of(context).s_accounts,
+        capabilities: const [Capability.oath],
         centered: true,
         delayedContent: true,
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         builder: (context, _) => const CircularProgressIndicator(),
       );
     }
@@ -207,7 +269,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         SearchIntent: CallbackAction<SearchIntent>(onInvoke: (_) {
           searchController.selection = TextSelection(
               baseOffset: 0, extentOffset: searchController.text.length);
-          searchFocus.requestFocus();
+          searchFocus.unfocus();
+          Timer.run(() => searchFocus.requestFocus());
           return null;
         }),
         EscapeIntent: CallbackAction<EscapeIntent>(onInvoke: (intent) {
@@ -258,7 +321,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
       },
       builder: (context) => AppPage(
         title: l10n.s_accounts,
+        alternativeTitle:
+            searchText != '' ? l10n.l_results_for(searchText) : null,
         capabilities: const [Capability.oath],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
         keyActionsBuilder: hasActions
             ? (context) => oathBuildActions(
                   context,
@@ -287,50 +353,46 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                         elevation: 0.0,
                         color: Theme.of(context).hoverColor,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
                           child: Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    IconTheme(
-                                      data: IconTheme.of(context)
-                                          .copyWith(size: 24),
-                                      child: helper.buildCodeIcon(),
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    DefaultTextStyle.merge(
-                                      style: const TextStyle(fontSize: 28),
-                                      child: helper.buildCodeLabel(),
-                                    ),
-                                  ],
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconTheme(
+                                    data: IconTheme.of(context)
+                                        .copyWith(size: 24),
+                                    child: helper.buildCodeIcon(),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  DefaultTextStyle.merge(
+                                    style: const TextStyle(fontSize: 28),
+                                    child: helper.buildCodeLabel(),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                helper.title,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
+                              const SizedBox(height: 16),
+                              TooltipIfTruncated(
+                                text: helper.title,
+                                style: TextStyle(
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.fontSize),
                               ),
                               if (subtitle != null)
-                                Text(
-                                  subtitle,
-                                  softWrap: true,
-                                  textAlign: TextAlign.center,
+                                TooltipIfTruncated(
+                                  text: subtitle,
                                   // This is what ListTile uses for subtitle
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium!
                                       .copyWith(
                                         color: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .color,
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                 ),
                             ],
@@ -340,13 +402,198 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                     ),
                     ActionListSection.fromMenuActions(
                       context,
-                      AppLocalizations.of(context)!.s_actions,
+                      AppLocalizations.of(context).s_actions,
                       actions: helper.buildActions(),
                     ),
                   ],
                 );
               }
             : null,
+        headerSliver: Focus(
+          canRequestFocus: false,
+          onKeyEvent: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              node.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.escape) {
+              searchController.clear();
+              ref.read(accountsSearchProvider.notifier).setFilter('');
+              node.unfocus();
+              setState(() {});
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final textTheme = Theme.of(context).textTheme;
+            return Consumer(
+              builder: (context, ref, child) {
+                final credentials = ref.watch(filteredCredentialsProvider(
+                    ref.watch(credentialListProvider(widget.devicePath)) ??
+                        []));
+                final favorites = ref.watch(favoritesProvider);
+                final pinnedCreds = credentials
+                    .where((entry) => favorites.contains(entry.credential.id));
+
+                final availableLayouts = pinnedCreds.isEmpty ||
+                        pinnedCreds.length == credentials.length
+                    ? OathLayout.values
+                        .where((element) => element != OathLayout.mixed)
+                    : OathLayout.values;
+                final oathLayout = ref.watch(oathLayoutProvider);
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 8.0),
+                  child: AppTextField(
+                    key: searchField,
+                    controller: searchController,
+                    canRequestFocus: _canRequestFocus,
+                    focusNode: searchFocus,
+                    // Use the default style, but with a smaller font size:
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontSize: textTheme.titleSmall?.fontSize),
+                    decoration: AppInputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(48),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: searchFocus.hasFocus
+                              ? BorderStyle.solid
+                              : BorderStyle.none,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                      fillColor: Theme.of(context).hoverColor,
+                      filled: true,
+                      hintText: l10n.s_search_accounts,
+                      isDense: true,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsetsDirectional.only(start: 8.0),
+                        child: Icon(Icons.search_outlined),
+                      ),
+                      suffixIcons: [
+                        if (searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            iconSize: 16,
+                            onPressed: () {
+                              searchController.clear();
+                              ref
+                                  .read(accountsSearchProvider.notifier)
+                                  .setFilter('');
+                              setState(() {});
+                            },
+                          ),
+                        if (searchController.text.isEmpty) ...[
+                          if (width >= 450)
+                            ...availableLayouts.map(
+                              (e) => MouseRegion(
+                                onEnter: (event) {
+                                  if (!searchFocus.hasFocus) {
+                                    setState(() {
+                                      _canRequestFocus = false;
+                                    });
+                                  }
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    _canRequestFocus = true;
+                                  });
+                                },
+                                child: IconButton(
+                                  tooltip: e.getDisplayName(l10n),
+                                  onPressed: () {
+                                    ref
+                                        .read(oathLayoutProvider.notifier)
+                                        .setLayout(e);
+                                  },
+                                  icon: Icon(
+                                    e._icon,
+                                    color: e == oathLayout
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (width < 450)
+                            MouseRegion(
+                              onEnter: (event) {
+                                if (!searchFocus.hasFocus) {
+                                  setState(() {
+                                    _canRequestFocus = false;
+                                  });
+                                }
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  _canRequestFocus = true;
+                                });
+                              },
+                              child: PopupMenuButton(
+                                constraints: const BoxConstraints.tightFor(),
+                                tooltip: l10n.s_select_layout,
+                                popUpAnimationStyle:
+                                    AnimationStyle(duration: Duration.zero),
+                                icon: Icon(
+                                  oathLayout._icon,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                itemBuilder: (context) => [
+                                  ...availableLayouts.map(
+                                    (e) => PopupMenuItem(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Tooltip(
+                                            message: e.getDisplayName(l10n),
+                                            child: Icon(
+                                              e._icon,
+                                              color: e == oathLayout
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        ref
+                                            .read(oathLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                        ]
+                      ],
+                    ),
+
+                    onChanged: (value) {
+                      ref
+                          .read(accountsSearchProvider.notifier)
+                          .setFilter(value);
+                      _scrollSearchField();
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    onSubmitted: (value) {
+                      Focus.of(context)
+                          .focusInDirection(TraversalDirection.down);
+                    },
+                  ).init(),
+                );
+              },
+            );
+          }),
+        ),
         builder: (context, expanded) {
           // De-select if window is resized to be non-expanded.
           if (!expanded && _selected != null) {
@@ -370,73 +617,6 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
             },
             child: Column(
               children: [
-                Focus(
-                  canRequestFocus: false,
-                  onKeyEvent: (node, event) {
-                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                      node.focusInDirection(TraversalDirection.down);
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: Builder(builder: (context) {
-                    final textTheme = Theme.of(context).textTheme;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      child: AppTextFormField(
-                        key: keys.searchAccountsField,
-                        controller: searchController,
-                        focusNode: searchFocus,
-                        // Use the default style, but with a smaller font size:
-                        style: textTheme.titleMedium?.copyWith(
-                            fontSize: textTheme.titleSmall?.fontSize),
-                        decoration: AppInputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: searchFocus.hasFocus
-                                  ? BorderStyle.solid
-                                  : BorderStyle.none,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.all(16),
-                          fillColor: Theme.of(context).hoverColor,
-                          filled: true,
-                          hintText: l10n.s_search_accounts,
-                          isDense: true,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsetsDirectional.only(start: 8.0),
-                            child: Icon(Icons.search_outlined),
-                          ),
-                          suffixIcon: searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear),
-                                  iconSize: 16,
-                                  onPressed: () {
-                                    searchController.clear();
-                                    ref
-                                        .read(searchProvider.notifier)
-                                        .setFilter('');
-                                    setState(() {});
-                                  },
-                                )
-                              : null,
-                        ),
-                        onChanged: (value) {
-                          ref.read(searchProvider.notifier).setFilter(value);
-                          setState(() {});
-                        },
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (value) {
-                          Focus.of(context)
-                              .focusInDirection(TraversalDirection.down);
-                        },
-                      ),
-                    );
-                  }),
-                ),
                 Consumer(
                   builder: (context, ref, _) {
                     return AccountList(

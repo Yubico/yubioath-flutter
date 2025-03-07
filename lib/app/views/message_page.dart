@@ -26,6 +26,7 @@ class MessagePage extends StatelessWidget {
   final Widget? graphic;
   final String? header;
   final String? message;
+  final String? footnote;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
@@ -43,6 +44,7 @@ class MessagePage extends StatelessWidget {
     this.graphic,
     this.header,
     this.message,
+    this.footnote,
     this.keyActionsBuilder,
     this.actionButtonBuilder,
     this.actionsBuilder,
@@ -58,6 +60,7 @@ class MessagePage extends StatelessWidget {
   Widget build(BuildContext context) => AppPage(
         title: title,
         capabilities: capabilities,
+        footnote: footnote,
         centered: centered,
         keyActionsBuilder: keyActionsBuilder,
         keyActionsBadge: keyActionsBadge,
@@ -68,12 +71,12 @@ class MessagePage extends StatelessWidget {
         delayedContent: delayedContent,
         builder: (context, _) => Padding(
           padding: EdgeInsets.only(
-              left: 16.0,
+              left: 18.0,
               top: 0.0,
-              right: 16.0,
+              right: 18.0,
               bottom: centered && actionsBuilder == null ? 96 : 0),
           child: SizedBox(
-            width: centered ? 250 : 350,
+            width: 350,
             child: Column(
               crossAxisAlignment: centered
                   ? CrossAxisAlignment.center
@@ -90,7 +93,7 @@ class MessagePage extends StatelessWidget {
                 if (message != null) ...[
                   const SizedBox(height: 12.0),
                   Container(
-                    constraints: const BoxConstraints(maxWidth: 300),
+                    constraints: const BoxConstraints(maxWidth: 350),
                     child: Text(message!,
                         textAlign: centered ? TextAlign.center : TextAlign.left,
                         style: Theme.of(context).textTheme.titleSmall?.apply(

@@ -13,15 +13,17 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
     RpcException,
     TimeoutException,
     AuthRequiredException,
+    PinComplexityException,
 )
 from fido2.ctap import CtapError
-from fido2.ctap2 import Ctap2, ClientPin
+from fido2.ctap2 import Ctap2, ClientPin, Config
 from fido2.ctap2.credman import CredentialManagement
 from fido2.ctap2.bio import BioEnrollment, FPBioEnrollment, CaptureError
 from fido2.pcsc import CtapPcscDevice
@@ -76,6 +78,8 @@ def _handle_pin_error(e, client_pin):
         raise PinValidationException(
             pin_retries, e.code == CtapError.ERR.PIN_AUTH_BLOCKED
         )
+    if e.code == CtapError.ERR.PIN_POLICY_VIOLATION:
+        raise PinComplexityException()
     raise e
 
 
@@ -85,15 +89,21 @@ class Ctap2Node(RpcNode):
         self.ctap = Ctap2(connection)
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
-        self._auth_blocked = False
         self._token = None
+
+    def __call__(self, *args, **kwargs):
+        try:
+            return super().__call__(*args, **kwargs)
+        except CtapError as e:
+            if e.code == CtapError.ERR.PIN_AUTH_INVALID:
+                raise AuthRequiredException()
+            raise
 
     def get_data(self):
         self._info = self.ctap.get_info()
         logger.debug(f"Info: {self._info}")
         data = dict(
             info=asdict(self._info),
-            auth_blocked=self._auth_blocked,
             unlocked=self._token is not None,
         )
         if self._info.options.get("clientPin"):
@@ -124,10 +134,12 @@ class Ctap2Node(RpcNode):
         removed = False
         while not event.wait(0.5):
             try:
-                with dev.open_connection(FidoConnection):
-                    if removed:
-                        sleep(1.0)  # Wait for the device to settle
-                        return dev.open_connection(FidoConnection)
+                conn = dev.open_connection(FidoConnection)
+                if removed:
+                    conn.close()
+                    sleep(1.0)  # Wait for the device to settle
+                    return dev.open_connection(FidoConnection)
+                conn.close()
             except CardConnectionException:
                 pass  # Expected, ignore
             except NoCardException:
@@ -165,7 +177,7 @@ class Ctap2Node(RpcNode):
         raise TimeoutException()
 
     @action
-    def reset(self, params, event, signal):
+    def reset(self, event, signal):
         target = _ctap_id(self.ctap)
         device = self.ctap.device
         if isinstance(device, CtapPcscDevice):
@@ -182,21 +194,26 @@ class Ctap2Node(RpcNode):
         try:
             self.ctap.reset(event=event)
         except CtapError as e:
-            if e.code == CtapError.ERR.USER_ACTION_TIMEOUT:
+            if e.code in (
+                # Different keys respond with different errors here
+                CtapError.ERR.USER_ACTION_TIMEOUT,
+                CtapError.ERR.ACTION_TIMEOUT,
+            ):
                 raise InactivityException()
+            raise
         self._info = self.ctap.get_info()
-        self._auth_blocked = False
         self._token = None
-        return dict()
+        return RpcResponse(dict(), ["device_info", "device_closed"])
 
     @action(condition=lambda self: self._info.options["clientPin"])
-    def unlock(self, params, event, signal):
-        pin = params.pop("pin")
+    def unlock(self, pin: str):
         permissions = ClientPin.PERMISSION(0)
         if CredentialManagement.is_supported(self._info):
             permissions |= ClientPin.PERMISSION.CREDENTIAL_MGMT
         if BioEnrollment.is_supported(self._info):
             permissions |= ClientPin.PERMISSION.BIO_ENROLL
+        if Config.is_supported(self._info):
+            permissions |= ClientPin.PERMISSION.AUTHENTICATOR_CFG
         try:
             if permissions:
                 self._token = self.client_pin.get_pin_token(pin, permissions)
@@ -209,22 +226,27 @@ class Ctap2Node(RpcNode):
             return _handle_pin_error(e, self.client_pin)
 
     @action
-    def set_pin(self, params, event, signal):
+    def set_pin(self, new_pin: str, pin: str | None = None):
         has_pin = self.ctap.get_info().options["clientPin"]
         try:
             if has_pin:
-                self.client_pin.change_pin(
-                    params.pop("pin"),
-                    params.pop("new_pin"),
-                )
+                assert pin  # nosec
+                self.client_pin.change_pin(pin, new_pin)
             else:
-                self.client_pin.set_pin(
-                    params.pop("new_pin"),
-                )
+                self.client_pin.set_pin(new_pin)
             self._info = self.ctap.get_info()
-            return dict()
+            return RpcResponse(dict(), ["device_info"])
         except CtapError as e:
+            self._token = None
             return _handle_pin_error(e, self.client_pin)
+
+    @action(condition=lambda self: Config.is_supported(self._info))
+    def enable_ep_attestation(self):
+        if self._info.options["clientPin"] and not self._token:
+            raise AuthRequiredException()
+        config = Config(self.ctap, self.client_pin.protocol, self._token)
+        config._call(Config.CMD.ENABLE_ENTERPRISE_ATT)
+        return dict()
 
     @child(condition=lambda self: BioEnrollment.is_supported(self._info))
     def fingerprints(self):
@@ -281,12 +303,14 @@ class CredentialsRpNode(RpcNode):
         self.refresh()
 
     def refresh(self):
-        self.refresh_rps()
         self._creds = {
             cred[CredentialManagement.RESULT.CREDENTIAL_ID]["id"].hex(): dict(
                 credential_id=cred[CredentialManagement.RESULT.CREDENTIAL_ID],
                 user_id=cred[CredentialManagement.RESULT.USER]["id"],
                 user_name=cred[CredentialManagement.RESULT.USER]["name"],
+                display_name=cred[CredentialManagement.RESULT.USER].get(
+                    "displayName", None
+                ),
             )
             for cred in self.credman.enumerate_creds(self.data["rp_id_hash"])
         }
@@ -299,25 +323,26 @@ class CredentialsRpNode(RpcNode):
             return CredentialNode(
                 self.credman,
                 self._creds[name],
-                self.refresh,
+                self.refresh_rps,
             )
         return super().create_child(name)
 
 
 class CredentialNode(RpcNode):
-    def __init__(self, credman, credential_data, refresh):
+    def __init__(self, credman, credential_data, refresh_rps):
         super().__init__()
         self.credman = credman
         self.data = credential_data
-        self.refresh = refresh
+        self.refresh_rps = refresh_rps
 
     def get_data(self):
         return self.data
 
     @action
-    def delete(self, params, event, signal):
+    def delete(self):
         self.credman.delete_cred(self.data["credential_id"])
-        self.refresh()
+        self.refresh_rps()
+        return dict()
 
 
 class FingerprintsNode(RpcNode):
@@ -349,8 +374,7 @@ class FingerprintsNode(RpcNode):
         return super().create_child(name)
 
     @action
-    def add(self, params, event, signal):
-        name = params.get("name", None)
+    def add(self, event, signal, name: str | None = None):
         enroller = self.bio.enroll()
         template_id = None
         while template_id is None:
@@ -381,13 +405,14 @@ class FingerprintNode(RpcNode):
         return dict(template_id=self.template_id, name=self.name)
 
     @action
-    def rename(self, params, event, signal):
-        name = params.pop("name")
+    def rename(self, name: str):
         self.bio.set_name(self.template_id, name)
         self.name = name
         self.refresh()
+        return dict()
 
     @action
-    def delete(self, params, event, signal):
+    def delete(self):
         self.bio.remove_enrollment(self.template_id)
         self.refresh()
+        return dict()

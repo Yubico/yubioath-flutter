@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -41,7 +43,7 @@ class SlotDialog extends ConsumerWidget {
       return const SizedBox();
     }
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
 
     final otpState = ref.watch(otpStateProvider(node.path)).valueOrNull;
@@ -62,7 +64,7 @@ class SlotDialog extends ConsumerWidget {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 48, bottom: 16),
+                        padding: const EdgeInsets.only(top: 48, bottom: 32),
                         child: Column(
                           children: [
                             Text(
@@ -72,14 +74,24 @@ class SlotDialog extends ConsumerWidget {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 8),
-                            const Icon(
-                              Icons.touch_app,
+                            Icon(
+                              Symbols.touch_app,
                               size: 100.0,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                             const SizedBox(height: 8),
-                            Text(otpSlot.isConfigured
-                                ? l10n.l_otp_slot_configured
-                                : l10n.l_otp_slot_empty)
+                            Text(
+                              otpSlot.isConfigured
+                                  ? l10n.l_otp_slot_configured
+                                  : l10n.l_otp_slot_empty,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
+                            )
                           ],
                         ),
                       ),

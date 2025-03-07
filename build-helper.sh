@@ -34,32 +34,24 @@ if [ "$OS" = "macos" ]; then
 		rm -rf $HELPER
 		mkdir -p $HELPER
 
-		# Needed to build zxing-cpp properly
-		export CMAKE_OSX_ARCHITECTURES="arm64;x86_64"
-
 		# Export exact versions
 		poetry export --without-hashes > $HELPER/requirements.txt
 		grep cryptography $HELPER/requirements.txt > $HELPER/cryptography.txt
 		grep cffi $HELPER/requirements.txt > $HELPER/cffi.txt
 		grep pillow $HELPER/requirements.txt > $HELPER/pillow.txt
-		grep zxing-cpp $HELPER/requirements.txt > $HELPER/zxing-cpp.txt
 		# Remove non-universal packages
-		poetry run pip uninstall -y cryptography cffi pillow zxing-cpp
+		poetry run pip uninstall -y cryptography cffi pillow
 		# Build cffi from source to get universal build
 		poetry run pip install --upgrade -r $HELPER/cffi.txt --no-binary cffi
-		# Build zxing-cpp from source to get universal build
-		poetry run pip install --upgrade -r $HELPER/zxing-cpp.txt --no-binary zxing-cpp
 		# Explicitly install pre-build universal build of cryptography
 		poetry run pip download -r $HELPER/cryptography.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip install -r $HELPER/cryptography.txt --no-cache-dir --no-index --find-links $HELPER
 		# Combine wheels of pillow to get universal build
-		poetry run pip download -r $HELPER/pillow.txt --platform macosx_10_10_x86_64 --only-binary :all: --no-deps --dest $HELPER
+		poetry run pip download -r $HELPER/pillow.txt --platform macosx_10_13_x86_64 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
 		poetry run pip install delocate
-		poetry run delocate-fuse $HELPER/pillow*.whl
-		WHL=$(ls $HELPER/pillow*x86_64.whl)
-		UNIVERSAL_WHL=${WHL//x86_64/universal2}
-		mv $WHL $UNIVERSAL_WHL
+		poetry run delocate-merge $HELPER/pillow*.whl
+		UNIVERSAL_WHL=$(ls $HELPER/pillow*universal2.whl)
 		poetry run pip install --upgrade $UNIVERSAL_WHL
 	fi
 fi

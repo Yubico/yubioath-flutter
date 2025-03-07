@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import com.yubico.yubikit.core.util.NdefUtils
 import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 import java.util.Locale
-
 
 typealias ResourceId = Int
 
@@ -97,17 +96,15 @@ class NdefActivity : Activity() {
         }
     }
 
-    private fun showToast(value: ResourceId, length: Int) {
-        val context = if (appPreferences.communityTranslationsEnabled)
-            this
-        else {
-            // always use 'us' locale
-            val configuration = resources.configuration
-            configuration.setLocale(Locale.US)
-            createConfigurationContext(configuration)
-        }
-        Toast.makeText(context, value, length).show()
+    private fun showToast(value: ResourceId, length: Int) = resources.configuration.apply {
+        setLocale(getLocale(appPreferences.appLocale).also {
+            logger.debug("Using locale '{}' for native toasts", it)
+        })
+        Toast.makeText(createConfigurationContext(this), value, length).show()
     }
+
+    private fun getLocale(languageTag: String): Locale = Locale.getAvailableLocales()
+        .firstOrNull { it -> it.toLanguageTag() == languageTag } ?: Locale.US
 
     private fun parseOtpFromIntent(): OtpSlotValue {
         val parcelable = intent.parcelableArrayExtra<NdefMessage>(NfcAdapter.EXTRA_NDEF_MESSAGES)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,13 @@ import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -33,13 +36,13 @@ import 'package:window_manager/window_manager.dart';
 import '../app/app.dart';
 import '../app/logging.dart';
 import '../app/message.dart';
-import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/app_failure_page.dart';
 import '../app/views/main_page.dart';
 import '../app/views/message_page.dart';
 import '../core/state.dart';
 import '../fido/state.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import '../otp/state.dart';
@@ -125,7 +128,26 @@ Future<Widget> initialize(List<String> argv) async {
   _initLogging(args);
 
   await windowManager.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs;
+  try {
+    prefs = await SharedPreferences.getInstance();
+  } catch (error) {
+    Directory appSupportDirectory = await getApplicationSupportDirectory();
+    String appDataPath =
+        path.join(appSupportDirectory.path, 'shared_preferences.json');
+    _log.warning(
+        'Failed to load the preferences file at $appDataPath. Attempting to repair it.');
+    await _repairPreferences(appDataPath);
+
+    try {
+      prefs = await SharedPreferences.getInstance();
+    } catch (error) {
+      _log.warning(
+          'Failed to repair the preferences file. Deleting the file and proceeding with a fresh configuration.');
+      await File(appDataPath).delete();
+      prefs = await SharedPreferences.getInstance();
+    }
+  }
   final windowManagerHelper = WindowManagerHelper.withPreferences(prefs);
   final isHidden = _getIsHidden(args, prefs);
 
@@ -184,15 +206,6 @@ Future<Widget> initialize(List<String> argv) async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(implementedApps([
-        Application.accounts,
-        Application.webauthn,
-        Application.fingerprints,
-        Application.passkeys,
-        Application.certificates,
-        Application.management,
-        Application.slots
-      ])),
       prefProvider.overrideWithValue(prefs),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
@@ -212,6 +225,9 @@ Future<Widget> initialize(List<String> argv) async {
       ),
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(desktopDeviceDataProvider),
+      ),
+      currentSectionProvider.overrideWith(
+        (ref) => desktopCurrentSectionNotifier(ref),
       ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState.call),
@@ -243,17 +259,18 @@ Future<Widget> initialize(List<String> argv) async {
           // Load feature flags, if they exist
           featureFile.exists().then(
             (exists) async {
+              final featureFlag = ref.read(featureFlagProvider.notifier);
               if (exists) {
                 try {
                   final featureConfig =
                       jsonDecode(await featureFile.readAsString());
-                  ref
-                      .read(featureFlagProvider.notifier)
-                      .loadConfig(featureConfig);
+                  featureFlag.loadConfig(featureConfig);
                 } catch (error) {
                   _log.error('Failed to parse feature flags', error);
                 }
               }
+              // Hardcode features here:
+              // featureFlag.setFeature(feature, false);
             },
           );
 
@@ -381,15 +398,14 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
   @override
   Widget build(BuildContext context) {
     if (slow) {
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       return MessagePage(
         centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
         actionsBuilder: (context, expanded) => [
           ActionChip(
-            avatar: const Icon(Icons.copy),
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            avatar: const Icon(Symbols.content_copy),
             label: Text(l10n.s_copy_log),
             onPressed: () async {
               _log.info('Copying log to clipboard ($version)...');
@@ -418,4 +434,14 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
       );
     }
   }
+}
+
+Future<void> _repairPreferences(String appDataPath) async {
+  List<int> contents = await File(appDataPath).readAsBytes();
+  var contentsGrowable = List<int>.from(contents); // Make the list growable
+
+  // Remove any NUL characters
+  contentsGrowable.removeWhere((item) => item == 0);
+
+  await File(appDataPath).writeAsBytes(contentsGrowable);
 }

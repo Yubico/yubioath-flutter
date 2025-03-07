@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/logging.dart';
 import '../../app/message.dart';
@@ -29,6 +31,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
@@ -36,6 +39,7 @@ import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import 'access_code_dialog.dart';
 import 'overwrite_confirm_dialog.dart';
 
 final _log = Logger('otp.view.configure_yubiotp_dialog');
@@ -52,9 +56,12 @@ enum OutputActions {
       };
 }
 
+final uploadOtpUri = Uri.parse('https://upload.yubico.com');
+
 class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
+
   const ConfigureYubiOtpDialog(this.devicePath, this.otpSlot, {super.key});
 
   @override
@@ -65,8 +72,11 @@ class ConfigureYubiOtpDialog extends ConsumerStatefulWidget {
 class _ConfigureYubiOtpDialogState
     extends ConsumerState<ConfigureYubiOtpDialog> {
   final _secretController = TextEditingController();
+  final _secretFocus = FocusNode();
   final _publicIdController = TextEditingController();
+  final _publicIdFocus = FocusNode();
   final _privateIdController = TextEditingController();
+  final _privateIdFocus = FocusNode();
   OutputActions _action = OutputActions.noOutput;
   bool _appendEnter = true;
   bool _validateSecretFormat = false;
@@ -81,12 +91,15 @@ class _ConfigureYubiOtpDialogState
     _secretController.dispose();
     _publicIdController.dispose();
     _privateIdController.dispose();
+    _secretFocus.dispose();
+    _publicIdFocus.dispose();
+    _privateIdFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final info = ref.watch(currentDeviceDataProvider).valueOrNull?.info;
 
@@ -96,7 +109,7 @@ class _ConfigureYubiOtpDialogState
 
     final privateId = _privateIdController.text;
     final privateIdLengthValid = privateId.length == privateIdLength;
-    final privatedIdFormatValid = Format.hex.isValid(privateId);
+    final privateIdFormatValid = Format.hex.isValid(privateId);
 
     final publicId = _publicIdController.text;
     final publicIdLengthValid = publicId.length == publicIdLength;
@@ -106,6 +119,75 @@ class _ConfigureYubiOtpDialogState
         secretLengthValid && privateIdLengthValid && publicIdLengthValid;
 
     final outputFile = ref.read(yubiOtpOutputProvider);
+
+    _createUploadText(context, l10n);
+
+    void submit() async {
+      if (!secretFormatValid || !publicIdFormatValid || !privateIdFormatValid) {
+        setState(() {
+          _validateSecretFormat = !secretFormatValid;
+          _validatePublicIdFormat = !publicIdFormatValid;
+          _validatePrivateIdFormat = !privateIdFormatValid;
+        });
+        return;
+      }
+
+      if (!await confirmOverwrite(context, widget.otpSlot)) {
+        return;
+      }
+
+      final otpNotifier =
+          ref.read(otpStateProvider(widget.devicePath).notifier);
+      final configuration = SlotConfiguration.yubiotp(
+          publicId: publicId,
+          privateId: privateId,
+          key: secret,
+          options: SlotConfigurationOptions(appendCr: _appendEnter));
+
+      bool configurationSucceeded = false;
+      try {
+        await otpNotifier.configureSlot(widget.otpSlot.slot,
+            configuration: configuration);
+        configurationSucceeded = true;
+      } catch (e) {
+        _log.error('Failed to program credential', e);
+        // Access code required
+        await ref.read(withContextProvider)((context) async {
+          final result = await showBlurDialog(
+              context: context,
+              builder: (context) => AccessCodeDialog(
+                    devicePath: widget.devicePath,
+                    otpSlot: widget.otpSlot,
+                    action: (accessCode) async {
+                      await otpNotifier.configureSlot(widget.otpSlot.slot,
+                          configuration: configuration, accessCode: accessCode);
+                    },
+                  ));
+          configurationSucceeded = result ?? false;
+        });
+      }
+
+      if (configurationSucceeded) {
+        if (outputFile != null) {
+          final csv = await otpNotifier.formatYubiOtpCsv(
+              info!.serial!, publicId, privateId, secret);
+
+          await outputFile.writeAsString('$csv${Platform.lineTerminator}',
+              mode: FileMode.append);
+        }
+      }
+      await ref.read(withContextProvider)((context) async {
+        Navigator.of(context).pop();
+        if (configurationSucceeded) {
+          showMessage(
+              context,
+              outputFile != null
+                  ? l10n.l_slot_credential_configured_and_exported(
+                      l10n.s_capability_otp, outputFile.uri.pathSegments.last)
+                  : l10n.l_slot_credential_configured(l10n.s_capability_otp));
+        }
+      });
+    }
 
     Future<bool> selectFile() async {
       final filePath = await FilePicker.platform.saveFile(
@@ -127,75 +209,11 @@ class _ConfigureYubiOtpDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: lengthsValid
-              ? () async {
-                  if (!secretFormatValid ||
-                      !publicIdFormatValid ||
-                      !privatedIdFormatValid) {
-                    setState(() {
-                      _validateSecretFormat = !secretFormatValid;
-                      _validatePublicIdFormat = !publicIdFormatValid;
-                      _validatePrivateIdFormat = !privatedIdFormatValid;
-                    });
-                    return;
-                  }
-
-                  if (!await confirmOverwrite(context, widget.otpSlot)) {
-                    return;
-                  }
-
-                  final otpNotifier =
-                      ref.read(otpStateProvider(widget.devicePath).notifier);
-                  try {
-                    await otpNotifier.configureSlot(widget.otpSlot.slot,
-                        configuration: SlotConfiguration.yubiotp(
-                            publicId: publicId,
-                            privateId: privateId,
-                            key: secret,
-                            options: SlotConfigurationOptions(
-                                appendCr: _appendEnter)));
-                    if (outputFile != null) {
-                      final csv = await otpNotifier.formatYubiOtpCsv(
-                          info!.serial!, publicId, privateId, secret);
-
-                      await outputFile.writeAsString(
-                          '$csv${Platform.lineTerminator}',
-                          mode: FileMode.append);
-                    }
-                    await ref.read(withContextProvider)((context) async {
-                      Navigator.of(context).pop();
-                      showMessage(
-                          context,
-                          outputFile != null
-                              ? l10n.l_slot_credential_configured_and_exported(
-                                  l10n.s_capability_otp,
-                                  outputFile.uri.pathSegments.last)
-                              : l10n.l_slot_credential_configured(
-                                  l10n.s_capability_otp));
-                    });
-                  } catch (e) {
-                    _log.error('Failed to program credential', e);
-                    await ref.read(withContextProvider)((context) async {
-                      final String errorMessage;
-                      if (e is PathNotFoundException) {
-                        errorMessage = '${e.message} ${e.path.toString()}';
-                      } else {
-                        errorMessage = l10n.p_otp_slot_configuration_error(
-                            widget.otpSlot.slot.getDisplayName(l10n));
-                      }
-                      showMessage(
-                        context,
-                        errorMessage,
-                        duration: const Duration(seconds: 4),
-                      );
-                    });
-                  }
-                }
-              : null,
+          onPressed: lengthsValid ? submit : null,
           child: Text(l10n.s_save),
         )
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,6 +223,7 @@ class _ConfigureYubiOtpDialogState
               autofocus: true,
               controller: _publicIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
+              focusNode: _publicIdFocus,
               maxLength: publicIdLength,
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
@@ -213,10 +232,11 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.modhex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Icons.public_outlined),
+                  icon: const Icon(Symbols.public),
                   suffixIcon: IconButton(
+                    key: keys.useSerial,
                     tooltip: l10n.s_use_serial,
-                    icon: const Icon(Icons.auto_awesome_outlined),
+                    icon: const Icon(Symbols.auto_awesome),
                     onPressed: (info?.serial != null)
                         ? () async {
                             final publicId = await ref
@@ -235,23 +255,32 @@ class _ConfigureYubiOtpDialogState
                   _validatePublicIdFormat = false;
                 });
               },
-            ),
+              onSubmitted: (_) {
+                if (publicIdLengthValid) {
+                  _privateIdFocus.requestFocus();
+                } else {
+                  _publicIdFocus.requestFocus();
+                }
+              },
+            ).init(),
             AppTextField(
               key: keys.privateIdField,
               controller: _privateIdController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: privateIdLength,
+              focusNode: _privateIdFocus,
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_private_id,
-                  errorText: _validatePrivateIdFormat && !privatedIdFormatValid
+                  errorText: _validatePrivateIdFormat && !privateIdFormatValid
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
+                    key: keys.generatePrivateId,
                     tooltip: l10n.s_generate_random,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh),
                     onPressed: () {
                       final random = Random.secure();
                       final key = List.generate(
@@ -271,12 +300,20 @@ class _ConfigureYubiOtpDialogState
                   _validatePrivateIdFormat = false;
                 });
               },
-            ),
+              onSubmitted: (_) {
+                if (privateIdLengthValid) {
+                  _secretFocus.requestFocus();
+                } else {
+                  _privateIdFocus.requestFocus();
+                }
+              },
+            ).init(),
             AppTextField(
               key: keys.secretField,
               controller: _secretController,
               autofillHints: isAndroid ? [] : const [AutofillHints.password],
               maxLength: secretLength,
+              focusNode: _secretFocus,
               decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: l10n.s_secret_key,
@@ -284,10 +321,11 @@ class _ConfigureYubiOtpDialogState
                       ? l10n.l_invalid_format_allowed_chars(
                           Format.hex.allowedCharacters)
                       : null,
-                  prefixIcon: const Icon(Icons.key_outlined),
+                  icon: const Icon(Symbols.key),
                   suffixIcon: IconButton(
+                    key: keys.generateSecretKey,
                     tooltip: l10n.s_generate_random,
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh),
                     onPressed: () {
                       final random = Random.secure();
                       final key = List.generate(
@@ -307,61 +345,87 @@ class _ConfigureYubiOtpDialogState
                   _validateSecretFormat = false;
                 });
               },
-            ),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4.0,
-              runSpacing: 8.0,
+              onSubmitted: (_) {
+                if (lengthsValid) {
+                  submit();
+                } else {
+                  _secretFocus.requestFocus();
+                }
+              },
+            ).init(),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FilterChip(
-                  label: Text(l10n.s_append_enter),
-                  tooltip: l10n.l_append_enter_desc,
-                  selected: _appendEnter,
-                  onSelected: (value) {
-                    setState(() {
-                      _appendEnter = value;
-                    });
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Icon(
+                    Symbols.tune,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                ChoiceFilterChip<OutputActions>(
-                  tooltip: outputFile?.path ?? l10n.s_no_export,
-                  selected: outputFile != null,
-                  avatar: outputFile != null
-                      ? Icon(Icons.check,
-                          color: Theme.of(context).colorScheme.secondary)
-                      : null,
-                  value: _action,
-                  items: OutputActions.values,
-                  itemBuilder: (value) => Text(value.getDisplayName(l10n)),
-                  labelBuilder: (_) {
-                    String? fileName = outputFile?.uri.pathSegments.last;
-                    return Container(
-                      constraints: const BoxConstraints(maxWidth: 140),
-                      child: Text(
-                        fileName != null
-                            ? '${l10n.s_export} $fileName'
-                            : _action.getDisplayName(l10n),
-                        overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 16.0),
+                Flexible(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    children: [
+                      FilterChip(
+                        label: Text(l10n.s_append_enter),
+                        tooltip: l10n.l_append_enter_desc,
+                        selected: _appendEnter,
+                        onSelected: (value) {
+                          setState(() {
+                            _appendEnter = value;
+                          });
+                        },
                       ),
-                    );
-                  },
-                  onChanged: (value) async {
-                    if (value == OutputActions.noOutput) {
-                      ref.read(yubiOtpOutputProvider.notifier).setOutput(null);
-                      setState(() {
-                        _action = value;
-                      });
-                    } else if (value == OutputActions.selectFile) {
-                      if (await selectFile()) {
-                        setState(() {
-                          _action = value;
-                        });
-                      }
-                    }
-                  },
+                      ChoiceFilterChip<OutputActions>(
+                        tooltip: outputFile?.path ?? l10n.s_no_export,
+                        selected: outputFile != null,
+                        avatar: outputFile != null
+                            ? Icon(Symbols.check,
+                                color: Theme.of(context).colorScheme.secondary)
+                            : null,
+                        value: _action,
+                        items: OutputActions.values,
+                        itemBuilder: (value) =>
+                            Text(value.getDisplayName(l10n)),
+                        labelBuilder: (_) {
+                          String? fileName = outputFile?.uri.pathSegments.last;
+                          return Container(
+                            constraints: const BoxConstraints(maxWidth: 140),
+                            child: Text(
+                              fileName != null
+                                  ? '${l10n.s_export} $fileName'
+                                  : _action.getDisplayName(l10n),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        },
+                        onChanged: (value) async {
+                          if (value == OutputActions.noOutput) {
+                            ref
+                                .read(yubiOtpOutputProvider.notifier)
+                                .setOutput(null);
+                            setState(() {
+                              _action = value;
+                            });
+                          } else if (value == OutputActions.selectFile) {
+                            if (await selectFile()) {
+                              setState(() {
+                                _action = value;
+                              });
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            )
+            ),
+            _createUploadText(context, l10n)
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -370,6 +434,42 @@ class _ConfigureYubiOtpDialogState
               .toList(),
         ),
       ),
+    );
+  }
+
+  RichText _createUploadText(BuildContext context, AppLocalizations l10n) {
+    final uploadText = l10n.l_exported_can_be_uploaded_at(uploadOtpUri.host);
+    final host = uploadOtpUri.host;
+    final parts = uploadText.split(RegExp('(?=$host)|(?<=$host)'));
+
+    return RichText(
+      textScaler: MediaQuery.textScalerOf(context),
+      text: TextSpan(
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        children: [
+          ...parts.map(
+            (e) => e == uploadOtpUri.host
+                ? _createUploadOtpLink(context)
+                : TextSpan(text: e),
+          )
+        ],
+      ),
+    );
+  }
+
+  TextSpan _createUploadOtpLink(BuildContext context) {
+    final theme = Theme.of(context);
+    return TextSpan(
+      text: uploadOtpUri.host,
+      style:
+          theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
+      recognizer: TapGestureRecognizer()
+        ..onTap = () async {
+          await launchUrl(uploadOtpUri, mode: LaunchMode.externalApplication);
+        },
     );
   }
 }

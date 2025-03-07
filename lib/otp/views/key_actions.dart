@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
-import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/views/action_list.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -28,7 +28,7 @@ import 'swap_slots_dialog.dart';
 
 Widget otpBuildActions(BuildContext context, DevicePath devicePath,
     OtpState otpState, WidgetRef ref) {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
 
   return Column(
     children: [
@@ -38,11 +38,11 @@ Widget otpBuildActions(BuildContext context, DevicePath devicePath,
           feature: features.actionsSwap,
           title: l10n.s_swap_slots,
           subtitle: l10n.l_swap_slots_desc,
-          icon: const Icon(Icons.swap_vert_outlined),
+          icon: const Icon(Symbols.swap_vert),
           onTap: (otpState.slot1Configured || otpState.slot2Configured)
               ? (context) {
                   Navigator.of(context).popUntil((route) => route.isFirst);
-                  showBlurDialog(
+                  showDialog(
                       context: context,
                       builder: (context) => SwapSlotsDialog(devicePath));
                 }

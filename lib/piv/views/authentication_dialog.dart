@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../core/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -43,61 +45,76 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   bool _keyIsWrong = false;
   bool _keyFormatInvalid = false;
   final _keyController = TextEditingController();
+  final _keyFocus = FocusNode();
 
   @override
   void dispose() {
     _keyController.dispose();
+    _keyFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasMetadata = widget.pivState.metadata != null;
     final keyLen = (widget.pivState.metadata?.managementKeyMetadata.keyType ??
                 ManagementKeyType.tdes)
             .keyLength *
         2;
     final keyFormatInvalid = !Format.hex.isValid(_keyController.text);
+
+    void submit() async {
+      if (keyFormatInvalid) {
+        _keyController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _keyController.text.length);
+        _keyFocus.requestFocus();
+        setState(() {
+          _keyFormatInvalid = true;
+        });
+
+        return;
+      }
+      final navigator = Navigator.of(context);
+      try {
+        final status = await ref
+            .read(pivStateProvider(widget.devicePath).notifier)
+            .authenticate(_keyController.text);
+        if (status) {
+          navigator.pop(true);
+        } else {
+          _keyController.selection = TextSelection(
+              baseOffset: 0, extentOffset: _keyController.text.length);
+          _keyFocus.requestFocus();
+          setState(() {
+            _keyIsWrong = true;
+          });
+        }
+      } on CancellationException catch (_) {
+        navigator.pop(false);
+      } catch (_) {
+        _keyController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _keyController.text.length);
+        _keyFocus.requestFocus();
+        // TODO: More error cases
+        setState(() {
+          _keyIsWrong = true;
+        });
+      }
+    }
+
     return ResponsiveDialog(
       title: Text(l10n.l_unlock_piv_management),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _keyController.text.length == keyLen
-              ? () async {
-                  if (keyFormatInvalid) {
-                    setState(() {
-                      _keyFormatInvalid = true;
-                    });
-                    return;
-                  }
-                  final navigator = Navigator.of(context);
-                  try {
-                    final status = await ref
-                        .read(pivStateProvider(widget.devicePath).notifier)
-                        .authenticate(_keyController.text);
-                    if (status) {
-                      navigator.pop(true);
-                    } else {
-                      setState(() {
-                        _keyIsWrong = true;
-                      });
-                    }
-                  } on CancellationException catch (_) {
-                    navigator.pop(false);
-                  } catch (_) {
-                    // TODO: More error cases
-                    setState(() {
-                      _keyIsWrong = true;
-                    });
-                  }
-                }
+          onPressed: !_keyIsWrong && _keyController.text.length == keyLen
+              ? submit
               : null,
           child: Text(l10n.s_unlock),
         ),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,6 +125,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
               autofocus: true,
               autofillHints: const [AutofillHints.password],
               controller: _keyController,
+              focusNode: _keyFocus,
               readOnly: _defaultKeyUsed,
               maxLength: !_defaultKeyUsed ? keyLen : null,
               decoration: AppInputDecoration(
@@ -121,13 +139,12 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                             Format.hex.allowedCharacters)
                         : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.key_outlined),
+                icon: const Icon(Symbols.key),
                 suffixIcon: hasMetadata
                     ? null
                     : IconButton(
-                        icon: Icon(_defaultKeyUsed
-                            ? Icons.auto_awesome
-                            : Icons.auto_awesome_outlined),
+                        icon: Icon(Symbols.auto_awesome,
+                            fill: _defaultKeyUsed ? 1.0 : 0.0),
                         tooltip: l10n.s_use_default,
                         onPressed: () {
                           setState(() {
@@ -149,7 +166,14 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                   _keyFormatInvalid = false;
                 });
               },
-            ),
+              onSubmitted: (_) {
+                if (!_keyIsWrong && _keyController.text.length == keyLen) {
+                  submit();
+                } else {
+                  _keyFocus.requestFocus();
+                }
+              },
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

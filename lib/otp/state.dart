@@ -47,6 +47,6 @@ abstract class OtpStateNotifier extends ApplicationStateNotifier<OtpState> {
       int serial, String publicId, String privateId, String key);
   Future<void> swapSlots();
   Future<void> configureSlot(SlotId slot,
-      {required SlotConfiguration configuration});
-  Future<void> deleteSlot(SlotId slot);
+      {required SlotConfiguration configuration, String? accessCode});
+  Future<void> deleteSlot(SlotId slot, {String? accessCode});
 }

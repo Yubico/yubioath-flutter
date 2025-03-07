@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/flex_box.dart';
 import '../models.dart';
 import '../state.dart';
 import 'account_view.dart';
@@ -31,7 +33,10 @@ class AccountList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final labelStyle =
+        theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary);
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
@@ -45,30 +50,71 @@ class AccountList extends ConsumerWidget {
     final creds =
         credentials.where((entry) => !favorites.contains(entry.credential.id));
 
+    final oathLayout = ref.watch(oathLayoutProvider);
+    final pinnedLayout =
+        (oathLayout == OathLayout.grid || oathLayout == OathLayout.mixed)
+            ? FlexLayout.grid
+            : FlexLayout.list;
+    final normalLayout =
+        oathLayout == OathLayout.grid ? FlexLayout.grid : FlexLayout.list;
+
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
-      child: Column(
-        children: [
-          ...pinnedCreds.map(
-            (entry) => AccountView(
-              entry.credential,
-              expanded: expanded,
-              selected: entry.credential == selected,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (pinnedCreds.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 18, bottom: 8),
+                child: Text(l10n.s_pinned, style: labelStyle),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: FlexBox<OathPair>(
+                  items: pinnedCreds.toList(),
+                  itemBuilder: (value) => AccountView(
+                    value.credential,
+                    expanded: expanded,
+                    selected: value.credential == selected,
+                    large: pinnedLayout == FlexLayout.grid,
+                  ),
+                  cellMinWidth: 250,
+                  spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
+                  runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
+                  layout: pinnedLayout,
+                ),
+              ),
+            ],
+            if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.only(left: 18, bottom: 8),
+                child: Text(
+                  l10n.s_accounts,
+                  style: labelStyle,
+                ),
+              ),
+            ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: FlexBox<OathPair>(
+                items: creds.toList(),
+                itemBuilder: (value) => AccountView(
+                  value.credential,
+                  expanded: expanded,
+                  selected: value.credential == selected,
+                  large: normalLayout == FlexLayout.grid,
+                ),
+                cellMinWidth: 250,
+                spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
+                runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
+                layout: normalLayout,
+              ),
             ),
-          ),
-          if (pinnedCreds.isNotEmpty && creds.isNotEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Divider(),
-            ),
-          ...creds.map(
-            (entry) => AccountView(
-              entry.credential,
-              expanded: expanded,
-              selected: entry.credential == selected,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

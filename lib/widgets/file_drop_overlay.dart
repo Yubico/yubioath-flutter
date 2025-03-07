@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class FileDropOverlay extends StatelessWidget {
   final Widget? graphic;
@@ -14,7 +15,7 @@ class FileDropOverlay extends StatelessWidget {
           color: Theme.of(context)
               .colorScheme
               .secondaryContainer
-              .withOpacity(0.95),
+              .withValues(alpha: 0.95),
           border: Border.all(color: Theme.of(context).colorScheme.primary),
           borderRadius: const BorderRadius.all(Radius.circular(20.0))),
       child: Column(
@@ -22,7 +23,7 @@ class FileDropOverlay extends StatelessWidget {
         children: [
           graphic ??
               Icon(
-                Icons.upload_file,
+                Symbols.upload_file,
                 size: 120,
                 color: Theme.of(context).colorScheme.primary,
               ),

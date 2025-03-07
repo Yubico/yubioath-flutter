@@ -2,7 +2,7 @@
 This document describes how to build and package Yubico Authenticator from
 source.
 
-NOTE: Yubico Authenticator 6 uses a new codebase built using the Flutter
+NOTE: Yubico Authenticator 6+ uses a new codebase built using the Flutter
 framework. The previous Qt codebase can be found in the `legacy` branch.
 
 === Requirements

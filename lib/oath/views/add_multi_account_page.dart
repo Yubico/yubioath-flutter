@@ -1,7 +1,24 @@
+/*
+ * Copyright (C) 2023-2025 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/oath/state.dart';
 import '../../app/logging.dart';
@@ -13,6 +30,7 @@ import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../exception/apdu_exception.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
@@ -51,7 +69,7 @@ class _OathAddMultiAccountPageState
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if (widget.devicePath != null) {
       _credentials = ref
@@ -74,124 +92,127 @@ class _OathAddMultiAccountPageState
             child: Text(l10n.s_save),
           )
         ],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                child: Text(l10n.l_select_accounts)),
-            ...widget.credentialsFromUri!.map(
-              (cred) {
-                final (checked, touch, unique) = _credStates[cred]!;
-                return CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  secondary: Row(mainAxisSize: MainAxisSize.min, children: [
-                    if (isTouchSupported())
-                      Semantics(
-                        label: l10n.s_require_touch,
-                        child: IconButton(
-                            tooltip: l10n.s_require_touch,
-                            color: touch ? colorScheme.primary : null,
-                            onPressed: unique
-                                ? () {
-                                    setState(() {
-                                      _credStates[cred] =
-                                          (checked, !touch, unique);
-                                    });
-                                  }
-                                : null,
-                            icon: Icon(touch
-                                ? Icons.touch_app
-                                : Icons.touch_app_outlined)),
-                      ),
-                    Semantics(
-                      label: l10n.s_rename_account,
-                      child: IconButton(
-                        tooltip: l10n.s_rename_account,
-                        onPressed: () async {
-                          final node = ref
-                              .read(currentDeviceDataProvider)
-                              .valueOrNull
-                              ?.node;
-                          final withContext = ref.read(withContextProvider);
-                          CredentialData? renamed = await withContext(
-                              (context) async => await showBlurDialog(
-                                    context: context,
-                                    builder: (context) => RenameAccountDialog(
-                                      devicePath: node!.path,
-                                      issuer: cred.issuer,
-                                      name: cred.name,
-                                      oathType: cred.oathType,
-                                      period: cred.period,
-                                      existing: (widget.credentialsFromUri ??
-                                              [])
-                                          .map((e) => (e.issuer, e.name))
-                                          .followedBy((_credentials ?? [])
-                                              .map((e) => (e.issuer, e.name)))
-                                          .toList(),
-                                      rename: (issuer, name) async => cred
-                                          .copyWith(issuer: issuer, name: name),
-                                    ),
-                                  ));
-                          if (renamed != null) {
-                            setState(() {
-                              int index = widget.credentialsFromUri!.indexWhere(
-                                  (element) =>
-                                      element.name == cred.name &&
-                                      (element.issuer == cred.issuer));
-                              widget.credentialsFromUri![index] = renamed;
-                              _credStates.remove(cred);
-                              _credStates[renamed] = (true, touch, true);
-                            });
-                          }
-                        },
-                        icon: IconTheme(
-                            data: IconTheme.of(context),
-                            child: const Icon(Icons.edit_outlined)),
-                      ),
-                    ),
-                  ]),
-                  title: Text(cred.issuer ?? cred.name,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false),
-                  value: unique && checked,
-                  enabled: unique,
-                  subtitle: cred.issuer != null || !unique
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                              if (cred.issuer != null)
-                                Text(cred.name,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
-                                    softWrap: false),
-                              if (!unique)
-                                Text(
-                                  l10n.l_account_already_exists,
-                                  style: TextStyle(
-                                    color: colorScheme.error,
-                                    fontSize: 12, // TODO: use Theme
-                                  ),
-                                )
-                            ])
-                      : null,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _credStates[cred] = (value == true, touch, unique);
-                    });
+        builder: (context, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                    child: Text(l10n.l_select_accounts)),
+                ...widget.credentialsFromUri!.map(
+                  (cred) {
+                    final (checked, touch, unique) = _credStates[cred]!;
+                    return CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.leading,
+                      secondary: Row(mainAxisSize: MainAxisSize.min, children: [
+                        if (isTouchSupported())
+                          Semantics(
+                            label: l10n.s_require_touch,
+                            child: IconButton(
+                                tooltip: l10n.s_require_touch,
+                                color: touch ? colorScheme.primary : null,
+                                onPressed: unique
+                                    ? () {
+                                        setState(() {
+                                          _credStates[cred] =
+                                              (checked, !touch, unique);
+                                        });
+                                      }
+                                    : null,
+                                icon: Icon(Symbols.touch_app,
+                                    fill: touch ? 1.0 : 0.0)),
+                          ),
+                        Semantics(
+                          label: l10n.s_rename_account,
+                          child: IconButton(
+                            tooltip: l10n.s_rename_account,
+                            onPressed: () async {
+                              final node = ref
+                                  .read(currentDeviceDataProvider)
+                                  .valueOrNull
+                                  ?.node;
+                              final withContext = ref.read(withContextProvider);
+                              CredentialData? renamed = await withContext(
+                                  (context) async => await showBlurDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            RenameAccountDialog(
+                                          devicePath: node!.path,
+                                          issuer: cred.issuer,
+                                          name: cred.name,
+                                          oathType: cred.oathType,
+                                          period: cred.period,
+                                          existing: (widget
+                                                      .credentialsFromUri ??
+                                                  [])
+                                              .map((e) => (e.issuer, e.name))
+                                              .followedBy((_credentials ?? [])
+                                                  .map((e) =>
+                                                      (e.issuer, e.name)))
+                                              .toList(),
+                                          rename: (issuer, name) async =>
+                                              cred.copyWith(
+                                                  issuer: issuer, name: name),
+                                        ),
+                                      ));
+                              if (renamed != null) {
+                                setState(() {
+                                  int index = widget.credentialsFromUri!
+                                      .indexWhere((element) =>
+                                          element.name == cred.name &&
+                                          (element.issuer == cred.issuer));
+                                  widget.credentialsFromUri![index] = renamed;
+                                  _credStates.remove(cred);
+                                  _credStates[renamed] = (true, touch, true);
+                                });
+                              }
+                            },
+                            icon: IconTheme(
+                                data: IconTheme.of(context),
+                                child: const Icon(Symbols.edit)),
+                          ),
+                        ),
+                      ]),
+                      title: Text(cred.issuer ?? cred.name,
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                          softWrap: false),
+                      value: unique && checked,
+                      enabled: unique,
+                      subtitle: cred.issuer != null || !unique
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                  if (cred.issuer != null)
+                                    Text(cred.name,
+                                        overflow: TextOverflow.fade,
+                                        maxLines: 1,
+                                        softWrap: false),
+                                  if (!unique)
+                                    Text(
+                                      l10n.l_account_already_exists,
+                                      style: TextStyle(
+                                        color: colorScheme.error,
+                                        fontSize: 12, // TODO: use Theme
+                                      ),
+                                    )
+                                ])
+                          : null,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _credStates[cred] = (value == true, touch, unique);
+                        });
+                      },
+                    );
                   },
-                );
-              },
-            )
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: e,
-                  ))
-              .toList(),
-        ));
+                )
+              ]
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: e,
+                      ))
+                  .toList(),
+            ));
   }
 
   bool isTouchSupported() => widget.state?.version.isAtLeast(4, 2) ?? true;
@@ -222,7 +243,7 @@ class _OathAddMultiAccountPageState
     if (widget.state != null) {
       final credsToAdd =
           _credStates.values.where((element) => element.$1).length;
-      final capacity = widget.state!.version.isAtLeast(4) ? 32 : null;
+      final capacity = widget.state!.capacity;
       return (credsToAdd > 0) &&
           (capacity == null || (_numCreds! + credsToAdd <= capacity));
     } else {
@@ -261,7 +282,7 @@ class _OathAddMultiAccountPageState
 
   Future<void> _addCredentials(
       {required List<String> uris, required List<bool> touchRequired}) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     try {
       await ref.read(addCredentialsToAnyProvider).call(uris, touchRequired);
       if (!mounted) return;
@@ -286,7 +307,7 @@ class _OathAddMultiAccountPageState
   }
 
   void accept(CredentialData cred, bool touch) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final devicePath = widget.devicePath;
     try {
       if (devicePath == null) {

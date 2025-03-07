@@ -15,20 +15,24 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/models.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
+import '../models.dart';
 import '../state.dart';
 
 class PinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
-  const PinDialog(this.devicePath, {super.key});
+  final PivState pivState;
+  const PinDialog(this.devicePath, this.pivState, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PinDialogState();
@@ -36,13 +40,22 @@ class PinDialog extends ConsumerStatefulWidget {
 
 class _PinDialogState extends ConsumerState<PinDialog> {
   final _pinController = TextEditingController();
+  final _pinFocus = FocusNode();
   bool _pinIsWrong = false;
   int _attemptsRemaining = -1;
+  late bool _pinIsBlocked;
   bool _isObscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _pinIsBlocked = widget.pivState.pinAttempts == 0;
+  }
 
   @override
   void dispose() {
     _pinController.dispose();
+    _pinFocus.dispose();
     super.dispose();
   }
 
@@ -56,12 +69,22 @@ class _PinDialogState extends ConsumerState<PinDialog> {
         success: () {
           navigator.pop(true);
         },
-        failure: (attemptsRemaining) {
-          setState(() {
-            _pinController.clear();
-            _attemptsRemaining = attemptsRemaining;
-            _pinIsWrong = true;
-          });
+        failure: (reason) {
+          reason.maybeWhen(
+            invalidPin: (attemptsRemaining) {
+              _pinController.selection = TextSelection(
+                  baseOffset: 0, extentOffset: _pinController.text.length);
+              _pinFocus.requestFocus();
+              setState(() {
+                _attemptsRemaining = attemptsRemaining;
+                _pinIsWrong = true;
+                if (_attemptsRemaining == 0) {
+                  _pinIsBlocked = true;
+                }
+              });
+            },
+            orElse: () {},
+          );
         },
       );
     } on CancellationException catch (_) {
@@ -71,17 +94,21 @@ class _PinDialogState extends ConsumerState<PinDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    final minPinLen =
+        widget.pivState.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
+    final currentPinLen = byteLength(_pinController.text);
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: _pinController.text.length >= 4 ? _submit : null,
+          onPressed:
+              currentPinLen >= minPinLen && !_pinIsBlocked ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
-      child: Padding(
+      builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,20 +118,27 @@ class _PinDialogState extends ConsumerState<PinDialog> {
               autofocus: true,
               obscureText: _isObscure,
               maxLength: 8,
+              inputFormatters: [limitBytesLength(8)],
+              buildCounter: buildByteCounterFor(_pinController.text),
               autofillHints: const [AutofillHints.password],
               key: keys.managementKeyField,
               controller: _pinController,
+              focusNode: _pinFocus,
+              enabled: !_pinIsBlocked,
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
-                errorText: _pinIsWrong
-                    ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                    : null,
+                errorText: _pinIsBlocked
+                    ? l10n.l_piv_pin_blocked
+                    : _pinIsWrong
+                        ? l10n
+                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
+                        : null,
                 errorMaxLines: 3,
-                prefixIcon: const Icon(Icons.pin_outlined),
+                icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
                   icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
+                      _isObscure ? Symbols.visibility : Symbols.visibility_off),
                   onPressed: () {
                     setState(() {
                       _isObscure = !_isObscure;
@@ -119,8 +153,14 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                   _pinIsWrong = false;
                 });
               },
-              onSubmitted: (_) => _submit(),
-            ),
+              onSubmitted: (_) {
+                if (currentPinLen >= minPinLen) {
+                  _submit();
+                } else {
+                  _pinFocus.requestFocus();
+                }
+              },
+            ).init(),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

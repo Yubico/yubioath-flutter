@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../generated/l10n/app_localizations.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -30,7 +31,7 @@ class NfcTapActionView extends ConsumerWidget {
       await showDialog<NfcTapAction>(
           context: context,
           builder: (BuildContext context) {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             return SimpleDialog(
               title: Text(l10n.l_on_yk_nfc_tap),
               children: NfcTapAction.values
@@ -51,7 +52,7 @@ class NfcTapActionView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final tapAction = ref.watch(androidNfcTapActionProvider);
     return ListTile(
       title: Text(l10n.l_on_yk_nfc_tap),
@@ -77,7 +78,7 @@ class NfcKbdLayoutView extends ConsumerWidget {
       await showDialog<String>(
           context: context,
           builder: (BuildContext context) {
-            final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context);
             return SimpleDialog(
               title: Text(l10n.s_choose_kbd_layout),
               children: available
@@ -98,7 +99,7 @@ class NfcKbdLayoutView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final tapAction = ref.watch(androidNfcTapActionProvider);
     final clipKbdLayout = ref.watch(androidNfcKbdLayoutProvider);
     return ListTile(
@@ -128,7 +129,7 @@ class NfcBypassTouchView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final nfcBypassTouch = ref.watch(androidNfcBypassTouchProvider);
     return SwitchListTile(
         title: Text(l10n.l_bypass_touch_requirement),
@@ -150,7 +151,7 @@ class NfcSilenceSoundsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final nfcSilenceSounds = ref.watch(androidNfcSilenceSoundsProvider);
     return SwitchListTile(
         title: Text(l10n.s_silence_nfc_sounds),
@@ -172,7 +173,7 @@ class UsbOpenAppView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final usbOpenApp = ref.watch(androidUsbLaunchAppProvider);
     return SwitchListTile(
         title: Text(l10n.l_launch_app_on_usb),

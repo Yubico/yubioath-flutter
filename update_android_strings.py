@@ -22,6 +22,18 @@ import xml.etree.ElementTree as ET
 from os import path as p
 
 
+escape_chars = str.maketrans(
+    {
+        "@": r"\@",
+        "?": r"\?",
+        "\n": r"\n",
+        "\t": r"\t",
+        "'": r"\'",
+        '"': r"\"",
+    }
+)
+
+
 def read_arb_file(file_path):
     """Load translations from flutter ARB file."""
     with open(file_path, "r", encoding="utf-8") as file:
@@ -67,10 +79,11 @@ def process_android_res(lang, arb, keys_to_translate):
         # only add the string if translation exists in arb
         if key in arb.keys() and arb[key] is not None:
             existing = res.find(f"./string[@name='{key}']")
+            escaped_val = arb[key].translate(escape_chars)
             if existing is not None:
-                existing.text = arb[key]
+                existing.text = escaped_val
             else:
-                ET.SubElement(res, "string", name=f"{key}").text = arb[key]
+                ET.SubElement(res, "string", name=f"{key}").text = escaped_val
     tree = ET.ElementTree(res)
     ET.indent(tree, "    ")
     tree.write(res_path, encoding="utf-8", xml_declaration=True)

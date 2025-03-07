@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 OathCredential _$OathCredentialFromJson(Map<String, dynamic> json) {
   return _OathCredential.fromJson(json);
@@ -29,8 +29,12 @@ mixin _$OathCredential {
   int get period => throw _privateConstructorUsedError;
   bool get touchRequired => throw _privateConstructorUsedError;
 
+  /// Serializes this OathCredential to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of OathCredential
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $OathCredentialCopyWith<OathCredential> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -61,6 +65,8 @@ class _$OathCredentialCopyWithImpl<$Res, $Val extends OathCredential>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of OathCredential
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -131,6 +137,8 @@ class __$$OathCredentialImplCopyWithImpl<$Res>
       _$OathCredentialImpl _value, $Res Function(_$OathCredentialImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of OathCredential
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -222,12 +230,14 @@ class _$OathCredentialImpl implements _OathCredential {
                 other.touchRequired == touchRequired));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, deviceId, id, issuer, name, oathType, period, touchRequired);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OathCredential
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$OathCredentialImplCopyWith<_$OathCredentialImpl> get copyWith =>
@@ -270,8 +280,11 @@ abstract class _OathCredential implements OathCredential {
   int get period;
   @override
   bool get touchRequired;
+
+  /// Create a copy of OathCredential
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$OathCredentialImplCopyWith<_$OathCredentialImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -286,8 +299,12 @@ mixin _$OathCode {
   int get validFrom => throw _privateConstructorUsedError;
   int get validTo => throw _privateConstructorUsedError;
 
+  /// Serializes this OathCode to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of OathCode
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $OathCodeCopyWith<OathCode> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -310,6 +327,8 @@ class _$OathCodeCopyWithImpl<$Res, $Val extends OathCode>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of OathCode
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -353,6 +372,8 @@ class __$$OathCodeImplCopyWithImpl<$Res>
       _$OathCodeImpl _value, $Res Function(_$OathCodeImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of OathCode
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -408,11 +429,13 @@ class _$OathCodeImpl implements _OathCode {
             (identical(other.validTo, validTo) || other.validTo == validTo));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, value, validFrom, validTo);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OathCode
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$OathCodeImplCopyWith<_$OathCodeImpl> get copyWith =>
@@ -440,8 +463,11 @@ abstract class _OathCode implements OathCode {
   int get validFrom;
   @override
   int get validTo;
+
+  /// Create a copy of OathCode
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$OathCodeImplCopyWith<_$OathCodeImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -455,8 +481,12 @@ mixin _$OathPair {
   OathCredential get credential => throw _privateConstructorUsedError;
   OathCode? get code => throw _privateConstructorUsedError;
 
+  /// Serializes this OathPair to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $OathPairCopyWith<OathPair> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -482,6 +512,8 @@ class _$OathPairCopyWithImpl<$Res, $Val extends OathPair>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -500,6 +532,8 @@ class _$OathPairCopyWithImpl<$Res, $Val extends OathPair>
     ) as $Val);
   }
 
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $OathCredentialCopyWith<$Res> get credential {
@@ -508,6 +542,8 @@ class _$OathPairCopyWithImpl<$Res, $Val extends OathPair>
     });
   }
 
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $OathCodeCopyWith<$Res>? get code {
@@ -545,6 +581,8 @@ class __$$OathPairImplCopyWithImpl<$Res>
       _$OathPairImpl _value, $Res Function(_$OathPairImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -592,11 +630,13 @@ class _$OathPairImpl implements _OathPair {
             (identical(other.code, code) || other.code == code));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, credential, code);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$OathPairImplCopyWith<_$OathPairImpl> get copyWith =>
@@ -621,8 +661,11 @@ abstract class _OathPair implements OathPair {
   OathCredential get credential;
   @override
   OathCode? get code;
+
+  /// Create a copy of OathPair
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$OathPairImplCopyWith<_$OathPairImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -640,8 +683,12 @@ mixin _$OathState {
   bool get locked => throw _privateConstructorUsedError;
   KeystoreState get keystore => throw _privateConstructorUsedError;
 
+  /// Serializes this OathState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of OathState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $OathStateCopyWith<OathState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -672,6 +719,8 @@ class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of OathState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -710,6 +759,8 @@ class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
     ) as $Val);
   }
 
+  /// Create a copy of OathState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $VersionCopyWith<$Res> get version {
@@ -747,6 +798,8 @@ class __$$OathStateImplCopyWithImpl<$Res>
       _$OathStateImpl _value, $Res Function(_$OathStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of OathState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -788,12 +841,13 @@ class __$$OathStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$OathStateImpl implements _OathState {
+class _$OathStateImpl extends _OathState {
   _$OathStateImpl(this.deviceId, this.version,
       {required this.hasKey,
       required this.remembered,
       required this.locked,
-      required this.keystore});
+      required this.keystore})
+      : super._();
 
   factory _$OathStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$OathStateImplFromJson(json);
@@ -832,12 +886,14 @@ class _$OathStateImpl implements _OathState {
                 other.keystore == keystore));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, deviceId, version, hasKey, remembered, locked, keystore);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OathState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>
@@ -851,12 +907,13 @@ class _$OathStateImpl implements _OathState {
   }
 }
 
-abstract class _OathState implements OathState {
+abstract class _OathState extends OathState {
   factory _OathState(final String deviceId, final Version version,
       {required final bool hasKey,
       required final bool remembered,
       required final bool locked,
       required final KeystoreState keystore}) = _$OathStateImpl;
+  _OathState._() : super._();
 
   factory _OathState.fromJson(Map<String, dynamic> json) =
       _$OathStateImpl.fromJson;
@@ -873,8 +930,11 @@ abstract class _OathState implements OathState {
   bool get locked;
   @override
   KeystoreState get keystore;
+
+  /// Create a copy of OathState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -894,8 +954,12 @@ mixin _$CredentialData {
   int get period => throw _privateConstructorUsedError;
   int get counter => throw _privateConstructorUsedError;
 
+  /// Serializes this CredentialData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of CredentialData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CredentialDataCopyWith<CredentialData> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -927,6 +991,8 @@ class _$CredentialDataCopyWithImpl<$Res, $Val extends CredentialData>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CredentialData
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1003,6 +1069,8 @@ class __$$CredentialDataImplCopyWithImpl<$Res>
       _$CredentialDataImpl _value, $Res Function(_$CredentialDataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CredentialData
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1113,12 +1181,14 @@ class _$CredentialDataImpl extends _CredentialData {
             (identical(other.counter, counter) || other.counter == counter));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, issuer, name, secret, oathType,
       hashAlgorithm, digits, period, counter);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CredentialData
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CredentialDataImplCopyWith<_$CredentialDataImpl> get copyWith =>
@@ -1164,8 +1234,11 @@ abstract class _CredentialData extends CredentialData {
   int get period;
   @override
   int get counter;
+
+  /// Create a copy of CredentialData
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CredentialDataImplCopyWith<_$CredentialDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

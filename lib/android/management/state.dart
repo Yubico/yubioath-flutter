@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022,2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../management/models.dart';
 import '../../management/state.dart';
+
+const _methods = MethodChannel('android.management.methods');
 
 final androidManagementState = AsyncNotifierProvider.autoDispose
     .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
@@ -45,13 +48,18 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
 
   @override
   Future<void> writeConfig(DeviceConfig config,
-      {String currentLockCode = '',
-      String newLockCode = '',
+      {String? currentLockCode,
+      String? newLockCode,
       bool reboot = false}) async {
     if (reboot) {
       state = const AsyncValue.loading();
     }
 
     ref.read(attachedDevicesProvider.notifier).refresh();
+  }
+
+  @override
+  Future<void> deviceReset() async {
+    await _methods.invokeMethod('deviceReset');
   }
 }

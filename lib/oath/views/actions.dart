@@ -15,7 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -24,6 +24,7 @@ import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
@@ -92,7 +93,7 @@ class OathActions extends ConsumerWidget {
               if (!clipboard.platformGivesFeedback()) {
                 await withContext((context) async {
                   showMessage(context,
-                      AppLocalizations.of(context)!.l_code_copied_clipboard);
+                      AppLocalizations.of(context).l_code_copied_clipboard);
                 });
               }
             }
@@ -124,7 +125,7 @@ class OathActions extends ConsumerWidget {
               CallbackAction<DeleteIntent<OathCredential>>(
             onInvoke: (intent) {
               return withContext((context) async =>
-                  await showBlurDialog(
+                  await showDialog(
                     context: context,
                     builder: (context) => DeleteAccountDialog(
                       devicePath,

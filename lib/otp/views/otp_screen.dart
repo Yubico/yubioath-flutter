@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
@@ -29,9 +30,11 @@ import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
 import '../features.dart' as features;
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 import 'actions.dart';
@@ -52,12 +55,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
     return ref.watch(otpStateProvider(widget.devicePath)).when(
-        loading: () => const MessagePage(
+        loading: () => MessagePage(
+              title: l10n.s_slots,
+              capabilities: const [Capability.otp],
               centered: true,
-              graphic: CircularProgressIndicator(),
+              graphic: const CircularProgressIndicator(),
               delayedContent: true,
             ),
         error: (error, _) => AppFailurePage(cause: error),
@@ -105,7 +110,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                       elevation: 0.0,
                                       color: Theme.of(context).hoverColor,
                                       child: Padding(
-                                        padding: const EdgeInsets.all(16),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 24, horizontal: 16.0),
                                         // TODO: Reuse from fingerprint_dialog
                                         child: Column(
                                           children: [
@@ -120,13 +126,23 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                             ),
                                             const SizedBox(height: 8),
                                             const Icon(
-                                              Icons.touch_app,
+                                              Symbols.touch_app,
                                               size: 100.0,
                                             ),
                                             const SizedBox(height: 8),
-                                            Text(selected.isConfigured
-                                                ? l10n.l_otp_slot_configured
-                                                : l10n.l_otp_slot_empty)
+                                            Text(
+                                              selected.isConfigured
+                                                  ? l10n.l_otp_slot_configured
+                                                  : l10n.l_otp_slot_empty,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -165,13 +181,17 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                 return null;
                               }),
                           },
-                          child: Column(children: [
-                            ...otpState.slots.map((e) => _SlotListItem(
-                                  e,
-                                  expanded: expanded,
-                                  selected: e == selected,
-                                ))
-                          ]),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(children: [
+                              ...otpState.slots.map((e) => _SlotListItem(
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                  ))
+                            ]),
+                          ),
                         );
                       },
                     ),
@@ -191,12 +211,13 @@ class _SlotListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final slot = otpSlot.slot;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final isConfigured = otpSlot.isConfigured;
     final hasFeature = ref.watch(featureProvider);
 
     return AppListItem(
+      key: getAppListItemKey(slot),
       otpSlot,
       selected: selected,
       leading: CircleAvatar(
@@ -209,8 +230,9 @@ class _SlotListItem extends ConsumerWidget {
       trailing: expanded
           ? null
           : OutlinedButton(
+              key: getOpenMenuButtonKey(slot),
               onPressed: Actions.handler(context, OpenIntent(otpSlot)),
-              child: const Icon(Icons.more_horiz),
+              child: const Icon(Symbols.more_horiz),
             ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(otpSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(otpSlot) : null,

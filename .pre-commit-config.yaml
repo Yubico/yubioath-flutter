@@ -1,12 +1,22 @@
 repos:
 # Flutter
+- repo: local
+  hooks:
+    - id: flutter-l10n-gen
+      name: generate-l10n
+      language: system
+      entry: flutter gen-l10n
+      pass_filenames: false
+      require_serial: true
 - repo: https://github.com/dluksza/flutter-analyze-pre-commit
   rev: "4afcaa82fc368d40d486256bf4edba329bf667bb"
   hooks:
     - id: dart-format
       files: \.dart$
+      exclude: lib/generated
       require_serial: true
     - id: flutter-analyze
+      exclude: lib/generated
       require_serial: true
 - repo: local
   hooks:

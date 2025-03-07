@@ -12,7 +12,7 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 OtpState _$OtpStateFromJson(Map<String, dynamic> json) {
   return _OtpState.fromJson(json);
@@ -23,8 +23,12 @@ mixin _$OtpState {
   bool get slot1Configured => throw _privateConstructorUsedError;
   bool get slot2Configured => throw _privateConstructorUsedError;
 
+  /// Serializes this OtpState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of OtpState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $OtpStateCopyWith<OtpState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -47,6 +51,8 @@ class _$OtpStateCopyWithImpl<$Res, $Val extends OtpState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of OtpState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -85,6 +91,8 @@ class __$$OtpStateImplCopyWithImpl<$Res>
       _$OtpStateImpl _value, $Res Function(_$OtpStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of OtpState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -134,12 +142,14 @@ class _$OtpStateImpl extends _OtpState {
                 other.slot2Configured == slot2Configured));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, slot1Configured, slot2Configured);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OtpState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$OtpStateImplCopyWith<_$OtpStateImpl> get copyWith =>
@@ -166,8 +176,11 @@ abstract class _OtpState extends OtpState {
   bool get slot1Configured;
   @override
   bool get slot2Configured;
+
+  /// Create a copy of OtpState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$OtpStateImplCopyWith<_$OtpStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -177,7 +190,9 @@ mixin _$OtpSlot {
   SlotId get slot => throw _privateConstructorUsedError;
   bool get isConfigured => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OtpSlot
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $OtpSlotCopyWith<OtpSlot> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -199,6 +214,8 @@ class _$OtpSlotCopyWithImpl<$Res, $Val extends OtpSlot>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of OtpSlot
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -236,6 +253,8 @@ class __$$OtpSlotImplCopyWithImpl<$Res>
       _$OtpSlotImpl _value, $Res Function(_$OtpSlotImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of OtpSlot
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -283,7 +302,9 @@ class _$OtpSlotImpl implements _OtpSlot {
   @override
   int get hashCode => Object.hash(runtimeType, slot, isConfigured);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of OtpSlot
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$OtpSlotImplCopyWith<_$OtpSlotImpl> get copyWith =>
@@ -299,8 +320,11 @@ abstract class _OtpSlot implements OtpSlot {
   SlotId get slot;
   @override
   bool get isConfigured;
+
+  /// Create a copy of OtpSlot
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$OtpSlotImplCopyWith<_$OtpSlotImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -316,8 +340,12 @@ mixin _$SlotConfigurationOptions {
   bool? get requireTouch => throw _privateConstructorUsedError;
   bool? get appendCr => throw _privateConstructorUsedError;
 
+  /// Serializes this SlotConfigurationOptions to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SlotConfigurationOptions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SlotConfigurationOptionsCopyWith<SlotConfigurationOptions> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -342,6 +370,8 @@ class _$SlotConfigurationOptionsCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SlotConfigurationOptions
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -388,6 +418,8 @@ class __$$SlotConfigurationOptionsImplCopyWithImpl<$Res>
       $Res Function(_$SlotConfigurationOptionsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SlotConfigurationOptions
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -446,11 +478,13 @@ class _$SlotConfigurationOptionsImpl implements _SlotConfigurationOptions {
                 other.appendCr == appendCr));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, digits8, requireTouch, appendCr);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SlotConfigurationOptions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SlotConfigurationOptionsImplCopyWith<_$SlotConfigurationOptionsImpl>
@@ -480,8 +514,11 @@ abstract class _SlotConfigurationOptions implements SlotConfigurationOptions {
   bool? get requireTouch;
   @override
   bool? get appendCr;
+
+  /// Create a copy of SlotConfigurationOptions
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SlotConfigurationOptionsImplCopyWith<_$SlotConfigurationOptionsImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -570,8 +607,13 @@ mixin _$SlotConfiguration {
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
+
+  /// Serializes this SlotConfiguration to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SlotConfigurationCopyWith<SlotConfiguration> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -597,6 +639,8 @@ class _$SlotConfigurationCopyWithImpl<$Res, $Val extends SlotConfiguration>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -610,6 +654,8 @@ class _$SlotConfigurationCopyWithImpl<$Res, $Val extends SlotConfiguration>
     ) as $Val);
   }
 
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SlotConfigurationOptionsCopyWith<$Res>? get options {
@@ -646,6 +692,8 @@ class __$$SlotConfigurationHotpImplCopyWithImpl<$Res>
       $Res Function(_$SlotConfigurationHotpImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -699,11 +747,13 @@ class _$SlotConfigurationHotpImpl extends _SlotConfigurationHotp {
             (identical(other.options, options) || other.options == options));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, key, options);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SlotConfigurationHotpImplCopyWith<_$SlotConfigurationHotpImpl>
@@ -818,8 +868,11 @@ abstract class _SlotConfigurationHotp extends SlotConfiguration {
   String get key;
   @override
   SlotConfigurationOptions? get options;
+
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SlotConfigurationHotpImplCopyWith<_$SlotConfigurationHotpImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -849,6 +902,8 @@ class __$$SlotConfigurationHmacSha1ImplCopyWithImpl<$Res>
       $Res Function(_$SlotConfigurationHmacSha1Impl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -902,11 +957,13 @@ class _$SlotConfigurationHmacSha1Impl extends _SlotConfigurationHmacSha1 {
             (identical(other.options, options) || other.options == options));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, key, options);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SlotConfigurationHmacSha1ImplCopyWith<_$SlotConfigurationHmacSha1Impl>
@@ -1022,8 +1079,11 @@ abstract class _SlotConfigurationHmacSha1 extends SlotConfiguration {
   String get key;
   @override
   SlotConfigurationOptions? get options;
+
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SlotConfigurationHmacSha1ImplCopyWith<_$SlotConfigurationHmacSha1Impl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -1056,6 +1116,8 @@ class __$$SlotConfigurationStaticPasswordImplCopyWithImpl<$Res>
       $Res Function(_$SlotConfigurationStaticPasswordImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1124,12 +1186,14 @@ class _$SlotConfigurationStaticPasswordImpl
             (identical(other.options, options) || other.options == options));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, password, keyboardLayout, options);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SlotConfigurationStaticPasswordImplCopyWith<
@@ -1248,8 +1312,11 @@ abstract class _SlotConfigurationStaticPassword extends SlotConfiguration {
   String get keyboardLayout;
   @override
   SlotConfigurationOptions? get options;
+
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SlotConfigurationStaticPasswordImplCopyWith<
           _$SlotConfigurationStaticPasswordImpl>
       get copyWith => throw _privateConstructorUsedError;
@@ -1284,6 +1351,8 @@ class __$$SlotConfigurationYubiOtpImplCopyWithImpl<$Res>
       $Res Function(_$SlotConfigurationYubiOtpImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1359,12 +1428,14 @@ class _$SlotConfigurationYubiOtpImpl extends _SlotConfigurationYubiOtp {
             (identical(other.options, options) || other.options == options));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, publicId, privateId, key, options);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SlotConfigurationYubiOtpImplCopyWith<_$SlotConfigurationYubiOtpImpl>
@@ -1484,8 +1555,11 @@ abstract class _SlotConfigurationYubiOtp extends SlotConfiguration {
   String get key;
   @override
   SlotConfigurationOptions? get options;
+
+  /// Create a copy of SlotConfiguration
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SlotConfigurationYubiOtpImplCopyWith<_$SlotConfigurationYubiOtpImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

@@ -1,2 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources />
+<resources>
+    <string name="p_ndef_set_otp">OTP Code wurde erfolgreich in die Zwischenablage kopiert.</string>
+    <string name="p_ndef_set_password">Passwort wurde erfolgreich in die Zwischenablage kopiert.</string>
+    <string name="p_ndef_parse_failure">Beim Auslesen des OTP Codes von deinem YubiKey ist ein Fehler aufgetreten.</string>
+    <string name="p_ndef_set_clip_failure">Fehler beim Zugriff auf die Zwischenablage als der OTP Code kopiert wurde.</string>
+</resources>

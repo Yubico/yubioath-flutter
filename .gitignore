@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -45,3 +47,6 @@ app.*.map.json
 
 # Report of untranslated strings
 /missing_l10n_strings.json
+
+# Generated source files
+/lib/generated

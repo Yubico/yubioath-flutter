@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class Toast extends StatefulWidget {
   final String message;
@@ -108,7 +109,8 @@ void Function() showToast(
   final Color backgroundColor = isThemeDark
       ? colorScheme.onSurface
       : Color.alphaBlend(
-          colorScheme.onSurface.withOpacity(0.80), colorScheme.surface);
+          colorScheme.onSurface.withValues(alpha: 0.80), colorScheme.surface);
+
   final textStyle =
       ThemeData(brightness: isThemeDark ? Brightness.light : Brightness.dark)
           .textTheme
@@ -148,6 +150,8 @@ void Function() showToast(
   Timer.run(() {
     Overlay.of(context).insert(entry!);
   });
+
+  SemanticsService.announce(message, TextDirection.ltr);
 
   return close;
 }

@@ -15,6 +15,7 @@
 from yubikit.core import InvalidPinError
 from functools import partial
 
+import inspect
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,12 @@ def encode_bytes(value: bytes) -> str:
 
 
 decode_bytes = bytes.fromhex
+
+
+class RpcResponse:
+    def __init__(self, body, flags=None):
+        self.body = body
+        self.flags = flags or []
 
 
 class RpcException(Exception):
@@ -75,6 +82,11 @@ class AuthRequiredException(RpcException):
         super().__init__("auth-required", "Authentication is required")
 
 
+class PinComplexityException(RpcException):
+    def __init__(self):
+        super().__init__("pin-complexity", "PIN does not meet complexity requirements")
+
+
 class ChildResetException(Exception):
     def __init__(self, message):
         self.message = message
@@ -103,6 +115,7 @@ def child(func=None, *, condition=None):
 
 class RpcNode:
     def __init__(self):
+        self._closed = False
         self._child = None
         self._child_name = None
 
@@ -111,16 +124,35 @@ class RpcNode:
         try:
             if target:
                 traversed += [target[0]]
-                return self.get_child(target[0])(
+                response = self.get_child(target[0])(
                     action, target[1:], params, event, signal, traversed
                 )
-            if action in self.list_actions():
-                return self.get_action(action)(params, event, signal)
-            if action in self.list_children():
+            elif action in self.list_actions():
+                action_f = self.get_action(action)
+                args = inspect.signature(action_f).parameters
+                # Decode any serialized bytes parameters
+                for key, param in args.items():
+                    if param.annotation in (bytes, bytes | None):
+                        value = params.get(key, None)
+                        if value is not None:
+                            params[key] = decode_bytes(value)
+                # Add event and signal if requested
+                if "event" in args:
+                    params["event"] = event
+                if "signal" in args:
+                    params["signal"] = signal
+                response = action_f(**params)
+            elif action in self.list_children():
                 traversed += [action]
-                return self.get_child(action)(
+                response = self.get_child(action)(
                     "get", [], params, event, signal, traversed
                 )
+            else:
+                raise NoSuchActionException(action)
+
+            if isinstance(response, RpcResponse):
+                return response
+            return RpcResponse(response)
         except ChildResetException as e:
             self._close_child()
             raise StateResetException(e.message, traversed)
@@ -128,11 +160,16 @@ class RpcNode:
             raise  # Prevent catching this as a ValueError below
         except ValueError as e:
             raise InvalidParametersException(e)
-        raise NoSuchActionException(action)
 
     def close(self):
+        logger.debug(f"Closing node {self}")
+        self._closed = True
         if self._child:
             self._close_child()
+
+    @property
+    def closed(self):
+        return self._closed
 
     def get_data(self):
         return dict()
@@ -193,7 +230,7 @@ class RpcNode:
         if self._child and self._child_name != name:
             self._close_child()
 
-        if not self._child:
+        if not self._child or self._child.closed:
             self._child = self.create_child(name)
             self._child_name = name
             logger.debug("created child: %s", name)
@@ -201,7 +238,7 @@ class RpcNode:
         return self._child
 
     @action
-    def get(self, params, event, signal):
+    def get(self):
         return dict(
             data=self.get_data(),
             actions=self.list_actions(),

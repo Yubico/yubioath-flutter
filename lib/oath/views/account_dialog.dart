@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/message.dart';
@@ -27,6 +27,8 @@ import '../../app/views/action_list.dart';
 import '../../app/views/fs_dialog.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../features.dart' as features;
 import '../models.dart';
 import '../state.dart';
@@ -77,13 +79,14 @@ class AccountDialog extends ConsumerWidget {
             return renamed;
           }),
         if (hasFeature(features.accountsDelete))
-          DeleteIntent: CallbackAction<DeleteIntent>(onInvoke: (intent) async {
+          DeleteIntent<OathCredential>:
+              CallbackAction<DeleteIntent<OathCredential>>(
+                  onInvoke: (intent) async {
             final deleted =
                 await (Actions.invoke(context, intent) as Future<dynamic>?);
             // Pop the account dialog if deleted
-            final withContext = ref.read(withContextProvider);
             if (deleted == true) {
-              await withContext((context) async {
+              await ref.read(withContextProvider)((context) async {
                 Navigator.of(context).pop();
               });
             }
@@ -131,26 +134,25 @@ class AccountDialog extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        Text(
-                          helper.title,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                          softWrap: true,
-                          textAlign: TextAlign.center,
+                        TooltipIfTruncated(
+                          text: helper.title,
+                          style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.fontSize),
                         ),
                         if (subtitle != null)
-                          Text(
-                            subtitle,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
+                          TooltipIfTruncated(
+                            text: subtitle,
                             // This is what ListTile uses for subtitle
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
                                 .copyWith(
                                   color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                           ),
                       ],
@@ -158,7 +160,7 @@ class AccountDialog extends ConsumerWidget {
                   ),
                   ActionListSection.fromMenuActions(
                     context,
-                    AppLocalizations.of(context)!.s_actions,
+                    AppLocalizations.of(context).s_actions,
                     actions: helper.buildActions(),
                   ),
                 ],

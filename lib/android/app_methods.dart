@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../theme.dart';
 import 'state.dart';
 
@@ -53,6 +54,10 @@ Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }
 
+Future<bool> getAndroidIsArc() async {
+  return await appMethodsChannel.invokeMethod('isArc');
+}
+
 Future<Color> getPrimaryColor() async {
   final value = await appMethodsChannel.invokeMethod('getPrimaryColor');
   return value != null ? Color(value) : defaultPrimaryColor;
@@ -69,8 +74,14 @@ void setupAppMethodsChannel(WidgetRef ref) {
     switch (call.method) {
       case 'nfcAdapterStateChanged':
         {
-          var nfcEnabled = args['nfcEnabled'];
-          ref.read(androidNfcStateProvider.notifier).setNfcEnabled(nfcEnabled);
+          var enabled = args['enabled'];
+          ref.read(androidNfcAdapterState.notifier).enable(enabled);
+          break;
+        }
+      case 'nfcStateChanged':
+        {
+          var nfcState = args['state'];
+          ref.read(androidNfcState.notifier).set(nfcState);
           break;
         }
       default:

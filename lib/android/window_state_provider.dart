@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2024 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ final androidWindowStateProvider = Provider<WindowState>(
 
 class _WindowStateNotifier extends StateNotifier<WindowState>
     with WidgetsBindingObserver {
-  final StateNotifierProviderRef<_WindowStateNotifier, WindowState> _ref;
+  final Ref<WindowState> _ref;
   _WindowStateNotifier(this._ref)
       : super(WindowState(focused: true, visible: true, active: true)) {
     _init();
@@ -58,7 +58,7 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
       if (lifeCycleState == AppLifecycleState.resumed) {
         _log.debug('Reading nfc enabled value');
         isNfcEnabled().then((value) =>
-            _ref.read(androidNfcStateProvider.notifier).setNfcEnabled(value));
+            _ref.read(androidNfcAdapterState.notifier).enable(value));
       }
     } else {
       _log.debug('Ignoring appLifecycleStateChange');

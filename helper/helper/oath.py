@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from .base import (
+    RpcResponse,
     RpcNode,
     action,
     child,
@@ -77,9 +78,9 @@ class OathNode(RpcNode):
                 logger.warning("Failed to unwrap access key", exc_info=True)
         return None
 
-    def __init__(self, connection):
+    def __init__(self, connection, scp_params=None):
         super().__init__()
-        self.session = OathSession(connection)
+        self.session = OathSession(connection, scp_params)
         self._key_verifier = None
 
         if self.session.locked:
@@ -117,17 +118,17 @@ class OathNode(RpcNode):
         )
 
     @action
-    def derive(self, params, event, signal):
-        return dict(key=self.session.derive_key(params.pop("password")))
+    def derive(self, password: str):
+        return dict(key=self.session.derive_key(password))
 
     @action
-    def forget(self, params, event, signal):
+    def forget(self):
         keys = self._get_keys()
         del keys[self.session.device_id]
         keys.write()
         return dict()
 
-    def _remember_key(self, key):
+    def _remember_key(self, key: bytes | None):
         keys = self._get_keys()
         if key is None:
             if self.session.device_id in keys:
@@ -141,33 +142,35 @@ class OathNode(RpcNode):
         else:
             return False
 
-    def _get_key(self, params):
-        has_key = "key" in params
-        has_pw = "password" in params
-        if has_key and has_pw:
+    def _get_key(self, key: bytes | None, password: str | None):
+        if key and password:
             raise ValueError("Only one of 'key' and 'password' can be provided.")
-        if has_pw:
-            return self.session.derive_key(params.pop("password"))
-        if has_key:
-            return decode_bytes(params.pop("key"))
+        if password:
+            return self.session.derive_key(password)
+        if key:
+            return key
         raise ValueError("One of 'key' and 'password' must be provided.")
 
-    def _set_key_verifier(self, key):
+    def _set_key_verifier(self, key: bytes):
         salt = os.urandom(32)
         digest = hmac.new(salt, key, "sha256").digest()
         self._key_verifier = (salt, digest)
 
-    def _do_validate(self, key):
+    def _do_validate(self, key: bytes):
         self.session.validate(key)
         self._set_key_verifier(key)
 
     @action
-    def validate(self, params, event, signal):
-        remember = params.pop("remember", False)
-        key = self._get_key(params)
+    def validate(
+        self,
+        key: bytes | None = None,
+        password: str | None = None,
+        remember: bool = False,
+    ):
+        access_key = self._get_key(key, password)
         if self.session.locked:
             try:
-                self._do_validate(key)
+                self._do_validate(access_key)
                 valid = True
             except ApduError as e:
                 if e.sw == SW.INCORRECT_PARAMETERS:
@@ -176,38 +179,42 @@ class OathNode(RpcNode):
                     raise e
         elif self._key_verifier:
             salt, digest = self._key_verifier
-            verify = hmac.new(salt, key, "sha256").digest()
+            verify = hmac.new(salt, access_key, "sha256").digest()
             valid = hmac.compare_digest(digest, verify)
         else:
             valid = False
         if valid and remember:
-            remembered = self._remember_key(key)
+            remembered = self._remember_key(access_key)
         else:
             remembered = False
         return dict(valid=valid, remembered=remembered)
 
     @action
-    def set_key(self, params, event, signal):
-        remember = params.pop("remember", False)
-        key = self._get_key(params)
-        self.session.set_key(key)
-        self._set_key_verifier(key)
-        remember &= self._remember_key(key if remember else None)
-        return dict(remembered=remember)
+    def set_key(
+        self,
+        key: bytes | None = None,
+        password: str | None = None,
+        remember: bool = False,
+    ):
+        access_key = self._get_key(key, password)
+        self.session.set_key(access_key)
+        self._set_key_verifier(access_key)
+        remember &= self._remember_key(access_key if remember else None)
+        return RpcResponse(dict(remembered=remember), ["device_info"])
 
     @action(condition=lambda self: self.session.has_key)
-    def unset_key(self, params, event, signal):
+    def unset_key(self):
         self.session.unset_key()
         self._key_verifier = None
         self._remember_key(None)
         return dict()
 
     @action
-    def reset(self, params, event, signal):
+    def reset(self):
         self.session.reset()
         self._key_verifier = None
         self._remember_key(None)
-        return dict()
+        return RpcResponse(dict(), ["device_info"])
 
     @child
     def accounts(self):
@@ -239,8 +246,7 @@ class CredentialsNode(RpcNode):
         return super().create_child(name)
 
     @action
-    def calculate_all(self, params, event, signal):
-        timestamp = params.pop("timestamp", None)
+    def calculate_all(self, timestamp: int | None = None):
         result = self.session.calculate_all(timestamp)
         return dict(
             entries=[
@@ -250,19 +256,22 @@ class CredentialsNode(RpcNode):
         )
 
     @action
-    def put(self, params, event, signal):
-        require_touch = params.pop("require_touch", False)
-        if "uri" in params:
-            data = CredentialData.parse_uri(params.pop("uri"))
-            if params:
+    def put(
+        self,
+        require_touch: bool = False,
+        **kwargs,
+    ):
+        if "uri" in kwargs:
+            data = CredentialData.parse_uri(kwargs.pop("uri"))
+            if kwargs:
                 raise ValueError("Unsupported parameters present")
         else:
             data = CredentialData(
-                params.pop("name"),
-                OATH_TYPE[params.pop("oath_type").upper()],
-                HASH_ALGORITHM[params.pop("hash", "sha1".upper())],
-                decode_bytes(params.pop("secret")),
-                **params,
+                kwargs.pop("name"),
+                OATH_TYPE[kwargs.pop("oath_type").upper()],
+                HASH_ALGORITHM[kwargs.pop("hash", "sha1".upper())],
+                decode_bytes(kwargs.pop("secret")),
+                **kwargs,
             )
 
         if data.get_id() in self._creds:
@@ -321,32 +330,29 @@ class CredentialNode(RpcNode):
                 timer.cancel()
 
     @action
-    def code(self, params, event, signal):
-        timestamp = params.pop("timestamp", None)
+    def code(self, signal, timestamp: int | None = None):
         code = self._do_with_touch(
             signal, lambda: self.session.calculate_code(self.credential, timestamp)
         )
         return asdict(code)
 
     @action
-    def calculate(self, params, event, signal):
-        challenge = decode_bytes(params.pop("challenge"))
+    def calculate(self, signal, challenge: str):
         response = self._do_with_touch(
-            signal, lambda: self.session.calculate(self.credential.id, challenge)
+            signal,
+            lambda: self.session.calculate(self.credential.id, decode_bytes(challenge)),
         )
         return dict(response=response)
 
     @action
-    def delete(self, params, event, signal):
+    def delete(self):
         self.session.delete_credential(self.credential.id)
         self.refresh()
         self.credential = None
         return dict()
 
     @action(condition=lambda self: self._require_version(5, 3, 1))
-    def rename(self, params, event, signal):
-        name = params.pop("name")
-        issuer = params.pop("issuer", None)
+    def rename(self, name: str, issuer: str | None = None):
         try:
             new_id = self.session.rename_credential(self.credential.id, name, issuer)
             self.refresh()

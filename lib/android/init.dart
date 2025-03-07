@@ -25,21 +25,25 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/app.dart';
+import '../app/features.dart' as features;
 import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
+import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
 import 'app_methods.dart';
+import 'fido/state.dart';
 import 'logger.dart';
 import 'management/state.dart';
 import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
+import 'overlay/nfc/nfc_event_notifier.dart';
+import 'overlay/nfc/nfc_overlay.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
-import 'tap_request_dialog.dart';
 import 'window_state_provider.dart';
 
 Future<Widget> initialize() async {
@@ -53,9 +57,6 @@ Future<Widget> initialize() async {
 
   return ProviderScope(
     overrides: [
-      supportedAppsProvider.overrideWith(implementedApps([
-        Application.accounts,
-      ])),
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
       attachedDevicesProvider.overrideWith(
@@ -67,8 +68,9 @@ Future<Widget> initialize() async {
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
       credentialListProvider
           .overrideWithProvider(androidCredentialListProvider.call),
-      currentAppProvider.overrideWith(
-          (ref) => AndroidSubPageNotifier(ref.watch(supportedAppsProvider))),
+      currentSectionProvider.overrideWith(
+        (ref) => androidCurrentSectionNotifier(ref),
+      ),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
       currentDeviceProvider.overrideWith(
         () => AndroidCurrentDeviceNotifier(),
@@ -82,19 +84,46 @@ Future<Widget> initialize() async {
       ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
+      supportedSectionsProvider.overrideWithValue([
+        Section.home,
+        Section.accounts,
+        Section.fingerprints,
+        Section.passkeys
+      ]),
+      // this specifies the priority of sections to show when
+      // the connected YubiKey does not support current section
+      androidSectionPriority.overrideWithValue(
+          [Section.accounts, Section.fingerprints, Section.passkeys]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
       defaultColorProvider.overrideWithValue(await getPrimaryColor()),
+
+      // FIDO
+      fidoStateProvider.overrideWithProvider(androidFidoStateProvider.call),
+      fingerprintProvider.overrideWithProvider(androidFingerprintProvider.call),
+      credentialProvider.overrideWithProvider(androidCredentialProvider.call),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(page: Consumer(
         builder: (context, ref, child) {
+          ref.read(nfcEventNotifierListener).startListener(context);
+
+          Timer.run(() {
+            ref.read(featureFlagProvider.notifier)
+              // TODO: Load feature flags from file/config?
+              //..loadConfig(config)
+              // Disable unimplemented feature
+              ..setFeature(features.piv, false)
+              ..setFeature(features.otp, false)
+              ..setFeature(features.management, false);
+          });
+
           // activates window state provider
           ref.read(androidWindowStateProvider);
 
-          // initializes global handler for dialogs
-          ref.read(androidDialogProvider);
+          // initializes overlay for nfc events
+          ref.read(nfcOverlay);
 
           // set context which will handle otpauth links
           setupOtpAuthLinkHandler(context);

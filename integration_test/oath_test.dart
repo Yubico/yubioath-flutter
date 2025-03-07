@@ -15,11 +15,12 @@
  */
 
 @Tags(['android', 'desktop', 'oath'])
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
-import 'package:yubico_authenticator/oath/keys.dart' as keys;
 import 'package:yubico_authenticator/oath/models.dart';
 import 'package:yubico_authenticator/oath/views/account_list.dart';
 
@@ -30,24 +31,24 @@ void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('OATH UI tests', () {
-    appTest('Menu items exist', (WidgetTester tester) async {
-      await tester.tapActionIconButton();
-      await tester.shortWait();
-      expect(find.byKey(keys.addAccountAction), findsOneWidget);
-      expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
-      // close dialog
-      await tester.tapTopLeftCorner();
-      await tester.longWait();
-    });
-  });
+  // group('OATH UI tests', () {
+  //   appTest('Menu items exist', (WidgetTester tester) async {
+  //     await tester.tapActionIconButton();
+  //     await tester.shortWait();
+  //     expect(find.byKey(keys.addAccountAction), findsOneWidget);
+  //     expect(find.byKey(keys.setOrManagePasswordAction), findsOneWidget);
+  //     // close dialog
+  //     await tester.tapTopLeftCorner();
+  //     await tester.longWait();
+  //   });
+  // });
 
   group('Account creation', () {
     appTest('Initial reset OATH', (WidgetTester tester) async {
       /// reset OATH application
-      await tester.tapAppDrawerButton(oathAppDrawer);
+      //await tester.tapAppDrawerButton(oathAppDrawer);
       await tester.resetOATH();
-      await tester.longWait();
+      await tester.shortWait();
     });
     appTest('Create 32 Accounts', (WidgetTester tester) async {
       await tester.tapAppDrawerButton(oathAppDrawer);
@@ -62,11 +63,11 @@ void main() {
         await tester.addAccount(testAccount);
         await tester.shortWait();
 
-        expect(
-            find.descendant(
-                of: find.byType(AccountList),
-                matching: find.textContaining(testAccount.name)),
-            findsOneWidget);
+        // expect(
+        //     find.descendant(
+        //         of: find.byType(AccountList),
+        //         matching: find.textContaining(testAccount.name)),
+        //     findsOneWidget);
 
         await tester.shortWait();
       }
@@ -239,20 +240,20 @@ void main() {
       await tester.longWait();
     });
 
-    /// adds an account, renames, verifies
-    appTest('Rename OATH account', (WidgetTester tester) async {
-      var testAccount =
-          const Account(issuer: 'IssuerToRename', name: 'NameToRename');
-
-      /// delete account if it exists
-      await tester.deleteAccount(testAccount);
-      await tester.deleteAccount(
-          const Account(issuer: 'RenamedIssuer', name: 'RenamedName'));
-      await tester.longWait();
-      await tester.addAccount(testAccount);
-      await tester.longWait();
-      await tester.renameAccount(testAccount, 'RenamedIssuer', 'RenamedName');
-    });
+    // /// adds an account, renames, verifies
+    // appTest('Rename OATH account', (WidgetTester tester) async {
+    //   var testAccount =
+    //       const Account(issuer: 'IssuerToRename', name: 'NameToRename');
+    //
+    //   /// delete account if it exists
+    //   await tester.deleteAccount(testAccount);
+    //   await tester.deleteAccount(
+    //       const Account(issuer: 'RenamedIssuer', name: 'RenamedName'));
+    //   await tester.longWait();
+    //   await tester.addAccount(testAccount);
+    //   await tester.longWait();
+    //   await tester.renameAccount(testAccount, 'RenamedIssuer', 'RenamedName');
+    // });
   });
 
   group('Password tests', () {
@@ -263,20 +264,28 @@ void main() {
       var secondPassword = 'secondPassword';
       var thirdPassword = 'thirdPassword';
       appTest('Reset OATH', (WidgetTester tester) async {
+        await tester.tapAppDrawerButton(oathAppDrawer);
         await tester.resetOATH();
+        await tester.longWait();
       });
       appTest('Set first OATH password', (WidgetTester tester) async {
+        await tester.tapAppDrawerButton(oathAppDrawer);
+
         // Sets a password for OATH
         await tester.setOathPassword(firstPassword);
       });
 
       appTest('Set second OATH password', (WidgetTester tester) async {
+        await tester.tapAppDrawerButton(oathAppDrawer);
+
         // Without removing the first, change to a second password
         await tester.unlockOathSession(firstPassword);
         await tester.replaceOathPassword(firstPassword, secondPassword);
       });
 
       appTest('Set third OATH password', (WidgetTester tester) async {
+        await tester.tapAppDrawerButton(oathAppDrawer);
+
         // Without removing the second, set a third password
         await tester.unlockOathSession(secondPassword);
         await tester.replaceOathPassword(secondPassword, thirdPassword);

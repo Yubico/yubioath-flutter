@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
 import '../../widgets/list_title.dart';
+import '../../widgets/tooltip_if_truncated.dart';
 import '../models.dart';
 
 class ActionListItem extends StatelessWidget {
@@ -51,22 +52,42 @@ class ActionListItem extends StatelessWidget {
     //   ActionStyle.primary => (theme.onPrimary, theme.primary),
     //   ActionStyle.error => (theme.onError, theme.error),
     // };
+    final theme = Theme.of(context);
 
-    return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
-      leading: Opacity(
-        opacity: onTap != null ? 1.0 : 0.4,
-        child: CircleAvatar(
-          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          backgroundColor: Colors.transparent,
-          child: icon,
+    return GestureDetector(
+      onTap: onTap == null
+          ? () {
+              // Needed to avoid triggering escape intent when tapping
+              // on a disabled item
+            }
+          : null,
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        title: TooltipIfTruncated(
+          text: title,
+          style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
         ),
+        subtitle: subtitle != null
+            ? TooltipIfTruncated(
+                text: subtitle!,
+                style:
+                    TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              )
+            : null,
+        leading: Opacity(
+          opacity: onTap != null ? 1.0 : 0.4,
+          child: CircleAvatar(
+            foregroundColor: theme.colorScheme.onSurfaceVariant,
+            backgroundColor: Colors.transparent,
+            child: icon,
+          ),
+        ),
+        trailing: trailing,
+        onTap: onTap != null ? () => onTap?.call(context) : null,
+        enabled: onTap != null,
       ),
-      trailing: trailing,
-      onTap: onTap != null ? () => onTap?.call(context) : null,
-      enabled: onTap != null,
     );
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../desktop/state.dart';
-import '../message.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../home/views/home_message_page.dart';
 import '../models.dart';
 import '../state.dart';
-import 'message_page.dart';
+import 'elevate_fido_buttons.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
   final DeviceNode node;
@@ -33,41 +35,23 @@ class DeviceErrorScreen extends ConsumerWidget {
   const DeviceErrorScreen(this.node, {this.error, super.key});
 
   Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (pid.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-        final currentApp = ref.read(currentAppProvider);
-        return MessagePage(
-          title: currentApp.getDisplayName(l10n),
-          capabilities: currentApp.getCapabilities(),
-          header: l10n.s_admin_privileges_required,
+        final currentSection = ref.read(currentSectionProvider);
+        return HomeMessagePage(
+          capabilities: currentSection.capabilities,
+          header: l10n.l_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [
-            FilledButton.icon(
-              label: Text(l10n.s_unlock),
-              icon: const Icon(Icons.lock_open),
-              onPressed: () async {
-                final closeMessage = showMessage(
-                    context, l10n.l_elevating_permissions,
-                    duration: const Duration(seconds: 30));
-                try {
-                  if (await ref.read(rpcProvider).requireValue.elevate()) {
-                    ref.invalidate(rpcProvider);
-                  } else {
-                    await ref.read(withContextProvider)((context) async =>
-                        showMessage(context, l10n.s_permission_denied));
-                  }
-                } finally {
-                  closeMessage();
-                }
-              },
-            ),
+            const ElevateFidoButtons(),
           ],
+          footnote: isMicrosoftStore ? l10n.l_ms_store_permission_note : null,
         );
       }
     }
-    return MessagePage(
+    return HomeMessagePage(
       centered: true,
       graphic: Image.asset(
         'assets/product-images/generic.png',
@@ -81,20 +65,41 @@ class DeviceErrorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return node.map(
       usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
       nfcReader: (node) => switch (error) {
-        'unknown-device' => MessagePage(
+        'unknown-device' => HomeMessagePage(
             centered: true,
             graphic: Icon(
-              Icons.help_outlined,
+              Symbols.help,
               size: 96,
               color: Theme.of(context).colorScheme.error,
             ),
             header: l10n.s_unknown_device,
           ),
-        _ => MessagePage(
+        'restricted-nfc' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.contactless,
+              size: 96,
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+            header: l10n.l_deactivate_restricted_nfc,
+            message: l10n.p_deactivate_restricted_nfc_desc,
+            footnote: l10n.p_deactivate_restricted_nfc_footer,
+          ),
+        'no-scp11b-nfc-support' => HomeMessagePage(
+            centered: true,
+            graphic: Icon(
+              Symbols.contactless,
+              size: 96,
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+            header: l10n.l_configuration_unsupported,
+            message: l10n.p_scp_unsupported,
+          ),
+        _ => HomeMessagePage(
             centered: true,
             graphic: Image.asset(
               'assets/graphics/no-key.png',
