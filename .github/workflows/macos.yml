@@ -141,7 +141,7 @@ jobs:
         --synchronous
         --download-artifacts
 
-    - name: verify signatures
+    - name: unpack signed artifacts
       run: |
         mkdir -p signed
         mv scribe-download/*/sign-source/1.zip signed/
