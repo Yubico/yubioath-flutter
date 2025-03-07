@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
+import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.asString
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.FidoCredential
@@ -162,6 +163,11 @@ class FidoManager(
                 else -> throw NotImplementedError()
             }
         }
+    }
+
+    override fun supports(appContext: OperationContext): Boolean = when (appContext) {
+        OperationContext.FidoPasskeys, OperationContext.FidoFingerprints -> true
+        else -> false
     }
 
     override fun activate() {

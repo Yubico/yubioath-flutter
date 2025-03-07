@@ -18,6 +18,7 @@ package com.yubico.authenticator.management
 
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.NULL
+import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.setHandler
@@ -71,6 +72,9 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
             }
         }
     }
+
+    override fun supports(appContext: OperationContext): Boolean =
+        appContext == OperationContext.Management
 
     override fun activate() {
         super.activate()

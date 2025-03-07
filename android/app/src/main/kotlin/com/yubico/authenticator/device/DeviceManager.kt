@@ -16,19 +16,16 @@
 
 package com.yubico.authenticator.device
 
-import androidx.collection.ArraySet
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
-import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
-import com.yubico.yubikit.management.Capability
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicReference
 
@@ -74,42 +71,6 @@ class DeviceManager(
     companion object {
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
         private val logger = LoggerFactory.getLogger(DeviceManager::class.java)
-
-        private val capabilityContextMap = mapOf(
-            Capability.OATH to listOf(OperationContext.Oath), Capability.FIDO2 to listOf(
-                OperationContext.FidoFingerprints, OperationContext.FidoPasskeys
-            )
-        )
-
-        fun getSupportedContexts(deviceInfo: Info): ArraySet<OperationContext> {
-            val operationContexts = ArraySet<OperationContext>()
-
-            val capabilities =
-                (if (deviceInfo.isNfc) deviceInfo.config.enabledCapabilities.nfc else deviceInfo.config.enabledCapabilities.usb)
-                    ?: 0
-
-            capabilityContextMap.forEach { entry ->
-                if (capabilities and entry.key.bit == entry.key.bit) {
-                    operationContexts.addAll(entry.value)
-                }
-            }
-
-            logger.debug("Device supports following contexts: {}", operationContexts)
-            return operationContexts
-        }
-
-        fun getPreferredContext(contexts: ArraySet<OperationContext>): OperationContext {
-            // custom sort
-            for (context in contexts) {
-                if (context == OperationContext.Oath) {
-                    return context
-                } else if (context == OperationContext.FidoPasskeys) {
-                    return context
-                }
-            }
-
-            return OperationContext.Oath
-        }
     }
 
     private val lifecycleObserver = object : DefaultLifecycleObserver {

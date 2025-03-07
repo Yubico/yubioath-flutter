@@ -209,6 +209,9 @@ class OathManager(
         }
     }
 
+    override fun supports(appContext: OperationContext): Boolean =
+        appContext == OperationContext.Oath
+
     override fun activate() {
         super.activate()
         oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
@@ -257,7 +260,7 @@ class OathManager(
                             try {
                                 // only load the accounts without calculating the codes
                                 oathViewModel.updateCredentials(getAccounts(session))
-                            } catch (e: IOException) {
+                            } catch (_: IOException) {
                                 oathViewModel.updateCredentials(emptyMap())
                             }                            }
                     }

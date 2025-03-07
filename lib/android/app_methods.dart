@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../app/models.dart';
+import '../app/state.dart';
 import '../theme.dart';
 import 'state.dart';
 
@@ -84,6 +86,19 @@ void setupAppMethodsChannel(WidgetRef ref) {
         {
           var nfcState = args['state'];
           ref.read(androidNfcState.notifier).set(nfcState);
+          break;
+        }
+      case 'appContextChanged':
+        {
+          var appContext = args['appContext'];
+          var section = switch (appContext) {
+            0 => Section.home,
+            1 => Section.accounts,
+            3 => Section.fingerprints,
+            4 => Section.passkeys,
+            _ => Section.home
+          };
+          ref.read(currentSectionProvider.notifier).setCurrentSection(section);
           break;
         }
       default:

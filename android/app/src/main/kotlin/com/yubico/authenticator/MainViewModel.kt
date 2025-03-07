@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package com.yubico.authenticator
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.yubico.authenticator.OperationContext.entries
 import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
+import com.yubico.yubikit.management.Capability
 
 enum class OperationContext(val value: Int) {
     Home(0),
@@ -37,6 +39,47 @@ enum class OperationContext(val value: Int) {
 
     companion object {
         fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Invalid
+
+        fun Info.getSupportedContexts(): List<OperationContext> {
+
+            val capabilitiesToContext = mapOf(
+                Capability.OATH to listOf(Oath),
+                Capability.FIDO2 to listOf(
+                    FidoFingerprints, FidoPasskeys
+                )
+            )
+
+            val operationContexts = mutableListOf(Home)
+
+            val capabilities =
+                (if (isNfc) config.enabledCapabilities.nfc else config.enabledCapabilities.usb)
+                    ?: 0
+
+            capabilitiesToContext.forEach { entry ->
+                if (capabilities and entry.key.bit == entry.key.bit) {
+                    operationContexts.addAll(entry.value)
+                }
+            }
+
+            return operationContexts
+        }
+
+        fun getPreferredContext(contexts: List<OperationContext>): OperationContext {
+            // custom sort
+            for (context in listOf(
+                Oath,
+                FidoPasskeys,
+                FidoFingerprints
+            )) {
+                if (context in contexts) {
+                    return context
+                }
+            }
+
+            return Home
+        }
+
+
     }
 }
 

@@ -42,6 +42,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
+import com.yubico.authenticator.OperationContext.Companion.getPreferredContext
+import com.yubico.authenticator.OperationContext.Companion.getSupportedContexts
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.noScp11bNfcSupport
 import com.yubico.authenticator.fido.FidoManager
@@ -347,18 +349,17 @@ class MainActivity : FlutterFragmentActivity() {
 
         deviceManager.setDeviceInfo(deviceInfo)
 
-        contextManagers.firstOrNull(AppContextManager::hasPending)?.let { pendingContextManager ->
-            val contextName = pendingContextManager.javaClass.simpleName
+        contextManagers.values.firstOrNull(AppContextManager::hasPending)?.let {
             // this context is waiting for the next action,
             // we have to switch to it if it is not active
-            if (contextManager != pendingContextManager) {
+            if (contextManager != it) {
                 contextManager?.deactivate()
-                pendingContextManager.activate()
+                it.activate()
             }
 
             try {
-                logger.debug("Processing pending action in context {}", contextName)
-                if (pendingContextManager.processYubiKey(device)) {
+                logger.debug("Processing pending action in context {}", it)
+                if (it.processYubiKey(device)) {
                     appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
                 }
                 if (device is NfcYubiKeyDevice) {
@@ -371,30 +372,28 @@ class MainActivity : FlutterFragmentActivity() {
                 appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             }
 
-            if (contextManager != pendingContextManager) {
-                pendingContextManager.deactivate()
+            if (contextManager != it) {
+                it.deactivate()
                 contextManager?.activate()
             }
-            logger.debug("Finished execution of pending action in {} context", contextName)
+            logger.debug("Finished execution of pending action in {} context", it)
             return
         }
 
-        val supportedContexts = DeviceManager.getSupportedContexts(deviceInfo)
-        logger.debug("Connected key supports: {}", supportedContexts)
-        logger.debug("Current context: {}", contextManager?.javaClass?.simpleName)
-        var switchedContext: Boolean = false
+        // there was no pending action, switch context manager if needed
+        val supportedContexts = deviceInfo.getSupportedContexts()
+        var switchedContextManager = false
         if (!supportedContexts.contains(viewModel.appContext.value)) {
-            val preferredContext = DeviceManager.getPreferredContext(supportedContexts)
+            val preferredContext = getPreferredContext(supportedContexts)
             logger.debug(
                 "Current context ({}) is not supported by the key. Using preferred context {}",
                 viewModel.appContext.value,
                 preferredContext
             )
-            switchedContext = switchContext(preferredContext)
-        }
-
-        if (contextManager is HomeContextManager && supportedContexts.isNotEmpty()) {
-            switchedContext = switchContext(DeviceManager.getPreferredContext(supportedContexts))
+            switchedContextManager = switchContextManager(preferredContext)
+            if (switchedContextManager) {
+                appMethodChannel.appContextChanged(preferredContext)
+            }
         }
 
         contextManager?.let {
@@ -403,7 +402,7 @@ class MainActivity : FlutterFragmentActivity() {
                 if (requestHandled) {
                     appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
                 }
-                if (!switchedContext && device is NfcYubiKeyDevice) {
+                if (!switchedContextManager && device is NfcYubiKeyDevice) {
                     device.remove {
                         appMethodChannel.nfcStateChanged(NfcState.IDLE)
                     }
@@ -423,7 +422,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private var contextManager: AppContextManager? = null
-    private lateinit var contextManagers: Array<AppContextManager>
+    private lateinit var contextManagers: Map<OperationContext, AppContextManager>
     private lateinit var deviceManager: DeviceManager
     private lateinit var appContext: AppContext
     private lateinit var nfcOverlayManager: NfcOverlayManager
@@ -462,70 +461,61 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.appContext.observe(this) {
             if (it != OperationContext.Invalid) {
-                switchContext(it)
+                switchContextManager(it)
                 viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
             }
         }
 
-        contextManagers = arrayOf(
-            HomeContextManager(
-                deviceManager
-            ),
-            OathManager(
-                messenger,
-                deviceManager,
-                this,
-                oathViewModel,
-                nfcOverlayManager,
-                appPreferences
-            ),
-            FidoManager(
-                messenger,
-                deviceManager,
-                this,
-                appMethodChannel,
-                nfcOverlayManager,
-                fidoViewModel,
-                viewModel
-            ),
-            ManagementManager(
-                messenger,
-                deviceManager,
-            )
+        val homeContextManager = HomeContextManager(deviceManager)
+        val oathContextManager = OathManager(
+            messenger,
+            deviceManager,
+            this,
+            oathViewModel,
+            nfcOverlayManager,
+            appPreferences
         )
-        contextManager = contextManagers[0]
+        val fidoContextManager = FidoManager(
+            messenger,
+            deviceManager,
+            this,
+            appMethodChannel,
+            nfcOverlayManager,
+            fidoViewModel,
+            viewModel
+        )
+        val managementContextManager = ManagementManager(messenger, deviceManager)
+
+        contextManagers = mapOf(
+            OperationContext.Home to homeContextManager,
+            OperationContext.Oath to oathContextManager,
+            OperationContext.FidoPasskeys to fidoContextManager,
+            OperationContext.FidoFingerprints to fidoContextManager,
+            OperationContext.Management to managementContextManager,
+            // currently not supported
+            OperationContext.FidoU2f to homeContextManager,
+            OperationContext.HsmAuth to homeContextManager,
+            OperationContext.OpenPgp to homeContextManager,
+            OperationContext.YubiOtp to homeContextManager,
+        )
+        contextManager = contextManagers[OperationContext.Home]
     }
 
-    private fun switchContext(appContext: OperationContext): Boolean {
-
-        logger.debug("AppContext before switch: {}", contextManager?.javaClass?.simpleName)
-        var switchHappened = false
-        // TODO: refactor this when more OperationContext are handled
-        // only recreate the contextManager object if it cannot be reused
-
-        if ((appContext == OperationContext.Home && contextManager is HomeContextManager) ||
-            (appContext == OperationContext.Oath && contextManager is OathManager) ||
-            (appContext in listOf(
-                OperationContext.FidoPasskeys,
-                OperationContext.FidoFingerprints
-            ) && contextManager is FidoManager)
-        ) {
-
-        } else {
-            contextManager?.deactivate()
-            contextManager = when (appContext) {
-                OperationContext.Home -> contextManagers[0] // don't change the contextManager
-                OperationContext.Oath -> contextManagers[1]
-                OperationContext.FidoFingerprints, OperationContext.FidoPasskeys -> contextManagers[2]
-                else -> contextManagers[0]
+    private fun switchContextManager(appContext: OperationContext): Boolean {
+        contextManager?.let {
+            if (it.supports(appContext)) {
+                logger.debug(
+                    "ContextManager ({}) does not need switching to {}.",
+                    contextManager,
+                    appContext
+                )
+                return false
             }
-            contextManager?.activate()
-            switchHappened = true
         }
-
-        logger.debug("AppContext after switch: {}", contextManager?.javaClass?.simpleName)
-
-        return switchHappened
+        contextManager?.deactivate()
+        contextManager = contextManagers[appContext]
+        contextManager?.activate()
+        return true
     }
 
     private fun readScpKeyParams(device: YubiKeyDevice, fipsCapable: Int): ScpKeyParams? =
@@ -558,7 +548,7 @@ class MainActivity : FlutterFragmentActivity() {
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         nfcStateListener.appMethodChannel = null
         flutterStreams.forEach { it.close() }
-        contextManagers.forEach(AppContextManager::dispose)
+        contextManagers.values.forEach(AppContextManager::dispose)
         deviceManager.dispose()
         super.cleanUpFlutterEngine(flutterEngine)
     }
@@ -705,6 +695,15 @@ class MainActivity : FlutterFragmentActivity() {
                 methodChannel.invokeMethod(
                     "nfcStateChanged",
                     JSONObject(mapOf("state" to activityState.value)).toString()
+                )
+            }
+        }
+
+        fun appContextChanged(appContext: OperationContext) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                methodChannel.invokeMethod(
+                    "appContextChanged",
+                    JSONObject(mapOf("appContext" to appContext.value)).toString()
                 )
             }
         }

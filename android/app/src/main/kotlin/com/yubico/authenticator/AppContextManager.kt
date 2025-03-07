@@ -37,6 +37,8 @@ abstract class AppContextManager(
 
     abstract suspend fun processYubiKey(device: YubiKeyDevice): Boolean
 
+    abstract fun supports(appContext: OperationContext): Boolean
+
     open fun activate() {
         deviceManager.addDeviceListener(this)
     }

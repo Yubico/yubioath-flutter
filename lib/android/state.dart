@@ -152,48 +152,21 @@ final androidAppContextHandler = Provider<AndroidAppContextHandler>(
 
 CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
   final notifier = AndroidCurrentSectionNotifier(
-    ref.watch(androidSectionPriority),
     ref.watch(androidAppContextHandler),
   );
-  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
-  }, fireImmediately: true);
   return notifier;
 }
 
 class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
-  final List<Section> _supportedSectionsByPriority;
   final AndroidAppContextHandler _appContextHandler;
 
-  AndroidCurrentSectionNotifier(
-    this._supportedSectionsByPriority,
-    this._appContextHandler,
-  ) : super(Section.home);
+  AndroidCurrentSectionNotifier(this._appContextHandler) : super(Section.home);
 
   @override
   void setCurrentSection(Section section) {
+    _appContextHandler.switchAppContext(section);
+    _log.debug('Section changed to $section');
     state = section;
-    _log.debug('Setting current section to $section');
-    _appContextHandler.switchAppContext(state);
-  }
-
-  void _notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null) {
-      _log.debug('Keeping current section because key was disconnected');
-      return;
-    }
-
-    final supportedSections = _supportedSectionsByPriority.where(
-      (e) => e.getAvailability(data) == Availability.enabled,
-    );
-
-    if (supportedSections.contains(state)) {
-      // the key supports current section
-      _log.debug('Keeping current section because new key support $state');
-      return;
-    }
-
-    setCurrentSection(supportedSections.firstOrNull ?? Section.home);
   }
 }
 
