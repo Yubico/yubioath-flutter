@@ -323,7 +323,7 @@ object Workarounds {
      */
     private suspend fun canPing(usbYubiKey: UsbYubiKeyDevice) = suspendCoroutine { continuation ->
         runCatching {
-            logger.debug("Probing with CTAPHID_PING ")
+            logger.debug("Probing with CTAPHID_PING")
             usbYubiKey.requestConnection(FidoConnection::class.java) {
                 try {
                     val fidoProtocol = FidoProtocol(it.value)
@@ -336,8 +336,8 @@ object Workarounds {
                     continuation.resume(true)
                 } catch (exception: Exception) {
                     logger.debug("Ignored exception: {}", exception.message)
+                    continuation.resume(false)
                 }
-                continuation.resume(false)
             }
         }.recoverCatching {
             continuation.resume(false)
