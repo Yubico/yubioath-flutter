@@ -56,13 +56,17 @@
     "q_rename_target": "Đổi tên {label}?",
     "@q_rename_target": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
-            "item": {}
+            "item": {
+                "type": "String"
+            }
         }
     },
     "s_none": "<không có>",
@@ -100,7 +104,9 @@
     "l_invalid_format_allowed_chars": "Định dạng không hợp lệ, các ký tự được phép: {characters}",
     "@l_invalid_format_allowed_chars": {
         "placeholders": {
-            "characters": {}
+            "characters": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_keyboard_character": "Ký tự không hợp lệ cho bàn phím đã chọn",
@@ -110,7 +116,9 @@
     "s_log_level": "Mức nhật ký: {level}",
     "@s_log_level": {
         "placeholders": {
-            "level": {}
+            "level": {
+                "type": "String"
+            }
         }
     },
     "s_character_count": "Số lượng ký tự",
@@ -122,7 +130,9 @@
     "p_community_translations_desc": null,
     "@p_community_translations_desc": {
         "placeholders": {
-            "crowdin": {}
+            "crowdin": {
+                "type": "String"
+            }
         }
     },
     "s_choose_language": null,
@@ -157,27 +167,35 @@
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
-            "serial": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "s_fw_version": "F/W: {version}",
     "@s_fw_version": {
         "placeholders": {
-            "version": {}
-        }
-    },
-    "@l_serial_number": {
-        "placeholders": {
-            "serial": {}
+            "version": {
+                "type": "Object"
+            }
         }
     },
     "l_serial_number": "Số serial: {serial}",
-    "@l_firmware_version": {
+    "@l_serial_number": {
         "placeholders": {
-            "version": {}
+            "serial": {
+                "type": "int"
+            }
         }
     },
     "l_firmware_version": "Phiên bản firmware: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
     "l_fips_capable": "Hỗ trợ FIPS",
     "l_fips_approved": "Đã phê duyệt FIPS",
 
@@ -217,13 +235,17 @@
     "l_app_not_supported_on_yk": "YubiKey được sử dụng không hỗ trợ ứng dụng '{app}'",
     "@l_app_not_supported_on_yk": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "l_app_disabled_desc": "Bật ứng dụng '{app}' trên YubiKey của bạn để truy cập",
     "@l_app_disabled_desc": {
         "placeholders": {
-            "app": {}
+            "app": {
+                "type": "String"
+            }
         }
     },
     "s_fido_disabled": "FIDO2 đã bị tắt",
@@ -233,7 +255,6 @@
     "s_show_lock_code": "Hiển thị mã khóa",
     "s_hide_lock_code": "Ẩn mã khóa",
     "p_lock_code_required_desc": "Hành động bạn sắp thực hiện yêu cầu nhập mã khóa cấu hình.",
-
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "Quá trình Helper không phản hồi",
@@ -288,25 +309,33 @@
     "l_set_pin_failed": "Cài đặt Mã PIN thất bại: {message}",
     "@l_set_pin_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_attempts_remaining": "Còn {retries} lần thử",
     "@l_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_pin_attempts_remaining": "Mã PIN sai, còn {retries} lần thử",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "l_wrong_puk_attempts_remaining": "Mã PUK sai, còn {retries} lần thử",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
-            "retries": {}
+            "retries": {
+                "type": "int"
+            }
         }
     },
     "s_fido_pin_protection": "Bảo vệ Mã PIN FIDO",
@@ -321,7 +350,9 @@
     "p_enter_current_pin_or_puk": null,
     "@p_enter_current_piv_pin_puk": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "p_enter_current_pin_or_reset": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải mở khóa bằng Mã PUK hoặc khôi phục cài đặt gốc YubiKey.",
@@ -330,17 +361,29 @@
     "p_new_fido2_pin_requirements": null,
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
         }
     },
     "p_new_fido2_pin_complexity_active_requirements": null,
     "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
-            "min_length": {},
-            "max_length": {},
-            "unique_characters": {},
-            "common_pin": {}
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
         }
     },
     "s_ep_attestation": "Xác thực Doanh Nghiệp",
@@ -357,22 +400,34 @@
     "p_new_piv_pin_puk_requirements": null,
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
         }
     },
     "p_new_piv_pin_puk_complexity_active_requirements": null,
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
-            "name": {},
-            "length": {},
-            "common": {}
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
         }
     },
     "p_pin_puk_complexity_failure": "Mới {name} không đáp ứng yêu cầu độ phức tạp.",
     "@p_pin_puk_complexity_failure": {
         "placeholders": {
-            "name": {}
+            "name": {
+                "type": "String"
+            }
         }
     },
     "s_dismiss": null,
@@ -434,7 +489,9 @@
     "l_account": "Tài khoản: {label}",
     "@l_account": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_accounts": "Các tài khoản",
@@ -442,7 +499,9 @@
     "l_results_for": "Kết quả cho \"{query}\"",
     "@l_results_for": {
         "placeholders": {
-            "query": {}
+            "query": {
+                "type": "String"
+            }
         }
     },
     "l_authenticator_get_started": "Bắt đầu với các tài khoản OTP",
@@ -464,7 +523,9 @@
     "l_account_add_failed": "Thêm tài khoản thất bại: {message}",
     "@l_account_add_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_account_password_required": "Yêu cầu mật khẩu",
@@ -487,7 +548,9 @@
     "l_rename_account_failed": "Đổi tên tài khoản không thành công: {message}",
     "@l_rename_account_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "p_rename_will_change_account_displayed": "Điều này sẽ thay đổi cách tài khoản được hiển thị trong danh sách.",
@@ -502,20 +565,28 @@
     "l_accounts_used": "{used} trong {capacity} tài khoản đã sử dụng",
     "@l_accounts_used": {
         "placeholders": {
-            "used": {},
-            "capacity": {}
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
         }
     },
     "s_num_digits": "{num} chữ số",
     "@s_num_digits": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_num_sec": "{num} giây",
     "@s_num_sec": {
         "placeholders": {
-            "num": {}
+            "num": {
+                "type": "int"
+            }
         }
     },
     "s_issuer_optional": "Nhà phát hành (tùy chọn)",
@@ -533,7 +604,9 @@
     "l_passkey": "Mã bảo mật: {label}",
     "@l_passkey": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_passkeys": "Mã bảo mật",
@@ -552,8 +625,12 @@
     "p_passkeys_used": "{used} trong {max} mã bảo mật đã sử dụng.",
     "@p_passkeys_used": {
         "placeholders": {
-            "used": {},
-            "max": {}
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
         }
     },
     "@_fingerprints": {},
@@ -561,7 +638,9 @@
     "l_fingerprint": "Vân tay: {label}",
     "@l_fingerprint": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
     "s_fingerprints": "Vân tay",
@@ -569,12 +648,18 @@
     "s_fingerprint_added": "Vân tay đã được thêm",
     "l_adding_fingerprint_failed": "Lỗi khi thêm vân tay: {message}",
     "@l_adding_fingerprint_failed": {
-        "placeholders": {}
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
     },
     "l_setting_name_failed": "Lỗi khi thiết lập tên: {message}",
     "@l_setting_name_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "s_setup_fingerprints": "Thiết lập vân tay",
@@ -594,14 +679,18 @@
     "l_rename_fp_failed": "Lỗi khi đổi tên: {message}",
     "@l_rename_fp_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_add_one_or_more_fps": "Thêm một hoặc nhiều (tối đa năm) vân tay",
     "l_fingerprints_used": "{used}/5 vân tay đã đăng ký",
     "@l_fingerprints_used": {
         "placeholders": {
-            "used": {}
+            "used": {
+                "type": "int"
+            }
         }
     },
     "p_press_fingerprint_begin": "Ấn ngón tay của bạn vào YubiKey để bắt đầu.",
@@ -658,7 +747,9 @@
     "p_generate_desc": "Điều này sẽ tạo một khóa mới trên YubiKey trong khe PIV {slot}. Khóa công khai sẽ được lưu vào tập tin, nhúng vào một chứng chỉ tự ký được lưu trữ trên YubiKey, hoặc trong một yêu cầu ký chứng chỉ (CSR) được lưu vào tập tin.",
     "@p_generate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "s_private_key_generated": "Khóa riêng đã được tạo",
@@ -669,19 +760,25 @@
     "p_delete_certificate_desc": null,
     "@p_delete_certificate_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_key_desc": null,
     "@p_delete_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "p_delete_certificate_and_key_desc": null,
     "@p_delete_certificate_and_key_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_certificate_deleted": "Chứng chỉ đã bị xóa",
@@ -692,28 +789,40 @@
     "q_move_key_confirm": "Di chuyển khóa riêng trong khe PIV {from_slot}?",
     "@q_move_key_confirm": {
         "placeholders": {
-            "from_slot": {}
+            "from_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_to_slot_confirm": "Di chuyển khóa riêng trong khe PIV {from_slot} đến khe {to_slot}?",
     "@q_move_key_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "q_move_key_and_certificate_to_slot_confirm": "Di chuyển khóa riêng và chứng chỉ trong khe PIV {from_slot} đến khe {to_slot}?",
     "@q_move_key_and_certificate_to_slot_confirm": {
         "placeholders": {
-            "from_slot": {},
-            "to_slot": {}
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
         }
     },
     "p_password_protected_file": "Tập tin đã chọn được bảo vệ bằng mật khẩu. Nhập mật khẩu để tiếp tục.",
     "p_import_items_desc": "Các mục sau sẽ được nhập vào khe PIV {slot}.",
     "@p_import_items_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_warning_public_key_mismatch": null,
@@ -735,7 +844,9 @@
     "p_overwrite_slot_desc": "Điều này sẽ ghi đè vĩnh viễn nội dung hiện có trong khe {slot}.",
     "@p_overwrite_slot_desc": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
     "l_overwrite_cert": "Chứng chỉ sẽ bị ghi đè",
@@ -746,8 +857,12 @@
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
-            "name": {},
-            "hexid": {}
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
         }
     },
     "s_slot_9a": "Xác thực",
@@ -779,15 +894,19 @@
     "s_export": "Xuất khẩu",
     "l_export_configuration_file": "Xuất cấu hình ra tệp",
     "l_exported_can_be_uploaded_at": "Các thông tin xác thực đã xuất có thể được tải lên tại {url}",
-    "@_export_can_be_uploaded_at": {
+    "@l_exported_can_be_uploaded_at": {
         "placeholders": {
-            "url": {}
+            "url": {
+                "type": "String"
+            }
         }
     },
     "l_keyboard_layout": null,
-    "@_keyboard_layout": {
-        "placeholder": {
-            "layout": {}
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
         }
     },
 
@@ -798,7 +917,9 @@
     "p_warning_delete_slot_configuration": "Cảnh báo! Hành động này sẽ xóa vĩnh viễn thông tin xác thực khỏi khe {slot_id}.",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
-            "slot_id": {}
+            "slot_id": {
+                "type": "int"
+            }
         }
     },
     "l_slot_deleted": "Thông tin xác thực đã bị xóa",
@@ -811,14 +932,20 @@
     "l_slot_credential_configured": "Thông tin xác thực {type} đã được cấu hình",
     "@l_slot_credential_configured": {
         "placeholders": {
-            "type": {}
+            "type": {
+                "type": "String"
+            }
         }
     },
     "l_slot_credential_configured_and_exported": "Thông tin xác thực {type} đã được cấu hình và xuất khẩu ra {file}",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
-            "type": {},
-            "file": {}
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
         }
     },
     "s_append_enter": "Thêm ⏎",
@@ -835,7 +962,9 @@
     "p_enter_access_code": "Nhập mã truy cập cho khe {slot}.",
     "@p_enter_access_code": {
         "placeholders": {
-            "slot": {}
+            "slot": {
+                "type": "String"
+            }
         }
     },
 
@@ -861,7 +990,9 @@
     "l_qr_file_too_large": "Tệp quá lớn (tối đa {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
-            "max": {}
+            "max": {
+                "type": "String"
+            }
         }
     },
     "l_qr_invalid_image_file": "Tệp hình ảnh không hợp lệ",
@@ -869,7 +1000,9 @@
     "l_qr_not_read": "Không thể đọc mã QR: {message}",
     "@l_qr_not_read": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_point_camera_scan": "Chỉa camera vào mã QR để quét",
@@ -888,7 +1021,9 @@
     "l_reset_failed": "Lỗi khi thực hiện đặt lại: {message}",
     "@l_reset_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_piv_app_reset": "Đặt lại ứng dụng PIV",
@@ -913,7 +1048,9 @@
     "p_target_copied_clipboard": "{label} đã được sao chép vào clipboard.",
     "@p_target_copied_clipboard": {
         "placeholders": {
-            "label": {}
+            "label": {
+                "type": "String"
+            }
         }
     },
 
@@ -924,7 +1061,9 @@
     "p_custom_icons_format_desc": null,
     "@p_custom_icons_format_desc": {
         "placeholders": {
-            "aegis_icon_pack": {}
+            "aegis_icon_pack": {
+                "type": "String"
+            }
         }
     },
     "s_replace_icon_pack": "Thay thế gói biểu tượng",
@@ -938,7 +1077,9 @@
     "l_import_icon_pack_failed": "Lỗi khi nhập khẩu gói biểu tượng: {message}",
     "@l_import_icon_pack_failed": {
         "placeholders": {
-            "message": {}
+            "message": {
+                "type": "String"
+            }
         }
     },
     "l_invalid_icon_pack": "Gói biểu tượng không hợp lệ",
