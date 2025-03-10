@@ -52,23 +52,27 @@ class _CapabilityForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final keyPrefix = (type == _CapabilityType.usb)
-        ? management_keys.usbCapabilityKeyPrefix
-        : management_keys.nfcCapabilityKeyPrefix;
+    final keyPrefix =
+        (type == _CapabilityType.usb)
+            ? management_keys.usbCapabilityKeyPrefix
+            : management_keys.nfcCapabilityKeyPrefix;
     return Wrap(
       spacing: 4.0,
       runSpacing: 8.0,
-      children: Capability.values
-          .where((c) => capabilities & c.value != 0)
-          .map((c) => FilterChip(
-                label: Text(c.getDisplayName(l10n)),
-                key: Key('$keyPrefix.${c.name}'),
-                selected: enabled & c.value != 0,
-                onSelected: (_) {
-                  onChanged(enabled ^ c.value);
-                },
-              ))
-          .toList(),
+      children:
+          Capability.values
+              .where((c) => capabilities & c.value != 0)
+              .map(
+                (c) => FilterChip(
+                  label: Text(c.getDisplayName(l10n)),
+                  key: Key('$keyPrefix.${c.name}'),
+                  selected: enabled & c.value != 0,
+                  onSelected: (_) {
+                    onChanged(enabled ^ c.value);
+                  },
+                ),
+              )
+              .toList(),
     );
   }
 }
@@ -81,27 +85,35 @@ class _ModeForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      ListTile(
-        leading: const Icon(Symbols.usb),
-        title: Text(l10n.s_usb),
-        contentPadding: const EdgeInsets.only(bottom: 8),
-      ),
-      Align(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          leading: const Icon(Symbols.usb),
+          title: Text(l10n.s_usb),
+          contentPadding: const EdgeInsets.only(bottom: 8),
+        ),
+        Align(
           alignment: Alignment.topLeft,
           child: Wrap(
-              spacing: 4.0,
-              runSpacing: 8.0,
-              children: UsbInterface.values
-                  .map((iface) => FilterChip(
+            spacing: 4.0,
+            runSpacing: 8.0,
+            children:
+                UsbInterface.values
+                    .map(
+                      (iface) => FilterChip(
                         label: Text(iface.name.toUpperCase()),
                         selected: iface.value & interfaces != 0,
                         onSelected: (_) {
                           onChanged(interfaces ^ iface.value);
                         },
-                      ))
-                  .toList())),
-    ]);
+                      ),
+                    )
+                    .toList(),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -142,9 +154,7 @@ class _CapabilitiesForm extends StatelessWidget {
         ],
         if (nfcCapabilities != 0) ...[
           if (usbCapabilities != 0)
-            const Padding(
-              padding: EdgeInsets.only(top: 8, bottom: 8),
-            ),
+            const Padding(padding: EdgeInsets.only(top: 8, bottom: 8)),
           ListTile(
             leading: const Icon(Symbols.contactless),
             title: Text(l10n.s_nfc),
@@ -158,7 +168,7 @@ class _CapabilitiesForm extends StatelessWidget {
               onChanged({...enabled, Transport.nfc: value});
             },
           ),
-        ]
+        ],
       ],
     );
   }
@@ -168,7 +178,7 @@ class ManagementScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
 
   const ManagementScreen(this.deviceData)
-      : super(key: management_keys.screenKey);
+    : super(key: management_keys.screenKey);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -191,7 +201,8 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     super.initState();
     _enabled = widget.deviceData.info.config.enabledCapabilities;
     _interfaces = UsbInterface.forCapabilities(
-        widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0);
+      widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0,
+    );
   }
 
   @override
@@ -205,57 +216,68 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(l10n.p_lock_code_required_desc),
-        AppTextField(
-          obscureText: _isObscure,
-          maxLength: lockCodeLength,
-          autofillHints: const [AutofillHints.password],
-          controller: _lockCodeController,
-          focusNode: _lockCodeFocus,
-          decoration: AppInputDecoration(
-            border: const OutlineInputBorder(),
-            labelText: l10n.s_lock_code,
-            errorText: _lockCodeIsWrong ? _lockCodeError : null,
-            errorMaxLines: 3,
-            icon: const Icon(Symbols.pin),
-            suffixIcon: IconButton(
-              icon: Icon(
-                  _isObscure ? Symbols.visibility : Symbols.visibility_off),
-              onPressed: () {
-                setState(() {
-                  _isObscure = !_isObscure;
-                });
-              },
-              tooltip:
-                  _isObscure ? l10n.s_show_lock_code : l10n.s_hide_lock_code,
-            ),
-          ),
-          textInputAction: TextInputAction.next,
-          onChanged: (value) {
-            setState(() {
-              _lockCodeIsWrong = false;
-            });
-          },
-          onSubmitted: (_) {
-            if (canSave) {
-              _submitForm();
-            } else {
-              _lockCodeFocus.requestFocus();
-            }
-          },
-        ).init()
-      ]
-          .map((e) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: e,
-              ))
-          .toList(),
+      children:
+          [
+                Text(l10n.p_lock_code_required_desc),
+                AppTextField(
+                  obscureText: _isObscure,
+                  maxLength: lockCodeLength,
+                  autofillHints: const [AutofillHints.password],
+                  controller: _lockCodeController,
+                  focusNode: _lockCodeFocus,
+                  decoration: AppInputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: l10n.s_lock_code,
+                    errorText: _lockCodeIsWrong ? _lockCodeError : null,
+                    errorMaxLines: 3,
+                    icon: const Icon(Symbols.pin),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure
+                            ? Symbols.visibility
+                            : Symbols.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                      tooltip:
+                          _isObscure
+                              ? l10n.s_show_lock_code
+                              : l10n.s_hide_lock_code,
+                    ),
+                  ),
+                  textInputAction: TextInputAction.next,
+                  onChanged: (value) {
+                    setState(() {
+                      _lockCodeIsWrong = false;
+                    });
+                  },
+                  onSubmitted: (_) {
+                    if (canSave) {
+                      _submitForm();
+                    } else {
+                      _lockCodeFocus.requestFocus();
+                    }
+                  },
+                ).init(),
+              ]
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: e,
+                ),
+              )
+              .toList(),
     );
   }
 
   Widget _buildCapabilitiesForm(
-      BuildContext context, WidgetRef ref, DeviceInfo info) {
+    BuildContext context,
+    WidgetRef ref,
+    DeviceInfo info,
+  ) {
     return _CapabilitiesForm(
       supported: widget.deviceData.info.supportedCapabilities,
       enabled: _enabled,
@@ -273,11 +295,14 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
 
     if (isLocked && !Format.hex.isValid(_lockCodeController.text)) {
       _lockCodeController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _lockCodeController.text.length);
+        baseOffset: 0,
+        extentOffset: _lockCodeController.text.length,
+      );
       _lockCodeFocus.requestFocus();
       setState(() {
-        _lockCodeError =
-            l10n.l_invalid_format_allowed_chars(Format.hex.allowedCharacters);
+        _lockCodeError = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
         _lockCodeIsWrong = true;
       });
       return;
@@ -287,10 +312,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     if (widget.deviceData.node is UsbYubiKeyNode) {
       // Reboot if USB device descriptor is changed.
       final oldInterfaces = UsbInterface.forCapabilities(
-          widget.deviceData.info.config.enabledCapabilities[Transport.usb] ??
-              0);
-      final newInterfaces =
-          UsbInterface.forCapabilities(_enabled[Transport.usb] ?? 0);
+        widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0,
+      );
+      final newInterfaces = UsbInterface.forCapabilities(
+        _enabled[Transport.usb] ?? 0,
+      );
       reboot = oldInterfaces != newInterfaces;
     } else {
       reboot = false;
@@ -312,17 +338,21 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       await ref
           .read(managementStateProvider(widget.deviceData.node.path).notifier)
           .writeConfig(
-              widget.deviceData.info.config
-                  .copyWith(enabledCapabilities: _enabled),
-              reboot: reboot,
-              currentLockCode: isLocked ? _lockCodeController.text : null);
+            widget.deviceData.info.config.copyWith(
+              enabledCapabilities: _enabled,
+            ),
+            reboot: reboot,
+            currentLockCode: isLocked ? _lockCodeController.text : null,
+          );
       if (!mounted) return;
       Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
     } catch (_) {
       if (isLocked) {
         _lockCodeController.selection = TextSelection(
-            baseOffset: 0, extentOffset: _lockCodeController.text.length);
+          baseOffset: 0,
+          extentOffset: _lockCodeController.text.length,
+        );
         _lockCodeFocus.requestFocus();
         setState(() {
           _lockCodeIsWrong = true;
@@ -355,10 +385,12 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         .setMode(interfaces: _interfaces);
     if (!mounted) return;
     showMessage(
-        context,
-        widget.deviceData.node.maybeMap(
-            nfcReader: (_) => l10n.s_config_updated,
-            orElse: () => l10n.l_config_updated_reinsert));
+      context,
+      widget.deviceData.node.maybeMap(
+        nfcReader: (_) => l10n.s_config_updated,
+        orElse: () => l10n.l_config_updated_reinsert,
+      ),
+    );
     Navigator.pop(context);
   }
 
@@ -378,43 +410,48 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final child = ref
         .watch(managementStateProvider(widget.deviceData.node.path))
         .when(
-          loading: () => const Center(
-              child: DelayedVisibility(
-            delay: Duration(milliseconds: 200),
-            child: CircularProgressIndicator(),
-          )),
-          error: (error, _) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  error.toString(),
-                  textAlign: TextAlign.center,
+          loading:
+              () => const Center(
+                child: DelayedVisibility(
+                  delay: Duration(milliseconds: 200),
+                  child: CircularProgressIndicator(),
                 ),
-              ],
-            ),
-          ),
+              ),
+          error:
+              (error, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(error.toString(), textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
           data: (info) {
             hasConfig = info.version.major > 4;
             int usbEnabled = _enabled[Transport.usb] ?? 0;
             if (hasConfig) {
               // Ignore the _usbCcid bit:
-              canSave = (usbEnabled & ~_usbCcid) != 0 &&
-                  !_mapEquals(
-                    _enabled,
-                    info.config.enabledCapabilities,
-                  );
+              canSave =
+                  (usbEnabled & ~_usbCcid) != 0 &&
+                  !_mapEquals(_enabled, info.config.enabledCapabilities);
             } else {
-              canSave = _interfaces != 0 &&
+              canSave =
+                  _interfaces != 0 &&
                   _interfaces !=
-                      UsbInterface.forCapabilities(widget.deviceData.info.config
-                              .enabledCapabilities[Transport.usb] ??
-                          0);
+                      UsbInterface.forCapabilities(
+                        widget
+                                .deviceData
+                                .info
+                                .config
+                                .enabledCapabilities[Transport.usb] ??
+                            0,
+                      );
             }
             if (info.isLocked) {
               final lockCode = _lockCodeController.text.replaceAll(' ', '');
-              canSave = canSave &&
+              canSave =
+                  canSave &&
                   lockCode.length == lockCodeLength &&
                   !_lockCodeIsWrong;
             }
@@ -422,33 +459,39 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8),
-                  child: Text(hasConfig
-                      ? l10n.p_toggle_applications_desc
-                      : l10n.p_toggle_interfaces_desc),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18.0,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    hasConfig
+                        ? l10n.p_toggle_applications_desc
+                        : l10n.p_toggle_interfaces_desc,
+                  ),
                 ),
                 hasConfig
                     ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                        child: _buildCapabilitiesForm(context, ref, info),
-                      )
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                      child: _buildCapabilitiesForm(context, ref, info),
+                    )
                     : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                        child: _buildModeForm(context, ref, info),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                      child: _buildModeForm(context, ref, info),
+                    ),
                 if (info.isLocked)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0)
-                        .copyWith(top: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18.0,
+                    ).copyWith(top: 20),
                     child: _buildLockCodeForm(context, canSave),
                   ),
                 Padding(
                   padding: EdgeInsets.only(
-                      top: info.isLocked ? 4.0 : 24.0,
-                      bottom: 4,
-                      left: 18.0,
-                      right: 18.0),
+                    top: info.isLocked ? 4.0 : 24.0,
+                    bottom: 4,
+                    left: 18.0,
+                    right: 18.0,
+                  ),
                   child: Visibility(
                     visible: _configuring,
                     maintainSize: true,
@@ -463,9 +506,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         );
 
     return ResponsiveDialog(
-      title: hasConfig
-          ? Text(l10n.s_toggle_applications)
-          : Text(l10n.s_toggle_interfaces),
+      title:
+          hasConfig
+              ? Text(l10n.s_toggle_applications)
+              : Text(l10n.s_toggle_interfaces),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,

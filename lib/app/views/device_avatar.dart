@@ -34,17 +34,18 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
-        badge: isDesktop && data.node is NfcReaderNode
-            ? const Icon(Symbols.contactless)
-            : null,
+        badge:
+            isDesktop && data.node is NfcReaderNode
+                ? const Icon(Symbols.contactless)
+                : null,
         radius: radius,
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
           child: ProductImage(
-              name: data.name,
-              formFactor: data.info.formFactor,
-              isNfc:
-                  data.info.supportedCapabilities.containsKey(Transport.nfc)),
+            name: data.name,
+            formFactor: data.info.formFactor,
+            isNfc: data.info.supportedCapabilities.containsKey(Transport.nfc),
+          ),
         ),
       );
 
@@ -70,27 +71,24 @@ class DeviceAvatar extends StatelessWidget {
             ),
           );
         },
-        nfcReader: (_) => DeviceAvatar(
-          radius: radius,
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Symbols.contactless),
-          ),
-        ),
+        nfcReader:
+            (_) => DeviceAvatar(
+              radius: radius,
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Symbols.contactless),
+              ),
+            ),
       );
 
   factory DeviceAvatar.currentDevice(WidgetRef ref, {double? radius}) {
     final deviceNode = ref.watch(currentDeviceProvider);
     if (deviceNode != null) {
-      return ref.watch(currentDeviceDataProvider).maybeWhen(
-            data: (data) => DeviceAvatar.yubiKeyData(
-              data,
-              radius: radius,
-            ),
-            orElse: () => DeviceAvatar.deviceNode(
-              deviceNode,
-              radius: radius,
-            ),
+      return ref
+          .watch(currentDeviceDataProvider)
+          .maybeWhen(
+            data: (data) => DeviceAvatar.yubiKeyData(data, radius: radius),
+            orElse: () => DeviceAvatar.deviceNode(deviceNode, radius: radius),
           );
     } else {
       return DeviceAvatar(

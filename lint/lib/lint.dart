@@ -23,12 +23,9 @@ PluginBase createPlugin() => _AppLinter();
 class _AppLinter extends PluginBase {
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) => [
-        UseRecommendedWidget(
-          discouraged: 'TextField',
-          recommended: 'AppTextField',
-        ),
-        const CallInitAfterCreation(className: 'AppTextField'),
-      ];
+    UseRecommendedWidget(discouraged: 'TextField', recommended: 'AppTextField'),
+    const CallInitAfterCreation(className: 'AppTextField'),
+  ];
 }
 
 /// recommend to use App Widgets
@@ -37,12 +34,13 @@ class UseRecommendedWidget extends DartLintRule {
   final String recommended;
 
   UseRecommendedWidget({required this.discouraged, required this.recommended})
-      : super(
-            code: LintCode(
+    : super(
+        code: LintCode(
           name: 'use_recommended_widget',
           problemMessage:
               'Use recommended $recommended instead of $discouraged.',
-        ));
+        ),
+      );
 
   @override
   void run(
@@ -62,11 +60,12 @@ class CallInitAfterCreation extends DartLintRule {
   final String className;
 
   const CallInitAfterCreation({required this.className})
-      : super(
-            code: const LintCode(
+    : super(
+        code: const LintCode(
           name: 'call_init_after_creation',
           problemMessage: 'Call init() after creation',
-        ));
+        ),
+      );
 
   @override
   void run(

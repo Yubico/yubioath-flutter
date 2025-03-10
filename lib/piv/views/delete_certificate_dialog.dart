@@ -33,8 +33,12 @@ class DeleteCertificateDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final PivState pivState;
   final PivSlot pivSlot;
-  const DeleteCertificateDialog(this.devicePath, this.pivState, this.pivSlot,
-      {super.key});
+  const DeleteCertificateDialog(
+    this.devicePath,
+    this.pivState,
+    this.pivSlot, {
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -50,7 +54,8 @@ class _DeleteCertificateDialogState
   void initState() {
     super.initState();
     _deleteCertificate = widget.pivSlot.certInfo != null;
-    _deleteKey = widget.pivSlot.metadata != null &&
+    _deleteKey =
+        widget.pivSlot.metadata != null &&
         widget.pivState.version.isAtLeast(5, 7);
   }
 
@@ -58,29 +63,35 @@ class _DeleteCertificateDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final canDeleteCertificate = widget.pivSlot.certInfo != null;
-    final canDeleteKey = widget.pivSlot.metadata != null &&
+    final canDeleteKey =
+        widget.pivSlot.metadata != null &&
         widget.pivState.version.isAtLeast(5, 7);
 
     return BasicDialog(
       icon: Icon(Symbols.delete),
-      title: Text(canDeleteKey && canDeleteCertificate
-          ? l10n.q_delete_certificate_or_key
-          : canDeleteCertificate
-              ? l10n.q_delete_certificate
-              : l10n.q_delete_key),
+      title: Text(
+        canDeleteKey && canDeleteCertificate
+            ? l10n.q_delete_certificate_or_key
+            : canDeleteCertificate
+            ? l10n.q_delete_certificate
+            : l10n.q_delete_key,
+      ),
       actions: [
         TextButton(
           key: keys.deleteButton,
-          onPressed: _deleteKey || _deleteCertificate
-              ? () async {
-                  try {
-                    await ref
-                        .read(pivSlotsProvider(widget.devicePath).notifier)
-                        .delete(widget.pivSlot.slot, _deleteCertificate,
-                            _deleteKey);
+          onPressed:
+              _deleteKey || _deleteCertificate
+                  ? () async {
+                    try {
+                      await ref
+                          .read(pivSlotsProvider(widget.devicePath).notifier)
+                          .delete(
+                            widget.pivSlot.slot,
+                            _deleteCertificate,
+                            _deleteKey,
+                          );
 
-                    await ref.read(withContextProvider)(
-                      (context) async {
+                      await ref.read(withContextProvider)((context) async {
                         String message;
                         if (_deleteCertificate && _deleteKey) {
                           message = l10n.l_certificate_and_key_deleted;
@@ -92,13 +103,12 @@ class _DeleteCertificateDialogState
 
                         Navigator.of(context).pop(true);
                         showMessage(context, message);
-                      },
-                    );
-                  } on CancellationException catch (_) {
-                    // ignored
+                      });
+                    } on CancellationException catch (_) {
+                      // ignored
+                    }
                   }
-                }
-              : null,
+                  : null,
           child: Text(l10n.s_delete),
         ),
       ],
@@ -110,22 +120,26 @@ class _DeleteCertificateDialogState
               _deleteCertificate && _deleteKey
                   ? l10n.p_warning_delete_certificate_and_key
                   : _deleteCertificate
-                      ? l10n.p_warning_delete_certificate
-                      : l10n.p_warning_delete_key,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
+                  ? l10n.p_warning_delete_certificate
+                  : l10n.p_warning_delete_key,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8.0),
-            Text(_deleteCertificate && _deleteKey
-                ? l10n.p_delete_certificate_and_key_desc(
-                    widget.pivSlot.slot.getDisplayName(l10n))
-                : _deleteCertificate
-                    ? l10n.p_delete_certificate_desc(
-                        widget.pivSlot.slot.getDisplayName(l10n))
-                    : l10n.p_delete_key_desc(
-                        widget.pivSlot.slot.getDisplayName(l10n)))
+            Text(
+              _deleteCertificate && _deleteKey
+                  ? l10n.p_delete_certificate_and_key_desc(
+                    widget.pivSlot.slot.getDisplayName(l10n),
+                  )
+                  : _deleteCertificate
+                  ? l10n.p_delete_certificate_desc(
+                    widget.pivSlot.slot.getDisplayName(l10n),
+                  )
+                  : l10n.p_delete_key_desc(
+                    widget.pivSlot.slot.getDisplayName(l10n),
+                  ),
+            ),
           ],
           if (!_deleteCertificate && !_deleteKey) ...[
             const SizedBox(height: 8.0),
@@ -149,16 +163,17 @@ class _DeleteCertificateDialogState
                   ),
                 if (canDeleteKey)
                   FilterChip(
-                      label: Text(l10n.s_private_key),
-                      selected: _deleteKey,
-                      onSelected: (value) {
-                        setState(() {
-                          _deleteKey = value;
-                        });
-                      })
+                    label: Text(l10n.s_private_key),
+                    selected: _deleteKey,
+                    onSelected: (value) {
+                      setState(() {
+                        _deleteKey = value;
+                      });
+                    },
+                  ),
               ],
             ),
-          ]
+          ],
         ],
       ),
     );

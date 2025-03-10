@@ -81,54 +81,63 @@ void main() {
       appTest('TOTP: sha-1', (WidgetTester tester) async {
         await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
-            issuer: 'i_totp_sha1',
-            name: 'n__totp_sha1',
-            secret: 'abbaabba',
-            touch: false,
-            oathType: OathType.totp,
-            hashAlgorithm: HashAlgorithm.sha1);
+          issuer: 'i_totp_sha1',
+          name: 'n__totp_sha1',
+          secret: 'abbaabba',
+          touch: false,
+          oathType: OathType.totp,
+          hashAlgorithm: HashAlgorithm.sha1,
+        );
         await tester.addAccount(testAccount);
         expect(
-            find.descendant(
-                of: find.byType(AccountList),
-                matching: find.textContaining(testAccount.name)),
-            findsOneWidget);
+          find.descendant(
+            of: find.byType(AccountList),
+            matching: find.textContaining(testAccount.name),
+          ),
+          findsOneWidget,
+        );
 
         await tester.shortWait();
       });
       appTest('TOTP: sha-256', (WidgetTester tester) async {
         await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
-            issuer: 'i_totp_sha256',
-            name: 'n__totp_sha256',
-            secret: 'abbaabba',
-            touch: false,
-            oathType: OathType.totp,
-            hashAlgorithm: HashAlgorithm.sha256);
+          issuer: 'i_totp_sha256',
+          name: 'n__totp_sha256',
+          secret: 'abbaabba',
+          touch: false,
+          oathType: OathType.totp,
+          hashAlgorithm: HashAlgorithm.sha256,
+        );
         await tester.addAccount(testAccount);
         expect(
-            find.descendant(
-                of: find.byType(AccountList),
-                matching: find.textContaining(testAccount.name)),
-            findsOneWidget);
+          find.descendant(
+            of: find.byType(AccountList),
+            matching: find.textContaining(testAccount.name),
+          ),
+          findsOneWidget,
+        );
 
         await tester.shortWait();
       });
       appTest('TOTP: sha-512', (WidgetTester tester) async {
         await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
-            issuer: 'i_totp_sha512',
-            name: 'n__totp_sha512',
-            secret: 'abbaabba',
-            touch: false,
-            oathType: OathType.totp,
-            hashAlgorithm: HashAlgorithm.sha512);
+          issuer: 'i_totp_sha512',
+          name: 'n__totp_sha512',
+          secret: 'abbaabba',
+          touch: false,
+          oathType: OathType.totp,
+          hashAlgorithm: HashAlgorithm.sha512,
+        );
         await tester.addAccount(testAccount);
         expect(
-            find.descendant(
-                of: find.byType(AccountList),
-                matching: find.textContaining(testAccount.name)),
-            findsOneWidget);
+          find.descendant(
+            of: find.byType(AccountList),
+            matching: find.textContaining(testAccount.name),
+          ),
+          findsOneWidget,
+        );
 
         await tester.shortWait();
       });
@@ -143,18 +152,21 @@ void main() {
       appTest('TOTP: touch', (WidgetTester tester) async {
         await tester.tapAppDrawerButton(oathAppDrawer);
         const testAccount = Account(
-            issuer: 'i_totp_touch',
-            name: 'n_totp_touch',
-            secret: 'abbaabba',
-            touch: true,
-            oathType: OathType.totp,
-            hashAlgorithm: HashAlgorithm.sha1);
+          issuer: 'i_totp_touch',
+          name: 'n_totp_touch',
+          secret: 'abbaabba',
+          touch: true,
+          oathType: OathType.totp,
+          hashAlgorithm: HashAlgorithm.sha1,
+        );
         await tester.addAccount(testAccount);
         expect(
-            find.descendant(
-                of: find.byType(AccountList),
-                matching: find.textContaining(testAccount.name)),
-            findsOneWidget);
+          find.descendant(
+            of: find.byType(AccountList),
+            matching: find.textContaining(testAccount.name),
+          ),
+          findsOneWidget,
+        );
         await tester.shortWait();
       });
     });
@@ -162,54 +174,63 @@ void main() {
     appTest('HOTP: sha-1', (WidgetTester tester) async {
       await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
-          issuer: 'i_hotp_sha1',
-          name: 'n__hotp_sha1',
-          secret: 'abbaabba',
-          touch: false,
-          oathType: OathType.hotp,
-          hashAlgorithm: HashAlgorithm.sha1);
+        issuer: 'i_hotp_sha1',
+        name: 'n__hotp_sha1',
+        secret: 'abbaabba',
+        touch: false,
+        oathType: OathType.hotp,
+        hashAlgorithm: HashAlgorithm.sha1,
+      );
       await tester.addAccount(testAccount);
       expect(
-          find.descendant(
-              of: find.byType(AccountList),
-              matching: find.textContaining(testAccount.name)),
-          findsOneWidget);
+        find.descendant(
+          of: find.byType(AccountList),
+          matching: find.textContaining(testAccount.name),
+        ),
+        findsOneWidget,
+      );
 
       await tester.shortWait();
     });
     appTest('HOTP: sha-256', (WidgetTester tester) async {
       await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
-          issuer: 'i_hotp_sha256',
-          name: 'n__hotp_sha256',
-          secret: 'abbaabba',
-          touch: false,
-          oathType: OathType.hotp,
-          hashAlgorithm: HashAlgorithm.sha256);
+        issuer: 'i_hotp_sha256',
+        name: 'n__hotp_sha256',
+        secret: 'abbaabba',
+        touch: false,
+        oathType: OathType.hotp,
+        hashAlgorithm: HashAlgorithm.sha256,
+      );
       await tester.addAccount(testAccount);
       expect(
-          find.descendant(
-              of: find.byType(AccountList),
-              matching: find.textContaining(testAccount.name)),
-          findsOneWidget);
+        find.descendant(
+          of: find.byType(AccountList),
+          matching: find.textContaining(testAccount.name),
+        ),
+        findsOneWidget,
+      );
 
       await tester.shortWait();
     });
     appTest('HOTP: sha-512', (WidgetTester tester) async {
       await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
-          issuer: 'i_hotp_sha512',
-          name: 'n__hotp_sha512',
-          secret: 'abbaabba',
-          touch: false,
-          oathType: OathType.hotp,
-          hashAlgorithm: HashAlgorithm.sha512);
+        issuer: 'i_hotp_sha512',
+        name: 'n__hotp_sha512',
+        secret: 'abbaabba',
+        touch: false,
+        oathType: OathType.hotp,
+        hashAlgorithm: HashAlgorithm.sha512,
+      );
       await tester.addAccount(testAccount);
       expect(
-          find.descendant(
-              of: find.byType(AccountList),
-              matching: find.textContaining(testAccount.name)),
-          findsOneWidget);
+        find.descendant(
+          of: find.byType(AccountList),
+          matching: find.textContaining(testAccount.name),
+        ),
+        findsOneWidget,
+      );
 
       await tester.shortWait();
     });
@@ -218,18 +239,21 @@ void main() {
     appTest('HOTP: touch', (WidgetTester tester) async {
       await tester.tapAppDrawerButton(oathAppDrawer);
       const testAccount = Account(
-          issuer: 'i_hotp_touch',
-          name: 'n_hotp_touch',
-          secret: 'abbaabba',
-          touch: true,
-          oathType: OathType.hotp,
-          hashAlgorithm: HashAlgorithm.sha1);
+        issuer: 'i_hotp_touch',
+        name: 'n_hotp_touch',
+        secret: 'abbaabba',
+        touch: true,
+        oathType: OathType.hotp,
+        hashAlgorithm: HashAlgorithm.sha1,
+      );
       await tester.addAccount(testAccount);
       expect(
-          find.descendant(
-              of: find.byType(AccountList),
-              matching: find.textContaining(testAccount.name)),
-          findsOneWidget);
+        find.descendant(
+          of: find.byType(AccountList),
+          matching: find.textContaining(testAccount.name),
+        ),
+        findsOneWidget,
+      );
       await tester.shortWait();
     });
     // group('QR Code scanning', () {});

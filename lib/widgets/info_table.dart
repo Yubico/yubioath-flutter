@@ -45,39 +45,42 @@ class InfoTable extends ConsumerWidget {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: values.keys
-              .map((title) => Text(
-                    title,
-                    textAlign: TextAlign.right,
-                  ))
-              .toList(),
+          children:
+              values.keys
+                  .map((title) => Text(title, textAlign: TextAlign.right))
+                  .toList(),
         ),
         const SizedBox(width: 8),
         Flexible(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: values.entries.map((e) {
-              final title = e.key;
-              final (value, key) = e.value;
-              return GestureDetector(
-                onDoubleTap: () async {
-                  await clipboard.setText(value);
-                  if (!clipboard.platformGivesFeedback()) {
-                    await withContext((context) async {
-                      showMessage(
-                          context, l10n.p_target_copied_clipboard(title));
-                    });
-                  }
-                },
-                child: TooltipIfTruncated(
-                  key: key,
-                  text: value,
-                  style: subtitleStyle,
-                  tooltip: value.replaceAllMapped(
-                      RegExp(r',([A-Z]+)='), (match) => '\n${match[1]}='),
-                ),
-              );
-            }).toList(),
+            children:
+                values.entries.map((e) {
+                  final title = e.key;
+                  final (value, key) = e.value;
+                  return GestureDetector(
+                    onDoubleTap: () async {
+                      await clipboard.setText(value);
+                      if (!clipboard.platformGivesFeedback()) {
+                        await withContext((context) async {
+                          showMessage(
+                            context,
+                            l10n.p_target_copied_clipboard(title),
+                          );
+                        });
+                      }
+                    },
+                    child: TooltipIfTruncated(
+                      key: key,
+                      text: value,
+                      style: subtitleStyle,
+                      tooltip: value.replaceAllMapped(
+                        RegExp(r',([A-Z]+)='),
+                        (match) => '\n${match[1]}=',
+                      ),
+                    ),
+                  );
+                }).toList(),
           ),
         ),
       ],

@@ -37,13 +37,13 @@ class CredentialInfoTable extends ConsumerWidget {
       if (credential.displayName != null)
         l10n.s_display_name: (
           credential.displayName!,
-          keys.credentialInfoDisplayName
+          keys.credentialInfoDisplayName,
         ),
       l10n.s_user_name: (credential.userName, keys.credentialInfoUserName),
       l10n.s_user_id: (credential.userId, keys.credentialInfoUserId),
       l10n.s_credential_id: (
         credential.credentialId,
-        keys.credentialInfoCredentialId
+        keys.credentialInfoCredentialId,
       ),
     });
   }

@@ -52,10 +52,9 @@ class _CircleTimerState extends State<CircleTimer>
 
     _animator = AnimationController(vsync: this);
     _tween = Tween(end: 0);
-    _progress = _tween.animate(_animator)
-      ..addListener(() {
-        setState(() {});
-      });
+    _progress = _tween.animate(_animator)..addListener(() {
+      setState(() {});
+    });
 
     _animate();
   }
@@ -76,6 +75,8 @@ class _CircleTimerState extends State<CircleTimer>
   @override
   Widget build(BuildContext context) {
     return ProgressCircle(
-        IconTheme.of(context).color ?? Colors.grey.shade600, _progress.value);
+      IconTheme.of(context).color ?? Colors.grey.shade600,
+      _progress.value,
+    );
   }
 }

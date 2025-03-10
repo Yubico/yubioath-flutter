@@ -25,9 +25,7 @@ class ProgressCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _CirclePainter(color, progress),
-    );
+    return CustomPaint(painter: _CirclePainter(color, progress));
   }
 }
 

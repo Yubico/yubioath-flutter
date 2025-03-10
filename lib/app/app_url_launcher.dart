@@ -24,7 +24,5 @@ void launchTermsUrl() => _launchUrl('https://yubi.co/terms');
 
 void launchPrivacyUrl() => _launchUrl('https://yubi.co/privacy');
 
-Future<bool> _launchUrl(String url) async => await launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
+Future<bool> _launchUrl(String url) async =>
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);

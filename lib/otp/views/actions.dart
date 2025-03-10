@@ -63,11 +63,12 @@ class OtpActions extends ConsumerWidget {
   final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
   final Widget Function(BuildContext context) builder;
 
-  const OtpActions(
-      {super.key,
-      required this.devicePath,
-      this.actions,
-      required this.builder});
+  const OtpActions({
+    super.key,
+    required this.devicePath,
+    this.actions,
+    required this.builder,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,67 +78,86 @@ class OtpActions extends ConsumerWidget {
     return Actions(
       actions: {
         if (hasFeature(features.slotsConfigureChalResp))
-          ConfigureChalRespIntent:
-              CallbackAction<ConfigureChalRespIntent>(onInvoke: (intent) async {
-            await withContext((context) async {
-              await showBlurDialog(
+          ConfigureChalRespIntent: CallbackAction<ConfigureChalRespIntent>(
+            onInvoke: (intent) async {
+              await withContext((context) async {
+                await showBlurDialog(
                   context: context,
-                  builder: (context) =>
-                      ConfigureChalrespDialog(devicePath, intent.slot));
-            });
-            return null;
-          }),
+                  builder:
+                      (context) =>
+                          ConfigureChalrespDialog(devicePath, intent.slot),
+                );
+              });
+              return null;
+            },
+          ),
         if (hasFeature(features.slotsConfigureHotp))
-          ConfigureHotpIntent:
-              CallbackAction<ConfigureHotpIntent>(onInvoke: (intent) async {
-            await withContext((context) async {
-              await showBlurDialog(
+          ConfigureHotpIntent: CallbackAction<ConfigureHotpIntent>(
+            onInvoke: (intent) async {
+              await withContext((context) async {
+                await showBlurDialog(
                   context: context,
-                  builder: (context) =>
-                      ConfigureHotpDialog(devicePath, intent.slot));
-            });
-            return null;
-          }),
+                  builder:
+                      (context) => ConfigureHotpDialog(devicePath, intent.slot),
+                );
+              });
+              return null;
+            },
+          ),
         if (hasFeature(features.slotsConfigureStatic))
-          ConfigureStaticIntent:
-              CallbackAction<ConfigureStaticIntent>(onInvoke: (intent) async {
-            final keyboardLayouts = await ref
-                .read(otpStateProvider(devicePath).notifier)
-                .getKeyboardLayouts();
-            await withContext((context) async {
-              await showBlurDialog(
+          ConfigureStaticIntent: CallbackAction<ConfigureStaticIntent>(
+            onInvoke: (intent) async {
+              final keyboardLayouts =
+                  await ref
+                      .read(otpStateProvider(devicePath).notifier)
+                      .getKeyboardLayouts();
+              await withContext((context) async {
+                await showBlurDialog(
                   context: context,
-                  builder: (context) => ConfigureStaticDialog(
-                      devicePath, intent.slot, keyboardLayouts));
-            });
-            return null;
-          }),
+                  builder:
+                      (context) => ConfigureStaticDialog(
+                        devicePath,
+                        intent.slot,
+                        keyboardLayouts,
+                      ),
+                );
+              });
+              return null;
+            },
+          ),
         if (hasFeature(features.slotsConfigureYubiOtp))
-          ConfigureYubiOtpIntent:
-              CallbackAction<ConfigureYubiOtpIntent>(onInvoke: (intent) async {
-            await withContext((context) async {
-              await showBlurDialog(
+          ConfigureYubiOtpIntent: CallbackAction<ConfigureYubiOtpIntent>(
+            onInvoke: (intent) async {
+              await withContext((context) async {
+                await showBlurDialog(
                   context: context,
-                  builder: (context) =>
-                      ConfigureYubiOtpDialog(devicePath, intent.slot));
-            });
-            return null;
-          }),
+                  builder:
+                      (context) =>
+                          ConfigureYubiOtpDialog(devicePath, intent.slot),
+                );
+              });
+              return null;
+            },
+          ),
         if (hasFeature(features.slotsDelete))
-          DeleteIntent<OtpSlot>:
-              CallbackAction<DeleteIntent<OtpSlot>>(onInvoke: (intent) async {
-            final slot = intent.target;
-            if (!slot.isConfigured) {
-              return false;
-            }
+          DeleteIntent<OtpSlot>: CallbackAction<DeleteIntent<OtpSlot>>(
+            onInvoke: (intent) async {
+              final slot = intent.target;
+              if (!slot.isConfigured) {
+                return false;
+              }
 
-            final bool? deleted = await withContext((context) async =>
-                await showDialog(
-                    context: context,
-                    builder: (context) => DeleteSlotDialog(devicePath, slot)) ??
-                false);
-            return deleted;
-          }),
+              final bool? deleted = await withContext(
+                (context) async =>
+                    await showDialog(
+                      context: context,
+                      builder: (context) => DeleteSlotDialog(devicePath, slot),
+                    ) ??
+                    false,
+              );
+              return deleted;
+            },
+          ),
       },
       child: Builder(
         // Builder to ensure new scope for actions, they can invoke parent actions
@@ -163,26 +183,29 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
       intent: ConfigureYubiOtpIntent(slot),
     ),
     ActionItem(
-        key: keys.configureChalResp,
-        feature: features.slotsConfigureChalResp,
-        icon: const Icon(Symbols.key),
-        title: l10n.s_challenge_response,
-        subtitle: l10n.l_challenge_response_desc,
-        intent: ConfigureChalRespIntent(slot)),
+      key: keys.configureChalResp,
+      feature: features.slotsConfigureChalResp,
+      icon: const Icon(Symbols.key),
+      title: l10n.s_challenge_response,
+      subtitle: l10n.l_challenge_response_desc,
+      intent: ConfigureChalRespIntent(slot),
+    ),
     ActionItem(
-        key: keys.configureStatic,
-        feature: features.slotsConfigureStatic,
-        icon: const Icon(Symbols.password),
-        title: l10n.s_static_password,
-        subtitle: l10n.l_static_password_desc,
-        intent: ConfigureStaticIntent(slot)),
+      key: keys.configureStatic,
+      feature: features.slotsConfigureStatic,
+      icon: const Icon(Symbols.password),
+      title: l10n.s_static_password,
+      subtitle: l10n.l_static_password_desc,
+      intent: ConfigureStaticIntent(slot),
+    ),
     ActionItem(
-        key: keys.configureHotp,
-        feature: features.slotsConfigureHotp,
-        icon: const Icon(Symbols.tag),
-        title: l10n.s_hotp,
-        subtitle: l10n.l_hotp_desc,
-        intent: ConfigureHotpIntent(slot)),
+      key: keys.configureHotp,
+      feature: features.slotsConfigureHotp,
+      icon: const Icon(Symbols.tag),
+      title: l10n.s_hotp,
+      subtitle: l10n.l_hotp_desc,
+      intent: ConfigureHotpIntent(slot),
+    ),
     ActionItem(
       key: keys.deleteAction,
       feature: features.slotsDelete,
@@ -191,6 +214,6 @@ List<ActionItem> buildSlotActions(OtpSlot slot, AppLocalizations l10n) {
       title: l10n.s_delete_slot,
       subtitle: l10n.l_delete_slot_desc,
       intent: slot.isConfigured ? DeleteIntent(slot) : null,
-    )
+    ),
   ];
 }

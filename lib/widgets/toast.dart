@@ -48,12 +48,13 @@ class _ToastState extends State<Toast> with SingleTickerProviderStateMixin {
     super.initState();
 
     _animator = AnimationController(
-        duration: const Duration(milliseconds: 100), vsync: this);
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
     _tween = Tween(begin: 0, end: 1);
-    _opacity = _tween.animate(_animator)
-      ..addListener(() {
-        setState(() {});
-      });
+    _opacity = _tween.animate(_animator)..addListener(() {
+      setState(() {});
+    });
 
     _animate();
   }
@@ -87,10 +88,7 @@ class _ToastState extends State<Toast> with SingleTickerProviderStateMixin {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              widget.message,
-              style: widget.textStyle,
-            ),
+            child: Text(widget.message, style: widget.textStyle),
           ),
         ),
       ),
@@ -106,15 +104,18 @@ void Function() showToast(
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
   final bool isThemeDark = theme.brightness == Brightness.dark;
-  final Color backgroundColor = isThemeDark
-      ? colorScheme.onSurface
-      : Color.alphaBlend(
-          colorScheme.onSurface.withValues(alpha: 0.80), colorScheme.surface);
+  final Color backgroundColor =
+      isThemeDark
+          ? colorScheme.onSurface
+          : Color.alphaBlend(
+            colorScheme.onSurface.withValues(alpha: 0.80),
+            colorScheme.surface,
+          );
 
   final textStyle =
-      ThemeData(brightness: isThemeDark ? Brightness.light : Brightness.dark)
-          .textTheme
-          .titleMedium;
+      ThemeData(
+        brightness: isThemeDark ? Brightness.light : Brightness.dark,
+      ).textTheme.titleMedium;
 
   OverlayEntry? entry;
   void close() {
@@ -123,30 +124,32 @@ void Function() showToast(
     }
   }
 
-  entry = OverlayEntry(builder: (context) {
-    return Positioned(
-      bottom: MediaQuery.of(context).viewInsets.bottom,
-      left: 0,
-      right: 0,
-      child: SafeArea(
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: 50,
-            width: 400,
-            margin: const EdgeInsets.all(8),
-            child: Toast(
-              message,
-              duration,
-              backgroundColor: backgroundColor,
-              textStyle: textStyle,
-              onComplete: close,
+  entry = OverlayEntry(
+    builder: (context) {
+      return Positioned(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 0,
+        right: 0,
+        child: SafeArea(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 50,
+              width: 400,
+              margin: const EdgeInsets.all(8),
+              child: Toast(
+                message,
+                duration,
+                backgroundColor: backgroundColor,
+                textStyle: textStyle,
+                onComplete: close,
+              ),
             ),
           ),
         ),
-      ),
-    );
-  });
+      );
+    },
+  );
   Timer.run(() {
     Overlay.of(context).insert(entry!);
   });

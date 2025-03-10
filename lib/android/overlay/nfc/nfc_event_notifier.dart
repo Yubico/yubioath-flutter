@@ -42,8 +42,9 @@ class NfcSetViewEvent extends NfcEvent {
   const NfcSetViewEvent({required this.child, this.showIfHidden = true});
 }
 
-final nfcEventNotifier =
-    NotifierProvider<_NfcEventNotifier, NfcEvent>(_NfcEventNotifier.new);
+final nfcEventNotifier = NotifierProvider<_NfcEventNotifier, NfcEvent>(
+  _NfcEventNotifier.new,
+);
 
 class _NfcEventNotifier extends Notifier<NfcEvent> {
   @override
@@ -57,7 +58,8 @@ class _NfcEventNotifier extends Notifier<NfcEvent> {
 }
 
 final nfcEventNotifierListener = Provider<_NfcEventNotifierListener>(
-    (ref) => _NfcEventNotifierListener(ref));
+  (ref) => _NfcEventNotifierListener(ref),
+);
 
 class _NfcEventNotifierListener {
   final Ref _ref;
@@ -92,10 +94,11 @@ class _NfcEventNotifierListener {
     if (!visible) {
       visible = true;
       final result = await showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) {
-            return const NfcOverlayWidget();
-          });
+        context: context,
+        builder: (BuildContext context) {
+          return const NfcOverlayWidget();
+        },
+      );
       if (result == null) {
         // the modal sheet was cancelled by Back button, close button or dismiss
         _ref.read(nfcOverlay.notifier).onCancel();

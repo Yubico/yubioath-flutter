@@ -56,10 +56,9 @@ class ConnectedKey {
 }
 
 extension ConnectedKeyExt on List<ConnectedKey> {
-  String serialNumbers() => where((e) => e.serialNumber != null)
-      .map((e) => e.serialNumber!)
-      .toList()
-      .join(',');
+  String serialNumbers() => where(
+    (e) => e.serialNumber != null,
+  ).map((e) => e.serialNumber!).toList().join(',');
 
   String prettyList() {
     var retval = '';
@@ -67,7 +66,8 @@ extension ConnectedKeyExt on List<ConnectedKey> {
       return 'No keys.';
     }
     for (final (index, connectedKey) in indexed) {
-      retval += '${index + 1}: ${connectedKey.name} / '
+      retval +=
+          '${index + 1}: ${connectedKey.name} / '
           'SN: ${connectedKey.serialNumber} / '
           'FW: ${connectedKey.firmware}\n';
     }
@@ -83,8 +83,9 @@ extension ListTileInfoExt on ListTile {
     var subtitle = (this.subtitle as Text?)?.data;
 
     if (subtitle != null) {
-      RegExpMatch? match =
-          RegExp(r'S/N: (\d.*) F/W: (\d\.\d\.\d)').firstMatch(subtitle);
+      RegExpMatch? match = RegExp(
+        r'S/N: (\d.*) F/W: (\d\.\d\.\d)',
+      ).firstMatch(subtitle);
       if (match != null) {
         itemSerialNumber = match.group(1);
         itemFirmware = match.group(2);
@@ -96,11 +97,7 @@ extension ListTileInfoExt on ListTile {
       }
     }
 
-    return ConnectedKey(
-      itemName,
-      itemSerialNumber,
-      itemFirmware,
-    );
+    return ConnectedKey(itemName, itemSerialNumber, itemFirmware);
   }
 }
 
@@ -135,8 +132,10 @@ extension AppWidgetTester on WidgetTester {
     }
 
     if (evaluated.isEmpty) {
-      testLog(false,
-          'Found 0 ${f.describeMatch(Plurality.zero)} in $timeOutSec seconds.');
+      testLog(
+        false,
+        'Found 0 ${f.describeMatch(Plurality.zero)} in $timeOutSec seconds.',
+      );
     }
 
     return f;
@@ -223,8 +222,9 @@ extension AppWidgetTester on WidgetTester {
       if (key == listTile.getKeyInfo()) {
         // find the popup menu
         final popupMenu = find.descendant(
-            of: drawerDevicesFinder.at(itemIndex),
-            matching: find.byKey(yubikeyPopupMenuButton));
+          of: drawerDevicesFinder.at(itemIndex),
+          matching: find.byKey(yubikeyPopupMenuButton),
+        );
         expect(popupMenu, findsOne);
         await tap(popupMenu);
         break;
@@ -299,9 +299,10 @@ extension AppWidgetTester on WidgetTester {
   }
 
   Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
-    var result = isAndroid == true
-        ? await android_test_util.startUp(this, startUpParams)
-        : await desktop_test_util.startUp(this, startUpParams);
+    var result =
+        isAndroid == true
+            ? await android_test_util.startUp(this, startUpParams)
+            : await desktop_test_util.startUp(this, startUpParams);
 
     if (!collectedYubiKeyInformation) {
       final connectedKeys = await collectYubiKeyInformation();
@@ -311,20 +312,25 @@ extension AppWidgetTester on WidgetTester {
 
       final approvedSerialNumbers = await getApprovedSerialNumbers();
 
-      approvedKeys.addAll(connectedKeys
-          .where(
-              (element) => approvedSerialNumbers.contains(element.serialNumber))
-          .toList(growable: false));
+      approvedKeys.addAll(
+        connectedKeys
+            .where(
+              (element) => approvedSerialNumbers.contains(element.serialNumber),
+            )
+            .toList(growable: false),
+      );
 
       testLog(false, 'Approved keys:');
       testLog(false, approvedKeys.prettyList());
 
       if (approvedKeys.isEmpty) {
         final connectedSerials = connectedKeys.serialNumbers();
-        fail('None of the connected YubiKeys ($connectedSerials) '
-            'is approved for integration tests.\nUse --dart-define='
-            'YA_TEST_APPROVED_KEY_SN=$connectedSerials test '
-            'parameter to approve it.');
+        fail(
+          'None of the connected YubiKeys ($connectedSerials) '
+          'is approved for integration tests.\nUse --dart-define='
+          'YA_TEST_APPROVED_KEY_SN=$connectedSerials test '
+          'parameter to approve it.',
+        );
       }
     }
 
@@ -339,11 +345,14 @@ extension AppWidgetTester on WidgetTester {
 
   /// get key information
   Future<Finder> getDrawerDevices() async {
-    var devicePickerContent =
-        await waitForFinder(find.byType(DevicePickerContent));
+    var devicePickerContent = await waitForFinder(
+      find.byType(DevicePickerContent),
+    );
 
     var deviceRows = find.descendant(
-        of: devicePickerContent, matching: find.byType(ListTile));
+      of: devicePickerContent,
+      matching: find.byType(ListTile),
+    );
 
     return deviceRows;
   }

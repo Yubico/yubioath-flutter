@@ -58,7 +58,8 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final hasMetadata = widget.pivState.metadata != null;
-    final keyLen = (widget.pivState.metadata?.managementKeyMetadata.keyType ??
+    final keyLen =
+        (widget.pivState.metadata?.managementKeyMetadata.keyType ??
                 ManagementKeyType.tdes)
             .keyLength *
         2;
@@ -67,7 +68,9 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
     void submit() async {
       if (keyFormatInvalid) {
         _keyController.selection = TextSelection(
-            baseOffset: 0, extentOffset: _keyController.text.length);
+          baseOffset: 0,
+          extentOffset: _keyController.text.length,
+        );
         _keyFocus.requestFocus();
         setState(() {
           _keyFormatInvalid = true;
@@ -84,7 +87,9 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
           navigator.pop(true);
         } else {
           _keyController.selection = TextSelection(
-              baseOffset: 0, extentOffset: _keyController.text.length);
+            baseOffset: 0,
+            extentOffset: _keyController.text.length,
+          );
           _keyFocus.requestFocus();
           setState(() {
             _keyIsWrong = true;
@@ -94,7 +99,9 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
         navigator.pop(false);
       } catch (_) {
         _keyController.selection = TextSelection(
-            baseOffset: 0, extentOffset: _keyController.text.length);
+          baseOffset: 0,
+          extentOffset: _keyController.text.length,
+        );
         _keyFocus.requestFocus();
         // TODO: More error cases
         setState(() {
@@ -108,80 +115,95 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: !_keyIsWrong && _keyController.text.length == keyLen
-              ? submit
-              : null,
+          onPressed:
+              !_keyIsWrong && _keyController.text.length == keyLen
+                  ? submit
+                  : null,
           child: Text(l10n.s_unlock),
         ),
       ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_unlock_piv_management_desc),
-            AppTextField(
-              key: keys.managementKeyField,
-              autofocus: true,
-              autofillHints: const [AutofillHints.password],
-              controller: _keyController,
-              focusNode: _keyFocus,
-              readOnly: _defaultKeyUsed,
-              maxLength: !_defaultKeyUsed ? keyLen : null,
-              decoration: AppInputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_management_key,
-                helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
-                errorText: _keyIsWrong
-                    ? l10n.l_wrong_key
-                    : _keyFormatInvalid
-                        ? l10n.l_invalid_format_allowed_chars(
-                            Format.hex.allowedCharacters)
-                        : null,
-                errorMaxLines: 3,
-                icon: const Icon(Symbols.key),
-                suffixIcon: hasMetadata
-                    ? null
-                    : IconButton(
-                        icon: Icon(Symbols.auto_awesome,
-                            fill: _defaultKeyUsed ? 1.0 : 0.0),
-                        tooltip: l10n.s_use_default,
-                        onPressed: () {
-                          setState(() {
-                            _keyFormatInvalid = false;
-                            _defaultKeyUsed = !_defaultKeyUsed;
-                            if (_defaultKeyUsed) {
-                              _keyController.text = defaultManagementKey;
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        Text(l10n.p_unlock_piv_management_desc),
+                        AppTextField(
+                          key: keys.managementKeyField,
+                          autofocus: true,
+                          autofillHints: const [AutofillHints.password],
+                          controller: _keyController,
+                          focusNode: _keyFocus,
+                          readOnly: _defaultKeyUsed,
+                          maxLength: !_defaultKeyUsed ? keyLen : null,
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_management_key,
+                            helperText:
+                                _defaultKeyUsed
+                                    ? l10n.l_default_key_used
+                                    : null,
+                            errorText:
+                                _keyIsWrong
+                                    ? l10n.l_wrong_key
+                                    : _keyFormatInvalid
+                                    ? l10n.l_invalid_format_allowed_chars(
+                                      Format.hex.allowedCharacters,
+                                    )
+                                    : null,
+                            errorMaxLines: 3,
+                            icon: const Icon(Symbols.key),
+                            suffixIcon:
+                                hasMetadata
+                                    ? null
+                                    : IconButton(
+                                      icon: Icon(
+                                        Symbols.auto_awesome,
+                                        fill: _defaultKeyUsed ? 1.0 : 0.0,
+                                      ),
+                                      tooltip: l10n.s_use_default,
+                                      onPressed: () {
+                                        setState(() {
+                                          _keyFormatInvalid = false;
+                                          _defaultKeyUsed = !_defaultKeyUsed;
+                                          if (_defaultKeyUsed) {
+                                            _keyController.text =
+                                                defaultManagementKey;
+                                          } else {
+                                            _keyController.clear();
+                                          }
+                                        });
+                                      },
+                                    ),
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (value) {
+                            setState(() {
+                              _keyIsWrong = false;
+                              _keyFormatInvalid = false;
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (!_keyIsWrong &&
+                                _keyController.text.length == keyLen) {
+                              submit();
                             } else {
-                              _keyController.clear();
+                              _keyFocus.requestFocus();
                             }
-                          });
-                        },
-                      ),
-              ),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  _keyIsWrong = false;
-                  _keyFormatInvalid = false;
-                });
-              },
-              onSubmitted: (_) {
-                if (!_keyIsWrong && _keyController.text.length == keyLen) {
-                  submit();
-                } else {
-                  _keyFocus.requestFocus();
-                }
-              },
-            ).init(),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
-      ),
+                          },
+                        ).init(),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 }

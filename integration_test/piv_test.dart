@@ -151,10 +151,14 @@ void main() {
       await tester.enterText(find.byKey(pinPukField).hitTestable(), tre);
       await tester.shortWait();
       await tester.enterText(
-          find.byKey(newPinPukField).hitTestable(), factoryPin);
+        find.byKey(newPinPukField).hitTestable(),
+        factoryPin,
+      );
       await tester.shortWait();
       await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), factoryPin);
+        find.byKey(confirmPinPukField).hitTestable(),
+        factoryPin,
+      );
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -205,10 +209,14 @@ void main() {
       await tester.enterText(find.byKey(pinPukField).hitTestable(), tre);
       await tester.shortWait();
       await tester.enterText(
-          find.byKey(newPinPukField).hitTestable(), factoryPuk);
+        find.byKey(newPinPukField).hitTestable(),
+        factoryPuk,
+      );
       await tester.shortWait();
       await tester.enterText(
-          find.byKey(confirmPinPukField).hitTestable(), factoryPuk);
+        find.byKey(confirmPinPukField).hitTestable(),
+        factoryPuk,
+      );
       await tester.shortWait();
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.shortWait();
@@ -392,7 +400,9 @@ void main() {
 
       // 5. Enter DN
       await tester.enterText(
-          find.byKey(subjectField).hitTestable(), 'CN=Generate9a');
+        find.byKey(subjectField).hitTestable(),
+        'CN=Generate9a',
+      );
       await tester.longWait();
 
       // 6. Change algorithm: RSA1024
@@ -401,7 +411,7 @@ void main() {
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.longWait();
       // 9 Verify Subject, verify Date
-/*      expect(find.byWidgetPredicate((widget) {
+      /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {
           final TooltipIfTruncated textWidget = widget;
           if (textWidget.key == certInfoSubjectKey &&
@@ -444,7 +454,9 @@ void main() {
 
       // 5. Enter DN
       await tester.enterText(
-          find.byKey(subjectField).hitTestable(), 'CN=Generate9c');
+        find.byKey(subjectField).hitTestable(),
+        'CN=Generate9c',
+      );
       await tester.longWait();
 
       // 6. Change algorithm: RSA2048
@@ -492,7 +504,9 @@ void main() {
 
       // 5. Enter DN
       await tester.enterText(
-          find.byKey(subjectField).hitTestable(), 'CN=Generate9d');
+        find.byKey(subjectField).hitTestable(),
+        'CN=Generate9d',
+      );
       await tester.longWait();
 
       // 6. Change algorithm: ECCP256
@@ -501,7 +515,7 @@ void main() {
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.longWait();
       // 9 Verify Subject, verify Date
-/*      expect(find.byWidgetPredicate((widget) {
+      /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {
           final TooltipIfTruncated textWidget = widget;
           if (textWidget.key == certInfoSubjectKey &&
@@ -545,7 +559,9 @@ void main() {
 
       // 5. Enter DN
       await tester.enterText(
-          find.byKey(subjectField).hitTestable(), 'CN=Generate9e');
+        find.byKey(subjectField).hitTestable(),
+        'CN=Generate9e',
+      );
       await tester.longWait();
 
       // 6. Change algorithm: ECCP384
@@ -554,7 +570,7 @@ void main() {
       await tester.tap(find.byKey(saveButton).hitTestable());
       await tester.longWait();
       // 9 Verify Subject, verify Date
-/*      expect(find.byWidgetPredicate((widget) {
+      /*      expect(find.byWidgetPredicate((widget) {
         if (widget is TooltipIfTruncated) {
           final TooltipIfTruncated textWidget = widget;
           if (textWidget.key == certInfoSubjectKey &&
@@ -578,59 +594,59 @@ void main() {
       await tester.tap(find.byKey(deleteButton).hitTestable());
       await tester.longWait();
     });
-//     appTest('Import outdated Key+Certificate from file',
-//         (WidgetTester tester) async {});
-//
-//     /// TODO fileload needs to be handled
-//     appTest('Import neverexpire Key+Certificate from file',
-//         (WidgetTester tester) async {
-//       /// TODO fileload needs to be handled
-//     });
-//     appTest('Generate a CSR', (WidgetTester tester) async {
-//       // 1. open PIV view
-//       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-//       await tester.tap(pivDrawerButton);
-//       await tester.longWait();
-//       // 2. click meatball menu for 9e
-//       await tester.tap(find.byKey(meatballButton9e).hitTestable());
-//       await tester.longWait();
-//       // 3. click generate
-//       await tester.tap(find.byKey(generateAction).hitTestable());
-//       await tester.longWait();
-//       // 4. enter PIN and click Unlock
-//       // await tester.enterText(
-//       //     find.byKey(managementKeyField).hitTestable(), '123456');
-//       // await tester.longWait();
-//       // await tester.tap(find.byKey(unlockButton).hitTestable());
-//       // await tester.longWait();
-//
-//       // 5. Enter DN
-//       await tester.enterText(
-//           find.byKey(subjectField).hitTestable(), 'CN=Generate9e-CSR');
-//       await tester.longWait();
-//       // 6. Change 'output format': CSR
-//       //      enum models.dart, generate_key_dialog.dart
-//       // 7. Choose File Name > Save As > 'File Name generate93-csr'
-//       //    TODO: where are files saved?
-//       // 8. click save
-//       await tester.tap(find.byKey(saveButton).hitTestable());
-//       await tester.longWait();
-//       // 9 Verify 'No certificate loaded'
-// /*      expect(find.byWidgetPredicate((widget) {
-//         if (widget is TooltipIfTruncated) {
-//           final TooltipIfTruncated textWidget = widget;
-//           if (textWidget.key == certInfoSubjectKey &&
-//               textWidget.text == 'CN=Generate9e') {
-//             return true;
-//           }
-//         }
-//         return false;
-//       }), findsOneWidget);*/
-//     });
-//     // appTest('Reset PIV (load-exit)', (WidgetTester tester) async {
-//     //   /// TODO: investigate why this reset randomly fails!
-//     //   await tester.resetPiv();
-//     //   await tester.shortWait();
-//     // });
+    //     appTest('Import outdated Key+Certificate from file',
+    //         (WidgetTester tester) async {});
+    //
+    //     /// TODO fileload needs to be handled
+    //     appTest('Import neverexpire Key+Certificate from file',
+    //         (WidgetTester tester) async {
+    //       /// TODO fileload needs to be handled
+    //     });
+    //     appTest('Generate a CSR', (WidgetTester tester) async {
+    //       // 1. open PIV view
+    //       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
+    //       await tester.tap(pivDrawerButton);
+    //       await tester.longWait();
+    //       // 2. click meatball menu for 9e
+    //       await tester.tap(find.byKey(meatballButton9e).hitTestable());
+    //       await tester.longWait();
+    //       // 3. click generate
+    //       await tester.tap(find.byKey(generateAction).hitTestable());
+    //       await tester.longWait();
+    //       // 4. enter PIN and click Unlock
+    //       // await tester.enterText(
+    //       //     find.byKey(managementKeyField).hitTestable(), '123456');
+    //       // await tester.longWait();
+    //       // await tester.tap(find.byKey(unlockButton).hitTestable());
+    //       // await tester.longWait();
+    //
+    //       // 5. Enter DN
+    //       await tester.enterText(
+    //           find.byKey(subjectField).hitTestable(), 'CN=Generate9e-CSR');
+    //       await tester.longWait();
+    //       // 6. Change 'output format': CSR
+    //       //      enum models.dart, generate_key_dialog.dart
+    //       // 7. Choose File Name > Save As > 'File Name generate93-csr'
+    //       //    TODO: where are files saved?
+    //       // 8. click save
+    //       await tester.tap(find.byKey(saveButton).hitTestable());
+    //       await tester.longWait();
+    //       // 9 Verify 'No certificate loaded'
+    // /*      expect(find.byWidgetPredicate((widget) {
+    //         if (widget is TooltipIfTruncated) {
+    //           final TooltipIfTruncated textWidget = widget;
+    //           if (textWidget.key == certInfoSubjectKey &&
+    //               textWidget.text == 'CN=Generate9e') {
+    //             return true;
+    //           }
+    //         }
+    //         return false;
+    //       }), findsOneWidget);*/
+    //     });
+    //     // appTest('Reset PIV (load-exit)', (WidgetTester tester) async {
+    //     //   /// TODO: investigate why this reset randomly fails!
+    //     //   await tester.resetPiv();
+    //     //   await tester.shortWait();
+    //     // });
   });
 }

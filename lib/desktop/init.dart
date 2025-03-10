@@ -133,17 +133,21 @@ Future<Widget> initialize(List<String> argv) async {
     prefs = await SharedPreferences.getInstance();
   } catch (error) {
     Directory appSupportDirectory = await getApplicationSupportDirectory();
-    String appDataPath =
-        path.join(appSupportDirectory.path, 'shared_preferences.json');
+    String appDataPath = path.join(
+      appSupportDirectory.path,
+      'shared_preferences.json',
+    );
     _log.warning(
-        'Failed to load the preferences file at $appDataPath. Attempting to repair it.');
+      'Failed to load the preferences file at $appDataPath. Attempting to repair it.',
+    );
     await _repairPreferences(appDataPath);
 
     try {
       prefs = await SharedPreferences.getInstance();
     } catch (error) {
       _log.warning(
-          'Failed to repair the preferences file. Deleting the file and proceeding with a fresh configuration.');
+        'Failed to repair the preferences file. Deleting the file and proceeding with a fresh configuration.',
+      );
       await File(appDataPath).delete();
       prefs = await SharedPreferences.getInstance();
     }
@@ -162,20 +166,25 @@ Future<Widget> initialize(List<String> argv) async {
 
   _log.debug('Using saved window bounds (or defaults): $bounds');
 
-  unawaited(windowManager
-      .waitUntilReadyToShow(
-          const WindowOptions(minimumSize: WindowDefaults.minSize))
-      .then((_) async {
-    await windowManagerHelper.setBounds(bounds);
+  unawaited(
+    windowManager
+        .waitUntilReadyToShow(
+          const WindowOptions(minimumSize: WindowDefaults.minSize),
+        )
+        .then((_) async {
+          await windowManagerHelper.setBounds(bounds);
 
-    if (isHidden) {
-      await windowManager.setSkipTaskbar(true);
-    } else {
-      await windowManager.show();
-    }
-    windowManager.addListener(_WindowEventListener(windowManagerHelper));
-    screenRetriever.addListener(_ScreenRetrieverListener(windowManagerHelper));
-  }));
+          if (isHidden) {
+            await windowManager.setSkipTaskbar(true);
+          } else {
+            await windowManager.show();
+          }
+          windowManager.addListener(_WindowEventListener(windowManagerHelper));
+          screenRetriever.addListener(
+            _ScreenRetrieverListener(windowManagerHelper),
+          );
+        }),
+  );
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
   var exe = Platform.environment['_HELPER_PATH'];
@@ -186,15 +195,16 @@ Future<Widget> initialize(List<String> argv) async {
     } else if (Platform.isWindows) {
       relativePath += '.exe';
     }
-    exe = Uri.file(Platform.resolvedExecutable)
-        .resolve(relativePath)
-        .toFilePath();
+    exe =
+        Uri.file(
+          Platform.resolvedExecutable,
+        ).resolve(relativePath).toFilePath();
   }
 
   // Locate feature flags file
-  final featureFile = File(Uri.file(Platform.resolvedExecutable)
-      .resolve('features.json')
-      .toFilePath());
+  final featureFile = File(
+    Uri.file(Platform.resolvedExecutable).resolve('features.json').toFilePath(),
+  );
 
   final rpcFuture = _initHelper(exe!);
   _initLicenses();
@@ -217,12 +227,8 @@ Future<Widget> initialize(List<String> argv) async {
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(desktopSupportedThemesProvider),
       ),
-      attachedDevicesProvider.overrideWith(
-        () => DesktopDevicesNotifier(),
-      ),
-      currentDeviceProvider.overrideWith(
-        () => DesktopCurrentDeviceNotifier(),
-      ),
+      attachedDevicesProvider.overrideWith(() => DesktopDevicesNotifier()),
+      currentDeviceProvider.overrideWith(() => DesktopCurrentDeviceNotifier()),
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(desktopDeviceDataProvider),
       ),
@@ -231,8 +237,9 @@ Future<Widget> initialize(List<String> argv) async {
       ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState.call),
-      credentialListProvider
-          .overrideWithProvider(desktopOathCredentialListProvider.call),
+      credentialListProvider.overrideWithProvider(
+        desktopOathCredentialListProvider.call,
+      ),
       qrScannerProvider.overrideWith(
         (ref) => ref.watch(desktopQrScannerProvider),
       ),
@@ -246,7 +253,7 @@ Future<Widget> initialize(List<String> argv) async {
       pivStateProvider.overrideWithProvider(desktopPivState.call),
       pivSlotsProvider.overrideWithProvider(desktopPivSlots.call),
       // OTP
-      otpStateProvider.overrideWithProvider(desktopOtpState.call)
+      otpStateProvider.overrideWithProvider(desktopOtpState.call),
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
@@ -257,33 +264,37 @@ Future<Widget> initialize(List<String> argv) async {
           });
 
           // Load feature flags, if they exist
-          featureFile.exists().then(
-            (exists) async {
-              final featureFlag = ref.read(featureFlagProvider.notifier);
-              if (exists) {
-                try {
-                  final featureConfig =
-                      jsonDecode(await featureFile.readAsString());
-                  featureFlag.loadConfig(featureConfig);
-                } catch (error) {
-                  _log.error('Failed to parse feature flags', error);
-                }
+          featureFile.exists().then((exists) async {
+            final featureFlag = ref.read(featureFlagProvider.notifier);
+            if (exists) {
+              try {
+                final featureConfig = jsonDecode(
+                  await featureFile.readAsString(),
+                );
+                featureFlag.loadConfig(featureConfig);
+              } catch (error) {
+                _log.error('Failed to parse feature flags', error);
               }
-              // Hardcode features here:
-              // featureFlag.setFeature(feature, false);
-            },
-          );
+            }
+            // Hardcode features here:
+            // featureFlag.setFeature(feature, false);
+          });
 
           // Initialize systray
           ref.watch(systrayProvider);
 
           // Show a loading or error page while the Helper isn't ready
           return Consumer(
-              builder: (context, ref, child) => ref.watch(rpcProvider).when(
-                    data: (data) => const MainPage(),
-                    error: (error, stackTrace) => AppFailurePage(cause: error),
-                    loading: () => _HelperWaiter(),
-                  ));
+            builder:
+                (context, ref, child) => ref
+                    .watch(rpcProvider)
+                    .when(
+                      data: (data) => const MainPage(),
+                      error:
+                          (error, stackTrace) => AppFailurePage(cause: error),
+                      loading: () => _HelperWaiter(),
+                    ),
+          );
         }),
       ),
     ),
@@ -312,15 +323,19 @@ void _initLogging(ArgResults args) {
   Logger.root.onRecord.listen((record) {
     if (file != null) {
       file.writeAsStringSync(
-          '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
-          mode: FileMode.append);
+        '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}${Platform.lineTerminator}',
+        mode: FileMode.append,
+      );
       if (record.error != null) {
-        file.writeAsStringSync('${record.error}${Platform.lineTerminator}',
-            mode: FileMode.append);
+        file.writeAsStringSync(
+          '${record.error}${Platform.lineTerminator}',
+          mode: FileMode.append,
+        );
       }
     }
     stderr.writeln(
-        '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
+      '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}',
+    );
     if (record.error != null) {
       stderr.writeln(record.error);
     }
@@ -328,8 +343,9 @@ void _initLogging(ArgResults args) {
 
   if (levelName != null) {
     try {
-      Level level = Levels.LEVELS
-          .firstWhere((level) => level.name == levelName.toUpperCase());
+      Level level = Levels.LEVELS.firstWhere(
+        (level) => level.name == levelName.toUpperCase(),
+      );
       Logger.root.level = level;
       _log.info('Log level initialized from command line argument');
     } catch (error) {
@@ -342,12 +358,14 @@ void _initLogging(ArgResults args) {
 
 void _initLicenses() async {
   LicenseRegistry.addLicense(() async* {
-    final python =
-        await rootBundle.loadString('assets/licenses/raw/python.txt');
+    final python = await rootBundle.loadString(
+      'assets/licenses/raw/python.txt',
+    );
     yield LicenseEntryWithLineBreaks(['Python'], python);
 
-    final zxingcpp =
-        await rootBundle.loadString('assets/licenses/raw/apache-2.0.txt');
+    final zxingcpp = await rootBundle.loadString(
+      'assets/licenses/raw/apache-2.0.txt',
+    );
     yield LicenseEntryWithLineBreaks(['zxing-cpp'], zxingcpp);
 
     final helper = await rootBundle.loadStructuredData<List>(
@@ -403,28 +421,25 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
-        actionsBuilder: (context, expanded) => [
-          ActionChip(
-            avatar: const Icon(Symbols.content_copy),
-            label: Text(l10n.s_copy_log),
-            onPressed: () async {
-              _log.info('Copying log to clipboard ($version)...');
-              final logs = await ref.read(logLevelProvider.notifier).getLogs();
-              var clipboard = ref.read(clipboardProvider);
-              await clipboard.setText(logs.join('\n'));
-              if (!clipboard.platformGivesFeedback()) {
-                await ref.read(withContextProvider)(
-                  (context) async {
-                    showMessage(
-                      context,
-                      l10n.l_log_copied,
-                    );
-                  },
-                );
-              }
-            },
-          ),
-        ],
+        actionsBuilder:
+            (context, expanded) => [
+              ActionChip(
+                avatar: const Icon(Symbols.content_copy),
+                label: Text(l10n.s_copy_log),
+                onPressed: () async {
+                  _log.info('Copying log to clipboard ($version)...');
+                  final logs =
+                      await ref.read(logLevelProvider.notifier).getLogs();
+                  var clipboard = ref.read(clipboardProvider);
+                  await clipboard.setText(logs.join('\n'));
+                  if (!clipboard.platformGivesFeedback()) {
+                    await ref.read(withContextProvider)((context) async {
+                      showMessage(context, l10n.l_log_copied);
+                    });
+                  }
+                },
+              ),
+            ],
       );
     } else {
       return const MessagePage(

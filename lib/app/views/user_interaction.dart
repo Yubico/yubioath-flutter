@@ -142,11 +142,19 @@ UserInteractionController promptUserInteraction(
 }) {
   if (headless) {
     // No support for icon or onCancel.
-    return _notificationUserInteraction(context,
-        title: title, description: description);
+    return _notificationUserInteraction(
+      context,
+      title: title,
+      description: description,
+    );
   } else {
-    return _dialogUserInteraction(context,
-        title: title, description: description, icon: icon, onCancel: onCancel);
+    return _dialogUserInteraction(
+      context,
+      title: title,
+      description: description,
+      icon: icon,
+      onCancel: onCancel,
+    );
   }
 }
 
@@ -173,23 +181,23 @@ UserInteractionController _dialogUserInteraction(
     },
   );
   showBlurDialog(
-      context: context,
-      routeSettings: const RouteSettings(name: 'user_interaction_prompt'),
-      builder: (context) {
-        return PopScope(
-            canPop: onCancel != null,
-            onPopInvokedWithResult: (didPop, _) {
-              if (didPop) {
-                wasPopped = true;
-                if (!completed && onCancel != null) {
-                  onCancel();
-                }
-              }
-            },
-            child: _UserInteractionDialog(
-              controller: controller,
-            ));
-      });
+    context: context,
+    routeSettings: const RouteSettings(name: 'user_interaction_prompt'),
+    builder: (context) {
+      return PopScope(
+        canPop: onCancel != null,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) {
+            wasPopped = true;
+            if (!completed && onCancel != null) {
+              onCancel();
+            }
+          }
+        },
+        child: _UserInteractionDialog(controller: controller),
+      );
+    },
+  );
 
   return controller;
 }
@@ -202,10 +210,8 @@ class _NotificationUserInteractionController extends UserInteractionController {
   _NotificationUserInteractionController({
     required this.title,
     required this.description,
-  }) : _notification = LocalNotification(
-          title: title,
-          body: description,
-        )..show();
+  }) : _notification = LocalNotification(title: title, body: description)
+         ..show();
 
   @override
   void close() {

@@ -33,7 +33,7 @@ enum SlotId {
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       SlotId.one => l10n.s_otp_slot_one,
-      SlotId.two => l10n.s_otp_slot_two
+      SlotId.two => l10n.s_otp_slot_two,
     };
   }
 
@@ -54,9 +54,9 @@ class OtpState with _$OtpState {
       _$OtpStateFromJson(json);
 
   List<OtpSlot> get slots => [
-        OtpSlot(slot: SlotId.one, isConfigured: slot1Configured),
-        OtpSlot(slot: SlotId.two, isConfigured: slot2Configured),
-      ];
+    OtpSlot(slot: SlotId.one, isConfigured: slot1Configured),
+    OtpSlot(slot: SlotId.two, isConfigured: slot2Configured),
+  ];
 }
 
 @freezed
@@ -69,10 +69,11 @@ class OtpSlot with _$OtpSlot {
 class SlotConfigurationOptions with _$SlotConfigurationOptions {
   // ignore: invalid_annotation_target
   @JsonSerializable(includeIfNull: false)
-  factory SlotConfigurationOptions(
-      {bool? digits8,
-      bool? requireTouch,
-      bool? appendCr}) = _SlotConfigurationOptions;
+  factory SlotConfigurationOptions({
+    bool? digits8,
+    bool? requireTouch,
+    bool? appendCr,
+  }) = _SlotConfigurationOptions;
 
   factory SlotConfigurationOptions.fromJson(Map<String, dynamic> json) =>
       _$SlotConfigurationOptionsFromJson(json);
@@ -84,32 +85,36 @@ class SlotConfiguration with _$SlotConfiguration {
 
   // ignore: invalid_annotation_target
   @JsonSerializable(explicitToJson: true, includeIfNull: false)
-  const factory SlotConfiguration.hotp(
-      {required String key,
-      SlotConfigurationOptions? options}) = _SlotConfigurationHotp;
+  const factory SlotConfiguration.hotp({
+    required String key,
+    SlotConfigurationOptions? options,
+  }) = _SlotConfigurationHotp;
 
   @FreezedUnionValue('hmac_sha1')
   // ignore: invalid_annotation_target
   @JsonSerializable(explicitToJson: true, includeIfNull: false)
-  const factory SlotConfiguration.chalresp(
-      {required String key,
-      SlotConfigurationOptions? options}) = _SlotConfigurationHmacSha1;
+  const factory SlotConfiguration.chalresp({
+    required String key,
+    SlotConfigurationOptions? options,
+  }) = _SlotConfigurationHmacSha1;
 
   @FreezedUnionValue('static_password')
   // ignore: invalid_annotation_target
   @JsonSerializable(explicitToJson: true, includeIfNull: false)
-  const factory SlotConfiguration.static(
-      {required String password,
-      required String keyboardLayout,
-      SlotConfigurationOptions? options}) = _SlotConfigurationStaticPassword;
+  const factory SlotConfiguration.static({
+    required String password,
+    required String keyboardLayout,
+    SlotConfigurationOptions? options,
+  }) = _SlotConfigurationStaticPassword;
 
   // ignore: invalid_annotation_target
   @JsonSerializable(explicitToJson: true, includeIfNull: false)
-  const factory SlotConfiguration.yubiotp(
-      {required String publicId,
-      required String privateId,
-      required String key,
-      SlotConfigurationOptions? options}) = _SlotConfigurationYubiOtp;
+  const factory SlotConfiguration.yubiotp({
+    required String publicId,
+    required String privateId,
+    required String key,
+    SlotConfigurationOptions? options,
+  }) = _SlotConfigurationYubiOtp;
 
   factory SlotConfiguration.fromJson(Map<String, dynamic> json) =>
       _$SlotConfigurationFromJson(json);

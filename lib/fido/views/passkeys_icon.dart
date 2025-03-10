@@ -25,15 +25,21 @@ class PasskeyIcon extends StatelessWidget {
   final String rpId;
   final Widget defaultWidget;
 
-  const PasskeyIcon(
-      {super.key, required this.rpId, required this.defaultWidget});
+  const PasskeyIcon({
+    super.key,
+    required this.rpId,
+    required this.defaultWidget,
+  });
 
   File? _getFileForRpID(IconPack iconPack) {
     final parts = rpId.split('.');
     final reversed = parts.reversed.toList();
 
-    final matching = iconPack.icons.where((element) => element.issuer
-        .any((element) => reversed.any((e) => e.toUpperCase() == element)));
+    final matching = iconPack.icons.where(
+      (element) => element.issuer.any(
+        (element) => reversed.any((e) => e.toUpperCase() == element),
+      ),
+    );
 
     return iconPack.getFileFromMatching(matching);
   }

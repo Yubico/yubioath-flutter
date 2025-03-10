@@ -31,26 +31,28 @@ class YubicoAuthenticatorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlobalShortcuts(
-        child: LogWarningOverlay(
-          child: Consumer(builder: (context, ref, _) {
-            final primaryColor = ref.watch(primaryColorProvider);
-            return MaterialApp(
-              title: ref.watch(l10nProvider).app_name,
-              theme: AppTheme.getLightTheme(primaryColor),
-              darkTheme: AppTheme.getDarkTheme(primaryColor),
-              themeMode: ref.watch(themeModeProvider),
-              home: page,
-              debugShowCheckedModeBanner: false,
-              locale: ref.watch(currentLocaleProvider),
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-            );
-          }),
-        ),
-      );
+    child: LogWarningOverlay(
+      child: Consumer(
+        builder: (context, ref, _) {
+          final primaryColor = ref.watch(primaryColorProvider);
+          return MaterialApp(
+            title: ref.watch(l10nProvider).app_name,
+            theme: AppTheme.getLightTheme(primaryColor),
+            darkTheme: AppTheme.getDarkTheme(primaryColor),
+            themeMode: ref.watch(themeModeProvider),
+            home: page,
+            debugShowCheckedModeBanner: false,
+            locale: ref.watch(currentLocaleProvider),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+          );
+        },
+      ),
+    ),
+  );
 }

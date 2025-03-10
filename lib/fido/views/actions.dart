@@ -36,11 +36,12 @@ class FidoActions extends ConsumerWidget {
   final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
   final Widget Function(BuildContext context) builder;
 
-  const FidoActions(
-      {super.key,
-      required this.devicePath,
-      this.actions,
-      required this.builder});
+  const FidoActions({
+    super.key,
+    required this.devicePath,
+    this.actions,
+    required this.builder,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,45 +53,46 @@ class FidoActions extends ConsumerWidget {
         if (hasFeature(features.credentialsDelete))
           DeleteIntent<FidoCredential>:
               CallbackAction<DeleteIntent<FidoCredential>>(
-                  onInvoke: (intent) async {
-            final credential = intent.target;
-            final deleted = await withContext(
-              (context) => showDialog<bool?>(
-                context: context,
-                builder: (context) => DeleteCredentialDialog(
-                  devicePath,
-                  credential,
-                ),
-              ),
-            );
-            return deleted;
-          }),
-        if (hasFeature(features.fingerprintsEdit))
-          EditIntent<Fingerprint>:
-              CallbackAction<EditIntent<Fingerprint>>(onInvoke: (intent) async {
-            final fingerprint = intent.target;
-            final renamed = await ref.read(withContextProvider)(
-                (context) => showBlurDialog<Fingerprint>(
+                onInvoke: (intent) async {
+                  final credential = intent.target;
+                  final deleted = await withContext(
+                    (context) => showDialog<bool?>(
                       context: context,
-                      builder: (context) => RenameFingerprintDialog(
-                        devicePath,
-                        fingerprint,
-                      ),
-                    ));
-            return renamed;
-          }),
+                      builder:
+                          (context) =>
+                              DeleteCredentialDialog(devicePath, credential),
+                    ),
+                  );
+                  return deleted;
+                },
+              ),
+        if (hasFeature(features.fingerprintsEdit))
+          EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
+            onInvoke: (intent) async {
+              final fingerprint = intent.target;
+              final renamed = await ref.read(withContextProvider)(
+                (context) => showBlurDialog<Fingerprint>(
+                  context: context,
+                  builder:
+                      (context) =>
+                          RenameFingerprintDialog(devicePath, fingerprint),
+                ),
+              );
+              return renamed;
+            },
+          ),
         if (hasFeature(features.fingerprintsDelete))
           DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
             onInvoke: (intent) async {
               final fingerprint = intent.target;
               final deleted = await ref.read(withContextProvider)(
-                  (context) => showDialog<bool?>(
-                        context: context,
-                        builder: (context) => DeleteFingerprintDialog(
-                          devicePath,
-                          fingerprint,
-                        ),
-                      ));
+                (context) => showDialog<bool?>(
+                  context: context,
+                  builder:
+                      (context) =>
+                          DeleteFingerprintDialog(devicePath, fingerprint),
+                ),
+              );
               return deleted;
             },
           ),
@@ -109,7 +111,9 @@ class FidoActions extends ConsumerWidget {
 }
 
 List<ActionItem> buildFingerprintActions(
-    Fingerprint fingerprint, AppLocalizations l10n) {
+  Fingerprint fingerprint,
+  AppLocalizations l10n,
+) {
   return [
     ActionItem(
       key: keys.editFingerprintAction,
@@ -132,7 +136,9 @@ List<ActionItem> buildFingerprintActions(
 }
 
 List<ActionItem> buildCredentialActions(
-    FidoCredential credential, AppLocalizations l10n) {
+  FidoCredential credential,
+  AppLocalizations l10n,
+) {
   return [
     ActionItem(
       key: keys.deleteCredentialAction,

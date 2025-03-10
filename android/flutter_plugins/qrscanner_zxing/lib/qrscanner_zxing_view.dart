@@ -37,12 +37,13 @@ class QRScannerZxingView extends StatefulWidget {
   /// permissionsGranted is true if the user granted camera permissions.
   final Function(bool permissionsGranted) onViewInitialized;
 
-  const QRScannerZxingView(
-      {super.key,
-      required this.marginPct,
-      required this.onDetect,
-      this.beforePermissionsRequest,
-      required this.onViewInitialized});
+  const QRScannerZxingView({
+    super.key,
+    required this.marginPct,
+    required this.onDetect,
+    this.beforePermissionsRequest,
+    required this.onViewInitialized,
+  });
 
   @override
   QRScannerZxingViewState createState() => QRScannerZxingViewState();
@@ -50,7 +51,8 @@ class QRScannerZxingView extends StatefulWidget {
 
 class QRScannerZxingViewState extends State<QRScannerZxingView> {
   final MethodChannel channel = const MethodChannel(
-      "com.yubico.authenticator.flutter_plugins.qr_scanner_channel");
+    "com.yubico.authenticator.flutter_plugins.qr_scanner_channel",
+  );
 
   QRScannerZxingViewState() : super() {
     channel.setMethodCallHandler((call) async {
@@ -98,20 +100,22 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
   Widget build(BuildContext context) {
     const String viewType = 'qrScannerNativeView';
     Map<String, dynamic> creationParams = <String, dynamic>{
-      "margin": widget.marginPct
+      "margin": widget.marginPct,
     };
     return PlatformViewLink(
-        viewType: viewType,
-        surfaceFactory:
-            (BuildContext context, PlatformViewController controller) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          );
-        },
-        onCreatePlatformView: (PlatformViewCreationParams params) {
-          return PlatformViewsService.initExpensiveAndroidView(
+      viewType: viewType,
+      surfaceFactory: (
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return PlatformViewsService.initExpensiveAndroidView(
             id: params.id,
             viewType: viewType,
             layoutDirection: TextDirection.ltr,
@@ -121,8 +125,9 @@ class QRScannerZxingViewState extends State<QRScannerZxingView> {
               params.onFocusChanged(true);
             },
           )
-            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-            ..create();
-        });
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..create();
+      },
+    );
   }
 }

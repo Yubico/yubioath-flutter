@@ -54,7 +54,9 @@ class IconCacheFs {
         await cacheDirectory.delete(recursive: true);
       } catch (e) {
         _log.error(
-            'Failed to delete cache directory ${cacheDirectory.path}', e);
+          'Failed to delete cache directory ${cacheDirectory.path}',
+          e,
+        );
       }
     }
   }
@@ -71,7 +73,8 @@ class IconCacheFs {
     final supportDirectory = await getApplicationSupportDirectory();
     final cacheDirectoryPath = _buildCacheDirectoryPath(supportDirectory.path);
     return File(
-        join(cacheDirectoryPath, '${basenameWithoutExtension(fileName)}.dat'));
+      join(cacheDirectoryPath, '${basenameWithoutExtension(fileName)}.dat'),
+    );
   }
 }
 
@@ -98,5 +101,6 @@ class IconCache {
   const IconCache(this.memCache, this.fsCache);
 }
 
-final iconCacheProvider =
-    Provider<IconCache>((ref) => IconCache(IconCacheMem(), IconCacheFs()));
+final iconCacheProvider = Provider<IconCache>(
+  (ref) => IconCache(IconCacheMem(), IconCacheFs()),
+);

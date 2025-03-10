@@ -39,31 +39,29 @@ class SwapSlotsDialog extends ConsumerWidget {
       title: Text(l10n.q_swap_slots),
       actions: [
         TextButton(
-            key: swapButton,
-            onPressed: () async {
-              try {
-                await ref
-                    .read(otpStateProvider(devicePath).notifier)
-                    .swapSlots();
-                await ref.read(withContextProvider)((context) async {
-                  Navigator.of(context).pop();
-                  showMessage(context, l10n.l_slots_swapped);
-                });
-              } catch (e) {
-                await ref.read(withContextProvider)((context) async {
-                  Navigator.of(context).pop();
-                  showMessage(context, l10n.p_otp_swap_error);
-                });
-              }
-            },
-            child: Text(l10n.s_swap))
+          key: swapButton,
+          onPressed: () async {
+            try {
+              await ref.read(otpStateProvider(devicePath).notifier).swapSlots();
+              await ref.read(withContextProvider)((context) async {
+                Navigator.of(context).pop();
+                showMessage(context, l10n.l_slots_swapped);
+              });
+            } catch (e) {
+              await ref.read(withContextProvider)((context) async {
+                Navigator.of(context).pop();
+                showMessage(context, l10n.p_otp_swap_error);
+              });
+            }
+          },
+          child: Text(l10n.s_swap),
+        ),
       ],
       content: Text(
         l10n.p_swap_slots_desc,
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontWeight: FontWeight.w700),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }

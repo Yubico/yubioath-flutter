@@ -46,13 +46,7 @@ class Levels {
   /// Key for serious failures ([value] = 1000).
   static const Level ERROR = Level('ERROR', 1000);
 
-  static const List<Level> LEVELS = [
-    TRAFFIC,
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-  ];
+  static const List<Level> LEVELS = [TRAFFIC, DEBUG, INFO, WARNING, ERROR];
 }
 
 extension LoggerExt on Logger {
@@ -64,15 +58,17 @@ extension LoggerExt on Logger {
       log(Levels.TRAFFIC, message, error, stackTrace);
 }
 
-final logLevelProvider =
-    StateNotifierProvider<LogLevelNotifier, Level>((ref) => LogLevelNotifier());
+final logLevelProvider = StateNotifierProvider<LogLevelNotifier, Level>(
+  (ref) => LogLevelNotifier(),
+);
 
 class LogLevelNotifier extends StateNotifier<Level> {
   final List<String> _buffer = [];
   LogLevelNotifier() : super(Logger.root.level) {
     Logger.root.onRecord.listen((record) {
       _buffer.add(
-          '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}');
+        '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}',
+      );
       if (record.error != null) {
         _buffer.add('${record.error}');
       }
@@ -103,49 +99,55 @@ class LogWarningOverlay extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         child,
-        Consumer(builder: (context, ref, _) {
-          final sensitiveLogs = ref.watch(logLevelProvider
-              .select((level) => level.value <= Level.CONFIG.value));
-          final allowScreenshots =
-              isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+        Consumer(
+          builder: (context, ref, _) {
+            final sensitiveLogs = ref.watch(
+              logLevelProvider.select(
+                (level) => level.value <= Level.CONFIG.value,
+              ),
+            );
+            final allowScreenshots =
+                isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
 
-          if (!(sensitiveLogs || allowScreenshots)) {
-            return const SizedBox();
-          }
+            if (!(sensitiveLogs || allowScreenshots)) {
+              return const SizedBox();
+            }
 
-          final String message;
-          if (sensitiveLogs && allowScreenshots) {
-            message =
-                'Potentially sensitive data is being logged, and other apps can potentially record the screen';
-          } else if (sensitiveLogs) {
-            message = 'Potentially sensitive data is being logged';
-          } else if (allowScreenshots) {
-            message = 'Other apps can potentially record the screen';
-          } else {
-            return const SizedBox();
-          }
+            final String message;
+            if (sensitiveLogs && allowScreenshots) {
+              message =
+                  'Potentially sensitive data is being logged, and other apps can potentially record the screen';
+            } else if (sensitiveLogs) {
+              message = 'Potentially sensitive data is being logged';
+            } else if (allowScreenshots) {
+              message = 'Other apps can potentially record the screen';
+            } else {
+              return const SizedBox();
+            }
 
-          var mediaQueryData = MediaQueryData.fromView(View.of(context));
-          var bottomPadding = mediaQueryData.systemGestureInsets.bottom;
-          return Padding(
-            padding: EdgeInsets.fromLTRB(5, 0, 5, bottomPadding),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: IgnorePointer(
-                child: Text(
-                  'WARNING: $message!',
-                  textDirection: TextDirection.ltr,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
+            var mediaQueryData = MediaQueryData.fromView(View.of(context));
+            var bottomPadding = mediaQueryData.systemGestureInsets.bottom;
+            return Padding(
+              padding: EdgeInsets.fromLTRB(5, 0, 5, bottomPadding),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: IgnorePointer(
+                  child: Text(
+                    'WARNING: $message!',
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                       height: 1.5,
-                      fontSize: 16),
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ],
     );
   }

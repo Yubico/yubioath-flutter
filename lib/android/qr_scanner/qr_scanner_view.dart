@@ -72,8 +72,9 @@ class _QrScannerViewState extends State<QrScannerView> {
     setState(() {
       if (qrCodeData.isNotEmpty) {
         try {
-          CredentialData.fromUri(Uri.parse(
-              qrCodeData)); // throws ArgumentError if validation fails
+          CredentialData.fromUri(
+            Uri.parse(qrCodeData),
+          ); // throws ArgumentError if validation fails
           _scannedString = qrCodeData;
           _status = ScanStatus.success;
 
@@ -127,57 +128,63 @@ class _QrScannerViewState extends State<QrScannerView> {
       body: Stack(
         children: [
           Container(
-              color: Colors.black,
-              child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [Spacer()])),
+            color: Colors.black,
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [Spacer()],
+            ),
+          ),
           Visibility(
-              maintainState: true,
-              maintainInteractivity: true,
-              maintainAnimation: true,
-              maintainSize: true,
-              visible: _permissionsGranted,
-              child: QRScannerZxingView(
-                key: _zxingViewKey,
-                marginPct: 10,
-                onDetect: (scannedData) => handleResult(scannedData),
-                onViewInitialized: (bool permissionsGranted) {
-                  Future.delayed(const Duration(milliseconds: 50), () {
-                    setState(() {
-                      _previewInitialized = true;
-                      _permissionsGranted = permissionsGranted;
-                    });
+            maintainState: true,
+            maintainInteractivity: true,
+            maintainAnimation: true,
+            maintainSize: true,
+            visible: _permissionsGranted,
+            child: QRScannerZxingView(
+              key: _zxingViewKey,
+              marginPct: 10,
+              onDetect: (scannedData) => handleResult(scannedData),
+              onViewInitialized: (bool permissionsGranted) {
+                Future.delayed(const Duration(milliseconds: 50), () {
+                  setState(() {
+                    _previewInitialized = true;
+                    _permissionsGranted = permissionsGranted;
                   });
-                },
-                beforePermissionsRequest: () async {
-                  await preserveConnectedDeviceWhenPaused();
-                },
-              )),
+                });
+              },
+              beforePermissionsRequest: () async {
+                await preserveConnectedDeviceWhenPaused();
+              },
+            ),
+          ),
           Visibility(
-              visible: _permissionsGranted,
-              child: QRScannerOverlay(
-                status: _status,
-                screenSize: screenSize,
-                overlayWidgetKey: overlayWidgetKey,
-              )),
+            visible: _permissionsGranted,
+            child: QRScannerOverlay(
+              status: _status,
+              screenSize: screenSize,
+              overlayWidgetKey: overlayWidgetKey,
+            ),
+          ),
           Visibility(
-              visible: _permissionsGranted,
-              child: QRScannerUI(
-                status: _status,
-                screenSize: screenSize,
-                overlayWidgetKey: overlayWidgetKey,
-              )),
+            visible: _permissionsGranted,
+            child: QRScannerUI(
+              status: _status,
+              screenSize: screenSize,
+              overlayWidgetKey: overlayWidgetKey,
+            ),
+          ),
           Visibility(
-              visible: _previewInitialized && !_permissionsGranted,
-              child: QRScannerPermissionsUI(
-                status: _status,
-                screenSize: screenSize,
-                onPermissionRequest: () {
-                  _zxingViewKey.currentState?.requestPermissions();
-                },
-              )),
+            visible: _previewInitialized && !_permissionsGranted,
+            child: QRScannerPermissionsUI(
+              status: _status,
+              screenSize: screenSize,
+              onPermissionRequest: () {
+                _zxingViewKey.currentState?.requestPermissions();
+              },
+            ),
+          ),
         ],
       ),
     );

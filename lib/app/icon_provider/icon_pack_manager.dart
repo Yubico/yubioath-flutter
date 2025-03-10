@@ -46,15 +46,18 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
   void readPack() async {
     final packDirectory = await _packDirectory;
-    final packFile =
-        File(join(packDirectory.path, getLocalIconFileName('pack.json')));
+    final packFile = File(
+      join(packDirectory.path, getLocalIconFileName('pack.json')),
+    );
 
     _log.debug('Looking for file: ${packFile.path}');
 
     if (!await packFile.exists()) {
       _log.debug('Failed to find icons pack ${packFile.path}');
       state = AsyncValue.error(
-          'Failed to find icon pack ${packFile.path}', StackTrace.current);
+        'Failed to find icon pack ${packFile.path}',
+        StackTrace.current,
+      );
       return;
     }
 
@@ -62,27 +65,37 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       var packContent = await packFile.readAsString();
       Map<String, dynamic> pack = const JsonDecoder().convert(packContent);
 
-      final icons = List<IconPackIconData>.from(pack['icons'].map((icon) =>
-          IconPackIconData(
-              filename: icon['filename'],
-              category: icon['category'],
-              issuer: List<String>.from(icon['issuer'])
-                  .map((e) => e.toUpperCase())
-                  .toList(growable: false))));
+      final icons = List<IconPackIconData>.from(
+        pack['icons'].map(
+          (icon) => IconPackIconData(
+            filename: icon['filename'],
+            category: icon['category'],
+            issuer: List<String>.from(
+              icon['issuer'],
+            ).map((e) => e.toUpperCase()).toList(growable: false),
+          ),
+        ),
+      );
 
-      state = AsyncValue.data(IconPack(
+      state = AsyncValue.data(
+        IconPack(
           uuid: pack['uuid'],
           name: pack['name'],
           version: pack['version'],
           directory: packDirectory,
-          icons: icons));
+          icons: icons,
+        ),
+      );
 
       _log.debug(
-          'Parsed ${state.value?.name} with ${state.value?.icons.length} icons');
+        'Parsed ${state.value?.name} with ${state.value?.icons.length} icons',
+      );
     } catch (e) {
       _log.debug('Failed to parse icons pack ${packFile.path}');
       state = AsyncValue.error(
-          'Failed to parse icon pack ${packFile.path}', StackTrace.current);
+        'Failed to parse icon pack ${packFile.path}',
+        StackTrace.current,
+      );
       return;
     }
   }
@@ -111,8 +124,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
     // copy input file to temporary folder
     final tempDirectory = await Directory.systemTemp.createTemp('yubioath');
-    final tempCopy =
-        await packFile.copy(join(tempDirectory.path, basename(packFile.path)));
+    final tempCopy = await packFile.copy(
+      join(tempDirectory.path, basename(packFile.path)),
+    );
     final bytes = await File(tempCopy.path).readAsBytes();
 
     final unpackDirectory = Directory(join(tempDirectory.path, 'unpack'));
@@ -131,8 +145,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       final filename = file.name;
       if (file.size > 0) {
         final data = file.content as List<int>;
-        final extractedFile =
-            File(join(unpackDirectory.path, getLocalIconFileName(filename)));
+        final extractedFile = File(
+          join(unpackDirectory.path, getLocalIconFileName(filename)),
+        );
         _log.debug('Writing file: ${extractedFile.path} (size: ${file.size})');
         final createdFile = await extractedFile.create(recursive: true);
         await createdFile.writeAsBytes(data);
@@ -140,8 +155,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
     }
 
     // check that there is pack.json
-    final packJsonFile =
-        File(join(unpackDirectory.path, getLocalIconFileName('pack.json')));
+    final packJsonFile = File(
+      join(unpackDirectory.path, getLocalIconFileName('pack.json')),
+    );
     if (!await packJsonFile.exists()) {
       _log.error('File is not an icon pack: missing pack.json');
       _lastError = l10n.l_invalid_icon_pack;
@@ -168,7 +184,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       _log.error('Failure when deleting original pack directory');
       _lastError = l10n.l_filesystem_error;
       state = AsyncValue.error(
-          'Failure deleting original pack directory', StackTrace.current);
+        'Failure deleting original pack directory',
+        StackTrace.current,
+      );
       await _deleteDirectory(tempDirectory);
       return false;
     }
@@ -183,7 +201,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
       _log.error('Failed to copy icon pack files to destination: $e');
       _lastError = l10n.l_icon_pack_copy_failed;
       state = AsyncValue.error(
-          'Failed to copy icon pack files.', StackTrace.current);
+        'Failed to copy icon pack files.',
+        StackTrace.current,
+      );
       return false;
     }
 
@@ -223,4 +243,5 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
 final iconPackProvider =
     StateNotifierProvider<IconPackManager, AsyncValue<IconPack?>>(
-        (ref) => IconPackManager(ref.watch(iconCacheProvider)));
+      (ref) => IconPackManager(ref.watch(iconCacheProvider)),
+    );

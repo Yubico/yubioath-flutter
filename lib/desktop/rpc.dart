@@ -56,11 +56,11 @@ class _Request {
   _Request(this.action, this.target, this.body, this.signal);
 
   Map<String, dynamic> toJson() => {
-        'kind': 'command',
-        'action': action,
-        'target': target,
-        'body': body,
-      };
+    'kind': 'command',
+    'action': action,
+    'target': target,
+    'body': body,
+  };
 }
 
 const _py2level = {
@@ -76,14 +76,16 @@ class _RpcConnection {
   final IOSink _sink;
   final StreamQueue<RpcResponse> _responses;
   _RpcConnection(this._sink, Stream<String> stream)
-      : _responses = StreamQueue(stream.map((event) {
+    : _responses = StreamQueue(
+        stream.map((event) {
           try {
             return RpcResponse.fromJson(jsonDecode(event));
           } catch (e) {
             _log.error('Response was not valid JSON', event);
             return RpcResponse.error('invalid-response', e.toString(), {});
           }
-        }));
+        }),
+      );
 
   void send(Map data) {
     _sink.writeln(jsonEncode(data));
@@ -114,8 +116,9 @@ class RpcSession {
       final record = jsonDecode(entry);
       var entryLevel = _py2level[record['level']];
       if (entryLevel == null) {
-        Logger('helper.${record['name']}')
-            .log(Levels.ERROR, 'Invalid log level: ${record['level']}');
+        Logger(
+          'helper.${record['name']}',
+        ).log(Levels.ERROR, 'Invalid log level: ${record['level']}');
       } else {
         Logger('helper.${record['name']}').log(
           entryLevel,
@@ -162,12 +165,16 @@ class RpcSession {
     _log.debug('Listening for Helper connection on $port');
 
     // Launch the elevated process
-    final process =
-        await Process.start('powershell.exe', ['-NoProfile', '-Command', '-']);
+    final process = await Process.start('powershell.exe', [
+      '-NoProfile',
+      '-Command',
+      '-',
+    ]);
 
     _log.info('Attempting to elevate $executable');
     process.stdin.writeln(
-        'Start-Process "$executable" -Verb runAs -WindowStyle hidden -ArgumentList "--tcp $port $nonce"');
+      'Start-Process "$executable" -Verb runAs -WindowStyle hidden -ArgumentList "--tcp $port $nonce"',
+    );
     await process.stdin.flush();
     await process.stdin.close();
     if (await process.exitCode != 0) {
@@ -195,55 +202,63 @@ class RpcSession {
 
     bool authenticated = false;
     final completer = Completer<void>();
-    final read =
-        utf8.decoder.bind(client).transform(const LineSplitter()).map((line) {
-      // The nonce needs to be received first.
-      if (!authenticated) {
-        if (nonce == line) {
-          _log.debug('Helper authenticated with correct nonce');
-          authenticated = true;
-          completer.complete();
-          return '';
-        } else {
-          _log.warning('Helper used WRONG NONCE: $line');
-          client.close();
-          completer.completeError(Exception('Invalid nonce'));
-          throw Exception('Invalid nonce');
-        }
-      } else {
-        // Filter out (and log) log messages
-        final type = line[0];
-        final message = line.substring(1);
-        switch (type) {
-          case 'O':
-            return message;
-          case 'E':
-            _logEntry(message);
-            return '';
-          default:
-            _log.error('Invalid message: $line');
-            throw Exception('Invalid message type: $type');
-        }
-      }
-    }).where((line) => line.isNotEmpty);
+    final read = utf8.decoder
+        .bind(client)
+        .transform(const LineSplitter())
+        .map((line) {
+          // The nonce needs to be received first.
+          if (!authenticated) {
+            if (nonce == line) {
+              _log.debug('Helper authenticated with correct nonce');
+              authenticated = true;
+              completer.complete();
+              return '';
+            } else {
+              _log.warning('Helper used WRONG NONCE: $line');
+              client.close();
+              completer.completeError(Exception('Invalid nonce'));
+              throw Exception('Invalid nonce');
+            }
+          } else {
+            // Filter out (and log) log messages
+            final type = line[0];
+            final message = line.substring(1);
+            switch (type) {
+              case 'O':
+                return message;
+              case 'E':
+                _logEntry(message);
+                return '';
+              default:
+                _log.error('Invalid message: $line');
+                throw Exception('Invalid message type: $type');
+            }
+          }
+        })
+        .where((line) => line.isNotEmpty);
     _connection = _RpcConnection(client, read);
 
     await completer.future;
     return true;
   }
 
-  Future<Map<String, dynamic>> command(String action, List<String>? target,
-      {Map? params, Signaler? signal}) {
+  Future<Map<String, dynamic>> command(
+    String action,
+    List<String>? target, {
+    Map? params,
+    Signaler? signal,
+  }) {
     final request = _Request(action, target ?? [], params ?? {}, signal);
     _requests.add(request);
     return request.completer.future;
   }
 
   Future<void> setLogLevel(Level level) async {
-    final name = Levels.LEVELS
-        .firstWhere((e) => level.value <= e.value, orElse: () => Level.OFF)
-        .name
-        .toLowerCase();
+    final name =
+        Levels.LEVELS
+            .firstWhere((e) => level.value <= e.value, orElse: () => Level.OFF)
+            .name
+            .toLowerCase();
 
     await command('logging', [], params: {'level': name});
   }
@@ -309,7 +324,7 @@ class _MultiSignaler extends Signaler {
   final Stream<String> _sendStream;
 
   _MultiSignaler(this.delegate)
-      : _sendStream = delegate._send.stream.asBroadcastStream() {
+    : _sendStream = delegate._send.stream.asBroadcastStream() {
     signals.listen(delegate._recv.sink.add);
   }
 

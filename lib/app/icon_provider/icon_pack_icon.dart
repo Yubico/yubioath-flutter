@@ -43,47 +43,49 @@ class IconPackIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final iconPack = ref.watch(iconPackProvider);
     return iconPack.when(
-        data: (IconPack? iconPack) {
-          File? issuerImageFile;
-          if (iconPack != null) {
-            issuerImageFile = matchFunction(iconPack);
-          }
-          if (issuerImageFile == null) {
-            return defaultWidget;
-          }
+      data: (IconPack? iconPack) {
+        File? issuerImageFile;
+        if (iconPack != null) {
+          issuerImageFile = matchFunction(iconPack);
+        }
+        if (issuerImageFile == null) {
+          return defaultWidget;
+        }
 
-          return switch (extension(issuerImageFile.path)) {
-            '.svg' => _decodeSvg(ref, issuerImageFile),
-            '.jpg' || '.png' => _decodeRasterImage(ref, issuerImageFile),
-            _ => defaultWidget
-          };
-        },
-        error: (_, __) => defaultWidget,
-        loading: () => defaultWidget);
+        return switch (extension(issuerImageFile.path)) {
+          '.svg' => _decodeSvg(ref, issuerImageFile),
+          '.jpg' || '.png' => _decodeRasterImage(ref, issuerImageFile),
+          _ => defaultWidget,
+        };
+      },
+      error: (_, __) => defaultWidget,
+      loading: () => defaultWidget,
+    );
   }
 
   Widget _decodeSvg(WidgetRef ref, File file) {
     return VectorGraphic(
-        width: _width,
-        height: _height,
-        fit: BoxFit.fill,
-        loader: IconFileLoader(ref, file),
-        placeholderBuilder: (BuildContext _) {
-          return SizedBox(
-            width: _width,
-            height: _height,
-            child: DelayedVisibility(
-              delay: const Duration(milliseconds: 10),
-              child: Stack(alignment: Alignment.center, children: [
-                Opacity(
-                  opacity: 0.5,
-                  child: defaultWidget,
-                ),
+      width: _width,
+      height: _height,
+      fit: BoxFit.fill,
+      loader: IconFileLoader(ref, file),
+      placeholderBuilder: (BuildContext _) {
+        return SizedBox(
+          width: _width,
+          height: _height,
+          child: DelayedVisibility(
+            delay: const Duration(milliseconds: 10),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Opacity(opacity: 0.5, child: defaultWidget),
                 const CircularProgressIndicator(),
-              ]),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Widget _decodeRasterImage(WidgetRef ref, File file) {
@@ -98,7 +100,7 @@ class IconPackIcon extends ConsumerWidget {
         alignment: Alignment.center,
         width: _width,
         height: _height,
-        errorBuilder: (_, __, ___) => defaultWidget,
+        errorBuilder: (_, _, _) => defaultWidget,
       ),
     );
   }
@@ -113,10 +115,11 @@ class _AccountIconClipper extends CustomClipper<Rect> {
   @override
   Rect getClip(Size size) {
     return Rect.fromCenter(
-        center: Offset(_width / 2, _height / 2),
-        // make the rect smaller to hide artifacts
-        width: _width - 1,
-        height: _height - 1);
+      center: Offset(_width / 2, _height / 2),
+      // make the rect smaller to hide artifacts
+      width: _width - 1,
+      height: _height - 1,
+    );
   }
 
   @override

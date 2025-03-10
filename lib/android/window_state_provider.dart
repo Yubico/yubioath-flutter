@@ -27,7 +27,8 @@ final _log = Logger('android.window_state_provider');
 
 final _windowStateProvider =
     StateNotifierProvider<_WindowStateNotifier, WindowState>(
-        (ref) => _WindowStateNotifier(ref));
+      (ref) => _WindowStateNotifier(ref),
+    );
 
 final androidWindowStateProvider = Provider<WindowState>(
   (ref) => ref.watch(_windowStateProvider),
@@ -37,28 +38,31 @@ class _WindowStateNotifier extends StateNotifier<WindowState>
     with WidgetsBindingObserver {
   final Ref<WindowState> _ref;
   _WindowStateNotifier(this._ref)
-      : super(WindowState(focused: true, visible: true, active: true)) {
+    : super(WindowState(focused: true, visible: true, active: true)) {
     _init();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState lifeCycleState) {
     _log.debug(
-        'appLifecycleStateChange triggered with: ${lifeCycleState.name}');
+      'appLifecycleStateChange triggered with: ${lifeCycleState.name}',
+    );
 
     var requestedState = lifeCycleState == AppLifecycleState.resumed;
     var currentState = state.focused;
 
     if (requestedState != currentState) {
       state = WindowState(
-          focused: requestedState,
-          visible: requestedState,
-          active: requestedState);
+        focused: requestedState,
+        visible: requestedState,
+        active: requestedState,
+      );
       _log.debug('Updated windowState to $state');
       if (lifeCycleState == AppLifecycleState.resumed) {
         _log.debug('Reading nfc enabled value');
-        isNfcEnabled().then((value) =>
-            _ref.read(androidNfcAdapterState.notifier).enable(value));
+        isNfcEnabled().then(
+          (value) => _ref.read(androidNfcAdapterState.notifier).enable(value),
+        );
       }
     } else {
       _log.debug('Ignoring appLifecycleStateChange');

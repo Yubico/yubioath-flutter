@@ -95,17 +95,16 @@ class ItemShortcuts<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Shortcuts(
-        shortcuts: {
-          ctrlOrCmd(LogicalKeyboardKey.keyR): RefreshIntent<T>(item),
-          ctrlOrCmd(LogicalKeyboardKey.keyC): CopyIntent<T>(item),
-          const SingleActivator(LogicalKeyboardKey.copy): CopyIntent<T>(item),
-          const SingleActivator(LogicalKeyboardKey.delete):
-              DeleteIntent<T>(item),
-          const SingleActivator(LogicalKeyboardKey.enter): OpenIntent<T>(item),
-          const SingleActivator(LogicalKeyboardKey.space): OpenIntent<T>(item),
-        },
-        child: child,
-      );
+    shortcuts: {
+      ctrlOrCmd(LogicalKeyboardKey.keyR): RefreshIntent<T>(item),
+      ctrlOrCmd(LogicalKeyboardKey.keyC): CopyIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.copy): CopyIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.delete): DeleteIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.enter): OpenIntent<T>(item),
+      const SingleActivator(LogicalKeyboardKey.space): OpenIntent<T>(item),
+    },
+    child: child,
+  );
 }
 
 /// Global keyboard shortcuts
@@ -115,109 +114,122 @@ class GlobalShortcuts extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Actions(
-        actions: {
-          CloseIntent: CallbackAction<CloseIntent>(onInvoke: (_) {
-            windowManager.close();
-            return null;
-          }),
-          HideIntent: CallbackAction<HideIntent>(onInvoke: (_) {
-            if (isDesktop) {
-              ref
-                  .read(desktopWindowStateProvider.notifier)
-                  .setWindowHidden(true);
+    actions: {
+      CloseIntent: CallbackAction<CloseIntent>(
+        onInvoke: (_) {
+          windowManager.close();
+          return null;
+        },
+      ),
+      HideIntent: CallbackAction<HideIntent>(
+        onInvoke: (_) {
+          if (isDesktop) {
+            ref.read(desktopWindowStateProvider.notifier).setWindowHidden(true);
+          }
+          return null;
+        },
+      ),
+      SearchIntent: CallbackAction<SearchIntent>(
+        onInvoke: (intent) {
+          // If the view doesn't have focus, but is shown, find and select the search bar.
+          final searchContext = searchField.currentContext;
+          if (searchContext != null) {
+            if (!Navigator.of(searchContext).canPop()) {
+              return Actions.maybeInvoke(searchContext, intent);
             }
-            return null;
-          }),
-          SearchIntent: CallbackAction<SearchIntent>(onInvoke: (intent) {
-            // If the view doesn't have focus, but is shown, find and select the search bar.
-            final searchContext = searchField.currentContext;
-            if (searchContext != null) {
-              if (!Navigator.of(searchContext).canPop()) {
-                return Actions.maybeInvoke(searchContext, intent);
-              }
-            }
-            return null;
-          }),
-          NextDeviceIntent: CallbackAction<NextDeviceIntent>(onInvoke: (_) {
-            ref.read(withContextProvider)((context) async {
-              // Only allow switching keys if no other views are open,
-              // with the exception of the drawer.
-              if (!Navigator.of(context).canPop() ||
-                  scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
-                final attached = ref
-                    .read(attachedDevicesProvider)
-                    .whereType<UsbYubiKeyNode>()
-                    .toList();
-                if (attached.length > 1) {
-                  final current = ref.read(currentDeviceProvider);
-                  if (current != null && current is UsbYubiKeyNode) {
-                    final index = attached.indexOf(current);
-                    ref.read(currentDeviceProvider.notifier).setCurrentDevice(
-                        attached[(index + 1) % attached.length]);
-                  }
+          }
+          return null;
+        },
+      ),
+      NextDeviceIntent: CallbackAction<NextDeviceIntent>(
+        onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            // Only allow switching keys if no other views are open,
+            // with the exception of the drawer.
+            if (!Navigator.of(context).canPop() ||
+                scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
+              final attached =
+                  ref
+                      .read(attachedDevicesProvider)
+                      .whereType<UsbYubiKeyNode>()
+                      .toList();
+              if (attached.length > 1) {
+                final current = ref.read(currentDeviceProvider);
+                if (current != null && current is UsbYubiKeyNode) {
+                  final index = attached.indexOf(current);
+                  ref
+                      .read(currentDeviceProvider.notifier)
+                      .setCurrentDevice(
+                        attached[(index + 1) % attached.length],
+                      );
                 }
               }
-            });
-            return null;
-          }),
-          SettingsIntent: CallbackAction<SettingsIntent>(onInvoke: (_) {
-            ref.read(withContextProvider)((context) async {
-              if (!Navigator.of(context).canPop()) {
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) => const SettingsPage(),
-                  routeSettings: const RouteSettings(name: 'settings'),
-                );
-              }
-            });
-            return null;
-          }),
-          AboutIntent: CallbackAction<AboutIntent>(onInvoke: (_) {
-            ref.read(withContextProvider)((context) async {
-              if (!Navigator.of(context).canPop()) {
-                await showBlurDialog(
-                  context: context,
-                  builder: (context) => const AboutPage(),
-                  routeSettings: const RouteSettings(name: 'about'),
-                );
-              }
-            });
-            return null;
-          }),
-          EscapeIntent: CallbackAction<EscapeIntent>(
-            onInvoke: (_) {
-              FocusManager.instance.primaryFocus?.unfocus();
-              return null;
-            },
-          ),
+            }
+          });
+          return null;
         },
-        child: Shortcuts(
-          shortcuts: {
-            ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
-            const SingleActivator(LogicalKeyboardKey.escape):
-                const EscapeIntent(),
-            if (isDesktop) ...{
-              const SingleActivator(LogicalKeyboardKey.tab, control: true):
-                  const NextDeviceIntent(),
-            },
-            if (Platform.isMacOS) ...{
-              const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
-                  const HideIntent(),
-              const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
-                  const CloseIntent(),
-              const SingleActivator(LogicalKeyboardKey.comma, meta: true):
-                  const SettingsIntent(),
-            },
-            if (Platform.isWindows) ...{
-              const SingleActivator(LogicalKeyboardKey.keyW, control: true):
-                  const HideIntent(),
-            },
-            if (Platform.isLinux) ...{
-              const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
-                  const CloseIntent(),
-            },
-          },
-          child: child,
-        ),
-      );
+      ),
+      SettingsIntent: CallbackAction<SettingsIntent>(
+        onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            if (!Navigator.of(context).canPop()) {
+              await showBlurDialog(
+                context: context,
+                builder: (context) => const SettingsPage(),
+                routeSettings: const RouteSettings(name: 'settings'),
+              );
+            }
+          });
+          return null;
+        },
+      ),
+      AboutIntent: CallbackAction<AboutIntent>(
+        onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            if (!Navigator.of(context).canPop()) {
+              await showBlurDialog(
+                context: context,
+                builder: (context) => const AboutPage(),
+                routeSettings: const RouteSettings(name: 'about'),
+              );
+            }
+          });
+          return null;
+        },
+      ),
+      EscapeIntent: CallbackAction<EscapeIntent>(
+        onInvoke: (_) {
+          FocusManager.instance.primaryFocus?.unfocus();
+          return null;
+        },
+      ),
+    },
+    child: Shortcuts(
+      shortcuts: {
+        ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
+        const SingleActivator(LogicalKeyboardKey.escape): const EscapeIntent(),
+        if (isDesktop) ...{
+          const SingleActivator(LogicalKeyboardKey.tab, control: true):
+              const NextDeviceIntent(),
+        },
+        if (Platform.isMacOS) ...{
+          const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
+              const HideIntent(),
+          const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
+              const CloseIntent(),
+          const SingleActivator(LogicalKeyboardKey.comma, meta: true):
+              const SettingsIntent(),
+        },
+        if (Platform.isWindows) ...{
+          const SingleActivator(LogicalKeyboardKey.keyW, control: true):
+              const HideIntent(),
+        },
+        if (Platform.isLinux) ...{
+          const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
+              const CloseIntent(),
+        },
+      },
+      child: child,
+    ),
+  );
 }

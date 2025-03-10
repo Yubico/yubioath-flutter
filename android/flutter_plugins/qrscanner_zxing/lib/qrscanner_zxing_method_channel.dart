@@ -27,15 +27,17 @@ class MethodChannelQRScannerZxing extends QRScannerZxingPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version = await methodChannel.invokeMethod<String>(
+      'getPlatformVersion',
+    );
     return version;
   }
 
   @override
   Future<String?> scanBitmap(Uint8List bytes) async {
-    final result = await methodChannel
-        .invokeMethod<String>('scanBitmap', {'bytes': bytes});
+    final result = await methodChannel.invokeMethod<String>('scanBitmap', {
+      'bytes': bytes,
+    });
     return result;
   }
 }

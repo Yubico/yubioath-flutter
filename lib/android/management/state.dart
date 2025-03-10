@@ -28,8 +28,8 @@ const _methods = MethodChannel('android.management.methods');
 
 final androidManagementState = AsyncNotifierProvider.autoDispose
     .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
-  _AndroidManagementStateNotifier.new,
-);
+      _AndroidManagementStateNotifier.new,
+    );
 
 class _AndroidManagementStateNotifier extends ManagementStateNotifier {
   @override
@@ -41,16 +41,19 @@ class _AndroidManagementStateNotifier extends ManagementStateNotifier {
   }
 
   @override
-  Future<void> setMode(
-      {required int interfaces,
-      int challengeResponseTimeout = 0,
-      int? autoEjectTimeout}) async {}
+  Future<void> setMode({
+    required int interfaces,
+    int challengeResponseTimeout = 0,
+    int? autoEjectTimeout,
+  }) async {}
 
   @override
-  Future<void> writeConfig(DeviceConfig config,
-      {String? currentLockCode,
-      String? newLockCode,
-      bool reboot = false}) async {
+  Future<void> writeConfig(
+    DeviceConfig config, {
+    String? currentLockCode,
+    String? newLockCode,
+    bool reboot = false,
+  }) async {
     if (reboot) {
       state = const AsyncValue.loading();
     }

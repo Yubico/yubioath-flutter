@@ -21,8 +21,9 @@ const _keyAction = '$_prefix.actions';
 const _accountAction = '$_prefix.account.actions';
 
 // Key actions
-const setOrManagePasswordAction =
-    Key('$_keyAction.action.set_or_manage_password');
+const setOrManagePasswordAction = Key(
+  '$_keyAction.action.set_or_manage_password',
+);
 const addAccountAction = Key('$_keyAction.add_account');
 const migrateAccountAction = Key('$_keyAction.migrate_account');
 const resetButton = Key('$_keyAction.reset_button');
@@ -58,12 +59,15 @@ const oathTypeFilterChip = Key('$_prefix.oath_type_filter_chip');
 const oathTypeTotpFilterValue = Key('$_prefix.oath_type_totp_filter_value');
 const oathTypeHotpFilterValue = Key('$_prefix.oath_type_hotp_filter_value');
 const hashAlgorithmFilterChip = Key('$_prefix.hash_algorithm_filter_chip');
-const hashAlgorithmSha1FilterValue =
-    Key('$_prefix.hash_algorithm_sha1_filter_value');
-const hashAlgorithmSha256FilterValue =
-    Key('$_prefix.hash_algorithm_sha256_filter_value');
-const hashAlgorithmSha512FilterValue =
-    Key('$_prefix.hash_algorithm_sha512_filter_value');
+const hashAlgorithmSha1FilterValue = Key(
+  '$_prefix.hash_algorithm_sha1_filter_value',
+);
+const hashAlgorithmSha256FilterValue = Key(
+  '$_prefix.hash_algorithm_sha256_filter_value',
+);
+const hashAlgorithmSha512FilterValue = Key(
+  '$_prefix.hash_algorithm_sha512_filter_value',
+);
 const digitsFilterChip = Key('$_prefix.digits_filter_chip');
 const digits6FilterValue = Key('$_prefix.digits_6_filter_value');
 const digits8FilterValue = Key('$_prefix.digits_8_filter_value');

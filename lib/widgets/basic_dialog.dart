@@ -26,14 +26,15 @@ class BasicDialog extends StatefulWidget {
   final Widget? icon;
   final Widget? title;
 
-  const BasicDialog(
-      {super.key,
-      required this.content,
-      this.actions = const [],
-      this.onCancel,
-      this.icon,
-      this.title,
-      this.allowCancel = true});
+  const BasicDialog({
+    super.key,
+    required this.content,
+    this.actions = const [],
+    this.onCancel,
+    this.icon,
+    this.title,
+    this.allowCancel = true,
+  });
 
   @override
   State<BasicDialog> createState() => _BasicDialogState();
@@ -79,8 +80,10 @@ class _BasicDialogState extends State<BasicDialog> {
           ),
           icon: widget.icon,
           scrollable: true,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 16, horizontal: 18.0),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 18.0,
+          ),
           content: Container(
             key: _childKey,
             constraints: BoxConstraints(maxWidth: 350),
@@ -88,14 +91,15 @@ class _BasicDialogState extends State<BasicDialog> {
           ),
           actions: [
             TextButton(
-              onPressed: widget.allowCancel
-                  ? () {
-                      Navigator.of(context).pop();
-                    }
-                  : null,
+              onPressed:
+                  widget.allowCancel
+                      ? () {
+                        Navigator.of(context).pop();
+                      }
+                      : null,
               child: Text(_getCancelText(context)),
             ),
-            ...widget.actions
+            ...widget.actions,
           ],
         ),
         onPopInvokedWithResult: (didPop, _) {

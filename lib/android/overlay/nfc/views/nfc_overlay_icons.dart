@@ -24,47 +24,38 @@ class NfcIconProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconTheme(
-        data: IconThemeData(
-          size: 64,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        child: Stack(
-          alignment: AlignmentDirectional.center,
-          children: [
-            const Opacity(
-              opacity: 0.5,
+    data: IconThemeData(size: 64, color: Theme.of(context).colorScheme.primary),
+    child: Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        const Opacity(opacity: 0.5, child: Icon(Symbols.contactless)),
+        const ClipOval(
+          child: SizedBox(
+            width: 42,
+            height: 42,
+            child: OverflowBox(
+              maxWidth: double.infinity,
+              maxHeight: double.infinity,
               child: Icon(Symbols.contactless),
             ),
-            const ClipOval(
-              child: SizedBox(
-                width: 42,
-                height: 42,
-                child: OverflowBox(
-                  maxWidth: double.infinity,
-                  maxHeight: double.infinity,
-                  child: Icon(Symbols.contactless),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: CircularProgressIndicator(value: inProgress ? null : 1.0),
-            ),
-          ],
+          ),
         ),
-      );
+        SizedBox(
+          width: 50,
+          height: 50,
+          child: CircularProgressIndicator(value: inProgress ? null : 1.0),
+        ),
+      ],
+    ),
+  );
 }
 
 class UsbIcon extends StatelessWidget {
   const UsbIcon({super.key});
 
   @override
-  Widget build(BuildContext context) => Icon(
-        Symbols.usb,
-        size: 64,
-        color: Theme.of(context).colorScheme.primary,
-      );
+  Widget build(BuildContext context) =>
+      Icon(Symbols.usb, size: 64, color: Theme.of(context).colorScheme.primary);
 }
 
 class NfcIconSuccess extends StatelessWidget {
@@ -72,19 +63,16 @@ class NfcIconSuccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Icon(
-        Symbols.check,
-        size: 64,
-        color: Theme.of(context).colorScheme.primary,
-      );
+    Symbols.check,
+    size: 64,
+    color: Theme.of(context).colorScheme.primary,
+  );
 }
 
 class NfcIconFailure extends StatelessWidget {
   const NfcIconFailure({super.key});
 
   @override
-  Widget build(BuildContext context) => Icon(
-        Symbols.close,
-        size: 64,
-        color: Theme.of(context).colorScheme.error,
-      );
+  Widget build(BuildContext context) =>
+      Icon(Symbols.close, size: 64, color: Theme.of(context).colorScheme.error);
 }

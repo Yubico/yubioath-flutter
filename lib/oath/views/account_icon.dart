@@ -25,16 +25,21 @@ class AccountIcon extends StatelessWidget {
   final String? issuer;
   final Widget defaultWidget;
 
-  const AccountIcon(
-      {super.key, required this.issuer, required this.defaultWidget});
+  const AccountIcon({
+    super.key,
+    required this.issuer,
+    required this.defaultWidget,
+  });
 
   File? _getFileForIssuer(IconPack iconPack) {
     if (issuer == null) {
       return null;
     }
 
-    final matching = iconPack.icons.where((element) =>
-        element.issuer.any((element) => element == issuer?.toUpperCase()));
+    final matching = iconPack.icons.where(
+      (element) =>
+          element.issuer.any((element) => element == issuer?.toUpperCase()),
+    );
 
     return iconPack.getFileFromMatching(matching);
   }

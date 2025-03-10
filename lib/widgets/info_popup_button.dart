@@ -58,7 +58,7 @@ class InfoPopupButton extends StatelessWidget {
         ),
         itemBuilder: (context) {
           return [
-            PopupMenuItem(enabled: false, child: _buildInfoContent(context))
+            PopupMenuItem(enabled: false, child: _buildInfoContent(context)),
           ];
         },
       );
@@ -72,9 +72,8 @@ class InfoPopupButton extends StatelessWidget {
             // Show info content in dialog on smaller screens and mobile
             showDialog(
               context: context,
-              builder: (context) => BasicDialog(
-                content: _buildInfoContent(context),
-              ),
+              builder:
+                  (context) => BasicDialog(content: _buildInfoContent(context)),
             );
           },
           icon: Icon(

@@ -26,8 +26,9 @@ const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');
 const noDeviceAvatar = Key('$_prefix.no_device_avatar');
 const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
-const toggleDetailViewIconButtonKey =
-    Key('$_prefix.toggle_detail_view_icon_button');
+const toggleDetailViewIconButtonKey = Key(
+  '$_prefix.toggle_detail_view_icon_button',
+);
 
 // drawer items
 const homeDrawer = Key('$_prefix.drawer.home');
@@ -43,12 +44,15 @@ const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
 
 // drawer yubikey more items
 const yubikeyPopupMenuButton = Key('$_prefix.yubikey_popup_menu_button');
-const yubikeyLabelColorMenuButton =
-    Key('$_prefix.yubikey_label_color_menu_button');
-const yubikeyApplicationToggleMenuButton =
-    Key('$_prefix.yubikey_application_toggle_menu_button');
-const yubikeyFactoryResetMenuButton =
-    Key('$_prefix.yubikey_factory_reset_menu_button');
+const yubikeyLabelColorMenuButton = Key(
+  '$_prefix.yubikey_label_color_menu_button',
+);
+const yubikeyApplicationToggleMenuButton = Key(
+  '$_prefix.yubikey_application_toggle_menu_button',
+);
+const yubikeyFactoryResetMenuButton = Key(
+  '$_prefix.yubikey_factory_reset_menu_button',
+);
 
 // factory reset dialog
 const factoryResetPickResetOath = Key('$_prefix.yubikey_factory_reset_oath');

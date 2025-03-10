@@ -22,13 +22,17 @@ import 'models.dart';
 
 final managementStateProvider = AsyncNotifierProvider.autoDispose
     .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class ManagementStateNotifier
     extends ApplicationStateNotifier<DeviceInfo> {
-  Future<void> writeConfig(DeviceConfig config,
-      {String? currentLockCode, String? newLockCode, bool reboot = false});
+  Future<void> writeConfig(
+    DeviceConfig config, {
+    String? currentLockCode,
+    String? newLockCode,
+    bool reboot = false,
+  });
 
   Future<void> setMode({
     required int interfaces,

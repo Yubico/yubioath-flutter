@@ -34,15 +34,17 @@ const _contextChannel = MethodChannel('android.state.appContext');
 
 final androidAllowScreenshotsProvider =
     StateNotifierProvider<AllowScreenshotsNotifier, bool>(
-  (ref) => AllowScreenshotsNotifier(),
-);
+      (ref) => AllowScreenshotsNotifier(),
+    );
 
 class AllowScreenshotsNotifier extends StateNotifier<bool> {
   AllowScreenshotsNotifier() : super(false);
 
   void setAllowScreenshots(bool value) async {
-    final result =
-        await appMethodsChannel.invokeMethod('allowScreenshots', value);
+    final result = await appMethodsChannel.invokeMethod(
+      'allowScreenshots',
+      value,
+    );
     if (mounted) {
       state = result;
     }
@@ -77,13 +79,7 @@ class NfcAdapterState extends StateNotifier<bool> {
   }
 }
 
-enum NfcState {
-  disabled,
-  idle,
-  ongoing,
-  success,
-  failure,
-}
+enum NfcState { disabled, idle, ongoing, success, failure }
 
 class NfcStateNotifier extends StateNotifier<NfcState> {
   NfcStateNotifier() : super(NfcState.disabled);
@@ -95,7 +91,7 @@ class NfcStateNotifier extends StateNotifier<NfcState> {
       2 => NfcState.ongoing,
       3 => NfcState.success,
       4 => NfcState.failure,
-      _ => NfcState.disabled
+      _ => NfcState.disabled,
     };
 
     state = newState;
@@ -108,11 +104,13 @@ final androidSdkVersionProvider = Provider<int>((ref) => -1);
 
 final androidNfcSupportProvider = Provider<bool>((ref) => false);
 
-final androidNfcAdapterState =
-    StateNotifierProvider<NfcAdapterState, bool>((ref) => NfcAdapterState());
+final androidNfcAdapterState = StateNotifierProvider<NfcAdapterState, bool>(
+  (ref) => NfcAdapterState(),
+);
 
 final androidNfcState = StateNotifierProvider<NfcStateNotifier, NfcState>(
-    (ref) => NfcStateNotifier());
+  (ref) => NfcStateNotifier(),
+);
 
 final androidSupportedThemesProvider = StateProvider<List<ThemeMode>>((ref) {
   if (ref.read(androidSdkVersionProvider) < 29) {
@@ -130,12 +128,15 @@ class AndroidAppContextHandler {
   }
 }
 
-final androidAppContextHandler =
-    Provider<AndroidAppContextHandler>((ref) => AndroidAppContextHandler());
+final androidAppContextHandler = Provider<AndroidAppContextHandler>(
+  (ref) => AndroidAppContextHandler(),
+);
 
 CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
   final notifier = AndroidCurrentSectionNotifier(
-      ref.watch(androidSectionPriority), ref.watch(androidAppContextHandler));
+    ref.watch(androidSectionPriority),
+    ref.watch(androidAppContextHandler),
+  );
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
     notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
@@ -186,18 +187,24 @@ class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {
 }
 
 final androidDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
-  return ref.watch(androidYubikeyProvider).when(data: (d) {
-    if (d.name == 'restricted-nfc' ||
-        d.name == 'unknown-device' ||
-        d.name == 'no-scp11b-nfc-support') {
-      return AsyncError(d.name, StackTrace.current);
-    }
-    return AsyncData(d);
-  }, error: (Object error, StackTrace stackTrace) {
-    return AsyncError(error, stackTrace);
-  }, loading: () {
-    return const AsyncLoading();
-  });
+  return ref
+      .watch(androidYubikeyProvider)
+      .when(
+        data: (d) {
+          if (d.name == 'restricted-nfc' ||
+              d.name == 'unknown-device' ||
+              d.name == 'no-scp11b-nfc-support') {
+            return AsyncError(d.name, StackTrace.current);
+          }
+          return AsyncData(d);
+        },
+        error: (Object error, StackTrace stackTrace) {
+          return AsyncError(error, stackTrace);
+        },
+        loading: () {
+          return const AsyncLoading();
+        },
+      );
 });
 
 class AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
@@ -213,7 +220,8 @@ class AndroidCurrentDeviceNotifier extends CurrentDeviceNotifier {
 
 final androidNfcTapActionProvider =
     StateNotifierProvider<NfcTapActionNotifier, NfcTapAction>(
-        (ref) => NfcTapActionNotifier(ref.watch(prefProvider)));
+      (ref) => NfcTapActionNotifier(ref.watch(prefProvider)),
+    );
 
 class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   static const _prefNfcOpenApp = 'prefNfcOpenApp';
@@ -241,21 +249,27 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   Future<void> setTapAction(NfcTapAction value) async {
     if (state != value) {
       state = value;
-      await _prefs.setBool(_prefNfcOpenApp,
-          value == NfcTapAction.launch || value == NfcTapAction.launchAndCopy);
-      await _prefs.setBool(_prefNfcCopyOtp,
-          value == NfcTapAction.copy || value == NfcTapAction.launchAndCopy);
+      await _prefs.setBool(
+        _prefNfcOpenApp,
+        value == NfcTapAction.launch || value == NfcTapAction.launchAndCopy,
+      );
+      await _prefs.setBool(
+        _prefNfcCopyOtp,
+        value == NfcTapAction.copy || value == NfcTapAction.launchAndCopy,
+      );
     }
   }
 }
 
 // TODO: Get these from Android
-final androidNfcSupportedKbdLayoutsProvider =
-    Provider<List<String>>((ref) => ['US', 'DE', 'DE-CH']);
+final androidNfcSupportedKbdLayoutsProvider = Provider<List<String>>(
+  (ref) => ['US', 'DE', 'DE-CH'],
+);
 
 final androidNfcKbdLayoutProvider =
     StateNotifierProvider<NfcKbdLayoutNotifier, String>(
-        (ref) => NfcKbdLayoutNotifier(ref.watch(prefProvider)));
+      (ref) => NfcKbdLayoutNotifier(ref.watch(prefProvider)),
+    );
 
 class NfcKbdLayoutNotifier extends StateNotifier<String> {
   static const String _defaultClipKbdLayout = 'US';
@@ -263,7 +277,7 @@ class NfcKbdLayoutNotifier extends StateNotifier<String> {
   final SharedPreferences _prefs;
 
   NfcKbdLayoutNotifier(this._prefs)
-      : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
+    : super(_prefs.getString(_prefClipKbdLayout) ?? _defaultClipKbdLayout);
 
   Future<void> setKeyboardLayout(String value) async {
     if (state != value) {
@@ -275,14 +289,15 @@ class NfcKbdLayoutNotifier extends StateNotifier<String> {
 
 final androidNfcBypassTouchProvider =
     StateNotifierProvider<NfcBypassTouchNotifier, bool>(
-        (ref) => NfcBypassTouchNotifier(ref.watch(prefProvider)));
+      (ref) => NfcBypassTouchNotifier(ref.watch(prefProvider)),
+    );
 
 class NfcBypassTouchNotifier extends StateNotifier<bool> {
   static const _prefNfcBypassTouch = 'prefNfcBypassTouch';
   final SharedPreferences _prefs;
 
   NfcBypassTouchNotifier(this._prefs)
-      : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
+    : super(_prefs.getBool(_prefNfcBypassTouch) ?? false);
 
   Future<void> setNfcBypassTouch(bool value) async {
     if (state != value) {
@@ -294,14 +309,15 @@ class NfcBypassTouchNotifier extends StateNotifier<bool> {
 
 final androidNfcSilenceSoundsProvider =
     StateNotifierProvider<NfcSilenceSoundsNotifier, bool>(
-        (ref) => NfcSilenceSoundsNotifier(ref.watch(prefProvider)));
+      (ref) => NfcSilenceSoundsNotifier(ref.watch(prefProvider)),
+    );
 
 class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
   static const _prefNfcSilenceSounds = 'prefNfcSilenceSounds';
   final SharedPreferences _prefs;
 
   NfcSilenceSoundsNotifier(this._prefs)
-      : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
+    : super(_prefs.getBool(_prefNfcSilenceSounds) ?? false);
 
   Future<void> setNfcSilenceSounds(bool value) async {
     if (state != value) {
@@ -313,14 +329,15 @@ class NfcSilenceSoundsNotifier extends StateNotifier<bool> {
 
 final androidUsbLaunchAppProvider =
     StateNotifierProvider<UsbLaunchAppNotifier, bool>(
-        (ref) => UsbLaunchAppNotifier(ref.watch(prefProvider)));
+      (ref) => UsbLaunchAppNotifier(ref.watch(prefProvider)),
+    );
 
 class UsbLaunchAppNotifier extends StateNotifier<bool> {
   static const _prefUsbOpenApp = 'prefUsbOpenApp';
   final SharedPreferences _prefs;
 
   UsbLaunchAppNotifier(this._prefs)
-      : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
+    : super(_prefs.getBool(_prefUsbOpenApp) ?? false);
 
   Future<void> setUsbLaunchApp(bool value) async {
     if (state != value) {

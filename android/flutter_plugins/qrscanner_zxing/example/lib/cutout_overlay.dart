@@ -20,29 +20,31 @@ import 'package:flutter/material.dart';
 
 class CutoutOverlay extends StatelessWidget {
   final int marginPct;
+
   const CutoutOverlay({super.key, required this.marginPct});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        child: CustomPaint(
-          painter: CutoutPainter(marginPct: marginPct),
-        ));
+      behavior: HitTestBehavior.translucent,
+      child: CustomPaint(painter: CutoutPainter(marginPct: marginPct)),
+    );
   }
 }
 
 class CutoutPainter extends CustomPainter {
   final int marginPct;
+
   CutoutPainter({required this.marginPct});
 
   @override
   void paint(Canvas canvas, Size size) {
     final overlayPaint = Paint()..color = Colors.black54;
-    final strokePaint = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+    final strokePaint =
+        Paint()
+          ..color = Colors.green
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2;
 
     final shorterDim = min(size.width, size.height);
 
@@ -54,17 +56,20 @@ class CutoutPainter extends CustomPainter {
       height: cutoutWidth,
     );
 
-    final cutOutRRect =
-        RRect.fromRectAndRadius(cutoutRect, const Radius.circular(5.0));
+    final cutOutRRect = RRect.fromRectAndRadius(
+      cutoutRect,
+      const Radius.circular(5.0),
+    );
     final targetPath = Path()..addRRect(cutOutRRect);
 
     canvas.drawPath(
-        Path.combine(
-          PathOperation.difference,
-          Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
-          targetPath..close(),
-        ),
-        overlayPaint);
+      Path.combine(
+        PathOperation.difference,
+        Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
+        targetPath..close(),
+      ),
+      overlayPaint,
+    );
 
     canvas.drawPath(targetPath, strokePaint);
   }

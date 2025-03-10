@@ -31,8 +31,11 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Startup', () {
-    appTestKeyless('App starts', (WidgetTester tester) async {},
-        tags: 'minimal');
+    appTestKeyless(
+      'App starts',
+      (WidgetTester tester) async {},
+      tags: 'minimal',
+    );
   });
   group('Settings', () {
     appTestKeyless('Click through all Themes', (WidgetTester tester) async {
@@ -42,18 +45,21 @@ void main() {
       await tester.shortWait();
       await tester.tap(find.byKey(themeModeSetting));
       await tester.shortWait();
-      await tester
-          .tap(find.byKey(themeModeOption(ThemeMode.light)).hitTestable());
+      await tester.tap(
+        find.byKey(themeModeOption(ThemeMode.light)).hitTestable(),
+      );
       await tester.longWait();
       await tester.tap(find.byKey(themeModeSetting));
       await tester.shortWait();
-      await tester
-          .tap(find.byKey(themeModeOption(ThemeMode.dark)).hitTestable());
+      await tester.tap(
+        find.byKey(themeModeOption(ThemeMode.dark)).hitTestable(),
+      );
       await tester.longWait();
       await tester.tap(find.byKey(themeModeSetting));
       await tester.shortWait();
-      await tester
-          .tap(find.byKey(themeModeOption(ThemeMode.system)).hitTestable());
+      await tester.tap(
+        find.byKey(themeModeOption(ThemeMode.system)).hitTestable(),
+      );
       await tester.longWait();
     });
   });
@@ -122,8 +128,9 @@ void main() {
       });
     });
     group('Troubleshooting', () {
-      appTestKeyless('Diagnostics Button', skip: isAndroid,
-          (WidgetTester tester) async {
+      appTestKeyless('Diagnostics Button', skip: isAndroid, (
+        WidgetTester tester,
+      ) async {
         await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
         await tester.shortWait();
         await tester.tap(helpDrawerButton);

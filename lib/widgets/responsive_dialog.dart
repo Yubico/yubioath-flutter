@@ -62,25 +62,27 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   }
 
   Widget _buildFullscreen(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: widget.title,
-          actions: widget.actions,
-          leading: IconButton(
-              tooltip: _getCancelText(context),
-              icon: const Icon(Symbols.close),
-              onPressed: widget.allowCancel
-                  ? () {
-                      widget.onCancel?.call();
-                      Navigator.of(context).pop();
-                    }
-                  : null),
-        ),
-        body: SingleChildScrollView(
-          child: SafeArea(
-              child: Container(
-                  key: _childKey, child: widget.builder(context, true))),
-        ),
-      );
+    appBar: AppBar(
+      title: widget.title,
+      actions: widget.actions,
+      leading: IconButton(
+        tooltip: _getCancelText(context),
+        icon: const Icon(Symbols.close),
+        onPressed:
+            widget.allowCancel
+                ? () {
+                  widget.onCancel?.call();
+                  Navigator.of(context).pop();
+                }
+                : null,
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: SafeArea(
+        child: Container(key: _childKey, child: widget.builder(context, true)),
+      ),
+    ),
+  );
 
   Widget _buildDialog(BuildContext context) {
     return PopScope(
@@ -92,19 +94,22 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         content: SizedBox(
           width: widget.dialogMaxWidth,
-          child:
-              Container(key: _childKey, child: widget.builder(context, false)),
+          child: Container(
+            key: _childKey,
+            child: widget.builder(context, false),
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: widget.allowCancel
-                ? () {
-                    Navigator.of(context).pop();
-                  }
-                : null,
+            onPressed:
+                widget.allowCancel
+                    ? () {
+                      Navigator.of(context).pop();
+                    }
+                    : null,
             child: Text(_getCancelText(context)),
           ),
-          ...widget.actions
+          ...widget.actions,
         ],
       ),
       onPopInvokedWithResult: (didPop, _) {
@@ -116,22 +121,24 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      LayoutBuilder(builder: ((context, constraints) {
-        var maxWidth = isDesktop ? 400 : 600;
-        // This keeps the focus in the dialog, even if the underlying page changes.
-        return FocusScope(
-          node: _focus,
-          autofocus: true,
-          onFocusChange: (focused) {
-            if (!focused && !_hasLostFocus) {
-              _focus.requestFocus();
-              _hasLostFocus = true;
-            }
-          },
-          child: constraints.maxWidth < maxWidth
-              ? _buildFullscreen(context)
-              : _buildDialog(context),
-        );
-      }));
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: ((context, constraints) {
+      var maxWidth = isDesktop ? 400 : 600;
+      // This keeps the focus in the dialog, even if the underlying page changes.
+      return FocusScope(
+        node: _focus,
+        autofocus: true,
+        onFocusChange: (focused) {
+          if (!focused && !_hasLostFocus) {
+            _focus.requestFocus();
+            _hasLostFocus = true;
+          }
+        },
+        child:
+            constraints.maxWidth < maxWidth
+                ? _buildFullscreen(context)
+                : _buildDialog(context),
+      );
+    }),
+  );
 }

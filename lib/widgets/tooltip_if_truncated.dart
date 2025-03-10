@@ -22,13 +22,14 @@ class TooltipIfTruncated extends StatelessWidget {
   final String? tooltip;
   final int maxLines;
   final TextOverflow overflow;
-  const TooltipIfTruncated(
-      {super.key,
-      required this.text,
-      required this.style,
-      this.tooltip,
-      this.maxLines = 1,
-      this.overflow = TextOverflow.fade});
+  const TooltipIfTruncated({
+    super.key,
+    required this.text,
+    required this.style,
+    this.tooltip,
+    this.maxLines = 1,
+    this.overflow = TextOverflow.fade,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +50,10 @@ class TooltipIfTruncated extends StatelessWidget {
         )..layout(minWidth: 0, maxWidth: constraints.maxWidth);
         return textPainter.didExceedMaxLines
             ? Tooltip(
-                margin: const EdgeInsets.all(16),
-                message: tooltip ?? text,
-                child: textWidget,
-              )
+              margin: const EdgeInsets.all(16),
+              message: tooltip ?? text,
+              child: textWidget,
+            )
             : textWidget;
       },
     );

@@ -42,24 +42,28 @@ final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
 class _FidoStateNotifier extends FidoStateNotifier {
   final _events = const EventChannel('android.fido.sessionState');
   late StreamSubscription _sub;
-  late final _FidoMethodChannelNotifier fido =
-      ref.read(_fidoMethodsProvider.notifier);
+  late final _FidoMethodChannelNotifier fido = ref.read(
+    _fidoMethodsProvider.notifier,
+  );
 
   @override
   FutureOr<FidoState> build(DevicePath devicePath) async {
-    _sub = _events.receiveBroadcastStream().listen((event) {
-      final json = jsonDecode(event);
-      if (json == null) {
-        state = AsyncValue.error(const NoDataException(), StackTrace.current);
-      } else if (json == 'loading') {
-        state = const AsyncValue.loading();
-      } else {
-        final fidoState = FidoState.fromJson(json);
-        state = AsyncValue.data(fidoState);
-      }
-    }, onError: (err, stackTrace) {
-      state = AsyncValue.error(err, stackTrace);
-    });
+    _sub = _events.receiveBroadcastStream().listen(
+      (event) {
+        final json = jsonDecode(event);
+        if (json == null) {
+          state = AsyncValue.error(const NoDataException(), StackTrace.current);
+        } else if (json == 'loading') {
+          state = const AsyncValue.loading();
+        } else {
+          final fidoState = FidoState.fromJson(json);
+          state = AsyncValue.data(fidoState);
+        }
+      },
+      onError: (err, stackTrace) {
+        state = AsyncValue.error(err, stackTrace);
+      },
+    );
 
     ref.onDispose(_sub.cancel);
 
@@ -71,11 +75,13 @@ class _FidoStateNotifier extends FidoStateNotifier {
     final controller = StreamController<InteractionEvent>();
     const resetEvents = EventChannel('android.fido.reset');
 
-    final subscription =
-        resetEvents.receiveBroadcastStream().skip(1).listen((event) {
+    final subscription = resetEvents.receiveBroadcastStream().skip(1).listen((
+      event,
+    ) {
       if (event is String && event.isNotEmpty) {
         controller.sink.add(
-            InteractionEvent.values.firstWhere((e) => '"${e.name}"' == event));
+          InteractionEvent.values.firstWhere((e) => '"${e.name}"' == event),
+        );
       }
     });
 
@@ -110,7 +116,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
   Future<PinResult> setPin(String newPin, {String? oldPin}) async {
     try {
       final response = jsonDecode(
-          await fido.invoke('setPin', {'pin': oldPin, 'newPin': newPin}));
+        await fido.invoke('setPin', {'pin': oldPin, 'newPin': newPin}),
+      );
       if (response['success'] == true) {
         _log.debug('FIDO PIN set/change successful');
         return PinResult.success();
@@ -122,8 +129,12 @@ class _FidoStateNotifier extends FidoStateNotifier {
       }
 
       _log.debug('FIDO PIN set/change failed');
-      return PinResult.failed(FidoPinFailureReason.invalidPin(
-          response['pinRetries'], response['authBlocked']));
+      return PinResult.failed(
+        FidoPinFailureReason.invalidPin(
+          response['pinRetries'],
+          response['authBlocked'],
+        ),
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
@@ -144,15 +155,23 @@ class _FidoStateNotifier extends FidoStateNotifier {
       }
 
       _log.debug('FIDO applet unlock failed');
-      return PinResult.failed(FidoPinFailureReason.invalidPin(
-          response['pinRetries'], response['authBlocked']));
+      return PinResult.failed(
+        FidoPinFailureReason.invalidPin(
+          response['pinRetries'],
+          response['authBlocked'],
+        ),
+      );
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is! CancellationException) {
         // non pin failure
         // simulate cancellation but show an error
-        await ref.read(withContextProvider)((context) async => showMessage(
-            context, ref.watch(l10nProvider).p_operation_failed_try_again));
+        await ref.read(withContextProvider)(
+          (context) async => showMessage(
+            context,
+            ref.watch(l10nProvider).p_operation_failed_try_again,
+          ),
+        );
         throw CancellationException();
       }
 
@@ -164,8 +183,9 @@ class _FidoStateNotifier extends FidoStateNotifier {
   @override
   Future<void> enableEnterpriseAttestation() async {
     try {
-      final response =
-          jsonDecode(await fido.invoke('enableEnterpriseAttestation'));
+      final response = jsonDecode(
+        await fido.invoke('enableEnterpriseAttestation'),
+      );
 
       if (response['success'] == true) {
         _log.debug('Enterprise attestation enabled');
@@ -178,7 +198,8 @@ class _FidoStateNotifier extends FidoStateNotifier {
       }
 
       _log.debug(
-          'Platform exception during enable enterprise attestation: $pe');
+        'Platform exception during enable enterprise attestation: $pe',
+      );
       rethrow;
     }
   }
@@ -186,30 +207,37 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
 final androidFingerprintProvider = AsyncNotifierProvider.autoDispose
     .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
-        _FidoFingerprintsNotifier.new);
+      _FidoFingerprintsNotifier.new,
+    );
 
 class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   final _events = const EventChannel('android.fido.fingerprints');
   late StreamSubscription _sub;
-  late final _FidoMethodChannelNotifier fido =
-      ref.read(_fidoMethodsProvider.notifier);
+  late final _FidoMethodChannelNotifier fido = ref.read(
+    _fidoMethodsProvider.notifier,
+  );
 
   @override
   FutureOr<List<Fingerprint>> build(DevicePath devicePath) async {
-    _sub = _events.receiveBroadcastStream().listen((event) {
-      final json = jsonDecode(event);
-      if (json == null) {
-        state = const AsyncValue.loading();
-      } else {
-        List<Fingerprint> newState = List.from((json as List)
-            .map((e) => Fingerprint.fromJson(e))
-            .sortedBy<String>((f) => f.label.toLowerCase())
-            .toList());
-        state = AsyncValue.data(newState);
-      }
-    }, onError: (err, stackTrace) {
-      state = AsyncValue.error(err, stackTrace);
-    });
+    _sub = _events.receiveBroadcastStream().listen(
+      (event) {
+        final json = jsonDecode(event);
+        if (json == null) {
+          state = const AsyncValue.loading();
+        } else {
+          List<Fingerprint> newState = List.from(
+            (json as List)
+                .map((e) => Fingerprint.fromJson(e))
+                .sortedBy<String>((f) => f.label.toLowerCase())
+                .toList(),
+          );
+          state = AsyncValue.data(newState);
+        }
+      },
+      onError: (err, stackTrace) {
+        state = AsyncValue.error(err, stackTrace);
+      },
+    );
 
     ref.onDispose(_sub.cancel);
     return Completer<List<Fingerprint>>().future;
@@ -220,25 +248,27 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
     final controller = StreamController<FingerprintEvent>();
     const registerEvents = EventChannel('android.fido.registerFp');
 
-    final registerFpSub =
-        registerEvents.receiveBroadcastStream().skip(1).listen((event) {
-      if (controller.isClosed) {
-        _log.debug('Controller already closed, ignoring: $event');
-      }
-      _log.debug('Received register fingerprint event: $event');
-      if (event is String && event.isNotEmpty) {
-        final e = jsonDecode(event);
-        _log.debug('Received register fingerprint event: $e');
+    final registerFpSub = registerEvents
+        .receiveBroadcastStream()
+        .skip(1)
+        .listen((event) {
+          if (controller.isClosed) {
+            _log.debug('Controller already closed, ignoring: $event');
+          }
+          _log.debug('Received register fingerprint event: $event');
+          if (event is String && event.isNotEmpty) {
+            final e = jsonDecode(event);
+            _log.debug('Received register fingerprint event: $e');
 
-        final status = e['status'];
+            final status = e['status'];
 
-        controller.sink.add(switch (status) {
-          'capture' => FingerprintEvent.capture(e['remaining']),
-          'capture-error' => FingerprintEvent.error(e['code']),
-          final other => throw UnimplementedError(other)
+            controller.sink.add(switch (status) {
+              'capture' => FingerprintEvent.capture(e['remaining']),
+              'capture-error' => FingerprintEvent.error(e['code']),
+              final other => throw UnimplementedError(other),
+            });
+          }
         });
-      }
-    });
 
     controller.onCancel = () async {
       if (!controller.isClosed) {
@@ -250,16 +280,18 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
     controller.onListen = () async {
       try {
-        final registerFpResult =
-            await fido.invoke('registerFingerprint', {'name': name});
+        final registerFpResult = await fido.invoke('registerFingerprint', {
+          'name': name,
+        });
 
         _log.debug('Finished registerFingerprint with: $registerFpResult');
 
         final resultJson = jsonDecode(registerFpResult);
 
         if (resultJson['success'] == true) {
-          controller.sink
-              .add(FingerprintEvent.complete(Fingerprint.fromJson(resultJson)));
+          controller.sink.add(
+            FingerprintEvent.complete(Fingerprint.fromJson(resultJson)),
+          );
         } else {
           // TODO abstract platform errors
           final errorStatus = resultJson['status'];
@@ -284,11 +316,16 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
   @override
   Future<Fingerprint> renameFingerprint(
-      Fingerprint fingerprint, String name) async {
+    Fingerprint fingerprint,
+    String name,
+  ) async {
     try {
-      final renameFingerprintResponse = jsonDecode(await fido.invoke(
-          'renameFingerprint',
-          {'templateId': fingerprint.templateId, 'name': name}));
+      final renameFingerprintResponse = jsonDecode(
+        await fido.invoke('renameFingerprint', {
+          'templateId': fingerprint.templateId,
+          'name': name,
+        }),
+      );
 
       if (renameFingerprintResponse['success'] == true) {
         _log.debug('FIDO rename fingerprint succeeded');
@@ -312,8 +349,11 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   @override
   Future<void> deleteFingerprint(Fingerprint fingerprint) async {
     try {
-      final deleteFingerprintResponse = jsonDecode(await fido
-          .invoke('deleteFingerprint', {'templateId': fingerprint.templateId}));
+      final deleteFingerprintResponse = jsonDecode(
+        await fido.invoke('deleteFingerprint', {
+          'templateId': fingerprint.templateId,
+        }),
+      );
 
       if (deleteFingerprintResponse['success'] == true) {
         _log.debug('FIDO delete fingerprint succeeded');
@@ -335,28 +375,34 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
 final androidCredentialProvider = AsyncNotifierProvider.autoDispose
     .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
-        _FidoCredentialsNotifier.new);
+      _FidoCredentialsNotifier.new,
+    );
 
 class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   final _events = const EventChannel('android.fido.credentials');
   late StreamSubscription _sub;
-  late final _FidoMethodChannelNotifier fido =
-      ref.read(_fidoMethodsProvider.notifier);
+  late final _FidoMethodChannelNotifier fido = ref.read(
+    _fidoMethodsProvider.notifier,
+  );
 
   @override
   FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
-    _sub = _events.receiveBroadcastStream().listen((event) {
-      final json = jsonDecode(event);
-      if (json == null) {
-        state = const AsyncValue.loading();
-      } else {
-        List<FidoCredential> newState = List.from(
-            (json as List).map((e) => FidoCredential.fromJson(e)).toList());
-        state = AsyncValue.data(newState);
-      }
-    }, onError: (err, stackTrace) {
-      state = AsyncValue.error(err, stackTrace);
-    });
+    _sub = _events.receiveBroadcastStream().listen(
+      (event) {
+        final json = jsonDecode(event);
+        if (json == null) {
+          state = const AsyncValue.loading();
+        } else {
+          List<FidoCredential> newState = List.from(
+            (json as List).map((e) => FidoCredential.fromJson(e)).toList(),
+          );
+          state = AsyncValue.data(newState);
+        }
+      },
+      onError: (err, stackTrace) {
+        state = AsyncValue.error(err, stackTrace);
+      },
+    );
 
     ref.onDispose(_sub.cancel);
     return Completer<List<FidoCredential>>().future;
@@ -365,8 +411,10 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   @override
   Future<void> deleteCredential(FidoCredential credential) async {
     try {
-      await fido.invoke('deleteCredential',
-          {'rpId': credential.rpId, 'credentialId': credential.credentialId});
+      await fido.invoke('deleteCredential', {
+        'rpId': credential.rpId,
+        'credentialId': credential.credentialId,
+      });
     } on PlatformException catch (pe) {
       var decodedException = pe.decode();
       if (decodedException is CancellationException) {
@@ -378,9 +426,10 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
 }
 
 final _fidoMethodsProvider = NotifierProvider<_FidoMethodChannelNotifier, void>(
-    () => _FidoMethodChannelNotifier());
+  () => _FidoMethodChannelNotifier(),
+);
 
 class _FidoMethodChannelNotifier extends MethodChannelNotifier {
   _FidoMethodChannelNotifier()
-      : super(const MethodChannel('android.fido.methods'));
+    : super(const MethodChannel('android.fido.methods'));
 }

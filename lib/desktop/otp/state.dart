@@ -30,15 +30,16 @@ import '../state.dart';
 
 final _log = Logger('desktop.otp.state');
 
-final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) =>
-      RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
-);
+final _sessionProvider = Provider.autoDispose
+    .family<RpcNodeSession, DevicePath>(
+      (ref, devicePath) =>
+          RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
+    );
 
 final desktopOtpState = AsyncNotifierProvider.autoDispose
     .family<OtpStateNotifier, OtpState, DevicePath>(
-        _DesktopOtpStateNotifier.new);
+      _DesktopOtpStateNotifier.new,
+    );
 
 class _DesktopOtpStateNotifier extends OtpStateNotifier {
   late RpcNodeSession _session;
@@ -83,55 +84,79 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
 
   @override
   Future<String> generateStaticPassword(int length, String layout) async {
-    final result = await _session.command('generate_static',
-        target: _subpath, params: {'length': length, 'layout': layout});
+    final result = await _session.command(
+      'generate_static',
+      target: _subpath,
+      params: {'length': length, 'layout': layout},
+    );
     return result['password'];
   }
 
   @override
   Future<String> modhexEncodeSerial(int serial) async {
-    final result = await _session
-        .command('serial_modhex', target: _subpath, params: {'serial': serial});
+    final result = await _session.command(
+      'serial_modhex',
+      target: _subpath,
+      params: {'serial': serial},
+    );
     return result['encoded'];
   }
 
   @override
   Future<Map<String, List<String>>> getKeyboardLayouts() async {
     final result = await _session.command('keyboard_layouts', target: _subpath);
-    return Map<String, List<String>>.from(result.map((key, value) =>
-        MapEntry(key, (value as List<dynamic>).cast<String>().toList())));
+    return Map<String, List<String>>.from(
+      result.map(
+        (key, value) =>
+            MapEntry(key, (value as List<dynamic>).cast<String>().toList()),
+      ),
+    );
   }
 
   @override
   Future<String> formatYubiOtpCsv(
-      int serial, String publicId, String privateId, String key) async {
-    final result = await _session.command('format_yubiotp_csv',
-        target: _subpath,
-        params: {
-          'serial': serial,
-          'public_id': publicId,
-          'private_id': privateId,
-          'key': key
-        });
+    int serial,
+    String publicId,
+    String privateId,
+    String key,
+  ) async {
+    final result = await _session.command(
+      'format_yubiotp_csv',
+      target: _subpath,
+      params: {
+        'serial': serial,
+        'public_id': publicId,
+        'private_id': privateId,
+        'key': key,
+      },
+    );
     return result['csv'];
   }
 
   @override
   Future<void> deleteSlot(SlotId slot, {String? accessCode}) async {
-    await _session.command('delete',
-        target: [..._subpath, slot.id],
-        params: accessCode != null ? {'curr_acc_code': accessCode} : null);
+    await _session.command(
+      'delete',
+      target: [..._subpath, slot.id],
+      params: accessCode != null ? {'curr_acc_code': accessCode} : null,
+    );
     ref.invalidateSelf();
   }
 
   @override
-  Future<void> configureSlot(SlotId slot,
-      {required SlotConfiguration configuration, String? accessCode}) async {
-    await _session.command('put',
-        target: [..._subpath, slot.id],
-        params: accessCode != null
-            ? {...configuration.toJson(), 'curr_acc_code': accessCode}
-            : configuration.toJson());
+  Future<void> configureSlot(
+    SlotId slot, {
+    required SlotConfiguration configuration,
+    String? accessCode,
+  }) async {
+    await _session.command(
+      'put',
+      target: [..._subpath, slot.id],
+      params:
+          accessCode != null
+              ? {...configuration.toJson(), 'curr_acc_code': accessCode}
+              : configuration.toJson(),
+    );
     ref.invalidateSelf();
   }
 }

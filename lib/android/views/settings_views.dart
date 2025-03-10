@@ -27,28 +27,32 @@ class NfcTapActionView extends ConsumerWidget {
   const NfcTapActionView({super.key});
 
   Future<NfcTapAction?> _selectTapAction(
-          BuildContext context, NfcTapAction tapAction) async =>
-      await showDialog<NfcTapAction>(
-          context: context,
-          builder: (BuildContext context) {
-            final l10n = AppLocalizations.of(context);
-            return SimpleDialog(
-              title: Text(l10n.l_on_yk_nfc_tap),
-              children: NfcTapAction.values
-                  .map(
-                    (e) => RadioListTile<NfcTapAction>(
-                        title: Text(e.getDescription(l10n)),
-                        key: keys.nfcTapOption(e),
-                        value: e,
-                        groupValue: tapAction,
-                        toggleable: true,
-                        onChanged: (mode) {
-                          Navigator.pop(context, e);
-                        }),
-                  )
-                  .toList(),
-            );
-          });
+    BuildContext context,
+    NfcTapAction tapAction,
+  ) async => await showDialog<NfcTapAction>(
+    context: context,
+    builder: (BuildContext context) {
+      final l10n = AppLocalizations.of(context);
+      return SimpleDialog(
+        title: Text(l10n.l_on_yk_nfc_tap),
+        children:
+            NfcTapAction.values
+                .map(
+                  (e) => RadioListTile<NfcTapAction>(
+                    title: Text(e.getDescription(l10n)),
+                    key: keys.nfcTapOption(e),
+                    value: e,
+                    groupValue: tapAction,
+                    toggleable: true,
+                    onChanged: (mode) {
+                      Navigator.pop(context, e);
+                    },
+                  ),
+                )
+                .toList(),
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,29 +77,34 @@ class NfcTapActionView extends ConsumerWidget {
 class NfcKbdLayoutView extends ConsumerWidget {
   const NfcKbdLayoutView({super.key});
 
-  Future<String?> _selectKbdLayout(BuildContext context, List<String> available,
-          String currentKbdLayout) async =>
-      await showDialog<String>(
-          context: context,
-          builder: (BuildContext context) {
-            final l10n = AppLocalizations.of(context);
-            return SimpleDialog(
-              title: Text(l10n.s_choose_kbd_layout),
-              children: available
-                  .map(
-                    (e) => RadioListTile<String>(
-                        title: Text(e),
-                        value: e,
-                        key: keys.keyboardLayoutOption(e),
-                        toggleable: true,
-                        groupValue: currentKbdLayout,
-                        onChanged: (mode) {
-                          Navigator.pop(context, e);
-                        }),
-                  )
-                  .toList(),
-            );
-          });
+  Future<String?> _selectKbdLayout(
+    BuildContext context,
+    List<String> available,
+    String currentKbdLayout,
+  ) async => await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      final l10n = AppLocalizations.of(context);
+      return SimpleDialog(
+        title: Text(l10n.s_choose_kbd_layout),
+        children:
+            available
+                .map(
+                  (e) => RadioListTile<String>(
+                    title: Text(e),
+                    value: e,
+                    key: keys.keyboardLayoutOption(e),
+                    toggleable: true,
+                    groupValue: currentKbdLayout,
+                    onChanged: (mode) {
+                      Navigator.pop(context, e);
+                    },
+                  ),
+                )
+                .toList(),
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -106,7 +115,8 @@ class NfcKbdLayoutView extends ConsumerWidget {
       title: Text(l10n.l_kbd_layout_for_static),
       subtitle: Text(clipKbdLayout),
       key: keys.nfcKeyboardLayoutSetting,
-      enabled: tapAction == NfcTapAction.copy ||
+      enabled:
+          tapAction == NfcTapAction.copy ||
           tapAction == NfcTapAction.launchAndCopy,
       onTap: () async {
         final newValue = await _selectKbdLayout(
@@ -132,17 +142,20 @@ class NfcBypassTouchView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final nfcBypassTouch = ref.watch(androidNfcBypassTouchProvider);
     return SwitchListTile(
-        title: Text(l10n.l_bypass_touch_requirement),
-        subtitle: Text(nfcBypassTouch
+      title: Text(l10n.l_bypass_touch_requirement),
+      subtitle: Text(
+        nfcBypassTouch
             ? l10n.l_bypass_touch_requirement_on
-            : l10n.l_bypass_touch_requirement_off),
-        value: nfcBypassTouch,
-        key: keys.nfcBypassTouchSetting,
-        onChanged: (value) {
-          ref
-              .read(androidNfcBypassTouchProvider.notifier)
-              .setNfcBypassTouch(value);
-        });
+            : l10n.l_bypass_touch_requirement_off,
+      ),
+      value: nfcBypassTouch,
+      key: keys.nfcBypassTouchSetting,
+      onChanged: (value) {
+        ref
+            .read(androidNfcBypassTouchProvider.notifier)
+            .setNfcBypassTouch(value);
+      },
+    );
   }
 }
 
@@ -154,17 +167,20 @@ class NfcSilenceSoundsView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final nfcSilenceSounds = ref.watch(androidNfcSilenceSoundsProvider);
     return SwitchListTile(
-        title: Text(l10n.s_silence_nfc_sounds),
-        subtitle: Text(nfcSilenceSounds
+      title: Text(l10n.s_silence_nfc_sounds),
+      subtitle: Text(
+        nfcSilenceSounds
             ? l10n.l_silence_nfc_sounds_on
-            : l10n.l_silence_nfc_sounds_off),
-        value: nfcSilenceSounds,
-        key: keys.nfcSilenceSoundsSettings,
-        onChanged: (value) {
-          ref
-              .read(androidNfcSilenceSoundsProvider.notifier)
-              .setNfcSilenceSounds(value);
-        });
+            : l10n.l_silence_nfc_sounds_off,
+      ),
+      value: nfcSilenceSounds,
+      key: keys.nfcSilenceSoundsSettings,
+      onChanged: (value) {
+        ref
+            .read(androidNfcSilenceSoundsProvider.notifier)
+            .setNfcSilenceSounds(value);
+      },
+    );
   }
 }
 
@@ -176,14 +192,15 @@ class UsbOpenAppView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final usbOpenApp = ref.watch(androidUsbLaunchAppProvider);
     return SwitchListTile(
-        title: Text(l10n.l_launch_app_on_usb),
-        subtitle: Text(usbOpenApp
-            ? l10n.l_launch_app_on_usb_on
-            : l10n.l_launch_app_on_usb_off),
-        value: usbOpenApp,
-        key: keys.usbOpenApp,
-        onChanged: (value) {
-          ref.read(androidUsbLaunchAppProvider.notifier).setUsbLaunchApp(value);
-        });
+      title: Text(l10n.l_launch_app_on_usb),
+      subtitle: Text(
+        usbOpenApp ? l10n.l_launch_app_on_usb_on : l10n.l_launch_app_on_usb_off,
+      ),
+      value: usbOpenApp,
+      key: keys.usbOpenApp,
+      onChanged: (value) {
+        ref.read(androidUsbLaunchAppProvider.notifier).setUsbLaunchApp(value);
+      },
+    );
   }
 }

@@ -39,10 +39,11 @@ class DevicePickerContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final hidden = ref.watch(hiddenDevicesProvider);
-    final devices = ref
-        .watch(attachedDevicesProvider)
-        .where((e) => !hidden.contains(e.path.key))
-        .toList();
+    final devices =
+        ref
+            .watch(attachedDevicesProvider)
+            .where((e) => !hidden.contains(e.path.key))
+            .toList();
     final currentNode = ref.watch(currentDeviceProvider);
 
     final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
@@ -51,16 +52,18 @@ class DevicePickerContent extends ConsumerWidget {
     if (isAndroid && devices.isEmpty) {
       var hasNfcSupport = ref.watch(androidNfcSupportProvider);
       var isNfcEnabled = ref.watch(androidNfcAdapterState);
-      final subtitle = hasNfcSupport && isNfcEnabled
-          ? l10n.l_insert_or_tap_yk
-          : l10n.l_insert_yk;
+      final subtitle =
+          hasNfcSupport && isNfcEnabled
+              ? l10n.l_insert_or_tap_yk
+              : l10n.l_insert_yk;
 
       androidNoKeyWidget = _DeviceRow(
         leading: const DeviceAvatar(
-            child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(Symbols.usb),
-        )),
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.usb),
+          ),
+        ),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -75,10 +78,11 @@ class DevicePickerContent extends ConsumerWidget {
       if (showUsb)
         _DeviceRow(
           leading: const DeviceAvatar(
-              child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Symbols.usb),
-          )),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Symbols.usb),
+            ),
+          ),
           title: l10n.s_usb,
           subtitle: l10n.l_no_yk_present,
           onTap: () {
@@ -89,24 +93,26 @@ class DevicePickerContent extends ConsumerWidget {
         ),
       if (androidNoKeyWidget != null) androidNoKeyWidget,
       ...devices.map(
-        (e) => e.path == currentNode?.path
-            ? _buildCurrentDeviceRow(
-                context,
-                ref,
-                e,
-                ref.watch(currentDeviceDataProvider),
-                extended,
-              )
-            : e.map(
-                usbYubiKey: (node) => _buildDeviceRow(
+        (e) =>
+            e.path == currentNode?.path
+                ? _buildCurrentDeviceRow(
                   context,
                   ref,
-                  node,
-                  node.info,
+                  e,
+                  ref.watch(currentDeviceDataProvider),
                   extended,
+                )
+                : e.map(
+                  usbYubiKey:
+                      (node) => _buildDeviceRow(
+                        context,
+                        ref,
+                        node,
+                        node.info,
+                        extended,
+                      ),
+                  nfcReader: (node) => _NfcDeviceRow(node, extended: extended),
                 ),
-                nfcReader: (node) => _NfcDeviceRow(node, extended: extended),
-              ),
       ),
     ];
 
@@ -127,16 +133,21 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
 }
 
 List<String> _getDeviceStrings(
-    BuildContext context, DeviceNode node, AsyncValue<YubiKeyData> data) {
+  BuildContext context,
+  DeviceNode node,
+  AsyncValue<YubiKeyData> data,
+) {
   final l10n = AppLocalizations.of(context);
-  final messages = data.whenOrNull(
+  final messages =
+      data.whenOrNull(
         data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
-        error: (error, _) => switch (error) {
-          'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
-          'unknown-device' => [l10n.s_unknown_device],
-          'restricted-nfc' => [l10n.s_restricted_nfc],
-          _ => null,
-        },
+        error:
+            (error, _) => switch (error) {
+              'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
+              'unknown-device' => [l10n.s_unknown_device],
+              'restricted-nfc' => [l10n.s_restricted_nfc],
+              _ => null,
+            },
       ) ??
       [l10n.l_no_yk_present];
 
@@ -210,23 +221,28 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
     final menuItems = _getMenuItems(context, ref, widget.node);
     final tooltip = '${widget.title}\n${widget.subtitle}';
     final themeData = Theme.of(context);
-    final seedColor = !widget.selected || widget.background == null
-        ? themeData.colorScheme.primary
-        : widget.background!;
+    final seedColor =
+        !widget.selected || widget.background == null
+            ? themeData.colorScheme.primary
+            : widget.background!;
     final colorScheme = ColorScheme.fromSeed(
-        seedColor: seedColor, brightness: themeData.brightness);
-    final localThemeData = widget.selected
-        ? themeData.copyWith(
-            colorScheme: colorScheme,
-            listTileTheme: themeData.listTileTheme.copyWith(
-              tileColor: widget.background != null
-                  ? colorScheme.primary
-                  : themeData.colorScheme.primary,
-              textColor: widget.selected ? colorScheme.onPrimary : null,
-              iconColor: widget.selected ? colorScheme.onPrimary : null,
-            ),
-          )
-        : themeData;
+      seedColor: seedColor,
+      brightness: themeData.brightness,
+    );
+    final localThemeData =
+        widget.selected
+            ? themeData.copyWith(
+              colorScheme: colorScheme,
+              listTileTheme: themeData.listTileTheme.copyWith(
+                tileColor:
+                    widget.background != null
+                        ? colorScheme.primary
+                        : themeData.colorScheme.primary,
+                textColor: widget.selected ? colorScheme.onPrimary : null,
+                iconColor: widget.selected ? colorScheme.onPrimary : null,
+              ),
+            )
+            : themeData;
     if (widget.extended) {
       return Tooltip(
         message: '', // no tooltip for drawer
@@ -245,21 +261,26 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
             },
             child: ListTile(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(48)),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                borderRadius: BorderRadius.circular(48),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 0,
+              ),
               horizontalTitleGap: 8,
               leading: widget.leading,
-              trailing: menuItems.isNotEmpty
-                  ? _DeviceMenuButton(
-                      menuItems: menuItems,
-                      opacity: widget.selected
-                          ? 1.0
-                          : _showContextMenu
-                              ? 0.3
-                              : 0.0,
-                    )
-                  : null,
+              trailing:
+                  menuItems.isNotEmpty
+                      ? _DeviceMenuButton(
+                        menuItems: menuItems,
+                        opacity:
+                            widget.selected
+                                ? 1.0
+                                : _showContextMenu
+                                ? 0.3
+                                : 0.0,
+                      )
+                      : null,
               title: Text(
                 widget.title,
                 overflow: TextOverflow.fade,
@@ -296,31 +317,37 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
         onLongPressStart: isAndroid ? showMenuFn : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
-          child: widget.selected
-              ? Semantics(
-                  label: tooltip,
-                  child: IconButton.filled(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                  ))
-              : Semantics(
-                  label: tooltip,
-                  child: IconButton(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                    color: colorScheme.secondary,
-                  )),
+          child:
+              widget.selected
+                  ? Semantics(
+                    label: tooltip,
+                    child: IconButton.filled(
+                      tooltip: isDesktop ? tooltip : null,
+                      icon: widget.leading,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      onPressed: widget.onTap,
+                    ),
+                  )
+                  : Semantics(
+                    label: tooltip,
+                    child: IconButton(
+                      tooltip: isDesktop ? tooltip : null,
+                      icon: widget.leading,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      onPressed: widget.onTap,
+                      color: colorScheme.secondary,
+                    ),
+                  ),
         ),
       );
     }
   }
 
   List<PopupMenuItem> _getMenuItems(
-      BuildContext context, WidgetRef ref, DeviceNode? node) {
+    BuildContext context,
+    WidgetRef ref,
+    DeviceNode? node,
+  ) {
     final l10n = AppLocalizations.of(context);
     final hidden = ref.watch(hiddenDevicesProvider);
 
@@ -364,10 +391,12 @@ _DeviceRow _buildDeviceRow(
 ) {
   final l10n = AppLocalizations.of(context);
   final subtitle = node.when(
-    usbYubiKey: (_, __, ___, info) => info == null
-        ? l10n.s_yk_inaccessible
-        : _getDeviceInfoString(context, info),
-    nfcReader: (_, __) => l10n.s_select_to_scan,
+    usbYubiKey:
+        (_, _, _, info) =>
+            info == null
+                ? l10n.s_yk_inaccessible
+                : _getDeviceInfoString(context, info),
+    nfcReader: (_, _) => l10n.s_select_to_scan,
   );
 
   final keyCustomization =
@@ -411,8 +440,9 @@ _DeviceRow _buildCurrentDeviceRow(
   return _DeviceRow(
     key: keys.deviceInfoListTile,
     leading: data.maybeWhen(
-      data: (data) =>
-          DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),
+      data:
+          (data) =>
+              DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),
       orElse: () => DeviceAvatar.deviceNode(node, radius: extended ? null : 16),
     ),
     title: displayName,

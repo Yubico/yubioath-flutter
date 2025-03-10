@@ -59,20 +59,24 @@ class IconFileLoader extends BytesLoader {
       return cachedData;
     }
 
-    final decodedData = await compute((File file) async {
-      final fileData = await file.readAsString();
-      final TimelineTask task = TimelineTask()..start('encodeSvg');
-      final Uint8List compiledBytes = encodeSvg(
-        xml: fileData,
-        debugName: file.path,
-        enableClippingOptimizer: false,
-        enableMaskingOptimizer: false,
-        enableOverdrawOptimizer: false,
-      );
-      task.finish();
-      // for testing try: await Future.delayed(const Duration(seconds: 5));
-      return compiledBytes;
-    }, _file, debugLabel: 'Process SVG data');
+    final decodedData = await compute(
+      (File file) async {
+        final fileData = await file.readAsString();
+        final TimelineTask task = TimelineTask()..start('encodeSvg');
+        final Uint8List compiledBytes = encodeSvg(
+          xml: fileData,
+          debugName: file.path,
+          enableClippingOptimizer: false,
+          enableMaskingOptimizer: false,
+          enableOverdrawOptimizer: false,
+        );
+        task.finish();
+        // for testing try: await Future.delayed(const Duration(seconds: 5));
+        return compiledBytes;
+      },
+      _file,
+      debugLabel: 'Process SVG data',
+    );
 
     memCache.write(cacheFileName, decodedData);
     await fsCache.write(cacheFileName, decodedData);

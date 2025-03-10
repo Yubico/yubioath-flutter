@@ -39,8 +39,11 @@ class AppFailurePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final reason = cause;
 
-    Widget? graphic = Icon(Symbols.error,
-        size: 96, color: Theme.of(context).colorScheme.error);
+    Widget? graphic = Icon(
+      Symbols.error,
+      size: 96,
+      color: Theme.of(context).colorScheme.error,
+    );
     String? header = l10n.l_error_occurred;
     String? message = reason.toString();
     String? title;
@@ -72,9 +75,7 @@ class AppFailurePage extends ConsumerWidget {
               message = l10n.p_webauthn_elevated_permissions_required;
               centered = false;
               graphic = null;
-              actions = [
-                const ElevateFidoButtons(),
-              ];
+              actions = [const ElevateFidoButtons()];
               if (isMicrosoftStore) {
                 footnote = l10n.l_ms_store_permission_note;
               }

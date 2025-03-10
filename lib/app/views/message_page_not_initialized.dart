@@ -32,8 +32,11 @@ class MessagePageNotInitialized extends ConsumerWidget {
   final String title;
   final List<Capability>? capabilities;
 
-  const MessagePageNotInitialized(
-      {super.key, required this.title, required this.capabilities});
+  const MessagePageNotInitialized({
+    super.key,
+    required this.title,
+    required this.capabilities,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,25 +53,28 @@ class MessagePageNotInitialized extends ConsumerWidget {
       var isNfcEnabled = ref.watch(androidNfcAdapterState);
       var isUsbYubiKey =
           ref.watch(attachedDevicesProvider).firstOrNull?.transport ==
-              Transport.usb;
+          Transport.usb;
       return MessagePage(
         title: title,
         capabilities: capabilities,
         centered: true,
         delayedContent: isUsbYubiKey,
         graphic: noKeyImage,
-        header: hasNfcSupport && isNfcEnabled
-            ? l10n.l_insert_or_tap_yk
-            : l10n.l_insert_yk,
-        actionsBuilder: (context, expanded) => [
-          if (hasNfcSupport && !isNfcEnabled)
-            ElevatedButton.icon(
-                label: Text(l10n.s_enable_nfc),
-                icon: const Icon(Symbols.contactless),
-                onPressed: () async {
-                  await openNfcSettings();
-                })
-        ],
+        header:
+            hasNfcSupport && isNfcEnabled
+                ? l10n.l_insert_or_tap_yk
+                : l10n.l_insert_yk,
+        actionsBuilder:
+            (context, expanded) => [
+              if (hasNfcSupport && !isNfcEnabled)
+                ElevatedButton.icon(
+                  label: Text(l10n.s_enable_nfc),
+                  icon: const Icon(Symbols.contactless),
+                  onPressed: () async {
+                    await openNfcSettings();
+                  },
+                ),
+            ],
       );
     } else {
       return MessagePage(

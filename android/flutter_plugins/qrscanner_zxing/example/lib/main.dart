@@ -32,9 +32,7 @@ class QRCodeScannerExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'QR Scanner Example',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
+      theme: ThemeData(primarySwatch: Colors.teal),
       home: const AppHomePage(title: 'QR Scanner Example'),
     );
   }
@@ -42,60 +40,64 @@ class QRCodeScannerExampleApp extends StatelessWidget {
 
 class AppHomePage extends StatelessWidget {
   const AppHomePage({super.key, required this.title});
+
   final String title;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => const QRScannerPage(),
-                        transitionDuration: const Duration(seconds: 0),
-                        reverseTransitionDuration: const Duration(seconds: 0),
-                      ));
-                },
-                child: const Text("Open QR Scanner")),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, _, _) => const QRScannerPage(),
+                    transitionDuration: const Duration(seconds: 0),
+                    reverseTransitionDuration: const Duration(seconds: 0),
+                  ),
+                );
+              },
+              child: const Text("Open QR Scanner"),
+            ),
             ElevatedButton(
-                onPressed: () async {
-                  var channel = MethodChannelQRScannerZxing();
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final result = await FilePicker.platform.pickFiles(
-                      allowedExtensions: ['png', 'jpg', 'gif', 'webp'],
-                      type: FileType.custom,
-                      allowMultiple: false,
-                      lockParentWindow: true,
-                      withData: true,
-                      dialogTitle: 'Select file with QR code');
+              onPressed: () async {
+                var channel = MethodChannelQRScannerZxing();
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                final result = await FilePicker.platform.pickFiles(
+                  allowedExtensions: ['png', 'jpg', 'gif', 'webp'],
+                  type: FileType.custom,
+                  allowMultiple: false,
+                  lockParentWindow: true,
+                  withData: true,
+                  dialogTitle: 'Select file with QR code',
+                );
 
-                  if (result == null || !result.isSinglePick) {
-                    // no result
-                    return;
-                  }
+                if (result == null || !result.isSinglePick) {
+                  // no result
+                  return;
+                }
 
-                  final bytes = result.files.first.bytes;
-                  if (bytes != null) {
-                    var value = await channel.scanBitmap(bytes);
-                    final snackBar = SnackBar(
-                        content: Text(value == null
-                            ? 'No QR code detected'
-                            : 'QR: $value'));
-                    scaffoldMessenger.showSnackBar(snackBar);
-                  } else {
-                    // no files selected
-                  }
-                },
-                child: const Text("Scan from file")),
+                final bytes = result.files.first.bytes;
+                if (bytes != null) {
+                  var value = await channel.scanBitmap(bytes);
+                  final snackBar = SnackBar(
+                    content: Text(
+                      value == null ? 'No QR code detected' : 'QR: $value',
+                    ),
+                  );
+                  scaffoldMessenger.showSnackBar(snackBar);
+                } else {
+                  // no files selected
+                }
+              },
+              child: const Text("Scan from file"),
+            ),
           ],
         ),
       ),
@@ -118,67 +120,68 @@ class QRScannerPageState extends State<QRScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        Positioned(
+      body: Stack(
+        children: [
+          Positioned(
             top: 0,
             bottom: 0,
             left: 0,
             right: 0,
             child: QRScannerZxingView(
-                marginPct: 10,
-                onViewInitialized: (permissionsGranted) {
-                  // this example does not handle Camera permissions
-                },
-                onDetect: (result) {
-                  if (currentCode == null) {
-                    setState(() {
-                      currentCode = result;
-                    });
-                  }
-                })),
-        const Positioned(
+              marginPct: 10,
+              onViewInitialized: (permissionsGranted) {
+                // this example does not handle Camera permissions
+              },
+              onDetect: (result) {
+                if (currentCode == null) {
+                  setState(() {
+                    currentCode = result;
+                  });
+                }
+              },
+            ),
+          ),
+          const Positioned(
             top: 0,
             bottom: 0,
             left: 0,
             right: 0,
-            child: CutoutOverlay(
-              marginPct: 5,
-            )),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Back'),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.refresh),
-                  label: const Text("Again"),
-                  onPressed: () {
-                    setState(() {
-                      currentCode = null;
-                    });
-                  },
-                ),
-              ],
+            child: CutoutOverlay(marginPct: 5),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Back'),
+                  ),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.refresh),
+                    label: const Text("Again"),
+                    onPressed: () {
+                      setState(() {
+                        currentCode = null;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 80,
-          left: 0,
-          right: 0,
-          child: Card(
+          Positioned(
+            bottom: 80,
+            left: 0,
+            right: 0,
+            child: Card(
               margin: const EdgeInsets.all(20),
               elevation: 100,
               child: Padding(
@@ -189,25 +192,24 @@ class QRScannerPageState extends State<QRScannerPage> {
                     Text(currentCode ?? "NO CODE DETECTED"),
                   ],
                 ),
-              )),
-        ),
-        const Positioned(
-          top: 50,
-          left: 0,
-          right: 0,
-          child: Card(
+              ),
+            ),
+          ),
+          const Positioned(
+            top: 50,
+            left: 0,
+            right: 0,
+            child: Card(
               margin: EdgeInsets.all(20),
               elevation: 100,
               child: Padding(
                 padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Text("QR scanner example"),
-                  ],
-                ),
-              )),
-        )
-      ],
-    ));
+                child: Column(children: [Text("QR scanner example")]),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -30,14 +30,20 @@ class CertInfoTable extends ConsumerWidget {
   final bool alwaysIncludePrivate;
   final bool supportsBio;
 
-  const CertInfoTable(this.certInfo, this.metadata,
-      {super.key, this.alwaysIncludePrivate = false, this.supportsBio = false});
+  const CertInfoTable(
+    this.certInfo,
+    this.metadata, {
+    super.key,
+    this.alwaysIncludePrivate = false,
+    this.supportsBio = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final dateFormat =
-        DateFormat.yMMMEd(ref.watch(currentLocaleProvider).toString());
+    final dateFormat = DateFormat.yMMMEd(
+      ref.watch(currentLocaleProvider).toString(),
+    );
 
     final certInfo = this.certInfo;
     final metadata = this.metadata;
@@ -45,39 +51,41 @@ class CertInfoTable extends ConsumerWidget {
       if (metadata != null)
         l10n.s_private_key: (
           metadata.keyType.getDisplayName(l10n),
-          keys.slotMetadataKeyType
+          keys.slotMetadataKeyType,
         ),
       if (metadata != null &&
           metadata.pinPolicy != PinPolicy.never &&
           supportsBio)
         l10n.s_biometrics: (
-          [PinPolicy.matchAlways, PinPolicy.matchOnce]
-                  .contains(metadata.pinPolicy)
+          [
+                PinPolicy.matchAlways,
+                PinPolicy.matchOnce,
+              ].contains(metadata.pinPolicy)
               ? l10n.s_enabled
               : l10n.s_disabled,
-          keys.slotMetadataBiometrics
+          keys.slotMetadataBiometrics,
         ),
       if (metadata == null && alwaysIncludePrivate)
         l10n.s_private_key: (l10n.s_none, keys.slotMetadataKeyType),
       if (certInfo != null) ...{
         l10n.s_public_key: (
           certInfo.keyType?.getDisplayName(l10n) ?? l10n.s_unknown_type,
-          keys.certInfoKeyType
+          keys.certInfoKeyType,
         ),
         l10n.s_subject: (certInfo.subject, keys.certInfoSubject),
         l10n.s_issuer: (certInfo.issuer, keys.certInfoIssuer),
         l10n.s_serial: (certInfo.serial, keys.certInfoSerial),
         l10n.s_certificate_fingerprint: (
           certInfo.fingerprint,
-          keys.certInfoFingerprint
+          keys.certInfoFingerprint,
         ),
         l10n.s_valid_from: (
           dateFormat.format(DateTime.parse(certInfo.notValidBefore)),
-          keys.certInfoValidFrom
+          keys.certInfoValidFrom,
         ),
         l10n.s_valid_to: (
           dateFormat.format(DateTime.parse(certInfo.notValidAfter)),
-          keys.certInfoValidTo
+          keys.certInfoValidTo,
         ),
       },
     });

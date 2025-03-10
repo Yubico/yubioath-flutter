@@ -24,10 +24,10 @@ import '../app/models.dart';
 import '../widgets/flex_box.dart';
 
 bool get isDesktop => const [
-      TargetPlatform.windows,
-      TargetPlatform.macOS,
-      TargetPlatform.linux
-    ].contains(defaultTargetPlatform);
+  TargetPlatform.windows,
+  TargetPlatform.macOS,
+  TargetPlatform.linux,
+].contains(defaultTargetPlatform);
 
 bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
 
@@ -79,7 +79,7 @@ class Feature extends BaseFeature {
   final bool _defaultState;
 
   Feature._(this.parent, this.key, {bool enabled = true})
-      : _defaultState = enabled;
+    : _defaultState = enabled;
 
   @override
   String get path => parent._subpath(key);
@@ -94,7 +94,8 @@ typedef FeatureProvider = bool Function(Feature feature);
 
 final featureFlagProvider =
     StateNotifierProvider<FeatureFlagsNotifier, Map<String, bool>>(
-        (_) => FeatureFlagsNotifier());
+      (_) => FeatureFlagsNotifier(),
+    );
 
 class FeatureFlagsNotifier extends StateNotifier<Map<String, bool>> {
   FeatureFlagsNotifier() : super({});
@@ -113,10 +114,11 @@ final featureProvider = Provider<FeatureProvider>((ref) {
   final featureMap = ref.watch(featureFlagProvider);
 
   bool isEnabled(BaseFeature feature) => switch (feature) {
-        _RootFeature() => true,
-        Feature() => isEnabled(feature.parent) &&
-            (featureMap[feature.path] ?? feature._defaultState),
-      };
+    _RootFeature() => true,
+    Feature() =>
+      isEnabled(feature.parent) &&
+          (featureMap[feature.path] ?? feature._defaultState),
+  };
 
   return isEnabled;
 });
@@ -125,7 +127,7 @@ class LayoutNotifier extends StateNotifier<FlexLayout> {
   final String _key;
   final SharedPreferences _prefs;
   LayoutNotifier(this._key, this._prefs)
-      : super(_fromName(_prefs.getString(_key)));
+    : super(_fromName(_prefs.getString(_key)));
 
   void setLayout(FlexLayout layout) {
     state = layout;
@@ -133,7 +135,7 @@ class LayoutNotifier extends StateNotifier<FlexLayout> {
   }
 
   static FlexLayout _fromName(String? name) => FlexLayout.values.firstWhere(
-        (element) => element.name == name,
-        orElse: () => FlexLayout.list,
-      );
+    (element) => element.name == name,
+    orElse: () => FlexLayout.list,
+  );
 }

@@ -25,7 +25,10 @@ class RpcResponse with _$RpcResponse {
       Success;
   factory RpcResponse.signal(String status, Map<String, dynamic> body) = Signal;
   factory RpcResponse.error(
-      String status, String message, Map<String, dynamic> body) = RpcError;
+    String status,
+    String message,
+    Map<String, dynamic> body,
+  ) = RpcError;
 
   factory RpcResponse.fromJson(Map<String, dynamic> json) =>
       _$RpcResponseFromJson(json);

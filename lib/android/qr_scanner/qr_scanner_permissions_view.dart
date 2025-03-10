@@ -26,11 +26,12 @@ class QRScannerPermissionsUI extends StatelessWidget {
   final Size screenSize;
   final Function onPermissionRequest;
 
-  const QRScannerPermissionsUI(
-      {super.key,
-      required this.status,
-      required this.screenSize,
-      required this.onPermissionRequest});
+  const QRScannerPermissionsUI({
+    super.key,
+    required this.status,
+    required this.screenSize,
+    required this.onPermissionRequest,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,58 +53,66 @@ class QRScannerPermissionsUI extends StatelessWidget {
             Column(
               children: [
                 Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        children: [
-                          SmallWhiteText(l10n.q_want_to_scan),
-                          OutlinedButton(
-                              onPressed: () {
-                                onPermissionRequest();
-                              },
-                              child: Text(
-                                l10n.s_review_permissions,
-                                style: const TextStyle(color: Colors.white),
-                              )),
-                        ],
-                      )
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        SmallWhiteText(l10n.q_want_to_scan),
+                        OutlinedButton(
+                          onPressed: () {
+                            onPermissionRequest();
+                          },
+                          child: Text(
+                            l10n.s_review_permissions,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(children: [
-                        SmallWhiteText(l10n.q_have_account_info),
-                      ])
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [SmallWhiteText(l10n.q_have_account_info)],
+                    ),
+                  ],
+                ),
                 Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(
-                                AndroidQrScanner.kQrScannerRequestManualEntry);
-                          },
-                          child: Text(
-                            l10n.s_enter_manually,
-                            style: const TextStyle(color: Colors.white),
-                          )),
-                      const SizedBox(width: 16),
-                      OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(
-                                AndroidQrScanner.kQrScannerRequestReadFromFile);
-                          },
-                          child: Text(
-                            l10n.s_read_from_file,
-                            style: const TextStyle(color: Colors.white),
-                          ))
-                    ]),
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).pop(AndroidQrScanner.kQrScannerRequestManualEntry);
+                      },
+                      child: Text(
+                        l10n.s_enter_manually,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).pop(AndroidQrScanner.kQrScannerRequestReadFromFile);
+                      },
+                      child: Text(
+                        l10n.s_read_from_file,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

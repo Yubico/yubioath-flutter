@@ -33,7 +33,8 @@ class WindowManagerHelperWindows {
   }
 
   static Future<bool> _displayConfigurationChanged(
-      SharedPreferences sharedPreferences) async {
+    SharedPreferences sharedPreferences,
+  ) async {
     final allDisplays =
         sharedPreferences.get(_keyAllDisplaysValue) as String? ?? '';
     return await _getAllDisplays() != allDisplays;
@@ -41,10 +42,11 @@ class WindowManagerHelperWindows {
 
   static bool _displayContainsBounds(Display d, Rect rect) {
     final displayRect = Rect.fromLTWH(
-        d.visiblePosition?.dx ?? 0.0,
-        d.visiblePosition?.dy ?? 0.0,
-        d.visibleSize?.width ?? 0.0,
-        d.visibleSize?.height ?? 0.0);
+      d.visiblePosition?.dx ?? 0.0,
+      d.visiblePosition?.dy ?? 0.0,
+      d.visibleSize?.width ?? 0.0,
+      d.visibleSize?.height ?? 0.0,
+    );
 
     // validate top bounds of the rectangle
     // the translations limit amount of minimum vertical and horizontal distance
@@ -61,12 +63,14 @@ class WindowManagerHelperWindows {
     final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor);
     final hasSavedScaleFactor = savedScaleFactor != null;
 
-    var height = hasSavedScaleFactor
-        ? bounds.height / savedScaleFactor * primaryScaleFactor
-        : bounds.height;
-    var width = hasSavedScaleFactor
-        ? bounds.width / savedScaleFactor * primaryScaleFactor
-        : bounds.width;
+    var height =
+        hasSavedScaleFactor
+            ? bounds.height / savedScaleFactor * primaryScaleFactor
+            : bounds.height;
+    var width =
+        hasSavedScaleFactor
+            ? bounds.width / savedScaleFactor * primaryScaleFactor
+            : bounds.width;
 
     final savedBounds = Rect.fromLTWH(bounds.left, bounds.top, width, height);
 
@@ -88,10 +92,11 @@ class WindowManagerHelperWindows {
     final rect = await windowManager.getBounds();
 
     final windowRect = Rect.fromLTWH(
-        rect.left / primaryScaleFactor * windowPixelRatio,
-        rect.top / primaryScaleFactor * windowPixelRatio,
-        rect.width,
-        rect.height);
+      rect.left / primaryScaleFactor * windowPixelRatio,
+      rect.top / primaryScaleFactor * windowPixelRatio,
+      rect.width,
+      rect.height,
+    );
 
     await prefs.setDouble(_keyPrimaryScaleFactor, primaryScaleFactor);
 

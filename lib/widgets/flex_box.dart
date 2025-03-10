@@ -26,13 +26,13 @@ enum FlexLayout {
   grid;
 
   IconData get icon => switch (this) {
-        FlexLayout.list => Symbols.list,
-        FlexLayout.grid => Symbols.grid_view
-      };
+    FlexLayout.list => Symbols.list,
+    FlexLayout.grid => Symbols.grid_view,
+  };
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        FlexLayout.list => l10n.s_list_layout,
-        FlexLayout.grid => l10n.s_grid_layout
-      };
+    FlexLayout.list => l10n.s_list_layout,
+    FlexLayout.grid => l10n.s_grid_layout,
+  };
 }
 
 class FlexBox<T> extends StatelessWidget {
@@ -105,22 +105,18 @@ class FlexBox<T> extends StatelessWidget {
               Row(
                 children: [
                   for (final entry in c) ...[
-                    Flexible(
-                      child: itemBuilder(entry),
-                    ),
+                    Flexible(child: itemBuilder(entry)),
                     if (itemsPerRow != 1 && c.indexOf(entry) != c.length - 1)
                       SizedBox(width: spacing),
                   ],
                   if (c.length < itemsPerRow) ...[
                     // Prevents resizing when an item is removed
                     SizedBox(width: 8 * (itemsPerRow - c.length).toDouble()),
-                    Spacer(
-                      flex: itemsPerRow - c.length,
-                    )
-                  ]
+                    Spacer(flex: itemsPerRow - c.length),
+                  ],
                 ],
               ),
-            ]
+            ],
           ],
         );
       },

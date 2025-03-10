@@ -21,10 +21,10 @@ Map<String, dynamic> _$$SuccessImplToJson(_$SuccessImpl instance) =>
     };
 
 _$SignalImpl _$$SignalImplFromJson(Map<String, dynamic> json) => _$SignalImpl(
-      json['status'] as String,
-      json['body'] as Map<String, dynamic>,
-      $type: json['kind'] as String?,
-    );
+  json['status'] as String,
+  json['body'] as Map<String, dynamic>,
+  $type: json['kind'] as String?,
+);
 
 Map<String, dynamic> _$$SignalImplToJson(_$SignalImpl instance) =>
     <String, dynamic>{
@@ -50,10 +50,7 @@ Map<String, dynamic> _$$RpcErrorImplToJson(_$RpcErrorImpl instance) =>
     };
 
 _$RpcStateImpl _$$RpcStateImplFromJson(Map<String, dynamic> json) =>
-    _$RpcStateImpl(
-      json['version'] as String,
-      json['is_admin'] as bool,
-    );
+    _$RpcStateImpl(json['version'] as String, json['is_admin'] as bool);
 
 Map<String, dynamic> _$$RpcStateImplToJson(_$RpcStateImpl instance) =>
     <String, dynamic>{

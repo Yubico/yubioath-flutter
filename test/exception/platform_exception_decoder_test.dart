@@ -26,36 +26,42 @@ PlatformException mockApdu(String message) =>
 void main() {
   test('Recognize cancellation exception', () {
     final pe = PlatformException(
-        code: 'CancellationException',
-        message: null,
-        details: null,
-        stacktrace: null);
+      code: 'CancellationException',
+      message: null,
+      details: null,
+      stacktrace: null,
+    );
 
     expect(pe.decode(), isA<CancellationException>());
   });
 
   test('Recognize apdu exception', () {
     var pe = mockApdu(
-        'com.yubico.yubikit.core.smartcard.ApduException: APDU error: 0x6f00');
+      'com.yubico.yubikit.core.smartcard.ApduException: APDU error: 0x6f00',
+    );
 
     expect(
-        pe.decode(),
-        const TypeMatcher<ApduException>()
-            .having((ae) => ae.sw, 'SW', 28416)
-            .having((ae) => ae.message, 'message', 'SW: 0x6f00'));
+      pe.decode(),
+      const TypeMatcher<ApduException>()
+          .having((ae) => ae.sw, 'SW', 28416)
+          .having((ae) => ae.message, 'message', 'SW: 0x6f00'),
+    );
 
     pe = mockApdu(
-        'com.yubico.yubikit.core.smartcard.ApduException: APDU error: 0xIJKLMNO');
+      'com.yubico.yubikit.core.smartcard.ApduException: APDU error: 0xIJKLMNO',
+    );
 
     expect(pe.decode(), isNot(const TypeMatcher<ApduException>()));
 
     pe = mockApdu(
-        'com.yubico.yubikit.core.smartcard.ApduException: APDU error: 6f00');
+      'com.yubico.yubikit.core.smartcard.ApduException: APDU error: 6f00',
+    );
 
     expect(pe.decode(), isNot(const TypeMatcher<ApduException>()));
 
     pe = mockApdu(
-        'com.yubico.yubikit.core.smartcard.ApduException: APDU error:');
+      'com.yubico.yubikit.core.smartcard.ApduException: APDU error:',
+    );
 
     expect(pe.decode(), isNot(const TypeMatcher<ApduException>()));
 
@@ -66,17 +72,19 @@ void main() {
 
   test('Rethrow', () {
     var pe = PlatformException(
-        code: 'some code',
-        message: 'some message',
-        details: 'some details',
-        stacktrace: 'and stacktrace');
+      code: 'some code',
+      message: 'some message',
+      details: 'some details',
+      stacktrace: 'and stacktrace',
+    );
 
     expect(
-        pe.decode(),
-        const TypeMatcher<PlatformException>()
-            .having((pe) => pe.code, 'code', 'some code')
-            .having((pe) => pe.message, 'message', 'some message')
-            .having((pe) => pe.details, 'details', 'some details')
-            .having((pe) => pe.stacktrace, 'stacktrace', 'and stacktrace'));
+      pe.decode(),
+      const TypeMatcher<PlatformException>()
+          .having((pe) => pe.code, 'code', 'some code')
+          .having((pe) => pe.message, 'message', 'some message')
+          .having((pe) => pe.details, 'details', 'some details')
+          .having((pe) => pe.stacktrace, 'stacktrace', 'and stacktrace'),
+    );
   });
 }

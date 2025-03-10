@@ -46,20 +46,22 @@ enum Section {
   const Section([this.capabilities = const []]);
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        Section.home => l10n.s_home,
-        Section.accounts => l10n.s_accounts,
-        Section.securityKey => l10n.s_security_key,
-        Section.fingerprints => l10n.s_fingerprints,
-        Section.passkeys => l10n.s_passkeys,
-        Section.certificates => l10n.s_certificates,
-        Section.slots => l10n.s_slots,
-      };
+    Section.home => l10n.s_home,
+    Section.accounts => l10n.s_accounts,
+    Section.securityKey => l10n.s_security_key,
+    Section.fingerprints => l10n.s_fingerprints,
+    Section.passkeys => l10n.s_passkeys,
+    Section.certificates => l10n.s_certificates,
+    Section.slots => l10n.s_slots,
+  };
 
   Availability getAvailability(YubiKeyData data) {
     // TODO: Require credman for passkeys?
     if (this == Section.fingerprints) {
-      if (!const {FormFactor.usbABio, FormFactor.usbCBio}
-          .contains(data.info.formFactor)) {
+      if (!const {
+        FormFactor.usbABio,
+        FormFactor.usbCBio,
+      }.contains(data.info.formFactor)) {
         return Availability.unsupported;
       }
     }
@@ -115,8 +117,11 @@ class DevicePath {
 class DeviceNode with _$DeviceNode {
   const DeviceNode._();
   factory DeviceNode.usbYubiKey(
-          DevicePath path, String name, UsbPid pid, DeviceInfo? info) =
-      UsbYubiKeyNode;
+    DevicePath path,
+    String name,
+    UsbPid pid,
+    DeviceInfo? info,
+  ) = UsbYubiKeyNode;
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 
   Transport get transport =>

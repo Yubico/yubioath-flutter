@@ -44,8 +44,10 @@ extension AppWidgetTester on WidgetTester {
     }
 
     if (evaluated.isEmpty) {
-      testLog(false,
-          'Found 0 ${f.describeMatch(Plurality.zero)} in $timeOutSec seconds.');
+      testLog(
+        false,
+        'Found 0 ${f.describeMatch(Plurality.zero)} in $timeOutSec seconds.',
+      );
     }
 
     return f;
@@ -102,9 +104,10 @@ extension AppWidgetTester on WidgetTester {
   }
 
   Future<void> startUp([Map<dynamic, dynamic> startUpParams = const {}]) async {
-    var result = isAndroid == true
-        ? await android_test_util.startUp(this, startUpParams)
-        : await desktop_test_util.startUp(this, startUpParams);
+    var result =
+        isAndroid == true
+            ? await android_test_util.startUp(this, startUpParams)
+            : await desktop_test_util.startUp(this, startUpParams);
     return result;
   }
 

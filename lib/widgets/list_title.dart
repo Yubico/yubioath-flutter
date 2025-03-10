@@ -23,14 +23,14 @@ class ListTitle extends StatelessWidget {
   const ListTitle(this.title, {this.textStyle, super.key});
   @override
   Widget build(BuildContext context) => ListTile(
-        dense: true,
-        title: Text(
-          title,
-          style: textStyle ??
-              Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
-        ),
-      );
+    dense: true,
+    title: Text(
+      title,
+      style:
+          textStyle ??
+          Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+    ),
+  );
 }

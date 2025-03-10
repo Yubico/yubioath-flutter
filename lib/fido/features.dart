@@ -21,8 +21,9 @@ final actions = fido.feature('actions');
 final actionsPin = actions.feature('pin');
 final actionsAddFingerprint = actions.feature('addFingerprint');
 final actionsReset = actions.feature('reset');
-final enableEnterpriseAttestation =
-    actions.feature('enableEnterpriseAttestation');
+final enableEnterpriseAttestation = actions.feature(
+  'enableEnterpriseAttestation',
+);
 
 final credentials = fido.feature('credentials');
 

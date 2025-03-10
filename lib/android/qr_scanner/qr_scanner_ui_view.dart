@@ -27,11 +27,12 @@ class QRScannerUI extends StatelessWidget {
   final Size screenSize;
   final GlobalKey overlayWidgetKey;
 
-  const QRScannerUI(
-      {super.key,
-      required this.status,
-      required this.screenSize,
-      required this.overlayWidgetKey});
+  const QRScannerUI({
+    super.key,
+    required this.status,
+    required this.screenSize,
+    required this.overlayWidgetKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,11 @@ class QRScannerUI extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 0, bottom: 0),
+                    left: 16,
+                    right: 16,
+                    top: 0,
+                    bottom: 0,
+                  ),
                   child: SizedBox(
                     // other widgets can find the RenderObject of this
                     // widget by its key value and query its size and offset.
@@ -71,35 +76,42 @@ class QRScannerUI extends StatelessWidget {
               Column(
                 children: [
                   SmallWhiteText(l10n.q_no_qr),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    OutlinedButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      OutlinedButton(
                         onPressed: () {
-                          Navigator.of(context).pop(
-                              AndroidQrScanner.kQrScannerRequestManualEntry);
+                          Navigator.of(
+                            context,
+                          ).pop(AndroidQrScanner.kQrScannerRequestManualEntry);
                         },
                         key: keys.manualEntryButton,
                         child: Text(
                           l10n.s_enter_manually,
                           style: const TextStyle(color: Colors.white),
-                        )),
-                    const SizedBox(width: 16),
-                    OutlinedButton(
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      OutlinedButton(
                         onPressed: () {
-                          Navigator.of(context).pop(
-                              AndroidQrScanner.kQrScannerRequestReadFromFile);
+                          Navigator.of(
+                            context,
+                          ).pop(AndroidQrScanner.kQrScannerRequestReadFromFile);
                         },
                         key: keys.readFromImage,
                         child: Text(
                           l10n.s_read_from_file,
                           style: const TextStyle(color: Colors.white),
-                        ))
-                  ])
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              const SizedBox(height: 16)
+              const SizedBox(height: 16),
             ],
           ),
-        )
+        ),
       ],
     );
   }

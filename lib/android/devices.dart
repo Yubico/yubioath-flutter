@@ -30,8 +30,8 @@ final _log = Logger('android.devices');
 
 final androidYubikeyProvider =
     StateNotifierProvider<_YubikeyProvider, AsyncValue<YubiKeyData>>((ref) {
-  return _YubikeyProvider();
-});
+      return _YubikeyProvider();
+    });
 
 class _YubikeyProvider extends StateNotifier<AsyncValue<YubiKeyData>> {
   final _events = const EventChannel('android.devices.deviceInfo');
@@ -61,13 +61,17 @@ class _YubikeyProvider extends StateNotifier<AsyncValue<YubiKeyData>> {
       bool isNfc = json['is_nfc'];
       int? usbPid = json['usb_pid'];
 
-      DeviceNode deviceNode = isNfc
-          ? DeviceNode.nfcReader(DevicePath([]), name)
-          : DeviceNode.usbYubiKey(
-              DevicePath([]),
-              name,
-              usbPid != null ? UsbPid.fromValue(usbPid) : UsbPid.yk4OtpFidoCcid,
-              deviceInfo);
+      DeviceNode deviceNode =
+          isNfc
+              ? DeviceNode.nfcReader(DevicePath([]), name)
+              : DeviceNode.usbYubiKey(
+                DevicePath([]),
+                name,
+                usbPid != null
+                    ? UsbPid.fromValue(usbPid)
+                    : UsbPid.yk4OtpFidoCcid,
+                deviceInfo,
+              );
 
       return YubiKeyData(deviceNode, name, deviceInfo);
     });

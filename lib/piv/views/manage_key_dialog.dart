@@ -70,7 +70,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     super.initState();
 
     _hasMetadata = widget.pivState.metadata != null;
-    _keyType = widget.pivState.metadata?.managementKeyMetadata.keyType ??
+    _keyType =
+        widget.pivState.metadata?.managementKeyMetadata.keyType ??
         defaultManagementKeyType;
     _defaultKeyUsed =
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
@@ -114,7 +115,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
           reason.maybeWhen(
             invalidPin: (attemptsRemaining) {
               _currentController.selection = TextSelection(
-                  baseOffset: 0, extentOffset: _currentController.text.length);
+                baseOffset: 0,
+                extentOffset: _currentController.text.length,
+              );
               _currentFocus.requestFocus();
               setState(() {
                 _attemptsRemaining = attemptsRemaining;
@@ -132,7 +135,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     } else {
       if (!await notifier.authenticate(_currentController.text)) {
         _currentController.selection = TextSelection(
-            baseOffset: 0, extentOffset: _currentController.text.length);
+          baseOffset: 0,
+          extentOffset: _currentController.text.length,
+        );
         _currentFocus.requestFocus();
         setState(() {
           _currentIsWrong = true;
@@ -146,11 +151,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         await notifier.verifyPin(defaultPin);
       } else {
         final withContext = ref.read(withContextProvider);
-        final verified = await withContext((context) async =>
-                await showBlurDialog(
-                    context: context,
-                    builder: (context) =>
-                        PinDialog(widget.path, widget.pivState))) ??
+        final verified =
+            await withContext(
+              (context) async => await showBlurDialog(
+                context: context,
+                builder: (context) => PinDialog(widget.path, widget.pivState),
+              ),
+            ) ??
             false;
 
         if (!verified) {
@@ -159,8 +166,11 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       }
     }
 
-    await notifier.setManagementKey(_keyController.text,
-        managementKeyType: _keyType, storeKey: _storeKey);
+    await notifier.setManagementKey(
+      _keyController.text,
+      managementKeyType: _keyType,
+      storeKey: _storeKey,
+    );
     if (!mounted) return;
 
     final l10n = AppLocalizations.of(context);
@@ -177,14 +187,16 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final textTheme = theme.textTheme;
     final currentType =
         widget.pivState.metadata?.managementKeyMetadata.keyType ??
-            defaultManagementKeyType;
+        defaultManagementKeyType;
     final hexLength = _keyType.keyLength * 2;
     final currentKeyOrPin = _currentController.text;
-    final currentLenOk = _usesStoredKey
-        ? currentKeyOrPin.length >= 4
-        : currentKeyOrPin.length == currentType.keyLength * 2;
+    final currentLenOk =
+        _usesStoredKey
+            ? currentKeyOrPin.length >= 4
+            : currentKeyOrPin.length == currentType.keyLength * 2;
     final newLenOk = _keyController.text.length == hexLength;
-    final (fipsCapable, fipsApproved) = ref
+    final (fipsCapable, fipsApproved) =
+        ref
             .watch(currentDeviceDataProvider)
             .valueOrNull
             ?.info
@@ -204,251 +216,296 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
               !_currentIsWrong && currentLenOk && newLenOk ? _submit : null,
           key: keys.saveButton,
           child: Text(l10n.s_save),
-        )
+        ),
       ],
-      builder: (_, fullScreen) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_usesStoredKey)
-              AppTextField(
-                autofocus: true,
-                obscureText: _isObscure,
-                autofillHints: const [AutofillHints.password],
-                key: keys.pinPukField,
-                maxLength: 8,
-                inputFormatters: [limitBytesLength(8)],
-                buildCounter: buildByteCounterFor(_currentController.text),
-                controller: _currentController,
-                focusNode: _currentFocus,
-                readOnly: _defaultPinUsed,
-                decoration: AppInputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_pin,
-                  helperText: _defaultPinUsed ? l10n.l_default_pin_used : null,
-                  errorText: _currentIsWrong
-                      ? l10n.l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                      : null,
-                  errorMaxLines: 3,
-                  icon: const Icon(Symbols.pin),
-                  suffixIcon: IconButton(
-                      icon: Icon(_isObscure
-                          ? Symbols.visibility
-                          : Symbols.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
-                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin),
-                ),
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  setState(() {
-                    _currentIsWrong = false;
-                    _currentInvalidFormat = false;
-                  });
-                },
-                onSubmitted: (_) {
-                  if (currentLenOk) {
-                    _newFocus.requestFocus();
-                  } else {
-                    _currentFocus.requestFocus();
-                  }
-                },
-              ).init(),
-            if (!_usesStoredKey)
-              AppTextField(
-                key: keys.managementKeyField,
-                autofocus: !_defaultKeyUsed,
-                autofillHints: const [AutofillHints.password],
-                controller: _currentController,
-                focusNode: _currentFocus,
-                readOnly: _defaultKeyUsed,
-                maxLength: !_defaultKeyUsed ? currentType.keyLength * 2 : null,
-                decoration: AppInputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_current_management_key,
-                  helperText: _defaultKeyUsed ? l10n.l_default_key_used : null,
-                  errorText: _currentIsWrong
-                      ? l10n.l_wrong_key
-                      : _currentInvalidFormat
-                          ? l10n.l_invalid_format_allowed_chars(
-                              Format.hex.allowedCharacters)
-                          : null,
-                  errorMaxLines: 3,
-                  icon: const Icon(Symbols.key),
-                  suffixIcon: _hasMetadata
-                      ? null
-                      : IconButton(
-                          icon: Icon(Symbols.auto_awesome,
-                              fill: _defaultKeyUsed ? 1.0 : 0.0),
-                          tooltip: l10n.s_use_default,
-                          onPressed: () {
-                            setState(() {
-                              _defaultKeyUsed = !_defaultKeyUsed;
-                              if (_defaultKeyUsed) {
-                                _currentController.text = defaultManagementKey;
-                              } else {
-                                _currentController.clear();
-                              }
-                            });
-                          },
-                        ),
-                ),
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  setState(() {
-                    _currentIsWrong = false;
-                  });
-                },
-                onSubmitted: (_) {
-                  if (currentLenOk) {
-                    _newFocus.requestFocus();
-                  } else {
-                    _currentFocus.requestFocus();
-                  }
-                },
-              ).init(),
-            AppTextField(
-              key: keys.newManagementKeyField,
-              autofocus: _defaultKeyUsed,
-              autofillHints: const [AutofillHints.newPassword],
-              maxLength: hexLength,
-              controller: _keyController,
-              focusNode: _newFocus,
-              decoration: AppInputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_new_management_key,
-                errorText: _newInvalidFormat
-                    ? l10n.l_invalid_format_allowed_chars(
-                        Format.hex.allowedCharacters)
-                    : null,
-                enabled: currentLenOk,
-                icon: const Icon(Symbols.key),
-                suffixIcon: IconButton(
-                  key: keys.managementKeyRefresh,
-                  icon: const Icon(Symbols.refresh),
-                  tooltip: l10n.s_generate_random,
-                  onPressed: currentLenOk
-                      ? () {
-                          final random = Random.secure();
-                          final key = List.generate(
-                              _keyType.keyLength,
-                              (_) => random
-                                  .nextInt(256)
-                                  .toRadixString(16)
-                                  .padLeft(2, '0')).join();
-                          setState(() {
-                            _keyController.text = key;
-                            _newInvalidFormat = false;
-                          });
-                        }
-                      : null,
-                ),
-              ),
-              textInputAction: TextInputAction.next,
-              onChanged: (_) {
-                setState(() {
-                  // Update length
-                });
-              },
-              onSubmitted: (_) {
-                if (currentLenOk && newLenOk) {
-                  _submit();
-                } else {
-                  _newFocus.requestFocus();
-                }
-              },
-            ).init(),
-            Row(
+      builder:
+          (_, fullScreen) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Icon(
-                    Symbols.tune,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                Flexible(
-                  child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.start,
-                      spacing: 4.0,
-                      runSpacing: 8.0,
-                      children: [
-                        if (widget.pivState.metadata != null)
-                          ChoiceFilterChip<ManagementKeyType>(
-                            tooltip: l10n.s_management_key_algorithm,
-                            items: managementKeyTypes,
-                            value: _keyType,
-                            selected: _keyType != currentType,
-                            itemBuilder: (value) =>
-                                Text(value.getDisplayName(l10n)),
+              children:
+                  [
+                        if (_usesStoredKey)
+                          AppTextField(
+                            autofocus: true,
+                            obscureText: _isObscure,
+                            autofillHints: const [AutofillHints.password],
+                            key: keys.pinPukField,
+                            maxLength: 8,
+                            inputFormatters: [limitBytesLength(8)],
+                            buildCounter: buildByteCounterFor(
+                              _currentController.text,
+                            ),
+                            controller: _currentController,
+                            focusNode: _currentFocus,
+                            readOnly: _defaultPinUsed,
+                            decoration: AppInputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: l10n.s_pin,
+                              helperText:
+                                  _defaultPinUsed
+                                      ? l10n.l_default_pin_used
+                                      : null,
+                              errorText:
+                                  _currentIsWrong
+                                      ? l10n.l_wrong_pin_attempts_remaining(
+                                        _attemptsRemaining,
+                                      )
+                                      : null,
+                              errorMaxLines: 3,
+                              icon: const Icon(Symbols.pin),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isObscure
+                                      ? Symbols.visibility
+                                      : Symbols.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscure = !_isObscure;
+                                  });
+                                },
+                                tooltip:
+                                    _isObscure
+                                        ? l10n.s_show_pin
+                                        : l10n.s_hide_pin,
+                              ),
+                            ),
+                            textInputAction: TextInputAction.next,
                             onChanged: (value) {
                               setState(() {
-                                _keyType = value;
+                                _currentIsWrong = false;
+                                _currentInvalidFormat = false;
                               });
                             },
-                          ),
-                        if (!fipsUnready)
-                          FilterChip(
-                            key: keys.pinLockManagementKeyChip,
-                            label: Text(l10n.s_protect_key),
-                            selected: _storeKey,
-                            onSelected: (value) {
+                            onSubmitted: (_) {
+                              if (currentLenOk) {
+                                _newFocus.requestFocus();
+                              } else {
+                                _currentFocus.requestFocus();
+                              }
+                            },
+                          ).init(),
+                        if (!_usesStoredKey)
+                          AppTextField(
+                            key: keys.managementKeyField,
+                            autofocus: !_defaultKeyUsed,
+                            autofillHints: const [AutofillHints.password],
+                            controller: _currentController,
+                            focusNode: _currentFocus,
+                            readOnly: _defaultKeyUsed,
+                            maxLength:
+                                !_defaultKeyUsed
+                                    ? currentType.keyLength * 2
+                                    : null,
+                            decoration: AppInputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: l10n.s_current_management_key,
+                              helperText:
+                                  _defaultKeyUsed
+                                      ? l10n.l_default_key_used
+                                      : null,
+                              errorText:
+                                  _currentIsWrong
+                                      ? l10n.l_wrong_key
+                                      : _currentInvalidFormat
+                                      ? l10n.l_invalid_format_allowed_chars(
+                                        Format.hex.allowedCharacters,
+                                      )
+                                      : null,
+                              errorMaxLines: 3,
+                              icon: const Icon(Symbols.key),
+                              suffixIcon:
+                                  _hasMetadata
+                                      ? null
+                                      : IconButton(
+                                        icon: Icon(
+                                          Symbols.auto_awesome,
+                                          fill: _defaultKeyUsed ? 1.0 : 0.0,
+                                        ),
+                                        tooltip: l10n.s_use_default,
+                                        onPressed: () {
+                                          setState(() {
+                                            _defaultKeyUsed = !_defaultKeyUsed;
+                                            if (_defaultKeyUsed) {
+                                              _currentController.text =
+                                                  defaultManagementKey;
+                                            } else {
+                                              _currentController.clear();
+                                            }
+                                          });
+                                        },
+                                      ),
+                            ),
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
                               setState(() {
-                                _storeKey = value;
+                                _currentIsWrong = false;
                               });
                             },
-                          ),
-                        InfoPopupButton(
-                          size: 30,
-                          iconSize: 20,
-                          displayDialog: fullScreen,
-                          infoText: RichText(
-                            text: TextSpan(
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: l10n.s_management_key_algorithm,
-                                  style: textTheme.bodySmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
-                                ),
-                                TextSpan(text: '\n'),
-                                TextSpan(
-                                  text: l10n.p_management_key_algorithm_desc,
-                                ),
-                                TextSpan(text: '\n' * 2),
-                                TextSpan(
-                                  text: l10n.s_protect_key,
-                                  style: textTheme.bodySmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
-                                ),
-                                TextSpan(text: '\n'),
-                                TextSpan(
-                                  text: l10n.p_protect_key_desc,
-                                ),
-                              ],
+                            onSubmitted: (_) {
+                              if (currentLenOk) {
+                                _newFocus.requestFocus();
+                              } else {
+                                _currentFocus.requestFocus();
+                              }
+                            },
+                          ).init(),
+                        AppTextField(
+                          key: keys.newManagementKeyField,
+                          autofocus: _defaultKeyUsed,
+                          autofillHints: const [AutofillHints.newPassword],
+                          maxLength: hexLength,
+                          controller: _keyController,
+                          focusNode: _newFocus,
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_new_management_key,
+                            errorText:
+                                _newInvalidFormat
+                                    ? l10n.l_invalid_format_allowed_chars(
+                                      Format.hex.allowedCharacters,
+                                    )
+                                    : null,
+                            enabled: currentLenOk,
+                            icon: const Icon(Symbols.key),
+                            suffixIcon: IconButton(
+                              key: keys.managementKeyRefresh,
+                              icon: const Icon(Symbols.refresh),
+                              tooltip: l10n.s_generate_random,
+                              onPressed:
+                                  currentLenOk
+                                      ? () {
+                                        final random = Random.secure();
+                                        final key =
+                                            List.generate(
+                                              _keyType.keyLength,
+                                              (_) => random
+                                                  .nextInt(256)
+                                                  .toRadixString(16)
+                                                  .padLeft(2, '0'),
+                                            ).join();
+                                        setState(() {
+                                          _keyController.text = key;
+                                          _newInvalidFormat = false;
+                                        });
+                                      }
+                                      : null,
                             ),
                           ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (_) {
+                            setState(() {
+                              // Update length
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (currentLenOk && newLenOk) {
+                              _submit();
+                            } else {
+                              _newFocus.requestFocus();
+                            }
+                          },
+                        ).init(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4.0,
+                              ),
+                              child: Icon(
+                                Symbols.tune,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Flexible(
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.start,
+                                spacing: 4.0,
+                                runSpacing: 8.0,
+                                children: [
+                                  if (widget.pivState.metadata != null)
+                                    ChoiceFilterChip<ManagementKeyType>(
+                                      tooltip: l10n.s_management_key_algorithm,
+                                      items: managementKeyTypes,
+                                      value: _keyType,
+                                      selected: _keyType != currentType,
+                                      itemBuilder:
+                                          (value) =>
+                                              Text(value.getDisplayName(l10n)),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _keyType = value;
+                                        });
+                                      },
+                                    ),
+                                  if (!fipsUnready)
+                                    FilterChip(
+                                      key: keys.pinLockManagementKeyChip,
+                                      label: Text(l10n.s_protect_key),
+                                      selected: _storeKey,
+                                      onSelected: (value) {
+                                        setState(() {
+                                          _storeKey = value;
+                                        });
+                                      },
+                                    ),
+                                  InfoPopupButton(
+                                    size: 30,
+                                    iconSize: 20,
+                                    displayDialog: fullScreen,
+                                    infoText: RichText(
+                                      text: TextSpan(
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                                l10n.s_management_key_algorithm,
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                          TextSpan(text: '\n'),
+                                          TextSpan(
+                                            text:
+                                                l10n.p_management_key_algorithm_desc,
+                                          ),
+                                          TextSpan(text: '\n' * 2),
+                                          TextSpan(
+                                            text: l10n.s_protect_key,
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                          TextSpan(text: '\n'),
+                                          TextSpan(
+                                            text: l10n.p_protect_key_desc,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ]),
-                ),
-              ],
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
             ),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
-      ),
+          ),
     );
   }
 }

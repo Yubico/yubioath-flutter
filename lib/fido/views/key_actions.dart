@@ -38,24 +38,35 @@ bool fingerprintsShowActionsNotifier(FidoState state) {
 }
 
 Widget passkeysBuildActions(
-        BuildContext context, DeviceNode node, FidoState state) =>
-    _fidoBuildActions(context, node, state);
+  BuildContext context,
+  DeviceNode node,
+  FidoState state,
+) => _fidoBuildActions(context, node, state);
 
-Widget fingerprintsBuildActions(BuildContext context, DeviceNode node,
-        FidoState state, int fingerprints) =>
-    _fidoBuildActions(context, node, state, fingerprints);
+Widget fingerprintsBuildActions(
+  BuildContext context,
+  DeviceNode node,
+  FidoState state,
+  int fingerprints,
+) => _fidoBuildActions(context, node, state, fingerprints);
 
-Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
-    [int? fingerprints]) {
+Widget _fidoBuildActions(
+  BuildContext context,
+  DeviceNode node,
+  FidoState state, [
+  int? fingerprints,
+]) {
   final l10n = AppLocalizations.of(context);
-  final colors = Theme.of(context).buttonTheme.colorScheme ??
+  final colors =
+      Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
   final authBlocked = state.pinBlocked;
 
   final enterpriseAttestation = state.enterpriseAttestation;
   final showEnterpriseAttestation =
       enterpriseAttestation != null && fingerprints == null;
-  final canEnableEnterpriseAttestation = enterpriseAttestation == false &&
+  final canEnableEnterpriseAttestation =
+      enterpriseAttestation == false &&
       !(state.alwaysUv && !state.hasPin) &&
       !(!state.unlocked && state.hasPin);
 
@@ -71,24 +82,31 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
               actionStyle: ActionStyle.primary,
               icon: const Icon(Symbols.fingerprint),
               title: l10n.s_add_fingerprint,
-              subtitle: state.unlocked
-                  ? l10n.l_fingerprints_used(fingerprints)
-                  : state.hasPin
+              subtitle:
+                  state.unlocked
+                      ? l10n.l_fingerprints_used(fingerprints)
+                      : state.hasPin
                       ? l10n.l_unlock_pin_first
                       : l10n.l_set_pin_first,
-              trailing: fingerprints == 0 || fingerprints == -1
-                  ? Icon(Symbols.warning_amber,
-                      color: state.unlocked ? colors.tertiary : null)
-                  : null,
-              onTap: state.unlocked && fingerprints < 5
-                  ? (context) {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      showBlurDialog(
-                        context: context,
-                        builder: (context) => AddFingerprintDialog(node.path),
-                      );
-                    }
-                  : null,
+              trailing:
+                  fingerprints == 0 || fingerprints == -1
+                      ? Icon(
+                        Symbols.warning_amber,
+                        color: state.unlocked ? colors.tertiary : null,
+                      )
+                      : null,
+              onTap:
+                  state.unlocked && fingerprints < 5
+                      ? (context) {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                        showBlurDialog(
+                          context: context,
+                          builder: (context) => AddFingerprintDialog(node.path),
+                        );
+                      }
+                      : null,
             ),
           ],
         ),
@@ -100,29 +118,32 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
             feature: features.actionsPin,
             icon: const Icon(Symbols.pin),
             title: state.hasPin ? l10n.s_change_pin : l10n.s_set_pin,
-            subtitle: authBlocked
-                ? l10n.l_pin_blocked
-                : state.hasPin
+            subtitle:
+                authBlocked
+                    ? l10n.l_pin_blocked
+                    : state.hasPin
                     ? (state.forcePinChange
                         ? l10n.s_pin_change_required
                         : state.pinRetries != null
-                            ? l10n.l_attempts_remaining(state.pinRetries!)
-                            : l10n.s_fido_pin_protection)
+                        ? l10n.l_attempts_remaining(state.pinRetries!)
+                        : l10n.s_fido_pin_protection)
                     : l10n.s_fido_pin_protection,
-            trailing: authBlocked ||
-                    state.alwaysUv && !state.hasPin ||
-                    state.forcePinChange
-                ? Icon(Symbols.warning_amber, color: colors.tertiary)
-                : null,
-            onTap: !authBlocked
-                ? (context) {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    showBlurDialog(
-                      context: context,
-                      builder: (context) => FidoPinDialog(node.path, state),
-                    );
-                  }
-                : null,
+            trailing:
+                authBlocked ||
+                        state.alwaysUv && !state.hasPin ||
+                        state.forcePinChange
+                    ? Icon(Symbols.warning_amber, color: colors.tertiary)
+                    : null,
+            onTap:
+                !authBlocked
+                    ? (context) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      showBlurDialog(
+                        context: context,
+                        builder: (context) => FidoPinDialog(node.path, state),
+                      );
+                    }
+                    : null,
           ),
           if (showEnterpriseAttestation)
             ActionListItem(
@@ -130,22 +151,27 @@ Widget _fidoBuildActions(BuildContext context, DeviceNode node, FidoState state,
               feature: features.enableEnterpriseAttestation,
               icon: const Icon(Symbols.local_police),
               title: l10n.s_ep_attestation,
-              subtitle: enterpriseAttestation
-                  ? l10n.s_enabled
-                  : (state.alwaysUv && !state.hasPin)
+              subtitle:
+                  enterpriseAttestation
+                      ? l10n.s_enabled
+                      : (state.alwaysUv && !state.hasPin)
                       ? l10n.l_set_pin_first
                       : l10n.s_disabled,
-              onTap: canEnableEnterpriseAttestation
-                  ? (context) {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            EnableEnterpriseAttestationDialog(node.path),
-                      );
-                    }
-                  : null,
-            )
+              onTap:
+                  canEnableEnterpriseAttestation
+                      ? (context) {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) =>
+                                  EnableEnterpriseAttestationDialog(node.path),
+                        );
+                      }
+                      : null,
+            ),
         ],
       ),
     ],

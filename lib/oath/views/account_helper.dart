@@ -41,12 +41,21 @@ class AccountHelper {
   final OathCode? code;
   final bool expired;
   const AccountHelper._(
-      this._context, this._ref, this.credential, this.code, this.expired);
+    this._context,
+    this._ref,
+    this.credential,
+    this.code,
+    this.expired,
+  );
 
   factory AccountHelper(
-      BuildContext context, WidgetRef ref, OathCredential credential) {
+    BuildContext context,
+    WidgetRef ref,
+    OathCredential credential,
+  ) {
     final code = ref.watch(codeProvider(credential));
-    final expired = code == null ||
+    final expired =
+        code == null ||
         (credential.oathType == OathType.totp &&
             ref.watch(expiredProvider(code.validTo)));
     return AccountHelper._(context, ref, credential, code, expired);
@@ -119,28 +128,31 @@ class AccountHelper {
       );
 
   Widget buildCodeIcon() => AnimatedSize(
-        alignment: Alignment.centerRight,
-        duration: const Duration(milliseconds: 100),
-        child: Opacity(
-          opacity: 0.4,
-          child: (credential.oathType == OathType.hotp
-                  ? (expired ? const Icon(Symbols.refresh) : null)
-                  : (expired || code == null
-                      ? (credential.touchRequired
-                          ? const Icon(Symbols.touch_app)
-                          : null)
-                      : Builder(builder: (context) {
-                          return SizedBox.square(
-                            dimension: (IconTheme.of(context).size ?? 18) * 0.8,
-                            child: CircleTimer(
-                              code!.validFrom * 1000,
-                              code!.validTo * 1000,
-                            ),
-                          );
-                        }))) ??
-              const SizedBox(),
-        ),
-      );
+    alignment: Alignment.centerRight,
+    duration: const Duration(milliseconds: 100),
+    child: Opacity(
+      opacity: 0.4,
+      child:
+          (credential.oathType == OathType.hotp
+              ? (expired ? const Icon(Symbols.refresh) : null)
+              : (expired || code == null
+                  ? (credential.touchRequired
+                      ? const Icon(Symbols.touch_app)
+                      : null)
+                  : Builder(
+                    builder: (context) {
+                      return SizedBox.square(
+                        dimension: (IconTheme.of(context).size ?? 18) * 0.8,
+                        child: CircleTimer(
+                          code!.validFrom * 1000,
+                          code!.validTo * 1000,
+                        ),
+                      );
+                    },
+                  ))) ??
+          const SizedBox(),
+    ),
+  );
 
   Widget buildCodeLabel() => _CodeLabel(code, expired);
 }
@@ -164,17 +176,18 @@ class _CodeLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Opacity(
-        opacity: expired ? 0.4 : 1.0,
-        child: Text(
-          _formatCode(code),
-          style: TextStyle(
-              fontFeatures: const [FontFeature.tabularFigures()],
-              color: Theme.of(context).colorScheme.onSurface),
-          textHeightBehavior: TextHeightBehavior(
-            // This helps with vertical centering on desktop
-            applyHeightToFirstAscent: !isDesktop,
-          ),
-          semanticsLabel: code?.value.characters.map((c) => '$c ').toString(),
-        ),
-      );
+    opacity: expired ? 0.4 : 1.0,
+    child: Text(
+      _formatCode(code),
+      style: TextStyle(
+        fontFeatures: const [FontFeature.tabularFigures()],
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+      textHeightBehavior: TextHeightBehavior(
+        // This helps with vertical centering on desktop
+        applyHeightToFirstAscent: !isDesktop,
+      ),
+      semanticsLabel: code?.value.characters.map((c) => '$c ').toString(),
+    ),
+  );
 }

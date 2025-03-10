@@ -50,17 +50,19 @@ class EnableEnterpriseAttestationDialog extends ConsumerWidget {
           child: Text(l10n.s_enable),
         ),
       ],
-      content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          l10n.p_enable_ep_attestation_desc,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8.0),
-        Text(l10n.p_enable_ep_attestation_disable_with_factory_reset),
-      ]),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.p_enable_ep_attestation_desc,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8.0),
+          Text(l10n.p_enable_ep_attestation_disable_with_factory_reset),
+        ],
+      ),
     );
   }
 }

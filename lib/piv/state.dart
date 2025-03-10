@@ -22,8 +22,8 @@ import 'models.dart';
 
 final pivStateProvider = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
   Future<void> reset();
@@ -43,13 +43,16 @@ abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
 
 final pivSlotsProvider = AsyncNotifierProvider.autoDispose
     .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class PivSlotsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<PivSlot>, DevicePath> {
-  Future<PivExamineResult> examine(SlotId slot, String data,
-      {String? password});
+  Future<PivExamineResult> examine(
+    SlotId slot,
+    String data, {
+    String? password,
+  });
   Future<bool> validateRfc4514(String value);
   Future<(SlotMetadata?, String?)> read(SlotId slot);
   Future<PivGenerateResult> generate(
@@ -68,6 +71,10 @@ abstract class PivSlotsNotifier
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   });
   Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey);
-  Future<void> moveKey(SlotId source, SlotId destination, bool overwriteKey,
-      bool includeCertificate);
+  Future<void> moveKey(
+    SlotId source,
+    SlotId destination,
+    bool overwriteKey,
+    bool includeCertificate,
+  );
 }

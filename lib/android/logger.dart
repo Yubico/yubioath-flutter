@@ -35,9 +35,7 @@ class AndroidLogger extends LogLevelNotifier {
   @override
   void setLogLevel(Level level) {
     super.setLogLevel(level);
-    _channel.invokeMethod('setLevel', {
-      'level': level.name,
-    });
+    _channel.invokeMethod('setLevel', {'level': level.name});
   }
 
   @override
@@ -48,18 +46,19 @@ class AndroidLogger extends LogLevelNotifier {
   }
 
   void log(LogRecord record) {
-    final error = record.error == null
-        ? null
-        : record.error is Exception
+    final error =
+        record.error == null
+            ? null
+            : record.error is Exception
             ? record.error.toString()
             : record.error is String
-                ? record.error
-                : 'Invalid error type: ${record.error.runtimeType.toString()}';
+            ? record.error
+            : 'Invalid error type: ${record.error.runtimeType.toString()}';
     _channel.invokeMethod('log', {
       'loggerName': record.loggerName,
       'level': record.level.name,
       'message': record.message,
-      'error': error
+      'error': error,
     });
   }
 }

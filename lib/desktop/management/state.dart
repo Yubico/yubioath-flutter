@@ -30,15 +30,16 @@ import '../state.dart';
 
 final _log = Logger('desktop.management.state');
 
-final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) =>
-      RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
-);
+final _sessionProvider = Provider.autoDispose
+    .family<RpcNodeSession, DevicePath>(
+      (ref, devicePath) =>
+          RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
+    );
 
 final desktopManagementState = AsyncNotifierProvider.autoDispose
     .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
-        _DesktopManagementStateNotifier.new);
+      _DesktopManagementStateNotifier.new,
+    );
 
 class _DesktopManagementStateNotifier extends ManagementStateNotifier {
   late RpcNodeSession _session;
@@ -83,29 +84,40 @@ class _DesktopManagementStateNotifier extends ManagementStateNotifier {
   }
 
   @override
-  Future<void> setMode(
-      {required int interfaces,
-      int challengeResponseTimeout = 0,
-      int? autoEjectTimeout}) async {
-    await _session.command('set_mode', target: _subpath, params: {
-      'interfaces': interfaces,
-      'challenge_response_timeout': challengeResponseTimeout,
-      'auto_eject_timeout': autoEjectTimeout,
-    });
+  Future<void> setMode({
+    required int interfaces,
+    int challengeResponseTimeout = 0,
+    int? autoEjectTimeout,
+  }) async {
+    await _session.command(
+      'set_mode',
+      target: _subpath,
+      params: {
+        'interfaces': interfaces,
+        'challenge_response_timeout': challengeResponseTimeout,
+        'auto_eject_timeout': autoEjectTimeout,
+      },
+    );
     ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
   @override
-  Future<void> writeConfig(DeviceConfig config,
-      {String? currentLockCode,
-      String? newLockCode,
-      bool reboot = false}) async {
-    await _session.command('configure', target: _subpath, params: {
-      ...config.toJson(),
-      'cur_lock_code': currentLockCode,
-      'new_lock_code': newLockCode,
-      'reboot': reboot,
-    });
+  Future<void> writeConfig(
+    DeviceConfig config, {
+    String? currentLockCode,
+    String? newLockCode,
+    bool reboot = false,
+  }) async {
+    await _session.command(
+      'configure',
+      target: _subpath,
+      params: {
+        ...config.toJson(),
+        'cur_lock_code': currentLockCode,
+        'new_lock_code': newLockCode,
+        'reboot': reboot,
+      },
+    );
     ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
