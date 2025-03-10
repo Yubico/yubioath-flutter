@@ -445,7 +445,7 @@ class _HeroAvatar extends StatelessWidget {
             color.withValues(alpha: 0.6),
             color.withValues(alpha: 0.25),
             (DialogTheme.of(context).backgroundColor ??
-                    theme.dialogBackgroundColor)
+                    theme.colorScheme.surfaceContainerHigh)
                 .withValues(alpha: 0),
           ],
         ),
