@@ -291,7 +291,10 @@ object Workarounds {
      */
     suspend fun handleFidoReclaim(
         deviceManager: DeviceManager,
-        device: YubiKeyDevice
+        device: YubiKeyDevice,
+        enterReclaimCallback: (() -> Unit)? = null,
+        leaveReclaimCallback: (() -> Unit)? = null,
+        failureCallback: (() -> Unit)? = null,
     ) = when {
         device !is UsbYubiKeyDevice -> true
 
@@ -301,10 +304,12 @@ object Workarounds {
         ) -> true
 
         else -> {
+            enterReclaimCallback?.invoke()
             run repeatBlock@{
                 repeat(10) {
                     if (canPing(device)) {
                         logger.info("USB reclaim period is over")
+                        leaveReclaimCallback?.invoke()
                         return true
                     }
                     delay(500)
@@ -314,6 +319,7 @@ object Workarounds {
                     }
                 }
             }
+            failureCallback?.invoke()
             false
         }
     }

@@ -1112,6 +1112,11 @@
     "s_nfc_tap_your_yubikey": "Nhấn vào YubiKey của bạn",
     "l_nfc_failed_to_scan": "Không quét được, hãy thử lại",
 
+    "@_usb": {},
+    "s_usb_processing": null,
+    "s_usb_dont_remove": null,
+    "l_usb_read_error": null,
+
     "@_ndef": {},
     "p_ndef_set_otp": "Đã sao chép mã OTP từ YubiKey vào clipboard.",
     "p_ndef_set_password": "Đã sao chép mật khẩu từ YubiKey vào clipboard.",

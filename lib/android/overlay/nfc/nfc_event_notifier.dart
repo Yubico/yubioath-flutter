@@ -38,8 +38,13 @@ class NfcHideViewEvent extends NfcEvent {
 class NfcSetViewEvent extends NfcEvent {
   final Widget child;
   final bool showIfHidden;
+  final bool isDismissible;
 
-  const NfcSetViewEvent({required this.child, this.showIfHidden = true});
+  const NfcSetViewEvent({
+    required this.child,
+    this.showIfHidden = true,
+    this.isDismissible = true,
+  });
 }
 
 final nfcEventNotifier = NotifierProvider<_NfcEventNotifier, NfcEvent>(
@@ -74,7 +79,7 @@ class _NfcEventNotifierListener {
       switch (action) {
         case (NfcSetViewEvent a):
           if (!visible && a.showIfHidden) {
-            _show(context, a.child);
+            _show(context, a.child, isDismissible: a.isDismissible);
           } else {
             _ref
                 .read(nfcOverlayWidgetProperties.notifier)
@@ -88,15 +93,24 @@ class _NfcEventNotifierListener {
     });
   }
 
-  void _show(BuildContext context, Widget child) async {
+  void _show(
+    BuildContext context,
+    Widget child, {
+    bool isDismissible = true,
+  }) async {
     final notifier = _ref.read(nfcOverlayWidgetProperties.notifier);
     notifier.update(child: child);
     if (!visible) {
       visible = true;
       final result = await showModalBottomSheet(
         context: context,
+        isDismissible: isDismissible,
+        enableDrag: isDismissible,
         builder: (BuildContext context) {
-          return const NfcOverlayWidget();
+          return PopScope(
+            canPop: isDismissible,
+            child: const NfcOverlayWidget(),
+          );
         },
       );
       if (result == null) {

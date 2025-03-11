@@ -97,7 +97,16 @@ class NfcAdapterState extends StateNotifier<bool> {
   }
 }
 
-enum NfcState { disabled, idle, ongoing, success, failure }
+enum NfcState {
+  disabled,
+  idle,
+  ongoing,
+  success,
+  failure,
+  usbActivityOngoing,
+  usbActivitySuccess,
+  usbActivityFailure,
+}
 
 class NfcStateNotifier extends StateNotifier<NfcState> {
   NfcStateNotifier() : super(NfcState.disabled);
@@ -109,6 +118,9 @@ class NfcStateNotifier extends StateNotifier<NfcState> {
       2 => NfcState.ongoing,
       3 => NfcState.success,
       4 => NfcState.failure,
+      5 => NfcState.usbActivityOngoing,
+      6 => NfcState.usbActivitySuccess,
+      7 => NfcState.usbActivityFailure,
       _ => NfcState.disabled,
     };
 

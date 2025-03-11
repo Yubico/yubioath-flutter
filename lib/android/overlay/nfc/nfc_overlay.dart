@@ -77,6 +77,23 @@ class _NfcOverlayNotifier extends Notifier<int> {
         case NfcState.idle:
           _log.debug('Received state: idle');
           break;
+        case NfcState.usbActivityOngoing:
+          const timeout = 100;
+          processingViewTimeout =
+              Timer(const Duration(milliseconds: timeout), () {
+            notifier.send(showUsbActivityOngoing());
+          });
+          break;
+        case NfcState.usbActivitySuccess:
+          notifier.send(showUsbActivityDone());
+          notifier
+              .send(const NfcHideViewEvent(delay: Duration(milliseconds: 500)));
+          break;
+        case NfcState.usbActivityFailure:
+          notifier.send(showUsbActivityFailed());
+          notifier.send(
+              const NfcHideViewEvent(delay: Duration(milliseconds: 1000)));
+          break;
       }
     });
 
@@ -149,6 +166,42 @@ class _NfcOverlayNotifier extends Notifier<int> {
       ),
       showIfHidden: false,
     );
+  }
+
+  NfcEvent showUsbActivityOngoing() {
+    final l10n = ref.read(l10nProvider);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
+          title: l10n.s_usb_processing,
+          subtitle: l10n.s_usb_dont_remove,
+          icon: const UsbIconProgressBar(true),
+        ),
+        isDismissible: false);
+  }
+
+  NfcEvent showUsbActivityDone() {
+    final l10n = ref.read(l10nProvider);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
+          title: l10n.s_usb_processing,
+          subtitle: l10n.s_done,
+          icon: const NfcIconSuccess(),
+        ),
+        showIfHidden: false);
+  }
+
+  NfcEvent showUsbActivityFailed() {
+    final l10n = ref.read(l10nProvider);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
+    return NfcSetViewEvent(
+        child: NfcContentWidget(
+          title: l10n.s_usb_processing,
+          subtitle: l10n.l_usb_read_error,
+          icon: const NfcIconFailure(),
+        ),
+        showIfHidden: false);
   }
 
   void hide() {

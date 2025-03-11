@@ -316,7 +316,19 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private suspend fun processYubiKey(device: YubiKeyDevice) {
-        if (!Workarounds.handleFidoReclaim(deviceManager, device)) {
+        if (!Workarounds.handleFidoReclaim(
+                deviceManager, device,
+                enterReclaimCallback = {
+                    appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_ONGOING)
+                },
+                leaveReclaimCallback = {
+                    appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_SUCCESS)
+                },
+                failureCallback = {
+                    appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_FAILURE)
+                })
+        ) {
+            // failure handling reclaim, we cannot use the key
             return
         }
         val deviceInfo = try {
