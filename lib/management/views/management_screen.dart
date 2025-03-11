@@ -499,9 +499,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     maintainSize: true,
                     maintainAnimation: true,
                     maintainState: true,
-                    child: !isAndroid
-                        ? const LinearProgressIndicator()
-                        : const SizedBox(),
+                    child:
+                        !isAndroid
+                            ? const LinearProgressIndicator()
+                            : const SizedBox(),
                   ),
                 ),
               ],

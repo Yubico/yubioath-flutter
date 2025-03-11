@@ -96,7 +96,7 @@ void setupAppMethodsChannel(WidgetRef ref) {
             1 => Section.accounts,
             3 => Section.fingerprints,
             4 => Section.passkeys,
-            _ => Section.home
+            _ => Section.home,
           };
           ref.read(currentSectionProvider.notifier).setCurrentSection(section);
           break;
