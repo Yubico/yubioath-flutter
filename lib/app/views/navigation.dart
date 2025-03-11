@@ -49,25 +49,28 @@ class NavigationItem extends StatelessWidget {
     if (collapsed) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: selected
-            ? Theme(
-                data: theme.copyWith(
+        child:
+            selected
+                ? Theme(
+                  data: theme.copyWith(
                     colorScheme: colorScheme.copyWith(
-                        primary: colorScheme.secondaryContainer,
-                        onPrimary: colorScheme.onSecondaryContainer)),
-                child: IconButton.filled(
+                      primary: colorScheme.secondaryContainer,
+                      onPrimary: colorScheme.onSecondaryContainer,
+                    ),
+                  ),
+                  child: IconButton.filled(
+                    icon: leading,
+                    tooltip: title,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    onPressed: onTap,
+                  ),
+                )
+                : IconButton(
                   icon: leading,
                   tooltip: title,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   onPressed: onTap,
                 ),
-              )
-            : IconButton(
-                icon: leading,
-                tooltip: title,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                onPressed: onTap,
-              ),
       );
     } else {
       return ListTile(
@@ -88,31 +91,34 @@ class NavigationItem extends StatelessWidget {
 
 extension on Section {
   IconData get _icon => switch (this) {
-        Section.home => Symbols.home,
-        Section.accounts => Symbols.supervisor_account,
-        Section.securityKey => Symbols.security_key,
-        Section.passkeys => Symbols.passkey,
-        Section.fingerprints => Symbols.fingerprint,
-        Section.slots => Symbols.touch_app,
-        Section.certificates => Symbols.id_card,
-      };
+    Section.home => Symbols.home,
+    Section.accounts => Symbols.supervisor_account,
+    Section.securityKey => Symbols.security_key,
+    Section.passkeys => Symbols.passkey,
+    Section.fingerprints => Symbols.fingerprint,
+    Section.slots => Symbols.touch_app,
+    Section.certificates => Symbols.id_card,
+  };
 
   Key get _key => switch (this) {
-        Section.home => homeDrawer,
-        Section.accounts => oathAppDrawer,
-        Section.securityKey => u2fAppDrawer,
-        Section.passkeys => fidoPasskeysAppDrawer,
-        Section.fingerprints => fidoFingerprintsAppDrawer,
-        Section.slots => otpAppDrawer,
-        Section.certificates => pivAppDrawer,
-      };
+    Section.home => homeDrawer,
+    Section.accounts => oathAppDrawer,
+    Section.securityKey => u2fAppDrawer,
+    Section.passkeys => fidoPasskeysAppDrawer,
+    Section.fingerprints => fidoFingerprintsAppDrawer,
+    Section.slots => otpAppDrawer,
+    Section.certificates => pivAppDrawer,
+  };
 }
 
 class NavigationContent extends ConsumerWidget {
   final bool shouldPop;
   final bool extended;
-  const NavigationContent(
-      {super.key, this.shouldPop = true, this.extended = false});
+  const NavigationContent({
+    super.key,
+    this.shouldPop = true,
+    this.extended = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -120,17 +126,24 @@ class NavigationContent extends ConsumerWidget {
     final supportedSections = ref.watch(supportedSectionsProvider);
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
 
-    final availableSections = data != null
-        ? supportedSections
-            .where((section) =>
-                section.getAvailability(data) != Availability.unsupported)
-            .toList()
-        : [Section.home];
+    final availableSections =
+        data != null
+            ? supportedSections
+                .where(
+                  (section) =>
+                      section.getAvailability(data) != Availability.unsupported,
+                )
+                .toList()
+            : [Section.home];
     final currentSection = ref.watch(currentSectionProvider);
 
     return Padding(
-      padding:
-          const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0, top: 12),
+      padding: const EdgeInsets.only(
+        left: 8.0,
+        right: 8.0,
+        bottom: 8.0,
+        top: 12,
+      ),
       child: Column(
         children: [
           AnimatedSize(
@@ -143,22 +156,24 @@ class NavigationContent extends ConsumerWidget {
             child: Column(
               children: [
                 // Normal YubiKey Applications
-                ...availableSections.map((app) => NavigationItem(
-                      key: app._key,
-                      title: app.getDisplayName(l10n),
-                      leading: Icon(
-                        app._icon,
-                        fill: app == currentSection ? 1.0 : 0.0,
-                        semanticLabel:
-                            !extended ? app.getDisplayName(l10n) : null,
-                      ),
-                      collapsed: !extended,
-                      selected: app == currentSection,
-                      onTap: data == null && currentSection == Section.home ||
-                              data != null &&
-                                  app.getAvailability(data) ==
-                                      Availability.enabled
-                          ? () {
+                ...availableSections.map(
+                  (app) => NavigationItem(
+                    key: app._key,
+                    title: app.getDisplayName(l10n),
+                    leading: Icon(
+                      app._icon,
+                      fill: app == currentSection ? 1.0 : 0.0,
+                      semanticLabel:
+                          !extended ? app.getDisplayName(l10n) : null,
+                    ),
+                    collapsed: !extended,
+                    selected: app == currentSection,
+                    onTap:
+                        data == null && currentSection == Section.home ||
+                                data != null &&
+                                    app.getAvailability(data) ==
+                                        Availability.enabled
+                            ? () {
                               ref
                                   .read(currentSectionProvider.notifier)
                                   .setCurrentSection(app);
@@ -166,8 +181,9 @@ class NavigationContent extends ConsumerWidget {
                                 Navigator.of(context).pop();
                               }
                             }
-                          : null,
-                    )),
+                            : null,
+                  ),
+                ),
               ],
             ),
           ),

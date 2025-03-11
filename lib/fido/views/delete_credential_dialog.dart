@@ -42,17 +42,19 @@ class DeleteCredentialDialog extends ConsumerWidget {
     return BasicDialog(
       icon: Icon(Symbols.delete),
       title: Text(l10n.q_delete_passkey),
-      content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          l10n.p_warning_delete_passkey,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8.0),
-        Text(l10n.p_warning_delete_passkey_desc),
-      ]),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.p_warning_delete_passkey,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8.0),
+          Text(l10n.p_warning_delete_passkey_desc),
+        ],
+      ),
       actions: [
         TextButton(
           onPressed: () async {
@@ -60,12 +62,10 @@ class DeleteCredentialDialog extends ConsumerWidget {
               await ref
                   .read(credentialProvider(devicePath).notifier)
                   .deleteCredential(credential);
-              await ref.read(withContextProvider)(
-                (context) async {
-                  Navigator.of(context).pop(true);
-                  showMessage(context, l10n.s_passkey_deleted);
-                },
-              );
+              await ref.read(withContextProvider)((context) async {
+                Navigator.of(context).pop(true);
+                showMessage(context, l10n.s_passkey_deleted);
+              });
             } on CancellationException catch (_) {
               // ignored
             }

@@ -41,21 +41,21 @@ class MainPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    ref.listen<Function(BuildContext)?>(
-      contextConsumer,
-      (previous, next) {
-        next?.call(context);
-      },
-    );
+    ref.listen<Function(BuildContext)?>(contextConsumer, (previous, next) {
+      next?.call(context);
+    });
 
     if (isAndroid) {
       isNfcEnabled().then(
-          (value) => ref.read(androidNfcAdapterState.notifier).enable(value));
+        (value) => ref.read(androidNfcAdapterState.notifier).enable(value),
+      );
     }
 
     // If the current device changes, we need to pop any open dialogs.
-    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider,
-        (prev, next) {
+    ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (
+      prev,
+      next,
+    ) {
       final serial = next.hasValue == true ? next.value?.info.serial : null;
       final prevSerial =
           prev?.hasValue == true ? prev?.value?.info.serial : null;
@@ -99,28 +99,32 @@ class MainPage extends ConsumerWidget {
         return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,
-          header: hasNfcSupport && isNfcEnabled
-              ? l10n.l_insert_or_tap_yk
-              : l10n.l_insert_yk,
-          actionsBuilder: (context, expanded) => [
-            if (hasNfcSupport && !isNfcEnabled)
-              ElevatedButton.icon(
-                  label: Text(l10n.s_enable_nfc),
-                  icon: const Icon(Symbols.contactless),
+          header:
+              hasNfcSupport && isNfcEnabled
+                  ? l10n.l_insert_or_tap_yk
+                  : l10n.l_insert_yk,
+          actionsBuilder:
+              (context, expanded) => [
+                if (hasNfcSupport && !isNfcEnabled)
+                  ElevatedButton.icon(
+                    label: Text(l10n.s_enable_nfc),
+                    icon: const Icon(Symbols.contactless),
+                    onPressed: () async {
+                      await openNfcSettings();
+                    },
+                  ),
+                ElevatedButton.icon(
+                  label: Text(l10n.s_add_account),
+                  icon: const Icon(Symbols.person_add_alt),
                   onPressed: () async {
-                    await openNfcSettings();
-                  }),
-            ElevatedButton.icon(
-                label: Text(l10n.s_add_account),
-                icon: const Icon(Symbols.person_add_alt),
-                onPressed: () async {
-                  // make sure we execute the "Add account" in OATH section
-                  ref
-                      .read(currentSectionProvider.notifier)
-                      .setCurrentSection(Section.accounts);
-                  await addOathAccount(context, ref);
-                })
-          ],
+                    // make sure we execute the "Add account" in OATH section
+                    ref
+                        .read(currentSectionProvider.notifier)
+                        .setCurrentSection(Section.accounts);
+                    await addOathAccount(context, ref);
+                  },
+                ),
+              ],
         );
       } else {
         return HomeMessagePage(
@@ -131,7 +135,9 @@ class MainPage extends ConsumerWidget {
         );
       }
     } else {
-      return ref.watch(currentDeviceDataProvider).when(
+      return ref
+          .watch(currentDeviceDataProvider)
+          .when(
             data: (data) {
               final section = ref.watch(currentSectionProvider);
 

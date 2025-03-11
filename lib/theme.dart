@@ -30,19 +30,19 @@ class AppTheme {
     const darkSurface = Color(0xff282828);
     return switch (brightness) {
       Brightness.dark => ColorScheme.fromSeed(
-          seedColor: primaryColor,
-          brightness: brightness,
-          surface: darkSurface,
-          surfaceContainerHigh: darkSurface.withValues(alpha: 0.9),
-          onSurface: const Color(0xeeffffff),
-          onSurfaceVariant: const Color(0xaaffffff),
-        ),
+        seedColor: primaryColor,
+        brightness: brightness,
+        surface: darkSurface,
+        surfaceContainerHigh: darkSurface.withValues(alpha: 0.9),
+        onSurface: const Color(0xeeffffff),
+        onSurfaceVariant: const Color(0xaaffffff),
+      ),
       Brightness.light => ColorScheme.fromSeed(
-          seedColor: primaryColor,
-          brightness: brightness,
-          onSurface: const Color(0xbb000000),
-          onSurfaceVariant: const Color(0x99000000),
-        )
+        seedColor: primaryColor,
+        brightness: brightness,
+        onSurface: const Color(0xbb000000),
+        onSurfaceVariant: const Color(0x99000000),
+      ),
     };
   }
 
@@ -55,8 +55,9 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         color: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.dark,
-            statusBarColor: Colors.transparent),
+          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.transparent,
+        ),
       ),
       listTileTheme: const ListTileThemeData(
         // For alignment under menu button
@@ -73,8 +74,10 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: colorScheme.surfaceContainerHighest,
-        labelStyle:
-            TextStyle(fontFamily: 'Roboto', color: colorScheme.onSurface),
+        labelStyle: TextStyle(
+          fontFamily: 'Roboto',
+          color: colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -89,8 +92,9 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         color: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.light,
-            statusBarColor: Colors.transparent),
+          statusBarIconBrightness: Brightness.light,
+          statusBarColor: Colors.transparent,
+        ),
       ),
       listTileTheme: const ListTileThemeData(
         // For alignment under menu button
@@ -107,8 +111,10 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: colorScheme.surfaceContainerHighest,
-        labelStyle:
-            TextStyle(fontFamily: 'Roboto', color: colorScheme.onSurface),
+        labelStyle: TextStyle(
+          fontFamily: 'Roboto',
+          color: colorScheme.onSurface,
+        ),
       ),
     );
   }

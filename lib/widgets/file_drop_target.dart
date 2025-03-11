@@ -70,10 +70,7 @@ class _FileDropTargetState extends State<FileDropTarget> {
         children: [
           widget.child,
           if (_hovering)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: widget.overlay,
-            ),
+            Padding(padding: const EdgeInsets.all(8.0), child: widget.overlay),
         ],
       ),
     );

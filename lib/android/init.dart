@@ -66,19 +66,20 @@ Future<Widget> initialize() async {
         (ref) => ref.watch(androidDeviceDataProvider),
       ),
       oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
-      credentialListProvider
-          .overrideWithProvider(androidCredentialListProvider.call),
+      credentialListProvider.overrideWithProvider(
+        androidCredentialListProvider.call,
+      ),
       currentSectionProvider.overrideWith(
         (ref) => androidCurrentSectionNotifier(ref),
       ),
       managementStateProvider.overrideWithProvider(androidManagementState.call),
-      currentDeviceProvider.overrideWith(
-        () => AndroidCurrentDeviceNotifier(),
+      currentDeviceProvider.overrideWith(() => AndroidCurrentDeviceNotifier()),
+      qrScannerProvider.overrideWith(
+        androidQrScannerProvider(await getHasCamera()),
       ),
-      qrScannerProvider
-          .overrideWith(androidQrScannerProvider(await getHasCamera())),
-      windowStateProvider
-          .overrideWith((ref) => ref.watch(androidWindowStateProvider)),
+      windowStateProvider.overrideWith(
+        (ref) => ref.watch(androidWindowStateProvider),
+      ),
       clipboardProvider.overrideWith(
         (ref) => ref.watch(androidClipboardProvider),
       ),
@@ -88,12 +89,15 @@ Future<Widget> initialize() async {
         Section.home,
         Section.accounts,
         Section.fingerprints,
-        Section.passkeys
+        Section.passkeys,
       ]),
       // this specifies the priority of sections to show when
       // the connected YubiKey does not support current section
-      androidSectionPriority.overrideWithValue(
-          [Section.accounts, Section.fingerprints, Section.passkeys]),
+      androidSectionPriority.overrideWithValue([
+        Section.accounts,
+        Section.fingerprints,
+        Section.passkeys,
+      ]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
@@ -105,34 +109,36 @@ Future<Widget> initialize() async {
       credentialProvider.overrideWithProvider(androidCredentialProvider.call),
     ],
     child: DismissKeyboard(
-      child: YubicoAuthenticatorApp(page: Consumer(
-        builder: (context, ref, child) {
-          ref.read(nfcEventNotifierListener).startListener(context);
+      child: YubicoAuthenticatorApp(
+        page: Consumer(
+          builder: (context, ref, child) {
+            ref.read(nfcEventNotifierListener).startListener(context);
 
-          Timer.run(() {
-            ref.read(featureFlagProvider.notifier)
-              // TODO: Load feature flags from file/config?
-              //..loadConfig(config)
-              // Disable unimplemented feature
-              ..setFeature(features.piv, false)
-              ..setFeature(features.otp, false)
-              ..setFeature(features.management, false);
-          });
+            Timer.run(() {
+              ref.read(featureFlagProvider.notifier)
+                // TODO: Load feature flags from file/config?
+                //..loadConfig(config)
+                // Disable unimplemented feature
+                ..setFeature(features.piv, false)
+                ..setFeature(features.otp, false)
+                ..setFeature(features.management, false);
+            });
 
-          // activates window state provider
-          ref.read(androidWindowStateProvider);
+            // activates window state provider
+            ref.read(androidWindowStateProvider);
 
-          // initializes overlay for nfc events
-          ref.read(nfcOverlay);
+            // initializes overlay for nfc events
+            ref.read(nfcOverlay);
 
-          // set context which will handle otpauth links
-          setupOtpAuthLinkHandler(context);
+            // set context which will handle otpauth links
+            setupOtpAuthLinkHandler(context);
 
-          setupAppMethodsChannel(ref);
+            setupAppMethodsChannel(ref);
 
-          return const MainPage();
-        },
-      )),
+            return const MainPage();
+          },
+        ),
+      ),
     ),
   );
 }
@@ -159,8 +165,10 @@ class DismissKeyboard extends StatelessWidget {
 }
 
 void _initSystemUi() async {
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-      overlays: SystemUiOverlay.values);
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+    overlays: SystemUiOverlay.values,
+  );
 }
 
 void _initLicenses() async {

@@ -36,24 +36,22 @@ final _log = Logger('app.state');
 
 extension on Section {
   Feature get _feature => switch (this) {
-        Section.home => features.home,
-        Section.accounts => features.oath,
-        Section.securityKey => features.fido,
-        Section.passkeys => features.fido,
-        Section.fingerprints => features.fingerprints,
-        Section.slots => features.otp,
-        Section.certificates => features.piv,
-      };
+    Section.home => features.home,
+    Section.accounts => features.oath,
+    Section.securityKey => features.fido,
+    Section.passkeys => features.fido,
+    Section.fingerprints => features.fingerprints,
+    Section.slots => features.otp,
+    Section.certificates => features.piv,
+  };
 }
 
-final supportedSectionsProvider = Provider<List<Section>>(
-  (ref) {
-    final hasFeature = ref.watch(featureProvider);
-    return Section.values
-        .where((section) => hasFeature(section._feature))
-        .toList();
-  },
-);
+final supportedSectionsProvider = Provider<List<Section>>((ref) {
+  final hasFeature = ref.watch(featureProvider);
+  return Section.values
+      .where((section) => hasFeature(section._feature))
+      .toList();
+});
 
 // Default implementation is always focused, override with platform specific version.
 final windowStateProvider = Provider<WindowState>(
@@ -68,24 +66,27 @@ final supportedLocalesProvider = Provider<List<Locale>>((_) {
   // Ensure english has the highest priority
   final supportedLocales = [
     const Locale('en', ''),
-    ...AppLocalizations.supportedLocales
-        .where((locale) => locale.languageCode != 'en')
+    ...AppLocalizations.supportedLocales.where(
+      (locale) => locale.languageCode != 'en',
+    ),
   ];
   return supportedLocales;
 });
 
 final currentLocaleProvider =
     StateNotifierProvider<CurrentLocaleProvider, Locale>(
-  (ref) => CurrentLocaleProvider(
-      ref.watch(prefProvider), ref.read(supportedLocalesProvider)),
-);
+      (ref) => CurrentLocaleProvider(
+        ref.watch(prefProvider),
+        ref.read(supportedLocalesProvider),
+      ),
+    );
 
 class CurrentLocaleProvider extends StateNotifier<Locale> {
   static const String _key = 'APP_LOCALE';
   final SharedPreferences _prefs;
 
   CurrentLocaleProvider(this._prefs, List<Locale> supportedLocales)
-      : super(_fromName(_prefs.getString(_key), supportedLocales));
+    : super(_fromName(_prefs.getString(_key), supportedLocales));
 
   void setLocale(Locale locale) {
     _log.debug('Set locale to $locale');
@@ -100,7 +101,9 @@ class CurrentLocaleProvider extends StateNotifier<Locale> {
       return basicLocaleListResolution([locale], supportedLocales);
     }
     return basicLocaleListResolution(
-        PlatformDispatcher.instance.locales, supportedLocales);
+      PlatformDispatcher.instance.locales,
+      supportedLocales,
+    );
   }
 }
 
@@ -108,21 +111,23 @@ final l10nProvider = Provider<AppLocalizations>(
   (ref) => lookupAppLocalizations(ref.watch(currentLocaleProvider)),
 );
 
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
-  (ref) {
-    // initialize the keyCustomizationManager
-    ref.read(keyCustomizationManagerProvider);
-    return ThemeModeNotifier(
-        ref.watch(prefProvider), ref.read(supportedThemesProvider));
-  },
-);
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((
+  ref,
+) {
+  // initialize the keyCustomizationManager
+  ref.read(keyCustomizationManagerProvider);
+  return ThemeModeNotifier(
+    ref.watch(prefProvider),
+    ref.read(supportedThemesProvider),
+  );
+});
 
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   static const String _key = 'APP_STATE_THEME';
   final SharedPreferences _prefs;
 
   ThemeModeNotifier(this._prefs, List<ThemeMode> supportedThemes)
-      : super(_fromName(_prefs.getString(_key), supportedThemes));
+    : super(_fromName(_prefs.getString(_key), supportedThemes));
 
   void setThemeMode(ThemeMode mode) {
     _log.debug('Set theme to $mode');
@@ -131,8 +136,10 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 
   static ThemeMode _fromName(String? name, List<ThemeMode> supportedThemes) =>
-      supportedThemes.firstWhere((element) => element.name == name,
-          orElse: () => supportedThemes.first);
+      supportedThemes.firstWhere(
+        (element) => element.name == name,
+        orElse: () => supportedThemes.first,
+      );
 }
 
 final defaultColorProvider = Provider<Color>((ref) => defaultPrimaryColor);
@@ -163,7 +170,8 @@ final primaryColorProvider = Provider<Color>((ref) {
 
 final hiddenDevicesProvider =
     StateNotifierProvider<HiddenDevicesNotifier, List<String>>(
-        (ref) => HiddenDevicesNotifier(ref.watch(prefProvider)));
+      (ref) => HiddenDevicesNotifier(ref.watch(prefProvider)),
+    );
 
 class HiddenDevicesNotifier extends StateNotifier<List<String>> {
   static const String _key = 'DEVICE_PICKER_HIDDEN';
@@ -190,8 +198,8 @@ class HiddenDevicesNotifier extends StateNotifier<List<String>> {
 // Override with platform implementation
 final attachedDevicesProvider =
     NotifierProvider<AttachedDevicesNotifier, List<DeviceNode>>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class AttachedDevicesNotifier extends Notifier<List<DeviceNode>> {
   /// Force a refresh of all device data.
@@ -206,7 +214,8 @@ final currentDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
 // Override with platform implementation
 final currentDeviceProvider =
     NotifierProvider<CurrentDeviceNotifier, DeviceNode?>(
-        () => throw UnimplementedError());
+      () => throw UnimplementedError(),
+    );
 
 abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
   setCurrentDevice(DeviceNode? device);
@@ -214,7 +223,8 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
 
 final currentSectionProvider =
     StateNotifierProvider<CurrentSectionNotifier, Section>(
-        (ref) => throw UnimplementedError());
+      (ref) => throw UnimplementedError(),
+    );
 
 abstract class CurrentSectionNotifier extends StateNotifier<Section> {
   CurrentSectionNotifier(super.initial);
@@ -230,13 +240,12 @@ abstract class QrScanner {
   Future<String?> scanQr([String? imageData]);
 }
 
-final qrScannerProvider = Provider<QrScanner?>(
-  (ref) => null,
-);
+final qrScannerProvider = Provider<QrScanner?>((ref) => null);
 
 final contextConsumer =
     StateNotifierProvider<ContextConsumer, Function(BuildContext)?>(
-        (ref) => ContextConsumer());
+      (ref) => ContextConsumer(),
+    );
 
 class ContextConsumer extends StateNotifier<Function(BuildContext)?> {
   ContextConsumer() : super(null);
@@ -270,15 +279,17 @@ final clipboardProvider = Provider<AppClipboard>(
 /// open dialogs, show Snackbars, etc.
 ///
 /// Used with the [withContextProvider] provider.
-typedef WithContext = Future<T> Function<T>(
-    Future<T> Function(BuildContext context) action);
+typedef WithContext =
+    Future<T> Function<T>(Future<T> Function(BuildContext context) action);
 
 final withContextProvider = Provider<WithContext>(
-    (ref) => ref.watch(contextConsumer.notifier).withContext);
+  (ref) => ref.watch(contextConsumer.notifier).withContext,
+);
 
 final keyCustomizationManagerProvider =
     StateNotifierProvider<KeyCustomizationNotifier, Map<int, KeyCustomization>>(
-        (ref) => KeyCustomizationNotifier(ref.watch(prefProvider)));
+      (ref) => KeyCustomizationNotifier(ref.watch(prefProvider)),
+    );
 
 class KeyCustomizationNotifier
     extends StateNotifier<Map<int, KeyCustomization>> {
@@ -286,7 +297,7 @@ class KeyCustomizationNotifier
   final SharedPreferences _prefs;
 
   KeyCustomizationNotifier(this._prefs)
-      : super(_readCustomizations(_prefs.getString(_prefKeyCustomizations)));
+    : super(_readCustomizations(_prefs.getString(_prefKeyCustomizations)));
 
   static Map<int, KeyCustomization> _readCustomizations(String? pref) {
     if (pref == null) {
@@ -319,18 +330,24 @@ class KeyCustomizationNotifier
     } else {
       state = {
         ...state
-          ..[serial] =
-              KeyCustomization(serial: serial, name: name, color: color)
+          ..[serial] = KeyCustomization(
+            serial: serial,
+            name: name,
+            color: color,
+          ),
       };
     }
     await _prefs.setString(
-        _prefKeyCustomizations, json.encode(state.values.toList()));
+      _prefKeyCustomizations,
+      json.encode(state.values.toList()),
+    );
   }
 }
 
 final dismissedBannersProvider =
     StateNotifierProvider.family<DismissedBanners, List<String>, int?>(
-        (ref, serial) => DismissedBanners(ref.watch(prefProvider), serial));
+      (ref, serial) => DismissedBanners(ref.watch(prefProvider), serial),
+    );
 
 class DismissedBanners extends StateNotifier<List<String>> {
   static const String _baseKey = 'BANNERS_DISMISSED';
@@ -339,7 +356,7 @@ class DismissedBanners extends StateNotifier<List<String>> {
   final int? _serial;
 
   DismissedBanners(this._prefs, this._serial)
-      : super(_prefs.getStringList(getFullKey(_serial)) ?? []);
+    : super(_prefs.getStringList(getFullKey(_serial)) ?? []);
 
   static String getFullKey(int? serial) =>
       '${_baseKey}_${serial ?? _noSerialKey}';

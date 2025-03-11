@@ -23,8 +23,11 @@ class DelayedVisibility extends StatefulWidget {
   final Widget child;
 
   /// Makes child visible after delay
-  const DelayedVisibility(
-      {super.key, required this.delay, required this.child});
+  const DelayedVisibility({
+    super.key,
+    required this.delay,
+    required this.child,
+  });
 
   @override
   State<StatefulWidget> createState() => _DelayedVisibilityState();

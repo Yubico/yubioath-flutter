@@ -64,8 +64,10 @@ Future<Color> getPrimaryColor() async {
 }
 
 Future<void> setPrimaryClip(String toClipboard, bool isSensitive) async {
-  await appMethodsChannel.invokeMethod('setPrimaryClip',
-      {'toClipboard': toClipboard, 'isSensitive': isSensitive});
+  await appMethodsChannel.invokeMethod('setPrimaryClip', {
+    'toClipboard': toClipboard,
+    'isSensitive': isSensitive,
+  });
 }
 
 void setupAppMethodsChannel(WidgetRef ref) {

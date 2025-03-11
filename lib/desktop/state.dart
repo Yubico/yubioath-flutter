@@ -60,7 +60,8 @@ class _RpcStateNotifier extends StateNotifier<RpcState> {
 
 final desktopWindowStateProvider =
     StateNotifierProvider<DesktopWindowStateNotifier, WindowState>(
-        (ref) => DesktopWindowStateNotifier(ref.watch(prefProvider)));
+      (ref) => DesktopWindowStateNotifier(ref.watch(prefProvider)),
+    );
 
 const String windowHidden = 'DESKTOP_WINDOW_HIDDEN';
 
@@ -70,11 +71,14 @@ class DesktopWindowStateNotifier extends StateNotifier<WindowState>
   Timer? _idleTimer;
 
   DesktopWindowStateNotifier(this._prefs)
-      : super(WindowState(
-            focused: true,
-            visible: true,
-            active: true,
-            hidden: _prefs.getBool(windowHidden) ?? false)) {
+    : super(
+        WindowState(
+          focused: true,
+          visible: true,
+          active: true,
+          hidden: _prefs.getBool(windowHidden) ?? false,
+        ),
+      ) {
     _init();
   }
 
@@ -160,7 +164,8 @@ class _DesktopClipboard extends AppClipboard {
   Future<void> setText(String toClipboard, {bool isSensitive = false}) async {
     await Clipboard.setData(ClipboardData(text: toClipboard));
     // Wayland may require the window to be focused to copy to clipboard
-    final needsFocus = Platform.isLinux &&
+    final needsFocus =
+        Platform.isLinux &&
         Platform.environment['XDG_SESSION_TYPE'] == 'wayland' &&
         Platform.environment['_YA_WL_CLIPFIX'] != null;
     var hidden = false;
@@ -173,8 +178,9 @@ class _DesktopClipboard extends AppClipboard {
         }
         await windowManager.focus();
         // Window focus isn't immediate, wait until focused with 10s timeout
-        await Future.doWhile(() async => !await windowManager.isFocused())
-            .timeout(const Duration(seconds: 10));
+        await Future.doWhile(
+          () async => !await windowManager.isFocused(),
+        ).timeout(const Duration(seconds: 10));
       }
       await Clipboard.setData(ClipboardData(text: toClipboard));
     } finally {
@@ -201,18 +207,21 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
     final lastDevice = prefs.getString(_lastDevice) ?? '';
 
     // Ensure hidden devices are deselected
-    var node = devices
-        .where(
-          (dev) => dev.path.key == lastDevice && !hidden.contains(dev.path.key),
-        )
-        .firstOrNull;
+    var node =
+        devices
+            .where(
+              (dev) =>
+                  dev.path.key == lastDevice && !hidden.contains(dev.path.key),
+            )
+            .firstOrNull;
     if (node == null) {
       final parts = lastDevice.split('/');
       if (parts.firstOrNull == 'pid') {
-        node = devices
-            .whereType<UsbYubiKeyNode>()
-            .where((e) => e.pid.value.toString() == parts[1])
-            .firstOrNull;
+        node =
+            devices
+                .whereType<UsbYubiKeyNode>()
+                .where((e) => e.pid.value.toString() == parts[1])
+                .firstOrNull;
       }
     }
     return node ?? devices.whereType<UsbYubiKeyNode>().firstOrNull;
@@ -227,7 +236,9 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
 
 CurrentSectionNotifier desktopCurrentSectionNotifier(Ref ref) {
   final notifier = DesktopCurrentSectionNotifier(
-      ref.watch(supportedSectionsProvider), ref.watch(prefProvider));
+    ref.watch(supportedSectionsProvider),
+    ref.watch(prefProvider),
+  );
   ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
     notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
   }, fireImmediately: true);
@@ -240,7 +251,7 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
   final SharedPreferences _prefs;
 
   DesktopCurrentSectionNotifier(this._supportedSections, this._prefs)
-      : super(_fromName(_prefs.getString(_key), _supportedSections));
+    : super(_fromName(_prefs.getString(_key), _supportedSections));
 
   @override
   void setCurrentSection(Section section) {
@@ -274,6 +285,8 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
   }
 
   static Section _fromName(String? name, List<Section> supportedSections) =>
-      supportedSections.firstWhere((element) => element.name == name,
-          orElse: () => supportedSections.first);
+      supportedSections.firstWhere(
+        (element) => element.name == name,
+        orElse: () => supportedSections.first,
+      );
 }

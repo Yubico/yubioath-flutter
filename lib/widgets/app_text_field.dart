@@ -87,11 +87,13 @@ class AppTextField extends TextField {
   }) : super(decoration: decoration);
 
   Widget init() => Builder(
-        builder: (context) => DefaultSelectionStyle(
-          selectionColor: decoration?.errorText != null
-              ? Theme.of(context).colorScheme.error
-              : null,
+    builder:
+        (context) => DefaultSelectionStyle(
+          selectionColor:
+              decoration?.errorText != null
+                  ? Theme.of(context).colorScheme.error
+                  : null,
           child: this,
         ),
-      );
+  );
 }

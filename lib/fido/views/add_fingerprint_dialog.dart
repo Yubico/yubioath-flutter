@@ -68,15 +68,20 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     super.dispose();
   }
 
-  Animation<Color?> _animateColor(bool success,
-      {Function? atPeak, bool reverse = true}) {
+  Animation<Color?> _animateColor(
+    bool success, {
+    Function? atPeak,
+    bool reverse = true,
+  }) {
     final theme = Theme.of(context);
     final darkMode = theme.brightness == Brightness.dark;
     final beginColor = darkMode ? Colors.white : Colors.black;
     final endColor =
         success ? theme.colorScheme.primary : theme.colorScheme.error;
-    final animation =
-        ColorTween(begin: beginColor, end: endColor).animate(_animator);
+    final animation = ColorTween(
+      begin: beginColor,
+      end: endColor,
+    ).animate(_animator);
     _animator.forward().then((_) {
       if (reverse) {
         atPeak?.call();
@@ -92,61 +97,77 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
     _nameFocus = FocusNode();
     _animator = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 250));
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
     _color = ColorTween().animate(_animator);
 
     _subscription = ref
         .read(fingerprintProvider(widget.devicePath).notifier)
         .registerFingerprint()
-        .listen((event) {
-      setState(() {
-        event.when(capture: (remaining) {
-          _color = _animateColor(true, atPeak: () {
+        .listen(
+          (event) {
             setState(() {
-              _samples += 1;
-              _remaining = remaining;
+              event.when(
+                capture: (remaining) {
+                  _color = _animateColor(
+                    true,
+                    atPeak: () {
+                      setState(() {
+                        _samples += 1;
+                        _remaining = remaining;
+                      });
+                    },
+                    reverse: remaining > 0,
+                  );
+                },
+                complete: (fingerprint) {
+                  _remaining = 0;
+                  // Add delay to show that progressbar is filled
+                  Timer(const Duration(milliseconds: 200), () {
+                    setState(() {
+                      _fingerprint = fingerprint;
+                    });
+                    // This needs a short delay to ensure the field is enabled first
+                    Timer(
+                      const Duration(milliseconds: 100),
+                      _nameFocus.requestFocus,
+                    );
+                  });
+                },
+                error: (code) {
+                  _log.debug('Fingerprint capture error (code: $code)');
+                  _color = _animateColor(false);
+                },
+              );
             });
-          }, reverse: remaining > 0);
-        }, complete: (fingerprint) {
-          _remaining = 0;
-          // Add delay to show that progressbar is filled
-          Timer(const Duration(milliseconds: 200), () {
-            setState(() {
-              _fingerprint = fingerprint;
-            });
-            // This needs a short delay to ensure the field is enabled first
-            Timer(const Duration(milliseconds: 100), _nameFocus.requestFocus);
-          });
-        }, error: (code) {
-          _log.debug('Fingerprint capture error (code: $code)');
-          _color = _animateColor(false);
-        });
-      });
-    }, onError: (error, stacktrace) {
-      _log.error('Error adding fingerprint', error, stacktrace);
+          },
+          onError: (error, stacktrace) {
+            _log.error('Error adding fingerprint', error, stacktrace);
 
-      if (!mounted) return;
-      Navigator.of(context).pop();
-      final l10n = AppLocalizations.of(context);
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (error is RpcError) {
-        if (error.status == 'user-action-timeout') {
-          errorMessage = l10n.l_user_action_timeout_error;
-        } else if (error.status == 'connection-error') {
-          errorMessage = l10n.l_failed_connecting_to_fido;
-        } else {
-          errorMessage = error.message;
-        }
-      } else {
-        errorMessage = error.toString();
-      }
-      showMessage(
-        context,
-        l10n.l_adding_fingerprint_failed(errorMessage),
-        duration: const Duration(seconds: 4),
-      );
-    });
+            if (!mounted) return;
+            Navigator.of(context).pop();
+            final l10n = AppLocalizations.of(context);
+            final String errorMessage;
+            // TODO: Make this cleaner than importing desktop specific RpcError.
+            if (error is RpcError) {
+              if (error.status == 'user-action-timeout') {
+                errorMessage = l10n.l_user_action_timeout_error;
+              } else if (error.status == 'connection-error') {
+                errorMessage = l10n.l_failed_connecting_to_fido;
+              } else {
+                errorMessage = error.message;
+              }
+            } else {
+              errorMessage = error.toString();
+            }
+            showMessage(
+              context,
+              l10n.l_adding_fingerprint_failed(errorMessage),
+              duration: const Duration(seconds: 4),
+            );
+          },
+        );
   }
 
   String _getMessage() {
@@ -192,94 +213,116 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    _getMessage(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.normal),
-                  ),
-                ),
-                Padding(
-                  padding: _fingerprint == null
-                      ? const EdgeInsets.all(34)
-                      : const EdgeInsets.only(top: 4, bottom: 12),
-                  child: AnimatedBuilder(
-                    animation: _color,
-                    builder: (context, _) {
-                      return Icon(
-                        _fingerprint == null
-                            ? Symbols.fingerprint
-                            : Symbols.check,
-                        size: 128.0,
-                        color: _color.value,
-                      );
-                    },
-                  ),
-                ),
-                if (_fingerprint == null)
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 360),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                    ),
-                  ),
-                if (_fingerprint != null) ...[
-                  Text(
-                    l10n.l_name_fingerprint,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.normal),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 460),
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 40),
-                      child: AppTextField(
-                        focusNode: _nameFocus,
-                        maxLength: 15,
-                        inputFormatters: [limitBytesLength(15)],
-                        buildCounter: buildByteCounterFor(_label),
-                        autofocus: true,
-                        decoration: AppInputDecoration(
-                          border: const OutlineInputBorder(),
-                          labelText: l10n.s_name,
-                          icon: const Icon(Symbols.fingerprint),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _label = value.trim();
-                          });
-                        },
-                        onSubmitted: (_) {
-                          if (_label.isNotEmpty) {
-                            _submit();
-                          } else {
-                            _nameFocus.requestFocus();
-                          }
-                        },
-                      ).init(),
-                    ),
-                  )
-                ]
-              ],
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.only(
+              top: 38,
+              bottom: 4,
+              right: 18,
+              left: 18,
             ),
-          ]
-              .map((e) => Padding(
-                    child: e,
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  ))
-              .toList(),
-        ),
-      ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children:
+                  [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                _getMessage(),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  _fingerprint == null
+                                      ? const EdgeInsets.all(34)
+                                      : const EdgeInsets.only(
+                                        top: 4,
+                                        bottom: 12,
+                                      ),
+                              child: AnimatedBuilder(
+                                animation: _color,
+                                builder: (context, _) {
+                                  return Icon(
+                                    _fingerprint == null
+                                        ? Symbols.fingerprint
+                                        : Symbols.check,
+                                    size: 128.0,
+                                    color: _color.value,
+                                  );
+                                },
+                              ),
+                            ),
+                            if (_fingerprint == null)
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 360,
+                                ),
+                                child: LinearProgressIndicator(value: progress),
+                              ),
+                            if (_fingerprint != null) ...[
+                              Text(
+                                l10n.l_name_fingerprint,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 460,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 40),
+                                  child:
+                                      AppTextField(
+                                        focusNode: _nameFocus,
+                                        maxLength: 15,
+                                        inputFormatters: [limitBytesLength(15)],
+                                        buildCounter: buildByteCounterFor(
+                                          _label,
+                                        ),
+                                        autofocus: true,
+                                        decoration: AppInputDecoration(
+                                          border: const OutlineInputBorder(),
+                                          labelText: l10n.s_name,
+                                          icon: const Icon(Symbols.fingerprint),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _label = value.trim();
+                                          });
+                                        },
+                                        onSubmitted: (_) {
+                                          if (_label.isNotEmpty) {
+                                            _submit();
+                                          } else {
+                                            _nameFocus.requestFocus();
+                                          }
+                                        },
+                                      ).init(),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          child: e,
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
       onCancel: () {
         _subscription.cancel();
       },
@@ -288,7 +331,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
           TextButton(
             onPressed: _label.isNotEmpty ? _submit : null,
             child: Text(l10n.s_save),
-          )
+          ),
       ],
     );
   }

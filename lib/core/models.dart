@@ -110,11 +110,13 @@ enum UsbPid {
     };
   }
 
-  int get usbInterfaces => UsbInterface.values
-      .where(
-          (e) => name.contains(e.name[0].toUpperCase() + e.name.substring(1)))
-      .map((e) => e.value)
-      .sum;
+  int get usbInterfaces =>
+      UsbInterface.values
+          .where(
+            (e) => name.contains(e.name[0].toUpperCase() + e.name.substring(1)),
+          )
+          .map((e) => e.value)
+          .sum;
 
   static UsbPid fromValue(int value) {
     return UsbPid.values.firstWhere((pid) => pid.value == value);
@@ -166,7 +168,9 @@ enum Format {
   const Format(this.allowedCharacters);
 
   bool isValid(String input) {
-    return RegExp('^[$allowedCharacters]+\$', caseSensitive: false)
-        .hasMatch(input);
+    return RegExp(
+      '^[$allowedCharacters]+\$',
+      caseSensitive: false,
+    ).hasMatch(input);
   }
 }

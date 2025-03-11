@@ -12,7 +12,8 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$Version {
@@ -53,28 +54,35 @@ class _$VersionCopyWithImpl<$Res, $Val extends Version>
     Object? minor = null,
     Object? patch = null,
   }) {
-    return _then(_value.copyWith(
-      major: null == major
-          ? _value.major
-          : major // ignore: cast_nullable_to_non_nullable
-              as int,
-      minor: null == minor
-          ? _value.minor
-          : minor // ignore: cast_nullable_to_non_nullable
-              as int,
-      patch: null == patch
-          ? _value.patch
-          : patch // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            major:
+                null == major
+                    ? _value.major
+                    : major // ignore: cast_nullable_to_non_nullable
+                        as int,
+            minor:
+                null == minor
+                    ? _value.minor
+                    : minor // ignore: cast_nullable_to_non_nullable
+                        as int,
+            patch:
+                null == patch
+                    ? _value.patch
+                    : patch // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$VersionImplCopyWith<$Res> implements $VersionCopyWith<$Res> {
   factory _$$VersionImplCopyWith(
-          _$VersionImpl value, $Res Function(_$VersionImpl) then) =
-      __$$VersionImplCopyWithImpl<$Res>;
+    _$VersionImpl value,
+    $Res Function(_$VersionImpl) then,
+  ) = __$$VersionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int major, int minor, int patch});
@@ -85,8 +93,9 @@ class __$$VersionImplCopyWithImpl<$Res>
     extends _$VersionCopyWithImpl<$Res, _$VersionImpl>
     implements _$$VersionImplCopyWith<$Res> {
   __$$VersionImplCopyWithImpl(
-      _$VersionImpl _value, $Res Function(_$VersionImpl) _then)
-      : super(_value, _then);
+    _$VersionImpl _value,
+    $Res Function(_$VersionImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Version
   /// with the given fields replaced by the non-null parameter values.
@@ -97,20 +106,22 @@ class __$$VersionImplCopyWithImpl<$Res>
     Object? minor = null,
     Object? patch = null,
   }) {
-    return _then(_$VersionImpl(
-      null == major
-          ? _value.major
-          : major // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == minor
-          ? _value.minor
-          : minor // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == patch
-          ? _value.patch
-          : patch // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$VersionImpl(
+        null == major
+            ? _value.major
+            : major // ignore: cast_nullable_to_non_nullable
+                as int,
+        null == minor
+            ? _value.minor
+            : minor // ignore: cast_nullable_to_non_nullable
+                as int,
+        null == patch
+            ? _value.patch
+            : patch // ignore: cast_nullable_to_non_nullable
+                as int,
+      ),
+    );
   }
 }
 
@@ -118,13 +129,13 @@ class __$$VersionImplCopyWithImpl<$Res>
 
 class _$VersionImpl extends _Version {
   const _$VersionImpl(this.major, this.minor, this.patch)
-      : assert(major >= 0),
-        assert(major < 256),
-        assert(minor >= 0),
-        assert(minor < 256),
-        assert(patch >= 0),
-        assert(patch < 256),
-        super._();
+    : assert(major >= 0),
+      assert(major < 256),
+      assert(minor >= 0),
+      assert(minor < 256),
+      assert(patch >= 0),
+      assert(patch < 256),
+      super._();
 
   @override
   final int major;

@@ -45,159 +45,171 @@ class AboutPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     return ResponsiveDialog(
       title: Text(l10n.s_about),
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
-            Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: Text(
-                l10n.app_name,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            const Text(version),
-            const Text(''),
-            Row(
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
+                Padding(
+                  padding: const EdgeInsets.only(top: 24.0),
+                  child: Text(
+                    l10n.app_name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const Text(version),
+                const Text(''),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      child: Text(
+                        key: tosButton,
+                        l10n.s_terms_of_use,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onPressed: () {
+                        launchTermsUrl();
+                      },
+                    ),
+                    TextButton(
+                      child: Text(
+                        key: privacyButton,
+                        l10n.s_privacy_policy,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onPressed: () {
+                        launchPrivacyUrl();
+                      },
+                    ),
+                  ],
+                ),
                 TextButton(
                   child: Text(
-                    key: tosButton,
-                    l10n.s_terms_of_use,
-                    style:
-                        const TextStyle(decoration: TextDecoration.underline),
+                    key: licensesButton,
+                    l10n.s_open_src_licenses,
+                    style: const TextStyle(
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                   onPressed: () {
-                    launchTermsUrl();
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder:
+                            (BuildContext context) =>
+                                const LicensePage(applicationVersion: version),
+                        settings: const RouteSettings(name: 'licenses'),
+                      ),
+                    );
                   },
                 ),
-                TextButton(
-                  child: Text(
-                    key: privacyButton,
-                    l10n.s_privacy_policy,
-                    style:
-                        const TextStyle(decoration: TextDecoration.underline),
-                  ),
-                  onPressed: () {
-                    launchPrivacyUrl();
-                  },
+                const Padding(
+                  padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+                  child: Divider(),
                 ),
-              ],
-            ),
-            TextButton(
-              child: Text(
-                key: licensesButton,
-                l10n.s_open_src_licenses,
-                style: const TextStyle(decoration: TextDecoration.underline),
-              ),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const LicensePage(
-                    applicationVersion: version,
-                  ),
-                  settings: const RouteSettings(name: 'licenses'),
-                ));
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
-              child: Divider(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                key: helpButton,
-                l10n.s_help_and_feedback,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextButton(
-                  onPressed: launchDocumentationUrl,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    key: userGuideButton,
-                    l10n.s_user_guide,
-                    style:
-                        const TextStyle(decoration: TextDecoration.underline),
+                    key: helpButton,
+                    l10n.s_help_and_feedback,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                TextButton(
-                  onPressed: launchHelpUrl,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      onPressed: launchDocumentationUrl,
+                      child: Text(
+                        key: userGuideButton,
+                        l10n.s_user_guide,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: launchHelpUrl,
+                      child: Text(
+                        l10n.s_i_need_help,
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    l10n.s_i_need_help,
-                    style:
-                        const TextStyle(decoration: TextDecoration.underline),
+                    l10n.s_troubleshooting,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 24.0, bottom: 8.0),
-              child: Divider(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                l10n.s_troubleshooting,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            const LoggingPanel(),
+                const LoggingPanel(),
 
-            // Diagnostics (desktop only)
-            if (isDesktop) ...[
-              const SizedBox(height: 12.0),
-              ActionChip(
-                key: diagnosticsChip,
-                avatar: const Icon(Symbols.bug_report),
-                label: Text(l10n.s_run_diagnostics),
-                onPressed: () async {
-                  _log.info('Running diagnostics...');
-                  final response = await ref
-                      .read(rpcProvider)
-                      .requireValue
-                      .command('diagnose', []);
-                  final data = response['diagnostics'] as List;
-                  data.insert(0, {
-                    'app_version': version,
-                    'dart': Platform.version,
-                    'os': Platform.operatingSystem,
-                    'os_version': Platform.operatingSystemVersion,
-                  });
-                  data.insert(data.length - 1, ref.read(featureFlagProvider));
-                  final text = const JsonEncoder.withIndent('  ').convert(data);
-                  await ref.read(clipboardProvider).setText(text);
-                  await ref.read(withContextProvider)(
-                    (context) async {
-                      showMessage(context, l10n.l_diagnostics_copied);
+                // Diagnostics (desktop only)
+                if (isDesktop) ...[
+                  const SizedBox(height: 12.0),
+                  ActionChip(
+                    key: diagnosticsChip,
+                    avatar: const Icon(Symbols.bug_report),
+                    label: Text(l10n.s_run_diagnostics),
+                    onPressed: () async {
+                      _log.info('Running diagnostics...');
+                      final response = await ref
+                          .read(rpcProvider)
+                          .requireValue
+                          .command('diagnose', []);
+                      final data = response['diagnostics'] as List;
+                      data.insert(0, {
+                        'app_version': version,
+                        'dart': Platform.version,
+                        'os': Platform.operatingSystem,
+                        'os_version': Platform.operatingSystemVersion,
+                      });
+                      data.insert(
+                        data.length - 1,
+                        ref.read(featureFlagProvider),
+                      );
+                      final text = const JsonEncoder.withIndent(
+                        '  ',
+                      ).convert(data);
+                      await ref.read(clipboardProvider).setText(text);
+                      await ref.read(withContextProvider)((context) async {
+                        showMessage(context, l10n.l_diagnostics_copied);
+                      });
                     },
-                  );
-                },
-              ),
-            ],
+                  ),
+                ],
 
-            // Enable screenshots (Android only)
-            if (isAndroid) ...[
-              const SizedBox(height: 12.0),
-              FilterChip(
-                key: screenshotChip,
-                label: Text(l10n.s_allow_screenshots),
-                selected: ref.watch(androidAllowScreenshotsProvider),
-                onSelected: (value) async {
-                  ref
-                      .read(androidAllowScreenshotsProvider.notifier)
-                      .setAllowScreenshots(value);
-                },
-              ),
-            ],
-          ],
-        ),
-      ),
+                // Enable screenshots (Android only)
+                if (isAndroid) ...[
+                  const SizedBox(height: 12.0),
+                  FilterChip(
+                    key: screenshotChip,
+                    label: Text(l10n.s_allow_screenshots),
+                    selected: ref.watch(androidAllowScreenshotsProvider),
+                    onSelected: (value) async {
+                      ref
+                          .read(androidAllowScreenshotsProvider.notifier)
+                          .setAllowScreenshots(value);
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
     );
   }
 }
@@ -222,10 +234,16 @@ class LoggingPanel extends ConsumerWidget {
           value: logLevel,
           items: Levels.LEVELS,
           selected: logLevel != Level.INFO,
-          labelBuilder: (value) => Text(l10n.s_log_level(
-              value.name[0] + value.name.substring(1).toLowerCase())),
-          itemBuilder: (value) =>
-              Text('${value.name[0]}${value.name.substring(1).toLowerCase()}'),
+          labelBuilder:
+              (value) => Text(
+                l10n.s_log_level(
+                  value.name[0] + value.name.substring(1).toLowerCase(),
+                ),
+              ),
+          itemBuilder:
+              (value) => Text(
+                '${value.name[0]}${value.name.substring(1).toLowerCase()}',
+              ),
           onChanged: (level) {
             ref.read(logLevelProvider.notifier).setLogLevel(level);
             _log.debug('Log level set to $level');
@@ -241,11 +259,9 @@ class LoggingPanel extends ConsumerWidget {
             var clipboard = ref.read(clipboardProvider);
             await clipboard.setText(logs.join('\n'));
             if (!clipboard.platformGivesFeedback()) {
-              await ref.read(withContextProvider)(
-                (context) async {
-                  showMessage(context, l10n.l_log_copied);
-                },
-              );
+              await ref.read(withContextProvider)((context) async {
+                showMessage(context, l10n.l_log_copied);
+              });
             }
           },
         ),

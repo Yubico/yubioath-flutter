@@ -22,7 +22,8 @@ import '../models.dart';
 
 final nfcOverlayWidgetProperties =
     NotifierProvider<_NfcOverlayWidgetProperties, NfcOverlayWidgetProperties>(
-        _NfcOverlayWidgetProperties.new);
+      _NfcOverlayWidgetProperties.new,
+    );
 
 class _NfcOverlayWidgetProperties extends Notifier<NfcOverlayWidgetProperties> {
   @override
@@ -30,15 +31,12 @@ class _NfcOverlayWidgetProperties extends Notifier<NfcOverlayWidgetProperties> {
     return NfcOverlayWidgetProperties(child: const SizedBox());
   }
 
-  void update({
-    Widget? child,
-    bool? visible,
-    bool? hasCloseButton,
-  }) {
+  void update({Widget? child, bool? visible, bool? hasCloseButton}) {
     state = state.copyWith(
-        child: child ?? state.child,
-        visible: visible ?? state.visible,
-        hasCloseButton: hasCloseButton ?? state.hasCloseButton);
+      child: child ?? state.child,
+      visible: visible ?? state.visible,
+      hasCloseButton: hasCloseButton ?? state.hasCloseButton,
+    );
   }
 }
 
@@ -48,27 +46,32 @@ class NfcOverlayWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final widget = ref.watch(nfcOverlayWidgetProperties.select((s) => s.child));
-    final showCloseButton =
-        ref.watch(nfcOverlayWidgetProperties.select((s) => s.hasCloseButton));
+    final showCloseButton = ref.watch(
+      nfcOverlayWidgetProperties.select((s) => s.hasCloseButton),
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Stack(fit: StackFit.passthrough, children: [
-          if (showCloseButton)
-            Positioned(
-              top: 10,
-              right: 10,
-              child: IconButton(
+        Stack(
+          fit: StackFit.passthrough,
+          children: [
+            if (showCloseButton)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Symbols.close, fill: 1, size: 24)),
+                  icon: const Icon(Symbols.close, fill: 1, size: 24),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+              child: widget,
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-            child: widget,
-          )
-        ]),
+          ],
+        ),
         const SizedBox(height: 32),
       ],
     );

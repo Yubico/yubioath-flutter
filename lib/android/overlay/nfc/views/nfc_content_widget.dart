@@ -40,14 +40,16 @@ class NfcContentWidget extends ConsumerWidget {
         children: [
           Text(title, textAlign: TextAlign.center, style: textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(subtitle,
-              textAlign: TextAlign.center,
-              style: textTheme.titleMedium!.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              )),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: textTheme.titleMedium!.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 32),
           icon,
-          const SizedBox(height: 24)
+          const SizedBox(height: 24),
         ],
       ),
     );

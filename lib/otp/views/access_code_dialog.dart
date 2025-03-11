@@ -31,11 +31,12 @@ class AccessCodeDialog extends ConsumerStatefulWidget {
   final OtpSlot otpSlot;
   final Future<void> Function(String accessCode) action;
 
-  const AccessCodeDialog(
-      {super.key,
-      required this.devicePath,
-      required this.otpSlot,
-      required this.action});
+  const AccessCodeDialog({
+    super.key,
+    required this.devicePath,
+    required this.otpSlot,
+    required this.action,
+  });
 
   @override
   ConsumerState<AccessCodeDialog> createState() => _AccessCodeDialogState();
@@ -60,11 +61,14 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
     final l10n = AppLocalizations.of(context);
     if (!Format.hex.isValid(_accessCodeController.text)) {
       _accessCodeController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _accessCodeController.text.length);
+        baseOffset: 0,
+        extentOffset: _accessCodeController.text.length,
+      );
       _accessCodeFocus.requestFocus();
       setState(() {
-        _accessCodeError =
-            l10n.l_invalid_format_allowed_chars(Format.hex.allowedCharacters);
+        _accessCodeError = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
         _accessCodeIsWrong = true;
       });
       return;
@@ -75,7 +79,9 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
       navigator.pop(true);
     } catch (e) {
       _accessCodeController.selection = TextSelection(
-          baseOffset: 0, extentOffset: _accessCodeController.text.length);
+        baseOffset: 0,
+        extentOffset: _accessCodeController.text.length,
+      );
       _accessCodeFocus.requestFocus();
       setState(() {
         _accessCodeIsWrong = true;
@@ -95,63 +101,75 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
         TextButton(
           onPressed: accessCodeLengthValid ? _submit : null,
           child: Text(l10n.s_unlock),
-        )
+        ),
       ],
-      builder: (context, _) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.p_enter_access_code(
-                  widget.otpSlot.slot.numberId.toString())),
-              AppTextField(
-                autofocus: true,
-                obscureText: _isObscure,
-                maxLength: accessCodeLength,
-                autofillHints: const [AutofillHints.password],
-                controller: _accessCodeController,
-                focusNode: _accessCodeFocus,
-                decoration: AppInputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_access_code,
-                  errorText: _accessCodeIsWrong ? _accessCodeError : null,
-                  errorMaxLines: 3,
-                  icon: const Icon(Symbols.pin),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isObscure
-                        ? Symbols.visibility
-                        : Symbols.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                    tooltip: _isObscure
-                        ? l10n.s_show_access_code
-                        : l10n.s_hide_access_code,
-                  ),
-                ),
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  setState(() {
-                    _accessCodeIsWrong = false;
-                  });
-                },
-                onSubmitted: (_) {
-                  if (accessCodeLengthValid) {
-                    _submit();
-                  } else {
-                    _accessCodeFocus.requestFocus();
-                  }
-                },
-              ).init(),
-            ]
-                .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: e,
-                    ))
-                .toList(),
-          )),
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        Text(
+                          l10n.p_enter_access_code(
+                            widget.otpSlot.slot.numberId.toString(),
+                          ),
+                        ),
+                        AppTextField(
+                          autofocus: true,
+                          obscureText: _isObscure,
+                          maxLength: accessCodeLength,
+                          autofillHints: const [AutofillHints.password],
+                          controller: _accessCodeController,
+                          focusNode: _accessCodeFocus,
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_access_code,
+                            errorText:
+                                _accessCodeIsWrong ? _accessCodeError : null,
+                            errorMaxLines: 3,
+                            icon: const Icon(Symbols.pin),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Symbols.visibility
+                                    : Symbols.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                              tooltip:
+                                  _isObscure
+                                      ? l10n.s_show_access_code
+                                      : l10n.s_hide_access_code,
+                            ),
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (value) {
+                            setState(() {
+                              _accessCodeIsWrong = false;
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (accessCodeLengthValid) {
+                              _submit();
+                            } else {
+                              _accessCodeFocus.requestFocus();
+                            }
+                          },
+                        ).init(),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 }

@@ -28,27 +28,32 @@ class AccountList extends ConsumerWidget {
   final List<OathPair> accounts;
   final bool expanded;
   final OathCredential? selected;
-  const AccountList(this.accounts,
-      {super.key, required this.expanded, this.selected});
+  const AccountList(
+    this.accounts, {
+    super.key,
+    required this.expanded,
+    this.selected,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final labelStyle =
-        theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary);
+    final labelStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.primary,
+    );
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
-      return Center(
-        child: Text(l10n.s_no_accounts),
-      );
+      return Center(child: Text(l10n.s_no_accounts));
     }
 
-    final pinnedCreds =
-        credentials.where((entry) => favorites.contains(entry.credential.id));
-    final creds =
-        credentials.where((entry) => !favorites.contains(entry.credential.id));
+    final pinnedCreds = credentials.where(
+      (entry) => favorites.contains(entry.credential.id),
+    );
+    final creds = credentials.where(
+      (entry) => !favorites.contains(entry.credential.id),
+    );
 
     final oathLayout = ref.watch(oathLayoutProvider);
     final pinnedLayout =
@@ -74,12 +79,13 @@ class AccountList extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: FlexBox<OathPair>(
                   items: pinnedCreds.toList(),
-                  itemBuilder: (value) => AccountView(
-                    value.credential,
-                    expanded: expanded,
-                    selected: value.credential == selected,
-                    large: pinnedLayout == FlexLayout.grid,
-                  ),
+                  itemBuilder:
+                      (value) => AccountView(
+                        value.credential,
+                        expanded: expanded,
+                        selected: value.credential == selected,
+                        large: pinnedLayout == FlexLayout.grid,
+                      ),
                   cellMinWidth: 250,
                   spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
                   runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
@@ -91,22 +97,20 @@ class AccountList extends ConsumerWidget {
               const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.only(left: 18, bottom: 8),
-                child: Text(
-                  l10n.s_accounts,
-                  style: labelStyle,
-                ),
+                child: Text(l10n.s_accounts, style: labelStyle),
               ),
             ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: FlexBox<OathPair>(
                 items: creds.toList(),
-                itemBuilder: (value) => AccountView(
-                  value.credential,
-                  expanded: expanded,
-                  selected: value.credential == selected,
-                  large: normalLayout == FlexLayout.grid,
-                ),
+                itemBuilder:
+                    (value) => AccountView(
+                      value.credential,
+                      expanded: expanded,
+                      selected: value.credential == selected,
+                      large: normalLayout == FlexLayout.grid,
+                    ),
                 cellMinWidth: 250,
                 spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
                 runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,

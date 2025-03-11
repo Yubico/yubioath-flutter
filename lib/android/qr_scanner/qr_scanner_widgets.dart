@@ -7,10 +7,7 @@ class SmallWhiteText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        _text,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Colors.white),
-      );
+    _text,
+    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
+  );
 }

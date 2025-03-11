@@ -86,8 +86,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
         }
       } else {
         _currentPasswordController.selection = TextSelection(
-            baseOffset: 0,
-            extentOffset: _currentPasswordController.text.length);
+          baseOffset: 0,
+          extentOffset: _currentPasswordController.text.length,
+        );
         _currentPasswordFocus.requestFocus();
         setState(() {
           _currentIsWrong = true;
@@ -100,11 +101,15 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final fipsCapable = ref.watch(currentDeviceDataProvider).maybeWhen(
-        data: (data) => data.info.getFipsStatus(Capability.oath).$1,
-        orElse: () => false);
+    final fipsCapable = ref
+        .watch(currentDeviceDataProvider)
+        .maybeWhen(
+          data: (data) => data.info.getFipsStatus(Capability.oath).$1,
+          orElse: () => false,
+        );
     final l10n = AppLocalizations.of(context);
-    final isValid = !_currentIsWrong &&
+    final isValid =
+        !_currentIsWrong &&
         _newPassword.isNotEmpty &&
         _newPassword == _confirmPassword &&
         (!widget.state.hasKey || _currentPasswordController.text.isNotEmpty);
@@ -114,225 +119,270 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
     final confirmPasswordEnabled =
         (!widget.state.hasKey || _currentPasswordController.text.isNotEmpty) &&
-            _newPassword.isNotEmpty;
+        _newPassword.isNotEmpty;
 
     return ResponsiveDialog(
       title: Text(
-          widget.state.hasKey ? l10n.s_manage_password : l10n.s_set_password),
+        widget.state.hasKey ? l10n.s_manage_password : l10n.s_set_password,
+      ),
       actions: [
         TextButton(
           onPressed: isValid ? _submit : null,
           key: keys.savePasswordButton,
           child: Text(l10n.s_save),
-        )
-      ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.state.hasKey) ...[
-              AppTextField(
-                autofocus: true,
-                obscureText: _isObscureCurrent,
-                autofillHints: const [AutofillHints.password],
-                key: keys.currentPasswordField,
-                controller: _currentPasswordController,
-                focusNode: _currentPasswordFocus,
-                decoration: AppInputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_current_password,
-                  errorText: _currentIsWrong ? l10n.p_wrong_password : null,
-                  errorMaxLines: 3,
-                  icon: const Icon(Symbols.password),
-                  suffixIcon: IconButton(
-                      icon: Icon(_isObscureCurrent
-                          ? Symbols.visibility
-                          : Symbols.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscureCurrent = !_isObscureCurrent;
-                        });
-                      },
-                      tooltip: _isObscureCurrent
-                          ? l10n.s_show_password
-                          : l10n.s_hide_password),
-                ),
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  setState(() {
-                    _currentIsWrong = false;
-                  });
-                },
-                onSubmitted: (_) {
-                  if (_currentPasswordController.text.isNotEmpty) {
-                    _newPasswordFocus.requestFocus();
-                  } else {
-                    _currentPasswordFocus.requestFocus();
-                  }
-                },
-              ).init(),
-              Padding(
-                padding: const EdgeInsets.only(left: 40),
-                child: Wrap(
-                  spacing: 4.0,
-                  runSpacing: 8.0,
-                  children: [
-                    if (!fipsCapable)
-                      OutlinedButton(
-                        key: keys.removePasswordButton,
-                        onPressed: _currentPasswordController.text.isNotEmpty &&
-                                !_currentIsWrong
-                            ? () async {
-                                _removeFocus();
-
-                                final result = await ref
-                                    .read(
-                                        oathStateProvider(widget.path).notifier)
-                                    .unsetPassword(
-                                        _currentPasswordController.text);
-                                if (result) {
-                                  if (mounted) {
-                                    await ref.read(withContextProvider)(
-                                        (context) async {
-                                      Navigator.of(context).pop();
-                                      showMessage(
-                                          context, l10n.s_password_removed);
-                                    });
-                                  }
-                                } else {
-                                  _currentPasswordController.selection =
-                                      TextSelection(
-                                          baseOffset: 0,
-                                          extentOffset:
-                                              _currentPasswordController
-                                                  .text.length);
-                                  _currentPasswordFocus.requestFocus();
-                                  setState(() {
-                                    _currentIsWrong = true;
-                                  });
-                                }
-                              }
-                            : null,
-                        child: Text(l10n.s_remove_password),
-                      ),
-                    if (widget.state.remembered)
-                      OutlinedButton(
-                        child: Text(l10n.s_clear_saved_password),
-                        onPressed: () async {
-                          await ref
-                              .read(oathStateProvider(widget.path).notifier)
-                              .forgetPassword();
-                          if (mounted) {
-                            await ref.read(withContextProvider)(
-                                (context) async {
-                              Navigator.of(context).pop();
-                              showMessage(context, l10n.s_password_forgotten);
-                            });
-                          }
-                        },
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 0),
-            ],
-            AppTextField(
-              key: keys.newPasswordField,
-              autofocus: !widget.state.hasKey,
-              obscureText: _isObscureNew,
-              autofillHints: const [AutofillHints.newPassword],
-              focusNode: _newPasswordFocus,
-              decoration: AppInputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_new_password,
-                helperText: l10n.p_new_password_requirements,
-                helperMaxLines: 3,
-                icon: const Icon(Symbols.password),
-                suffixIcon: ExcludeFocusTraversal(
-                  excluding: !newPasswordEnabled,
-                  child: IconButton(
-                      icon: Icon(_isObscureNew
-                          ? Symbols.visibility
-                          : Symbols.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscureNew = !_isObscureNew;
-                        });
-                      },
-                      tooltip: _isObscureNew
-                          ? l10n.s_show_password
-                          : l10n.s_hide_password),
-                ),
-                enabled: newPasswordEnabled,
-              ),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  _newPassword = value;
-                });
-              },
-              onSubmitted: (_) {
-                if (_newPassword.isNotEmpty) {
-                  _confirmPasswordFocus.requestFocus();
-                } else if (_newPassword.isEmpty) {
-                  _newPasswordFocus.requestFocus();
-                }
-              },
-            ).init(),
-            AppTextField(
-              key: keys.confirmPasswordField,
-              obscureText: _isObscureConfirm,
-              focusNode: _confirmPasswordFocus,
-              autofillHints: const [AutofillHints.newPassword],
-              decoration: AppInputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_confirm_password,
-                icon: const Icon(Symbols.password),
-                suffixIcon: ExcludeFocusTraversal(
-                  excluding: !confirmPasswordEnabled,
-                  child: IconButton(
-                      icon: Icon(_isObscureConfirm
-                          ? Symbols.visibility
-                          : Symbols.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscureConfirm = !_isObscureConfirm;
-                        });
-                      },
-                      tooltip: _isObscureConfirm
-                          ? l10n.s_show_password
-                          : l10n.s_hide_password),
-                ),
-                enabled: confirmPasswordEnabled,
-                errorText: _newPassword.length == _confirmPassword.length &&
-                        _newPassword != _confirmPassword
-                    ? l10n.l_password_mismatch
-                    : null,
-                helperText: '', // Prevents resizing when errorText shown
-              ),
-              textInputAction: TextInputAction.done,
-              onChanged: (value) {
-                setState(() {
-                  _confirmPassword = value;
-                });
-              },
-              onSubmitted: (_) {
-                if (isValid) {
-                  _submit();
-                } else {
-                  _confirmPasswordFocus.requestFocus();
-                }
-              },
-            ).init(),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
         ),
-      ),
+      ],
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        if (widget.state.hasKey) ...[
+                          AppTextField(
+                            autofocus: true,
+                            obscureText: _isObscureCurrent,
+                            autofillHints: const [AutofillHints.password],
+                            key: keys.currentPasswordField,
+                            controller: _currentPasswordController,
+                            focusNode: _currentPasswordFocus,
+                            decoration: AppInputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: l10n.s_current_password,
+                              errorText:
+                                  _currentIsWrong
+                                      ? l10n.p_wrong_password
+                                      : null,
+                              errorMaxLines: 3,
+                              icon: const Icon(Symbols.password),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isObscureCurrent
+                                      ? Symbols.visibility
+                                      : Symbols.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscureCurrent = !_isObscureCurrent;
+                                  });
+                                },
+                                tooltip:
+                                    _isObscureCurrent
+                                        ? l10n.s_show_password
+                                        : l10n.s_hide_password,
+                              ),
+                            ),
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
+                              setState(() {
+                                _currentIsWrong = false;
+                              });
+                            },
+                            onSubmitted: (_) {
+                              if (_currentPasswordController.text.isNotEmpty) {
+                                _newPasswordFocus.requestFocus();
+                              } else {
+                                _currentPasswordFocus.requestFocus();
+                              }
+                            },
+                          ).init(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 40),
+                            child: Wrap(
+                              spacing: 4.0,
+                              runSpacing: 8.0,
+                              children: [
+                                if (!fipsCapable)
+                                  OutlinedButton(
+                                    key: keys.removePasswordButton,
+                                    onPressed:
+                                        _currentPasswordController
+                                                    .text
+                                                    .isNotEmpty &&
+                                                !_currentIsWrong
+                                            ? () async {
+                                              _removeFocus();
+
+                                              final result = await ref
+                                                  .read(
+                                                    oathStateProvider(
+                                                      widget.path,
+                                                    ).notifier,
+                                                  )
+                                                  .unsetPassword(
+                                                    _currentPasswordController
+                                                        .text,
+                                                  );
+                                              if (result) {
+                                                if (mounted) {
+                                                  await ref.read(
+                                                    withContextProvider,
+                                                  )((context) async {
+                                                    Navigator.of(context).pop();
+                                                    showMessage(
+                                                      context,
+                                                      l10n.s_password_removed,
+                                                    );
+                                                  });
+                                                }
+                                              } else {
+                                                _currentPasswordController
+                                                    .selection = TextSelection(
+                                                  baseOffset: 0,
+                                                  extentOffset:
+                                                      _currentPasswordController
+                                                          .text
+                                                          .length,
+                                                );
+                                                _currentPasswordFocus
+                                                    .requestFocus();
+                                                setState(() {
+                                                  _currentIsWrong = true;
+                                                });
+                                              }
+                                            }
+                                            : null,
+                                    child: Text(l10n.s_remove_password),
+                                  ),
+                                if (widget.state.remembered)
+                                  OutlinedButton(
+                                    child: Text(l10n.s_clear_saved_password),
+                                    onPressed: () async {
+                                      await ref
+                                          .read(
+                                            oathStateProvider(
+                                              widget.path,
+                                            ).notifier,
+                                          )
+                                          .forgetPassword();
+                                      if (mounted) {
+                                        await ref.read(withContextProvider)((
+                                          context,
+                                        ) async {
+                                          Navigator.of(context).pop();
+                                          showMessage(
+                                            context,
+                                            l10n.s_password_forgotten,
+                                          );
+                                        });
+                                      }
+                                    },
+                                  ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 0),
+                        ],
+                        AppTextField(
+                          key: keys.newPasswordField,
+                          autofocus: !widget.state.hasKey,
+                          obscureText: _isObscureNew,
+                          autofillHints: const [AutofillHints.newPassword],
+                          focusNode: _newPasswordFocus,
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_new_password,
+                            helperText: l10n.p_new_password_requirements,
+                            helperMaxLines: 3,
+                            icon: const Icon(Symbols.password),
+                            suffixIcon: ExcludeFocusTraversal(
+                              excluding: !newPasswordEnabled,
+                              child: IconButton(
+                                icon: Icon(
+                                  _isObscureNew
+                                      ? Symbols.visibility
+                                      : Symbols.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscureNew = !_isObscureNew;
+                                  });
+                                },
+                                tooltip:
+                                    _isObscureNew
+                                        ? l10n.s_show_password
+                                        : l10n.s_hide_password,
+                              ),
+                            ),
+                            enabled: newPasswordEnabled,
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (value) {
+                            setState(() {
+                              _newPassword = value;
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (_newPassword.isNotEmpty) {
+                              _confirmPasswordFocus.requestFocus();
+                            } else if (_newPassword.isEmpty) {
+                              _newPasswordFocus.requestFocus();
+                            }
+                          },
+                        ).init(),
+                        AppTextField(
+                          key: keys.confirmPasswordField,
+                          obscureText: _isObscureConfirm,
+                          focusNode: _confirmPasswordFocus,
+                          autofillHints: const [AutofillHints.newPassword],
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_confirm_password,
+                            icon: const Icon(Symbols.password),
+                            suffixIcon: ExcludeFocusTraversal(
+                              excluding: !confirmPasswordEnabled,
+                              child: IconButton(
+                                icon: Icon(
+                                  _isObscureConfirm
+                                      ? Symbols.visibility
+                                      : Symbols.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscureConfirm = !_isObscureConfirm;
+                                  });
+                                },
+                                tooltip:
+                                    _isObscureConfirm
+                                        ? l10n.s_show_password
+                                        : l10n.s_hide_password,
+                              ),
+                            ),
+                            enabled: confirmPasswordEnabled,
+                            errorText:
+                                _newPassword.length ==
+                                            _confirmPassword.length &&
+                                        _newPassword != _confirmPassword
+                                    ? l10n.l_password_mismatch
+                                    : null,
+                            helperText:
+                                '', // Prevents resizing when errorText shown
+                          ),
+                          textInputAction: TextInputAction.done,
+                          onChanged: (value) {
+                            setState(() {
+                              _confirmPassword = value;
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (isValid) {
+                              _submit();
+                            } else {
+                              _confirmPasswordFocus.requestFocus();
+                            }
+                          },
+                        ).init(),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 }

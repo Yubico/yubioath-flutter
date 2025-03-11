@@ -73,7 +73,9 @@ class _PinDialogState extends ConsumerState<PinDialog> {
           reason.maybeWhen(
             invalidPin: (attemptsRemaining) {
               _pinController.selection = TextSelection(
-                  baseOffset: 0, extentOffset: _pinController.text.length);
+                baseOffset: 0,
+                extentOffset: _pinController.text.length,
+              );
               _pinFocus.requestFocus();
               setState(() {
                 _attemptsRemaining = attemptsRemaining;
@@ -108,67 +110,81 @@ class _PinDialogState extends ConsumerState<PinDialog> {
           child: Text(l10n.s_unlock),
         ),
       ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.p_pin_required_desc),
-            AppTextField(
-              autofocus: true,
-              obscureText: _isObscure,
-              maxLength: 8,
-              inputFormatters: [limitBytesLength(8)],
-              buildCounter: buildByteCounterFor(_pinController.text),
-              autofillHints: const [AutofillHints.password],
-              key: keys.managementKeyField,
-              controller: _pinController,
-              focusNode: _pinFocus,
-              enabled: !_pinIsBlocked,
-              decoration: AppInputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_pin,
-                errorText: _pinIsBlocked
-                    ? l10n.l_piv_pin_blocked
-                    : _pinIsWrong
-                        ? l10n
-                            .l_wrong_pin_attempts_remaining(_attemptsRemaining)
-                        : null,
-                errorMaxLines: 3,
-                icon: const Icon(Symbols.pin),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscure ? Symbols.visibility : Symbols.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _isObscure = !_isObscure;
-                    });
-                  },
-                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
-                ),
-              ),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  _pinIsWrong = false;
-                });
-              },
-              onSubmitted: (_) {
-                if (currentPinLen >= minPinLen) {
-                  _submit();
-                } else {
-                  _pinFocus.requestFocus();
-                }
-              },
-            ).init(),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
-      ),
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        Text(l10n.p_pin_required_desc),
+                        AppTextField(
+                          autofocus: true,
+                          obscureText: _isObscure,
+                          maxLength: 8,
+                          inputFormatters: [limitBytesLength(8)],
+                          buildCounter: buildByteCounterFor(
+                            _pinController.text,
+                          ),
+                          autofillHints: const [AutofillHints.password],
+                          key: keys.managementKeyField,
+                          controller: _pinController,
+                          focusNode: _pinFocus,
+                          enabled: !_pinIsBlocked,
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_pin,
+                            errorText:
+                                _pinIsBlocked
+                                    ? l10n.l_piv_pin_blocked
+                                    : _pinIsWrong
+                                    ? l10n.l_wrong_pin_attempts_remaining(
+                                      _attemptsRemaining,
+                                    )
+                                    : null,
+                            errorMaxLines: 3,
+                            icon: const Icon(Symbols.pin),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Symbols.visibility
+                                    : Symbols.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                              tooltip:
+                                  _isObscure
+                                      ? l10n.s_show_pin
+                                      : l10n.s_hide_pin,
+                            ),
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (value) {
+                            setState(() {
+                              _pinIsWrong = false;
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (currentPinLen >= minPinLen) {
+                              _submit();
+                            } else {
+                              _pinFocus.requestFocus();
+                            }
+                          },
+                        ).init(),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 }

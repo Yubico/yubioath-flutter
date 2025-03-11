@@ -31,8 +31,9 @@ import 'views/nfc_overlay_widget.dart';
 final _log = Logger('android.nfc_overlay');
 const _channel = MethodChannel('com.yubico.authenticator.channel.nfc_overlay');
 
-final nfcOverlay =
-    NotifierProvider<_NfcOverlayNotifier, int>(_NfcOverlayNotifier.new);
+final nfcOverlay = NotifierProvider<_NfcOverlayNotifier, int>(
+  _NfcOverlayNotifier.new,
+);
 
 class _NfcOverlayNotifier extends Notifier<int> {
   Timer? processingViewTimeout;
@@ -51,20 +52,24 @@ class _NfcOverlayNotifier extends Notifier<int> {
           // if the action is finished before, the timer might be cancelled
           // causing the view not to be visible at all
           const timeout = 300;
-          processingViewTimeout =
-              Timer(const Duration(milliseconds: timeout), () {
-            notifier.send(showHoldStill());
-          });
+          processingViewTimeout = Timer(
+            const Duration(milliseconds: timeout),
+            () {
+              notifier.send(showHoldStill());
+            },
+          );
           break;
         case NfcState.success:
           notifier.send(showDone());
-          notifier
-              .send(const NfcHideViewEvent(delay: Duration(milliseconds: 400)));
+          notifier.send(
+            const NfcHideViewEvent(delay: Duration(milliseconds: 400)),
+          );
           break;
         case NfcState.failure:
           notifier.send(showFailed());
-          notifier
-              .send(const NfcHideViewEvent(delay: Duration(milliseconds: 800)));
+          notifier.send(
+            const NfcHideViewEvent(delay: Duration(milliseconds: 800)),
+          );
           break;
         case NfcState.disabled:
           _log.debug('Received state: disabled');
@@ -100,46 +105,50 @@ class _NfcOverlayNotifier extends Notifier<int> {
     final nfcAvailable = ref.watch(androidNfcAdapterState);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: true);
     return NfcSetViewEvent(
-        child: NfcContentWidget(
-      title: l10n.s_nfc_ready_to_scan,
-      subtitle: nfcAvailable ? l10n.s_nfc_tap_your_yubikey : l10n.l_insert_yk,
-      icon: nfcAvailable ? const NfcIconProgressBar(false) : const UsbIcon(),
-    ));
+      child: NfcContentWidget(
+        title: l10n.s_nfc_ready_to_scan,
+        subtitle: nfcAvailable ? l10n.s_nfc_tap_your_yubikey : l10n.l_insert_yk,
+        icon: nfcAvailable ? const NfcIconProgressBar(false) : const UsbIcon(),
+      ),
+    );
   }
 
   NfcEvent showHoldStill() {
     final l10n = ref.read(l10nProvider);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
-        child: NfcContentWidget(
-      title: l10n.s_nfc_ready_to_scan,
-      subtitle: l10n.s_nfc_hold_still,
-      icon: const NfcIconProgressBar(true),
-    ));
+      child: NfcContentWidget(
+        title: l10n.s_nfc_ready_to_scan,
+        subtitle: l10n.s_nfc_hold_still,
+        icon: const NfcIconProgressBar(true),
+      ),
+    );
   }
 
   NfcEvent showDone() {
     final l10n = ref.read(l10nProvider);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
-        child: NfcContentWidget(
-          title: l10n.s_nfc_ready_to_scan,
-          subtitle: l10n.s_done,
-          icon: const NfcIconSuccess(),
-        ),
-        showIfHidden: false);
+      child: NfcContentWidget(
+        title: l10n.s_nfc_ready_to_scan,
+        subtitle: l10n.s_done,
+        icon: const NfcIconSuccess(),
+      ),
+      showIfHidden: false,
+    );
   }
 
   NfcEvent showFailed() {
     final l10n = ref.read(l10nProvider);
     ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
     return NfcSetViewEvent(
-        child: NfcContentWidget(
-          title: l10n.s_nfc_ready_to_scan,
-          subtitle: l10n.l_nfc_failed_to_scan,
-          icon: const NfcIconFailure(),
-        ),
-        showIfHidden: false);
+      child: NfcContentWidget(
+        title: l10n.s_nfc_ready_to_scan,
+        subtitle: l10n.l_nfc_failed_to_scan,
+        icon: const NfcIconFailure(),
+      ),
+      showIfHidden: false,
+    );
   }
 
   void hide() {
@@ -153,15 +162,12 @@ class _NfcOverlayNotifier extends Notifier<int> {
   Future<void> waitForHide() async {
     final completer = Completer();
 
-    Timer.periodic(
-      const Duration(milliseconds: 200),
-      (timer) {
-        if (ref.read(nfcOverlayWidgetProperties.select((s) => !s.visible))) {
-          timer.cancel();
-          completer.complete();
-        }
-      },
-    );
+    Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (ref.read(nfcOverlayWidgetProperties.select((s) => !s.visible))) {
+        timer.cancel();
+        completer.complete();
+      }
+    });
 
     await completer.future;
   }

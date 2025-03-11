@@ -24,7 +24,8 @@ import 'models.dart';
 
 final yubiOtpOutputProvider =
     StateNotifierProvider<YubiOtpOutputNotifier, File?>(
-        (ref) => YubiOtpOutputNotifier());
+      (ref) => YubiOtpOutputNotifier(),
+    );
 
 class YubiOtpOutputNotifier extends StateNotifier<File?> {
   YubiOtpOutputNotifier() : super(null);
@@ -36,17 +37,24 @@ class YubiOtpOutputNotifier extends StateNotifier<File?> {
 
 final otpStateProvider = AsyncNotifierProvider.autoDispose
     .family<OtpStateNotifier, OtpState, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class OtpStateNotifier extends ApplicationStateNotifier<OtpState> {
   Future<String> generateStaticPassword(int length, String layout);
   Future<String> modhexEncodeSerial(int serial);
   Future<Map<String, List<String>>> getKeyboardLayouts();
   Future<String> formatYubiOtpCsv(
-      int serial, String publicId, String privateId, String key);
+    int serial,
+    String publicId,
+    String privateId,
+    String key,
+  );
   Future<void> swapSlots();
-  Future<void> configureSlot(SlotId slot,
-      {required SlotConfiguration configuration, String? accessCode});
+  Future<void> configureSlot(
+    SlotId slot, {
+    required SlotConfiguration configuration,
+    String? accessCode,
+  });
   Future<void> deleteSlot(SlotId slot, {String? accessCode});
 }

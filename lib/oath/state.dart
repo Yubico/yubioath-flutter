@@ -28,7 +28,8 @@ import 'models.dart';
 
 final accountsSearchProvider =
     StateNotifierProvider<AccountsSearchNotifier, String>(
-        (ref) => AccountsSearchNotifier());
+      (ref) => AccountsSearchNotifier(),
+    );
 
 class AccountsSearchNotifier extends StateNotifier<String> {
   AccountsSearchNotifier() : super('');
@@ -40,33 +41,47 @@ class AccountsSearchNotifier extends StateNotifier<String> {
 
 final oathLayoutProvider =
     StateNotifierProvider.autoDispose<OathLayoutNotfier, OathLayout>((ref) {
-  final device = ref.watch(currentDeviceProvider);
-  List<OathPair> credentials = device != null
-      ? ref.read(filteredCredentialsProvider(
-          ref.read(credentialListProvider(device.path)) ?? []))
-      : [];
-  final favorites = ref.watch(favoritesProvider);
-  final pinnedCreds =
-      credentials.where((entry) => favorites.contains(entry.credential.id));
-  return OathLayoutNotfier('OATH_STATE_LAYOUT', ref.watch(prefProvider),
-      credentials, pinnedCreds.toList());
-});
+      final device = ref.watch(currentDeviceProvider);
+      List<OathPair> credentials =
+          device != null
+              ? ref.read(
+                filteredCredentialsProvider(
+                  ref.read(credentialListProvider(device.path)) ?? [],
+                ),
+              )
+              : [];
+      final favorites = ref.watch(favoritesProvider);
+      final pinnedCreds = credentials.where(
+        (entry) => favorites.contains(entry.credential.id),
+      );
+      return OathLayoutNotfier(
+        'OATH_STATE_LAYOUT',
+        ref.watch(prefProvider),
+        credentials,
+        pinnedCreds.toList(),
+      );
+    });
 
 class OathLayoutNotfier extends StateNotifier<OathLayout> {
   final String _key;
   final SharedPreferences _prefs;
-  OathLayoutNotfier(this._key, this._prefs, List<OathPair> credentials,
-      List<OathPair> pinnedCredentials)
-      : super(
-            _fromName(_prefs.getString(_key), credentials, pinnedCredentials));
+  OathLayoutNotfier(
+    this._key,
+    this._prefs,
+    List<OathPair> credentials,
+    List<OathPair> pinnedCredentials,
+  ) : super(_fromName(_prefs.getString(_key), credentials, pinnedCredentials));
 
   void setLayout(OathLayout layout) {
     state = layout;
     _prefs.setString(_key, layout.name);
   }
 
-  static OathLayout _fromName(String? name, List<OathPair> credentials,
-      List<OathPair> pinnedCredentials) {
+  static OathLayout _fromName(
+    String? name,
+    List<OathPair> credentials,
+    List<OathPair> pinnedCredentials,
+  ) {
     final layout = OathLayout.values.firstWhere(
       (element) => element.name == name,
       orElse: () => OathLayout.list,
@@ -87,8 +102,8 @@ class OathLayoutNotfier extends StateNotifier<OathLayout> {
 
 final oathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
   Future<void> reset();
@@ -103,8 +118,8 @@ abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
 
 final credentialListProvider = StateNotifierProvider.autoDispose
     .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
-  (ref, arg) => throw UnimplementedError(),
-);
+      (ref, arg) => throw UnimplementedError(),
+    );
 
 abstract class OathCredentialListNotifier
     extends StateNotifier<List<OathPair>?> {
@@ -113,30 +128,41 @@ abstract class OathCredentialListNotifier
   @override
   @protected
   set state(List<OathPair>? value) {
-    super.state = value != null
-        ? List.unmodifiable(value
-          ..sort((a, b) {
-            String searchKey(OathCredential c) =>
-                ((c.issuer ?? '') + c.name).toLowerCase();
-            return searchKey(a.credential).compareTo(searchKey(b.credential));
-          }))
-        : null;
+    super.state =
+        value != null
+            ? List.unmodifiable(
+              value..sort((a, b) {
+                String searchKey(OathCredential c) =>
+                    ((c.issuer ?? '') + c.name).toLowerCase();
+                return searchKey(
+                  a.credential,
+                ).compareTo(searchKey(b.credential));
+              }),
+            )
+            : null;
   }
 
   Future<OathCode> calculate(OathCredential credential);
   Future<OathCredential> addAccount(Uri otpauth, {bool requireTouch = false});
   Future<OathCredential> renameAccount(
-      OathCredential credential, String? issuer, String name);
+    OathCredential credential,
+    String? issuer,
+    String name,
+  );
   Future<void> deleteAccount(OathCredential credential);
 }
 
 final credentialsProvider = StateNotifierProvider.autoDispose<
-    _CredentialsProviderNotifier, List<OathCredential>?>((ref) {
+  _CredentialsProviderNotifier,
+  List<OathCredential>?
+>((ref) {
   final provider = _CredentialsProviderNotifier();
   final node = ref.watch(currentDeviceProvider);
   if (node != null) {
-    ref.listen<List<OathPair>?>(credentialListProvider(node.path),
-        (previous, next) {
+    ref.listen<List<OathPair>?>(credentialListProvider(node.path), (
+      previous,
+      next,
+    ) {
       provider._updatePairs(next);
     }, fireImmediately: true);
   }
@@ -163,26 +189,31 @@ class _CredentialsProviderNotifier
   }
 }
 
-final codeProvider =
-    Provider.autoDispose.family<OathCode?, OathCredential>((ref, credential) {
+final codeProvider = Provider.autoDispose.family<OathCode?, OathCredential>((
+  ref,
+  credential,
+) {
   final node = ref.watch(currentDeviceProvider);
   if (node != null) {
     return ref
-        .watch(credentialListProvider(node.path)
-            .select((pairs) => pairs?.firstWhere(
-                  (pair) => pair.credential == credential,
-                  orElse: () => OathPair(credential, null),
-                )))
+        .watch(
+          credentialListProvider(node.path).select(
+            (pairs) => pairs?.firstWhere(
+              (pair) => pair.credential == credential,
+              orElse: () => OathPair(credential, null),
+            ),
+          ),
+        )
         ?.code;
   }
   return null;
 });
 
-final expiredProvider =
-    StateNotifierProvider.autoDispose.family<_ExpireNotifier, bool, int>(
-  (ref, expiry) =>
-      _ExpireNotifier(DateTime.now().millisecondsSinceEpoch, expiry * 1000),
-);
+final expiredProvider = StateNotifierProvider.autoDispose
+    .family<_ExpireNotifier, bool, int>(
+      (ref, expiry) =>
+          _ExpireNotifier(DateTime.now().millisecondsSinceEpoch, expiry * 1000),
+    );
 
 class _ExpireNotifier extends StateNotifier<bool> {
   Timer? _timer;
@@ -205,7 +236,8 @@ class _ExpireNotifier extends StateNotifier<bool> {
 
 final favoritesProvider =
     StateNotifierProvider<FavoritesNotifier, List<String>>(
-        (ref) => FavoritesNotifier(ref.watch(prefProvider)));
+      (ref) => FavoritesNotifier(ref.watch(prefProvider)),
+    );
 
 class FavoritesNotifier extends StateNotifier<List<String>> {
   static const String _key = 'OATH_STATE_FAVORITES';
@@ -229,24 +261,26 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
   }
 }
 
-final filteredCredentialsProvider = StateNotifierProvider.autoDispose
-    .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>(
-        (ref, full) {
+final filteredCredentialsProvider = StateNotifierProvider.autoDispose.family<
+  FilteredCredentialsNotifier,
+  List<OathPair>,
+  List<OathPair>
+>((ref, full) {
   return FilteredCredentialsNotifier(full, ref.watch(accountsSearchProvider));
 });
 
 class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
   final String query;
-  FilteredCredentialsNotifier(
-    List<OathPair> full,
-    this.query,
-  ) : super(
-          full
-              .where((pair) =>
+  FilteredCredentialsNotifier(List<OathPair> full, this.query)
+    : super(
+        full
+            .where(
+              (pair) =>
                   "${pair.credential.issuer ?? ''}:${pair.credential.name}"
                       .toLowerCase()
-                      .contains(query.toLowerCase()))
-              .where((pair) => pair.credential.issuer != '_hidden')
-              .toList(),
-        );
+                      .contains(query.toLowerCase()),
+            )
+            .where((pair) => pair.credential.issuer != '_hidden')
+            .toList(),
+      );
 }

@@ -18,21 +18,18 @@ _$OathCredentialImpl _$$OathCredentialImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$OathCredentialImplToJson(
-        _$OathCredentialImpl instance) =>
-    <String, dynamic>{
-      'device_id': instance.deviceId,
-      'id': instance.id,
-      'issuer': const _IssuerConverter().toJson(instance.issuer),
-      'name': instance.name,
-      'oath_type': _$OathTypeEnumMap[instance.oathType]!,
-      'period': instance.period,
-      'touch_required': instance.touchRequired,
-    };
-
-const _$OathTypeEnumMap = {
-  OathType.hotp: 16,
-  OathType.totp: 32,
+  _$OathCredentialImpl instance,
+) => <String, dynamic>{
+  'device_id': instance.deviceId,
+  'id': instance.id,
+  'issuer': const _IssuerConverter().toJson(instance.issuer),
+  'name': instance.name,
+  'oath_type': _$OathTypeEnumMap[instance.oathType]!,
+  'period': instance.period,
+  'touch_required': instance.touchRequired,
 };
+
+const _$OathTypeEnumMap = {OathType.hotp: 16, OathType.totp: 32};
 
 _$OathCodeImpl _$$OathCodeImplFromJson(Map<String, dynamic> json) =>
     _$OathCodeImpl(
@@ -57,10 +54,7 @@ _$OathPairImpl _$$OathPairImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$OathPairImplToJson(_$OathPairImpl instance) =>
-    <String, dynamic>{
-      'credential': instance.credential,
-      'code': instance.code,
-    };
+    <String, dynamic>{'credential': instance.credential, 'code': instance.code};
 
 _$OathStateImpl _$$OathStateImplFromJson(Map<String, dynamic> json) =>
     _$OathStateImpl(
@@ -93,28 +87,29 @@ _$CredentialDataImpl _$$CredentialDataImplFromJson(Map<String, dynamic> json) =>
       issuer: json['issuer'] as String?,
       name: json['name'] as String,
       secret: json['secret'] as String,
-      oathType: $enumDecodeNullable(_$OathTypeEnumMap, json['oath_type']) ??
+      oathType:
+          $enumDecodeNullable(_$OathTypeEnumMap, json['oath_type']) ??
           defaultOathType,
       hashAlgorithm:
           $enumDecodeNullable(_$HashAlgorithmEnumMap, json['hash_algorithm']) ??
-              defaultHashAlgorithm,
+          defaultHashAlgorithm,
       digits: (json['digits'] as num?)?.toInt() ?? defaultDigits,
       period: (json['period'] as num?)?.toInt() ?? defaultPeriod,
       counter: (json['counter'] as num?)?.toInt() ?? defaultCounter,
     );
 
 Map<String, dynamic> _$$CredentialDataImplToJson(
-        _$CredentialDataImpl instance) =>
-    <String, dynamic>{
-      'issuer': instance.issuer,
-      'name': instance.name,
-      'secret': instance.secret,
-      'oath_type': _$OathTypeEnumMap[instance.oathType]!,
-      'hash_algorithm': _$HashAlgorithmEnumMap[instance.hashAlgorithm]!,
-      'digits': instance.digits,
-      'period': instance.period,
-      'counter': instance.counter,
-    };
+  _$CredentialDataImpl instance,
+) => <String, dynamic>{
+  'issuer': instance.issuer,
+  'name': instance.name,
+  'secret': instance.secret,
+  'oath_type': _$OathTypeEnumMap[instance.oathType]!,
+  'hash_algorithm': _$HashAlgorithmEnumMap[instance.hashAlgorithm]!,
+  'digits': instance.digits,
+  'period': instance.period,
+  'counter': instance.counter,
+};
 
 const _$HashAlgorithmEnumMap = {
   HashAlgorithm.sha1: 1,

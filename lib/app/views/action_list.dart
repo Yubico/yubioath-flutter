@@ -55,27 +55,30 @@ class ActionListItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: onTap == null
-          ? () {
-              // Needed to avoid triggering escape intent when tapping
-              // on a disabled item
-            }
-          : null,
+      onTap:
+          onTap == null
+              ? () {
+                // Needed to avoid triggering escape intent when tapping
+                // on a disabled item
+              }
+              : null,
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
         title: TooltipIfTruncated(
           text: title,
           style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
         ),
-        subtitle: subtitle != null
-            ? TooltipIfTruncated(
-                text: subtitle!,
-                style:
-                    TextStyle(fontSize: theme.textTheme.bodyMedium!.fontSize),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              )
-            : null,
+        subtitle:
+            subtitle != null
+                ? TooltipIfTruncated(
+                  text: subtitle!,
+                  style: TextStyle(
+                    fontSize: theme.textTheme.bodyMedium!.fontSize,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                )
+                : null,
         leading: Opacity(
           opacity: onTap != null ? 1.0 : 0.4,
           child: CircleAvatar(
@@ -98,45 +101,47 @@ class ActionListSection extends ConsumerWidget {
 
   const ActionListSection(this.title, {super.key, required this.children});
 
-  factory ActionListSection.fromMenuActions(BuildContext context, String title,
-      {Key? key, required List<ActionItem> actions}) {
+  factory ActionListSection.fromMenuActions(
+    BuildContext context,
+    String title, {
+    Key? key,
+    required List<ActionItem> actions,
+  }) {
     return ActionListSection(
       key: key,
       title,
-      children: actions.map((action) {
-        final intent = action.intent;
-        return ActionListItem(
-          key: action.key,
-          feature: action.feature,
-          actionStyle: action.actionStyle ?? ActionStyle.normal,
-          icon: action.icon,
-          title: action.title,
-          subtitle: action.subtitle,
-          onTap: intent != null
-              ? (context) => Actions.invoke(context, intent)
-              : null,
-          trailing: action.trailing,
-        );
-      }).toList(),
+      children:
+          actions.map((action) {
+            final intent = action.intent;
+            return ActionListItem(
+              key: action.key,
+              feature: action.feature,
+              actionStyle: action.actionStyle ?? ActionStyle.normal,
+              icon: action.icon,
+              title: action.title,
+              subtitle: action.subtitle,
+              onTap:
+                  intent != null
+                      ? (context) => Actions.invoke(context, intent)
+                      : null,
+              trailing: action.trailing,
+            );
+          }).toList(),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasFeature = ref.watch(featureProvider);
-    final enabledChildren = children
-        .where((item) => item.feature == null || hasFeature(item.feature!));
+    final enabledChildren = children.where(
+      (item) => item.feature == null || hasFeature(item.feature!),
+    );
     if (enabledChildren.isEmpty) {
       return const SizedBox();
     }
     return SizedBox(
       width: 360,
-      child: Column(children: [
-        ListTitle(
-          title,
-        ),
-        ...enabledChildren,
-      ]),
+      child: Column(children: [ListTitle(title), ...enabledChildren]),
     );
   }
 }

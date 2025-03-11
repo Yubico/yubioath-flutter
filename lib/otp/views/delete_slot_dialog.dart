@@ -44,8 +44,9 @@ class DeleteSlotDialog extends ConsumerWidget {
         TextButton(
           key: keys.deleteButton,
           onPressed: () async {
-            final otpStateNotifier =
-                ref.read(otpStateProvider(devicePath).notifier);
+            final otpStateNotifier = ref.read(
+              otpStateProvider(devicePath).notifier,
+            );
             bool deleteSucceeded = false;
             try {
               await otpStateNotifier.deleteSlot(otpSlot.slot);
@@ -54,15 +55,19 @@ class DeleteSlotDialog extends ConsumerWidget {
               // Access code required
               await ref.read(withContextProvider)((context) async {
                 final result = await showBlurDialog(
-                    context: context,
-                    builder: (context) => AccessCodeDialog(
-                          devicePath: devicePath,
-                          otpSlot: otpSlot,
-                          action: (accessCode) async {
-                            await otpStateNotifier.deleteSlot(otpSlot.slot,
-                                accessCode: accessCode);
-                          },
-                        ));
+                  context: context,
+                  builder:
+                      (context) => AccessCodeDialog(
+                        devicePath: devicePath,
+                        otpSlot: otpSlot,
+                        action: (accessCode) async {
+                          await otpStateNotifier.deleteSlot(
+                            otpSlot.slot,
+                            accessCode: accessCode,
+                          );
+                        },
+                      ),
+                );
                 deleteSucceeded = result ?? false;
               });
             }
@@ -74,13 +79,13 @@ class DeleteSlotDialog extends ConsumerWidget {
             });
           },
           child: Text(l10n.s_delete),
-        )
+        ),
       ],
       content: Text(
         l10n.p_warning_delete_slot_configuration(otpSlot.slot.numberId),
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }

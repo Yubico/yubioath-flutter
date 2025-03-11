@@ -37,29 +37,30 @@ import '../state.dart';
 
 final _log = Logger('desktop.piv.state');
 
-final _managementKeyProvider =
-    StateProvider.autoDispose.family<String?, DevicePath>(
-  (ref, _) => null,
-);
+final _managementKeyProvider = StateProvider.autoDispose
+    .family<String?, DevicePath>((ref, _) => null);
 
 final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
   (ref, _) => null,
 );
 
-final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) {
-    // Make sure the managementKey and PIN are held for the duration of the session.
-    ref.watch(_managementKeyProvider(devicePath));
-    ref.watch(_pinProvider(devicePath));
-    return RpcNodeSession(
-        ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'piv']);
-  },
-);
+final _sessionProvider = Provider.autoDispose.family<
+  RpcNodeSession,
+  DevicePath
+>((ref, devicePath) {
+  // Make sure the managementKey and PIN are held for the duration of the session.
+  ref.watch(_managementKeyProvider(devicePath));
+  ref.watch(_pinProvider(devicePath));
+  return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
+    'ccid',
+    'piv',
+  ]);
+});
 
 final desktopPivState = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
-        _DesktopPivStateNotifier.new);
+      _DesktopPivStateNotifier.new,
+    );
 
 class _DesktopPivStateNotifier extends PivStateNotifier {
   late RpcNodeSession _session;
@@ -90,7 +91,10 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
             }
           } else {
             final String? mgmtKey;
-            if (state.valueOrNull?.metadata?.managementKeyMetadata
+            if (state
+                    .valueOrNull
+                    ?.metadata
+                    ?.managementKeyMetadata
                     .defaultValue ==
                 true) {
               mgmtKey = defaultManagementKey;
@@ -141,17 +145,15 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
     try {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
-          controller = await withContext(
-            (context) async {
-              final l10n = AppLocalizations.of(context);
-              return promptUserInteraction(
-                context,
-                icon: const Icon(Symbols.touch_app),
-                title: l10n.s_touch_required,
-                description: l10n.l_touch_button_now,
-              );
-            },
-          );
+          controller = await withContext((context) async {
+            final l10n = AppLocalizations.of(context);
+            return promptUserInteraction(
+              context,
+              icon: const Icon(Symbols.touch_app),
+              title: l10n.s_touch_required,
+              description: l10n.l_touch_button_now,
+            );
+          });
         }
       });
 
@@ -189,17 +191,15 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
         final withContext = ref.watch(withContextProvider);
         signaler.signals.listen((signal) async {
           if (signal.status == 'touch') {
-            controller = await withContext(
-              (context) async {
-                final l10n = AppLocalizations.of(context);
-                return promptUserInteraction(
-                  context,
-                  icon: const Icon(Symbols.touch_app),
-                  title: l10n.s_touch_required,
-                  description: l10n.l_touch_button_now,
-                );
-              },
-            );
+            controller = await withContext((context) async {
+              final l10n = AppLocalizations.of(context);
+              return promptUserInteraction(
+                context,
+                icon: const Icon(Symbols.touch_app),
+                title: l10n.s_touch_required,
+                description: l10n.l_touch_button_now,
+              );
+            });
           }
         });
       }
@@ -215,7 +215,8 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
         return PinVerificationStatus.failure(
-            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
+        );
       }
       rethrow;
     } finally {
@@ -236,11 +237,13 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
         return PinVerificationStatus.failure(
-            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
+        );
       }
       if (e.status == 'pin-complexity') {
         return PinVerificationStatus.failure(
-            const PivPinFailureReason.weakPin());
+          const PivPinFailureReason.weakPin(),
+        );
       }
       rethrow;
     } finally {
@@ -259,11 +262,13 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
         return PinVerificationStatus.failure(
-            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
+        );
       }
       if (e.status == 'pin-complexity') {
         return PinVerificationStatus.failure(
-            const PivPinFailureReason.weakPin());
+          const PivPinFailureReason.weakPin(),
+        );
       }
       rethrow;
     } finally {
@@ -272,9 +277,11 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
   }
 
   @override
-  Future<void> setManagementKey(String managementKey,
-      {ManagementKeyType managementKeyType = defaultManagementKeyType,
-      bool storeKey = false}) async {
+  Future<void> setManagementKey(
+    String managementKey, {
+    ManagementKeyType managementKeyType = defaultManagementKeyType,
+    bool storeKey = false,
+  }) async {
     await _session.command(
       'set_key',
       params: {
@@ -299,11 +306,13 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
         return PinVerificationStatus.failure(
-            PivPinFailureReason.invalidPin(e.body['attempts_remaining']));
+          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
+        );
       }
       if (e.status == 'pin-complexity') {
         return PinVerificationStatus.failure(
-            const PivPinFailureReason.weakPin());
+          const PivPinFailureReason.weakPin(),
+        );
       }
       rethrow;
     } finally {
@@ -316,7 +325,8 @@ final _shownSlots = SlotId.values.map((slot) => slot.id).toList();
 
 final desktopPivSlots = AsyncNotifierProvider.autoDispose
     .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
-        _DesktopPivSlotsNotifier.new);
+      _DesktopPivSlotsNotifier.new,
+    );
 
 class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
   late RpcNodeSession _session;
@@ -326,8 +336,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
     _session = ref.watch(_sessionProvider(devicePath));
 
     final result = await _session.command('get', target: ['slots']);
-    return (result['children'] as Map<String, dynamic>)
-        .values
+    return (result['children'] as Map<String, dynamic>).values
         .where((e) => _shownSlots.contains(e['slot']))
         .map((e) => PivSlot.fromJson(e))
         .toList();
@@ -335,23 +344,30 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey) async {
-    await _session.command('delete',
-        target: ['slots', slot.hexId],
-        params: {'delete_cert': deleteCert, 'delete_key': deleteKey});
+    await _session.command(
+      'delete',
+      target: ['slots', slot.hexId],
+      params: {'delete_cert': deleteCert, 'delete_key': deleteKey},
+    );
     ref.invalidateSelf();
   }
 
   @override
-  Future<void> moveKey(SlotId source, SlotId destination, bool overwriteKey,
-      bool includeCertificate) async {
-    await _session.command('move_key', target: [
-      'slots',
-      source.hexId
-    ], params: {
-      'destination': destination.hexId,
-      'overwrite_key': overwriteKey,
-      'include_certificate': includeCertificate
-    });
+  Future<void> moveKey(
+    SlotId source,
+    SlotId destination,
+    bool overwriteKey,
+    bool includeCertificate,
+  ) async {
+    await _session.command(
+      'move_key',
+      target: ['slots', source.hexId],
+      params: {
+        'destination': destination.hexId,
+        'overwrite_key': overwriteKey,
+        'include_certificate': includeCertificate,
+      },
+    );
     ref.invalidateSelf();
   }
 
@@ -371,49 +387,35 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
     try {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
-          controller = await withContext(
-            (context) async {
-              final l10n = AppLocalizations.of(context);
-              return promptUserInteraction(
-                context,
-                icon: const Icon(Symbols.touch_app),
-                title: l10n.s_touch_required,
-                description: l10n.l_touch_button_now,
-              );
-            },
-          );
+          controller = await withContext((context) async {
+            final l10n = AppLocalizations.of(context);
+            return promptUserInteraction(
+              context,
+              icon: const Icon(Symbols.touch_app),
+              title: l10n.s_touch_required,
+              description: l10n.l_touch_button_now,
+            );
+          });
         }
       });
 
       final (type, subject, validFrom, validTo) = parameters.when(
-        publicKey: () => (
-          GenerateType.publicKey,
-          null,
-          null,
-          null,
-        ),
-        certificate: (subject, validFrom, validTo) => (
-          GenerateType.certificate,
-          subject,
-          dateFormatter.format(validFrom),
-          dateFormatter.format(validTo),
-        ),
-        csr: (subject) => (
-          GenerateType.csr,
-          subject,
-          null,
-          null,
-        ),
+        publicKey: () => (GenerateType.publicKey, null, null, null),
+        certificate:
+            (subject, validFrom, validTo) => (
+              GenerateType.certificate,
+              subject,
+              dateFormatter.format(validFrom),
+              dateFormatter.format(validTo),
+            ),
+        csr: (subject) => (GenerateType.csr, subject, null, null),
       );
 
       final pin = ref.read(_pinProvider(_session.devicePath));
 
       final result = await _session.command(
         'generate',
-        target: [
-          'slots',
-          slot.hexId,
-        ],
+        target: ['slots', slot.hexId],
         params: {
           'key_type': keyType.value,
           'pin_policy': pinPolicy.value,
@@ -429,23 +431,26 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
       ref.invalidateSelf();
 
-      return PivGenerateResult.fromJson(
-          {'generate_type': type.name, ...result});
+      return PivGenerateResult.fromJson({
+        'generate_type': type.name,
+        ...result,
+      });
     } finally {
       controller?.close();
     }
   }
 
   @override
-  Future<PivExamineResult> examine(SlotId slot, String data,
-      {String? password}) async {
-    final result = await _session.command('examine_file', target: [
-      'slots',
-      slot.hexId
-    ], params: {
-      'data': data,
-      'password': password,
-    });
+  Future<PivExamineResult> examine(
+    SlotId slot,
+    String data, {
+    String? password,
+  }) async {
+    final result = await _session.command(
+      'examine_file',
+      target: ['slots', slot.hexId],
+      params: {'data': data, 'password': password},
+    );
 
     if (result['status']) {
       return PivExamineResult.fromJson({'runtimeType': 'result', ...result});
@@ -456,26 +461,31 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<bool> validateRfc4514(String value) async {
-    final result = await _session.command('validate_rfc4514', params: {
-      'data': value,
-    });
+    final result = await _session.command(
+      'validate_rfc4514',
+      params: {'data': value},
+    );
     return result['status'];
   }
 
   @override
-  Future<PivImportResult> import(SlotId slot, String data,
-      {String? password,
-      PinPolicy pinPolicy = PinPolicy.dfault,
-      TouchPolicy touchPolicy = TouchPolicy.dfault}) async {
-    final result = await _session.command('import_file', target: [
-      'slots',
-      slot.hexId,
-    ], params: {
-      'data': data,
-      'password': password,
-      'pin_policy': pinPolicy.value,
-      'touch_policy': touchPolicy.value,
-    });
+  Future<PivImportResult> import(
+    SlotId slot,
+    String data, {
+    String? password,
+    PinPolicy pinPolicy = PinPolicy.dfault,
+    TouchPolicy touchPolicy = TouchPolicy.dfault,
+  }) async {
+    final result = await _session.command(
+      'import_file',
+      target: ['slots', slot.hexId],
+      params: {
+        'data': data,
+        'password': password,
+        'pin_policy': pinPolicy.value,
+        'touch_policy': touchPolicy.value,
+      },
+    );
 
     ref.invalidateSelf();
     return PivImportResult.fromJson(result);
@@ -483,10 +493,7 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
-    final result = await _session.command('get', target: [
-      'slots',
-      slot.hexId,
-    ]);
+    final result = await _session.command('get', target: ['slots', slot.hexId]);
     final data = result['data'];
     final metadata = data['metadata'];
     return (

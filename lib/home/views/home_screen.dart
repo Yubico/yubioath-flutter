@@ -52,8 +52,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final serial = widget.deviceData.info.serial;
     final keyCustomization = ref.watch(keyCustomizationManagerProvider)[serial];
-    final enabledCapabilities = widget.deviceData.info.config
-            .enabledCapabilities[widget.deviceData.node.transport] ??
+    final enabledCapabilities =
+        widget.deviceData.info.config.enabledCapabilities[widget
+            .deviceData
+            .node
+            .transport] ??
         0;
     final primaryColor = ref.watch(primaryColorProvider);
 
@@ -69,8 +72,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return AppPage(
       title: hide ? null : l10n.s_home,
       delayedContent: hide,
-      keyActionsBuilder: (context) =>
-          homeBuildActions(context, widget.deviceData, ref),
+      keyActionsBuilder:
+          (context) => homeBuildActions(context, widget.deviceData, ref),
       builder: (context, expanded) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -91,10 +94,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Wrap(
                           spacing: 4,
                           runSpacing: 8,
-                          children: Capability.values
-                              .where((c) => enabledCapabilities & c.value != 0)
-                              .map((c) => CapabilityBadge(c, noTooltip: true))
-                              .toList(),
+                          children:
+                              Capability.values
+                                  .where(
+                                    (c) => enabledCapabilities & c.value != 0,
+                                  )
+                                  .map(
+                                    (c) => CapabilityBadge(c, noTooltip: true),
+                                  )
+                                  .toList(),
                         ),
                         if (widget.deviceData.info.fipsCapable != 0)
                           Padding(
@@ -119,9 +127,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                 ],
-              )
+              ),
             ],
           ),
         );
@@ -147,16 +155,13 @@ class _FipsLegend extends StatelessWidget {
                   alignment: PlaceholderAlignment.middle,
                   child: Padding(
                     padding: EdgeInsets.only(right: 4),
-                    child: Icon(
-                      Symbols.shield,
-                      size: 12,
-                      fill: 0.0,
-                    ),
+                    child: Icon(Symbols.shield, size: 12, fill: 0.0),
                   ),
                 ),
                 TextSpan(
-                    text: l10n.l_fips_capable,
-                    style: Theme.of(context).textTheme.bodySmall),
+                  text: l10n.l_fips_capable,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
           ),
@@ -167,16 +172,13 @@ class _FipsLegend extends StatelessWidget {
                   alignment: PlaceholderAlignment.middle,
                   child: Padding(
                     padding: EdgeInsets.only(right: 4),
-                    child: Icon(
-                      Symbols.shield,
-                      size: 12,
-                      fill: 1.0,
-                    ),
+                    child: Icon(Symbols.shield, size: 12, fill: 1.0),
                   ),
                 ),
                 TextSpan(
-                    text: l10n.l_fips_approved,
-                    style: Theme.of(context).textTheme.bodySmall),
+                  text: l10n.l_fips_approved,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
           ),
@@ -239,8 +241,9 @@ class _DeviceContent extends ConsumerWidget {
                   Column(
                     children: [
                       PopupMenuButton(
-                        popUpAnimationStyle:
-                            AnimationStyle(duration: Duration.zero),
+                        popUpAnimationStyle: AnimationStyle(
+                          duration: Duration.zero,
+                        ),
                         menuPadding: EdgeInsets.zero,
                         tooltip: l10n.s_set_color,
                         itemBuilder: (context) {
@@ -264,16 +267,18 @@ class _DeviceContent extends ConsumerWidget {
                                       if (isAndroid &&
                                           ref.read(androidSdkVersionProvider) >=
                                               31)
-                                        Colors.lightGreen
-                                    ].map((e) => _ColorButton(
-                                          color: e,
-                                          isSelected:
-                                              customColor?.toInt32 == e.toInt32,
-                                          onPressed: () {
-                                            _updateColor(e, ref, serial);
-                                            Navigator.of(context).pop();
-                                          },
-                                        )),
+                                        Colors.lightGreen,
+                                    ].map(
+                                      (e) => _ColorButton(
+                                        color: e,
+                                        isSelected:
+                                            customColor?.toInt32 == e.toInt32,
+                                        onPressed: () {
+                                          _updateColor(e, ref, serial);
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ),
 
                                     // "use default color" button
                                     RawMaterialButton(
@@ -282,28 +287,32 @@ class _DeviceContent extends ConsumerWidget {
                                         Navigator.of(context).pop();
                                       },
                                       constraints: const BoxConstraints(
-                                          minWidth: 26.0, minHeight: 26.0),
+                                        minWidth: 26.0,
+                                        minHeight: 26.0,
+                                      ),
                                       fillColor: defaultColor,
                                       hoverColor: Colors.black12,
                                       shape: const CircleBorder(),
                                       child: Icon(
-                                          customColor == null
-                                              ? Symbols.circle
-                                              : Symbols.clear,
-                                          fill: 1,
-                                          size: 16,
-                                          weight: 700,
-                                          opticalSize: 20,
-                                          color: defaultColor
-                                                      .computeLuminance() >
-                                                  0.7
-                                              ? Colors.grey // for bright colors
-                                              : Colors.white),
+                                        customColor == null
+                                            ? Symbols.circle
+                                            : Symbols.clear,
+                                        fill: 1,
+                                        size: 16,
+                                        weight: 700,
+                                        opticalSize: 20,
+                                        color:
+                                            defaultColor.computeLuminance() >
+                                                    0.7
+                                                ? Colors
+                                                    .grey // for bright colors
+                                                : Colors.white,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                            )
+                            ),
                           ];
                         },
                         icon: Icon(
@@ -315,44 +324,41 @@ class _DeviceContent extends ConsumerWidget {
                         height: 3.0,
                         width: 24.0,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withValues(alpha: 0.9)),
-                      )
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.9),
+                        ),
+                      ),
                     ],
                   ),
                 ],
-              )
-            ]
+              ),
+            ],
           ],
         ),
-        const SizedBox(
-          height: 12,
-        ),
+        const SizedBox(height: 12),
         if (serial != null)
           Text(
             l10n.l_serial_number(serial),
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.titleSmall?.apply(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         if (version != const Version(0, 0, 0))
           Text(
             l10n.l_firmware_version(version),
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.titleSmall?.apply(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         if (deviceData.info.pinComplexity)
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: RichText(
-              text: TextSpan(children: [
-                WidgetSpan(
+              text: TextSpan(
+                children: [
+                  WidgetSpan(
                     alignment: PlaceholderAlignment.middle,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 4),
@@ -361,13 +367,16 @@ class _DeviceContent extends ConsumerWidget {
                         size: 16,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                    )),
-                TextSpan(
-                  text: l10n.l_pin_complexity,
-                  style: Theme.of(context).textTheme.titleSmall?.apply(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-              ]),
+                    ),
+                  ),
+                  TextSpan(
+                    text: l10n.l_pin_complexity,
+                    style: Theme.of(context).textTheme.titleSmall?.apply(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
       ],
@@ -384,12 +393,14 @@ class _DeviceContent extends ConsumerWidget {
   }
 
   Future<void> _showManageLabelDialog(
-      KeyCustomization keyCustomization, BuildContext context) async {
+    KeyCustomization keyCustomization,
+    BuildContext context,
+  ) async {
     await showBlurDialog(
       context: context,
-      builder: (context) => ManageLabelDialog(
-        initialCustomization: keyCustomization,
-      ),
+      builder:
+          (context) =>
+              ManageLabelDialog(initialCustomization: keyCustomization),
     );
   }
 }
@@ -445,7 +456,7 @@ class _HeroAvatar extends StatelessWidget {
             color.withValues(alpha: 0.6),
             color.withValues(alpha: 0.25),
             (DialogTheme.of(context).backgroundColor ??
-                    theme.dialogBackgroundColor)
+                    theme.colorScheme.surfaceContainerHigh)
                 .withValues(alpha: 0),
           ],
         ),

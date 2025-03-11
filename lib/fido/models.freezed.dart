@@ -12,7 +12,8 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 FidoState _$FidoStateFromJson(Map<String, dynamic> json) {
   return _FidoState.fromJson(json);
@@ -61,20 +62,26 @@ class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
     Object? unlocked = null,
     Object? pinRetries = freezed,
   }) {
-    return _then(_value.copyWith(
-      info: null == info
-          ? _value.info
-          : info // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>,
-      unlocked: null == unlocked
-          ? _value.unlocked
-          : unlocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      pinRetries: freezed == pinRetries
-          ? _value.pinRetries
-          : pinRetries // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            info:
+                null == info
+                    ? _value.info
+                    : info // ignore: cast_nullable_to_non_nullable
+                        as Map<String, dynamic>,
+            unlocked:
+                null == unlocked
+                    ? _value.unlocked
+                    : unlocked // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            pinRetries:
+                freezed == pinRetries
+                    ? _value.pinRetries
+                    : pinRetries // ignore: cast_nullable_to_non_nullable
+                        as int?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -82,8 +89,9 @@ class _$FidoStateCopyWithImpl<$Res, $Val extends FidoState>
 abstract class _$$FidoStateImplCopyWith<$Res>
     implements $FidoStateCopyWith<$Res> {
   factory _$$FidoStateImplCopyWith(
-          _$FidoStateImpl value, $Res Function(_$FidoStateImpl) then) =
-      __$$FidoStateImplCopyWithImpl<$Res>;
+    _$FidoStateImpl value,
+    $Res Function(_$FidoStateImpl) then,
+  ) = __$$FidoStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, dynamic> info, bool unlocked, int? pinRetries});
@@ -94,8 +102,9 @@ class __$$FidoStateImplCopyWithImpl<$Res>
     extends _$FidoStateCopyWithImpl<$Res, _$FidoStateImpl>
     implements _$$FidoStateImplCopyWith<$Res> {
   __$$FidoStateImplCopyWithImpl(
-      _$FidoStateImpl _value, $Res Function(_$FidoStateImpl) _then)
-      : super(_value, _then);
+    _$FidoStateImpl _value,
+    $Res Function(_$FidoStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FidoState
   /// with the given fields replaced by the non-null parameter values.
@@ -106,32 +115,37 @@ class __$$FidoStateImplCopyWithImpl<$Res>
     Object? unlocked = null,
     Object? pinRetries = freezed,
   }) {
-    return _then(_$FidoStateImpl(
-      info: null == info
-          ? _value._info
-          : info // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>,
-      unlocked: null == unlocked
-          ? _value.unlocked
-          : unlocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      pinRetries: freezed == pinRetries
-          ? _value.pinRetries
-          : pinRetries // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$FidoStateImpl(
+        info:
+            null == info
+                ? _value._info
+                : info // ignore: cast_nullable_to_non_nullable
+                    as Map<String, dynamic>,
+        unlocked:
+            null == unlocked
+                ? _value.unlocked
+                : unlocked // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        pinRetries:
+            freezed == pinRetries
+                ? _value.pinRetries
+                : pinRetries // ignore: cast_nullable_to_non_nullable
+                    as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FidoStateImpl extends _FidoState {
-  _$FidoStateImpl(
-      {required final Map<String, dynamic> info,
-      required this.unlocked,
-      this.pinRetries})
-      : _info = info,
-        super._();
+  _$FidoStateImpl({
+    required final Map<String, dynamic> info,
+    required this.unlocked,
+    this.pinRetries,
+  }) : _info = info,
+       super._();
 
   factory _$FidoStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$FidoStateImplFromJson(json);
@@ -168,8 +182,12 @@ class _$FidoStateImpl extends _FidoState {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_info), unlocked, pinRetries);
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_info),
+    unlocked,
+    pinRetries,
+  );
 
   /// Create a copy of FidoState
   /// with the given fields replaced by the non-null parameter values.
@@ -181,17 +199,16 @@ class _$FidoStateImpl extends _FidoState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FidoStateImplToJson(
-      this,
-    );
+    return _$$FidoStateImplToJson(this);
   }
 }
 
 abstract class _FidoState extends FidoState {
-  factory _FidoState(
-      {required final Map<String, dynamic> info,
-      required final bool unlocked,
-      final int? pinRetries}) = _$FidoStateImpl;
+  factory _FidoState({
+    required final Map<String, dynamic> info,
+    required final bool unlocked,
+    final int? pinRetries,
+  }) = _$FidoStateImpl;
   _FidoState._() : super._();
 
   factory _FidoState.fromJson(Map<String, dynamic> json) =
@@ -218,40 +235,34 @@ mixin _$PinResult {
   TResult when<TResult extends Object?>({
     required TResult Function() success,
     required TResult Function(FidoPinFailureReason reason) failed,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
     TResult? Function(FidoPinFailureReason reason)? failed,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
     TResult Function(FidoPinFailureReason reason)? failed,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_PinSuccess value) success,
     required TResult Function(_PinFailure value) failed,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_PinSuccess value)? success,
     TResult? Function(_PinFailure value)? failed,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_PinSuccess value)? success,
     TResult Function(_PinFailure value)? failed,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -277,8 +288,9 @@ class _$PinResultCopyWithImpl<$Res, $Val extends PinResult>
 /// @nodoc
 abstract class _$$PinSuccessImplCopyWith<$Res> {
   factory _$$PinSuccessImplCopyWith(
-          _$PinSuccessImpl value, $Res Function(_$PinSuccessImpl) then) =
-      __$$PinSuccessImplCopyWithImpl<$Res>;
+    _$PinSuccessImpl value,
+    $Res Function(_$PinSuccessImpl) then,
+  ) = __$$PinSuccessImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
@@ -286,8 +298,9 @@ class __$$PinSuccessImplCopyWithImpl<$Res>
     extends _$PinResultCopyWithImpl<$Res, _$PinSuccessImpl>
     implements _$$PinSuccessImplCopyWith<$Res> {
   __$$PinSuccessImplCopyWithImpl(
-      _$PinSuccessImpl _value, $Res Function(_$PinSuccessImpl) _then)
-      : super(_value, _then);
+    _$PinSuccessImpl _value,
+    $Res Function(_$PinSuccessImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PinResult
   /// with the given fields replaced by the non-null parameter values.
@@ -382,8 +395,9 @@ abstract class _PinSuccess implements PinResult {
 /// @nodoc
 abstract class _$$PinFailureImplCopyWith<$Res> {
   factory _$$PinFailureImplCopyWith(
-          _$PinFailureImpl value, $Res Function(_$PinFailureImpl) then) =
-      __$$PinFailureImplCopyWithImpl<$Res>;
+    _$PinFailureImpl value,
+    $Res Function(_$PinFailureImpl) then,
+  ) = __$$PinFailureImplCopyWithImpl<$Res>;
   @useResult
   $Res call({FidoPinFailureReason reason});
 
@@ -395,22 +409,23 @@ class __$$PinFailureImplCopyWithImpl<$Res>
     extends _$PinResultCopyWithImpl<$Res, _$PinFailureImpl>
     implements _$$PinFailureImplCopyWith<$Res> {
   __$$PinFailureImplCopyWithImpl(
-      _$PinFailureImpl _value, $Res Function(_$PinFailureImpl) _then)
-      : super(_value, _then);
+    _$PinFailureImpl _value,
+    $Res Function(_$PinFailureImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PinResult
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? reason = null,
-  }) {
-    return _then(_$PinFailureImpl(
-      null == reason
-          ? _value.reason
-          : reason // ignore: cast_nullable_to_non_nullable
-              as FidoPinFailureReason,
-    ));
+  $Res call({Object? reason = null}) {
+    return _then(
+      _$PinFailureImpl(
+        null == reason
+            ? _value.reason
+            : reason // ignore: cast_nullable_to_non_nullable
+                as FidoPinFailureReason,
+      ),
+    );
   }
 
   /// Create a copy of PinResult
@@ -537,52 +552,49 @@ mixin _$FidoPinFailureReason {
   TResult when<TResult extends Object?>({
     required TResult Function(int retries, bool authBlocked) invalidPin,
     required TResult Function() weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int retries, bool authBlocked)? invalidPin,
     TResult? Function()? weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int retries, bool authBlocked)? invalidPin,
     TResult Function()? weakPin,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(FidoInvalidPin value) invalidPin,
     required TResult Function(FidoWeakPin value) weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FidoInvalidPin value)? invalidPin,
     TResult? Function(FidoWeakPin value)? weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FidoInvalidPin value)? invalidPin,
     TResult Function(FidoWeakPin value)? weakPin,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $FidoPinFailureReasonCopyWith<$Res> {
-  factory $FidoPinFailureReasonCopyWith(FidoPinFailureReason value,
-          $Res Function(FidoPinFailureReason) then) =
-      _$FidoPinFailureReasonCopyWithImpl<$Res, FidoPinFailureReason>;
+  factory $FidoPinFailureReasonCopyWith(
+    FidoPinFailureReason value,
+    $Res Function(FidoPinFailureReason) then,
+  ) = _$FidoPinFailureReasonCopyWithImpl<$Res, FidoPinFailureReason>;
 }
 
 /// @nodoc
-class _$FidoPinFailureReasonCopyWithImpl<$Res,
-        $Val extends FidoPinFailureReason>
+class _$FidoPinFailureReasonCopyWithImpl<
+  $Res,
+  $Val extends FidoPinFailureReason
+>
     implements $FidoPinFailureReasonCopyWith<$Res> {
   _$FidoPinFailureReasonCopyWithImpl(this._value, this._then);
 
@@ -597,9 +609,10 @@ class _$FidoPinFailureReasonCopyWithImpl<$Res,
 
 /// @nodoc
 abstract class _$$FidoInvalidPinImplCopyWith<$Res> {
-  factory _$$FidoInvalidPinImplCopyWith(_$FidoInvalidPinImpl value,
-          $Res Function(_$FidoInvalidPinImpl) then) =
-      __$$FidoInvalidPinImplCopyWithImpl<$Res>;
+  factory _$$FidoInvalidPinImplCopyWith(
+    _$FidoInvalidPinImpl value,
+    $Res Function(_$FidoInvalidPinImpl) then,
+  ) = __$$FidoInvalidPinImplCopyWithImpl<$Res>;
   @useResult
   $Res call({int retries, bool authBlocked});
 }
@@ -609,27 +622,27 @@ class __$$FidoInvalidPinImplCopyWithImpl<$Res>
     extends _$FidoPinFailureReasonCopyWithImpl<$Res, _$FidoInvalidPinImpl>
     implements _$$FidoInvalidPinImplCopyWith<$Res> {
   __$$FidoInvalidPinImplCopyWithImpl(
-      _$FidoInvalidPinImpl _value, $Res Function(_$FidoInvalidPinImpl) _then)
-      : super(_value, _then);
+    _$FidoInvalidPinImpl _value,
+    $Res Function(_$FidoInvalidPinImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FidoPinFailureReason
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? retries = null,
-    Object? authBlocked = null,
-  }) {
-    return _then(_$FidoInvalidPinImpl(
-      null == retries
-          ? _value.retries
-          : retries // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == authBlocked
-          ? _value.authBlocked
-          : authBlocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+  $Res call({Object? retries = null, Object? authBlocked = null}) {
+    return _then(
+      _$FidoInvalidPinImpl(
+        null == retries
+            ? _value.retries
+            : retries // ignore: cast_nullable_to_non_nullable
+                as int,
+        null == authBlocked
+            ? _value.authBlocked
+            : authBlocked // ignore: cast_nullable_to_non_nullable
+                as bool,
+      ),
+    );
   }
 }
 
@@ -668,7 +681,9 @@ class _$FidoInvalidPinImpl implements FidoInvalidPin {
   @pragma('vm:prefer-inline')
   _$$FidoInvalidPinImplCopyWith<_$FidoInvalidPinImpl> get copyWith =>
       __$$FidoInvalidPinImplCopyWithImpl<_$FidoInvalidPinImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   @optionalTypeArgs
@@ -750,8 +765,9 @@ abstract class FidoInvalidPin implements FidoPinFailureReason {
 /// @nodoc
 abstract class _$$FidoWeakPinImplCopyWith<$Res> {
   factory _$$FidoWeakPinImplCopyWith(
-          _$FidoWeakPinImpl value, $Res Function(_$FidoWeakPinImpl) then) =
-      __$$FidoWeakPinImplCopyWithImpl<$Res>;
+    _$FidoWeakPinImpl value,
+    $Res Function(_$FidoWeakPinImpl) then,
+  ) = __$$FidoWeakPinImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
@@ -759,8 +775,9 @@ class __$$FidoWeakPinImplCopyWithImpl<$Res>
     extends _$FidoPinFailureReasonCopyWithImpl<$Res, _$FidoWeakPinImpl>
     implements _$$FidoWeakPinImplCopyWith<$Res> {
   __$$FidoWeakPinImplCopyWithImpl(
-      _$FidoWeakPinImpl _value, $Res Function(_$FidoWeakPinImpl) _then)
-      : super(_value, _then);
+    _$FidoWeakPinImpl _value,
+    $Res Function(_$FidoWeakPinImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FidoPinFailureReason
   /// with the given fields replaced by the non-null parameter values.
@@ -874,8 +891,9 @@ mixin _$Fingerprint {
 /// @nodoc
 abstract class $FingerprintCopyWith<$Res> {
   factory $FingerprintCopyWith(
-          Fingerprint value, $Res Function(Fingerprint) then) =
-      _$FingerprintCopyWithImpl<$Res, Fingerprint>;
+    Fingerprint value,
+    $Res Function(Fingerprint) then,
+  ) = _$FingerprintCopyWithImpl<$Res, Fingerprint>;
   @useResult
   $Res call({String templateId, String? name});
 }
@@ -894,20 +912,22 @@ class _$FingerprintCopyWithImpl<$Res, $Val extends Fingerprint>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? templateId = null,
-    Object? name = freezed,
-  }) {
-    return _then(_value.copyWith(
-      templateId: null == templateId
-          ? _value.templateId
-          : templateId // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  $Res call({Object? templateId = null, Object? name = freezed}) {
+    return _then(
+      _value.copyWith(
+            templateId:
+                null == templateId
+                    ? _value.templateId
+                    : templateId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            name:
+                freezed == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -915,8 +935,9 @@ class _$FingerprintCopyWithImpl<$Res, $Val extends Fingerprint>
 abstract class _$$FingerprintImplCopyWith<$Res>
     implements $FingerprintCopyWith<$Res> {
   factory _$$FingerprintImplCopyWith(
-          _$FingerprintImpl value, $Res Function(_$FingerprintImpl) then) =
-      __$$FingerprintImplCopyWithImpl<$Res>;
+    _$FingerprintImpl value,
+    $Res Function(_$FingerprintImpl) then,
+  ) = __$$FingerprintImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String templateId, String? name});
@@ -927,27 +948,27 @@ class __$$FingerprintImplCopyWithImpl<$Res>
     extends _$FingerprintCopyWithImpl<$Res, _$FingerprintImpl>
     implements _$$FingerprintImplCopyWith<$Res> {
   __$$FingerprintImplCopyWithImpl(
-      _$FingerprintImpl _value, $Res Function(_$FingerprintImpl) _then)
-      : super(_value, _then);
+    _$FingerprintImpl _value,
+    $Res Function(_$FingerprintImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Fingerprint
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? templateId = null,
-    Object? name = freezed,
-  }) {
-    return _then(_$FingerprintImpl(
-      null == templateId
-          ? _value.templateId
-          : templateId // ignore: cast_nullable_to_non_nullable
-              as String,
-      freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+  $Res call({Object? templateId = null, Object? name = freezed}) {
+    return _then(
+      _$FingerprintImpl(
+        null == templateId
+            ? _value.templateId
+            : templateId // ignore: cast_nullable_to_non_nullable
+                as String,
+        freezed == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                as String?,
+      ),
+    );
   }
 }
 
@@ -993,9 +1014,7 @@ class _$FingerprintImpl extends _Fingerprint {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FingerprintImplToJson(
-      this,
-    );
+    return _$$FingerprintImplToJson(this);
   }
 }
 
@@ -1027,52 +1046,47 @@ mixin _$FingerprintEvent {
     required TResult Function(int remaining) capture,
     required TResult Function(Fingerprint fingerprint) complete,
     required TResult Function(int code) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int remaining)? capture,
     TResult? Function(Fingerprint fingerprint)? complete,
     TResult? Function(int code)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int remaining)? capture,
     TResult Function(Fingerprint fingerprint)? complete,
     TResult Function(int code)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_EventCapture value) capture,
     required TResult Function(_EventComplete value) complete,
     required TResult Function(_EventError value) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_EventCapture value)? capture,
     TResult? Function(_EventComplete value)? complete,
     TResult? Function(_EventError value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_EventCapture value)? capture,
     TResult Function(_EventComplete value)? complete,
     TResult Function(_EventError value)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $FingerprintEventCopyWith<$Res> {
   factory $FingerprintEventCopyWith(
-          FingerprintEvent value, $Res Function(FingerprintEvent) then) =
-      _$FingerprintEventCopyWithImpl<$Res, FingerprintEvent>;
+    FingerprintEvent value,
+    $Res Function(FingerprintEvent) then,
+  ) = _$FingerprintEventCopyWithImpl<$Res, FingerprintEvent>;
 }
 
 /// @nodoc
@@ -1092,8 +1106,9 @@ class _$FingerprintEventCopyWithImpl<$Res, $Val extends FingerprintEvent>
 /// @nodoc
 abstract class _$$EventCaptureImplCopyWith<$Res> {
   factory _$$EventCaptureImplCopyWith(
-          _$EventCaptureImpl value, $Res Function(_$EventCaptureImpl) then) =
-      __$$EventCaptureImplCopyWithImpl<$Res>;
+    _$EventCaptureImpl value,
+    $Res Function(_$EventCaptureImpl) then,
+  ) = __$$EventCaptureImplCopyWithImpl<$Res>;
   @useResult
   $Res call({int remaining});
 }
@@ -1103,22 +1118,23 @@ class __$$EventCaptureImplCopyWithImpl<$Res>
     extends _$FingerprintEventCopyWithImpl<$Res, _$EventCaptureImpl>
     implements _$$EventCaptureImplCopyWith<$Res> {
   __$$EventCaptureImplCopyWithImpl(
-      _$EventCaptureImpl _value, $Res Function(_$EventCaptureImpl) _then)
-      : super(_value, _then);
+    _$EventCaptureImpl _value,
+    $Res Function(_$EventCaptureImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FingerprintEvent
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? remaining = null,
-  }) {
-    return _then(_$EventCaptureImpl(
-      null == remaining
-          ? _value.remaining
-          : remaining // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+  $Res call({Object? remaining = null}) {
+    return _then(
+      _$EventCaptureImpl(
+        null == remaining
+            ? _value.remaining
+            : remaining // ignore: cast_nullable_to_non_nullable
+                as int,
+      ),
+    );
   }
 }
 
@@ -1239,8 +1255,9 @@ abstract class _EventCapture implements FingerprintEvent {
 /// @nodoc
 abstract class _$$EventCompleteImplCopyWith<$Res> {
   factory _$$EventCompleteImplCopyWith(
-          _$EventCompleteImpl value, $Res Function(_$EventCompleteImpl) then) =
-      __$$EventCompleteImplCopyWithImpl<$Res>;
+    _$EventCompleteImpl value,
+    $Res Function(_$EventCompleteImpl) then,
+  ) = __$$EventCompleteImplCopyWithImpl<$Res>;
   @useResult
   $Res call({Fingerprint fingerprint});
 
@@ -1252,22 +1269,23 @@ class __$$EventCompleteImplCopyWithImpl<$Res>
     extends _$FingerprintEventCopyWithImpl<$Res, _$EventCompleteImpl>
     implements _$$EventCompleteImplCopyWith<$Res> {
   __$$EventCompleteImplCopyWithImpl(
-      _$EventCompleteImpl _value, $Res Function(_$EventCompleteImpl) _then)
-      : super(_value, _then);
+    _$EventCompleteImpl _value,
+    $Res Function(_$EventCompleteImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FingerprintEvent
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? fingerprint = null,
-  }) {
-    return _then(_$EventCompleteImpl(
-      null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
-              as Fingerprint,
-    ));
+  $Res call({Object? fingerprint = null}) {
+    return _then(
+      _$EventCompleteImpl(
+        null == fingerprint
+            ? _value.fingerprint
+            : fingerprint // ignore: cast_nullable_to_non_nullable
+                as Fingerprint,
+      ),
+    );
   }
 
   /// Create a copy of FingerprintEvent
@@ -1398,8 +1416,9 @@ abstract class _EventComplete implements FingerprintEvent {
 /// @nodoc
 abstract class _$$EventErrorImplCopyWith<$Res> {
   factory _$$EventErrorImplCopyWith(
-          _$EventErrorImpl value, $Res Function(_$EventErrorImpl) then) =
-      __$$EventErrorImplCopyWithImpl<$Res>;
+    _$EventErrorImpl value,
+    $Res Function(_$EventErrorImpl) then,
+  ) = __$$EventErrorImplCopyWithImpl<$Res>;
   @useResult
   $Res call({int code});
 }
@@ -1409,22 +1428,23 @@ class __$$EventErrorImplCopyWithImpl<$Res>
     extends _$FingerprintEventCopyWithImpl<$Res, _$EventErrorImpl>
     implements _$$EventErrorImplCopyWith<$Res> {
   __$$EventErrorImplCopyWithImpl(
-      _$EventErrorImpl _value, $Res Function(_$EventErrorImpl) _then)
-      : super(_value, _then);
+    _$EventErrorImpl _value,
+    $Res Function(_$EventErrorImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FingerprintEvent
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? code = null,
-  }) {
-    return _then(_$EventErrorImpl(
-      null == code
-          ? _value.code
-          : code // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+  $Res call({Object? code = null}) {
+    return _then(
+      _$EventErrorImpl(
+        null == code
+            ? _value.code
+            : code // ignore: cast_nullable_to_non_nullable
+                as int,
+      ),
+    );
   }
 }
 
@@ -1566,15 +1586,17 @@ mixin _$FidoCredential {
 /// @nodoc
 abstract class $FidoCredentialCopyWith<$Res> {
   factory $FidoCredentialCopyWith(
-          FidoCredential value, $Res Function(FidoCredential) then) =
-      _$FidoCredentialCopyWithImpl<$Res, FidoCredential>;
+    FidoCredential value,
+    $Res Function(FidoCredential) then,
+  ) = _$FidoCredentialCopyWithImpl<$Res, FidoCredential>;
   @useResult
-  $Res call(
-      {String rpId,
-      String credentialId,
-      String userId,
-      String userName,
-      String? displayName});
+  $Res call({
+    String rpId,
+    String credentialId,
+    String userId,
+    String userName,
+    String? displayName,
+  });
 }
 
 /// @nodoc
@@ -1598,45 +1620,55 @@ class _$FidoCredentialCopyWithImpl<$Res, $Val extends FidoCredential>
     Object? userName = null,
     Object? displayName = freezed,
   }) {
-    return _then(_value.copyWith(
-      rpId: null == rpId
-          ? _value.rpId
-          : rpId // ignore: cast_nullable_to_non_nullable
-              as String,
-      credentialId: null == credentialId
-          ? _value.credentialId
-          : credentialId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userName: null == userName
-          ? _value.userName
-          : userName // ignore: cast_nullable_to_non_nullable
-              as String,
-      displayName: freezed == displayName
-          ? _value.displayName
-          : displayName // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            rpId:
+                null == rpId
+                    ? _value.rpId
+                    : rpId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            credentialId:
+                null == credentialId
+                    ? _value.credentialId
+                    : credentialId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            userId:
+                null == userId
+                    ? _value.userId
+                    : userId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            userName:
+                null == userName
+                    ? _value.userName
+                    : userName // ignore: cast_nullable_to_non_nullable
+                        as String,
+            displayName:
+                freezed == displayName
+                    ? _value.displayName
+                    : displayName // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$FidoCredentialImplCopyWith<$Res>
     implements $FidoCredentialCopyWith<$Res> {
-  factory _$$FidoCredentialImplCopyWith(_$FidoCredentialImpl value,
-          $Res Function(_$FidoCredentialImpl) then) =
-      __$$FidoCredentialImplCopyWithImpl<$Res>;
+  factory _$$FidoCredentialImplCopyWith(
+    _$FidoCredentialImpl value,
+    $Res Function(_$FidoCredentialImpl) then,
+  ) = __$$FidoCredentialImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String rpId,
-      String credentialId,
-      String userId,
-      String userName,
-      String? displayName});
+  $Res call({
+    String rpId,
+    String credentialId,
+    String userId,
+    String userName,
+    String? displayName,
+  });
 }
 
 /// @nodoc
@@ -1644,8 +1676,9 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
     extends _$FidoCredentialCopyWithImpl<$Res, _$FidoCredentialImpl>
     implements _$$FidoCredentialImplCopyWith<$Res> {
   __$$FidoCredentialImplCopyWithImpl(
-      _$FidoCredentialImpl _value, $Res Function(_$FidoCredentialImpl) _then)
-      : super(_value, _then);
+    _$FidoCredentialImpl _value,
+    $Res Function(_$FidoCredentialImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of FidoCredential
   /// with the given fields replaced by the non-null parameter values.
@@ -1658,40 +1691,48 @@ class __$$FidoCredentialImplCopyWithImpl<$Res>
     Object? userName = null,
     Object? displayName = freezed,
   }) {
-    return _then(_$FidoCredentialImpl(
-      rpId: null == rpId
-          ? _value.rpId
-          : rpId // ignore: cast_nullable_to_non_nullable
-              as String,
-      credentialId: null == credentialId
-          ? _value.credentialId
-          : credentialId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userName: null == userName
-          ? _value.userName
-          : userName // ignore: cast_nullable_to_non_nullable
-              as String,
-      displayName: freezed == displayName
-          ? _value.displayName
-          : displayName // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$FidoCredentialImpl(
+        rpId:
+            null == rpId
+                ? _value.rpId
+                : rpId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        credentialId:
+            null == credentialId
+                ? _value.credentialId
+                : credentialId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        userId:
+            null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        userName:
+            null == userName
+                ? _value.userName
+                : userName // ignore: cast_nullable_to_non_nullable
+                    as String,
+        displayName:
+            freezed == displayName
+                ? _value.displayName
+                : displayName // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FidoCredentialImpl implements _FidoCredential {
-  _$FidoCredentialImpl(
-      {required this.rpId,
-      required this.credentialId,
-      required this.userId,
-      required this.userName,
-      this.displayName});
+  _$FidoCredentialImpl({
+    required this.rpId,
+    required this.credentialId,
+    required this.userId,
+    required this.userName,
+    this.displayName,
+  });
 
   factory _$FidoCredentialImpl.fromJson(Map<String, dynamic> json) =>
       _$$FidoCredentialImplFromJson(json);
@@ -1730,7 +1771,13 @@ class _$FidoCredentialImpl implements _FidoCredential {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, rpId, credentialId, userId, userName, displayName);
+    runtimeType,
+    rpId,
+    credentialId,
+    userId,
+    userName,
+    displayName,
+  );
 
   /// Create a copy of FidoCredential
   /// with the given fields replaced by the non-null parameter values.
@@ -1739,23 +1786,24 @@ class _$FidoCredentialImpl implements _FidoCredential {
   @pragma('vm:prefer-inline')
   _$$FidoCredentialImplCopyWith<_$FidoCredentialImpl> get copyWith =>
       __$$FidoCredentialImplCopyWithImpl<_$FidoCredentialImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FidoCredentialImplToJson(
-      this,
-    );
+    return _$$FidoCredentialImplToJson(this);
   }
 }
 
 abstract class _FidoCredential implements FidoCredential {
-  factory _FidoCredential(
-      {required final String rpId,
-      required final String credentialId,
-      required final String userId,
-      required final String userName,
-      final String? displayName}) = _$FidoCredentialImpl;
+  factory _FidoCredential({
+    required final String rpId,
+    required final String credentialId,
+    required final String userId,
+    required final String userName,
+    final String? displayName,
+  }) = _$FidoCredentialImpl;
 
   factory _FidoCredential.fromJson(Map<String, dynamic> json) =
       _$FidoCredentialImpl.fromJson;

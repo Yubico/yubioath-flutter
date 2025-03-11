@@ -38,7 +38,7 @@ enum GenerateType {
     return switch (this) {
       GenerateType.publicKey => l10n.s_public_key,
       GenerateType.certificate => l10n.l_self_signed_certificate,
-      GenerateType.csr => l10n.l_certificate_signing_request
+      GenerateType.csr => l10n.l_certificate_signing_request,
     };
   }
 }
@@ -81,7 +81,7 @@ enum SlotId {
       SlotId.signature => l10n.s_slot_9c,
       SlotId.keyManagement => l10n.s_slot_9d,
       SlotId.cardAuth => l10n.s_slot_9e,
-      _ => l10n.s_retired_slot
+      _ => l10n.s_retired_slot,
     };
   }
 
@@ -115,7 +115,7 @@ enum PinPolicy {
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       // TODO:
-      _ => name
+      _ => name,
     };
   }
 }
@@ -138,7 +138,7 @@ enum TouchPolicy {
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       // TODO:
-      _ => name
+      _ => name,
     };
   }
 }
@@ -169,7 +169,7 @@ enum KeyType {
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       // TODO: Should these be translatable?
-      _ => name.toUpperCase()
+      _ => name.toUpperCase(),
     };
   }
 }
@@ -192,7 +192,7 @@ enum ManagementKeyType {
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
       // TODO: Should these be translatable?
-      _ => name.toUpperCase()
+      _ => name.toUpperCase(),
     };
   }
 }
@@ -338,9 +338,7 @@ class PivGenerateParameters with _$PivGenerateParameters {
     required DateTime validTo,
   }) = _GenerateCertificate;
 
-  factory PivGenerateParameters.csr({
-    required String subject,
-  }) = _GenerateCsr;
+  factory PivGenerateParameters.csr({required String subject}) = _GenerateCsr;
 }
 
 @freezed

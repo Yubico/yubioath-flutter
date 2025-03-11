@@ -42,11 +42,12 @@ import 'manage_password_dialog.dart';
 ///
 /// Returns a record of the space available for the issuer and account name,
 /// respectively, based on the current state of the credential.
-(int, int) getRemainingKeySpace(
-    {required OathType oathType,
-    required int period,
-    required String issuer,
-    required String name}) {
+(int, int) getRemainingKeySpace({
+  required OathType oathType,
+  required int period,
+  required String issuer,
+  required String name,
+}) {
   int remaining = 64; // The field is 64 bytes in total.
 
   if (oathType == OathType.totp && period != defaultPeriod) {
@@ -93,33 +94,45 @@ Future<void> handleUri(
   } else if (creds.length == 1) {
     await showBlurDialog(
       context: context,
-      builder: (context) => OathAddAccountPage(
-        devicePath,
-        state,
-        credentials: credentials,
-        credentialData: creds[0],
-      ),
+      builder:
+          (context) => OathAddAccountPage(
+            devicePath,
+            state,
+            credentials: credentials,
+            credentialData: creds[0],
+          ),
     );
   } else {
     await showBlurDialog(
       context: context,
-      builder: (context) => OathAddMultiAccountPage(devicePath, state, creds,
-          key: migrateAccountAction),
+      builder:
+          (context) => OathAddMultiAccountPage(
+            devicePath,
+            state,
+            creds,
+            key: migrateAccountAction,
+          ),
     );
   }
 }
 
 const maxQrFileSize = 5 * 1024 * 1024;
 
-Future<String?> handleQrFile(File file, BuildContext context,
-    WithContext withContext, QrScanner qrScanner) async {
+Future<String?> handleQrFile(
+  File file,
+  BuildContext context,
+  WithContext withContext,
+  QrScanner qrScanner,
+) async {
   final l10n = AppLocalizations.of(context);
   if (await file.length() > maxQrFileSize) {
     await withContext((context) async {
       showMessage(
-          context,
-          l10n.l_qr_not_read(
-              l10n.l_qr_file_too_large('${maxQrFileSize / (1024 * 1024)} MB')));
+        context,
+        l10n.l_qr_not_read(
+          l10n.l_qr_file_too_large('${maxQrFileSize / (1024 * 1024)} MB'),
+        ),
+      );
     });
     return null;
   }
@@ -154,8 +167,12 @@ Future<String?> handleQrFile(File file, BuildContext context,
   }
 }
 
-Future<void> addOathAccount(BuildContext context, WidgetRef ref,
-    [DevicePath? devicePath, OathState? oathState]) async {
+Future<void> addOathAccount(
+  BuildContext context,
+  WidgetRef ref, [
+  DevicePath? devicePath,
+  OathState? oathState,
+]) async {
   if (isAndroid) {
     final l10n = AppLocalizations.of(context);
     final withContext = ref.read(withContextProvider);
@@ -164,7 +181,11 @@ Future<void> addOathAccount(BuildContext context, WidgetRef ref,
       try {
         final qrData = await qrScanner.scanQr();
         await AndroidQrScanner.handleScannedData(
-            qrData, withContext, qrScanner, l10n);
+          qrData,
+          withContext,
+          qrScanner,
+          l10n,
+        );
       } on CancellationException catch (_) {
         //ignored - user cancelled
         return;
@@ -177,14 +198,22 @@ Future<void> addOathAccount(BuildContext context, WidgetRef ref,
     final credentials = ref.read(credentialsProvider);
     await showBlurDialog(
       context: context,
-      builder: (context) =>
-          OathAddAccountPage(devicePath, oathState, credentials: credentials),
+      builder:
+          (context) => OathAddAccountPage(
+            devicePath,
+            oathState,
+            credentials: credentials,
+          ),
     );
   }
 }
 
-Future<void> managePassword(BuildContext context, WidgetRef ref,
-    DevicePath devicePath, OathState oathState) async {
+Future<void> managePassword(
+  BuildContext context,
+  WidgetRef ref,
+  DevicePath devicePath,
+  OathState oathState,
+) async {
   await showBlurDialog(
     context: context,
     builder: (context) => ManagePasswordDialog(devicePath, oathState),

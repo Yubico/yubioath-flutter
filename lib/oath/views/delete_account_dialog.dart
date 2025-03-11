@@ -48,12 +48,10 @@ class DeleteAccountDialog extends ConsumerWidget {
               await ref
                   .read(credentialListProvider(devicePath).notifier)
                   .deleteAccount(credential);
-              await ref.read(withContextProvider)(
-                (context) async {
-                  Navigator.of(context).pop(true);
-                  showMessage(context, l10n.s_account_deleted);
-                },
-              );
+              await ref.read(withContextProvider)((context) async {
+                Navigator.of(context).pop(true);
+                showMessage(context, l10n.s_account_deleted);
+              });
             } on CancellationException catch (_) {
               // ignored
             }
@@ -66,15 +64,12 @@ class DeleteAccountDialog extends ConsumerWidget {
         children: [
           Text(
             l10n.p_warning_delete_account,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8.0),
-          Text(
-            l10n.p_warning_disable_credential,
-          ),
+          Text(l10n.p_warning_disable_credential),
         ],
       ),
     );

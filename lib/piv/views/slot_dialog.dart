@@ -52,14 +52,18 @@ class SlotDialog extends ConsumerWidget {
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
 
-    final (fipsCapable, fipsApproved) =
-        keyData.info.getFipsStatus(Capability.piv);
+    final (fipsCapable, fipsApproved) = keyData.info.getFipsStatus(
+      Capability.piv,
+    );
 
     final pivState = ref.watch(pivStateProvider(devicePath)).valueOrNull;
-    final slotData = ref.watch(pivSlotsProvider(devicePath).select((value) =>
-        value.whenOrNull(
-            data: (data) =>
-                data.firstWhere((element) => element.slot == pivSlot))));
+    final slotData = ref.watch(
+      pivSlotsProvider(devicePath).select(
+        (value) => value.whenOrNull(
+          data: (data) => data.firstWhere((element) => element.slot == pivSlot),
+        ),
+      ),
+    );
 
     if (pivState == null || slotData == null) {
       return const FsDialog(child: CircularProgressIndicator());
@@ -70,90 +74,104 @@ class SlotDialog extends ConsumerWidget {
     return PivActions(
       devicePath: devicePath,
       pivState: pivState,
-      builder: (context) => ItemShortcuts(
-        item: slotData,
-        child: FocusScope(
-          autofocus: true,
-          child: FsDialog(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 48, bottom: 32),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          pivSlot.getDisplayName(l10n),
-                          style: textTheme.headlineSmall,
-                          softWrap: true,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: [
-                            if (certInfo != null || metadata != null) ...[
-                              CertInfoTable(
-                                certInfo,
-                                metadata,
-                                alwaysIncludePrivate: pivState.supportsMetadata,
-                                supportsBio: pivState.supportsBio,
-                              ),
-                              if (slotData.publicKeyMatch == false) ...[
-                                const SizedBox(height: 16.0),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Symbols.info,
-                                      size: 16,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        l10n.l_warning_public_key_mismatch,
-                                        style: textTheme.bodySmall?.copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                      ),
+      builder:
+          (context) => ItemShortcuts(
+            item: slotData,
+            child: FocusScope(
+              autofocus: true,
+              child: FsDialog(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 48, bottom: 32),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: Text(
+                              pivSlot.getDisplayName(l10n),
+                              style: textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: [
+                                if (certInfo != null || metadata != null) ...[
+                                  CertInfoTable(
+                                    certInfo,
+                                    metadata,
+                                    alwaysIncludePrivate:
+                                        pivState.supportsMetadata,
+                                    supportsBio: pivState.supportsBio,
+                                  ),
+                                  if (slotData.publicKeyMatch == false) ...[
+                                    const SizedBox(height: 16.0),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Symbols.info,
+                                          size: 16,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            l10n.l_warning_public_key_mismatch,
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                                ),
+                                  if (certInfo == null)
+                                    const SizedBox(height: 16),
+                                ],
+                                if (certInfo == null) ...[
+                                  Text(
+                                    l10n.l_no_certificate,
+                                    softWrap: true,
+                                    textAlign: TextAlign.center,
+                                    style: subtitleStyle,
+                                  ),
+                                ],
                               ],
-                              if (certInfo == null) const SizedBox(height: 16),
-                            ],
-                            if (certInfo == null) ...[
-                              Text(
-                                l10n.l_no_certificate,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                style: subtitleStyle,
-                              ),
-                            ],
-                          ],
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      l10n.s_actions,
+                      actions: buildSlotActions(
+                        pivState,
+                        slotData,
+                        fipsCapable && !fipsApproved,
+                        l10n,
+                      ),
+                    ),
+                  ],
                 ),
-                ActionListSection.fromMenuActions(
-                  context,
-                  l10n.s_actions,
-                  actions: buildSlotActions(
-                      pivState, slotData, fipsCapable && !fipsApproved, l10n),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 }

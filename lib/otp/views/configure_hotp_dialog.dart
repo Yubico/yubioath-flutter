@@ -86,32 +86,43 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
         return;
       }
 
-      final otpNotifier =
-          ref.read(otpStateProvider(widget.devicePath).notifier);
+      final otpNotifier = ref.read(
+        otpStateProvider(widget.devicePath).notifier,
+      );
       final configuration = SlotConfiguration.hotp(
-          key: secret,
-          options: SlotConfigurationOptions(
-              digits8: _digits == 8, appendCr: _appendEnter));
+        key: secret,
+        options: SlotConfigurationOptions(
+          digits8: _digits == 8,
+          appendCr: _appendEnter,
+        ),
+      );
 
       bool configurationSucceeded = false;
       try {
-        await otpNotifier.configureSlot(widget.otpSlot.slot,
-            configuration: configuration);
+        await otpNotifier.configureSlot(
+          widget.otpSlot.slot,
+          configuration: configuration,
+        );
         configurationSucceeded = true;
       } catch (e) {
         _log.error('Failed to program credential', e);
         // Access code required
         await ref.read(withContextProvider)((context) async {
           final result = await showBlurDialog(
-              context: context,
-              builder: (context) => AccessCodeDialog(
-                    devicePath: widget.devicePath,
-                    otpSlot: widget.otpSlot,
-                    action: (accessCode) async {
-                      await otpNotifier.configureSlot(widget.otpSlot.slot,
-                          configuration: configuration, accessCode: accessCode);
-                    },
-                  ));
+            context: context,
+            builder:
+                (context) => AccessCodeDialog(
+                  devicePath: widget.devicePath,
+                  otpSlot: widget.otpSlot,
+                  action: (accessCode) async {
+                    await otpNotifier.configureSlot(
+                      widget.otpSlot.slot,
+                      configuration: configuration,
+                      accessCode: accessCode,
+                    );
+                  },
+                ),
+          );
           configurationSucceeded = result ?? false;
         });
       }
@@ -131,110 +142,128 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
           key: keys.saveButton,
           onPressed: !_validateSecret ? submit : null,
           child: Text(l10n.s_save),
-        )
-      ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppTextField(
-              key: keys.secretField,
-              controller: _secretController,
-              obscureText: _isObscure,
-              autofocus: true,
-              focusNode: _secretFocus,
-              autofillHints: isAndroid ? [] : const [AutofillHints.password],
-              decoration: AppInputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: l10n.s_secret_key,
-                  helperText: '',
-                  // Prevents resizing when errorText shown
-                  errorText: _validateSecret && !secretFormatValid
-                      ? l10n.l_invalid_format_allowed_chars(
-                          Format.base32.allowedCharacters)
-                      : _validateSecret && !secretLengthValid
-                          ? l10n.s_invalid_length
-                          : null,
-                  icon: const Icon(Symbols.key),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isObscure
-                        ? Symbols.visibility
-                        : Symbols.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                    tooltip: _isObscure
-                        ? l10n.s_show_secret_key
-                        : l10n.s_hide_secret_key,
-                  )),
-              textInputAction: TextInputAction.next,
-              onChanged: (value) {
-                setState(() {
-                  _validateSecret = false;
-                });
-              },
-              onSubmitted: (_) {
-                if (!_validateSecret) {
-                  submit();
-                } else {
-                  _secretFocus.requestFocus();
-                }
-              },
-            ).init(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Icon(
-                    Symbols.tune,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                Flexible(
-                  child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.start,
-                    spacing: 4.0,
-                    runSpacing: 8.0,
-                    children: [
-                      FilterChip(
-                        label: Text(l10n.s_append_enter),
-                        tooltip: l10n.l_append_enter_desc,
-                        selected: _appendEnter,
-                        onSelected: (value) {
-                          setState(() {
-                            _appendEnter = value;
-                          });
-                        },
-                      ),
-                      ChoiceFilterChip<int>(
-                          items: _digitsValues,
-                          value: _digits,
-                          selected: _digits != defaultDigits,
-                          itemBuilder: (value) =>
-                              Text(l10n.s_num_digits(value)),
-                          onChanged: (digits) {
-                            setState(() {
-                              _digits = digits;
-                            });
-                          }),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
         ),
-      ),
+      ],
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        AppTextField(
+                          key: keys.secretField,
+                          controller: _secretController,
+                          obscureText: _isObscure,
+                          autofocus: true,
+                          focusNode: _secretFocus,
+                          autofillHints:
+                              isAndroid ? [] : const [AutofillHints.password],
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_secret_key,
+                            helperText: '',
+                            // Prevents resizing when errorText shown
+                            errorText:
+                                _validateSecret && !secretFormatValid
+                                    ? l10n.l_invalid_format_allowed_chars(
+                                      Format.base32.allowedCharacters,
+                                    )
+                                    : _validateSecret && !secretLengthValid
+                                    ? l10n.s_invalid_length
+                                    : null,
+                            icon: const Icon(Symbols.key),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Symbols.visibility
+                                    : Symbols.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                              tooltip:
+                                  _isObscure
+                                      ? l10n.s_show_secret_key
+                                      : l10n.s_hide_secret_key,
+                            ),
+                          ),
+                          textInputAction: TextInputAction.next,
+                          onChanged: (value) {
+                            setState(() {
+                              _validateSecret = false;
+                            });
+                          },
+                          onSubmitted: (_) {
+                            if (!_validateSecret) {
+                              submit();
+                            } else {
+                              _secretFocus.requestFocus();
+                            }
+                          },
+                        ).init(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4.0,
+                              ),
+                              child: Icon(
+                                Symbols.tune,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Flexible(
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.start,
+                                spacing: 4.0,
+                                runSpacing: 8.0,
+                                children: [
+                                  FilterChip(
+                                    label: Text(l10n.s_append_enter),
+                                    tooltip: l10n.l_append_enter_desc,
+                                    selected: _appendEnter,
+                                    onSelected: (value) {
+                                      setState(() {
+                                        _appendEnter = value;
+                                      });
+                                    },
+                                  ),
+                                  ChoiceFilterChip<int>(
+                                    items: _digitsValues,
+                                    value: _digits,
+                                    selected: _digits != defaultDigits,
+                                    itemBuilder:
+                                        (value) =>
+                                            Text(l10n.s_num_digits(value)),
+                                    onChanged: (digits) {
+                                      setState(() {
+                                        _digits = digits;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 }

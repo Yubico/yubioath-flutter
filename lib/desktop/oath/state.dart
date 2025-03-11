@@ -37,24 +37,31 @@ import '../state.dart';
 
 final _log = Logger('desktop.oath.state');
 
-final _sessionProvider =
-    Provider.autoDispose.family<RpcNodeSession, DevicePath>(
-  (ref, devicePath) {
-    // Reset state if the OATH capability is toggled.
-    ref.watch(currentDeviceDataProvider.select((value) =>
-        (value.valueOrNull?.info.config
-                .enabledCapabilities[value.valueOrNull?.node.transport] ??
-            0) &
-        Capability.oath.value));
-    return RpcNodeSession(
-        ref.watch(rpcProvider).requireValue, devicePath, ['ccid', 'oath']);
-  },
-);
+final _sessionProvider = Provider.autoDispose
+    .family<RpcNodeSession, DevicePath>((ref, devicePath) {
+      // Reset state if the OATH capability is toggled.
+      ref.watch(
+        currentDeviceDataProvider.select(
+          (value) =>
+              (value.valueOrNull?.info.config.enabledCapabilities[value
+                      .valueOrNull
+                      ?.node
+                      .transport] ??
+                  0) &
+              Capability.oath.value,
+        ),
+      );
+      return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
+        'ccid',
+        'oath',
+      ]);
+    });
 
 // This remembers the key for all devices for the duration of the process.
 final _oathLockKeyProvider =
     StateNotifierProvider.family<_LockKeyNotifier, String?, DevicePath>(
-        (ref, devicePath) => _LockKeyNotifier(null));
+      (ref, devicePath) => _LockKeyNotifier(null),
+    );
 
 class _LockKeyNotifier extends StateNotifier<String?> {
   _LockKeyNotifier(super.state);
@@ -70,7 +77,8 @@ class _LockKeyNotifier extends StateNotifier<String?> {
 
 final desktopOathState = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
-        _DesktopOathStateNotifier.new);
+      _DesktopOathStateNotifier.new,
+    );
 
 class _DesktopOathStateNotifier extends OathStateNotifier {
   late RpcNodeSession _session;
@@ -85,8 +93,10 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
       ..setErrorHandler('auth-required', (e) async {
         final key = ref.read(_oathLockKeyProvider(_session.devicePath));
         if (key != null) {
-          final result =
-              await _session.command('validate', params: {'key': key});
+          final result = await _session.command(
+            'validate',
+            params: {'key': key},
+          );
           if (result['valid']) {
             ref.invalidateSelf();
             return;
@@ -117,27 +127,30 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 
   @override
   Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
-    var derive =
-        await _session.command('derive', params: {'password': password});
+    var derive = await _session.command(
+      'derive',
+      params: {'password': password},
+    );
     var key = derive['key'];
-    final validate = await _session
-        .command('validate', params: {'key': key, 'remember': remember});
+    final validate = await _session.command(
+      'validate',
+      params: {'key': key, 'remember': remember},
+    );
     final bool valid = validate['valid'];
     final bool remembered = validate['remembered'];
     if (valid) {
       _log.debug('applet unlocked');
       ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
-      setData(state.value!.copyWith(
-        locked: false,
-        remembered: remembered,
-      ));
+      setData(state.value!.copyWith(locked: false, remembered: remembered));
     }
     return (valid, remembered);
   }
 
   Future<bool> _checkPassword(String password) async {
-    var result =
-        await _session.command('validate', params: {'password': password});
+    var result = await _session.command(
+      'validate',
+      params: {'password': password},
+    );
     return result['valid'];
   }
 
@@ -156,12 +169,16 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 
     if (oathState.remembered) {
       // Remembered, keep remembering
-      await _session
-          .command('set_key', params: {'password': password, 'remember': true});
+      await _session.command(
+        'set_key',
+        params: {'password': password, 'remember': true},
+      );
     } else {
       // Not remembered, keep in keyProvider
-      var derive =
-          await _session.command('derive', params: {'password': password});
+      var derive = await _session.command(
+        'derive',
+        params: {'password': password},
+      );
       var key = derive['key'];
       await _session.command('set_key', params: {'key': key});
       ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
@@ -197,24 +214,28 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
 }
 
 final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<DesktopCredentialListNotifier, List<OathPair>?, DevicePath>(
-  (ref, devicePath) {
-    var notifier = DesktopCredentialListNotifier(
-      ref.watch(withContextProvider),
-      ref.watch(_sessionProvider(devicePath)),
-      ref.watch(oathStateProvider(devicePath)
-          .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true)),
-    );
-    ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-      notifier._rescheduleTimer(windowState.active);
-    }, fireImmediately: true);
-    ref.listen(currentSectionProvider, (_, section) {
-      notifier._rescheduleTimer(section == Section.accounts);
-    });
+    .family<DesktopCredentialListNotifier, List<OathPair>?, DevicePath>((
+      ref,
+      devicePath,
+    ) {
+      var notifier = DesktopCredentialListNotifier(
+        ref.watch(withContextProvider),
+        ref.watch(_sessionProvider(devicePath)),
+        ref.watch(
+          oathStateProvider(
+            devicePath,
+          ).select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
+        ),
+      );
+      ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+        notifier._rescheduleTimer(windowState.active);
+      }, fireImmediately: true);
+      ref.listen(currentSectionProvider, (_, section) {
+        notifier._rescheduleTimer(section == Section.accounts);
+      });
 
-    return notifier;
-  },
-);
+      return notifier;
+    });
 
 extension on OathCredential {
   bool get isSteam => issuer == 'Steam' && oathType == OathType.totp;
@@ -226,7 +247,7 @@ String _formatSteam(String response) {
   final offset = int.parse(response.substring(response.length - 1), radix: 16);
   var number =
       int.parse(response.substring(offset * 2, offset * 2 + 8), radix: 16) &
-          0x7fffffff;
+      0x7fffffff;
   var value = '';
   for (var i = 0; i < 5; i++) {
     value += _steamCharTable[number % _steamCharTable.length];
@@ -242,7 +263,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   Timer? _timer;
 
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
-      : super();
+    : super();
 
   void _rescheduleTimer(bool active) {
     if (_locked) return;
@@ -261,8 +282,11 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   @override
-  Future<OathCode> calculate(OathCredential credential,
-      {bool update = true, bool headless = false}) async {
+  Future<OathCode> calculate(
+    OathCredential credential, {
+    bool update = true,
+    bool headless = false,
+  }) async {
     var now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     if (update) {
       // Manually triggered, need to pad timer to avoid immediate expiration
@@ -274,30 +298,31 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     try {
       signaler.signals.listen((signal) async {
         if (signal.status == 'touch') {
-          controller = await _withContext(
-            (context) async {
-              final l10n = AppLocalizations.of(context);
-              return promptUserInteraction(
-                context,
-                icon: const Icon(Symbols.touch_app),
-                title: l10n.s_touch_required,
-                description: l10n.l_touch_button_now,
-                headless: headless,
-              );
-            },
-          );
+          controller = await _withContext((context) async {
+            final l10n = AppLocalizations.of(context);
+            return promptUserInteraction(
+              context,
+              icon: const Icon(Symbols.touch_app),
+              title: l10n.s_touch_required,
+              description: l10n.l_touch_button_now,
+              headless: headless,
+            );
+          });
         }
       });
       if (credential.isSteam) {
         final timeStep = now ~/ 30;
-        var result = await _session.command('calculate',
-            target: ['accounts', credential.id],
-            params: {
-              'challenge': timeStep.toRadixString(16).padLeft(16, '0'),
-            },
-            signal: signaler);
-        code = OathCode(_formatSteam(result['response']), timeStep * 30,
-            (timeStep + 1) * 30);
+        var result = await _session.command(
+          'calculate',
+          target: ['accounts', credential.id],
+          params: {'challenge': timeStep.toRadixString(16).padLeft(16, '0')},
+          signal: signaler,
+        );
+        code = OathCode(
+          _formatSteam(result['response']),
+          timeStep * 30,
+          (timeStep + 1) * 30,
+        );
       } else {
         var result = await _session.command(
           'code',
@@ -320,14 +345,15 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   @override
-  Future<OathCredential> addAccount(Uri otpauth,
-      {bool requireTouch = false}) async {
-    var result = await _session.command('put', target: [
-      'accounts'
-    ], params: {
-      'uri': otpauth.toString(),
-      'require_touch': requireTouch,
-    });
+  Future<OathCredential> addAccount(
+    Uri otpauth, {
+    bool requireTouch = false,
+  }) async {
+    var result = await _session.command(
+      'put',
+      target: ['accounts'],
+      params: {'uri': otpauth.toString(), 'require_touch': requireTouch},
+    );
     refresh();
     return OathCredential.fromJson(result);
   }
@@ -338,24 +364,22 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     String? issuer,
     String name,
   ) async {
-    final result = await _session.command('rename', target: [
-      'accounts',
-      credential.id,
-    ], params: {
-      'issuer': issuer,
-      'name': name,
-    });
+    final result = await _session.command(
+      'rename',
+      target: ['accounts', credential.id],
+      params: {'issuer': issuer, 'name': name},
+    );
     String credentialId = result['credential_id'];
-    final renamedCredential =
-        credential.copyWith(id: credentialId, issuer: issuer, name: name);
+    final renamedCredential = credential.copyWith(
+      id: credentialId,
+      issuer: issuer,
+      name: name,
+    );
     if (mounted) {
       final newState = state!.toList();
       final index = newState.indexWhere((e) => e.credential == credential);
       final oldPair = newState.removeAt(index);
-      newState.add(OathPair(
-        renamedCredential,
-        oldPair.code,
-      ));
+      newState.add(OathPair(renamedCredential, oldPair.code));
       state = newState;
     }
     return renamedCredential;
@@ -378,9 +402,11 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     final pairs = [];
     for (var e in result['entries']) {
       final credential = OathCredential.fromJson(e['credential']);
-      final code = e['code'] == null
-          ? null
-          : credential.isSteam // Steam codes require a re-calculate
+      final code =
+          e['code'] == null
+              ? null
+              : credential
+                  .isSteam // Steam codes require a re-calculate
               ? await calculate(credential, update: false)
               : OathCode.fromJson(e['code']);
       pairs.add(OathPair(credential, code));
@@ -389,8 +415,9 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     if (mounted) {
       final current = state?.toList() ?? [];
       for (var pair in pairs) {
-        final i =
-            current.indexWhere((e) => e.credential.id == pair.credential.id);
+        final i = current.indexWhere(
+          (e) => e.credential.id == pair.credential.id,
+        );
         if (i < 0) {
           current.add(pair);
         } else if (pair.code != null) {
@@ -410,9 +437,11 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
       refresh();
     } else if (mounted) {
       final expirations = (state ?? [])
-          .where((pair) =>
-              pair.credential.oathType == OathType.totp &&
-              !pair.credential.touchRequired)
+          .where(
+            (pair) =>
+                pair.credential.oathType == OathType.totp &&
+                !pair.credential.touchRequired,
+          )
           .map((e) => e.code)
           .whereType<OathCode>()
           .map((e) => e.validTo);

@@ -33,7 +33,7 @@ class HomeMessagePage extends ConsumerWidget {
   final bool delayedContent;
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final List<Widget> Function(BuildContext context, bool expanded)?
-      actionsBuilder;
+  actionsBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
   final List<Capability>? capabilities;

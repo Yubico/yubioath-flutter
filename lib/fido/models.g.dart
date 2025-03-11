@@ -21,10 +21,7 @@ Map<String, dynamic> _$$FidoStateImplToJson(_$FidoStateImpl instance) =>
     };
 
 _$FingerprintImpl _$$FingerprintImplFromJson(Map<String, dynamic> json) =>
-    _$FingerprintImpl(
-      json['template_id'] as String,
-      json['name'] as String?,
-    );
+    _$FingerprintImpl(json['template_id'] as String, json['name'] as String?);
 
 Map<String, dynamic> _$$FingerprintImplToJson(_$FingerprintImpl instance) =>
     <String, dynamic>{
@@ -42,11 +39,11 @@ _$FidoCredentialImpl _$$FidoCredentialImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$FidoCredentialImplToJson(
-        _$FidoCredentialImpl instance) =>
-    <String, dynamic>{
-      'rp_id': instance.rpId,
-      'credential_id': instance.credentialId,
-      'user_id': instance.userId,
-      'user_name': instance.userName,
-      'display_name': instance.displayName,
-    };
+  _$FidoCredentialImpl instance,
+) => <String, dynamic>{
+  'rp_id': instance.rpId,
+  'credential_id': instance.credentialId,
+  'user_id': instance.userId,
+  'user_name': instance.userName,
+  'display_name': instance.displayName,
+};

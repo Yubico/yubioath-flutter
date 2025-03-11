@@ -57,50 +57,59 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final hasFeature = ref.watch(featureProvider);
-    return ref.watch(otpStateProvider(widget.devicePath)).when(
-        loading: () => MessagePage(
-              title: l10n.s_slots,
-              capabilities: const [Capability.otp],
-              centered: true,
-              graphic: const CircularProgressIndicator(),
-              delayedContent: true,
-            ),
-        error: (error, _) => AppFailurePage(cause: error),
-        data: (otpState) {
-          final selected = _selected != null
-              ? otpState.slots.firstWhere((e) => e.slot == _selected)
-              : null;
-          return OtpActions(
+    return ref
+        .watch(otpStateProvider(widget.devicePath))
+        .when(
+          loading:
+              () => MessagePage(
+                title: l10n.s_slots,
+                capabilities: const [Capability.otp],
+                centered: true,
+                graphic: const CircularProgressIndicator(),
+                delayedContent: true,
+              ),
+          error: (error, _) => AppFailurePage(cause: error),
+          data: (otpState) {
+            final selected =
+                _selected != null
+                    ? otpState.slots.firstWhere((e) => e.slot == _selected)
+                    : null;
+            return OtpActions(
               devicePath: widget.devicePath,
-              builder: (context) => Actions(
+              builder:
+                  (context) => Actions(
                     actions: {
-                      EscapeIntent:
-                          CallbackAction<EscapeIntent>(onInvoke: (intent) {
-                        if (selected != null) {
-                          setState(() {
-                            _selected = null;
-                          });
-                        } else {
-                          Actions.invoke(context, intent);
-                        }
-                        return false;
-                      }),
+                      EscapeIntent: CallbackAction<EscapeIntent>(
+                        onInvoke: (intent) {
+                          if (selected != null) {
+                            setState(() {
+                              _selected = null;
+                            });
+                          } else {
+                            Actions.invoke(context, intent);
+                          }
+                          return false;
+                        },
+                      ),
                       OpenIntent<OtpSlot>: CallbackAction<OpenIntent<OtpSlot>>(
-                          onInvoke: (intent) async {
-                        await showBlurDialog(
-                          context: context,
-                          barrierColor: Colors.transparent,
-                          builder: (context) => SlotDialog(intent.target.slot),
-                        );
+                        onInvoke: (intent) async {
+                          await showBlurDialog(
+                            context: context,
+                            barrierColor: Colors.transparent,
+                            builder:
+                                (context) => SlotDialog(intent.target.slot),
+                          );
 
-                        return null;
-                      }),
+                          return null;
+                        },
+                      ),
                     },
                     child: AppPage(
                       title: l10n.s_slots,
                       capabilities: const [Capability.otp],
-                      detailViewBuilder: selected != null
-                          ? (context) => Column(
+                      detailViewBuilder:
+                          selected != null
+                              ? (context) => Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   ListTitle(l10n.s_details),
@@ -111,16 +120,20 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                       color: Theme.of(context).hoverColor,
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 24, horizontal: 16.0),
+                                          vertical: 24,
+                                          horizontal: 16.0,
+                                        ),
                                         // TODO: Reuse from fingerprint_dialog
                                         child: Column(
                                           children: [
                                             Text(
-                                              selected.slot
-                                                  .getDisplayName(l10n),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineSmall,
+                                              selected.slot.getDisplayName(
+                                                l10n,
+                                              ),
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.headlineSmall,
                                               softWrap: true,
                                               textAlign: TextAlign.center,
                                             ),
@@ -134,15 +147,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                               selected.isConfigured
                                                   ? l10n.l_otp_slot_configured
                                                   : l10n.l_otp_slot_empty,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium!
-                                                  .copyWith(
-                                                    color: Theme.of(context)
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.bodyMedium!.copyWith(
+                                                color:
+                                                    Theme.of(context)
                                                         .colorScheme
                                                         .onSurfaceVariant,
-                                                  ),
-                                            )
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -152,14 +165,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                     context,
                                     l10n.s_setup,
                                     actions: buildSlotActions(selected, l10n),
-                                  )
+                                  ),
                                 ],
                               )
-                          : null,
-                      keyActionsBuilder: hasFeature(features.actions)
-                          ? (context) => otpBuildActions(
-                              context, widget.devicePath, otpState, ref)
-                          : null,
+                              : null,
+                      keyActionsBuilder:
+                          hasFeature(features.actions)
+                              ? (context) => otpBuildActions(
+                                context,
+                                widget.devicePath,
+                                otpState,
+                                ref,
+                              )
+                              : null,
                       builder: (context, expanded) {
                         // De-select if window is resized to be non-expanded.
                         if (!expanded && _selected != null) {
@@ -174,29 +192,37 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                             if (expanded)
                               OpenIntent<OtpSlot>:
                                   CallbackAction<OpenIntent<OtpSlot>>(
-                                      onInvoke: (intent) async {
-                                setState(() {
-                                  _selected = intent.target.slot;
-                                });
-                                return null;
-                              }),
+                                    onInvoke: (intent) async {
+                                      setState(() {
+                                        _selected = intent.target.slot;
+                                      });
+                                      return null;
+                                    },
+                                  ),
                           },
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Column(children: [
-                              ...otpState.slots.map((e) => _SlotListItem(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
+                            child: Column(
+                              children: [
+                                ...otpState.slots.map(
+                                  (e) => _SlotListItem(
                                     e,
                                     expanded: expanded,
                                     selected: e == selected,
-                                  ))
-                            ]),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
                     ),
-                  ));
-        });
+                  ),
+            );
+          },
+        );
   }
 }
 
@@ -205,8 +231,11 @@ class _SlotListItem extends ConsumerWidget {
   final bool expanded;
   final bool selected;
 
-  const _SlotListItem(this.otpSlot,
-      {required this.expanded, required this.selected});
+  const _SlotListItem(
+    this.otpSlot, {
+    required this.expanded,
+    required this.selected,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -221,24 +250,27 @@ class _SlotListItem extends ConsumerWidget {
       otpSlot,
       selected: selected,
       leading: CircleAvatar(
-          foregroundColor: colorScheme.onSecondary,
-          backgroundColor: colorScheme.secondary,
-          child: Text(slot.numberId.toString())),
+        foregroundColor: colorScheme.onSecondary,
+        backgroundColor: colorScheme.secondary,
+        child: Text(slot.numberId.toString()),
+      ),
       title: slot.getDisplayName(l10n),
       subtitle:
           isConfigured ? l10n.l_otp_slot_configured : l10n.l_otp_slot_empty,
-      trailing: expanded
-          ? null
-          : OutlinedButton(
-              key: getOpenMenuButtonKey(slot),
-              onPressed: Actions.handler(context, OpenIntent(otpSlot)),
-              child: const Icon(Symbols.more_horiz),
-            ),
+      trailing:
+          expanded
+              ? null
+              : OutlinedButton(
+                key: getOpenMenuButtonKey(slot),
+                onPressed: Actions.handler(context, OpenIntent(otpSlot)),
+                child: const Icon(Symbols.more_horiz),
+              ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(otpSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(otpSlot) : null,
-      buildPopupActions: hasFeature(features.slots)
-          ? (context) => buildSlotActions(otpSlot, l10n)
-          : null,
+      buildPopupActions:
+          hasFeature(features.slots)
+              ? (context) => buildSlotActions(otpSlot, l10n)
+              : null,
     );
   }
 }

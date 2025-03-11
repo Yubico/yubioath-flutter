@@ -23,8 +23,10 @@ import 'package:yubico_authenticator/app/views/keys.dart' as app_keys;
 
 import '../test_util.dart';
 
-Future<void> startUp(WidgetTester tester,
-    [Map<dynamic, dynamic> startUpParams = const {}]) async {
+Future<void> startUp(
+  WidgetTester tester, [
+  Map<dynamic, dynamic> startUpParams = const {},
+]) async {
   await tester.pumpWidget(await initialize());
 
   // only wait for yubikey connection when needed
@@ -32,10 +34,15 @@ Future<void> startUp(WidgetTester tester,
   if (startUpParams['needs_yubikey'] != false) {
     await tester.openDrawer();
     // wait for a YubiKey connection
-    await tester.waitForFinder(find.descendant(
+    await tester.waitForFinder(
+      find.descendant(
         of: find.byKey(app_keys.deviceInfoListTile),
-        matching: find.byWidgetPredicate((widget) =>
-            widget is DeviceAvatar && widget.key != app_keys.noDeviceAvatar)));
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is DeviceAvatar && widget.key != app_keys.noDeviceAvatar,
+        ),
+      ),
+    );
   }
 
   await tester.pump(const Duration(milliseconds: 500));

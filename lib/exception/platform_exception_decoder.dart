@@ -31,7 +31,8 @@ extension Decoder on PlatformException {
 
     if (message != null && _isApduException()) {
       final regExp = RegExp(
-          r'^com.yubico.yubikit.core.smartcard.ApduException: APDU error: 0x(.*)$');
+        r'^com.yubico.yubikit.core.smartcard.ApduException: APDU error: 0x(.*)$',
+      );
       final firstMatch = regExp.firstMatch(message!);
       if (firstMatch != null) {
         final hexSw = firstMatch.group(1);

@@ -51,15 +51,17 @@ class ProductImage extends StatelessWidget {
   final FormFactor formFactor;
   final bool isNfc;
 
-  const ProductImage(
-      {super.key,
-      required this.name,
-      required this.formFactor,
-      required this.isNfc});
+  const ProductImage({
+    super.key,
+    required this.name,
+    required this.formFactor,
+    required this.isNfc,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final image = _imagesForName[name] ??
+    final image =
+        _imagesForName[name] ??
         (isNfc ? _imagesForFormFactorNfc : _imagesForFormFactor)[formFactor];
 
     if (image == null) {

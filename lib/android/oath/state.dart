@@ -44,29 +44,34 @@ final _log = Logger('android.oath.state');
 
 final androidOathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
-        _AndroidOathStateNotifier.new);
+      _AndroidOathStateNotifier.new,
+    );
 
 class _AndroidOathStateNotifier extends OathStateNotifier {
   final _events = const EventChannel('android.oath.sessionState');
   late StreamSubscription _sub;
-  late _OathMethodChannelNotifier oath =
-      ref.watch(_oathMethodsProvider.notifier);
+  late _OathMethodChannelNotifier oath = ref.watch(
+    _oathMethodsProvider.notifier,
+  );
 
   @override
   FutureOr<OathState> build(DevicePath arg) {
-    _sub = _events.receiveBroadcastStream().listen((event) {
-      final json = jsonDecode(event);
-      if (json == null) {
-        state = AsyncValue.error(const NoDataException(), StackTrace.current);
-      } else if (json == 'loading') {
-        state = const AsyncValue.loading();
-      } else {
-        final oathState = OathState.fromJson(json);
-        state = AsyncValue.data(oathState);
-      }
-    }, onError: (err, stackTrace) {
-      state = AsyncValue.error(err, stackTrace);
-    });
+    _sub = _events.receiveBroadcastStream().listen(
+      (event) {
+        final json = jsonDecode(event);
+        if (json == null) {
+          state = AsyncValue.error(const NoDataException(), StackTrace.current);
+        } else if (json == 'loading') {
+          state = const AsyncValue.loading();
+        } else {
+          final oathState = OathState.fromJson(json);
+          state = AsyncValue.data(oathState);
+        }
+      },
+      onError: (err, stackTrace) {
+        state = AsyncValue.error(err, stackTrace);
+      },
+    );
 
     ref.onDispose(_sub.cancel);
 
@@ -91,8 +96,12 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<(bool, bool)> unlock(String password, {bool remember = false}) async {
     try {
-      final unlockResponse = jsonDecode(await oath
-          .invoke('unlock', {'password': password, 'remember': remember}));
+      final unlockResponse = jsonDecode(
+        await oath.invoke('unlock', {
+          'password': password,
+          'remember': remember,
+        }),
+      );
       _log.debug('applet unlocked');
 
       final unlocked = unlockResponse['unlocked'] == true;
@@ -113,8 +122,10 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
   @override
   Future<bool> setPassword(String? current, String password) async {
     try {
-      await oath
-          .invoke('setPassword', {'current': current, 'password': password});
+      await oath.invoke('setPassword', {
+        'current': current,
+        'password': password,
+      });
       return true;
     } on PlatformException catch (pe) {
       final decoded = pe.decode();
@@ -154,7 +165,9 @@ class _AndroidOathStateNotifier extends OathStateNotifier {
 }
 
 Exception handlePlatformException(
-    Ref ref, PlatformException platformException) {
+  Ref ref,
+  PlatformException platformException,
+) {
   final decoded = platformException.decode();
   final l10n = ref.read(l10nProvider);
   final withContext = ref.read(withContextProvider);
@@ -194,59 +207,75 @@ Exception handlePlatformException(
   return decoded;
 }
 
-final addCredentialToAnyProvider =
-    Provider((ref) => (Uri credentialUri, {bool requireTouch = false}) async {
-          final oath = ref.watch(_oathMethodsProvider.notifier);
-          try {
-            var result = jsonDecode(await oath.invoke('addAccountToAny', {
-              'uri': credentialUri.toString(),
-              'requireTouch': requireTouch
-            }));
-            return OathCredential.fromJson(result['credential']);
-          } on PlatformException catch (pe) {
-            _log.error('Received exception: $pe');
-            throw handlePlatformException(ref, pe);
-          }
-        });
-
-final addCredentialsToAnyProvider = Provider(
-    (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
-          final oath = ref.read(_oathMethodsProvider.notifier);
-          try {
-            _log.debug(
-                'Calling android with ${credentialUris.length} credentials to be added');
-            var result = jsonDecode(await oath.invoke('addAccountsToAny',
-                {'uris': credentialUris, 'requireTouch': touchRequired}));
-            return result['succeeded'] == credentialUris.length;
-          } on PlatformException catch (pe) {
-            _log.error('Received exception: $pe');
-            throw handlePlatformException(ref, pe);
-          }
-        });
-
-final androidCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>(
-  (ref, devicePath) {
-    var notifier =
-        _AndroidCredentialListNotifier(ref.watch(withContextProvider), ref);
-    return notifier;
+final addCredentialToAnyProvider = Provider(
+  (ref) => (Uri credentialUri, {bool requireTouch = false}) async {
+    final oath = ref.watch(_oathMethodsProvider.notifier);
+    try {
+      var result = jsonDecode(
+        await oath.invoke('addAccountToAny', {
+          'uri': credentialUri.toString(),
+          'requireTouch': requireTouch,
+        }),
+      );
+      return OathCredential.fromJson(result['credential']);
+    } on PlatformException catch (pe) {
+      _log.error('Received exception: $pe');
+      throw handlePlatformException(ref, pe);
+    }
   },
 );
+
+final addCredentialsToAnyProvider = Provider(
+  (ref) => (List<String> credentialUris, List<bool> touchRequired) async {
+    final oath = ref.read(_oathMethodsProvider.notifier);
+    try {
+      _log.debug(
+        'Calling android with ${credentialUris.length} credentials to be added',
+      );
+      var result = jsonDecode(
+        await oath.invoke('addAccountsToAny', {
+          'uris': credentialUris,
+          'requireTouch': touchRequired,
+        }),
+      );
+      return result['succeeded'] == credentialUris.length;
+    } on PlatformException catch (pe) {
+      _log.error('Received exception: $pe');
+      throw handlePlatformException(ref, pe);
+    }
+  },
+);
+
+final androidCredentialListProvider = StateNotifierProvider.autoDispose
+    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>((
+      ref,
+      devicePath,
+    ) {
+      var notifier = _AndroidCredentialListNotifier(
+        ref.watch(withContextProvider),
+        ref,
+      );
+      return notifier;
+    });
 
 class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final _events = const EventChannel('android.oath.credentials');
   final WithContext _withContext;
   final Ref _ref;
   late StreamSubscription _sub;
-  late _OathMethodChannelNotifier oath =
-      _ref.read(_oathMethodsProvider.notifier);
+  late _OathMethodChannelNotifier oath = _ref.read(
+    _oathMethodsProvider.notifier,
+  );
 
   _AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
-      List<OathPair>? newState = json != null
-          ? List.from((json as List).map((e) => OathPair.fromJson(e)).toList())
-          : null;
+      List<OathPair>? newState =
+          json != null
+              ? List.from(
+                (json as List).map((e) => OathPair.fromJson(e)).toList(),
+              )
+              : null;
       state = newState;
     });
   }
@@ -264,30 +293,31 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
     Timer? touchTimer;
     if (_ref.read(currentDeviceProvider)?.transport == Transport.usb) {
       void triggerTouchPrompt() async {
-        controller = await _withContext(
-          (context) async {
-            final l10n = AppLocalizations.of(context);
-            return promptUserInteraction(
-              context,
-              icon: const Icon(Symbols.touch_app),
-              title: l10n.s_touch_required,
-              description: l10n.l_touch_button_now,
-            );
-          },
-        );
+        controller = await _withContext((context) async {
+          final l10n = AppLocalizations.of(context);
+          return promptUserInteraction(
+            context,
+            icon: const Icon(Symbols.touch_app),
+            title: l10n.s_touch_required,
+            description: l10n.l_touch_button_now,
+          );
+        });
       }
 
       if (credential.touchRequired) {
         triggerTouchPrompt();
       } else if (credential.oathType == OathType.hotp) {
-        touchTimer =
-            Timer(const Duration(milliseconds: 500), triggerTouchPrompt);
+        touchTimer = Timer(
+          const Duration(milliseconds: 500),
+          triggerTouchPrompt,
+        );
       }
     }
 
     try {
-      final resultJson =
-          await oath.invoke('calculate', {'credentialId': credential.id});
+      final resultJson = await oath.invoke('calculate', {
+        'credentialId': credential.id,
+      });
       _log.debug('Calculate', resultJson);
       return OathCode.fromJson(jsonDecode(resultJson));
     } on PlatformException catch (pe) {
@@ -299,11 +329,15 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   @override
-  Future<OathCredential> addAccount(Uri credentialUri,
-      {bool requireTouch = false}) async {
+  Future<OathCredential> addAccount(
+    Uri credentialUri, {
+    bool requireTouch = false,
+  }) async {
     try {
-      String resultString = await oath.invoke('addAccount',
-          {'uri': credentialUri.toString(), 'requireTouch': requireTouch});
+      String resultString = await oath.invoke('addAccount', {
+        'uri': credentialUri.toString(),
+        'requireTouch': requireTouch,
+      });
       var result = jsonDecode(resultString);
       return OathCredential.fromJson(result['credential']);
     } on PlatformException catch (pe) {
@@ -313,10 +347,16 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   Future<OathCredential> renameAccount(
-      OathCredential credential, String? issuer, String name) async {
+    OathCredential credential,
+    String? issuer,
+    String name,
+  ) async {
     try {
-      final response = await oath.invoke('renameAccount',
-          {'credentialId': credential.id, 'name': name, 'issuer': issuer});
+      final response = await oath.invoke('renameAccount', {
+        'credentialId': credential.id,
+        'name': name,
+        'issuer': issuer,
+      });
       _log.debug('Rename response: $response');
 
       var responseJson = jsonDecode(response);
@@ -346,9 +386,10 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
 }
 
 final _oathMethodsProvider = NotifierProvider<_OathMethodChannelNotifier, void>(
-    () => _OathMethodChannelNotifier());
+  () => _OathMethodChannelNotifier(),
+);
 
 class _OathMethodChannelNotifier extends MethodChannelNotifier {
   _OathMethodChannelNotifier()
-      : super(const MethodChannel('android.oath.methods'));
+    : super(const MethodChannel('android.oath.methods'));
 }

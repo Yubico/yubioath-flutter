@@ -38,20 +38,26 @@ class WindowManagerHelperMacOs {
       final displays = await screenRetriever.getAllDisplays();
       for (var d in displays) {
         if (d.name == posDisplay) {
-          var globalPos =
-              Offset(10 + d.visiblePosition!.dx, 10 + d.visiblePosition!.dy);
+          var globalPos = Offset(
+            10 + d.visiblePosition!.dx,
+            10 + d.visiblePosition!.dy,
+          );
           if ((posX >= 0) &&
               (posX < d.visibleSize!.width) &&
               (posY >= 0) &&
               (posY < d.visibleSize!.height)) {
             // if the local position exists on the display, use it
             globalPos = Offset(
-                posX + d.visiblePosition!.dx, posY + d.visiblePosition!.dy);
+              posX + d.visiblePosition!.dx,
+              posY + d.visiblePosition!.dy,
+            );
           }
 
-          await windowManager.setBounds(null,
-              size: Size(width, height),
-              position: Offset(globalPos.dx, globalPos.dy));
+          await windowManager.setBounds(
+            null,
+            size: Size(width, height),
+            position: Offset(globalPos.dx, globalPos.dy),
+          );
         }
       }
     }
@@ -66,20 +72,28 @@ class WindowManagerHelperMacOs {
       if (d.visiblePosition != null &&
           d.visibleSize != null &&
           d.name != null) {
-        final windowCenter =
-            Offset(offset.dx + size.width / 2.0, offset.dy + size.height / 2.0);
+        final windowCenter = Offset(
+          offset.dx + size.width / 2.0,
+          offset.dy + size.height / 2.0,
+        );
         if ((windowCenter.dx >= d.visiblePosition!.dx) &&
             (windowCenter.dx <
                 (d.visiblePosition!.dx + d.visibleSize!.width)) &&
             (windowCenter.dy >= d.visiblePosition!.dy) &&
             (windowCenter.dy <
                 (d.visiblePosition!.dy + d.visibleSize!.height))) {
-          final localOffset = Offset(offset.dx - d.visiblePosition!.dx,
-              offset.dy - d.visiblePosition!.dy);
+          final localOffset = Offset(
+            offset.dx - d.visiblePosition!.dx,
+            offset.dy - d.visiblePosition!.dy,
+          );
           await prefs.setString(_keyPosDisplay, d.name!);
 
           return Rect.fromLTWH(
-              localOffset.dx, localOffset.dy, size.width, size.height);
+            localOffset.dx,
+            localOffset.dy,
+            size.width,
+            size.height,
+          );
         }
       }
     }

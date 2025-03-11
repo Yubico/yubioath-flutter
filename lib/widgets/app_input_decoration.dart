@@ -60,8 +60,10 @@ class AppInputDecoration extends InputDecoration {
     super.semanticCounterText,
     super.alignLabelWithHint,
     super.constraints,
-  }) : assert(!(suffixIcon != null && suffixIcons != null),
-            'Declaring both suffixIcon and suffixIcons is not supported.');
+  }) : assert(
+         !(suffixIcon != null && suffixIcons != null),
+         'Declaring both suffixIcon and suffixIcons is not supported.',
+       );
 
   @override
   Widget? get suffixIcon {
@@ -75,28 +77,26 @@ class AppInputDecoration extends InputDecoration {
       0 => null,
       1 => icons.single,
       _ => Builder(
-          builder: (context) {
-            // Apply the constraints to *each* icon.
-            final constraints = suffixIconConstraints ??
-                Theme.of(context).visualDensity.effectiveConstraints(
-                      const BoxConstraints(
-                        minWidth: kMinInteractiveDimension,
-                        minHeight: kMinInteractiveDimension,
-                      ),
-                    );
-            return Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              runAlignment: WrapAlignment.center,
-              children: [
-                for (Widget icon in icons)
-                  ConstrainedBox(
-                    constraints: constraints,
-                    child: icon,
-                  )
-              ],
-            );
-          },
-        ),
+        builder: (context) {
+          // Apply the constraints to *each* icon.
+          final constraints =
+              suffixIconConstraints ??
+              Theme.of(context).visualDensity.effectiveConstraints(
+                const BoxConstraints(
+                  minWidth: kMinInteractiveDimension,
+                  minHeight: kMinInteractiveDimension,
+                ),
+              );
+          return Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            runAlignment: WrapAlignment.center,
+            children: [
+              for (Widget icon in icons)
+                ConstrainedBox(constraints: constraints, child: icon),
+            ],
+          );
+        },
+      ),
     };
   }
 }

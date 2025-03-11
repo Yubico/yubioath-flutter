@@ -26,29 +26,38 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'swap_slots_dialog.dart';
 
-Widget otpBuildActions(BuildContext context, DevicePath devicePath,
-    OtpState otpState, WidgetRef ref) {
+Widget otpBuildActions(
+  BuildContext context,
+  DevicePath devicePath,
+  OtpState otpState,
+  WidgetRef ref,
+) {
   final l10n = AppLocalizations.of(context);
 
   return Column(
     children: [
-      ActionListSection(l10n.s_manage, children: [
-        ActionListItem(
-          key: keys.swapSlots,
-          feature: features.actionsSwap,
-          title: l10n.s_swap_slots,
-          subtitle: l10n.l_swap_slots_desc,
-          icon: const Icon(Symbols.swap_vert),
-          onTap: (otpState.slot1Configured || otpState.slot2Configured)
-              ? (context) {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  showDialog(
-                      context: context,
-                      builder: (context) => SwapSlotsDialog(devicePath));
-                }
-              : null,
-        )
-      ])
+      ActionListSection(
+        l10n.s_manage,
+        children: [
+          ActionListItem(
+            key: keys.swapSlots,
+            feature: features.actionsSwap,
+            title: l10n.s_swap_slots,
+            subtitle: l10n.l_swap_slots_desc,
+            icon: const Icon(Symbols.swap_vert),
+            onTap:
+                (otpState.slot1Configured || otpState.slot2Configured)
+                    ? (context) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      showDialog(
+                        context: context,
+                        builder: (context) => SwapSlotsDialog(devicePath),
+                      );
+                    }
+                    : null,
+          ),
+        ],
+      ),
     ],
   );
 }

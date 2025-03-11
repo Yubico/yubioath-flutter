@@ -54,9 +54,9 @@ enum OathType {
   const OathType();
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        OathType.hotp => l10n.s_counter_based,
-        OathType.totp => l10n.s_time_based
-      };
+    OathType.hotp => l10n.s_counter_based,
+    OathType.totp => l10n.s_time_based,
+  };
 }
 
 enum KeystoreState { unknown, allowed, failed }
@@ -64,13 +64,14 @@ enum KeystoreState { unknown, allowed, failed }
 @freezed
 class OathCredential with _$OathCredential {
   factory OathCredential(
-      String deviceId,
-      String id,
-      @_IssuerConverter() String? issuer,
-      String name,
-      OathType oathType,
-      int period,
-      bool touchRequired) = _OathCredential;
+    String deviceId,
+    String id,
+    @_IssuerConverter() String? issuer,
+    String name,
+    OathType oathType,
+    int period,
+    bool touchRequired,
+  ) = _OathCredential;
 
   factory OathCredential.fromJson(Map<String, dynamic> json) =>
       _$OathCredentialFromJson(json);
@@ -106,11 +107,14 @@ class OathPair with _$OathPair {
 class OathState with _$OathState {
   const OathState._();
 
-  factory OathState(String deviceId, Version version,
-      {required bool hasKey,
-      required bool remembered,
-      required bool locked,
-      required KeystoreState keystore}) = _OathState;
+  factory OathState(
+    String deviceId,
+    Version version, {
+    required bool hasKey,
+    required bool remembered,
+    required bool locked,
+    required KeystoreState keystore,
+  }) = _OathState;
 
   int? get capacity =>
       version.isAtLeast(4) ? (version.isAtLeast(5, 7) ? 64 : 32) : null;
@@ -194,11 +198,13 @@ class CredentialData with _$CredentialData {
     }
 
     // Convert parsed credential values into CredentialData objects
-    return splitCreds(base64.decode(uri.queryParameters['data']!))
-        .map((values) {
-      String? issuer = values[3] != null
-          ? utf8.decode(values[3], allowMalformed: true)
-          : null;
+    return splitCreds(base64.decode(uri.queryParameters['data']!)).map((
+      values,
+    ) {
+      String? issuer =
+          values[3] != null
+              ? utf8.decode(values[3], allowMalformed: true)
+              : null;
       String name = utf8.decode(values[2], allowMalformed: true);
       final nameIndex = name.indexOf(':');
       if (nameIndex >= 0 && issuer == null) {
@@ -235,8 +241,9 @@ class CredentialData with _$CredentialData {
       issuer: params['issuer'] ?? issuer,
       name: name,
       oathType: oathType,
-      hashAlgorithm: HashAlgorithm.values
-          .byName(params['algorithm']?.toLowerCase() ?? 'sha1'),
+      hashAlgorithm: HashAlgorithm.values.byName(
+        params['algorithm']?.toLowerCase() ?? 'sha1',
+      ),
       secret: params['secret']!,
       digits: int.tryParse(params['digits'] ?? '') ?? defaultDigits,
       period: int.tryParse(params['period'] ?? '') ?? defaultPeriod,
@@ -245,19 +252,18 @@ class CredentialData with _$CredentialData {
   }
 
   Uri toUri() => Uri(
-        scheme: 'otpauth',
-        host: oathType.name,
-        path: issuer != null ? '$issuer:$name' : name,
-        queryParameters: {
-          'secret': secret,
-          if (oathType == OathType.totp) 'period': period.toString(),
-          if (oathType == OathType.hotp) 'counter': counter.toString(),
-          if (issuer != null) 'issuer': issuer!,
-          if (digits != 6) 'digits': digits.toString(),
-          if (hashAlgorithm != HashAlgorithm.sha1)
-            'algorithm': hashAlgorithm.name,
-        },
-      );
+    scheme: 'otpauth',
+    host: oathType.name,
+    path: issuer != null ? '$issuer:$name' : name,
+    queryParameters: {
+      'secret': secret,
+      if (oathType == OathType.totp) 'period': period.toString(),
+      if (oathType == OathType.hotp) 'counter': counter.toString(),
+      if (issuer != null) 'issuer': issuer!,
+      if (digits != 6) 'digits': digits.toString(),
+      if (hashAlgorithm != HashAlgorithm.sha1) 'algorithm': hashAlgorithm.name,
+    },
+  );
 }
 
 enum OathLayout { list, grid, mixed }

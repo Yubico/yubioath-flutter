@@ -32,10 +32,7 @@ class ErrorPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              error,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(error, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
       ),

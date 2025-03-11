@@ -12,7 +12,8 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 PinMetadata _$PinMetadataFromJson(Map<String, dynamic> json) {
   return _PinMetadata.fromJson(json);
@@ -37,8 +38,9 @@ mixin _$PinMetadata {
 /// @nodoc
 abstract class $PinMetadataCopyWith<$Res> {
   factory $PinMetadataCopyWith(
-          PinMetadata value, $Res Function(PinMetadata) then) =
-      _$PinMetadataCopyWithImpl<$Res, PinMetadata>;
+    PinMetadata value,
+    $Res Function(PinMetadata) then,
+  ) = _$PinMetadataCopyWithImpl<$Res, PinMetadata>;
   @useResult
   $Res call({bool defaultValue, int totalAttempts, int attemptsRemaining});
 }
@@ -62,20 +64,26 @@ class _$PinMetadataCopyWithImpl<$Res, $Val extends PinMetadata>
     Object? totalAttempts = null,
     Object? attemptsRemaining = null,
   }) {
-    return _then(_value.copyWith(
-      defaultValue: null == defaultValue
-          ? _value.defaultValue
-          : defaultValue // ignore: cast_nullable_to_non_nullable
-              as bool,
-      totalAttempts: null == totalAttempts
-          ? _value.totalAttempts
-          : totalAttempts // ignore: cast_nullable_to_non_nullable
-              as int,
-      attemptsRemaining: null == attemptsRemaining
-          ? _value.attemptsRemaining
-          : attemptsRemaining // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            defaultValue:
+                null == defaultValue
+                    ? _value.defaultValue
+                    : defaultValue // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            totalAttempts:
+                null == totalAttempts
+                    ? _value.totalAttempts
+                    : totalAttempts // ignore: cast_nullable_to_non_nullable
+                        as int,
+            attemptsRemaining:
+                null == attemptsRemaining
+                    ? _value.attemptsRemaining
+                    : attemptsRemaining // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -83,8 +91,9 @@ class _$PinMetadataCopyWithImpl<$Res, $Val extends PinMetadata>
 abstract class _$$PinMetadataImplCopyWith<$Res>
     implements $PinMetadataCopyWith<$Res> {
   factory _$$PinMetadataImplCopyWith(
-          _$PinMetadataImpl value, $Res Function(_$PinMetadataImpl) then) =
-      __$$PinMetadataImplCopyWithImpl<$Res>;
+    _$PinMetadataImpl value,
+    $Res Function(_$PinMetadataImpl) then,
+  ) = __$$PinMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({bool defaultValue, int totalAttempts, int attemptsRemaining});
@@ -95,8 +104,9 @@ class __$$PinMetadataImplCopyWithImpl<$Res>
     extends _$PinMetadataCopyWithImpl<$Res, _$PinMetadataImpl>
     implements _$$PinMetadataImplCopyWith<$Res> {
   __$$PinMetadataImplCopyWithImpl(
-      _$PinMetadataImpl _value, $Res Function(_$PinMetadataImpl) _then)
-      : super(_value, _then);
+    _$PinMetadataImpl _value,
+    $Res Function(_$PinMetadataImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PinMetadata
   /// with the given fields replaced by the non-null parameter values.
@@ -107,20 +117,22 @@ class __$$PinMetadataImplCopyWithImpl<$Res>
     Object? totalAttempts = null,
     Object? attemptsRemaining = null,
   }) {
-    return _then(_$PinMetadataImpl(
-      null == defaultValue
-          ? _value.defaultValue
-          : defaultValue // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == totalAttempts
-          ? _value.totalAttempts
-          : totalAttempts // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == attemptsRemaining
-          ? _value.attemptsRemaining
-          : attemptsRemaining // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$PinMetadataImpl(
+        null == defaultValue
+            ? _value.defaultValue
+            : defaultValue // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == totalAttempts
+            ? _value.totalAttempts
+            : totalAttempts // ignore: cast_nullable_to_non_nullable
+                as int,
+        null == attemptsRemaining
+            ? _value.attemptsRemaining
+            : attemptsRemaining // ignore: cast_nullable_to_non_nullable
+                as int,
+      ),
+    );
   }
 }
 
@@ -128,7 +140,10 @@ class __$$PinMetadataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PinMetadataImpl implements _PinMetadata {
   _$PinMetadataImpl(
-      this.defaultValue, this.totalAttempts, this.attemptsRemaining);
+    this.defaultValue,
+    this.totalAttempts,
+    this.attemptsRemaining,
+  );
 
   factory _$PinMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$PinMetadataImplFromJson(json);
@@ -173,15 +188,16 @@ class _$PinMetadataImpl implements _PinMetadata {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PinMetadataImplToJson(
-      this,
-    );
+    return _$$PinMetadataImplToJson(this);
   }
 }
 
 abstract class _PinMetadata implements PinMetadata {
-  factory _PinMetadata(final bool defaultValue, final int totalAttempts,
-      final int attemptsRemaining) = _$PinMetadataImpl;
+  factory _PinMetadata(
+    final bool defaultValue,
+    final int totalAttempts,
+    final int attemptsRemaining,
+  ) = _$PinMetadataImpl;
 
   factory _PinMetadata.fromJson(Map<String, dynamic> json) =
       _$PinMetadataImpl.fromJson;
@@ -207,52 +223,49 @@ mixin _$PinVerificationStatus {
   TResult when<TResult extends Object?>({
     required TResult Function() success,
     required TResult Function(PivPinFailureReason reason) failure,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
     TResult? Function(PivPinFailureReason reason)? failure,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
     TResult Function(PivPinFailureReason reason)? failure,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(PinSuccess value) success,
     required TResult Function(PinFailure value) failure,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(PinSuccess value)? success,
     TResult? Function(PinFailure value)? failure,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(PinSuccess value)? success,
     TResult Function(PinFailure value)? failure,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $PinVerificationStatusCopyWith<$Res> {
-  factory $PinVerificationStatusCopyWith(PinVerificationStatus value,
-          $Res Function(PinVerificationStatus) then) =
-      _$PinVerificationStatusCopyWithImpl<$Res, PinVerificationStatus>;
+  factory $PinVerificationStatusCopyWith(
+    PinVerificationStatus value,
+    $Res Function(PinVerificationStatus) then,
+  ) = _$PinVerificationStatusCopyWithImpl<$Res, PinVerificationStatus>;
 }
 
 /// @nodoc
-class _$PinVerificationStatusCopyWithImpl<$Res,
-        $Val extends PinVerificationStatus>
+class _$PinVerificationStatusCopyWithImpl<
+  $Res,
+  $Val extends PinVerificationStatus
+>
     implements $PinVerificationStatusCopyWith<$Res> {
   _$PinVerificationStatusCopyWithImpl(this._value, this._then);
 
@@ -268,8 +281,9 @@ class _$PinVerificationStatusCopyWithImpl<$Res,
 /// @nodoc
 abstract class _$$PinSuccessImplCopyWith<$Res> {
   factory _$$PinSuccessImplCopyWith(
-          _$PinSuccessImpl value, $Res Function(_$PinSuccessImpl) then) =
-      __$$PinSuccessImplCopyWithImpl<$Res>;
+    _$PinSuccessImpl value,
+    $Res Function(_$PinSuccessImpl) then,
+  ) = __$$PinSuccessImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
@@ -277,8 +291,9 @@ class __$$PinSuccessImplCopyWithImpl<$Res>
     extends _$PinVerificationStatusCopyWithImpl<$Res, _$PinSuccessImpl>
     implements _$$PinSuccessImplCopyWith<$Res> {
   __$$PinSuccessImplCopyWithImpl(
-      _$PinSuccessImpl _value, $Res Function(_$PinSuccessImpl) _then)
-      : super(_value, _then);
+    _$PinSuccessImpl _value,
+    $Res Function(_$PinSuccessImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PinVerificationStatus
   /// with the given fields replaced by the non-null parameter values.
@@ -373,8 +388,9 @@ abstract class PinSuccess implements PinVerificationStatus {
 /// @nodoc
 abstract class _$$PinFailureImplCopyWith<$Res> {
   factory _$$PinFailureImplCopyWith(
-          _$PinFailureImpl value, $Res Function(_$PinFailureImpl) then) =
-      __$$PinFailureImplCopyWithImpl<$Res>;
+    _$PinFailureImpl value,
+    $Res Function(_$PinFailureImpl) then,
+  ) = __$$PinFailureImplCopyWithImpl<$Res>;
   @useResult
   $Res call({PivPinFailureReason reason});
 
@@ -386,22 +402,23 @@ class __$$PinFailureImplCopyWithImpl<$Res>
     extends _$PinVerificationStatusCopyWithImpl<$Res, _$PinFailureImpl>
     implements _$$PinFailureImplCopyWith<$Res> {
   __$$PinFailureImplCopyWithImpl(
-      _$PinFailureImpl _value, $Res Function(_$PinFailureImpl) _then)
-      : super(_value, _then);
+    _$PinFailureImpl _value,
+    $Res Function(_$PinFailureImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PinVerificationStatus
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? reason = null,
-  }) {
-    return _then(_$PinFailureImpl(
-      null == reason
-          ? _value.reason
-          : reason // ignore: cast_nullable_to_non_nullable
-              as PivPinFailureReason,
-    ));
+  $Res call({Object? reason = null}) {
+    return _then(
+      _$PinFailureImpl(
+        null == reason
+            ? _value.reason
+            : reason // ignore: cast_nullable_to_non_nullable
+                as PivPinFailureReason,
+      ),
+    );
   }
 
   /// Create a copy of PinVerificationStatus
@@ -528,47 +545,42 @@ mixin _$PivPinFailureReason {
   TResult when<TResult extends Object?>({
     required TResult Function(int attemptsRemaining) invalidPin,
     required TResult Function() weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int attemptsRemaining)? invalidPin,
     TResult? Function()? weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int attemptsRemaining)? invalidPin,
     TResult Function()? weakPin,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(PivInvalidPin value) invalidPin,
     required TResult Function(PivWeakPin value) weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(PivInvalidPin value)? invalidPin,
     TResult? Function(PivWeakPin value)? weakPin,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(PivInvalidPin value)? invalidPin,
     TResult Function(PivWeakPin value)? weakPin,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $PivPinFailureReasonCopyWith<$Res> {
   factory $PivPinFailureReasonCopyWith(
-          PivPinFailureReason value, $Res Function(PivPinFailureReason) then) =
-      _$PivPinFailureReasonCopyWithImpl<$Res, PivPinFailureReason>;
+    PivPinFailureReason value,
+    $Res Function(PivPinFailureReason) then,
+  ) = _$PivPinFailureReasonCopyWithImpl<$Res, PivPinFailureReason>;
 }
 
 /// @nodoc
@@ -588,8 +600,9 @@ class _$PivPinFailureReasonCopyWithImpl<$Res, $Val extends PivPinFailureReason>
 /// @nodoc
 abstract class _$$PivInvalidPinImplCopyWith<$Res> {
   factory _$$PivInvalidPinImplCopyWith(
-          _$PivInvalidPinImpl value, $Res Function(_$PivInvalidPinImpl) then) =
-      __$$PivInvalidPinImplCopyWithImpl<$Res>;
+    _$PivInvalidPinImpl value,
+    $Res Function(_$PivInvalidPinImpl) then,
+  ) = __$$PivInvalidPinImplCopyWithImpl<$Res>;
   @useResult
   $Res call({int attemptsRemaining});
 }
@@ -599,22 +612,23 @@ class __$$PivInvalidPinImplCopyWithImpl<$Res>
     extends _$PivPinFailureReasonCopyWithImpl<$Res, _$PivInvalidPinImpl>
     implements _$$PivInvalidPinImplCopyWith<$Res> {
   __$$PivInvalidPinImplCopyWithImpl(
-      _$PivInvalidPinImpl _value, $Res Function(_$PivInvalidPinImpl) _then)
-      : super(_value, _then);
+    _$PivInvalidPinImpl _value,
+    $Res Function(_$PivInvalidPinImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivPinFailureReason
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? attemptsRemaining = null,
-  }) {
-    return _then(_$PivInvalidPinImpl(
-      null == attemptsRemaining
-          ? _value.attemptsRemaining
-          : attemptsRemaining // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+  $Res call({Object? attemptsRemaining = null}) {
+    return _then(
+      _$PivInvalidPinImpl(
+        null == attemptsRemaining
+            ? _value.attemptsRemaining
+            : attemptsRemaining // ignore: cast_nullable_to_non_nullable
+                as int,
+      ),
+    );
   }
 }
 
@@ -729,8 +743,9 @@ abstract class PivInvalidPin implements PivPinFailureReason {
 /// @nodoc
 abstract class _$$PivWeakPinImplCopyWith<$Res> {
   factory _$$PivWeakPinImplCopyWith(
-          _$PivWeakPinImpl value, $Res Function(_$PivWeakPinImpl) then) =
-      __$$PivWeakPinImplCopyWithImpl<$Res>;
+    _$PivWeakPinImpl value,
+    $Res Function(_$PivWeakPinImpl) then,
+  ) = __$$PivWeakPinImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
@@ -738,8 +753,9 @@ class __$$PivWeakPinImplCopyWithImpl<$Res>
     extends _$PivPinFailureReasonCopyWithImpl<$Res, _$PivWeakPinImpl>
     implements _$$PivWeakPinImplCopyWith<$Res> {
   __$$PivWeakPinImplCopyWithImpl(
-      _$PivWeakPinImpl _value, $Res Function(_$PivWeakPinImpl) _then)
-      : super(_value, _then);
+    _$PivWeakPinImpl _value,
+    $Res Function(_$PivWeakPinImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivPinFailureReason
   /// with the given fields replaced by the non-null parameter values.
@@ -832,7 +848,8 @@ abstract class PivWeakPin implements PivPinFailureReason {
 }
 
 ManagementKeyMetadata _$ManagementKeyMetadataFromJson(
-    Map<String, dynamic> json) {
+  Map<String, dynamic> json,
+) {
   return _ManagementKeyMetadata.fromJson(json);
 }
 
@@ -854,17 +871,23 @@ mixin _$ManagementKeyMetadata {
 
 /// @nodoc
 abstract class $ManagementKeyMetadataCopyWith<$Res> {
-  factory $ManagementKeyMetadataCopyWith(ManagementKeyMetadata value,
-          $Res Function(ManagementKeyMetadata) then) =
-      _$ManagementKeyMetadataCopyWithImpl<$Res, ManagementKeyMetadata>;
+  factory $ManagementKeyMetadataCopyWith(
+    ManagementKeyMetadata value,
+    $Res Function(ManagementKeyMetadata) then,
+  ) = _$ManagementKeyMetadataCopyWithImpl<$Res, ManagementKeyMetadata>;
   @useResult
-  $Res call(
-      {ManagementKeyType keyType, bool defaultValue, TouchPolicy touchPolicy});
+  $Res call({
+    ManagementKeyType keyType,
+    bool defaultValue,
+    TouchPolicy touchPolicy,
+  });
 }
 
 /// @nodoc
-class _$ManagementKeyMetadataCopyWithImpl<$Res,
-        $Val extends ManagementKeyMetadata>
+class _$ManagementKeyMetadataCopyWithImpl<
+  $Res,
+  $Val extends ManagementKeyMetadata
+>
     implements $ManagementKeyMetadataCopyWith<$Res> {
   _$ManagementKeyMetadataCopyWithImpl(this._value, this._then);
 
@@ -882,20 +905,26 @@ class _$ManagementKeyMetadataCopyWithImpl<$Res,
     Object? defaultValue = null,
     Object? touchPolicy = null,
   }) {
-    return _then(_value.copyWith(
-      keyType: null == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as ManagementKeyType,
-      defaultValue: null == defaultValue
-          ? _value.defaultValue
-          : defaultValue // ignore: cast_nullable_to_non_nullable
-              as bool,
-      touchPolicy: null == touchPolicy
-          ? _value.touchPolicy
-          : touchPolicy // ignore: cast_nullable_to_non_nullable
-              as TouchPolicy,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            keyType:
+                null == keyType
+                    ? _value.keyType
+                    : keyType // ignore: cast_nullable_to_non_nullable
+                        as ManagementKeyType,
+            defaultValue:
+                null == defaultValue
+                    ? _value.defaultValue
+                    : defaultValue // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            touchPolicy:
+                null == touchPolicy
+                    ? _value.touchPolicy
+                    : touchPolicy // ignore: cast_nullable_to_non_nullable
+                        as TouchPolicy,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -903,23 +932,27 @@ class _$ManagementKeyMetadataCopyWithImpl<$Res,
 abstract class _$$ManagementKeyMetadataImplCopyWith<$Res>
     implements $ManagementKeyMetadataCopyWith<$Res> {
   factory _$$ManagementKeyMetadataImplCopyWith(
-          _$ManagementKeyMetadataImpl value,
-          $Res Function(_$ManagementKeyMetadataImpl) then) =
-      __$$ManagementKeyMetadataImplCopyWithImpl<$Res>;
+    _$ManagementKeyMetadataImpl value,
+    $Res Function(_$ManagementKeyMetadataImpl) then,
+  ) = __$$ManagementKeyMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {ManagementKeyType keyType, bool defaultValue, TouchPolicy touchPolicy});
+  $Res call({
+    ManagementKeyType keyType,
+    bool defaultValue,
+    TouchPolicy touchPolicy,
+  });
 }
 
 /// @nodoc
 class __$$ManagementKeyMetadataImplCopyWithImpl<$Res>
-    extends _$ManagementKeyMetadataCopyWithImpl<$Res,
-        _$ManagementKeyMetadataImpl>
+    extends
+        _$ManagementKeyMetadataCopyWithImpl<$Res, _$ManagementKeyMetadataImpl>
     implements _$$ManagementKeyMetadataImplCopyWith<$Res> {
-  __$$ManagementKeyMetadataImplCopyWithImpl(_$ManagementKeyMetadataImpl _value,
-      $Res Function(_$ManagementKeyMetadataImpl) _then)
-      : super(_value, _then);
+  __$$ManagementKeyMetadataImplCopyWithImpl(
+    _$ManagementKeyMetadataImpl _value,
+    $Res Function(_$ManagementKeyMetadataImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ManagementKeyMetadata
   /// with the given fields replaced by the non-null parameter values.
@@ -930,20 +963,22 @@ class __$$ManagementKeyMetadataImplCopyWithImpl<$Res>
     Object? defaultValue = null,
     Object? touchPolicy = null,
   }) {
-    return _then(_$ManagementKeyMetadataImpl(
-      null == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as ManagementKeyType,
-      null == defaultValue
-          ? _value.defaultValue
-          : defaultValue // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == touchPolicy
-          ? _value.touchPolicy
-          : touchPolicy // ignore: cast_nullable_to_non_nullable
-              as TouchPolicy,
-    ));
+    return _then(
+      _$ManagementKeyMetadataImpl(
+        null == keyType
+            ? _value.keyType
+            : keyType // ignore: cast_nullable_to_non_nullable
+                as ManagementKeyType,
+        null == defaultValue
+            ? _value.defaultValue
+            : defaultValue // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == touchPolicy
+            ? _value.touchPolicy
+            : touchPolicy // ignore: cast_nullable_to_non_nullable
+                as TouchPolicy,
+      ),
+    );
   }
 }
 
@@ -951,7 +986,10 @@ class __$$ManagementKeyMetadataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ManagementKeyMetadataImpl implements _ManagementKeyMetadata {
   _$ManagementKeyMetadataImpl(
-      this.keyType, this.defaultValue, this.touchPolicy);
+    this.keyType,
+    this.defaultValue,
+    this.touchPolicy,
+  );
 
   factory _$ManagementKeyMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ManagementKeyMetadataImplFromJson(json);
@@ -991,22 +1029,24 @@ class _$ManagementKeyMetadataImpl implements _ManagementKeyMetadata {
   @override
   @pragma('vm:prefer-inline')
   _$$ManagementKeyMetadataImplCopyWith<_$ManagementKeyMetadataImpl>
-      get copyWith => __$$ManagementKeyMetadataImplCopyWithImpl<
-          _$ManagementKeyMetadataImpl>(this, _$identity);
+  get copyWith =>
+      __$$ManagementKeyMetadataImplCopyWithImpl<_$ManagementKeyMetadataImpl>(
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ManagementKeyMetadataImplToJson(
-      this,
-    );
+    return _$$ManagementKeyMetadataImplToJson(this);
   }
 }
 
 abstract class _ManagementKeyMetadata implements ManagementKeyMetadata {
   factory _ManagementKeyMetadata(
-      final ManagementKeyType keyType,
-      final bool defaultValue,
-      final TouchPolicy touchPolicy) = _$ManagementKeyMetadataImpl;
+    final ManagementKeyType keyType,
+    final bool defaultValue,
+    final TouchPolicy touchPolicy,
+  ) = _$ManagementKeyMetadataImpl;
 
   factory _ManagementKeyMetadata.fromJson(Map<String, dynamic> json) =
       _$ManagementKeyMetadataImpl.fromJson;
@@ -1023,7 +1063,7 @@ abstract class _ManagementKeyMetadata implements ManagementKeyMetadata {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ManagementKeyMetadataImplCopyWith<_$ManagementKeyMetadataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 SlotMetadata _$SlotMetadataFromJson(Map<String, dynamic> json) {
@@ -1051,15 +1091,17 @@ mixin _$SlotMetadata {
 /// @nodoc
 abstract class $SlotMetadataCopyWith<$Res> {
   factory $SlotMetadataCopyWith(
-          SlotMetadata value, $Res Function(SlotMetadata) then) =
-      _$SlotMetadataCopyWithImpl<$Res, SlotMetadata>;
+    SlotMetadata value,
+    $Res Function(SlotMetadata) then,
+  ) = _$SlotMetadataCopyWithImpl<$Res, SlotMetadata>;
   @useResult
-  $Res call(
-      {KeyType keyType,
-      PinPolicy pinPolicy,
-      TouchPolicy touchPolicy,
-      bool generated,
-      String publicKey});
+  $Res call({
+    KeyType keyType,
+    PinPolicy pinPolicy,
+    TouchPolicy touchPolicy,
+    bool generated,
+    String publicKey,
+  });
 }
 
 /// @nodoc
@@ -1083,28 +1125,36 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
     Object? generated = null,
     Object? publicKey = null,
   }) {
-    return _then(_value.copyWith(
-      keyType: null == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as KeyType,
-      pinPolicy: null == pinPolicy
-          ? _value.pinPolicy
-          : pinPolicy // ignore: cast_nullable_to_non_nullable
-              as PinPolicy,
-      touchPolicy: null == touchPolicy
-          ? _value.touchPolicy
-          : touchPolicy // ignore: cast_nullable_to_non_nullable
-              as TouchPolicy,
-      generated: null == generated
-          ? _value.generated
-          : generated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      publicKey: null == publicKey
-          ? _value.publicKey
-          : publicKey // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            keyType:
+                null == keyType
+                    ? _value.keyType
+                    : keyType // ignore: cast_nullable_to_non_nullable
+                        as KeyType,
+            pinPolicy:
+                null == pinPolicy
+                    ? _value.pinPolicy
+                    : pinPolicy // ignore: cast_nullable_to_non_nullable
+                        as PinPolicy,
+            touchPolicy:
+                null == touchPolicy
+                    ? _value.touchPolicy
+                    : touchPolicy // ignore: cast_nullable_to_non_nullable
+                        as TouchPolicy,
+            generated:
+                null == generated
+                    ? _value.generated
+                    : generated // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            publicKey:
+                null == publicKey
+                    ? _value.publicKey
+                    : publicKey // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -1112,16 +1162,18 @@ class _$SlotMetadataCopyWithImpl<$Res, $Val extends SlotMetadata>
 abstract class _$$SlotMetadataImplCopyWith<$Res>
     implements $SlotMetadataCopyWith<$Res> {
   factory _$$SlotMetadataImplCopyWith(
-          _$SlotMetadataImpl value, $Res Function(_$SlotMetadataImpl) then) =
-      __$$SlotMetadataImplCopyWithImpl<$Res>;
+    _$SlotMetadataImpl value,
+    $Res Function(_$SlotMetadataImpl) then,
+  ) = __$$SlotMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {KeyType keyType,
-      PinPolicy pinPolicy,
-      TouchPolicy touchPolicy,
-      bool generated,
-      String publicKey});
+  $Res call({
+    KeyType keyType,
+    PinPolicy pinPolicy,
+    TouchPolicy touchPolicy,
+    bool generated,
+    String publicKey,
+  });
 }
 
 /// @nodoc
@@ -1129,8 +1181,9 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
     extends _$SlotMetadataCopyWithImpl<$Res, _$SlotMetadataImpl>
     implements _$$SlotMetadataImplCopyWith<$Res> {
   __$$SlotMetadataImplCopyWithImpl(
-      _$SlotMetadataImpl _value, $Res Function(_$SlotMetadataImpl) _then)
-      : super(_value, _then);
+    _$SlotMetadataImpl _value,
+    $Res Function(_$SlotMetadataImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of SlotMetadata
   /// with the given fields replaced by the non-null parameter values.
@@ -1143,36 +1196,43 @@ class __$$SlotMetadataImplCopyWithImpl<$Res>
     Object? generated = null,
     Object? publicKey = null,
   }) {
-    return _then(_$SlotMetadataImpl(
-      null == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as KeyType,
-      null == pinPolicy
-          ? _value.pinPolicy
-          : pinPolicy // ignore: cast_nullable_to_non_nullable
-              as PinPolicy,
-      null == touchPolicy
-          ? _value.touchPolicy
-          : touchPolicy // ignore: cast_nullable_to_non_nullable
-              as TouchPolicy,
-      null == generated
-          ? _value.generated
-          : generated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == publicKey
-          ? _value.publicKey
-          : publicKey // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+    return _then(
+      _$SlotMetadataImpl(
+        null == keyType
+            ? _value.keyType
+            : keyType // ignore: cast_nullable_to_non_nullable
+                as KeyType,
+        null == pinPolicy
+            ? _value.pinPolicy
+            : pinPolicy // ignore: cast_nullable_to_non_nullable
+                as PinPolicy,
+        null == touchPolicy
+            ? _value.touchPolicy
+            : touchPolicy // ignore: cast_nullable_to_non_nullable
+                as TouchPolicy,
+        null == generated
+            ? _value.generated
+            : generated // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == publicKey
+            ? _value.publicKey
+            : publicKey // ignore: cast_nullable_to_non_nullable
+                as String,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$SlotMetadataImpl implements _SlotMetadata {
-  _$SlotMetadataImpl(this.keyType, this.pinPolicy, this.touchPolicy,
-      this.generated, this.publicKey);
+  _$SlotMetadataImpl(
+    this.keyType,
+    this.pinPolicy,
+    this.touchPolicy,
+    this.generated,
+    this.publicKey,
+  );
 
   factory _$SlotMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$SlotMetadataImplFromJson(json);
@@ -1212,7 +1272,13 @@ class _$SlotMetadataImpl implements _SlotMetadata {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, keyType, pinPolicy, touchPolicy, generated, publicKey);
+    runtimeType,
+    keyType,
+    pinPolicy,
+    touchPolicy,
+    generated,
+    publicKey,
+  );
 
   /// Create a copy of SlotMetadata
   /// with the given fields replaced by the non-null parameter values.
@@ -1224,19 +1290,18 @@ class _$SlotMetadataImpl implements _SlotMetadata {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SlotMetadataImplToJson(
-      this,
-    );
+    return _$$SlotMetadataImplToJson(this);
   }
 }
 
 abstract class _SlotMetadata implements SlotMetadata {
   factory _SlotMetadata(
-      final KeyType keyType,
-      final PinPolicy pinPolicy,
-      final TouchPolicy touchPolicy,
-      final bool generated,
-      final String publicKey) = _$SlotMetadataImpl;
+    final KeyType keyType,
+    final PinPolicy pinPolicy,
+    final TouchPolicy touchPolicy,
+    final bool generated,
+    final String publicKey,
+  ) = _$SlotMetadataImpl;
 
   factory _SlotMetadata.fromJson(Map<String, dynamic> json) =
       _$SlotMetadataImpl.fromJson;
@@ -1284,13 +1349,15 @@ mixin _$PivStateMetadata {
 /// @nodoc
 abstract class $PivStateMetadataCopyWith<$Res> {
   factory $PivStateMetadataCopyWith(
-          PivStateMetadata value, $Res Function(PivStateMetadata) then) =
-      _$PivStateMetadataCopyWithImpl<$Res, PivStateMetadata>;
+    PivStateMetadata value,
+    $Res Function(PivStateMetadata) then,
+  ) = _$PivStateMetadataCopyWithImpl<$Res, PivStateMetadata>;
   @useResult
-  $Res call(
-      {ManagementKeyMetadata managementKeyMetadata,
-      PinMetadata pinMetadata,
-      PinMetadata pukMetadata});
+  $Res call({
+    ManagementKeyMetadata managementKeyMetadata,
+    PinMetadata pinMetadata,
+    PinMetadata pukMetadata,
+  });
 
   $ManagementKeyMetadataCopyWith<$Res> get managementKeyMetadata;
   $PinMetadataCopyWith<$Res> get pinMetadata;
@@ -1316,20 +1383,26 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
     Object? pinMetadata = null,
     Object? pukMetadata = null,
   }) {
-    return _then(_value.copyWith(
-      managementKeyMetadata: null == managementKeyMetadata
-          ? _value.managementKeyMetadata
-          : managementKeyMetadata // ignore: cast_nullable_to_non_nullable
-              as ManagementKeyMetadata,
-      pinMetadata: null == pinMetadata
-          ? _value.pinMetadata
-          : pinMetadata // ignore: cast_nullable_to_non_nullable
-              as PinMetadata,
-      pukMetadata: null == pukMetadata
-          ? _value.pukMetadata
-          : pukMetadata // ignore: cast_nullable_to_non_nullable
-              as PinMetadata,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            managementKeyMetadata:
+                null == managementKeyMetadata
+                    ? _value.managementKeyMetadata
+                    : managementKeyMetadata // ignore: cast_nullable_to_non_nullable
+                        as ManagementKeyMetadata,
+            pinMetadata:
+                null == pinMetadata
+                    ? _value.pinMetadata
+                    : pinMetadata // ignore: cast_nullable_to_non_nullable
+                        as PinMetadata,
+            pukMetadata:
+                null == pukMetadata
+                    ? _value.pukMetadata
+                    : pukMetadata // ignore: cast_nullable_to_non_nullable
+                        as PinMetadata,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of PivStateMetadata
@@ -1337,8 +1410,9 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
   @override
   @pragma('vm:prefer-inline')
   $ManagementKeyMetadataCopyWith<$Res> get managementKeyMetadata {
-    return $ManagementKeyMetadataCopyWith<$Res>(_value.managementKeyMetadata,
-        (value) {
+    return $ManagementKeyMetadataCopyWith<$Res>(_value.managementKeyMetadata, (
+      value,
+    ) {
       return _then(_value.copyWith(managementKeyMetadata: value) as $Val);
     });
   }
@@ -1367,15 +1441,17 @@ class _$PivStateMetadataCopyWithImpl<$Res, $Val extends PivStateMetadata>
 /// @nodoc
 abstract class _$$PivStateMetadataImplCopyWith<$Res>
     implements $PivStateMetadataCopyWith<$Res> {
-  factory _$$PivStateMetadataImplCopyWith(_$PivStateMetadataImpl value,
-          $Res Function(_$PivStateMetadataImpl) then) =
-      __$$PivStateMetadataImplCopyWithImpl<$Res>;
+  factory _$$PivStateMetadataImplCopyWith(
+    _$PivStateMetadataImpl value,
+    $Res Function(_$PivStateMetadataImpl) then,
+  ) = __$$PivStateMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {ManagementKeyMetadata managementKeyMetadata,
-      PinMetadata pinMetadata,
-      PinMetadata pukMetadata});
+  $Res call({
+    ManagementKeyMetadata managementKeyMetadata,
+    PinMetadata pinMetadata,
+    PinMetadata pukMetadata,
+  });
 
   @override
   $ManagementKeyMetadataCopyWith<$Res> get managementKeyMetadata;
@@ -1389,9 +1465,10 @@ abstract class _$$PivStateMetadataImplCopyWith<$Res>
 class __$$PivStateMetadataImplCopyWithImpl<$Res>
     extends _$PivStateMetadataCopyWithImpl<$Res, _$PivStateMetadataImpl>
     implements _$$PivStateMetadataImplCopyWith<$Res> {
-  __$$PivStateMetadataImplCopyWithImpl(_$PivStateMetadataImpl _value,
-      $Res Function(_$PivStateMetadataImpl) _then)
-      : super(_value, _then);
+  __$$PivStateMetadataImplCopyWithImpl(
+    _$PivStateMetadataImpl _value,
+    $Res Function(_$PivStateMetadataImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivStateMetadata
   /// with the given fields replaced by the non-null parameter values.
@@ -1402,30 +1479,36 @@ class __$$PivStateMetadataImplCopyWithImpl<$Res>
     Object? pinMetadata = null,
     Object? pukMetadata = null,
   }) {
-    return _then(_$PivStateMetadataImpl(
-      managementKeyMetadata: null == managementKeyMetadata
-          ? _value.managementKeyMetadata
-          : managementKeyMetadata // ignore: cast_nullable_to_non_nullable
-              as ManagementKeyMetadata,
-      pinMetadata: null == pinMetadata
-          ? _value.pinMetadata
-          : pinMetadata // ignore: cast_nullable_to_non_nullable
-              as PinMetadata,
-      pukMetadata: null == pukMetadata
-          ? _value.pukMetadata
-          : pukMetadata // ignore: cast_nullable_to_non_nullable
-              as PinMetadata,
-    ));
+    return _then(
+      _$PivStateMetadataImpl(
+        managementKeyMetadata:
+            null == managementKeyMetadata
+                ? _value.managementKeyMetadata
+                : managementKeyMetadata // ignore: cast_nullable_to_non_nullable
+                    as ManagementKeyMetadata,
+        pinMetadata:
+            null == pinMetadata
+                ? _value.pinMetadata
+                : pinMetadata // ignore: cast_nullable_to_non_nullable
+                    as PinMetadata,
+        pukMetadata:
+            null == pukMetadata
+                ? _value.pukMetadata
+                : pukMetadata // ignore: cast_nullable_to_non_nullable
+                    as PinMetadata,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PivStateMetadataImpl implements _PivStateMetadata {
-  _$PivStateMetadataImpl(
-      {required this.managementKeyMetadata,
-      required this.pinMetadata,
-      required this.pukMetadata});
+  _$PivStateMetadataImpl({
+    required this.managementKeyMetadata,
+    required this.pinMetadata,
+    required this.pukMetadata,
+  });
 
   factory _$PivStateMetadataImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivStateMetadataImplFromJson(json);
@@ -1467,21 +1550,22 @@ class _$PivStateMetadataImpl implements _PivStateMetadata {
   @pragma('vm:prefer-inline')
   _$$PivStateMetadataImplCopyWith<_$PivStateMetadataImpl> get copyWith =>
       __$$PivStateMetadataImplCopyWithImpl<_$PivStateMetadataImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PivStateMetadataImplToJson(
-      this,
-    );
+    return _$$PivStateMetadataImplToJson(this);
   }
 }
 
 abstract class _PivStateMetadata implements PivStateMetadata {
-  factory _PivStateMetadata(
-      {required final ManagementKeyMetadata managementKeyMetadata,
-      required final PinMetadata pinMetadata,
-      required final PinMetadata pukMetadata}) = _$PivStateMetadataImpl;
+  factory _PivStateMetadata({
+    required final ManagementKeyMetadata managementKeyMetadata,
+    required final PinMetadata pinMetadata,
+    required final PinMetadata pukMetadata,
+  }) = _$PivStateMetadataImpl;
 
   factory _PivStateMetadata.fromJson(Map<String, dynamic> json) =
       _$PivStateMetadataImpl.fromJson;
@@ -1532,16 +1616,17 @@ abstract class $PivStateCopyWith<$Res> {
   factory $PivStateCopyWith(PivState value, $Res Function(PivState) then) =
       _$PivStateCopyWithImpl<$Res, PivState>;
   @useResult
-  $Res call(
-      {Version version,
-      bool authenticated,
-      bool derivedKey,
-      bool storedKey,
-      int pinAttempts,
-      bool supportsBio,
-      String? chuid,
-      String? ccc,
-      PivStateMetadata? metadata});
+  $Res call({
+    Version version,
+    bool authenticated,
+    bool derivedKey,
+    bool storedKey,
+    int pinAttempts,
+    bool supportsBio,
+    String? chuid,
+    String? ccc,
+    PivStateMetadata? metadata,
+  });
 
   $VersionCopyWith<$Res> get version;
   $PivStateMetadataCopyWith<$Res>? get metadata;
@@ -1572,44 +1657,56 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
     Object? ccc = freezed,
     Object? metadata = freezed,
   }) {
-    return _then(_value.copyWith(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as Version,
-      authenticated: null == authenticated
-          ? _value.authenticated
-          : authenticated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      derivedKey: null == derivedKey
-          ? _value.derivedKey
-          : derivedKey // ignore: cast_nullable_to_non_nullable
-              as bool,
-      storedKey: null == storedKey
-          ? _value.storedKey
-          : storedKey // ignore: cast_nullable_to_non_nullable
-              as bool,
-      pinAttempts: null == pinAttempts
-          ? _value.pinAttempts
-          : pinAttempts // ignore: cast_nullable_to_non_nullable
-              as int,
-      supportsBio: null == supportsBio
-          ? _value.supportsBio
-          : supportsBio // ignore: cast_nullable_to_non_nullable
-              as bool,
-      chuid: freezed == chuid
-          ? _value.chuid
-          : chuid // ignore: cast_nullable_to_non_nullable
-              as String?,
-      ccc: freezed == ccc
-          ? _value.ccc
-          : ccc // ignore: cast_nullable_to_non_nullable
-              as String?,
-      metadata: freezed == metadata
-          ? _value.metadata
-          : metadata // ignore: cast_nullable_to_non_nullable
-              as PivStateMetadata?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            version:
+                null == version
+                    ? _value.version
+                    : version // ignore: cast_nullable_to_non_nullable
+                        as Version,
+            authenticated:
+                null == authenticated
+                    ? _value.authenticated
+                    : authenticated // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            derivedKey:
+                null == derivedKey
+                    ? _value.derivedKey
+                    : derivedKey // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            storedKey:
+                null == storedKey
+                    ? _value.storedKey
+                    : storedKey // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            pinAttempts:
+                null == pinAttempts
+                    ? _value.pinAttempts
+                    : pinAttempts // ignore: cast_nullable_to_non_nullable
+                        as int,
+            supportsBio:
+                null == supportsBio
+                    ? _value.supportsBio
+                    : supportsBio // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            chuid:
+                freezed == chuid
+                    ? _value.chuid
+                    : chuid // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            ccc:
+                freezed == ccc
+                    ? _value.ccc
+                    : ccc // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            metadata:
+                freezed == metadata
+                    ? _value.metadata
+                    : metadata // ignore: cast_nullable_to_non_nullable
+                        as PivStateMetadata?,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of PivState
@@ -1641,20 +1738,22 @@ class _$PivStateCopyWithImpl<$Res, $Val extends PivState>
 abstract class _$$PivStateImplCopyWith<$Res>
     implements $PivStateCopyWith<$Res> {
   factory _$$PivStateImplCopyWith(
-          _$PivStateImpl value, $Res Function(_$PivStateImpl) then) =
-      __$$PivStateImplCopyWithImpl<$Res>;
+    _$PivStateImpl value,
+    $Res Function(_$PivStateImpl) then,
+  ) = __$$PivStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {Version version,
-      bool authenticated,
-      bool derivedKey,
-      bool storedKey,
-      int pinAttempts,
-      bool supportsBio,
-      String? chuid,
-      String? ccc,
-      PivStateMetadata? metadata});
+  $Res call({
+    Version version,
+    bool authenticated,
+    bool derivedKey,
+    bool storedKey,
+    int pinAttempts,
+    bool supportsBio,
+    String? chuid,
+    String? ccc,
+    PivStateMetadata? metadata,
+  });
 
   @override
   $VersionCopyWith<$Res> get version;
@@ -1667,8 +1766,9 @@ class __$$PivStateImplCopyWithImpl<$Res>
     extends _$PivStateCopyWithImpl<$Res, _$PivStateImpl>
     implements _$$PivStateImplCopyWith<$Res> {
   __$$PivStateImplCopyWithImpl(
-      _$PivStateImpl _value, $Res Function(_$PivStateImpl) _then)
-      : super(_value, _then);
+    _$PivStateImpl _value,
+    $Res Function(_$PivStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivState
   /// with the given fields replaced by the non-null parameter values.
@@ -1685,61 +1785,72 @@ class __$$PivStateImplCopyWithImpl<$Res>
     Object? ccc = freezed,
     Object? metadata = freezed,
   }) {
-    return _then(_$PivStateImpl(
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as Version,
-      authenticated: null == authenticated
-          ? _value.authenticated
-          : authenticated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      derivedKey: null == derivedKey
-          ? _value.derivedKey
-          : derivedKey // ignore: cast_nullable_to_non_nullable
-              as bool,
-      storedKey: null == storedKey
-          ? _value.storedKey
-          : storedKey // ignore: cast_nullable_to_non_nullable
-              as bool,
-      pinAttempts: null == pinAttempts
-          ? _value.pinAttempts
-          : pinAttempts // ignore: cast_nullable_to_non_nullable
-              as int,
-      supportsBio: null == supportsBio
-          ? _value.supportsBio
-          : supportsBio // ignore: cast_nullable_to_non_nullable
-              as bool,
-      chuid: freezed == chuid
-          ? _value.chuid
-          : chuid // ignore: cast_nullable_to_non_nullable
-              as String?,
-      ccc: freezed == ccc
-          ? _value.ccc
-          : ccc // ignore: cast_nullable_to_non_nullable
-              as String?,
-      metadata: freezed == metadata
-          ? _value.metadata
-          : metadata // ignore: cast_nullable_to_non_nullable
-              as PivStateMetadata?,
-    ));
+    return _then(
+      _$PivStateImpl(
+        version:
+            null == version
+                ? _value.version
+                : version // ignore: cast_nullable_to_non_nullable
+                    as Version,
+        authenticated:
+            null == authenticated
+                ? _value.authenticated
+                : authenticated // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        derivedKey:
+            null == derivedKey
+                ? _value.derivedKey
+                : derivedKey // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        storedKey:
+            null == storedKey
+                ? _value.storedKey
+                : storedKey // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        pinAttempts:
+            null == pinAttempts
+                ? _value.pinAttempts
+                : pinAttempts // ignore: cast_nullable_to_non_nullable
+                    as int,
+        supportsBio:
+            null == supportsBio
+                ? _value.supportsBio
+                : supportsBio // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        chuid:
+            freezed == chuid
+                ? _value.chuid
+                : chuid // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        ccc:
+            freezed == ccc
+                ? _value.ccc
+                : ccc // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        metadata:
+            freezed == metadata
+                ? _value.metadata
+                : metadata // ignore: cast_nullable_to_non_nullable
+                    as PivStateMetadata?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PivStateImpl extends _PivState {
-  _$PivStateImpl(
-      {required this.version,
-      required this.authenticated,
-      required this.derivedKey,
-      required this.storedKey,
-      required this.pinAttempts,
-      required this.supportsBio,
-      this.chuid,
-      this.ccc,
-      this.metadata})
-      : super._();
+  _$PivStateImpl({
+    required this.version,
+    required this.authenticated,
+    required this.derivedKey,
+    required this.storedKey,
+    required this.pinAttempts,
+    required this.supportsBio,
+    this.chuid,
+    this.ccc,
+    this.metadata,
+  }) : super._();
 
   factory _$PivStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivStateImplFromJson(json);
@@ -1792,8 +1903,18 @@ class _$PivStateImpl extends _PivState {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, version, authenticated,
-      derivedKey, storedKey, pinAttempts, supportsBio, chuid, ccc, metadata);
+  int get hashCode => Object.hash(
+    runtimeType,
+    version,
+    authenticated,
+    derivedKey,
+    storedKey,
+    pinAttempts,
+    supportsBio,
+    chuid,
+    ccc,
+    metadata,
+  );
 
   /// Create a copy of PivState
   /// with the given fields replaced by the non-null parameter values.
@@ -1805,23 +1926,22 @@ class _$PivStateImpl extends _PivState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PivStateImplToJson(
-      this,
-    );
+    return _$$PivStateImplToJson(this);
   }
 }
 
 abstract class _PivState extends PivState {
-  factory _PivState(
-      {required final Version version,
-      required final bool authenticated,
-      required final bool derivedKey,
-      required final bool storedKey,
-      required final int pinAttempts,
-      required final bool supportsBio,
-      final String? chuid,
-      final String? ccc,
-      final PivStateMetadata? metadata}) = _$PivStateImpl;
+  factory _PivState({
+    required final Version version,
+    required final bool authenticated,
+    required final bool derivedKey,
+    required final bool storedKey,
+    required final int pinAttempts,
+    required final bool supportsBio,
+    final String? chuid,
+    final String? ccc,
+    final PivStateMetadata? metadata,
+  }) = _$PivStateImpl;
   _PivState._() : super._();
 
   factory _PivState.fromJson(Map<String, dynamic> json) =
@@ -1883,14 +2003,15 @@ abstract class $CertInfoCopyWith<$Res> {
   factory $CertInfoCopyWith(CertInfo value, $Res Function(CertInfo) then) =
       _$CertInfoCopyWithImpl<$Res, CertInfo>;
   @useResult
-  $Res call(
-      {KeyType? keyType,
-      String subject,
-      String issuer,
-      String serial,
-      String notValidBefore,
-      String notValidAfter,
-      String fingerprint});
+  $Res call({
+    KeyType? keyType,
+    String subject,
+    String issuer,
+    String serial,
+    String notValidBefore,
+    String notValidAfter,
+    String fingerprint,
+  });
 }
 
 /// @nodoc
@@ -1916,36 +2037,46 @@ class _$CertInfoCopyWithImpl<$Res, $Val extends CertInfo>
     Object? notValidAfter = null,
     Object? fingerprint = null,
   }) {
-    return _then(_value.copyWith(
-      keyType: freezed == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as KeyType?,
-      subject: null == subject
-          ? _value.subject
-          : subject // ignore: cast_nullable_to_non_nullable
-              as String,
-      issuer: null == issuer
-          ? _value.issuer
-          : issuer // ignore: cast_nullable_to_non_nullable
-              as String,
-      serial: null == serial
-          ? _value.serial
-          : serial // ignore: cast_nullable_to_non_nullable
-              as String,
-      notValidBefore: null == notValidBefore
-          ? _value.notValidBefore
-          : notValidBefore // ignore: cast_nullable_to_non_nullable
-              as String,
-      notValidAfter: null == notValidAfter
-          ? _value.notValidAfter
-          : notValidAfter // ignore: cast_nullable_to_non_nullable
-              as String,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            keyType:
+                freezed == keyType
+                    ? _value.keyType
+                    : keyType // ignore: cast_nullable_to_non_nullable
+                        as KeyType?,
+            subject:
+                null == subject
+                    ? _value.subject
+                    : subject // ignore: cast_nullable_to_non_nullable
+                        as String,
+            issuer:
+                null == issuer
+                    ? _value.issuer
+                    : issuer // ignore: cast_nullable_to_non_nullable
+                        as String,
+            serial:
+                null == serial
+                    ? _value.serial
+                    : serial // ignore: cast_nullable_to_non_nullable
+                        as String,
+            notValidBefore:
+                null == notValidBefore
+                    ? _value.notValidBefore
+                    : notValidBefore // ignore: cast_nullable_to_non_nullable
+                        as String,
+            notValidAfter:
+                null == notValidAfter
+                    ? _value.notValidAfter
+                    : notValidAfter // ignore: cast_nullable_to_non_nullable
+                        as String,
+            fingerprint:
+                null == fingerprint
+                    ? _value.fingerprint
+                    : fingerprint // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -1953,18 +2084,20 @@ class _$CertInfoCopyWithImpl<$Res, $Val extends CertInfo>
 abstract class _$$CertInfoImplCopyWith<$Res>
     implements $CertInfoCopyWith<$Res> {
   factory _$$CertInfoImplCopyWith(
-          _$CertInfoImpl value, $Res Function(_$CertInfoImpl) then) =
-      __$$CertInfoImplCopyWithImpl<$Res>;
+    _$CertInfoImpl value,
+    $Res Function(_$CertInfoImpl) then,
+  ) = __$$CertInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {KeyType? keyType,
-      String subject,
-      String issuer,
-      String serial,
-      String notValidBefore,
-      String notValidAfter,
-      String fingerprint});
+  $Res call({
+    KeyType? keyType,
+    String subject,
+    String issuer,
+    String serial,
+    String notValidBefore,
+    String notValidAfter,
+    String fingerprint,
+  });
 }
 
 /// @nodoc
@@ -1972,8 +2105,9 @@ class __$$CertInfoImplCopyWithImpl<$Res>
     extends _$CertInfoCopyWithImpl<$Res, _$CertInfoImpl>
     implements _$$CertInfoImplCopyWith<$Res> {
   __$$CertInfoImplCopyWithImpl(
-      _$CertInfoImpl _value, $Res Function(_$CertInfoImpl) _then)
-      : super(_value, _then);
+    _$CertInfoImpl _value,
+    $Res Function(_$CertInfoImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of CertInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -1988,50 +2122,60 @@ class __$$CertInfoImplCopyWithImpl<$Res>
     Object? notValidAfter = null,
     Object? fingerprint = null,
   }) {
-    return _then(_$CertInfoImpl(
-      keyType: freezed == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as KeyType?,
-      subject: null == subject
-          ? _value.subject
-          : subject // ignore: cast_nullable_to_non_nullable
-              as String,
-      issuer: null == issuer
-          ? _value.issuer
-          : issuer // ignore: cast_nullable_to_non_nullable
-              as String,
-      serial: null == serial
-          ? _value.serial
-          : serial // ignore: cast_nullable_to_non_nullable
-              as String,
-      notValidBefore: null == notValidBefore
-          ? _value.notValidBefore
-          : notValidBefore // ignore: cast_nullable_to_non_nullable
-              as String,
-      notValidAfter: null == notValidAfter
-          ? _value.notValidAfter
-          : notValidAfter // ignore: cast_nullable_to_non_nullable
-              as String,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+    return _then(
+      _$CertInfoImpl(
+        keyType:
+            freezed == keyType
+                ? _value.keyType
+                : keyType // ignore: cast_nullable_to_non_nullable
+                    as KeyType?,
+        subject:
+            null == subject
+                ? _value.subject
+                : subject // ignore: cast_nullable_to_non_nullable
+                    as String,
+        issuer:
+            null == issuer
+                ? _value.issuer
+                : issuer // ignore: cast_nullable_to_non_nullable
+                    as String,
+        serial:
+            null == serial
+                ? _value.serial
+                : serial // ignore: cast_nullable_to_non_nullable
+                    as String,
+        notValidBefore:
+            null == notValidBefore
+                ? _value.notValidBefore
+                : notValidBefore // ignore: cast_nullable_to_non_nullable
+                    as String,
+        notValidAfter:
+            null == notValidAfter
+                ? _value.notValidAfter
+                : notValidAfter // ignore: cast_nullable_to_non_nullable
+                    as String,
+        fingerprint:
+            null == fingerprint
+                ? _value.fingerprint
+                : fingerprint // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$CertInfoImpl implements _CertInfo {
-  _$CertInfoImpl(
-      {required this.keyType,
-      required this.subject,
-      required this.issuer,
-      required this.serial,
-      required this.notValidBefore,
-      required this.notValidAfter,
-      required this.fingerprint});
+  _$CertInfoImpl({
+    required this.keyType,
+    required this.subject,
+    required this.issuer,
+    required this.serial,
+    required this.notValidBefore,
+    required this.notValidAfter,
+    required this.fingerprint,
+  });
 
   factory _$CertInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$CertInfoImplFromJson(json);
@@ -2075,8 +2219,16 @@ class _$CertInfoImpl implements _CertInfo {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, keyType, subject, issuer, serial,
-      notValidBefore, notValidAfter, fingerprint);
+  int get hashCode => Object.hash(
+    runtimeType,
+    keyType,
+    subject,
+    issuer,
+    serial,
+    notValidBefore,
+    notValidAfter,
+    fingerprint,
+  );
 
   /// Create a copy of CertInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -2088,21 +2240,20 @@ class _$CertInfoImpl implements _CertInfo {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CertInfoImplToJson(
-      this,
-    );
+    return _$$CertInfoImplToJson(this);
   }
 }
 
 abstract class _CertInfo implements CertInfo {
-  factory _CertInfo(
-      {required final KeyType? keyType,
-      required final String subject,
-      required final String issuer,
-      required final String serial,
-      required final String notValidBefore,
-      required final String notValidAfter,
-      required final String fingerprint}) = _$CertInfoImpl;
+  factory _CertInfo({
+    required final KeyType? keyType,
+    required final String subject,
+    required final String issuer,
+    required final String serial,
+    required final String notValidBefore,
+    required final String notValidAfter,
+    required final String fingerprint,
+  }) = _$CertInfoImpl;
 
   factory _CertInfo.fromJson(Map<String, dynamic> json) =
       _$CertInfoImpl.fromJson;
@@ -2155,11 +2306,12 @@ abstract class $PivSlotCopyWith<$Res> {
   factory $PivSlotCopyWith(PivSlot value, $Res Function(PivSlot) then) =
       _$PivSlotCopyWithImpl<$Res, PivSlot>;
   @useResult
-  $Res call(
-      {SlotId slot,
-      SlotMetadata? metadata,
-      CertInfo? certInfo,
-      bool? publicKeyMatch});
+  $Res call({
+    SlotId slot,
+    SlotMetadata? metadata,
+    CertInfo? certInfo,
+    bool? publicKeyMatch,
+  });
 
   $SlotMetadataCopyWith<$Res>? get metadata;
   $CertInfoCopyWith<$Res>? get certInfo;
@@ -2185,24 +2337,31 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
     Object? certInfo = freezed,
     Object? publicKeyMatch = freezed,
   }) {
-    return _then(_value.copyWith(
-      slot: null == slot
-          ? _value.slot
-          : slot // ignore: cast_nullable_to_non_nullable
-              as SlotId,
-      metadata: freezed == metadata
-          ? _value.metadata
-          : metadata // ignore: cast_nullable_to_non_nullable
-              as SlotMetadata?,
-      certInfo: freezed == certInfo
-          ? _value.certInfo
-          : certInfo // ignore: cast_nullable_to_non_nullable
-              as CertInfo?,
-      publicKeyMatch: freezed == publicKeyMatch
-          ? _value.publicKeyMatch
-          : publicKeyMatch // ignore: cast_nullable_to_non_nullable
-              as bool?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            slot:
+                null == slot
+                    ? _value.slot
+                    : slot // ignore: cast_nullable_to_non_nullable
+                        as SlotId,
+            metadata:
+                freezed == metadata
+                    ? _value.metadata
+                    : metadata // ignore: cast_nullable_to_non_nullable
+                        as SlotMetadata?,
+            certInfo:
+                freezed == certInfo
+                    ? _value.certInfo
+                    : certInfo // ignore: cast_nullable_to_non_nullable
+                        as CertInfo?,
+            publicKeyMatch:
+                freezed == publicKeyMatch
+                    ? _value.publicKeyMatch
+                    : publicKeyMatch // ignore: cast_nullable_to_non_nullable
+                        as bool?,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of PivSlot
@@ -2237,15 +2396,17 @@ class _$PivSlotCopyWithImpl<$Res, $Val extends PivSlot>
 /// @nodoc
 abstract class _$$PivSlotImplCopyWith<$Res> implements $PivSlotCopyWith<$Res> {
   factory _$$PivSlotImplCopyWith(
-          _$PivSlotImpl value, $Res Function(_$PivSlotImpl) then) =
-      __$$PivSlotImplCopyWithImpl<$Res>;
+    _$PivSlotImpl value,
+    $Res Function(_$PivSlotImpl) then,
+  ) = __$$PivSlotImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {SlotId slot,
-      SlotMetadata? metadata,
-      CertInfo? certInfo,
-      bool? publicKeyMatch});
+  $Res call({
+    SlotId slot,
+    SlotMetadata? metadata,
+    CertInfo? certInfo,
+    bool? publicKeyMatch,
+  });
 
   @override
   $SlotMetadataCopyWith<$Res>? get metadata;
@@ -2258,8 +2419,9 @@ class __$$PivSlotImplCopyWithImpl<$Res>
     extends _$PivSlotCopyWithImpl<$Res, _$PivSlotImpl>
     implements _$$PivSlotImplCopyWith<$Res> {
   __$$PivSlotImplCopyWithImpl(
-      _$PivSlotImpl _value, $Res Function(_$PivSlotImpl) _then)
-      : super(_value, _then);
+    _$PivSlotImpl _value,
+    $Res Function(_$PivSlotImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivSlot
   /// with the given fields replaced by the non-null parameter values.
@@ -2271,32 +2433,42 @@ class __$$PivSlotImplCopyWithImpl<$Res>
     Object? certInfo = freezed,
     Object? publicKeyMatch = freezed,
   }) {
-    return _then(_$PivSlotImpl(
-      slot: null == slot
-          ? _value.slot
-          : slot // ignore: cast_nullable_to_non_nullable
-              as SlotId,
-      metadata: freezed == metadata
-          ? _value.metadata
-          : metadata // ignore: cast_nullable_to_non_nullable
-              as SlotMetadata?,
-      certInfo: freezed == certInfo
-          ? _value.certInfo
-          : certInfo // ignore: cast_nullable_to_non_nullable
-              as CertInfo?,
-      publicKeyMatch: freezed == publicKeyMatch
-          ? _value.publicKeyMatch
-          : publicKeyMatch // ignore: cast_nullable_to_non_nullable
-              as bool?,
-    ));
+    return _then(
+      _$PivSlotImpl(
+        slot:
+            null == slot
+                ? _value.slot
+                : slot // ignore: cast_nullable_to_non_nullable
+                    as SlotId,
+        metadata:
+            freezed == metadata
+                ? _value.metadata
+                : metadata // ignore: cast_nullable_to_non_nullable
+                    as SlotMetadata?,
+        certInfo:
+            freezed == certInfo
+                ? _value.certInfo
+                : certInfo // ignore: cast_nullable_to_non_nullable
+                    as CertInfo?,
+        publicKeyMatch:
+            freezed == publicKeyMatch
+                ? _value.publicKeyMatch
+                : publicKeyMatch // ignore: cast_nullable_to_non_nullable
+                    as bool?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PivSlotImpl implements _PivSlot {
-  _$PivSlotImpl(
-      {required this.slot, this.metadata, this.certInfo, this.publicKeyMatch});
+  _$PivSlotImpl({
+    required this.slot,
+    this.metadata,
+    this.certInfo,
+    this.publicKeyMatch,
+  });
 
   factory _$PivSlotImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivSlotImplFromJson(json);
@@ -2344,18 +2516,17 @@ class _$PivSlotImpl implements _PivSlot {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PivSlotImplToJson(
-      this,
-    );
+    return _$$PivSlotImplToJson(this);
   }
 }
 
 abstract class _PivSlot implements PivSlot {
-  factory _PivSlot(
-      {required final SlotId slot,
-      final SlotMetadata? metadata,
-      final CertInfo? certInfo,
-      final bool? publicKeyMatch}) = _$PivSlotImpl;
+  factory _PivSlot({
+    required final SlotId slot,
+    final SlotMetadata? metadata,
+    final CertInfo? certInfo,
+    final bool? publicKeyMatch,
+  }) = _$PivSlotImpl;
 
   factory _PivSlot.fromJson(Map<String, dynamic> json) = _$PivSlotImpl.fromJson;
 
@@ -2384,8 +2555,12 @@ PivExamineResult _$PivExamineResultFromJson(Map<String, dynamic> json) {
       return _InvalidPassword.fromJson(json);
 
     default:
-      throw CheckedFromJsonException(json, 'runtimeType', 'PivExamineResult',
-          'Invalid union type "${json['runtimeType']}"!');
+      throw CheckedFromJsonException(
+        json,
+        'runtimeType',
+        'PivExamineResult',
+        'Invalid union type "${json['runtimeType']}"!',
+      );
   }
 }
 
@@ -2393,48 +2568,54 @@ PivExamineResult _$PivExamineResultFromJson(Map<String, dynamic> json) {
 mixin _$PivExamineResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool password, KeyType? keyType,
-            CertInfo? certInfo, bool? publicKeyMatch)
-        result,
+    required TResult Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )
+    result,
     required TResult Function() invalidPassword,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo,
-            bool? publicKeyMatch)?
-        result,
+    TResult? Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )?
+    result,
     TResult? Function()? invalidPassword,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo,
-            bool? publicKeyMatch)?
-        result,
+    TResult Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )?
+    result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_ExamineResult value) result,
     required TResult Function(_InvalidPassword value) invalidPassword,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ExamineResult value)? result,
     TResult? Function(_InvalidPassword value)? invalidPassword,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ExamineResult value)? result,
     TResult Function(_InvalidPassword value)? invalidPassword,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 
   /// Serializes this PivExamineResult to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2443,8 +2624,9 @@ mixin _$PivExamineResult {
 /// @nodoc
 abstract class $PivExamineResultCopyWith<$Res> {
   factory $PivExamineResultCopyWith(
-          PivExamineResult value, $Res Function(PivExamineResult) then) =
-      _$PivExamineResultCopyWithImpl<$Res, PivExamineResult>;
+    PivExamineResult value,
+    $Res Function(PivExamineResult) then,
+  ) = _$PivExamineResultCopyWithImpl<$Res, PivExamineResult>;
 }
 
 /// @nodoc
@@ -2464,14 +2646,16 @@ class _$PivExamineResultCopyWithImpl<$Res, $Val extends PivExamineResult>
 /// @nodoc
 abstract class _$$ExamineResultImplCopyWith<$Res> {
   factory _$$ExamineResultImplCopyWith(
-          _$ExamineResultImpl value, $Res Function(_$ExamineResultImpl) then) =
-      __$$ExamineResultImplCopyWithImpl<$Res>;
+    _$ExamineResultImpl value,
+    $Res Function(_$ExamineResultImpl) then,
+  ) = __$$ExamineResultImplCopyWithImpl<$Res>;
   @useResult
-  $Res call(
-      {bool password,
-      KeyType? keyType,
-      CertInfo? certInfo,
-      bool? publicKeyMatch});
+  $Res call({
+    bool password,
+    KeyType? keyType,
+    CertInfo? certInfo,
+    bool? publicKeyMatch,
+  });
 
   $CertInfoCopyWith<$Res>? get certInfo;
 }
@@ -2481,8 +2665,9 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
     extends _$PivExamineResultCopyWithImpl<$Res, _$ExamineResultImpl>
     implements _$$ExamineResultImplCopyWith<$Res> {
   __$$ExamineResultImplCopyWithImpl(
-      _$ExamineResultImpl _value, $Res Function(_$ExamineResultImpl) _then)
-      : super(_value, _then);
+    _$ExamineResultImpl _value,
+    $Res Function(_$ExamineResultImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivExamineResult
   /// with the given fields replaced by the non-null parameter values.
@@ -2494,24 +2679,30 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
     Object? certInfo = freezed,
     Object? publicKeyMatch = freezed,
   }) {
-    return _then(_$ExamineResultImpl(
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as bool,
-      keyType: freezed == keyType
-          ? _value.keyType
-          : keyType // ignore: cast_nullable_to_non_nullable
-              as KeyType?,
-      certInfo: freezed == certInfo
-          ? _value.certInfo
-          : certInfo // ignore: cast_nullable_to_non_nullable
-              as CertInfo?,
-      publicKeyMatch: freezed == publicKeyMatch
-          ? _value.publicKeyMatch
-          : publicKeyMatch // ignore: cast_nullable_to_non_nullable
-              as bool?,
-    ));
+    return _then(
+      _$ExamineResultImpl(
+        password:
+            null == password
+                ? _value.password
+                : password // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        keyType:
+            freezed == keyType
+                ? _value.keyType
+                : keyType // ignore: cast_nullable_to_non_nullable
+                    as KeyType?,
+        certInfo:
+            freezed == certInfo
+                ? _value.certInfo
+                : certInfo // ignore: cast_nullable_to_non_nullable
+                    as CertInfo?,
+        publicKeyMatch:
+            freezed == publicKeyMatch
+                ? _value.publicKeyMatch
+                : publicKeyMatch // ignore: cast_nullable_to_non_nullable
+                    as bool?,
+      ),
+    );
   }
 
   /// Create a copy of PivExamineResult
@@ -2532,13 +2723,13 @@ class __$$ExamineResultImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ExamineResultImpl implements _ExamineResult {
-  _$ExamineResultImpl(
-      {required this.password,
-      required this.keyType,
-      required this.certInfo,
-      this.publicKeyMatch,
-      final String? $type})
-      : $type = $type ?? 'result';
+  _$ExamineResultImpl({
+    required this.password,
+    required this.keyType,
+    required this.certInfo,
+    this.publicKeyMatch,
+    final String? $type,
+  }) : $type = $type ?? 'result';
 
   factory _$ExamineResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$ExamineResultImplFromJson(json);
@@ -2590,9 +2781,13 @@ class _$ExamineResultImpl implements _ExamineResult {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool password, KeyType? keyType,
-            CertInfo? certInfo, bool? publicKeyMatch)
-        result,
+    required TResult Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )
+    result,
     required TResult Function() invalidPassword,
   }) {
     return result(password, keyType, certInfo, publicKeyMatch);
@@ -2601,9 +2796,13 @@ class _$ExamineResultImpl implements _ExamineResult {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo,
-            bool? publicKeyMatch)?
-        result,
+    TResult? Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )?
+    result,
     TResult? Function()? invalidPassword,
   }) {
     return result?.call(password, keyType, certInfo, publicKeyMatch);
@@ -2612,9 +2811,13 @@ class _$ExamineResultImpl implements _ExamineResult {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo,
-            bool? publicKeyMatch)?
-        result,
+    TResult Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )?
+    result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
   }) {
@@ -2657,18 +2860,17 @@ class _$ExamineResultImpl implements _ExamineResult {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ExamineResultImplToJson(
-      this,
-    );
+    return _$$ExamineResultImplToJson(this);
   }
 }
 
 abstract class _ExamineResult implements PivExamineResult {
-  factory _ExamineResult(
-      {required final bool password,
-      required final KeyType? keyType,
-      required final CertInfo? certInfo,
-      final bool? publicKeyMatch}) = _$ExamineResultImpl;
+  factory _ExamineResult({
+    required final bool password,
+    required final KeyType? keyType,
+    required final CertInfo? certInfo,
+    final bool? publicKeyMatch,
+  }) = _$ExamineResultImpl;
 
   factory _ExamineResult.fromJson(Map<String, dynamic> json) =
       _$ExamineResultImpl.fromJson;
@@ -2687,9 +2889,10 @@ abstract class _ExamineResult implements PivExamineResult {
 
 /// @nodoc
 abstract class _$$InvalidPasswordImplCopyWith<$Res> {
-  factory _$$InvalidPasswordImplCopyWith(_$InvalidPasswordImpl value,
-          $Res Function(_$InvalidPasswordImpl) then) =
-      __$$InvalidPasswordImplCopyWithImpl<$Res>;
+  factory _$$InvalidPasswordImplCopyWith(
+    _$InvalidPasswordImpl value,
+    $Res Function(_$InvalidPasswordImpl) then,
+  ) = __$$InvalidPasswordImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
@@ -2697,8 +2900,9 @@ class __$$InvalidPasswordImplCopyWithImpl<$Res>
     extends _$PivExamineResultCopyWithImpl<$Res, _$InvalidPasswordImpl>
     implements _$$InvalidPasswordImplCopyWith<$Res> {
   __$$InvalidPasswordImplCopyWithImpl(
-      _$InvalidPasswordImpl _value, $Res Function(_$InvalidPasswordImpl) _then)
-      : super(_value, _then);
+    _$InvalidPasswordImpl _value,
+    $Res Function(_$InvalidPasswordImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivExamineResult
   /// with the given fields replaced by the non-null parameter values.
@@ -2708,7 +2912,7 @@ class __$$InvalidPasswordImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$InvalidPasswordImpl implements _InvalidPassword {
   _$InvalidPasswordImpl({final String? $type})
-      : $type = $type ?? 'invalidPassword';
+    : $type = $type ?? 'invalidPassword';
 
   factory _$InvalidPasswordImpl.fromJson(Map<String, dynamic> json) =>
       _$$InvalidPasswordImplFromJson(json);
@@ -2734,9 +2938,13 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool password, KeyType? keyType,
-            CertInfo? certInfo, bool? publicKeyMatch)
-        result,
+    required TResult Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )
+    result,
     required TResult Function() invalidPassword,
   }) {
     return invalidPassword();
@@ -2745,9 +2953,13 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool password, KeyType? keyType, CertInfo? certInfo,
-            bool? publicKeyMatch)?
-        result,
+    TResult? Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )?
+    result,
     TResult? Function()? invalidPassword,
   }) {
     return invalidPassword?.call();
@@ -2756,9 +2968,13 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool password, KeyType? keyType, CertInfo? certInfo,
-            bool? publicKeyMatch)?
-        result,
+    TResult Function(
+      bool password,
+      KeyType? keyType,
+      CertInfo? certInfo,
+      bool? publicKeyMatch,
+    )?
+    result,
     TResult Function()? invalidPassword,
     required TResult orElse(),
   }) {
@@ -2801,9 +3017,7 @@ class _$InvalidPasswordImpl implements _InvalidPassword {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$InvalidPasswordImplToJson(
-      this,
-    );
+    return _$$InvalidPasswordImplToJson(this);
   }
 }
 
@@ -2820,62 +3034,62 @@ mixin _$PivGenerateParameters {
   TResult when<TResult extends Object?>({
     required TResult Function() publicKey,
     required TResult Function(
-            String subject, DateTime validFrom, DateTime validTo)
-        certificate,
+      String subject,
+      DateTime validFrom,
+      DateTime validTo,
+    )
+    certificate,
     required TResult Function(String subject) csr,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult? Function(String subject)? csr,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult Function(String subject)? csr,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_GeneratePublicKey value) publicKey,
     required TResult Function(_GenerateCertificate value) certificate,
     required TResult Function(_GenerateCsr value) csr,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_GeneratePublicKey value)? publicKey,
     TResult? Function(_GenerateCertificate value)? certificate,
     TResult? Function(_GenerateCsr value)? csr,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_GeneratePublicKey value)? publicKey,
     TResult Function(_GenerateCertificate value)? certificate,
     TResult Function(_GenerateCsr value)? csr,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $PivGenerateParametersCopyWith<$Res> {
-  factory $PivGenerateParametersCopyWith(PivGenerateParameters value,
-          $Res Function(PivGenerateParameters) then) =
-      _$PivGenerateParametersCopyWithImpl<$Res, PivGenerateParameters>;
+  factory $PivGenerateParametersCopyWith(
+    PivGenerateParameters value,
+    $Res Function(PivGenerateParameters) then,
+  ) = _$PivGenerateParametersCopyWithImpl<$Res, PivGenerateParameters>;
 }
 
 /// @nodoc
-class _$PivGenerateParametersCopyWithImpl<$Res,
-        $Val extends PivGenerateParameters>
+class _$PivGenerateParametersCopyWithImpl<
+  $Res,
+  $Val extends PivGenerateParameters
+>
     implements $PivGenerateParametersCopyWith<$Res> {
   _$PivGenerateParametersCopyWithImpl(this._value, this._then);
 
@@ -2890,18 +3104,20 @@ class _$PivGenerateParametersCopyWithImpl<$Res,
 
 /// @nodoc
 abstract class _$$GeneratePublicKeyImplCopyWith<$Res> {
-  factory _$$GeneratePublicKeyImplCopyWith(_$GeneratePublicKeyImpl value,
-          $Res Function(_$GeneratePublicKeyImpl) then) =
-      __$$GeneratePublicKeyImplCopyWithImpl<$Res>;
+  factory _$$GeneratePublicKeyImplCopyWith(
+    _$GeneratePublicKeyImpl value,
+    $Res Function(_$GeneratePublicKeyImpl) then,
+  ) = __$$GeneratePublicKeyImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$GeneratePublicKeyImplCopyWithImpl<$Res>
     extends _$PivGenerateParametersCopyWithImpl<$Res, _$GeneratePublicKeyImpl>
     implements _$$GeneratePublicKeyImplCopyWith<$Res> {
-  __$$GeneratePublicKeyImplCopyWithImpl(_$GeneratePublicKeyImpl _value,
-      $Res Function(_$GeneratePublicKeyImpl) _then)
-      : super(_value, _then);
+  __$$GeneratePublicKeyImplCopyWithImpl(
+    _$GeneratePublicKeyImpl _value,
+    $Res Function(_$GeneratePublicKeyImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivGenerateParameters
   /// with the given fields replaced by the non-null parameter values.
@@ -2931,8 +3147,11 @@ class _$GeneratePublicKeyImpl implements _GeneratePublicKey {
   TResult when<TResult extends Object?>({
     required TResult Function() publicKey,
     required TResult Function(
-            String subject, DateTime validFrom, DateTime validTo)
-        certificate,
+      String subject,
+      DateTime validFrom,
+      DateTime validTo,
+    )
+    certificate,
     required TResult Function(String subject) csr,
   }) {
     return publicKey();
@@ -2943,7 +3162,7 @@ class _$GeneratePublicKeyImpl implements _GeneratePublicKey {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult? Function(String subject)? csr,
   }) {
     return publicKey?.call();
@@ -2954,7 +3173,7 @@ class _$GeneratePublicKeyImpl implements _GeneratePublicKey {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult Function(String subject)? csr,
     required TResult orElse(),
   }) {
@@ -3005,9 +3224,10 @@ abstract class _GeneratePublicKey implements PivGenerateParameters {
 
 /// @nodoc
 abstract class _$$GenerateCertificateImplCopyWith<$Res> {
-  factory _$$GenerateCertificateImplCopyWith(_$GenerateCertificateImpl value,
-          $Res Function(_$GenerateCertificateImpl) then) =
-      __$$GenerateCertificateImplCopyWithImpl<$Res>;
+  factory _$$GenerateCertificateImplCopyWith(
+    _$GenerateCertificateImpl value,
+    $Res Function(_$GenerateCertificateImpl) then,
+  ) = __$$GenerateCertificateImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String subject, DateTime validFrom, DateTime validTo});
 }
@@ -3016,9 +3236,10 @@ abstract class _$$GenerateCertificateImplCopyWith<$Res> {
 class __$$GenerateCertificateImplCopyWithImpl<$Res>
     extends _$PivGenerateParametersCopyWithImpl<$Res, _$GenerateCertificateImpl>
     implements _$$GenerateCertificateImplCopyWith<$Res> {
-  __$$GenerateCertificateImplCopyWithImpl(_$GenerateCertificateImpl _value,
-      $Res Function(_$GenerateCertificateImpl) _then)
-      : super(_value, _then);
+  __$$GenerateCertificateImplCopyWithImpl(
+    _$GenerateCertificateImpl _value,
+    $Res Function(_$GenerateCertificateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivGenerateParameters
   /// with the given fields replaced by the non-null parameter values.
@@ -3029,28 +3250,36 @@ class __$$GenerateCertificateImplCopyWithImpl<$Res>
     Object? validFrom = null,
     Object? validTo = null,
   }) {
-    return _then(_$GenerateCertificateImpl(
-      subject: null == subject
-          ? _value.subject
-          : subject // ignore: cast_nullable_to_non_nullable
-              as String,
-      validFrom: null == validFrom
-          ? _value.validFrom
-          : validFrom // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      validTo: null == validTo
-          ? _value.validTo
-          : validTo // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ));
+    return _then(
+      _$GenerateCertificateImpl(
+        subject:
+            null == subject
+                ? _value.subject
+                : subject // ignore: cast_nullable_to_non_nullable
+                    as String,
+        validFrom:
+            null == validFrom
+                ? _value.validFrom
+                : validFrom // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        validTo:
+            null == validTo
+                ? _value.validTo
+                : validTo // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$GenerateCertificateImpl implements _GenerateCertificate {
-  _$GenerateCertificateImpl(
-      {required this.subject, required this.validFrom, required this.validTo});
+  _$GenerateCertificateImpl({
+    required this.subject,
+    required this.validFrom,
+    required this.validTo,
+  });
 
   @override
   final String subject;
@@ -3085,15 +3314,20 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   @pragma('vm:prefer-inline')
   _$$GenerateCertificateImplCopyWith<_$GenerateCertificateImpl> get copyWith =>
       __$$GenerateCertificateImplCopyWithImpl<_$GenerateCertificateImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() publicKey,
     required TResult Function(
-            String subject, DateTime validFrom, DateTime validTo)
-        certificate,
+      String subject,
+      DateTime validFrom,
+      DateTime validTo,
+    )
+    certificate,
     required TResult Function(String subject) csr,
   }) {
     return certificate(subject, validFrom, validTo);
@@ -3104,7 +3338,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult? Function(String subject)? csr,
   }) {
     return certificate?.call(subject, validFrom, validTo);
@@ -3115,7 +3349,7 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult Function(String subject)? csr,
     required TResult orElse(),
   }) {
@@ -3161,10 +3395,11 @@ class _$GenerateCertificateImpl implements _GenerateCertificate {
 }
 
 abstract class _GenerateCertificate implements PivGenerateParameters {
-  factory _GenerateCertificate(
-      {required final String subject,
-      required final DateTime validFrom,
-      required final DateTime validTo}) = _$GenerateCertificateImpl;
+  factory _GenerateCertificate({
+    required final String subject,
+    required final DateTime validFrom,
+    required final DateTime validTo,
+  }) = _$GenerateCertificateImpl;
 
   String get subject;
   DateTime get validFrom;
@@ -3180,8 +3415,9 @@ abstract class _GenerateCertificate implements PivGenerateParameters {
 /// @nodoc
 abstract class _$$GenerateCsrImplCopyWith<$Res> {
   factory _$$GenerateCsrImplCopyWith(
-          _$GenerateCsrImpl value, $Res Function(_$GenerateCsrImpl) then) =
-      __$$GenerateCsrImplCopyWithImpl<$Res>;
+    _$GenerateCsrImpl value,
+    $Res Function(_$GenerateCsrImpl) then,
+  ) = __$$GenerateCsrImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String subject});
 }
@@ -3191,22 +3427,24 @@ class __$$GenerateCsrImplCopyWithImpl<$Res>
     extends _$PivGenerateParametersCopyWithImpl<$Res, _$GenerateCsrImpl>
     implements _$$GenerateCsrImplCopyWith<$Res> {
   __$$GenerateCsrImplCopyWithImpl(
-      _$GenerateCsrImpl _value, $Res Function(_$GenerateCsrImpl) _then)
-      : super(_value, _then);
+    _$GenerateCsrImpl _value,
+    $Res Function(_$GenerateCsrImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivGenerateParameters
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? subject = null,
-  }) {
-    return _then(_$GenerateCsrImpl(
-      subject: null == subject
-          ? _value.subject
-          : subject // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+  $Res call({Object? subject = null}) {
+    return _then(
+      _$GenerateCsrImpl(
+        subject:
+            null == subject
+                ? _value.subject
+                : subject // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
   }
 }
 
@@ -3247,8 +3485,11 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   TResult when<TResult extends Object?>({
     required TResult Function() publicKey,
     required TResult Function(
-            String subject, DateTime validFrom, DateTime validTo)
-        certificate,
+      String subject,
+      DateTime validFrom,
+      DateTime validTo,
+    )
+    certificate,
     required TResult Function(String subject) csr,
   }) {
     return csr(subject);
@@ -3259,7 +3500,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? publicKey,
     TResult? Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult? Function(String subject)? csr,
   }) {
     return csr?.call(subject);
@@ -3270,7 +3511,7 @@ class _$GenerateCsrImpl implements _GenerateCsr {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? publicKey,
     TResult Function(String subject, DateTime validFrom, DateTime validTo)?
-        certificate,
+    certificate,
     TResult Function(String subject)? csr,
     required TResult orElse(),
   }) {
@@ -3350,8 +3591,9 @@ mixin _$PivGenerateResult {
 /// @nodoc
 abstract class $PivGenerateResultCopyWith<$Res> {
   factory $PivGenerateResultCopyWith(
-          PivGenerateResult value, $Res Function(PivGenerateResult) then) =
-      _$PivGenerateResultCopyWithImpl<$Res, PivGenerateResult>;
+    PivGenerateResult value,
+    $Res Function(PivGenerateResult) then,
+  ) = _$PivGenerateResultCopyWithImpl<$Res, PivGenerateResult>;
   @useResult
   $Res call({GenerateType generateType, String publicKey, String? result});
 }
@@ -3375,29 +3617,36 @@ class _$PivGenerateResultCopyWithImpl<$Res, $Val extends PivGenerateResult>
     Object? publicKey = null,
     Object? result = freezed,
   }) {
-    return _then(_value.copyWith(
-      generateType: null == generateType
-          ? _value.generateType
-          : generateType // ignore: cast_nullable_to_non_nullable
-              as GenerateType,
-      publicKey: null == publicKey
-          ? _value.publicKey
-          : publicKey // ignore: cast_nullable_to_non_nullable
-              as String,
-      result: freezed == result
-          ? _value.result
-          : result // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            generateType:
+                null == generateType
+                    ? _value.generateType
+                    : generateType // ignore: cast_nullable_to_non_nullable
+                        as GenerateType,
+            publicKey:
+                null == publicKey
+                    ? _value.publicKey
+                    : publicKey // ignore: cast_nullable_to_non_nullable
+                        as String,
+            result:
+                freezed == result
+                    ? _value.result
+                    : result // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$PivGenerateResultImplCopyWith<$Res>
     implements $PivGenerateResultCopyWith<$Res> {
-  factory _$$PivGenerateResultImplCopyWith(_$PivGenerateResultImpl value,
-          $Res Function(_$PivGenerateResultImpl) then) =
-      __$$PivGenerateResultImplCopyWithImpl<$Res>;
+  factory _$$PivGenerateResultImplCopyWith(
+    _$PivGenerateResultImpl value,
+    $Res Function(_$PivGenerateResultImpl) then,
+  ) = __$$PivGenerateResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({GenerateType generateType, String publicKey, String? result});
@@ -3407,9 +3656,10 @@ abstract class _$$PivGenerateResultImplCopyWith<$Res>
 class __$$PivGenerateResultImplCopyWithImpl<$Res>
     extends _$PivGenerateResultCopyWithImpl<$Res, _$PivGenerateResultImpl>
     implements _$$PivGenerateResultImplCopyWith<$Res> {
-  __$$PivGenerateResultImplCopyWithImpl(_$PivGenerateResultImpl _value,
-      $Res Function(_$PivGenerateResultImpl) _then)
-      : super(_value, _then);
+  __$$PivGenerateResultImplCopyWithImpl(
+    _$PivGenerateResultImpl _value,
+    $Res Function(_$PivGenerateResultImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivGenerateResult
   /// with the given fields replaced by the non-null parameter values.
@@ -3420,28 +3670,36 @@ class __$$PivGenerateResultImplCopyWithImpl<$Res>
     Object? publicKey = null,
     Object? result = freezed,
   }) {
-    return _then(_$PivGenerateResultImpl(
-      generateType: null == generateType
-          ? _value.generateType
-          : generateType // ignore: cast_nullable_to_non_nullable
-              as GenerateType,
-      publicKey: null == publicKey
-          ? _value.publicKey
-          : publicKey // ignore: cast_nullable_to_non_nullable
-              as String,
-      result: freezed == result
-          ? _value.result
-          : result // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$PivGenerateResultImpl(
+        generateType:
+            null == generateType
+                ? _value.generateType
+                : generateType // ignore: cast_nullable_to_non_nullable
+                    as GenerateType,
+        publicKey:
+            null == publicKey
+                ? _value.publicKey
+                : publicKey // ignore: cast_nullable_to_non_nullable
+                    as String,
+        result:
+            freezed == result
+                ? _value.result
+                : result // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PivGenerateResultImpl implements _PivGenerateResult {
-  _$PivGenerateResultImpl(
-      {required this.generateType, required this.publicKey, this.result});
+  _$PivGenerateResultImpl({
+    required this.generateType,
+    required this.publicKey,
+    this.result,
+  });
 
   factory _$PivGenerateResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivGenerateResultImplFromJson(json);
@@ -3481,21 +3739,22 @@ class _$PivGenerateResultImpl implements _PivGenerateResult {
   @pragma('vm:prefer-inline')
   _$$PivGenerateResultImplCopyWith<_$PivGenerateResultImpl> get copyWith =>
       __$$PivGenerateResultImplCopyWithImpl<_$PivGenerateResultImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PivGenerateResultImplToJson(
-      this,
-    );
+    return _$$PivGenerateResultImplToJson(this);
   }
 }
 
 abstract class _PivGenerateResult implements PivGenerateResult {
-  factory _PivGenerateResult(
-      {required final GenerateType generateType,
-      required final String publicKey,
-      final String? result}) = _$PivGenerateResultImpl;
+  factory _PivGenerateResult({
+    required final GenerateType generateType,
+    required final String publicKey,
+    final String? result,
+  }) = _$PivGenerateResultImpl;
 
   factory _PivGenerateResult.fromJson(Map<String, dynamic> json) =
       _$PivGenerateResultImpl.fromJson;
@@ -3538,8 +3797,9 @@ mixin _$PivImportResult {
 /// @nodoc
 abstract class $PivImportResultCopyWith<$Res> {
   factory $PivImportResultCopyWith(
-          PivImportResult value, $Res Function(PivImportResult) then) =
-      _$PivImportResultCopyWithImpl<$Res, PivImportResult>;
+    PivImportResult value,
+    $Res Function(PivImportResult) then,
+  ) = _$PivImportResultCopyWithImpl<$Res, PivImportResult>;
   @useResult
   $Res call({SlotMetadata? metadata, String? publicKey, String? certificate});
 
@@ -3565,20 +3825,26 @@ class _$PivImportResultCopyWithImpl<$Res, $Val extends PivImportResult>
     Object? publicKey = freezed,
     Object? certificate = freezed,
   }) {
-    return _then(_value.copyWith(
-      metadata: freezed == metadata
-          ? _value.metadata
-          : metadata // ignore: cast_nullable_to_non_nullable
-              as SlotMetadata?,
-      publicKey: freezed == publicKey
-          ? _value.publicKey
-          : publicKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      certificate: freezed == certificate
-          ? _value.certificate
-          : certificate // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            metadata:
+                freezed == metadata
+                    ? _value.metadata
+                    : metadata // ignore: cast_nullable_to_non_nullable
+                        as SlotMetadata?,
+            publicKey:
+                freezed == publicKey
+                    ? _value.publicKey
+                    : publicKey // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            certificate:
+                freezed == certificate
+                    ? _value.certificate
+                    : certificate // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of PivImportResult
@@ -3599,9 +3865,10 @@ class _$PivImportResultCopyWithImpl<$Res, $Val extends PivImportResult>
 /// @nodoc
 abstract class _$$PivImportResultImplCopyWith<$Res>
     implements $PivImportResultCopyWith<$Res> {
-  factory _$$PivImportResultImplCopyWith(_$PivImportResultImpl value,
-          $Res Function(_$PivImportResultImpl) then) =
-      __$$PivImportResultImplCopyWithImpl<$Res>;
+  factory _$$PivImportResultImplCopyWith(
+    _$PivImportResultImpl value,
+    $Res Function(_$PivImportResultImpl) then,
+  ) = __$$PivImportResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({SlotMetadata? metadata, String? publicKey, String? certificate});
@@ -3615,8 +3882,9 @@ class __$$PivImportResultImplCopyWithImpl<$Res>
     extends _$PivImportResultCopyWithImpl<$Res, _$PivImportResultImpl>
     implements _$$PivImportResultImplCopyWith<$Res> {
   __$$PivImportResultImplCopyWithImpl(
-      _$PivImportResultImpl _value, $Res Function(_$PivImportResultImpl) _then)
-      : super(_value, _then);
+    _$PivImportResultImpl _value,
+    $Res Function(_$PivImportResultImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PivImportResult
   /// with the given fields replaced by the non-null parameter values.
@@ -3627,30 +3895,36 @@ class __$$PivImportResultImplCopyWithImpl<$Res>
     Object? publicKey = freezed,
     Object? certificate = freezed,
   }) {
-    return _then(_$PivImportResultImpl(
-      metadata: freezed == metadata
-          ? _value.metadata
-          : metadata // ignore: cast_nullable_to_non_nullable
-              as SlotMetadata?,
-      publicKey: freezed == publicKey
-          ? _value.publicKey
-          : publicKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      certificate: freezed == certificate
-          ? _value.certificate
-          : certificate // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$PivImportResultImpl(
+        metadata:
+            freezed == metadata
+                ? _value.metadata
+                : metadata // ignore: cast_nullable_to_non_nullable
+                    as SlotMetadata?,
+        publicKey:
+            freezed == publicKey
+                ? _value.publicKey
+                : publicKey // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        certificate:
+            freezed == certificate
+                ? _value.certificate
+                : certificate // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PivImportResultImpl implements _PivImportResult {
-  _$PivImportResultImpl(
-      {required this.metadata,
-      required this.publicKey,
-      required this.certificate});
+  _$PivImportResultImpl({
+    required this.metadata,
+    required this.publicKey,
+    required this.certificate,
+  });
 
   factory _$PivImportResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$PivImportResultImplFromJson(json);
@@ -3692,21 +3966,22 @@ class _$PivImportResultImpl implements _PivImportResult {
   @pragma('vm:prefer-inline')
   _$$PivImportResultImplCopyWith<_$PivImportResultImpl> get copyWith =>
       __$$PivImportResultImplCopyWithImpl<_$PivImportResultImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PivImportResultImplToJson(
-      this,
-    );
+    return _$$PivImportResultImplToJson(this);
   }
 }
 
 abstract class _PivImportResult implements PivImportResult {
-  factory _PivImportResult(
-      {required final SlotMetadata? metadata,
-      required final String? publicKey,
-      required final String? certificate}) = _$PivImportResultImpl;
+  factory _PivImportResult({
+    required final SlotMetadata? metadata,
+    required final String? publicKey,
+    required final String? certificate,
+  }) = _$PivImportResultImpl;
 
   factory _PivImportResult.fromJson(Map<String, dynamic> json) =
       _$PivImportResultImpl.fromJson;

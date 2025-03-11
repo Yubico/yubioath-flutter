@@ -40,19 +40,20 @@ class _OverwriteConfirmDialog extends StatelessWidget {
       title: Text(l10n.q_overwrite_slot),
       actions: [
         TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: Text(l10n.s_overwrite)),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+          child: Text(l10n.s_overwrite),
+        ),
       ],
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.p_overwrite_slot_desc(slot.getDisplayName(l10n)),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           if (certificate) Text(l10n.l_bullet(l10n.l_overwrite_cert)),
@@ -75,12 +76,14 @@ Future<bool> confirmOverwrite(
   final overwritesKey = writeKey ? pivSlot.metadata != null : false;
   if (overwritesCert || overwritesKey != false) {
     return await showDialog(
-            context: context,
-            builder: (context) => _OverwriteConfirmDialog(
-                  slot: pivSlot.slot,
-                  certificate: overwritesCert,
-                  privateKey: overwritesKey,
-                )) ??
+          context: context,
+          builder:
+              (context) => _OverwriteConfirmDialog(
+                slot: pivSlot.slot,
+                certificate: overwritesCert,
+                privateKey: overwritesKey,
+              ),
+        ) ??
         false;
   }
   return true;

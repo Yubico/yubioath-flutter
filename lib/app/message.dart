@@ -25,29 +25,27 @@ void Function() showMessage(
   BuildContext context,
   String message, {
   Duration duration = const Duration(seconds: 2),
-}) =>
-    showToast(context, message, duration: duration);
+}) => showToast(context, message, duration: duration);
 
 Future<T?> showBlurDialog<T>({
   required BuildContext context,
   required Widget Function(BuildContext) builder,
   RouteSettings? routeSettings,
   Color barrierColor = const Color(0x33000000),
-}) async =>
-    await showGeneralDialog<T>(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: barrierColor,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      pageBuilder: (ctx, anim1, anim2) => builder(ctx),
-      transitionDuration: const Duration(milliseconds: 150),
-      transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+}) async => await showGeneralDialog<T>(
+  context: context,
+  barrierDismissible: true,
+  barrierColor: barrierColor,
+  barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+  pageBuilder: (ctx, anim1, anim2) => builder(ctx),
+  transitionDuration: const Duration(milliseconds: 150),
+  transitionBuilder:
+      (ctx, anim1, anim2, child) => BackdropFilter(
         filter: ImageFilter.blur(
-            sigmaX: 20 * anim1.value, sigmaY: 20 * anim1.value),
-        child: FadeTransition(
-          opacity: anim1,
-          child: child,
+          sigmaX: 20 * anim1.value,
+          sigmaY: 20 * anim1.value,
         ),
+        child: FadeTransition(opacity: anim1, child: child),
       ),
-      routeSettings: routeSettings,
-    );
+  routeSettings: routeSettings,
+);

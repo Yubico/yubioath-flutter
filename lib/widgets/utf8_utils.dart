@@ -29,19 +29,24 @@ int byteLength(String value) => utf8.encode(value).length;
 /// Set this as a [TextField.buildCounter] callback to show the number of bytes
 /// used rather than number of characters. [currentValue] should always match
 /// the input text value to measure.
-InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
-    (context, {required currentLength, required isFocused, maxLength}) {
-      final theme = Theme.of(context);
-      final caption = theme.textTheme.bodySmall;
-      final style = (byteLength(currentValue) <= (maxLength ?? 0))
+InputCounterWidgetBuilder buildByteCounterFor(String currentValue) => (
+  context, {
+  required currentLength,
+  required isFocused,
+  maxLength,
+}) {
+  final theme = Theme.of(context);
+  final caption = theme.textTheme.bodySmall;
+  final style =
+      (byteLength(currentValue) <= (maxLength ?? 0))
           ? caption
           : caption?.copyWith(color: theme.colorScheme.error);
-      return Text(
-        maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
-        style: style,
-        semanticsLabel: AppLocalizations.of(context).s_character_count,
-      );
-    };
+  return Text(
+    maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
+    style: style,
+    semanticsLabel: AppLocalizations.of(context).s_character_count,
+  );
+};
 
 /// Limits the input in length based on the byte length when encoded.
 /// This is generally used together with [buildByteCounterFor].

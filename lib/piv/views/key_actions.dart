@@ -40,9 +40,14 @@ bool pivShowActionsNotifier(PivState state) {
   return usingDefaultPin || usingDefaultPuk || usingDefaultMgmtKey;
 }
 
-Widget pivBuildActions(BuildContext context, DevicePath devicePath,
-    PivState pivState, WidgetRef ref) {
-  final colors = Theme.of(context).buttonTheme.colorScheme ??
+Widget pivBuildActions(
+  BuildContext context,
+  DevicePath devicePath,
+  PivState pivState,
+  WidgetRef ref,
+) {
+  final colors =
+      Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
   final l10n = AppLocalizations.of(context);
 
@@ -56,8 +61,10 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
   final alertIcon = Icon(Symbols.warning_amber, color: colors.tertiary);
 
   final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
-  final isBio = [FormFactor.usbABio, FormFactor.usbCBio]
-      .contains(deviceData?.info.formFactor);
+  final isBio = [
+    FormFactor.usbABio,
+    FormFactor.usbCBio,
+  ].contains(deviceData?.info.formFactor);
 
   return Column(
     children: [
@@ -65,80 +72,93 @@ Widget pivBuildActions(BuildContext context, DevicePath devicePath,
         l10n.s_manage,
         children: [
           ActionListItem(
-              key: keys.managePinAction,
-              feature: features.actionsPin,
-              title: pinBlocked ? l10n.s_unblock_pin : l10n.s_change_pin,
-              subtitle: pinBlocked
-                  ? (pukAttempts != 0
-                      ? l10n.l_piv_pin_blocked
-                      : l10n.l_piv_pin_puk_blocked)
-                  : usingDefaultPin
-                      ? '${l10n.l_attempts_remaining(pivState.pinAttempts)}\n${l10n.l_warning_default_pin}'
-                      : l10n.l_attempts_remaining(pivState.pinAttempts),
-              icon: const Icon(Symbols.pin),
-              trailing: pinBlocked || usingDefaultPin ? alertIcon : null,
-              onTap: !(pinBlocked && pukAttempts == 0)
-                  ? (context) {
+            key: keys.managePinAction,
+            feature: features.actionsPin,
+            title: pinBlocked ? l10n.s_unblock_pin : l10n.s_change_pin,
+            subtitle:
+                pinBlocked
+                    ? (pukAttempts != 0
+                        ? l10n.l_piv_pin_blocked
+                        : l10n.l_piv_pin_puk_blocked)
+                    : usingDefaultPin
+                    ? '${l10n.l_attempts_remaining(pivState.pinAttempts)}\n${l10n.l_warning_default_pin}'
+                    : l10n.l_attempts_remaining(pivState.pinAttempts),
+            icon: const Icon(Symbols.pin),
+            trailing: pinBlocked || usingDefaultPin ? alertIcon : null,
+            onTap:
+                !(pinBlocked && pukAttempts == 0)
+                    ? (context) {
                       Navigator.of(context).popUntil((route) => route.isFirst);
                       showBlurDialog(
                         context: context,
-                        builder: (context) => ManagePinPukDialog(
-                          devicePath,
-                          pivState,
-                          target: pinBlocked
-                              ? ManageTarget.unblock
-                              : ManageTarget.pin,
-                        ),
+                        builder:
+                            (context) => ManagePinPukDialog(
+                              devicePath,
+                              pivState,
+                              target:
+                                  pinBlocked
+                                      ? ManageTarget.unblock
+                                      : ManageTarget.pin,
+                            ),
                       );
                     }
-                  : null),
+                    : null,
+          ),
           if (!isBio)
             ActionListItem(
-                key: keys.managePukAction,
-                feature: features.actionsPuk,
-                title: l10n.s_change_puk,
-                subtitle: pukAttempts != null
-                    ? (pukAttempts == 0
-                        ? l10n.l_piv_pin_puk_blocked
-                        : usingDefaultPuk
-                            ? '${l10n.l_attempts_remaining(pukAttempts)}\n${l10n.l_warning_default_puk}'
-                            : l10n.l_attempts_remaining(pukAttempts))
-                    : usingDefaultPuk
-                        ? l10n.l_warning_default_puk
-                        : null,
-                icon: const Icon(Symbols.pin),
-                trailing:
-                    pukAttempts == 0 || usingDefaultPuk ? alertIcon : null,
-                onTap: pukAttempts != 0
-                    ? (context) {
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
+              key: keys.managePukAction,
+              feature: features.actionsPuk,
+              title: l10n.s_change_puk,
+              subtitle:
+                  pukAttempts != null
+                      ? (pukAttempts == 0
+                          ? l10n.l_piv_pin_puk_blocked
+                          : usingDefaultPuk
+                          ? '${l10n.l_attempts_remaining(pukAttempts)}\n${l10n.l_warning_default_puk}'
+                          : l10n.l_attempts_remaining(pukAttempts))
+                      : usingDefaultPuk
+                      ? l10n.l_warning_default_puk
+                      : null,
+              icon: const Icon(Symbols.pin),
+              trailing: pukAttempts == 0 || usingDefaultPuk ? alertIcon : null,
+              onTap:
+                  pukAttempts != 0
+                      ? (context) {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
                         showBlurDialog(
                           context: context,
-                          builder: (context) => ManagePinPukDialog(
-                              devicePath, pivState,
-                              target: ManageTarget.puk),
+                          builder:
+                              (context) => ManagePinPukDialog(
+                                devicePath,
+                                pivState,
+                                target: ManageTarget.puk,
+                              ),
                         );
                       }
-                    : null),
+                      : null,
+            ),
           ActionListItem(
-              key: keys.manageManagementKeyAction,
-              feature: features.actionsManagementKey,
-              title: l10n.s_management_key,
-              subtitle: usingDefaultMgmtKey
-                  ? l10n.l_warning_default_key
-                  : (pivState.protectedKey
-                      ? l10n.l_pin_protected_key
-                      : l10n.l_change_management_key),
-              icon: const Icon(Symbols.key),
-              trailing: usingDefaultMgmtKey ? alertIcon : null,
-              onTap: (context) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                showBlurDialog(
-                  context: context,
-                  builder: (context) => ManageKeyDialog(devicePath, pivState),
-                );
-              }),
+            key: keys.manageManagementKeyAction,
+            feature: features.actionsManagementKey,
+            title: l10n.s_management_key,
+            subtitle:
+                usingDefaultMgmtKey
+                    ? l10n.l_warning_default_key
+                    : (pivState.protectedKey
+                        ? l10n.l_pin_protected_key
+                        : l10n.l_change_management_key),
+            icon: const Icon(Symbols.key),
+            trailing: usingDefaultMgmtKey ? alertIcon : null,
+            onTap: (context) {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              showBlurDialog(
+                context: context,
+                builder: (context) => ManageKeyDialog(devicePath, pivState),
+              );
+            },
+          ),
         ],
       ),
       // TODO

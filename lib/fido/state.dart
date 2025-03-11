@@ -23,7 +23,8 @@ import 'models.dart';
 
 final passkeysSearchProvider =
     StateNotifierProvider<PasskeysSearchNotifier, String>(
-        (ref) => PasskeysSearchNotifier());
+      (ref) => PasskeysSearchNotifier(),
+    );
 
 class PasskeysSearchNotifier extends StateNotifier<String> {
   PasskeysSearchNotifier() : super('');
@@ -35,13 +36,13 @@ class PasskeysSearchNotifier extends StateNotifier<String> {
 
 final passkeysLayoutProvider =
     StateNotifierProvider<LayoutNotifier, FlexLayout>(
-  (ref) => LayoutNotifier('FIDO_PASSKEYS_LAYOUT', ref.watch(prefProvider)),
-);
+      (ref) => LayoutNotifier('FIDO_PASSKEYS_LAYOUT', ref.watch(prefProvider)),
+    );
 
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   Stream<InteractionEvent> reset();
@@ -52,8 +53,8 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
 
 final fingerprintProvider = AsyncNotifierProvider.autoDispose
     .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class FidoFingerprintsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<Fingerprint>, DevicePath> {
@@ -64,8 +65,8 @@ abstract class FidoFingerprintsNotifier
 
 final credentialProvider = AsyncNotifierProvider.autoDispose
     .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
-  () => throw UnimplementedError(),
-);
+      () => throw UnimplementedError(),
+    );
 
 abstract class FidoCredentialsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<FidoCredential>, DevicePath> {
@@ -73,21 +74,30 @@ abstract class FidoCredentialsNotifier
 }
 
 final filteredFidoCredentialsProvider = StateNotifierProvider.autoDispose
-    .family<FilteredFidoCredentialsNotifier, List<FidoCredential>,
-        List<FidoCredential>>(
-  (ref, full) {
-    return FilteredFidoCredentialsNotifier(
-        full, ref.watch(passkeysSearchProvider));
-  },
-);
+    .family<
+      FilteredFidoCredentialsNotifier,
+      List<FidoCredential>,
+      List<FidoCredential>
+    >((ref, full) {
+      return FilteredFidoCredentialsNotifier(
+        full,
+        ref.watch(passkeysSearchProvider),
+      );
+    });
 
 class FilteredFidoCredentialsNotifier
     extends StateNotifier<List<FidoCredential>> {
   final String query;
   FilteredFidoCredentialsNotifier(List<FidoCredential> full, this.query)
-      : super(full
-            .where((credential) =>
-                credential.rpId.toLowerCase().contains(query.toLowerCase()) ||
-                credential.userName.toLowerCase().contains(query.toLowerCase()))
-            .toList());
+    : super(
+        full
+            .where(
+              (credential) =>
+                  credential.rpId.toLowerCase().contains(query.toLowerCase()) ||
+                  credential.userName.toLowerCase().contains(
+                    query.toLowerCase(),
+                  ),
+            )
+            .toList(),
+      );
 }

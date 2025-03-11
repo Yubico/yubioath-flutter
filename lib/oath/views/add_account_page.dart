@@ -137,8 +137,10 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     });
   }
 
-  Future<void> _doAddCredential(
-      {DevicePath? devicePath, required Uri credUri}) async {
+  Future<void> _doAddCredential({
+    DevicePath? devicePath,
+    required Uri credUri,
+  }) async {
     final l10n = AppLocalizations.of(context);
     try {
       if (devicePath == null) {
@@ -190,10 +192,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       oathState = ref
           .watch(oathStateProvider(deviceNode.path))
           .maybeWhen(data: (data) => data, orElse: () => null);
-      _credentials = ref
-          .watch(credentialListProvider(deviceNode.path))
-          ?.map((e) => e.credential)
-          .toList();
+      _credentials =
+          ref
+              .watch(credentialListProvider(deviceNode.path))
+              ?.map((e) => e.credential)
+              .toList();
     } else {
       oathState = widget.state;
       _credentials = widget.credentials;
@@ -203,31 +206,37 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     _promptController?.updateContent(title: l10n.l_insert_yk);
     if (otpauthUri != null && deviceNode != null) {
       final deviceData = ref.watch(currentDeviceDataProvider);
-      deviceData.when(data: (data) {
-        if (Capability.oath.value ^
-                (data.info.config.enabledCapabilities[deviceNode.transport] ??
-                    0) !=
-            0) {
-          if (oathState == null) {
-            _promptController?.updateContent(title: l10n.s_please_wait);
-          } else if (oathState.locked) {
-            _promptController?.close();
-          } else {
-            _otpauthUri = null;
-            _promptController?.close();
-            Timer.run(() => _doAddCredential(
+      deviceData.when(
+        data: (data) {
+          if (Capability.oath.value ^
+                  (data.info.config.enabledCapabilities[deviceNode.transport] ??
+                      0) !=
+              0) {
+            if (oathState == null) {
+              _promptController?.updateContent(title: l10n.s_please_wait);
+            } else if (oathState.locked) {
+              _promptController?.close();
+            } else {
+              _otpauthUri = null;
+              _promptController?.close();
+              Timer.run(
+                () => _doAddCredential(
                   devicePath: deviceNode.path,
                   credUri: otpauthUri,
-                ));
+                ),
+              );
+            }
+          } else {
+            _promptController?.updateContent(title: l10n.s_unsupported_yk);
           }
-        } else {
+        },
+        error: (error, _) {
           _promptController?.updateContent(title: l10n.s_unsupported_yk);
-        }
-      }, error: (error, _) {
-        _promptController?.updateContent(title: l10n.s_unsupported_yk);
-      }, loading: () {
-        _promptController?.updateContent(title: l10n.s_please_wait);
-      });
+        },
+        loading: () {
+          _promptController?.updateContent(title: l10n.s_please_wait);
+        },
+      );
     }
 
     final period = int.tryParse(_periodController.text) ?? -1;
@@ -251,17 +260,21 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     final secretFormatValid = Format.base32.isValid(secret);
 
     // is this credentials name/issuer pair different from all other?
-    final isUnique = _credentials
-            ?.where((element) =>
-                element.name == nameText &&
-                (element.issuer ?? '') == issuerText)
+    final isUnique =
+        _credentials
+            ?.where(
+              (element) =>
+                  element.name == nameText &&
+                  (element.issuer ?? '') == issuerText,
+            )
             .isEmpty ??
         true;
     final issuerNoColon = !_issuerController.text.contains(':');
 
     final isLocked = oathState?.locked ?? false;
 
-    final isValid = !isLocked &&
+    final isValid =
+        !isLocked &&
         nameText.isNotEmpty &&
         secret.isNotEmpty &&
         isUnique &&
@@ -270,11 +283,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
         nameRemaining >= 0 &&
         period > 0;
 
-    final hashAlgorithms = HashAlgorithm.values
-        .where((alg) =>
-            alg != HashAlgorithm.sha512 ||
-            (oathState?.version.isAtLeast(4, 3, 1) ?? true))
-        .toList();
+    final hashAlgorithms =
+        HashAlgorithm.values
+            .where(
+              (alg) =>
+                  alg != HashAlgorithm.sha512 ||
+                  (oathState?.version.isAtLeast(4, 3, 1) ?? true),
+            )
+            .toList();
     if (!hashAlgorithms.contains(_hashAlgorithm)) {
       _hashAlgorithm = HashAlgorithm.sha1;
     }
@@ -364,8 +380,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
             });
           } else {
             Navigator.of(context).pop();
-            await handleUri(context, widget.credentials, qrData,
-                widget.devicePath, widget.state, l10n);
+            await handleUri(
+              context,
+              widget.credentials,
+              qrData,
+              widget.devicePath,
+              widget.state,
+              l10n,
+            );
             return;
           }
         } catch (_) {
@@ -387,8 +409,12 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
           setState(() {
             _scanning = true;
           });
-          final qrData =
-              await handleQrFile(file, context, withContext, qrScanner);
+          final qrData = await handleQrFile(
+            file,
+            context,
+            withContext,
+            qrScanner,
+          );
 
           if (qrData != null) {
             handleQrData(qrData, withContext);
@@ -410,345 +436,458 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
             child: Text(l10n.s_save, key: keys.saveButton),
           ),
         ],
-        builder: (context, fullScreen) => isLocked
-            ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                child:
-                    UnlockForm(deviceNode!.path, keystore: oathState!.keystore),
-              )
-            : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (widget.credentialData == null && !isAndroid)
-                      Column(
-                        children: [
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 4.0,
-                            runSpacing: 4.0,
-                            children: [
-                              ActionChip(
-                                avatar: _scanning
-                                    ? SizedBox(
-                                        height: 16,
-                                        width: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2.0,
-                                        ),
-                                      )
-                                    : _qrScanSuccess
-                                        ? Icon(
-                                            Symbols.check_circle,
-                                            fill: 1,
-                                            color: colorScheme.primary,
-                                          )
-                                        : Icon(Symbols.qr_code_scanner),
-                                label: Text(
-                                  _qrScanSuccess && !_scanning
-                                      ? l10n.l_qr_scanned
-                                      : l10n.s_qr_scan,
-                                ),
-                                onPressed: () async {
-                                  if (_qrScanSuccess) {
-                                    clearCredentialData();
-                                    setState(() {
-                                      _qrScanSuccess = false;
-                                    });
-                                    return;
-                                  }
-                                  if (qrScanner != null) {
-                                    setState(() {
-                                      _scanning = true;
-                                    });
+        builder:
+            (context, fullScreen) =>
+                isLocked
+                    ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      child: UnlockForm(
+                        deviceNode!.path,
+                        keystore: oathState!.keystore,
+                      ),
+                    )
+                    : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children:
+                            [
+                                  if (widget.credentialData == null &&
+                                      !isAndroid)
+                                    Column(
+                                      children: [
+                                        Wrap(
+                                          alignment: WrapAlignment.center,
+                                          spacing: 4.0,
+                                          runSpacing: 4.0,
+                                          children: [
+                                            ActionChip(
+                                              avatar:
+                                                  _scanning
+                                                      ? SizedBox(
+                                                        height: 16,
+                                                        width: 16,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                              strokeWidth: 2.0,
+                                                            ),
+                                                      )
+                                                      : _qrScanSuccess
+                                                      ? Icon(
+                                                        Symbols.check_circle,
+                                                        fill: 1,
+                                                        color:
+                                                            colorScheme.primary,
+                                                      )
+                                                      : Icon(
+                                                        Symbols.qr_code_scanner,
+                                                      ),
+                                              label: Text(
+                                                _qrScanSuccess && !_scanning
+                                                    ? l10n.l_qr_scanned
+                                                    : l10n.s_qr_scan,
+                                              ),
+                                              onPressed: () async {
+                                                if (_qrScanSuccess) {
+                                                  clearCredentialData();
+                                                  setState(() {
+                                                    _qrScanSuccess = false;
+                                                  });
+                                                  return;
+                                                }
+                                                if (qrScanner != null) {
+                                                  setState(() {
+                                                    _scanning = true;
+                                                  });
 
-                                    final qrData = await qrScanner.scanQr();
-                                    if (qrData != null) {
-                                      handleQrData(qrData, withContext);
-                                    } else {
-                                      await withContext((context) async {
-                                        showMessage(
-                                            context, l10n.l_qr_not_found);
-                                      });
-                                    }
-                                    setState(() {
-                                      _scanning = false;
-                                    });
-                                  }
-                                },
-                              ),
-                              InfoPopupButton(
-                                size: 30,
-                                iconSize: 20,
-                                displayDialog: fullScreen,
-                                infoText: RichText(
-                                  text: TextSpan(
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: colorScheme.onSurfaceVariant,
+                                                  final qrData =
+                                                      await qrScanner.scanQr();
+                                                  if (qrData != null) {
+                                                    handleQrData(
+                                                      qrData,
+                                                      withContext,
+                                                    );
+                                                  } else {
+                                                    await withContext((
+                                                      context,
+                                                    ) async {
+                                                      showMessage(
+                                                        context,
+                                                        l10n.l_qr_not_found,
+                                                      );
+                                                    });
+                                                  }
+                                                  setState(() {
+                                                    _scanning = false;
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                            InfoPopupButton(
+                                              size: 30,
+                                              iconSize: 20,
+                                              displayDialog: fullScreen,
+                                              infoText: RichText(
+                                                text: TextSpan(
+                                                  style: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            colorScheme
+                                                                .onSurfaceVariant,
+                                                      ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text:
+                                                          l10n.p_add_account_three_ways,
+                                                    ),
+                                                    TextSpan(text: '\n' * 2),
+                                                    TextSpan(
+                                                      text: l10n.s_scanning,
+                                                      style: textTheme.bodySmall
+                                                          ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
+                                                    ),
+                                                    TextSpan(text: '\n'),
+                                                    TextSpan(
+                                                      text:
+                                                          l10n.p_scanning_desc,
+                                                    ),
+                                                    TextSpan(text: '\n' * 2),
+                                                    TextSpan(
+                                                      text:
+                                                          l10n.s_drag_and_drop,
+                                                      style: textTheme.bodySmall
+                                                          ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
+                                                    ),
+                                                    TextSpan(text: '\n'),
+                                                    TextSpan(
+                                                      text:
+                                                          l10n.p_drag_and_drop_desc,
+                                                    ),
+                                                    TextSpan(text: '\n' * 2),
+                                                    TextSpan(
+                                                      text: l10n.s_manually,
+                                                      style: textTheme.bodySmall
+                                                          ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
+                                                    ),
+                                                    TextSpan(text: '\n'),
+                                                    TextSpan(
+                                                      text:
+                                                          l10n.p_manually_desc,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0,
+                                          ),
+                                          child: Text(
+                                            l10n.p_add_account_desc,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  AppTextField(
+                                    key: keys.issuerField,
+                                    controller: _issuerController,
+                                    autofocus: widget.credentialData == null,
+                                    enabled: issuerRemaining > 0,
+                                    maxLength: issuerMaxLength,
+                                    inputFormatters: [
+                                      limitBytesLength(issuerRemaining),
+                                    ],
+                                    buildCounter: buildByteCounterFor(
+                                      issuerText,
+                                    ),
+                                    decoration: AppInputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: l10n.s_issuer_optional,
+                                      helperText:
+                                          '', // Prevents dialog resizing when
+                                      errorText:
+                                          (byteLength(issuerText) >
+                                                  issuerMaxLength)
+                                              ? '' // needs empty string to render as error
+                                              : issuerNoColon
+                                              ? null
+                                              : l10n.l_invalid_character_issuer,
+                                      icon: const Icon(Symbols.business),
+                                    ),
+                                    textInputAction: TextInputAction.next,
+                                    focusNode: _issuerFocus,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        // Update maxlengths
+                                      });
+                                    },
+                                  ).init(),
+                                  AppTextField(
+                                    key: keys.nameField,
+                                    controller: _accountController,
+                                    maxLength: nameMaxLength,
+                                    buildCounter: buildByteCounterFor(nameText),
+                                    inputFormatters: [
+                                      limitBytesLength(nameRemaining),
+                                    ],
+                                    decoration: AppInputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: l10n.s_account_name,
+                                      helperText:
+                                          '', // Prevents dialog resizing when disabled
+                                      errorText:
+                                          _submitting
+                                              ? null
+                                              : (byteLength(nameText) >
+                                                  nameMaxLength)
+                                              ? '' // needs empty string to render as error
+                                              : isUnique
+                                              ? null
+                                              : l10n.l_name_already_exists,
+                                      icon: const Icon(Symbols.person),
+                                    ),
+                                    textInputAction: TextInputAction.next,
+                                    focusNode: _accountFocus,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        // Update max lengths
+                                      });
+                                    },
+                                  ).init(),
+                                  AppTextField(
+                                    key: keys.secretField,
+                                    controller: _secretController,
+                                    obscureText: _isObscure,
+                                    // avoid using autofill hints on Android otherwise Autofill service
+                                    // would hint to use saved passwords for this field
+                                    autofillHints:
+                                        isAndroid
+                                            ? []
+                                            : const [AutofillHints.password],
+                                    decoration: AppInputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: l10n.s_secret_key,
+                                      errorText:
+                                          _validateSecret && !secretLengthValid
+                                              ? l10n.s_invalid_length
+                                              : _validateSecret &&
+                                                  !secretFormatValid
+                                              ? l10n
+                                                  .l_invalid_format_allowed_chars(
+                                                    Format
+                                                        .base32
+                                                        .allowedCharacters,
+                                                  )
+                                              : null,
+                                      icon: const Icon(Symbols.key),
+                                      suffixIcon: IconButton(
+                                        icon: Icon(
+                                          _isObscure
+                                              ? Symbols.visibility
+                                              : Symbols.visibility_off,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _isObscure = !_isObscure;
+                                          });
+                                        },
+                                        tooltip:
+                                            _isObscure
+                                                ? l10n.s_show_secret_key
+                                                : l10n.s_hide_secret_key,
+                                      ),
+                                    ),
+                                    readOnly: _dataLoaded,
+                                    textInputAction: TextInputAction.done,
+                                    focusNode: _secretFocus,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _validateSecret = false;
+                                      });
+                                    },
+                                    onSubmitted: (_) {
+                                      if (isValid) submit();
+                                    },
+                                  ).init(),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      TextSpan(
-                                        text: l10n.p_add_account_three_ways,
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0,
+                                        ),
+                                        child: Icon(
+                                          Symbols.tune,
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
                                       ),
-                                      TextSpan(text: '\n' * 2),
-                                      TextSpan(
-                                        text: l10n.s_scanning,
-                                        style: textTheme.bodySmall?.copyWith(
-                                            fontWeight: FontWeight.w700),
+                                      const SizedBox(width: 16.0),
+                                      Flexible(
+                                        child: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.start,
+                                          spacing: 4.0,
+                                          runSpacing: 8.0,
+                                          children: [
+                                            if (oathState?.version.isAtLeast(
+                                                  4,
+                                                  2,
+                                                ) ??
+                                                true)
+                                              FilterChip(
+                                                key:
+                                                    keys.requireTouchFilterChip,
+                                                label: Text(
+                                                  l10n.s_require_touch,
+                                                ),
+                                                selected: _touch,
+                                                onSelected: (value) {
+                                                  setState(() {
+                                                    _touch = value;
+                                                  });
+                                                },
+                                              ),
+                                            ChoiceFilterChip<OathType>(
+                                              key: keys.oathTypeFilterChip,
+                                              items: OathType.values,
+                                              value: _oathType,
+                                              selected:
+                                                  _oathType != defaultOathType,
+                                              itemBuilder:
+                                                  (value) => Text(
+                                                    value.getDisplayName(l10n),
+                                                    key:
+                                                        value == OathType.totp
+                                                            ? keys
+                                                                .oathTypeTotpFilterValue
+                                                            : keys
+                                                                .oathTypeHotpFilterValue,
+                                                  ),
+                                              onChanged:
+                                                  !_dataLoaded
+                                                      ? (value) {
+                                                        setState(() {
+                                                          _oathType = value;
+                                                        });
+                                                      }
+                                                      : null,
+                                            ),
+                                            ChoiceFilterChip<HashAlgorithm>(
+                                              key: keys.hashAlgorithmFilterChip,
+                                              items: hashAlgorithms,
+                                              value: _hashAlgorithm,
+                                              selected:
+                                                  _hashAlgorithm !=
+                                                  defaultHashAlgorithm,
+                                              itemBuilder:
+                                                  (value) => Text(
+                                                    value.displayName,
+                                                    key:
+                                                        value ==
+                                                                HashAlgorithm
+                                                                    .sha1
+                                                            ? keys
+                                                                .hashAlgorithmSha1FilterValue
+                                                            : value ==
+                                                                HashAlgorithm
+                                                                    .sha256
+                                                            ? keys
+                                                                .hashAlgorithmSha256FilterValue
+                                                            : keys
+                                                                .hashAlgorithmSha512FilterValue,
+                                                  ),
+                                              onChanged:
+                                                  !_dataLoaded
+                                                      ? (value) {
+                                                        setState(() {
+                                                          _hashAlgorithm =
+                                                              value;
+                                                        });
+                                                      }
+                                                      : null,
+                                            ),
+                                            if (_oathType == OathType.totp)
+                                              ChoiceFilterChip<int>(
+                                                key: keys.periodFilterChip,
+                                                items: _periodValues,
+                                                value:
+                                                    int.tryParse(
+                                                      _periodController.text,
+                                                    ) ??
+                                                    defaultPeriod,
+                                                selected:
+                                                    int.tryParse(
+                                                      _periodController.text,
+                                                    ) !=
+                                                    defaultPeriod,
+                                                itemBuilder:
+                                                    ((value) => Text(
+                                                      l10n.s_num_sec(value),
+                                                    )),
+                                                onChanged:
+                                                    !_dataLoaded
+                                                        ? (period) {
+                                                          setState(() {
+                                                            _periodController
+                                                                    .text =
+                                                                '$period';
+                                                          });
+                                                        }
+                                                        : null,
+                                              ),
+                                            ChoiceFilterChip<int>(
+                                              key: keys.digitsFilterChip,
+                                              items: _digitsValues,
+                                              value: _digits,
+                                              selected:
+                                                  _digits != defaultDigits,
+                                              itemBuilder:
+                                                  (value) => Text(
+                                                    l10n.s_num_digits(value),
+                                                  ),
+                                              // TODO: need to figure out how to add values for
+                                              //    digits6FilterValue
+                                              //    digits8FilterValue
+                                              onChanged:
+                                                  !_dataLoaded
+                                                      ? (digits) {
+                                                        setState(() {
+                                                          _digits = digits;
+                                                        });
+                                                      }
+                                                      : null,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      TextSpan(text: '\n'),
-                                      TextSpan(text: l10n.p_scanning_desc),
-                                      TextSpan(text: '\n' * 2),
-                                      TextSpan(
-                                        text: l10n.s_drag_and_drop,
-                                        style: textTheme.bodySmall?.copyWith(
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      TextSpan(text: '\n'),
-                                      TextSpan(text: l10n.p_drag_and_drop_desc),
-                                      TextSpan(text: '\n' * 2),
-                                      TextSpan(
-                                        text: l10n.s_manually,
-                                        style: textTheme.bodySmall?.copyWith(
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      TextSpan(text: '\n'),
-                                      TextSpan(text: l10n.p_manually_desc)
                                     ],
                                   ),
-                                ),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              l10n.p_add_account_desc,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
+                                ]
+                                .map(
+                                  (e) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0,
+                                    ),
+                                    child: e,
+                                  ),
+                                )
+                                .toList(),
                       ),
-                    AppTextField(
-                      key: keys.issuerField,
-                      controller: _issuerController,
-                      autofocus: widget.credentialData == null,
-                      enabled: issuerRemaining > 0,
-                      maxLength: issuerMaxLength,
-                      inputFormatters: [
-                        limitBytesLength(issuerRemaining),
-                      ],
-                      buildCounter: buildByteCounterFor(issuerText),
-                      decoration: AppInputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: l10n.s_issuer_optional,
-                        helperText: '', // Prevents dialog resizing when
-                        errorText: (byteLength(issuerText) > issuerMaxLength)
-                            ? '' // needs empty string to render as error
-                            : issuerNoColon
-                                ? null
-                                : l10n.l_invalid_character_issuer,
-                        icon: const Icon(Symbols.business),
-                      ),
-                      textInputAction: TextInputAction.next,
-                      focusNode: _issuerFocus,
-                      onChanged: (value) {
-                        setState(() {
-                          // Update maxlengths
-                        });
-                      },
-                    ).init(),
-                    AppTextField(
-                      key: keys.nameField,
-                      controller: _accountController,
-                      maxLength: nameMaxLength,
-                      buildCounter: buildByteCounterFor(nameText),
-                      inputFormatters: [limitBytesLength(nameRemaining)],
-                      decoration: AppInputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: l10n.s_account_name,
-                        helperText:
-                            '', // Prevents dialog resizing when disabled
-                        errorText: _submitting
-                            ? null
-                            : (byteLength(nameText) > nameMaxLength)
-                                ? '' // needs empty string to render as error
-                                : isUnique
-                                    ? null
-                                    : l10n.l_name_already_exists,
-                        icon: const Icon(Symbols.person),
-                      ),
-                      textInputAction: TextInputAction.next,
-                      focusNode: _accountFocus,
-                      onChanged: (value) {
-                        setState(() {
-                          // Update max lengths
-                        });
-                      },
-                    ).init(),
-                    AppTextField(
-                      key: keys.secretField,
-                      controller: _secretController,
-                      obscureText: _isObscure,
-                      // avoid using autofill hints on Android otherwise Autofill service
-                      // would hint to use saved passwords for this field
-                      autofillHints:
-                          isAndroid ? [] : const [AutofillHints.password],
-                      decoration: AppInputDecoration(
-                          border: const OutlineInputBorder(),
-                          labelText: l10n.s_secret_key,
-                          errorText: _validateSecret && !secretLengthValid
-                              ? l10n.s_invalid_length
-                              : _validateSecret && !secretFormatValid
-                                  ? l10n.l_invalid_format_allowed_chars(
-                                      Format.base32.allowedCharacters)
-                                  : null,
-                          icon: const Icon(Symbols.key),
-                          suffixIcon: IconButton(
-                            icon: Icon(_isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off),
-                            onPressed: () {
-                              setState(() {
-                                _isObscure = !_isObscure;
-                              });
-                            },
-                            tooltip: _isObscure
-                                ? l10n.s_show_secret_key
-                                : l10n.s_hide_secret_key,
-                          )),
-                      readOnly: _dataLoaded,
-                      textInputAction: TextInputAction.done,
-                      focusNode: _secretFocus,
-                      onChanged: (value) {
-                        setState(() {
-                          _validateSecret = false;
-                        });
-                      },
-                      onSubmitted: (_) {
-                        if (isValid) submit();
-                      },
-                    ).init(),
-                    const SizedBox(height: 8),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Icon(
-                            Symbols.tune,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
-                        Flexible(
-                          child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.start,
-                            spacing: 4.0,
-                            runSpacing: 8.0,
-                            children: [
-                              if (oathState?.version.isAtLeast(4, 2) ?? true)
-                                FilterChip(
-                                  key: keys.requireTouchFilterChip,
-                                  label: Text(l10n.s_require_touch),
-                                  selected: _touch,
-                                  onSelected: (value) {
-                                    setState(() {
-                                      _touch = value;
-                                    });
-                                  },
-                                ),
-                              ChoiceFilterChip<OathType>(
-                                key: keys.oathTypeFilterChip,
-                                items: OathType.values,
-                                value: _oathType,
-                                selected: _oathType != defaultOathType,
-                                itemBuilder: (value) => Text(
-                                    value.getDisplayName(l10n),
-                                    key: value == OathType.totp
-                                        ? keys.oathTypeTotpFilterValue
-                                        : keys.oathTypeHotpFilterValue),
-                                onChanged: !_dataLoaded
-                                    ? (value) {
-                                        setState(() {
-                                          _oathType = value;
-                                        });
-                                      }
-                                    : null,
-                              ),
-                              ChoiceFilterChip<HashAlgorithm>(
-                                key: keys.hashAlgorithmFilterChip,
-                                items: hashAlgorithms,
-                                value: _hashAlgorithm,
-                                selected:
-                                    _hashAlgorithm != defaultHashAlgorithm,
-                                itemBuilder: (value) => Text(value.displayName,
-                                    key: value == HashAlgorithm.sha1
-                                        ? keys.hashAlgorithmSha1FilterValue
-                                        : value == HashAlgorithm.sha256
-                                            ? keys
-                                                .hashAlgorithmSha256FilterValue
-                                            : keys
-                                                .hashAlgorithmSha512FilterValue),
-                                onChanged: !_dataLoaded
-                                    ? (value) {
-                                        setState(() {
-                                          _hashAlgorithm = value;
-                                        });
-                                      }
-                                    : null,
-                              ),
-                              if (_oathType == OathType.totp)
-                                ChoiceFilterChip<int>(
-                                  key: keys.periodFilterChip,
-                                  items: _periodValues,
-                                  value: int.tryParse(_periodController.text) ??
-                                      defaultPeriod,
-                                  selected:
-                                      int.tryParse(_periodController.text) !=
-                                          defaultPeriod,
-                                  itemBuilder: ((value) =>
-                                      Text(l10n.s_num_sec(value))),
-                                  onChanged: !_dataLoaded
-                                      ? (period) {
-                                          setState(() {
-                                            _periodController.text = '$period';
-                                          });
-                                        }
-                                      : null,
-                                ),
-                              ChoiceFilterChip<int>(
-                                key: keys.digitsFilterChip,
-                                items: _digitsValues,
-                                value: _digits,
-                                selected: _digits != defaultDigits,
-                                itemBuilder: (value) =>
-                                    Text(l10n.s_num_digits(value)),
-                                // TODO: need to figure out how to add values for
-                                //    digits6FilterValue
-                                //    digits8FilterValue
-                                onChanged: !_dataLoaded
-                                    ? (digits) {
-                                        setState(() {
-                                          _digits = digits;
-                                        });
-                                      }
-                                    : null,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ),
-                  ]
-                      .map((e) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: e,
-                          ))
-                      .toList(),
-                ),
-              ),
       ),
     );
   }

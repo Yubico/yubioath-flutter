@@ -41,35 +41,31 @@ import 'state.dart';
 final _log = Logger('systray');
 
 final _favoriteAccounts =
-    Provider.autoDispose<(DevicePath?, List<OathCredential>)>(
-  (ref) {
-    final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
-    if (deviceData != null) {
-      final credentials =
-          ref.watch(credentialListProvider(deviceData.node.path));
-      final favorites = ref.watch(favoritesProvider);
-      final listed = credentials
-              ?.map((e) => e.credential)
-              .where((c) => favorites.contains(c.id))
-              .toList() ??
-          [];
-      return (deviceData.node.path, listed);
-    }
-    return (null, []);
-  },
-);
+    Provider.autoDispose<(DevicePath?, List<OathCredential>)>((ref) {
+      final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
+      if (deviceData != null) {
+        final credentials = ref.watch(
+          credentialListProvider(deviceData.node.path),
+        );
+        final favorites = ref.watch(favoritesProvider);
+        final listed =
+            credentials
+                ?.map((e) => e.credential)
+                .where((c) => favorites.contains(c.id))
+                .toList() ??
+            [];
+        return (deviceData.node.path, listed);
+      }
+      return (null, []);
+    });
 
 final systrayProvider = Provider.autoDispose((ref) {
   final systray = _Systray(ref);
 
   // Keep track of which accounts to show
-  ref.listen(
-    _favoriteAccounts,
-    (_, next) {
-      systray._updateCredentials(next.$1, next.$2);
-    },
-    fireImmediately: true,
-  );
+  ref.listen(_favoriteAccounts, (_, next) {
+    systray._updateCredentials(next.$1, next.$2);
+  }, fireImmediately: true);
 
   // Keep track of the shown/hidden state of the app
   ref.listen(windowStateProvider.select((value) => value.hidden), (_, hidden) {
@@ -87,11 +83,14 @@ final systrayProvider = Provider.autoDispose((ref) {
 });
 
 Future<OathCode?> _calculateCode(
-    DevicePath devicePath, OathCredential credential, Ref ref) async {
+  DevicePath devicePath,
+  OathCredential credential,
+  Ref ref,
+) async {
   try {
-    return await (ref
-            .read(desktopOathCredentialListProvider(devicePath).notifier))
-        .calculate(credential, headless: true);
+    return await (ref.read(
+      desktopOathCredentialListProvider(devicePath).notifier,
+    )).calculate(credential, headless: true);
   } on CancellationException catch (_) {
     return null;
   }
@@ -135,12 +134,16 @@ class _Systray extends TrayListener {
       final file = File(clipboardPath);
       if (!(await file.exists())) {
         _log.warning(
-            'Not using custom binary for clipboard: $clipboardPath. File not found.');
+          'Not using custom binary for clipboard: $clipboardPath. File not found.',
+        );
         return;
       }
       final resolved = await file.resolveSymbolicLinks();
-      final result = await Process.run('ls', ['-nd', '--', resolved],
-          environment: {'LC_ALL': 'C'});
+      final result = await Process.run(
+        'ls',
+        ['-nd', '--', resolved],
+        environment: {'LC_ALL': 'C'},
+      );
       if (result.exitCode == 0) {
         final output = result.stdout as String;
         //Eg. "-rwxr-xr-x 1 0 0 52384 Oct  7  2019 /usr/bin/wl-copy"
@@ -174,7 +177,9 @@ class _Systray extends TrayListener {
   }
 
   void _updateCredentials(
-      DevicePath? devicePath, List<OathCredential> credentials) {
+    DevicePath? devicePath,
+    List<OathCredential> credentials,
+  ) {
     if (!listEquals(_credentials, credentials)) {
       _devicePath = devicePath ?? _devicePath;
       _credentials = credentials;
@@ -218,45 +223,40 @@ class _Systray extends TrayListener {
     await trayManager.setContextMenu(
       Menu(
         items: [
-          ..._credentials.map(
-            (e) {
-              final label = getTextName(e);
-              return MenuItem(
-                label: label,
-                onClick: (_) async {
-                  final code = await _calculateCode(_devicePath, e, _ref);
-                  if (code != null) {
-                    if (_clipboardBinary != null) {
-                      // Copy to clipboard via another executable, which can be needed for Wayland
-                      _log.debug(
-                          'Using custom binary to copy to clipboard: $_clipboardBinary');
-                      final process =
-                          await Process.start(_clipboardBinary!, []);
-                      process.stdin.writeln(code.value);
-                      await process.stdin.close();
-                    } else {
-                      await _ref
-                          .read(clipboardProvider)
-                          .setText(code.value, isSensitive: true);
-                    }
-                    final notification = LocalNotification(
-                      title: _l10n.s_code_copied,
-                      body: _l10n.p_target_copied_clipboard(label),
-                      silent: true,
+          ..._credentials.map((e) {
+            final label = getTextName(e);
+            return MenuItem(
+              label: label,
+              onClick: (_) async {
+                final code = await _calculateCode(_devicePath, e, _ref);
+                if (code != null) {
+                  if (_clipboardBinary != null) {
+                    // Copy to clipboard via another executable, which can be needed for Wayland
+                    _log.debug(
+                      'Using custom binary to copy to clipboard: $_clipboardBinary',
                     );
-                    await notification.show();
-                    await Future.delayed(const Duration(seconds: 4));
-                    await notification.close();
+                    final process = await Process.start(_clipboardBinary!, []);
+                    process.stdin.writeln(code.value);
+                    await process.stdin.close();
+                  } else {
+                    await _ref
+                        .read(clipboardProvider)
+                        .setText(code.value, isSensitive: true);
                   }
-                },
-              );
-            },
-          ),
+                  final notification = LocalNotification(
+                    title: _l10n.s_code_copied,
+                    body: _l10n.p_target_copied_clipboard(label),
+                    silent: true,
+                  );
+                  await notification.show();
+                  await Future.delayed(const Duration(seconds: 4));
+                  await notification.close();
+                }
+              },
+            );
+          }),
           if (_credentials.isEmpty)
-            MenuItem(
-              label: _l10n.s_no_pinned_accounts,
-              disabled: true,
-            ),
+            MenuItem(label: _l10n.s_no_pinned_accounts, disabled: true),
           MenuItem.separator(),
           MenuItem(
             label: !isVisible ? _l10n.s_show_window : _l10n.s_hide_window,
@@ -268,14 +268,13 @@ class _Systray extends TrayListener {
           ),
           MenuItem.separator(),
           MenuItem(
-              label: _l10n.s_quit,
-              onClick: (_) {
-                _ref.read(withContextProvider)(
-                  (context) async {
-                    Actions.invoke(context, const CloseIntent());
-                  },
-                );
-              }),
+            label: _l10n.s_quit,
+            onClick: (_) {
+              _ref.read(withContextProvider)((context) async {
+                Actions.invoke(context, const CloseIntent());
+              });
+            },
+          ),
         ],
       ),
     );

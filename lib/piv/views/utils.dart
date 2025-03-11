@@ -18,19 +18,17 @@ import '../../core/models.dart';
 import '../models.dart';
 
 List<KeyType> getSupportedKeyTypes(Version version, bool isFips) => [
-      if (!isFips) KeyType.rsa1024,
-      KeyType.rsa2048,
-      if (version.isAtLeast(5, 7)) ...[
-        KeyType.rsa3072,
-        KeyType.rsa4096,
-        KeyType.ed25519,
-        if (!isFips) KeyType.x25519,
-      ],
-      KeyType.eccp256,
-      if (version.isAtLeast(4, 0)) ...[
-        KeyType.eccp384,
-      ]
-    ];
+  if (!isFips) KeyType.rsa1024,
+  KeyType.rsa2048,
+  if (version.isAtLeast(5, 7)) ...[
+    KeyType.rsa3072,
+    KeyType.rsa4096,
+    KeyType.ed25519,
+    if (!isFips) KeyType.x25519,
+  ],
+  KeyType.eccp256,
+  if (version.isAtLeast(4, 0)) ...[KeyType.eccp384],
+];
 
 PinPolicy getPinPolicy(SlotId slot, bool match) {
   if (match) {

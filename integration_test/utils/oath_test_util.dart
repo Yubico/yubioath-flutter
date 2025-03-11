@@ -147,8 +147,9 @@ extension OathFunctions on WidgetTester {
   }
 
   Finder findAccountList() {
-    var accountList =
-        find.byType(AccountList).hitTestable(at: Alignment.topCenter);
+    var accountList = find
+        .byType(AccountList)
+        .hitTestable(at: Alignment.topCenter);
     // expect(accountList, findsOneWidget);
     return accountList;
   }
@@ -168,19 +169,23 @@ extension OathFunctions on WidgetTester {
 
     /// find an AccountView with issuer/name in the account list
     var matchingAccounts = find.descendant(
-        of: findAccountList(),
-        matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is AccountView &&
-                widget.credential.name == a.name &&
-                widget.credential.issuer == a.issuer,
-            skipOffstage: false));
+      of: findAccountList(),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is AccountView &&
+            widget.credential.name == a.name &&
+            widget.credential.issuer == a.issuer,
+        skipOffstage: false,
+      ),
+    );
 
     matchingAccounts.evaluate().forEach((element) {
       var widget = element.widget;
       if (widget is AccountView) {
-        testLog(quiet,
-            'Found ${widget.credential.issuer}/${widget.credential.name} matching account');
+        testLog(
+          quiet,
+          'Found ${widget.credential.issuer}/${widget.credential.name} matching account',
+        );
       } else {
         printToConsole('Unexpected widget type found: $widget');
       }
@@ -191,8 +196,8 @@ extension OathFunctions on WidgetTester {
     return evaluated.isEmpty
         ? null
         : evaluated.length != 1
-            ? null
-            : evaluated.single.widget as AccountView;
+        ? null
+        : evaluated.single.widget as AccountView;
   }
 
   Future<void> openAccountDialog(Account a) async {
@@ -203,7 +208,9 @@ extension OathFunctions on WidgetTester {
       final accountFinder = find.byWidget(accountView);
       await ensureVisible(accountFinder);
       final codeButtonFinder = find.descendant(
-          of: accountFinder, matching: find.bySubtype<FilledButton>());
+        of: accountFinder,
+        matching: find.bySubtype<FilledButton>(),
+      );
       await tap(codeButtonFinder);
       await shortWait();
     }
@@ -360,7 +367,9 @@ extension OathFunctions on WidgetTester {
   }
 
   Future<void> replaceOathPassword(
-      String currentPassword, String newPassword) async {
+    String currentPassword,
+    String newPassword,
+  ) async {
     await tapSetOrManagePassword();
 
     await shortWait();

@@ -26,11 +26,12 @@ class QRScannerOverlay extends StatelessWidget {
   final Size screenSize;
   final GlobalKey overlayWidgetKey;
 
-  const QRScannerOverlay(
-      {super.key,
-      required this.status,
-      required this.screenSize,
-      required this.overlayWidgetKey});
+  const QRScannerOverlay({
+    super.key,
+    required this.status,
+    required this.screenSize,
+    required this.overlayWidgetKey,
+  });
 
   RRect getOverlayRRect(Size size) {
     final renderBox =
@@ -38,8 +39,10 @@ class QRScannerOverlay extends StatelessWidget {
     final renderObjectSize = renderBox.size;
     final renderObjectOffset = renderBox.globalToLocal(Offset.zero);
 
-    final double shorterEdge =
-        min(renderObjectSize.width, renderObjectSize.height);
+    final double shorterEdge = min(
+      renderObjectSize.width,
+      renderObjectSize.height,
+    );
 
     var top = (size.height - shorterEdge) / 2 - 32;
 
@@ -48,9 +51,14 @@ class QRScannerOverlay extends StatelessWidget {
     }
 
     return RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-            (size.width - shorterEdge) / 2, top, shorterEdge, shorterEdge),
-        const Radius.circular(10));
+      Rect.fromLTWH(
+        (size.width - shorterEdge) / 2,
+        top,
+        shorterEdge,
+        shorterEdge,
+      ),
+      const Radius.circular(10),
+    );
   }
 
   @override
@@ -59,29 +67,30 @@ class QRScannerOverlay extends StatelessWidget {
       return getOverlayRRect(size);
     }
 
-    return Stack(fit: StackFit.expand, children: [
-      /// clip scanner area "hole" into a darkened background
-      ClipPath(
-        clipper: _OverlayClipper(overlayRectProvider),
-        child: const Opacity(
-          opacity: 0.6,
-          child: ColoredBox(
-            color: Colors.black,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [Spacer()],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        /// clip scanner area "hole" into a darkened background
+        ClipPath(
+          clipper: _OverlayClipper(overlayRectProvider),
+          child: const Opacity(
+            opacity: 0.6,
+            child: ColoredBox(
+              color: Colors.black,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [Spacer()],
+              ),
             ),
           ),
         ),
-      ),
 
-      /// draw a stroke around the scanner area
-      CustomPaint(
-        painter: _OverlayPainter(status, overlayRectProvider),
-      ),
-    ]);
+        /// draw a stroke around the scanner area
+        CustomPaint(painter: _OverlayPainter(status, overlayRectProvider)),
+      ],
+    );
   }
 }
 
@@ -96,13 +105,15 @@ class _OverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final color = _status == ScanStatus.error
-        ? Colors.red.shade400
-        : Colors.green.shade400;
-    Paint paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0;
+    final color =
+        _status == ScanStatus.error
+            ? Colors.red.shade400
+            : Colors.green.shade400;
+    Paint paint =
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.0;
 
     final RRect overlayRRect = _rectProvider(size);
 
@@ -118,14 +129,15 @@ class _OverlayPainter extends CustomPainter {
         textAlign: TextAlign.center,
       );
       iconPainter.text = TextSpan(
-          text: String.fromCharCode(icon.codePoint),
-          style: TextStyle(
-            fontSize: iconSize,
-            fontFamily: icon.fontFamily,
-            fontVariations: const [FontVariation('FILL', 1)],
-            package: icon.fontPackage,
-            color: color.withAlpha(240),
-          ));
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(
+          fontSize: iconSize,
+          fontFamily: icon.fontFamily,
+          fontVariations: const [FontVariation('FILL', 1)],
+          package: icon.fontPackage,
+          color: color.withAlpha(240),
+        ),
+      );
       iconPainter.layout();
       iconPainter.paint(
         canvas,

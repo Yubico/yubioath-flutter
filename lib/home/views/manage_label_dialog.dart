@@ -41,8 +41,9 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
   @override
   void initState() {
     super.initState();
-    _labelController =
-        TextEditingController(text: widget.initialCustomization.name);
+    _labelController = TextEditingController(
+      text: widget.initialCustomization.name,
+    );
   }
 
   @override
@@ -59,48 +60,55 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
     final label = trimmed.isEmpty ? null : trimmed;
     final didChange = initialLabel != label;
     return ResponsiveDialog(
-      title:
-          Text(initialLabel != null ? l10n.s_change_label : l10n.s_set_label),
+      title: Text(
+        initialLabel != null ? l10n.s_change_label : l10n.s_set_label,
+      ),
       actions: [
         TextButton(
           onPressed: didChange ? _submit : null,
           child: Text(l10n.s_save),
-        )
-      ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(initialLabel == null
-                ? l10n.p_set_will_add_custom_name
-                : l10n.p_rename_will_change_custom_name),
-            AppTextField(
-              autofocus: true,
-              controller: _labelController,
-              maxLength: 20,
-              decoration: AppInputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l10n.s_label,
-                helperText: '',
-                icon: const Icon(Symbols.key),
-              ),
-              textInputAction: TextInputAction.done,
-              onChanged: (value) {
-                setState(() {});
-              },
-              onSubmitted: (_) {
-                _submit();
-              },
-            ).init()
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
         ),
-      ),
+      ],
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        Text(
+                          initialLabel == null
+                              ? l10n.p_set_will_add_custom_name
+                              : l10n.p_rename_will_change_custom_name,
+                        ),
+                        AppTextField(
+                          autofocus: true,
+                          controller: _labelController,
+                          maxLength: 20,
+                          decoration: AppInputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: l10n.s_label,
+                            helperText: '',
+                            icon: const Icon(Symbols.key),
+                          ),
+                          textInputAction: TextInputAction.done,
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          onSubmitted: (_) {
+                            _submit();
+                          },
+                        ).init(),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
+                      .toList(),
+            ),
+          ),
     );
   }
 
@@ -109,9 +117,10 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
     final trimmed = _labelController.text.trim();
     final label = trimmed.isEmpty ? null : trimmed;
     await manager.set(
-        serial: widget.initialCustomization.serial,
-        name: label,
-        color: widget.initialCustomization.color);
+      serial: widget.initialCustomization.serial,
+      name: label,
+      color: widget.initialCustomization.color,
+    );
 
     await ref.read(withContextProvider)((context) async {
       FocusUtils.unfocus(context);

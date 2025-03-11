@@ -31,7 +31,7 @@ class MessagePage extends StatelessWidget {
   final Widget Function(BuildContext context)? keyActionsBuilder;
   final Widget Function(BuildContext context)? actionButtonBuilder;
   final List<Widget> Function(BuildContext context, bool expanded)?
-      actionsBuilder;
+  actionsBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
   final List<Capability>? capabilities;
@@ -58,53 +58,59 @@ class MessagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppPage(
-        title: title,
-        capabilities: capabilities,
-        footnote: footnote,
-        centered: centered,
-        keyActionsBuilder: keyActionsBuilder,
-        keyActionsBadge: keyActionsBadge,
-        fileDropOverlay: fileDropOverlay,
-        onFileDropped: onFileDropped,
-        actionButtonBuilder: actionButtonBuilder,
-        actionsBuilder: actionsBuilder,
-        delayedContent: delayedContent,
-        builder: (context, _) => Padding(
+    title: title,
+    capabilities: capabilities,
+    footnote: footnote,
+    centered: centered,
+    keyActionsBuilder: keyActionsBuilder,
+    keyActionsBadge: keyActionsBadge,
+    fileDropOverlay: fileDropOverlay,
+    onFileDropped: onFileDropped,
+    actionButtonBuilder: actionButtonBuilder,
+    actionsBuilder: actionsBuilder,
+    delayedContent: delayedContent,
+    builder:
+        (context, _) => Padding(
           padding: EdgeInsets.only(
-              left: 18.0,
-              top: 0.0,
-              right: 18.0,
-              bottom: centered && actionsBuilder == null ? 96 : 0),
+            left: 18.0,
+            top: 0.0,
+            right: 18.0,
+            bottom: centered && actionsBuilder == null ? 96 : 0,
+          ),
           child: SizedBox(
             width: 350,
             child: Column(
-              crossAxisAlignment: centered
-                  ? CrossAxisAlignment.center
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  centered
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
               children: [
                 if (graphic != null) ...[
                   graphic!,
-                  const SizedBox(height: 16.0)
+                  const SizedBox(height: 16.0),
                 ],
                 if (header != null)
-                  Text(header!,
-                      textAlign: centered ? TextAlign.center : TextAlign.left,
-                      style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    header!,
+                    textAlign: centered ? TextAlign.center : TextAlign.left,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 if (message != null) ...[
                   const SizedBox(height: 12.0),
                   Container(
                     constraints: const BoxConstraints(maxWidth: 350),
-                    child: Text(message!,
-                        textAlign: centered ? TextAlign.center : TextAlign.left,
-                        style: Theme.of(context).textTheme.titleSmall?.apply(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant)),
+                    child: Text(
+                      message!,
+                      textAlign: centered ? TextAlign.center : TextAlign.left,
+                      style: Theme.of(context).textTheme.titleSmall?.apply(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 ],
               ],
             ),
           ),
         ),
-      );
+  );
 }

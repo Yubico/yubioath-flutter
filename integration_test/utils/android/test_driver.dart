@@ -25,14 +25,14 @@ Future<void> main() async {
     'pm',
     'grant',
     'com.yubico.yubioath',
-    'android.permission.CAMERA'
+    'android.permission.CAMERA',
   ]);
   await Process.run('adb', [
     'shell',
     'pm',
     'grant',
     'com.yubico.yubioath',
-    'android.permission.WRITE_EXTERNAL_STORAGE'
+    'android.permission.WRITE_EXTERNAL_STORAGE',
   ]);
 
   await integrationDriver();

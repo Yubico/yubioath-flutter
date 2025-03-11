@@ -47,7 +47,8 @@ Widget oathBuildActions(
 }) {
   final l10n = AppLocalizations.of(context);
   final capacity = oathState.capacity;
-  final (fipsCapable, fipsApproved) = ref
+  final (fipsCapable, fipsApproved) =
+      ref
           .watch(currentDeviceDataProvider)
           .valueOrNull
           ?.info
@@ -70,29 +71,37 @@ Widget oathBuildActions(
     enabled = true;
   }
 
-  final colors = Theme.of(context).buttonTheme.colorScheme ??
+  final colors =
+      Theme.of(context).buttonTheme.colorScheme ??
       Theme.of(context).colorScheme;
   final alertIcon = Icon(Symbols.warning_amber, color: colors.tertiary);
 
   return Column(
     children: [
-      ActionListSection(l10n.s_setup, children: [
-        ActionListItem(
+      ActionListSection(
+        l10n.s_setup,
+        children: [
+          ActionListItem(
             feature: features.actionsAdd,
             key: keys.addAccountAction,
             title: l10n.s_add_account,
             subtitle: subtitle,
             actionStyle: ActionStyle.primary,
             icon: const Icon(Symbols.person_add_alt),
-            onTap: enabled
-                ? (context) async {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    await addOathAccount(context, ref, devicePath, oathState);
-                  }
-                : null),
-      ]),
-      ActionListSection(l10n.s_manage, children: [
-        ActionListItem(
+            onTap:
+                enabled
+                    ? (context) async {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      await addOathAccount(context, ref, devicePath, oathState);
+                    }
+                    : null,
+          ),
+        ],
+      ),
+      ActionListSection(
+        l10n.s_manage,
+        children: [
+          ActionListItem(
             key: keys.setOrManagePasswordAction,
             feature: features.actionsPassword,
             title:
@@ -103,8 +112,10 @@ Widget oathBuildActions(
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
               managePassword(context, ref, devicePath, oathState);
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
     ],
   );
 }

@@ -54,23 +54,24 @@ enum Capability {
   const Capability(this.value);
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
-        Capability.otp => l10n.s_capability_otp,
-        Capability.piv => l10n.s_capability_piv,
-        Capability.oath => l10n.s_capability_oath,
-        Capability.openpgp => l10n.s_capability_openpgp,
-        Capability.hsmauth => l10n.s_capability_hsmauth,
-        Capability.u2f => l10n.s_capability_u2f,
-        Capability.fido2 => l10n.s_capability_fido2,
-      };
+    Capability.otp => l10n.s_capability_otp,
+    Capability.piv => l10n.s_capability_piv,
+    Capability.oath => l10n.s_capability_oath,
+    Capability.openpgp => l10n.s_capability_openpgp,
+    Capability.hsmauth => l10n.s_capability_hsmauth,
+    Capability.u2f => l10n.s_capability_u2f,
+    Capability.fido2 => l10n.s_capability_fido2,
+  };
 }
 
 @freezed
 class DeviceConfig with _$DeviceConfig {
   factory DeviceConfig(
-      Map<Transport, int> enabledCapabilities,
-      int? autoEjectTimeout,
-      int? challengeResponseTimeout,
-      int? deviceFlags) = _DeviceConfig;
+    Map<Transport, int> enabledCapabilities,
+    int? autoEjectTimeout,
+    int? challengeResponseTimeout,
+    int? deviceFlags,
+  ) = _DeviceConfig;
 
   factory DeviceConfig.fromJson(Map<String, dynamic> json) =>
       _$DeviceConfigFromJson(json);
@@ -81,18 +82,19 @@ class DeviceInfo with _$DeviceInfo {
   const DeviceInfo._(); // Added constructor
 
   factory DeviceInfo(
-      DeviceConfig config,
-      int? serial,
-      Version version,
-      FormFactor formFactor,
-      Map<Transport, int> supportedCapabilities,
-      bool isLocked,
-      bool isFips,
-      bool isSky,
-      bool pinComplexity,
-      int fipsCapable,
-      int fipsApproved,
-      int resetBlocked) = _DeviceInfo;
+    DeviceConfig config,
+    int? serial,
+    Version version,
+    FormFactor formFactor,
+    Map<Transport, int> supportedCapabilities,
+    bool isLocked,
+    bool isFips,
+    bool isSky,
+    bool pinComplexity,
+    int fipsCapable,
+    int fipsApproved,
+    int resetBlocked,
+  ) = _DeviceInfo;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
       _$DeviceInfoFromJson(json);

@@ -34,8 +34,12 @@ class MoveKeyDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final PivState pivState;
   final PivSlot pivSlot;
-  const MoveKeyDialog(this.devicePath, this.pivState, this.pivSlot,
-      {super.key});
+  const MoveKeyDialog(
+    this.devicePath,
+    this.pivState,
+    this.pivSlot, {
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MoveKeyDialogState();
@@ -60,30 +64,36 @@ class _MoveKeyDialogState extends ConsumerState<MoveKeyDialog> {
       actions: [
         TextButton(
           key: keys.deleteButton,
-          onPressed: _destination != null
-              ? () async {
-                  try {
-                    final pivSlots =
-                        ref.read(pivSlotsProvider(widget.devicePath)).asData;
-                    if (pivSlots != null) {
-                      final destination = pivSlots.value.firstWhere(
-                          (element) => element.slot == _destination);
+          onPressed:
+              _destination != null
+                  ? () async {
+                    try {
+                      final pivSlots =
+                          ref.read(pivSlotsProvider(widget.devicePath)).asData;
+                      if (pivSlots != null) {
+                        final destination = pivSlots.value.firstWhere(
+                          (element) => element.slot == _destination,
+                        );
 
-                      if (!await confirmOverwrite(context, destination,
-                          writeKey: true, writeCert: _includeCertificate)) {
-                        return;
-                      }
+                        if (!await confirmOverwrite(
+                          context,
+                          destination,
+                          writeKey: true,
+                          writeCert: _includeCertificate,
+                        )) {
+                          return;
+                        }
 
-                      await ref
-                          .read(pivSlotsProvider(widget.devicePath).notifier)
-                          .moveKey(
+                        await ref
+                            .read(pivSlotsProvider(widget.devicePath).notifier)
+                            .moveKey(
                               widget.pivSlot.slot,
                               destination.slot,
                               destination.metadata != null,
-                              _includeCertificate);
+                              _includeCertificate,
+                            );
 
-                      await ref.read(withContextProvider)(
-                        (context) async {
+                        await ref.read(withContextProvider)((context) async {
                           String message;
                           if (_includeCertificate) {
                             message = l10n.l_key_and_certificate_moved;
@@ -93,71 +103,91 @@ class _MoveKeyDialogState extends ConsumerState<MoveKeyDialog> {
 
                           Navigator.of(context).pop(true);
                           showMessage(context, message);
-                        },
-                      );
+                        });
+                      }
+                    } on CancellationException catch (_) {
+                      // ignored
                     }
-                  } on CancellationException catch (_) {
-                    // ignored
                   }
-                }
-              : null,
+                  : null,
           child: Text(l10n.s_move),
         ),
       ],
-      builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(_destination == null
-                ? l10n.q_move_key_confirm(
-                    widget.pivSlot.slot.getDisplayName(l10n))
-                : widget.pivSlot.certInfo != null && _includeCertificate
-                    ? l10n.q_move_key_and_certificate_to_slot_confirm(
-                        widget.pivSlot.slot.getDisplayName(l10n),
-                        _destination!.getDisplayName(l10n))
-                    : l10n.q_move_key_to_slot_confirm(
-                        widget.pivSlot.slot.getDisplayName(l10n),
-                        _destination!.getDisplayName(l10n))),
-            Wrap(
-              spacing: 4.0,
-              runSpacing: 8.0,
-              children: [
-                ChoiceFilterChip<SlotId?>(
-                  menuConstraints: const BoxConstraints(maxHeight: 200),
-                  value: _destination,
-                  items: SlotId.values
-                      .where((element) => element != widget.pivSlot.slot)
+      builder:
+          (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                        Text(
+                          _destination == null
+                              ? l10n.q_move_key_confirm(
+                                widget.pivSlot.slot.getDisplayName(l10n),
+                              )
+                              : widget.pivSlot.certInfo != null &&
+                                  _includeCertificate
+                              ? l10n.q_move_key_and_certificate_to_slot_confirm(
+                                widget.pivSlot.slot.getDisplayName(l10n),
+                                _destination!.getDisplayName(l10n),
+                              )
+                              : l10n.q_move_key_to_slot_confirm(
+                                widget.pivSlot.slot.getDisplayName(l10n),
+                                _destination!.getDisplayName(l10n),
+                              ),
+                        ),
+                        Wrap(
+                          spacing: 4.0,
+                          runSpacing: 8.0,
+                          children: [
+                            ChoiceFilterChip<SlotId?>(
+                              menuConstraints: const BoxConstraints(
+                                maxHeight: 200,
+                              ),
+                              value: _destination,
+                              items:
+                                  SlotId.values
+                                      .where(
+                                        (element) =>
+                                            element != widget.pivSlot.slot,
+                                      )
+                                      .toList(),
+                              labelBuilder:
+                                  (value) => Text(
+                                    _destination == null
+                                        ? l10n.l_select_destination_slot
+                                        : _destination!.getDisplayName(l10n),
+                                  ),
+                              itemBuilder:
+                                  (value) => Text(value!.getDisplayName(l10n)),
+                              onChanged: (value) {
+                                setState(() {
+                                  _destination = value;
+                                });
+                              },
+                            ),
+                            if (widget.pivSlot.certInfo != null)
+                              FilterChip(
+                                label: Text(l10n.l_include_certificate),
+                                selected: _includeCertificate,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _includeCertificate = value;
+                                  });
+                                },
+                              ),
+                          ],
+                        ),
+                      ]
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: e,
+                        ),
+                      )
                       .toList(),
-                  labelBuilder: (value) => Text(_destination == null
-                      ? l10n.l_select_destination_slot
-                      : _destination!.getDisplayName(l10n)),
-                  itemBuilder: (value) => Text(value!.getDisplayName(l10n)),
-                  onChanged: (value) {
-                    setState(() {
-                      _destination = value;
-                    });
-                  },
-                ),
-                if (widget.pivSlot.certInfo != null)
-                  FilterChip(
-                      label: Text(l10n.l_include_certificate),
-                      selected: _includeCertificate,
-                      onSelected: (value) {
-                        setState(() {
-                          _includeCertificate = value;
-                        });
-                      })
-              ],
             ),
-          ]
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: e,
-                  ))
-              .toList(),
-        ),
-      ),
+          ),
     );
   }
 }

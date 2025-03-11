@@ -25,9 +25,7 @@ import '../models.dart';
 class _OverwriteConfirmDialog extends StatelessWidget {
   final OtpSlot otpSlot;
 
-  const _OverwriteConfirmDialog({
-    required this.otpSlot,
-  });
+  const _OverwriteConfirmDialog({required this.otpSlot});
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -36,17 +34,17 @@ class _OverwriteConfirmDialog extends StatelessWidget {
       title: Text(l10n.q_overwrite_slot),
       actions: [
         TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: Text(l10n.s_overwrite)),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+          child: Text(l10n.s_overwrite),
+        ),
       ],
       content: Text(
         l10n.p_overwrite_slot_desc(otpSlot.slot.getDisplayName(l10n)),
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(fontWeight: FontWeight.w700),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -55,10 +53,9 @@ class _OverwriteConfirmDialog extends StatelessWidget {
 Future<bool> confirmOverwrite(BuildContext context, OtpSlot otpSlot) async {
   if (otpSlot.isConfigured) {
     return await showDialog(
-            context: context,
-            builder: (context) => _OverwriteConfirmDialog(
-                  otpSlot: otpSlot,
-                )) ??
+          context: context,
+          builder: (context) => _OverwriteConfirmDialog(otpSlot: otpSlot),
+        ) ??
         false;
   }
   return true;

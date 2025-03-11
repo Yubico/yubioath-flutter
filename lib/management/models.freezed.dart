@@ -12,7 +12,8 @@ part of 'models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 DeviceConfig _$DeviceConfigFromJson(Map<String, dynamic> json) {
   return _DeviceConfig.fromJson(json);
@@ -39,14 +40,16 @@ mixin _$DeviceConfig {
 /// @nodoc
 abstract class $DeviceConfigCopyWith<$Res> {
   factory $DeviceConfigCopyWith(
-          DeviceConfig value, $Res Function(DeviceConfig) then) =
-      _$DeviceConfigCopyWithImpl<$Res, DeviceConfig>;
+    DeviceConfig value,
+    $Res Function(DeviceConfig) then,
+  ) = _$DeviceConfigCopyWithImpl<$Res, DeviceConfig>;
   @useResult
-  $Res call(
-      {Map<Transport, int> enabledCapabilities,
-      int? autoEjectTimeout,
-      int? challengeResponseTimeout,
-      int? deviceFlags});
+  $Res call({
+    Map<Transport, int> enabledCapabilities,
+    int? autoEjectTimeout,
+    int? challengeResponseTimeout,
+    int? deviceFlags,
+  });
 }
 
 /// @nodoc
@@ -69,24 +72,31 @@ class _$DeviceConfigCopyWithImpl<$Res, $Val extends DeviceConfig>
     Object? challengeResponseTimeout = freezed,
     Object? deviceFlags = freezed,
   }) {
-    return _then(_value.copyWith(
-      enabledCapabilities: null == enabledCapabilities
-          ? _value.enabledCapabilities
-          : enabledCapabilities // ignore: cast_nullable_to_non_nullable
-              as Map<Transport, int>,
-      autoEjectTimeout: freezed == autoEjectTimeout
-          ? _value.autoEjectTimeout
-          : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
-              as int?,
-      challengeResponseTimeout: freezed == challengeResponseTimeout
-          ? _value.challengeResponseTimeout
-          : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
-              as int?,
-      deviceFlags: freezed == deviceFlags
-          ? _value.deviceFlags
-          : deviceFlags // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            enabledCapabilities:
+                null == enabledCapabilities
+                    ? _value.enabledCapabilities
+                    : enabledCapabilities // ignore: cast_nullable_to_non_nullable
+                        as Map<Transport, int>,
+            autoEjectTimeout:
+                freezed == autoEjectTimeout
+                    ? _value.autoEjectTimeout
+                    : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
+                        as int?,
+            challengeResponseTimeout:
+                freezed == challengeResponseTimeout
+                    ? _value.challengeResponseTimeout
+                    : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
+                        as int?,
+            deviceFlags:
+                freezed == deviceFlags
+                    ? _value.deviceFlags
+                    : deviceFlags // ignore: cast_nullable_to_non_nullable
+                        as int?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -94,15 +104,17 @@ class _$DeviceConfigCopyWithImpl<$Res, $Val extends DeviceConfig>
 abstract class _$$DeviceConfigImplCopyWith<$Res>
     implements $DeviceConfigCopyWith<$Res> {
   factory _$$DeviceConfigImplCopyWith(
-          _$DeviceConfigImpl value, $Res Function(_$DeviceConfigImpl) then) =
-      __$$DeviceConfigImplCopyWithImpl<$Res>;
+    _$DeviceConfigImpl value,
+    $Res Function(_$DeviceConfigImpl) then,
+  ) = __$$DeviceConfigImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {Map<Transport, int> enabledCapabilities,
-      int? autoEjectTimeout,
-      int? challengeResponseTimeout,
-      int? deviceFlags});
+  $Res call({
+    Map<Transport, int> enabledCapabilities,
+    int? autoEjectTimeout,
+    int? challengeResponseTimeout,
+    int? deviceFlags,
+  });
 }
 
 /// @nodoc
@@ -110,8 +122,9 @@ class __$$DeviceConfigImplCopyWithImpl<$Res>
     extends _$DeviceConfigCopyWithImpl<$Res, _$DeviceConfigImpl>
     implements _$$DeviceConfigImplCopyWith<$Res> {
   __$$DeviceConfigImplCopyWithImpl(
-      _$DeviceConfigImpl _value, $Res Function(_$DeviceConfigImpl) _then)
-      : super(_value, _then);
+    _$DeviceConfigImpl _value,
+    $Res Function(_$DeviceConfigImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of DeviceConfig
   /// with the given fields replaced by the non-null parameter values.
@@ -123,33 +136,38 @@ class __$$DeviceConfigImplCopyWithImpl<$Res>
     Object? challengeResponseTimeout = freezed,
     Object? deviceFlags = freezed,
   }) {
-    return _then(_$DeviceConfigImpl(
-      null == enabledCapabilities
-          ? _value._enabledCapabilities
-          : enabledCapabilities // ignore: cast_nullable_to_non_nullable
-              as Map<Transport, int>,
-      freezed == autoEjectTimeout
-          ? _value.autoEjectTimeout
-          : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
-              as int?,
-      freezed == challengeResponseTimeout
-          ? _value.challengeResponseTimeout
-          : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
-              as int?,
-      freezed == deviceFlags
-          ? _value.deviceFlags
-          : deviceFlags // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$DeviceConfigImpl(
+        null == enabledCapabilities
+            ? _value._enabledCapabilities
+            : enabledCapabilities // ignore: cast_nullable_to_non_nullable
+                as Map<Transport, int>,
+        freezed == autoEjectTimeout
+            ? _value.autoEjectTimeout
+            : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
+                as int?,
+        freezed == challengeResponseTimeout
+            ? _value.challengeResponseTimeout
+            : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
+                as int?,
+        freezed == deviceFlags
+            ? _value.deviceFlags
+            : deviceFlags // ignore: cast_nullable_to_non_nullable
+                as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DeviceConfigImpl implements _DeviceConfig {
-  _$DeviceConfigImpl(final Map<Transport, int> enabledCapabilities,
-      this.autoEjectTimeout, this.challengeResponseTimeout, this.deviceFlags)
-      : _enabledCapabilities = enabledCapabilities;
+  _$DeviceConfigImpl(
+    final Map<Transport, int> enabledCapabilities,
+    this.autoEjectTimeout,
+    this.challengeResponseTimeout,
+    this.deviceFlags,
+  ) : _enabledCapabilities = enabledCapabilities;
 
   factory _$DeviceConfigImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeviceConfigImplFromJson(json);
@@ -180,12 +198,16 @@ class _$DeviceConfigImpl implements _DeviceConfig {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DeviceConfigImpl &&
-            const DeepCollectionEquality()
-                .equals(other._enabledCapabilities, _enabledCapabilities) &&
+            const DeepCollectionEquality().equals(
+              other._enabledCapabilities,
+              _enabledCapabilities,
+            ) &&
             (identical(other.autoEjectTimeout, autoEjectTimeout) ||
                 other.autoEjectTimeout == autoEjectTimeout) &&
             (identical(
-                    other.challengeResponseTimeout, challengeResponseTimeout) ||
+                  other.challengeResponseTimeout,
+                  challengeResponseTimeout,
+                ) ||
                 other.challengeResponseTimeout == challengeResponseTimeout) &&
             (identical(other.deviceFlags, deviceFlags) ||
                 other.deviceFlags == deviceFlags));
@@ -194,11 +216,12 @@ class _$DeviceConfigImpl implements _DeviceConfig {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_enabledCapabilities),
-      autoEjectTimeout,
-      challengeResponseTimeout,
-      deviceFlags);
+    runtimeType,
+    const DeepCollectionEquality().hash(_enabledCapabilities),
+    autoEjectTimeout,
+    challengeResponseTimeout,
+    deviceFlags,
+  );
 
   /// Create a copy of DeviceConfig
   /// with the given fields replaced by the non-null parameter values.
@@ -210,18 +233,17 @@ class _$DeviceConfigImpl implements _DeviceConfig {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DeviceConfigImplToJson(
-      this,
-    );
+    return _$$DeviceConfigImplToJson(this);
   }
 }
 
 abstract class _DeviceConfig implements DeviceConfig {
   factory _DeviceConfig(
-      final Map<Transport, int> enabledCapabilities,
-      final int? autoEjectTimeout,
-      final int? challengeResponseTimeout,
-      final int? deviceFlags) = _$DeviceConfigImpl;
+    final Map<Transport, int> enabledCapabilities,
+    final int? autoEjectTimeout,
+    final int? challengeResponseTimeout,
+    final int? deviceFlags,
+  ) = _$DeviceConfigImpl;
 
   factory _DeviceConfig.fromJson(Map<String, dynamic> json) =
       _$DeviceConfigImpl.fromJson;
@@ -276,22 +298,24 @@ mixin _$DeviceInfo {
 /// @nodoc
 abstract class $DeviceInfoCopyWith<$Res> {
   factory $DeviceInfoCopyWith(
-          DeviceInfo value, $Res Function(DeviceInfo) then) =
-      _$DeviceInfoCopyWithImpl<$Res, DeviceInfo>;
+    DeviceInfo value,
+    $Res Function(DeviceInfo) then,
+  ) = _$DeviceInfoCopyWithImpl<$Res, DeviceInfo>;
   @useResult
-  $Res call(
-      {DeviceConfig config,
-      int? serial,
-      Version version,
-      FormFactor formFactor,
-      Map<Transport, int> supportedCapabilities,
-      bool isLocked,
-      bool isFips,
-      bool isSky,
-      bool pinComplexity,
-      int fipsCapable,
-      int fipsApproved,
-      int resetBlocked});
+  $Res call({
+    DeviceConfig config,
+    int? serial,
+    Version version,
+    FormFactor formFactor,
+    Map<Transport, int> supportedCapabilities,
+    bool isLocked,
+    bool isFips,
+    bool isSky,
+    bool pinComplexity,
+    int fipsCapable,
+    int fipsApproved,
+    int resetBlocked,
+  });
 
   $DeviceConfigCopyWith<$Res> get config;
   $VersionCopyWith<$Res> get version;
@@ -325,56 +349,71 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
     Object? fipsApproved = null,
     Object? resetBlocked = null,
   }) {
-    return _then(_value.copyWith(
-      config: null == config
-          ? _value.config
-          : config // ignore: cast_nullable_to_non_nullable
-              as DeviceConfig,
-      serial: freezed == serial
-          ? _value.serial
-          : serial // ignore: cast_nullable_to_non_nullable
-              as int?,
-      version: null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as Version,
-      formFactor: null == formFactor
-          ? _value.formFactor
-          : formFactor // ignore: cast_nullable_to_non_nullable
-              as FormFactor,
-      supportedCapabilities: null == supportedCapabilities
-          ? _value.supportedCapabilities
-          : supportedCapabilities // ignore: cast_nullable_to_non_nullable
-              as Map<Transport, int>,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isFips: null == isFips
-          ? _value.isFips
-          : isFips // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isSky: null == isSky
-          ? _value.isSky
-          : isSky // ignore: cast_nullable_to_non_nullable
-              as bool,
-      pinComplexity: null == pinComplexity
-          ? _value.pinComplexity
-          : pinComplexity // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fipsCapable: null == fipsCapable
-          ? _value.fipsCapable
-          : fipsCapable // ignore: cast_nullable_to_non_nullable
-              as int,
-      fipsApproved: null == fipsApproved
-          ? _value.fipsApproved
-          : fipsApproved // ignore: cast_nullable_to_non_nullable
-              as int,
-      resetBlocked: null == resetBlocked
-          ? _value.resetBlocked
-          : resetBlocked // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            config:
+                null == config
+                    ? _value.config
+                    : config // ignore: cast_nullable_to_non_nullable
+                        as DeviceConfig,
+            serial:
+                freezed == serial
+                    ? _value.serial
+                    : serial // ignore: cast_nullable_to_non_nullable
+                        as int?,
+            version:
+                null == version
+                    ? _value.version
+                    : version // ignore: cast_nullable_to_non_nullable
+                        as Version,
+            formFactor:
+                null == formFactor
+                    ? _value.formFactor
+                    : formFactor // ignore: cast_nullable_to_non_nullable
+                        as FormFactor,
+            supportedCapabilities:
+                null == supportedCapabilities
+                    ? _value.supportedCapabilities
+                    : supportedCapabilities // ignore: cast_nullable_to_non_nullable
+                        as Map<Transport, int>,
+            isLocked:
+                null == isLocked
+                    ? _value.isLocked
+                    : isLocked // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            isFips:
+                null == isFips
+                    ? _value.isFips
+                    : isFips // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            isSky:
+                null == isSky
+                    ? _value.isSky
+                    : isSky // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            pinComplexity:
+                null == pinComplexity
+                    ? _value.pinComplexity
+                    : pinComplexity // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            fipsCapable:
+                null == fipsCapable
+                    ? _value.fipsCapable
+                    : fipsCapable // ignore: cast_nullable_to_non_nullable
+                        as int,
+            fipsApproved:
+                null == fipsApproved
+                    ? _value.fipsApproved
+                    : fipsApproved // ignore: cast_nullable_to_non_nullable
+                        as int,
+            resetBlocked:
+                null == resetBlocked
+                    ? _value.resetBlocked
+                    : resetBlocked // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of DeviceInfo
@@ -402,23 +441,25 @@ class _$DeviceInfoCopyWithImpl<$Res, $Val extends DeviceInfo>
 abstract class _$$DeviceInfoImplCopyWith<$Res>
     implements $DeviceInfoCopyWith<$Res> {
   factory _$$DeviceInfoImplCopyWith(
-          _$DeviceInfoImpl value, $Res Function(_$DeviceInfoImpl) then) =
-      __$$DeviceInfoImplCopyWithImpl<$Res>;
+    _$DeviceInfoImpl value,
+    $Res Function(_$DeviceInfoImpl) then,
+  ) = __$$DeviceInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {DeviceConfig config,
-      int? serial,
-      Version version,
-      FormFactor formFactor,
-      Map<Transport, int> supportedCapabilities,
-      bool isLocked,
-      bool isFips,
-      bool isSky,
-      bool pinComplexity,
-      int fipsCapable,
-      int fipsApproved,
-      int resetBlocked});
+  $Res call({
+    DeviceConfig config,
+    int? serial,
+    Version version,
+    FormFactor formFactor,
+    Map<Transport, int> supportedCapabilities,
+    bool isLocked,
+    bool isFips,
+    bool isSky,
+    bool pinComplexity,
+    int fipsCapable,
+    int fipsApproved,
+    int resetBlocked,
+  });
 
   @override
   $DeviceConfigCopyWith<$Res> get config;
@@ -431,8 +472,9 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
     extends _$DeviceInfoCopyWithImpl<$Res, _$DeviceInfoImpl>
     implements _$$DeviceInfoImplCopyWith<$Res> {
   __$$DeviceInfoImplCopyWithImpl(
-      _$DeviceInfoImpl _value, $Res Function(_$DeviceInfoImpl) _then)
-      : super(_value, _then);
+    _$DeviceInfoImpl _value,
+    $Res Function(_$DeviceInfoImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of DeviceInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -452,56 +494,58 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
     Object? fipsApproved = null,
     Object? resetBlocked = null,
   }) {
-    return _then(_$DeviceInfoImpl(
-      null == config
-          ? _value.config
-          : config // ignore: cast_nullable_to_non_nullable
-              as DeviceConfig,
-      freezed == serial
-          ? _value.serial
-          : serial // ignore: cast_nullable_to_non_nullable
-              as int?,
-      null == version
-          ? _value.version
-          : version // ignore: cast_nullable_to_non_nullable
-              as Version,
-      null == formFactor
-          ? _value.formFactor
-          : formFactor // ignore: cast_nullable_to_non_nullable
-              as FormFactor,
-      null == supportedCapabilities
-          ? _value._supportedCapabilities
-          : supportedCapabilities // ignore: cast_nullable_to_non_nullable
-              as Map<Transport, int>,
-      null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == isFips
-          ? _value.isFips
-          : isFips // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == isSky
-          ? _value.isSky
-          : isSky // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == pinComplexity
-          ? _value.pinComplexity
-          : pinComplexity // ignore: cast_nullable_to_non_nullable
-              as bool,
-      null == fipsCapable
-          ? _value.fipsCapable
-          : fipsCapable // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == fipsApproved
-          ? _value.fipsApproved
-          : fipsApproved // ignore: cast_nullable_to_non_nullable
-              as int,
-      null == resetBlocked
-          ? _value.resetBlocked
-          : resetBlocked // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$DeviceInfoImpl(
+        null == config
+            ? _value.config
+            : config // ignore: cast_nullable_to_non_nullable
+                as DeviceConfig,
+        freezed == serial
+            ? _value.serial
+            : serial // ignore: cast_nullable_to_non_nullable
+                as int?,
+        null == version
+            ? _value.version
+            : version // ignore: cast_nullable_to_non_nullable
+                as Version,
+        null == formFactor
+            ? _value.formFactor
+            : formFactor // ignore: cast_nullable_to_non_nullable
+                as FormFactor,
+        null == supportedCapabilities
+            ? _value._supportedCapabilities
+            : supportedCapabilities // ignore: cast_nullable_to_non_nullable
+                as Map<Transport, int>,
+        null == isLocked
+            ? _value.isLocked
+            : isLocked // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == isFips
+            ? _value.isFips
+            : isFips // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == isSky
+            ? _value.isSky
+            : isSky // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == pinComplexity
+            ? _value.pinComplexity
+            : pinComplexity // ignore: cast_nullable_to_non_nullable
+                as bool,
+        null == fipsCapable
+            ? _value.fipsCapable
+            : fipsCapable // ignore: cast_nullable_to_non_nullable
+                as int,
+        null == fipsApproved
+            ? _value.fipsApproved
+            : fipsApproved // ignore: cast_nullable_to_non_nullable
+                as int,
+        null == resetBlocked
+            ? _value.resetBlocked
+            : resetBlocked // ignore: cast_nullable_to_non_nullable
+                as int,
+      ),
+    );
   }
 }
 
@@ -509,20 +553,20 @@ class __$$DeviceInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DeviceInfoImpl extends _DeviceInfo {
   _$DeviceInfoImpl(
-      this.config,
-      this.serial,
-      this.version,
-      this.formFactor,
-      final Map<Transport, int> supportedCapabilities,
-      this.isLocked,
-      this.isFips,
-      this.isSky,
-      this.pinComplexity,
-      this.fipsCapable,
-      this.fipsApproved,
-      this.resetBlocked)
-      : _supportedCapabilities = supportedCapabilities,
-        super._();
+    this.config,
+    this.serial,
+    this.version,
+    this.formFactor,
+    final Map<Transport, int> supportedCapabilities,
+    this.isLocked,
+    this.isFips,
+    this.isSky,
+    this.pinComplexity,
+    this.fipsCapable,
+    this.fipsApproved,
+    this.resetBlocked,
+  ) : _supportedCapabilities = supportedCapabilities,
+      super._();
 
   factory _$DeviceInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeviceInfoImplFromJson(json);
@@ -574,8 +618,10 @@ class _$DeviceInfoImpl extends _DeviceInfo {
             (identical(other.version, version) || other.version == version) &&
             (identical(other.formFactor, formFactor) ||
                 other.formFactor == formFactor) &&
-            const DeepCollectionEquality()
-                .equals(other._supportedCapabilities, _supportedCapabilities) &&
+            const DeepCollectionEquality().equals(
+              other._supportedCapabilities,
+              _supportedCapabilities,
+            ) &&
             (identical(other.isLocked, isLocked) ||
                 other.isLocked == isLocked) &&
             (identical(other.isFips, isFips) || other.isFips == isFips) &&
@@ -593,19 +639,20 @@ class _$DeviceInfoImpl extends _DeviceInfo {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      config,
-      serial,
-      version,
-      formFactor,
-      const DeepCollectionEquality().hash(_supportedCapabilities),
-      isLocked,
-      isFips,
-      isSky,
-      pinComplexity,
-      fipsCapable,
-      fipsApproved,
-      resetBlocked);
+    runtimeType,
+    config,
+    serial,
+    version,
+    formFactor,
+    const DeepCollectionEquality().hash(_supportedCapabilities),
+    isLocked,
+    isFips,
+    isSky,
+    pinComplexity,
+    fipsCapable,
+    fipsApproved,
+    resetBlocked,
+  );
 
   /// Create a copy of DeviceInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -617,26 +664,25 @@ class _$DeviceInfoImpl extends _DeviceInfo {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DeviceInfoImplToJson(
-      this,
-    );
+    return _$$DeviceInfoImplToJson(this);
   }
 }
 
 abstract class _DeviceInfo extends DeviceInfo {
   factory _DeviceInfo(
-      final DeviceConfig config,
-      final int? serial,
-      final Version version,
-      final FormFactor formFactor,
-      final Map<Transport, int> supportedCapabilities,
-      final bool isLocked,
-      final bool isFips,
-      final bool isSky,
-      final bool pinComplexity,
-      final int fipsCapable,
-      final int fipsApproved,
-      final int resetBlocked) = _$DeviceInfoImpl;
+    final DeviceConfig config,
+    final int? serial,
+    final Version version,
+    final FormFactor formFactor,
+    final Map<Transport, int> supportedCapabilities,
+    final bool isLocked,
+    final bool isFips,
+    final bool isSky,
+    final bool pinComplexity,
+    final int fipsCapable,
+    final int fipsApproved,
+    final int resetBlocked,
+  ) = _$DeviceInfoImpl;
   _DeviceInfo._() : super._();
 
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) =
