@@ -102,7 +102,9 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
                     autoEjectTimeout
                 )
             }
-            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(yubiKeyDevice) }.getOrNull())
+            runCatching { getDeviceInfo(yubiKeyDevice) }.getOrNull()?.let {
+                deviceManager.setDeviceInfo(it)
+            }
             NULL
         } catch (t: Throwable) {
             logger.error("Failed to update device config: ", t)
@@ -117,6 +119,9 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
         reboot: Boolean
     ): String = connectionHelper.useDevice { yubikey ->
         try {
+            if (reboot) {
+                deviceManager.clearDeviceInfoOnDisconnect = false
+            }
             withManagementSession(yubikey) {
                 it.updateDeviceConfig(
                     deviceConfigFromMap(config),
@@ -125,7 +130,11 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
                     HexCodec.hexStringToBytes(newLockCode)
                 )
             }
-            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(yubikey) }.getOrNull())
+            if (!reboot) {
+                runCatching { getDeviceInfo(yubikey) }.getOrNull()?.let {
+                    deviceManager.setDeviceInfo(it)
+                }
+            }
             NULL
         } catch (t: Throwable) {
             logger.error("Failed to update device config: ", t)

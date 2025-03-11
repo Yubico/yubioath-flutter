@@ -39,7 +39,9 @@ final androidAllowScreenshotsProvider =
     );
 
 class DeviceInfoComparator {
-  static bool areSame(DeviceInfo? prev, DeviceInfo? next) {
+  /// Compares two instances of DeviceInfo and determines whether they
+  /// belong the the same physical device.
+  static bool customCompare(DeviceInfo? prev, DeviceInfo? next) {
     if (prev != null && next != null) {
       if (prev.serial == null && next.serial == null) {
         // compare without config

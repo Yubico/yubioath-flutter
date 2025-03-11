@@ -117,6 +117,7 @@ class DeviceManager(
                 listener.onConnected(yubiKeyDevice)
             }
         }
+        clearDeviceInfoOnDisconnect = true
     }
 
     init {

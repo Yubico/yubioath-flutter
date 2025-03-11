@@ -65,8 +65,11 @@ class MainPage extends ConsumerWidget {
       }
 
       if (isAndroid &&
-              ((prev != null && prev.isLoading == true) || next.isLoading) ||
-          DeviceInfoComparator.areSame(prev?.value?.info, next.value?.info)) {
+          DeviceInfoComparator.customCompare(
+            prev?.value?.info,
+            next.value?.info,
+          )) {
+        // prev and next are the same device, don't pop any dialogs
         return;
       }
 

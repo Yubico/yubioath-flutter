@@ -198,7 +198,7 @@ class FidoManager(
     override fun dispose() {
         super.dispose()
         fidoChannel.setMethodCallHandler(null)
-        logger.debug("XXX FIDO app context disposed")
+        logger.debug("FidoManager disposed")
     }
 
     override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {
