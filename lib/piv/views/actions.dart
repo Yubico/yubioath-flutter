@@ -151,7 +151,8 @@ class PivActions extends ConsumerWidget {
                 );
 
                 if (result != null) {
-                  final (fileExt, title, data) = switch (result.generateType) {
+                  final generateType = result.generateType;
+                  final (fileExt, title, data) = switch (generateType) {
                     GenerateType.publicKey => (
                       'pem',
                       l10n.l_export_public_key_file,
@@ -166,13 +167,23 @@ class PivActions extends ConsumerWidget {
                   };
 
                   if (fileExt != null) {
-                    final filePath = await FilePicker.platform.saveFile(
+                    String typeName =
+                        generateType == GenerateType.publicKey
+                            ? 'public-key'
+                            : generateType.name;
+                    String? filePath = await FilePicker.platform.saveFile(
                       dialogTitle: title,
+                      fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
                       allowedExtensions: [fileExt],
                       type: FileType.custom,
                       lockParentWindow: true,
                     );
                     if (filePath != null) {
+                      // Windows only: Append extension if missing
+                      if (Platform.isWindows &&
+                          !filePath.toLowerCase().endsWith('.$fileExt')) {
+                        filePath += '.$fileExt';
+                      }
                       final file = File(filePath);
                       await file.writeAsString(data!, flush: true);
                     }
