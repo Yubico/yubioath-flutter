@@ -151,14 +151,15 @@ class PivActions extends ConsumerWidget {
                 );
 
                 if (result != null) {
-                  final (fileExt, title, data) = switch (result.generateType) {
+                  final generateType = result.generateType;
+                  final (fileExt, title, data) = switch (generateType) {
                     GenerateType.publicKey => (
-                      'pem',
+                      generateType.getFileExtension(),
                       l10n.l_export_public_key_file,
                       result.publicKey,
                     ),
                     GenerateType.csr => (
-                      'csr',
+                      generateType.getFileExtension(),
                       l10n.l_export_csr_file,
                       result.result,
                     ),
@@ -166,13 +167,29 @@ class PivActions extends ConsumerWidget {
                   };
 
                   if (fileExt != null) {
-                    final filePath = await FilePicker.platform.saveFile(
+                    String typeName =
+                        generateType == GenerateType.publicKey
+                            ? 'public-key'
+                            : generateType.name;
+                    String fileName = '$typeName-${intent.slot.slot.hexId}';
+                    // Needed to avoid adding double extensions on MacOS
+                    if (!(Platform.isMacOS &&
+                        generateType == GenerateType.csr)) {
+                      fileName += '.$fileExt';
+                    }
+                    String? filePath = await FilePicker.platform.saveFile(
                       dialogTitle: title,
+                      fileName: fileName,
                       allowedExtensions: [fileExt],
                       type: FileType.custom,
                       lockParentWindow: true,
                     );
                     if (filePath != null) {
+                      // Windows only: Append extension if missing
+                      if (Platform.isWindows &&
+                          !filePath.toLowerCase().endsWith('.$fileExt')) {
+                        filePath += '.$fileExt';
+                      }
                       final file = File(filePath);
                       await file.writeAsString(data!, flush: true);
                     }
@@ -233,22 +250,30 @@ class PivActions extends ConsumerWidget {
               String title;
               String message;
               String data;
+              String typeName;
+              GenerateType generateType;
               if (cert != null) {
                 title = l10n.l_export_certificate_file;
                 message = l10n.l_certificate_exported;
                 data = cert;
+                typeName = 'certificate';
+                generateType = GenerateType.certificate;
               } else if (metadata != null) {
                 title = l10n.l_export_public_key_file;
                 message = l10n.l_public_key_exported;
                 data = metadata.publicKey;
+                typeName = 'public-key';
+                generateType = GenerateType.publicKey;
               } else {
                 return false;
               }
 
-              final filePath = await withContext((context) async {
+              final fileExt = generateType.getFileExtension();
+              String? filePath = await withContext((context) async {
                 return await FilePicker.platform.saveFile(
                   dialogTitle: title,
-                  allowedExtensions: ['pem'],
+                  fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
+                  allowedExtensions: [fileExt],
                   type: FileType.custom,
                   lockParentWindow: true,
                 );
@@ -258,6 +283,11 @@ class PivActions extends ConsumerWidget {
                 return false;
               }
 
+              // Windows only: Append extension if missing
+              if (Platform.isWindows &&
+                  !filePath.toLowerCase().endsWith('.$fileExt')) {
+                filePath += '.$fileExt';
+              }
               final file = File(filePath);
               await file.writeAsString(data, flush: true);
 

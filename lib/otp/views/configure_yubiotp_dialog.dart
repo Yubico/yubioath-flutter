@@ -208,15 +208,21 @@ class _ConfigureYubiOtpDialogState
     }
 
     Future<bool> selectFile() async {
-      final filePath = await FilePicker.platform.saveFile(
+      String? filePath = await FilePicker.platform.saveFile(
         dialogTitle: l10n.l_export_configuration_file,
         allowedExtensions: ['csv'],
+        fileName: 'yubico-otp-$publicId.csv',
         type: FileType.custom,
         lockParentWindow: true,
       );
 
       if (filePath == null) {
         return false;
+      }
+
+      // Windows only: Append csv extension if missing
+      if (Platform.isWindows && !filePath.toLowerCase().endsWith('.csv')) {
+        filePath += '.csv';
       }
 
       ref.read(yubiOtpOutputProvider.notifier).setOutput(File(filePath));
