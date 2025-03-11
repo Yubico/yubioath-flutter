@@ -41,6 +41,14 @@ enum GenerateType {
       GenerateType.csr => l10n.l_certificate_signing_request,
     };
   }
+
+  String getFileExtension() {
+    return switch (this) {
+      GenerateType.publicKey => 'pem',
+      GenerateType.csr => 'csr',
+      GenerateType.certificate => 'crt'
+    };
+  }
 }
 
 enum SlotId {
