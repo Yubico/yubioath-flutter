@@ -35,10 +35,10 @@ enum class OperationContext(val value: Int) {
     OpenPgp(7),
     HsmAuth(8),
     Management(9),
-    Invalid(-1);
+    Default(-1);
 
     companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Invalid
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Default
 
         fun Info.getSupportedContexts(): List<OperationContext> {
 
@@ -84,7 +84,7 @@ enum class OperationContext(val value: Int) {
 }
 
 class MainViewModel : ViewModel() {
-    private var _appContext = MutableLiveData(OperationContext.Invalid)
+    private var _appContext = MutableLiveData(OperationContext.Default)
     val appContext: LiveData<OperationContext> = _appContext
     fun setAppContext(appContext: OperationContext) {
         // Don't reset the context unless it actually changes

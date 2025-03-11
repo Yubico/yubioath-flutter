@@ -475,7 +475,7 @@ class MainActivity : FlutterFragmentActivity() {
         )
 
         viewModel.appContext.observe(this) {
-            if (it != OperationContext.Invalid) {
+            if (it != OperationContext.Default) {
                 switchContextManager(it)
                 viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
             }
