@@ -26,6 +26,10 @@ class AppTheme {
         Brightness.dark => getDarkTheme(primaryColor),
       };
 
+  static ProgressIndicatorThemeData _progressIndicatorThemeData() =>
+  // ignore: deprecated_member_use
+  ProgressIndicatorThemeData(year2023: false);
+
   static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) {
     const darkSurface = Color(0xff282828);
     return switch (brightness) {
@@ -79,6 +83,7 @@ class AppTheme {
           color: colorScheme.onSurface,
         ),
       ),
+      progressIndicatorTheme: _progressIndicatorThemeData(),
     );
   }
 
@@ -116,6 +121,7 @@ class AppTheme {
           color: colorScheme.onSurface,
         ),
       ),
+      progressIndicatorTheme: _progressIndicatorThemeData(),
     );
   }
 }
