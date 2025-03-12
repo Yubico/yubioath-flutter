@@ -470,6 +470,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                                         child:
                                                             CircularProgressIndicator(
                                                               strokeWidth: 2.0,
+                                                              strokeAlign: 2.0,
                                                             ),
                                                       )
                                                       : _qrScanSuccess
