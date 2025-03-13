@@ -106,6 +106,7 @@ class _NfcEventNotifierListener {
         context: context,
         isDismissible: isDismissible,
         enableDrag: isDismissible,
+        routeSettings: RouteSettings(name: 'android_nfc_activity_overlay'),
         builder: (BuildContext context) {
           return PopScope(
             canPop: isDismissible,

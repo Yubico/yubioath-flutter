@@ -23,10 +23,12 @@ import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.yubikit.NfcState
+import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
 
 interface DeviceListener {
@@ -149,9 +151,24 @@ class DeviceManager(
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
         onCancelled: () -> Unit
     ): T = appViewModel.connectedYubiKey.value?.let {
+        if (!handleUsbReclaim(it)) {
+            throw IOException("Failed handling USB reclaim")
+        }
         onUsb(it)
     } ?: onNfc(onNfc, onCancelled)
 
+    /**
+     * Waits for a possible USB reclaim period to be over.
+     * @return true if it was possible to communicate with the device.
+     */
+    suspend fun handleUsbReclaim(device: YubiKeyDevice): Boolean =
+        Workarounds.handleUsbReclaim(this, device, enterReclaimCallback = {
+            appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_ONGOING)
+        }, leaveReclaimCallback = {
+            appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_SUCCESS)
+        }, failureCallback = {
+            appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_FAILURE)
+        })
 
     private suspend fun <T> onNfc(
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,

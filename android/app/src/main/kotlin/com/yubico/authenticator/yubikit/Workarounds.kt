@@ -42,8 +42,6 @@ import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
 import java.nio.ByteBuffer
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 object Workarounds {
     private val logger = LoggerFactory.getLogger("Workarounds")
@@ -289,7 +287,7 @@ object Workarounds {
      * @return true if the reclaim time is over and communication over FidoConnection is possible and
      * false if the communication with the key over FidoConnection failed after several tries.
      */
-    suspend fun handleFidoReclaim(
+    suspend fun handleUsbReclaim(
         deviceManager: DeviceManager,
         device: YubiKeyDevice,
         enterReclaimCallback: (() -> Unit)? = null,
@@ -327,26 +325,21 @@ object Workarounds {
     /** Send CTAPHID_PING over FidoConnection
      * @return true if the command succeeded
      */
-    private suspend fun canPing(usbYubiKey: UsbYubiKeyDevice) = suspendCoroutine { continuation ->
-        runCatching {
-            logger.debug("Probing with CTAPHID_PING")
-            usbYubiKey.requestConnection(FidoConnection::class.java) {
-                try {
-                    val fidoProtocol = FidoProtocol(it.value)
-                    fidoProtocol.sendAndReceive(
+    private suspend fun canPing(usbYubiKey: UsbYubiKeyDevice) =
+        usbYubiKey.withConnection<FidoConnection, Boolean> { connection ->
+            try {
+                FidoProtocol(connection)
+                    .sendAndReceive(
                         (0x80 or 0x01).toByte(), // CTAPHID_PING
                         "Probing".toByteArray(),
                         null
                     )
 
-                    continuation.resume(true)
-                } catch (exception: Exception) {
-                    logger.debug("Ignored exception: {}", exception.message)
-                    continuation.resume(false)
-                }
+                true
+            } catch (exception: Exception) {
+                logger.debug("Ignored exception: {}", exception.message)
+                false
             }
-        }.recoverCatching {
-            continuation.resume(false)
         }
-    }
 }
+

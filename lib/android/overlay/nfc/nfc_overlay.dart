@@ -78,7 +78,7 @@ class _NfcOverlayNotifier extends Notifier<int> {
           _log.debug('Received state: idle');
           break;
         case NfcState.usbActivityOngoing:
-          const timeout = 100;
+          const timeout = 300;
           processingViewTimeout = Timer(
             const Duration(milliseconds: timeout),
             () {

@@ -57,7 +57,6 @@ import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.NfcStateDispatcher
 import com.yubico.authenticator.yubikit.NfcStateListener
-import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.android.YubiKitManager
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable
@@ -316,18 +315,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private suspend fun processYubiKey(device: YubiKeyDevice) {
-        if (!Workarounds.handleFidoReclaim(
-                deviceManager, device,
-                enterReclaimCallback = {
-                    appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_ONGOING)
-                },
-                leaveReclaimCallback = {
-                    appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_SUCCESS)
-                },
-                failureCallback = {
-                    appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_FAILURE)
-                })
-        ) {
+        if (!deviceManager.handleUsbReclaim(device)) {
             // failure handling reclaim, we cannot use the key
             return
         }
@@ -375,7 +363,9 @@ class MainActivity : FlutterFragmentActivity() {
             try {
                 logger.debug("Processing pending action in context {}", it)
                 if (it.processYubiKey(device)) {
-                    appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                    if (device is NfcYubiKeyDevice) {
+                        appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                    }
                 }
                 if (device is NfcYubiKeyDevice) {
                     device.remove {
@@ -393,7 +383,7 @@ class MainActivity : FlutterFragmentActivity() {
             }
             logger.debug("Finished execution of pending action in {} context", it)
             return
-        }
+        } ?: logger.debug("There was no context with pending action")
 
         // there was no pending action, switch context manager if needed
         val supportedContexts = deviceInfo.getSupportedContexts()
@@ -415,7 +405,9 @@ class MainActivity : FlutterFragmentActivity() {
             try {
                 val requestHandled = it.processYubiKey(device)
                 if (requestHandled) {
-                    appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                    if (device is NfcYubiKeyDevice) {
+                        appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                    }
                 }
                 if (!switchedContextManager && device is NfcYubiKeyDevice) {
                     device.remove {
@@ -477,7 +469,9 @@ class MainActivity : FlutterFragmentActivity() {
         viewModel.appContext.observe(this) {
             if (it != OperationContext.Default) {
                 switchContextManager(it)
-                viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
+                if (it != OperationContext.Home) {
+                    viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
+                }
             }
         }
 

@@ -85,6 +85,7 @@ class MainPage extends ConsumerWidget {
               'icon_pack_dialog',
               'toggle_readers_dialog',
               'android_qr_scanner_view',
+              'android_nfc_activity_overlay',
             ].contains(route.settings.name);
       });
     });
