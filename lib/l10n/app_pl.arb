@@ -1112,6 +1112,11 @@
     "s_nfc_tap_your_yubikey": "Dotknij przycisku YubiKey",
     "l_nfc_failed_to_scan": "Skanowanie nie powiodło się, spróbuj ponownie",
 
+    "@_usb": {},
+    "s_usb_processing": null,
+    "s_usb_dont_remove": null,
+    "l_usb_read_error": null,
+
     "@_ndef": {},
     "p_ndef_set_otp": "Kod OTP został skopiowany do schowka.",
     "p_ndef_set_password": "Hasło zostało skopiowane do schowka.",

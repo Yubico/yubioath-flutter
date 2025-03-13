@@ -1112,6 +1112,11 @@
     "s_nfc_tap_your_yubikey": "Ťuknite na svoj YubiKey",
     "l_nfc_failed_to_scan": "Skenovanie sa nepodarilo, skúste to znova",
 
+    "@_usb": {},
+    "s_usb_processing": null,
+    "s_usb_dont_remove": null,
+    "l_usb_read_error": null,
+
     "@_ndef": {},
     "p_ndef_set_otp": "OTP kód sa úspešne skopíroval z YubiKey do schránky.",
     "p_ndef_set_password": "Heslo bolo úspešne skopírované z YubiKey do schránky.",

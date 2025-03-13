@@ -1112,6 +1112,11 @@
     "s_nfc_tap_your_yubikey": "Tapez sur votre YubiKey",
     "l_nfc_failed_to_scan": "Échec de l'analyse, réessayez",
 
+    "@_usb": {},
+    "s_usb_processing": null,
+    "s_usb_dont_remove": null,
+    "l_usb_read_error": null,
+
     "@_ndef": {},
     "p_ndef_set_otp": "Code OTP copié de la YubiKey dans le presse-papiers.",
     "p_ndef_set_password": "Mot de passe copié de la YubiKey dans le presse-papiers.",

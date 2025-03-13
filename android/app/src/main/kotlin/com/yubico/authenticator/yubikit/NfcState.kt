@@ -21,5 +21,8 @@ enum class NfcState(val value: Int) {
     IDLE(1),
     ONGOING(2),
     SUCCESS(3),
-    FAILURE(4)
+    FAILURE(4),
+    USB_ACTIVITY_ONGOING(5),
+    USB_ACTIVITY_SUCCESS(6),
+    USB_ACTIVITY_FAILURE(7)
 }

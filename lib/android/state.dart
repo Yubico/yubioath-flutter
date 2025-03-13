@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
+import '../management/models.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
@@ -36,6 +37,25 @@ final androidAllowScreenshotsProvider =
     StateNotifierProvider<AllowScreenshotsNotifier, bool>(
       (ref) => AllowScreenshotsNotifier(),
     );
+
+class DeviceInfoComparator {
+  /// Compares two instances of DeviceInfo and determines whether they
+  /// belong the the same physical device.
+  static bool customCompare(DeviceInfo? prev, DeviceInfo? next) {
+    if (prev != null && next != null) {
+      if (prev.serial == null && next.serial == null) {
+        // compare without config
+        final simpleConfig = DeviceConfig({}, 0, 0, 0);
+        return next.copyWith(config: simpleConfig) ==
+            prev.copyWith(config: simpleConfig);
+      } else {
+        // serial number based comparison
+        return prev.serial == next.serial;
+      }
+    }
+    return prev == null && next == null;
+  }
+}
 
 class AllowScreenshotsNotifier extends StateNotifier<bool> {
   AllowScreenshotsNotifier() : super(false);
@@ -79,7 +99,16 @@ class NfcAdapterState extends StateNotifier<bool> {
   }
 }
 
-enum NfcState { disabled, idle, ongoing, success, failure }
+enum NfcState {
+  disabled,
+  idle,
+  ongoing,
+  success,
+  failure,
+  usbActivityOngoing,
+  usbActivitySuccess,
+  usbActivityFailure,
+}
 
 class NfcStateNotifier extends StateNotifier<NfcState> {
   NfcStateNotifier() : super(NfcState.disabled);
@@ -91,6 +120,9 @@ class NfcStateNotifier extends StateNotifier<NfcState> {
       2 => NfcState.ongoing,
       3 => NfcState.success,
       4 => NfcState.failure,
+      5 => NfcState.usbActivityOngoing,
+      6 => NfcState.usbActivitySuccess,
+      7 => NfcState.usbActivityFailure,
       _ => NfcState.disabled,
     };
 
@@ -134,48 +166,21 @@ final androidAppContextHandler = Provider<AndroidAppContextHandler>(
 
 CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
   final notifier = AndroidCurrentSectionNotifier(
-    ref.watch(androidSectionPriority),
     ref.watch(androidAppContextHandler),
   );
-  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
-  }, fireImmediately: true);
   return notifier;
 }
 
 class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
-  final List<Section> _supportedSectionsByPriority;
   final AndroidAppContextHandler _appContextHandler;
 
-  AndroidCurrentSectionNotifier(
-    this._supportedSectionsByPriority,
-    this._appContextHandler,
-  ) : super(Section.home);
+  AndroidCurrentSectionNotifier(this._appContextHandler) : super(Section.home);
 
   @override
   void setCurrentSection(Section section) {
+    _appContextHandler.switchAppContext(section);
+    _log.debug('Section changed to $section');
     state = section;
-    _log.debug('Setting current section to $section');
-    _appContextHandler.switchAppContext(state);
-  }
-
-  void _notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null) {
-      _log.debug('Keeping current section because key was disconnected');
-      return;
-    }
-
-    final supportedSections = _supportedSectionsByPriority.where(
-      (e) => e.getAvailability(data) == Availability.enabled,
-    );
-
-    if (supportedSections.contains(state)) {
-      // the key supports current section
-      _log.debug('Keeping current section because new key support $state');
-      return;
-    }
-
-    setCurrentSection(supportedSections.firstOrNull ?? Section.home);
   }
 }
 

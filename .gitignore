@@ -50,3 +50,4 @@ app.*.map.json
 
 # Generated source files
 /lib/generated
+/android/app/.cxx/
