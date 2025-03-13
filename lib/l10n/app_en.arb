@@ -85,12 +85,16 @@
     "s_security_key": "Security Key",
     "s_slots": "Slots",
     "s_help_and_about": "Help and about",
-    "l_help_and_about_desc": "Troubleshoot and support",
+    "s_hide_log_panel": "Hide log panel",
+    "s_show_log_panel": "Show log panel",
+    "s_troubleshooting": "Troubleshooting",
+    "l_sensitive_data_logged": "Potentially sensitive data is being logged",
+    "l_warning_allow_screenshots": "Other apps can potentially record the screen",
+    "l_help_and_about_desc": "Information and support",
     "s_help_and_feedback": "Help and feedback",
     "s_home": "Home",
     "s_user_guide": "User guide",
     "s_i_need_help": "I need help",
-    "s_troubleshooting": "Troubleshooting",
     "s_terms_of_use": "Terms of use",
     "s_privacy_policy": "Privacy policy",
     "s_open_src_licenses": "Open source licenses",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "Launch when YubiKey is connected",
     "l_launch_app_on_usb_on": "This prevents other apps from using the YubiKey over USB",
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
+    "s_privacy_options": "Privacy options",
     "s_allow_screenshots": "Allow screenshots",
+    "l_allow_screenshots_desc": "Allow other apps to record the screen",
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Ready to scan",
@@ -1125,6 +1131,5 @@
     "s_color": "Color",
     "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",
     "p_rename_will_change_custom_name": "This will change the label of your YubiKey.",
-
     "@_eof": {}
 }

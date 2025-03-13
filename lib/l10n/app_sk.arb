@@ -85,12 +85,16 @@
     "s_security_key": "Bezpečnostný kľúč",
     "s_slots": "Sloty",
     "s_help_and_about": "Pomoc a informácie",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "Riešenie problémov",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "Odstraňovanie problémov a podpora",
     "s_help_and_feedback": "Pomoc a spätná väzba",
     "s_home": "Domov",
     "s_user_guide": "Používateľská príručka",
     "s_i_need_help": "Potrebujem pomoc",
-    "s_troubleshooting": "Riešenie problémov",
     "s_terms_of_use": "Podmienky používania",
     "s_privacy_policy": "Zásady ochrany osobných údajov",
     "s_open_src_licenses": "Licencie otvoreného zdrojového kódu",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "Spustiť po pripojení YubiKey",
     "l_launch_app_on_usb_on": "Toto zabráni používaniu YubiKey cez USB inými aplikáciami",
     "l_launch_app_on_usb_off": "Ostatné aplikácie môžu používať YubiKey cez USB",
+    "s_privacy_options": null,
     "s_allow_screenshots": "Povoliť snímky obrazovky",
+    "l_allow_screenshots_desc": null,
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Pripravené na skenovanie",
@@ -1125,6 +1131,5 @@
     "s_color": "Farba",
     "p_set_will_add_custom_name": "Týmto sa vášmu kľúču YubiKey pridelí vlastný názov.",
     "p_rename_will_change_custom_name": "Týmto sa zmení menovka vášho kľúča YubiKey.",
-
     "@_eof": {}
 }

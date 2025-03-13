@@ -29,6 +29,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
+import '../logging.dart';
 import '../message.dart';
 import '../shortcuts.dart';
 import '../state.dart';
@@ -823,6 +824,7 @@ class _AppPageState extends ConsumerState<AppPage> {
           ],
         ),
       ),
+      bottomNavigationBar: PanelList(key: loggingPanelKey),
       drawer: hasDrawer ? _buildDrawer(context) : null,
       body: body,
     );

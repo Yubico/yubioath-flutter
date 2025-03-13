@@ -85,12 +85,16 @@
     "s_security_key": "Khóa bảo mật",
     "s_slots": "Khe cắm",
     "s_help_and_about": "Trợ giúp và giới thiệu",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "Khắc phục sự cố",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "Khắc phục sự cố và hỗ trợ",
     "s_help_and_feedback": "Trợ giúp và phản hồi",
     "s_home": "Trang chủ",
     "s_user_guide": "Hướng dẫn sử dụng",
     "s_i_need_help": "Tôi cần trợ giúp",
-    "s_troubleshooting": "Khắc phục sự cố",
     "s_terms_of_use": "Điều khoản sử dụng",
     "s_privacy_policy": "Chính sách bảo mật",
     "s_open_src_licenses": "Giấy phép mã nguồn mở",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "Khởi chạy khi kết nối YubiKey",
     "l_launch_app_on_usb_on": "Điều này ngăn cản các ứng dụng khác sử dụng YubiKey qua USB",
     "l_launch_app_on_usb_off": "Các ứng dụng khác có thể sử dụng YubiKey qua USB",
+    "s_privacy_options": null,
     "s_allow_screenshots": "Cho phép chụp ảnh màn hình",
+    "l_allow_screenshots_desc": null,
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Sẵn sàng để quét",
@@ -1125,6 +1131,5 @@
     "s_color": "Màu sắc",
     "p_set_will_add_custom_name": "Điều này sẽ đặt tên tùy chỉnh cho YubiKey của bạn.",
     "p_rename_will_change_custom_name": "Điều này sẽ thay đổi nhãn của YubiKey của bạn.",
-
     "@_eof": {}
 }

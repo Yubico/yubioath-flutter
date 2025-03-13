@@ -16,12 +16,25 @@
 
 // ignore_for_file: constant_identifier_names
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../android/state.dart';
 import '../core/state.dart';
+import '../desktop/state.dart';
+import '../generated/l10n/app_localizations.dart';
+import '../version.dart';
+import '../widgets/choice_filter_chip.dart';
+import 'message.dart';
+import 'state.dart';
+import 'views/keys.dart';
+
+final _log = Logger('logging');
 
 String _pad(int value, int zeroes) => value.toString().padLeft(zeroes, '0');
 
@@ -88,66 +101,275 @@ class LogLevelNotifier extends StateNotifier<Level> {
   }
 }
 
-class LogWarningOverlay extends StatelessWidget {
-  final Widget child;
+final logPanelVisibilityProvider =
+    StateNotifierProvider<LogPanelVisibilityNotifier, bool>((ref) {
+      return LogPanelVisibilityNotifier(false);
+    });
 
-  const LogWarningOverlay({super.key, required this.child});
+class LogPanelVisibilityNotifier extends StateNotifier<bool> {
+  LogPanelVisibilityNotifier(super.initialVisiblity);
+
+  void setVisibility(bool visibility) {
+    state = visibility;
+  }
+}
+
+class _LoggingPanel extends ConsumerStatefulWidget {
+  final bool safeArea;
+  const _LoggingPanel({this.safeArea = false});
+
+  @override
+  ConsumerState<_LoggingPanel> createState() => _LoggingPanelState();
+}
+
+class _LoggingPanelState extends ConsumerState<_LoggingPanel> {
+  bool _runningDiagnostics = false;
+
+  List<Widget> _buildChipsList(Level logLevel) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      ChoiceFilterChip<Level>(
+        avatar: Icon(Symbols.insights),
+        value: logLevel,
+        items: Levels.LEVELS,
+        selected: logLevel != Level.INFO,
+        labelBuilder:
+            (value) => Text(
+              l10n.s_log_level(
+                value.name[0] + value.name.substring(1).toLowerCase(),
+              ),
+            ),
+        itemBuilder:
+            (value) => Text(
+              '${value.name[0]}${value.name.substring(1).toLowerCase()}',
+            ),
+        onChanged: (level) {
+          ref.read(logLevelProvider.notifier).setLogLevel(level);
+          _log.debug('Log level set to $level');
+        },
+      ),
+      ActionChip(
+        key: logChip,
+        avatar: const Icon(Symbols.content_copy),
+        label: Text(l10n.s_copy_log),
+        onPressed: () async {
+          _log.info('Copying log to clipboard ($version)...');
+          final logs = await ref.read(logLevelProvider.notifier).getLogs();
+          var clipboard = ref.read(clipboardProvider);
+          await clipboard.setText(logs.join('\n'));
+          if (!clipboard.platformGivesFeedback()) {
+            await ref.read(withContextProvider)((context) async {
+              showMessage(context, l10n.l_log_copied);
+            });
+          }
+        },
+      ),
+      if (isDesktop) ...[
+        ActionChip(
+          key: diagnosticsChip,
+          avatar:
+              _runningDiagnostics
+                  ? SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2.0),
+                  )
+                  : const Icon(Symbols.bug_report),
+          label: Text(l10n.s_run_diagnostics),
+          onPressed: () async {
+            setState(() {
+              _runningDiagnostics = true;
+            });
+            _log.info('Running diagnostics...');
+            final response = await ref
+                .read(rpcProvider)
+                .requireValue
+                .command('diagnose', []);
+            final data = response['diagnostics'] as List;
+            data.insert(0, {
+              'app_version': version,
+              'dart': Platform.version,
+              'os': Platform.operatingSystem,
+              'os_version': Platform.operatingSystemVersion,
+            });
+            data.insert(data.length - 1, ref.read(featureFlagProvider));
+            final text = const JsonEncoder.withIndent('  ').convert(data);
+            await ref.read(clipboardProvider).setText(text);
+            setState(() {
+              _runningDiagnostics = false;
+            });
+            await ref.read(withContextProvider)((context) async {
+              showMessage(context, l10n.l_diagnostics_copied);
+            });
+          },
+        ),
+      ],
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        child,
-        Consumer(
-          builder: (context, ref, _) {
-            final sensitiveLogs = ref.watch(
-              logLevelProvider.select(
-                (level) => level.value <= Level.CONFIG.value,
-              ),
-            );
-            final allowScreenshots =
-                isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+    final l10n = AppLocalizations.of(context);
+    final logLevel = ref.watch(logLevelProvider);
+    final sensitiveLogs = ref.watch(
+      logLevelProvider.select((level) => level.value <= Level.CONFIG.value),
+    );
 
-            if (!(sensitiveLogs || allowScreenshots)) {
-              return const SizedBox();
-            }
-
-            final String message;
-            if (sensitiveLogs && allowScreenshots) {
-              message =
-                  'Potentially sensitive data is being logged, and other apps can potentially record the screen';
-            } else if (sensitiveLogs) {
-              message = 'Potentially sensitive data is being logged';
-            } else if (allowScreenshots) {
-              message = 'Other apps can potentially record the screen';
-            } else {
-              return const SizedBox();
-            }
-
-            var mediaQueryData = MediaQueryData.fromView(View.of(context));
-            var bottomPadding = mediaQueryData.systemGestureInsets.bottom;
-            return Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 5, bottomPadding),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: IgnorePointer(
-                  child: Text(
-                    'WARNING: $message!',
-                    textDirection: TextDirection.ltr,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      height: 1.5,
-                      fontSize: 16,
-                    ),
+    return _Panel(
+      sensitive: sensitiveLogs,
+      safeArea: widget.safeArea,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        runSpacing: 4.0,
+        spacing: 4.0,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          if (sensitiveLogs)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 12.0,
+                    top: 8.0,
+                    bottom: 8.0,
                   ),
+                  child: Icon(Symbols.warning_amber, size: 24),
                 ),
-              ),
-            );
-          },
+                if (sensitiveLogs) ...[
+                  const SizedBox(width: 8.0),
+                  Flexible(child: Text(l10n.l_sensitive_data_logged)),
+                ],
+              ],
+            ),
+          if (!sensitiveLogs)
+            IconButton(
+              onPressed: () {
+                ref
+                    .read(logPanelVisibilityProvider.notifier)
+                    .setVisibility(false);
+              },
+              icon: Icon(Symbols.close),
+            ),
+          Wrap(
+            spacing: 4.0,
+            runSpacing: 4.0,
+            children: _buildChipsList(logLevel),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WarningPanel extends StatelessWidget {
+  final bool safeArea;
+  const _WarningPanel({this.safeArea = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return _Panel(
+      sensitive: true,
+      safeArea: safeArea,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+            child: Icon(Symbols.warning_amber, size: 24),
+          ),
+          const SizedBox(width: 8.0),
+          Flexible(child: Text(l10n.l_warning_allow_screenshots)),
+        ],
+      ),
+    );
+  }
+}
+
+class _Panel extends StatelessWidget {
+  final Widget child;
+  final bool sensitive;
+  final bool safeArea;
+  const _Panel({
+    required this.child,
+    required this.sensitive,
+    this.safeArea = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
+
+    final sensitiveColor = Color(0xFFFF1A1A);
+    final sensitiveChipColor =
+        themeData.brightness == Brightness.dark
+            ? Color(0xFF832E2E)
+            : Color.fromARGB(255, 223, 134, 134);
+    final sensitiveChipBorderColor =
+        themeData.brightness == Brightness.dark
+            ? Color(0xFFA24848)
+            : Color.fromARGB(255, 191, 98, 98);
+    final seedColor =
+        sensitive ? sensitiveColor : themeData.colorScheme.primary;
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: themeData.brightness,
+    );
+
+    final localThemeData = themeData.copyWith(
+      colorScheme: colorScheme,
+      chipTheme: themeData.chipTheme.copyWith(
+        backgroundColor:
+            sensitive ? sensitiveChipColor : colorScheme.secondaryContainer,
+        selectedColor: sensitive ? sensitiveChipColor : null,
+        shape:
+            sensitive
+                ? RoundedRectangleBorder(
+                  side: BorderSide(color: sensitiveChipBorderColor),
+                  borderRadius: BorderRadius.circular(8.0),
+                )
+                : null,
+      ),
+    );
+
+    final panelBackgroundColor =
+        sensitive
+            ? sensitiveColor.withValues(alpha: 0.3)
+            : colorScheme.secondaryContainer.withValues(alpha: 0.3);
+
+    final content = Padding(padding: const EdgeInsets.all(4.0), child: child);
+
+    return ColoredBox(
+      color: colorScheme.surface,
+      child: Theme(
+        data: localThemeData,
+        child: ColoredBox(
+          color: panelBackgroundColor,
+          child: safeArea ? SafeArea(child: content) : content,
         ),
+      ),
+    );
+  }
+}
+
+class PanelList extends ConsumerWidget {
+  const PanelList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final logPanelVisible = ref.watch(logPanelVisibilityProvider);
+    final allowScreenshots =
+        isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (allowScreenshots)
+          Flexible(child: _WarningPanel(safeArea: !logPanelVisible)),
+        if (allowScreenshots && logPanelVisible) const SizedBox(height: 4.0),
+        if (logPanelVisible) Flexible(child: _LoggingPanel(safeArea: true)),
       ],
     );
   }

@@ -19,6 +19,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../app/views/keys.dart';
+
 class Toast extends StatefulWidget {
   final String message;
   final Duration duration;
@@ -124,29 +126,36 @@ void Function() showToast(
     }
   }
 
+  final RenderBox? panelBox =
+      loggingPanelKey.currentContext?.findRenderObject() as RenderBox?;
+  final panelHeight = panelBox?.size.height ?? 0.0;
+
+  final content = Align(
+    alignment: Alignment.bottomCenter,
+    child: Container(
+      height: 50,
+      width: 400,
+      margin: const EdgeInsets.all(8),
+      child: Toast(
+        message,
+        duration,
+        backgroundColor: backgroundColor,
+        textStyle: textStyle,
+        onComplete: close,
+      ),
+    ),
+  );
+
   entry = OverlayEntry(
     builder: (context) {
       return Positioned(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        bottom: MediaQuery.of(context).viewInsets.bottom + panelHeight,
         left: 0,
         right: 0,
-        child: SafeArea(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 50,
-              width: 400,
-              margin: const EdgeInsets.all(8),
-              child: Toast(
-                message,
-                duration,
-                backgroundColor: backgroundColor,
-                textStyle: textStyle,
-                onComplete: close,
-              ),
-            ),
-          ),
-        ),
+        child:
+            panelHeight > 0
+                ? content // Panel already adds SafeArea
+                : SafeArea(child: content),
       );
     },
   );
