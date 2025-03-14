@@ -79,7 +79,7 @@ class IconPackIcon extends ConsumerWidget {
               alignment: Alignment.center,
               children: [
                 Opacity(opacity: 0.5, child: defaultWidget),
-                const CircularProgressIndicator(),
+                const CircularProgressIndicator(strokeAlign: 1.0),
               ],
             ),
           ),

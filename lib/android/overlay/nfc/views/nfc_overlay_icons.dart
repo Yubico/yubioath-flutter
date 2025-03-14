@@ -43,7 +43,10 @@ class NfcIconProgressBar extends StatelessWidget {
         SizedBox(
           width: 50,
           height: 50,
-          child: CircularProgressIndicator(value: inProgress ? null : 1.0),
+          child: CircularProgressIndicator(
+            strokeAlign: 2,
+            value: inProgress ? null : 1.0,
+          ),
         ),
       ],
     ),
