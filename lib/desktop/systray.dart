@@ -18,7 +18,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
@@ -28,7 +27,6 @@ import 'package:window_manager/window_manager.dart';
 
 import '../app/logging.dart';
 import '../app/models.dart';
-import '../app/shortcuts.dart';
 import '../app/state.dart';
 import '../exception/cancellation_exception.dart';
 import '../generated/l10n/app_localizations.dart';
@@ -270,9 +268,8 @@ class _Systray extends TrayListener {
           MenuItem(
             label: _l10n.s_quit,
             onClick: (_) {
-              _ref.read(withContextProvider)((context) async {
-                Actions.invoke(context, const CloseIntent());
-              });
+              // We don't use CloseIntent as it requires a Context, which we will not have if the window hasn't been shown yet.
+              windowManager.close();
             },
           ),
         ],
