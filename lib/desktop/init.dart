@@ -166,25 +166,23 @@ Future<Widget> initialize(List<String> argv) async {
 
   _log.debug('Using saved window bounds (or defaults): $bounds');
 
-  unawaited(
-    windowManager
-        .waitUntilReadyToShow(
-          const WindowOptions(minimumSize: WindowDefaults.minSize),
-        )
-        .then((_) async {
-          await windowManagerHelper.setBounds(bounds);
+  final windowReady = windowManager
+      .waitUntilReadyToShow(
+        const WindowOptions(minimumSize: WindowDefaults.minSize),
+      )
+      .then((_) async {
+        await windowManagerHelper.setBounds(bounds);
 
-          if (isHidden) {
-            await windowManager.setSkipTaskbar(true);
-          } else {
-            await windowManager.show();
-          }
-          windowManager.addListener(_WindowEventListener(windowManagerHelper));
-          screenRetriever.addListener(
-            _ScreenRetrieverListener(windowManagerHelper),
-          );
-        }),
-  );
+        if (isHidden) {
+          await windowManager.setSkipTaskbar(true);
+        } else {
+          await windowManager.show();
+        }
+        windowManager.addListener(_WindowEventListener(windowManagerHelper));
+        screenRetriever.addListener(
+          _ScreenRetrieverListener(windowManagerHelper),
+        );
+      });
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
   var exe = Platform.environment['_HELPER_PATH'];
@@ -281,7 +279,10 @@ Future<Widget> initialize(List<String> argv) async {
           });
 
           // Initialize systray
-          ref.watch(systrayProvider);
+          windowReady.then((_) {
+            // We need to wait to do this, as otherwise on Linux the icon doesn't react to clicks!
+            ref.watch(systrayProvider);
+          });
 
           // Show a loading or error page while the Helper isn't ready
           return Consumer(
