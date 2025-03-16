@@ -351,6 +351,7 @@ class MainActivity : FlutterFragmentActivity() {
         // this YubiKey provides SCP11b key but the phone cannot perform AESCMAC
         if (deviceManager.scpKeyParams != null && !supportsScp11b) {
             deviceManager.setDeviceInfo(noScp11bNfcSupport)
+            appMethodChannel.nfcStateChanged(NfcState.FAILURE)
             return
         }
 
