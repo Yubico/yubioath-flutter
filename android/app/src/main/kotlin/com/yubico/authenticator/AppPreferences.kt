@@ -33,6 +33,7 @@ class AppPreferences(context: Context) {
 
         const val PREF_CLIP_KBD_LAYOUT = "flutter.prefClipKbdLayout"
         const val PREF_APP_LOCALE = "flutter.APP_LOCALE"
+        const val PREF_APP_STATE_LAST_SECTION = "flutter.APP_STATE_LAST_SECTION"
         const val DEFAULT_CLIP_KBD_LAYOUT = "US"
     }
 
@@ -69,6 +70,14 @@ class AppPreferences(context: Context) {
 
     val appLocale: String
         get() = prefs.getString(PREF_APP_LOCALE, "en")!!
+
+    val appContext: OperationContext
+        get() = when (prefs.getString(PREF_APP_STATE_LAST_SECTION, "")!!) {
+            "passkeys" -> OperationContext.FidoPasskeys
+            "fingerprints" -> OperationContext.FidoFingerprints
+            "accounts" -> OperationContext.Oath
+            else -> OperationContext.Default
+        }
 
     fun registerListener(listener: OnSharedPreferenceChangeListener) {
         logger.debug("registering change listener")

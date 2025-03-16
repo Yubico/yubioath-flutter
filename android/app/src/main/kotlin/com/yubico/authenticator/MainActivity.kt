@@ -17,6 +17,7 @@
 package com.yubico.authenticator
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -42,7 +43,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
-import com.yubico.authenticator.OperationContext.Companion.getPreferredContext
 import com.yubico.authenticator.OperationContext.Companion.getSupportedContexts
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.noScp11bNfcSupport
@@ -86,10 +86,13 @@ import java.util.concurrent.Executors
 import javax.crypto.Mac
 
 class MainActivity : FlutterFragmentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(applicationContext as Application)
+    }
     private val oathViewModel: OathViewModel by viewModels()
     private val fidoViewModel: FidoViewModel by viewModels()
 
+    private lateinit var appPreferences : AppPreferences
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
     private var hasNfc: Boolean = false
@@ -138,6 +141,7 @@ class MainActivity : FlutterFragmentActivity() {
         } else null
 
         yubikit = YubiKitManager(UsbYubiKeyManager(this), nfcManager)
+        appPreferences = AppPreferences(this)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -387,17 +391,44 @@ class MainActivity : FlutterFragmentActivity() {
 
         // there was no pending action, switch context manager if needed
         val supportedContexts = deviceInfo.getSupportedContexts()
+        val currentContext = viewModel.appContext.value?.appContext ?: appPreferences.appContext
+        logger.debug("Device supports: {}", supportedContexts)
+        logger.debug("Current context: {}", currentContext)
         var switchedContextManager = false
-        if (!supportedContexts.contains(viewModel.appContext.value)) {
-            val preferredContext = getPreferredContext(supportedContexts)
-            logger.debug(
-                "Current context ({}) is not supported by the key. Using preferred context {}",
-                viewModel.appContext.value,
-                preferredContext
-            )
-            switchedContextManager = switchContextManager(preferredContext)
-            if (switchedContextManager) {
-                appMethodChannel.appContextChanged(preferredContext)
+
+        if (!supportedContexts.contains(currentContext)) {
+            // is there any other app context supported by both,
+            // the device and current active contextManager?
+            val otherContext = supportedContexts
+                .minus(currentContext)
+                .firstOrNull { contextManager?.supports(it) == true }
+            if (otherContext != null) {
+                logger.debug(
+                    "Context {} is not supported by the key, but the key supports context {}.",
+                    currentContext,
+                    otherContext
+                )
+                viewModel.setAppContext(AppContext(otherContext, notify = true))
+            } else {
+                val contexts = listOf(
+                    appPreferences.appContext,
+                    OperationContext.Oath,
+                    OperationContext.FidoPasskeys,
+                    OperationContext.FidoFingerprints,
+                    OperationContext.Home
+                )
+
+                val preferredContext = contexts.firstOrNull { it in supportedContexts }
+                    ?: OperationContext.Home
+
+                logger.debug(
+                    "Context {} is not supported by the key. Using preferred context {}",
+                    currentContext,
+                    preferredContext
+                )
+
+                switchedContextManager = switchContextManager(preferredContext)
+                viewModel.setAppContext(AppContext(preferredContext, notify = true))
             }
         }
 
@@ -431,9 +462,8 @@ class MainActivity : FlutterFragmentActivity() {
     private var contextManager: AppContextManager? = null
     private lateinit var contextManagers: Map<OperationContext, AppContextManager>
     private lateinit var deviceManager: DeviceManager
-    private lateinit var appContext: AppContext
+    private lateinit var appContextChannel: AppContextChannel
     private lateinit var nfcOverlayManager: NfcOverlayManager
-    private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
@@ -448,9 +478,8 @@ class MainActivity : FlutterFragmentActivity() {
         appMethodChannel = AppMethodChannel(messenger)
         nfcOverlayManager = NfcOverlayManager(messenger, this.lifecycleScope)
         deviceManager = DeviceManager(this, viewModel, appMethodChannel, nfcOverlayManager)
-        appContext = AppContext(messenger, this.lifecycleScope, viewModel)
+        appContextChannel = AppContextChannel(messenger, this.lifecycleScope, viewModel)
 
-        appPreferences = AppPreferences(this)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
         nfcStateListener.appMethodChannel = appMethodChannel
@@ -467,11 +496,13 @@ class MainActivity : FlutterFragmentActivity() {
         )
 
         viewModel.appContext.observe(this) {
-            if (it != OperationContext.Default) {
-                switchContextManager(it)
-                if (it != OperationContext.Home) {
-                    viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
-                }
+            switchContextManager(it.appContext)
+            if (it.appContext != OperationContext.Home) {
+                logger.debug("A YubiKey is connected, using it with the context {}", it.appContext)
+                viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
+            }
+            if (it.notify == true) {
+                appMethodChannel.appContextChanged(it.appContext)
             }
         }
 
@@ -507,15 +538,15 @@ class MainActivity : FlutterFragmentActivity() {
             OperationContext.OpenPgp to homeContextManager,
             OperationContext.YubiOtp to homeContextManager,
         )
-        contextManager = contextManagers[OperationContext.Home]
+
+        contextManager = contextManagers[appPreferences.appContext]
     }
 
     private fun switchContextManager(appContext: OperationContext): Boolean {
         contextManager?.let {
             if (it.supports(appContext)) {
                 logger.debug(
-                    "ContextManager ({}) does not need switching to {}.",
-                    contextManager,
+                    "Context {} is already supported by active manager.",
                     appContext
                 )
                 return false

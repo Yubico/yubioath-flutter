@@ -17,10 +17,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
@@ -28,8 +26,6 @@ import '../management/models.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
-
-final _log = Logger('android.state');
 
 const _contextChannel = MethodChannel('android.state.appContext');
 
@@ -164,24 +160,46 @@ final androidAppContextHandler = Provider<AndroidAppContextHandler>(
   (ref) => AndroidAppContextHandler(),
 );
 
-CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
-  final notifier = AndroidCurrentSectionNotifier(
+final androidCurrentSectionNotifierProvider = Provider(
+  (ref) => AndroidCurrentSectionNotifier(
     ref.watch(androidAppContextHandler),
-  );
-  return notifier;
+    ref.watch(prefProvider),
+    ref.watch(supportedSectionsProvider),
+  ),
+);
+
+CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
+  return ref.read(androidCurrentSectionNotifierProvider);
 }
 
 class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
   final AndroidAppContextHandler _appContextHandler;
+  final SharedPreferences _prefs;
 
-  AndroidCurrentSectionNotifier(this._appContextHandler) : super(Section.home);
+  static const String _key = 'APP_STATE_LAST_SECTION';
+
+  AndroidCurrentSectionNotifier(
+    this._appContextHandler,
+    this._prefs,
+    final List<Section> supportedSections,
+  ) : super(_fromName(_prefs.getString(_key), supportedSections));
 
   @override
-  void setCurrentSection(Section section) {
-    _appContextHandler.switchAppContext(section);
-    _log.debug('Section changed to $section');
+  void setCurrentSection(Section section, {bool notify = true}) {
+    if (section != Section.home) {
+      _prefs.setString(_key, section.name);
+    }
+    if (notify) {
+      _appContextHandler.switchAppContext(section);
+    }
     state = section;
   }
+
+  static Section _fromName(String? name, List<Section> supportedSections) =>
+      supportedSections.firstWhere(
+        (element) => element.name == name,
+        orElse: () => supportedSections.first,
+      );
 }
 
 class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {

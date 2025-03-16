@@ -372,23 +372,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                 onSelectionChanged: (selected) {
                                   setState(() {
                                     _application = selected.first;
-                                    if (isAndroid) {
-                                      // switch current app context
-                                      ref
-                                          .read(currentSectionProvider.notifier)
-                                          .setCurrentSection(
-                                            switch (_application) {
-                                              Capability.oath =>
-                                                Section.accounts,
-                                              Capability.fido2 =>
-                                                Section.passkeys,
-                                              _ =>
-                                                throw UnimplementedError(
-                                                  'Reset for $_application is not implemented',
-                                                ),
-                                            },
-                                          );
-                                    }
                                   });
                                 },
                               );

@@ -16,15 +16,18 @@
 
 package com.yubico.authenticator
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.yubico.authenticator.OperationContext.entries
 import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.management.Capability
 
 enum class OperationContext(val value: Int) {
+    Default(-1),
     Home(0),
     Oath(1),
     FidoU2f(2),
@@ -34,8 +37,7 @@ enum class OperationContext(val value: Int) {
     Piv(6),
     OpenPgp(7),
     HsmAuth(8),
-    Management(9),
-    Default(-1);
+    Management(9);
 
     companion object {
         fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Default
@@ -43,10 +45,8 @@ enum class OperationContext(val value: Int) {
         fun Info.getSupportedContexts(): List<OperationContext> {
 
             val capabilitiesToContext = mapOf(
-                Capability.OATH to listOf(Oath),
-                Capability.FIDO2 to listOf(
-                    FidoFingerprints, FidoPasskeys
-                )
+                Capability.OATH to Oath,
+                Capability.FIDO2 to FidoPasskeys
             )
 
             val operationContexts = mutableListOf(Home)
@@ -57,38 +57,32 @@ enum class OperationContext(val value: Int) {
 
             capabilitiesToContext.forEach { entry ->
                 if (capabilities and entry.key.bit == entry.key.bit) {
-                    operationContexts.addAll(entry.value)
+                    operationContexts.add(entry.value)
                 }
             }
 
+            if (name.contains("bio", ignoreCase = true) && !isNfc) {
+                operationContexts.add(FidoFingerprints)
+            }
             return operationContexts
         }
-
-        fun getPreferredContext(contexts: List<OperationContext>): OperationContext {
-            // custom sort
-            for (context in listOf(
-                Oath,
-                FidoPasskeys,
-                FidoFingerprints
-            )) {
-                if (context in contexts) {
-                    return context
-                }
-            }
-
-            return Home
-        }
-
-
     }
 }
 
-class MainViewModel : ViewModel() {
-    private var _appContext = MutableLiveData(OperationContext.Default)
-    val appContext: LiveData<OperationContext> = _appContext
-    fun setAppContext(appContext: OperationContext) {
+data class AppContext(
+    val appContext: OperationContext,
+    val notify: Boolean = false
+)
+
+class MainViewModel(application: Application) : ViewModel() {
+
+    private val appPreferences = AppPreferences(application)
+
+    private var _appContext = MutableLiveData(AppContext(appPreferences.appContext))
+    val appContext: LiveData<AppContext> = _appContext
+    fun setAppContext(appContext: AppContext) {
         // Don't reset the context unless it actually changes
-        if (appContext != _appContext.value) {
+        if (appContext.appContext != _appContext.value?.appContext) {
             _appContext.postValue(appContext)
         }
     }
@@ -108,3 +102,14 @@ class MainViewModel : ViewModel() {
 
     fun setDeviceInfo(info: Info?) = _deviceInfo.postValue(info)
 }
+
+class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MainViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+

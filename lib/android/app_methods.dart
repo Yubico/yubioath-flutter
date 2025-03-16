@@ -20,7 +20,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/models.dart';
-import '../app/state.dart';
 import '../theme.dart';
 import 'state.dart';
 
@@ -98,7 +97,12 @@ void setupAppMethodsChannel(WidgetRef ref) {
             4 => Section.passkeys,
             _ => Section.home,
           };
-          ref.read(currentSectionProvider.notifier).setCurrentSection(section);
+
+          // use Android specific notifier to set the current section
+          // don't notify, as we just received the section
+          ref
+              .read(androidCurrentSectionNotifierProvider)
+              .setCurrentSection(section, notify: false);
           break;
         }
       default:

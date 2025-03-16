@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,14 @@ import kotlinx.coroutines.CoroutineScope
 
 import org.slf4j.LoggerFactory
 
-class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, private val appViewModel: MainViewModel)  {
+class AppContextChannel(
+    messenger: BinaryMessenger,
+    coroutineScope: CoroutineScope,
+    private val appViewModel: MainViewModel
+) {
     private val channel = MethodChannel(messenger, "android.state.appContext")
 
-    private val logger = LoggerFactory.getLogger(AppContext::class.java)
+    private val logger = LoggerFactory.getLogger(AppContextChannel::class.java)
 
     init {
         channel.setHandler(coroutineScope) { method, args ->
@@ -39,7 +43,7 @@ class AppContext(messenger: BinaryMessenger, coroutineScope: CoroutineScope, pri
 
     private fun setContext(subPageIndex: Int): String {
         val appContext = OperationContext.getByValue(subPageIndex)
-        appViewModel.setAppContext(appContext)
+        appViewModel.setAppContext(AppContext(appContext, notify = false))
         logger.debug("App context is now {}", appContext)
         return NULL
     }
