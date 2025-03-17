@@ -64,6 +64,8 @@ enum class OperationContext(val value: Int) {
             if (name.contains("bio", ignoreCase = true) && !isNfc) {
                 operationContexts.add(FidoFingerprints)
             }
+            operationContexts.add(Management)
+
             return operationContexts
         }
     }

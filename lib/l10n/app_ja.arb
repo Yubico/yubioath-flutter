@@ -284,6 +284,7 @@
     "l_file_not_found": "ファイルが見つかりません",
     "l_file_too_big": "ファイルサイズが大きすぎます",
     "l_filesystem_error": "ファイルのシステム操作エラー",
+    "l_func_missing_or_disabled": "機能が存在しないか無効です",
 
     "@_pins": {},
     "s_pin": "PIN",
@@ -531,7 +532,6 @@
     "l_add_account_password_required": "パスワードが必要です",
     "l_add_account_unlock_required": "ロック解除が必要です",
     "l_add_account_already_exists": "既に存在するアカウントです",
-    "l_add_account_func_missing": "機能が存在しないか無効です",
     "l_account_name_required": "アカウントには名前が必要です",
     "l_name_already_exists": "この名前は発行者にすでに存在します",
     "l_account_already_exists": "このアカウントはYubiKeyにすでに存在します",

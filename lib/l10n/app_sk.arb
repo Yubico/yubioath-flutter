@@ -284,6 +284,7 @@
     "l_file_not_found": "Súbor nebol nájdený",
     "l_file_too_big": "Súbor je príliš veľký",
     "l_filesystem_error": "Chyba operácie súborového systému",
+    "l_func_missing_or_disabled": "Funkcia chýba alebo je zakázaná",
 
     "@_pins": {},
     "s_pin": "PIN",
@@ -531,7 +532,6 @@
     "l_add_account_password_required": "Vyžaduje sa heslo",
     "l_add_account_unlock_required": "Vyžaduje sa odomknutie",
     "l_add_account_already_exists": "Účet už existuje",
-    "l_add_account_func_missing": "Funkcia chýba alebo je zakázaná",
     "l_account_name_required": "Váš účet musí mať názov",
     "l_name_already_exists": "Tento názov už pre vydavateľa existuje",
     "l_account_already_exists": "Tento účet už existuje na YubiKey",

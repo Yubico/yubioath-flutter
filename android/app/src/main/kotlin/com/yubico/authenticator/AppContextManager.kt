@@ -58,4 +58,4 @@ abstract class AppContextManager(
     abstract fun hasPending() : Boolean
 }
 
-class ContextDisposedException : Exception()
+class FunctionalityMissingException : Exception()

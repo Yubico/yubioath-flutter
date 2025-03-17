@@ -122,6 +122,10 @@ class MainPage extends ConsumerWidget {
                   label: Text(l10n.s_add_account),
                   icon: const Icon(Symbols.person_add_alt),
                   onPressed: () async {
+                    // make sure we execute the "Add account" in OATH section
+                    ref
+                        .read(currentSectionProvider.notifier)
+                        .setCurrentSection(Section.accounts);
                     await addOathAccount(context, ref);
                   },
                 ),

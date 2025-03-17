@@ -106,8 +106,8 @@ class OathManager(
     override fun onError(e: Exception) {
         super.onError(e)
         pendingAction?.let { action ->
-            logger.error("Cancelling pending action in onError. Cause: ", e)
-            action.invoke(Result.failure(CancellationException()))
+            logger.error("Pending action failure: ", e)
+            action.invoke(Result.failure(e))
             pendingAction = null
         }
     }
@@ -222,7 +222,7 @@ class OathManager(
         oathViewModel.credentials.removeObserver(credentialObserver)
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
-        pendingAction?.invoke(Result.failure(ContextDisposedException()))
+        pendingAction?.invoke(Result.failure(CancellationException()))
         pendingAction = null
         super.deactivate()
         logger.debug("OathManager deactivated")

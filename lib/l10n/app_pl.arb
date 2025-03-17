@@ -284,6 +284,7 @@
     "l_file_not_found": "Plik nie został znaleziony",
     "l_file_too_big": "Plik jest zbyt duży",
     "l_filesystem_error": "Błąd operacji systemu plików",
+    "l_func_missing_or_disabled": null,
 
     "@_pins": {},
     "s_pin": "PIN",
@@ -531,7 +532,6 @@
     "l_add_account_password_required": "Wymagane hasło",
     "l_add_account_unlock_required": "Wymagane odblokowanie",
     "l_add_account_already_exists": "Konto już istnieje",
-    "l_add_account_func_missing": "Brak lub wyłączona funkcjonalność",
     "l_account_name_required": "Konto musi mieć nazwę",
     "l_name_already_exists": "Ta nazwa wydawcy już istnieje",
     "l_account_already_exists": "To konto już istnieje w kluczu YubiKey",

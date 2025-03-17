@@ -284,6 +284,7 @@
     "l_file_not_found": "Tệp không tìm thấy",
     "l_file_too_big": "Kích thước tệp quá lớn",
     "l_filesystem_error": "Lỗi hệ thống tệp",
+    "l_func_missing_or_disabled": "Chức năng bị thiếu hoặc bị vô hiệu hóa",
 
     "@_pins": {},
     "s_pin": "Mã PIN",
@@ -531,7 +532,6 @@
     "l_add_account_password_required": "Yêu cầu mật khẩu",
     "l_add_account_unlock_required": "Yêu cầu mở khóa",
     "l_add_account_already_exists": "Tài khoản đã tồn tại",
-    "l_add_account_func_missing": "Chức năng bị thiếu hoặc bị vô hiệu hóa",
     "l_account_name_required": "Tài khoản của bạn phải có tên",
     "l_name_already_exists": "Tên này đã tồn tại cho nhà phát hành",
     "l_account_already_exists": "Tài khoản này đã tồn tại trên YubiKey",

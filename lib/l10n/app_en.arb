@@ -284,6 +284,7 @@
     "l_file_not_found": "File not found",
     "l_file_too_big": "File size too big",
     "l_filesystem_error": "File system operation error",
+    "l_func_missing_or_disabled": "Functionality missing or disabled",
 
     "@_pins": {},
     "s_pin": "PIN",
@@ -531,7 +532,6 @@
     "l_add_account_password_required": "Password required",
     "l_add_account_unlock_required": "Unlock required",
     "l_add_account_already_exists": "Account already exists",
-    "l_add_account_func_missing": "Functionality missing or disabled",
     "l_account_name_required": "Your account must have a name",
     "l_name_already_exists": "This name already exists for the issuer",
     "l_account_already_exists": "This account already exists on the YubiKey",

@@ -284,6 +284,7 @@
     "l_file_not_found": "Fichier introuvable",
     "l_file_too_big": "Fichier trop gros",
     "l_filesystem_error": "Erreur du système de fichiers",
+    "l_func_missing_or_disabled": "Fonctionnalité manquante ou désactivée",
 
     "@_pins": {},
     "s_pin": "PIN",
@@ -531,7 +532,6 @@
     "l_add_account_password_required": "Mot de passe requis",
     "l_add_account_unlock_required": "Déverrouillage requis",
     "l_add_account_already_exists": "Le compte existe déjà",
-    "l_add_account_func_missing": "Fonctionnalité manquante ou désactivée",
     "l_account_name_required": "Votre compte doit avoir un nom",
     "l_name_already_exists": "Ce nom existe déjà pour l'émetteur",
     "l_account_already_exists": "Ce compte existe déjà sur la YubiKey",

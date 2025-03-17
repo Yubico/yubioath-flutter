@@ -92,7 +92,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val oathViewModel: OathViewModel by viewModels()
     private val fidoViewModel: FidoViewModel by viewModels()
 
-    private lateinit var appPreferences : AppPreferences
+    private lateinit var appPreferences: AppPreferences
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
     private var hasNfc: Boolean = false
@@ -356,42 +356,46 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         deviceManager.setDeviceInfo(deviceInfo)
+        val supportedContexts = deviceInfo.getSupportedContexts()
 
         contextManagers.values.firstOrNull(AppContextManager::hasPending)?.let {
-            // this context is waiting for the next action,
-            // we have to switch to it if it is not active
-            if (contextManager != it) {
-                contextManager?.deactivate()
-                it.activate()
-            }
+            if (it.supportsAny(supportedContexts)) {
 
-            try {
-                logger.debug("Processing pending action in context {}", it)
-                if (it.processYubiKey(device)) {
+                if (contextManager != it) {
+                    contextManager?.deactivate()
+                    it.activate()
+                }
+
+                try {
+                    logger.debug("Processing pending action in context {}", it)
+                    if (it.processYubiKey(device)) {
+                        if (device is NfcYubiKeyDevice) {
+                            appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                        }
+                    }
                     if (device is NfcYubiKeyDevice) {
-                        appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                        device.remove {
+                            appMethodChannel.nfcStateChanged(NfcState.IDLE)
+                        }
                     }
+                } catch (e: Exception) {
+                    logger.debug("Caught Exception during YubiKey processing: ", e)
+                    appMethodChannel.nfcStateChanged(NfcState.FAILURE)
                 }
-                if (device is NfcYubiKeyDevice) {
-                    device.remove {
-                        appMethodChannel.nfcStateChanged(NfcState.IDLE)
-                    }
-                }
-            } catch (e: Exception) {
-                logger.debug("Caught Exception during YubiKey processing: ", e)
-                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
-            }
 
-            if (contextManager != it) {
-                it.deactivate()
-                contextManager?.activate()
+                if (contextManager != it) {
+                    it.deactivate()
+                    contextManager?.activate()
+                }
+                logger.debug("Finished execution of pending action in {} context", it)
+                return
+            } else {
+                logger.error("Device does not support required context for {}", it)
+                it.onError(FunctionalityMissingException())
             }
-            logger.debug("Finished execution of pending action in {} context", it)
-            return
         } ?: logger.debug("There was no context with pending action")
 
         // there was no pending action, switch context manager if needed
-        val supportedContexts = deviceInfo.getSupportedContexts()
         val currentContext = viewModel.appContext.value?.appContext ?: appPreferences.appContext
         logger.debug("Device supports: {}", supportedContexts)
         logger.debug("Current context: {}", currentContext)
