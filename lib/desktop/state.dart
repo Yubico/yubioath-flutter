@@ -214,6 +214,7 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
                   dev.path.key == lastDevice && !hidden.contains(dev.path.key),
             )
             .firstOrNull;
+
     if (node == null) {
       final parts = lastDevice.split('/');
       if (parts.firstOrNull == 'pid') {
@@ -224,7 +225,17 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
                 .firstOrNull;
       }
     }
-    return node ?? devices.whereType<UsbYubiKeyNode>().firstOrNull;
+
+    node = node ?? devices.whereType<UsbYubiKeyNode>().firstOrNull;
+
+    final devicePaths = devices.map((dev) => dev.path.key);
+    if (node != null && !devicePaths.contains(lastDevice)) {
+      // Update lastDevice with current device when
+      // lastDevice has been removed
+      ref.read(prefProvider).setString(_lastDevice, node.path.key);
+    }
+
+    return node;
   }
 
   @override
@@ -282,6 +293,9 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
       // Default to home if app is not enabled
       state = Section.home;
     }
+
+    // Update lastAppName due to device changed
+    _prefs.setString(_key, state.name);
   }
 
   static Section _fromName(String? name, List<Section> supportedSections) =>
