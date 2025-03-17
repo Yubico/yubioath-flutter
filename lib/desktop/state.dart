@@ -293,6 +293,9 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
       // Default to home if app is not enabled
       state = Section.home;
     }
+
+    // Update lastAppName due to device changed
+    _prefs.setString(_key, state.name);
   }
 
   static Section _fromName(String? name, List<Section> supportedSections) =>
