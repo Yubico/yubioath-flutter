@@ -48,7 +48,7 @@ dependencies:
   shared_preferences: ^2.5.0
   flutter_riverpod: ^2.6.1
   json_annotation: ^4.9.0
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.0.0
   window_manager:
     git:
       url: https://github.com/fdennis/window_manager.git
@@ -89,12 +89,12 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
   build_runner: ^2.4.14
-  freezed: ^2.5.7
+  freezed: ^3.0.4
   json_serializable: ^6.9.4
   analyzer:
-  analyzer_plugin:
-  custom_lint_builder:
-  custom_lint:
+  analyzer_plugin: 0.13.0
+  custom_lint_builder: 0.7.5
+  custom_lint: 0.7.5
   lint:
     path: lint
 
