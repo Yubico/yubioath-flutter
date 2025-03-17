@@ -312,8 +312,7 @@ class AbstractDeviceNode(RpcNode):
             return self._data
         raise ChildResetException("Unable to read device data")
 
-    def _refresh_data(self):
-        ...
+    def _refresh_data(self): ...
 
     def _read_data(self, conn):
         pid = self._device.pid
