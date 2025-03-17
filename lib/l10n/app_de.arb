@@ -284,7 +284,6 @@
     "l_file_not_found": "Datei nicht gefunden",
     "l_file_too_big": "Datei ist zu groß",
     "l_filesystem_error": "Fehler beim Dateisystem-Zugriff",
-    "l_func_missing_or_disabled": "Funktion nicht verfügbar oder deaktiviert",
 
     "@_pins": {},
     "s_pin": "PIN",
@@ -532,6 +531,7 @@
     "l_add_account_password_required": "Passwort erforderlich",
     "l_add_account_unlock_required": "Freischaltung erforderlich",
     "l_add_account_already_exists": "Konto existiert bereits",
+    "l_add_account_func_missing": "Funktion nicht verfügbar oder deaktiviert",
     "l_account_name_required": "Dein Konto muss einen Namen haben",
     "l_name_already_exists": "Dieser Name wird für diesen Aussteller bereits verwendet",
     "l_account_already_exists": "Dieses Konto existiert bereits auf dem YubiKey",

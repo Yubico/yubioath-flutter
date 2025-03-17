@@ -196,7 +196,7 @@ Exception handlePlatformException(
       }
     case PlatformException pe:
       if (pe.code == 'FunctionalityMissingException') {
-        toast(l10n.l_func_missing_or_disabled, popStack: true);
+        toast(l10n.l_add_account_func_missing, popStack: true);
         return CancellationException();
       } else if (pe.code == 'IllegalArgumentException') {
         toast(l10n.l_add_account_already_exists);
