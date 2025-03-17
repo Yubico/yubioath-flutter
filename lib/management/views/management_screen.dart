@@ -33,6 +33,7 @@ import '../state.dart';
 import 'keys.dart' as management_keys;
 
 final _mapEquals = const DeepCollectionEquality().equals;
+const _usbOtp = 0x01;
 const _usbCcid = 0x04;
 
 enum _CapabilityType { usb, nfc }
@@ -437,6 +438,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               canSave =
                   (usbEnabled & ~_usbCcid) != 0 &&
                   !_mapEquals(_enabled, info.config.enabledCapabilities);
+
+              if (isAndroid) {
+                // don't allow OTP only mode
+                canSave = canSave && (usbEnabled & ~_usbCcid) != _usbOtp;
+              }
             } else {
               canSave =
                   _interfaces != 0 &&
@@ -449,6 +455,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                                 .enabledCapabilities[Transport.usb] ??
                             0,
                       );
+              if (isAndroid) {
+                // don't allow OTP only mode
+                canSave = canSave && _interfaces != _usbOtp;
+              }
             }
             if (info.isLocked) {
               final lockCode = _lockCodeController.text.replaceAll(' ', '');
