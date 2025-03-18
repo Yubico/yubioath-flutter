@@ -5,7 +5,7 @@ description = "Yubico Authenticator Helper"
 authors = [{ name = "Dain Nilsson", email = "dain@yubico.com" }]
 requires-python = ">=3.10, <4"
 dependencies = [
-  "yubikey-manager (>=5.6, <6)",
+  "yubikey-manager (>=5.6.1, <6)",
   "fido2 (==2.0.0b1)",
   "mss (>=9.0.1, <10)",
   "Pillow (>=10.2.0, <11)",
