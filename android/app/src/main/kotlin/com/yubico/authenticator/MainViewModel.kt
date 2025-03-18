@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,19 @@
 
 package com.yubico.authenticator
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.yubico.authenticator.OperationContext.entries
 import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
+import com.yubico.yubikit.management.Capability
+import com.yubico.yubikit.management.FormFactor
 
 enum class OperationContext(val value: Int) {
+    Default(-1),
     Home(0),
     Oath(1),
     FidoU2f(2),
@@ -32,20 +38,54 @@ enum class OperationContext(val value: Int) {
     Piv(6),
     OpenPgp(7),
     HsmAuth(8),
-    Management(9),
-    Invalid(-1);
+    Management(9);
 
     companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Invalid
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Default
+
+        fun Info.getSupportedContexts(): List<OperationContext> {
+
+            val capabilitiesToContext = mapOf(
+                Capability.OATH to Oath,
+                Capability.FIDO2 to FidoPasskeys
+            )
+
+            val operationContexts = mutableListOf(Home)
+
+            val capabilities =
+                (if (isNfc) config.enabledCapabilities.nfc else config.enabledCapabilities.usb)
+                    ?: 0
+
+            capabilitiesToContext.forEach { entry ->
+                if (capabilities and entry.key.bit == entry.key.bit) {
+                    operationContexts.add(entry.value)
+                }
+            }
+
+            if (formFactor in listOf(FormFactor.USB_C_BIO.value, FormFactor.USB_A_BIO.value)) {
+                operationContexts.add(FidoFingerprints)
+            }
+            operationContexts.add(Management)
+
+            return operationContexts
+        }
     }
 }
 
-class MainViewModel : ViewModel() {
-    private var _appContext = MutableLiveData(OperationContext.Oath)
-    val appContext: LiveData<OperationContext> = _appContext
-    fun setAppContext(appContext: OperationContext) {
+data class AppContext(
+    val appContext: OperationContext,
+    val notify: Boolean = false
+)
+
+class MainViewModel(application: Application) : ViewModel() {
+
+    private val appPreferences = AppPreferences(application)
+
+    private var _appContext = MutableLiveData(AppContext(appPreferences.appContext))
+    val appContext: LiveData<AppContext> = _appContext
+    fun setAppContext(appContext: AppContext) {
         // Don't reset the context unless it actually changes
-        if (appContext != _appContext.value) {
+        if (appContext.appContext != _appContext.value?.appContext) {
             _appContext.postValue(appContext)
         }
     }
@@ -65,3 +105,14 @@ class MainViewModel : ViewModel() {
 
     fun setDeviceInfo(info: Info?) = _deviceInfo.postValue(info)
 }
+
+class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MainViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+

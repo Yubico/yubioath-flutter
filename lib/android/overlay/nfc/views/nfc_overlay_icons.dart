@@ -53,6 +53,42 @@ class NfcIconProgressBar extends StatelessWidget {
   );
 }
 
+class UsbIconProgressBar extends StatelessWidget {
+  final bool inProgress;
+
+  const UsbIconProgressBar(this.inProgress, {super.key});
+
+  @override
+  Widget build(BuildContext context) => IconTheme(
+    data: IconThemeData(size: 64, color: Theme.of(context).colorScheme.primary),
+    child: Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        const Opacity(opacity: 0.0, child: Icon(Symbols.usb)),
+        const ClipOval(
+          child: SizedBox(
+            width: 42,
+            height: 42,
+            child: OverflowBox(
+              maxWidth: double.infinity,
+              maxHeight: double.infinity,
+              child: Icon(Symbols.usb, size: 40),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 50,
+          height: 50,
+          child: CircularProgressIndicator(
+            strokeAlign: 2,
+            value: inProgress ? null : 1.0,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class UsbIcon extends StatelessWidget {
   const UsbIcon({super.key});
 

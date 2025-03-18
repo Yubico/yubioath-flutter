@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@
 
 package com.yubico.authenticator.device
 
-import androidx.collection.ArraySet
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.yubico.authenticator.ContextDisposedException
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
-import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.yubikit.NfcState
+import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
-import com.yubico.yubikit.management.Capability
-import kotlinx.coroutines.CancellationException
 import org.slf4j.LoggerFactory
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 
 interface DeviceListener {
     // a USB device is connected
@@ -55,8 +52,9 @@ class DeviceManager(
 
     private val deviceListeners = HashSet<DeviceListener>()
 
+    private val _deviceInfo = AtomicReference<Info?>()
     val deviceInfo: Info?
-        get() = appViewModel.deviceInfo.value
+        get() = _deviceInfo.get()
 
     var scpKeyParams: ScpKeyParams? = null
         set(value) {
@@ -75,46 +73,6 @@ class DeviceManager(
     companion object {
         const val NFC_DATA_CLEANUP_DELAY = 30L * 1000 // 30s
         private val logger = LoggerFactory.getLogger(DeviceManager::class.java)
-
-        private val capabilityContextMap = mapOf(
-            Capability.OATH to listOf(OperationContext.Oath),
-            Capability.FIDO2 to listOf(
-                OperationContext.FidoFingerprints,
-                OperationContext.FidoPasskeys
-            )
-        )
-
-        fun getSupportedContexts(deviceInfo: Info): ArraySet<OperationContext> {
-            val operationContexts = ArraySet<OperationContext>()
-
-            val capabilities = (
-                    if (deviceInfo.isNfc)
-                        deviceInfo.config.enabledCapabilities.nfc else
-                        deviceInfo.config.enabledCapabilities.usb
-                    ) ?: 0
-
-            capabilityContextMap.forEach { entry ->
-                if (capabilities and entry.key.bit == entry.key.bit) {
-                    operationContexts.addAll(entry.value)
-                }
-            }
-
-            logger.debug("Device supports following contexts: {}", operationContexts)
-            return operationContexts
-        }
-
-        fun getPreferredContext(contexts: ArraySet<OperationContext>): OperationContext {
-            // custom sort
-            for (context in contexts) {
-                if (context == OperationContext.Oath) {
-                    return context
-                } else if (context == OperationContext.FidoPasskeys) {
-                    return context
-                }
-            }
-
-            return OperationContext.Oath
-        }
     }
 
     private val lifecycleObserver = object : DefaultLifecycleObserver {
@@ -161,6 +119,7 @@ class DeviceManager(
                 listener.onConnected(yubiKeyDevice)
             }
         }
+        clearDeviceInfoOnDisconnect = true
     }
 
     init {
@@ -174,7 +133,8 @@ class DeviceManager(
     }
 
     fun setDeviceInfo(deviceInfo: Info?) {
-        appViewModel.setDeviceInfo(deviceInfo)
+        _deviceInfo.set(deviceInfo?.copy())
+        appViewModel.setDeviceInfo(this.deviceInfo)
     }
 
     fun isUsbKeyConnected(): Boolean {
@@ -190,11 +150,25 @@ class DeviceManager(
         onUsb: suspend (UsbYubiKeyDevice) -> T,
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
         onCancelled: () -> Unit
-    ): T =
-        appViewModel.connectedYubiKey.value?.let {
-            onUsb(it)
-        } ?: onNfc(onNfc, onCancelled)
+    ): T = appViewModel.connectedYubiKey.value?.let {
+        if (!handleUsbReclaim(it)) {
+            throw IOException("Failed handling USB reclaim")
+        }
+        onUsb(it)
+    } ?: onNfc(onNfc, onCancelled)
 
+    /**
+     * Waits for a possible USB reclaim period to be over.
+     * @return true if it was possible to communicate with the device.
+     */
+    suspend fun handleUsbReclaim(device: YubiKeyDevice): Boolean =
+        Workarounds.handleUsbReclaim(this, device, enterReclaimCallback = {
+            appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_ONGOING)
+        }, leaveReclaimCallback = {
+            appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_SUCCESS)
+        }, failureCallback = {
+            appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_FAILURE)
+        })
 
     private suspend fun <T> onNfc(
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,

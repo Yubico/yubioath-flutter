@@ -16,13 +16,13 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -33,6 +33,7 @@ import '../state.dart';
 import 'keys.dart' as management_keys;
 
 final _mapEquals = const DeepCollectionEquality().equals;
+const _usbOtp = 0x01;
 const _usbCcid = 0x04;
 
 enum _CapabilityType { usb, nfc }
@@ -42,6 +43,7 @@ class _CapabilityForm extends StatelessWidget {
   final int capabilities;
   final int enabled;
   final Function(int) onChanged;
+
   const _CapabilityForm({
     required this.type,
     required this.capabilities,
@@ -80,6 +82,7 @@ class _CapabilityForm extends StatelessWidget {
 class _ModeForm extends StatelessWidget {
   final int interfaces;
   final Function(int) onChanged;
+
   const _ModeForm(this.interfaces, {required this.onChanged});
 
   @override
@@ -435,6 +438,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               canSave =
                   (usbEnabled & ~_usbCcid) != 0 &&
                   !_mapEquals(_enabled, info.config.enabledCapabilities);
+
+              if (isAndroid) {
+                // don't allow OTP only mode
+                canSave = canSave && (usbEnabled & ~_usbCcid) != _usbOtp;
+              }
             } else {
               canSave =
                   _interfaces != 0 &&
@@ -447,6 +455,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                                 .enabledCapabilities[Transport.usb] ??
                             0,
                       );
+              if (isAndroid) {
+                // don't allow OTP only mode
+                canSave = canSave && _interfaces != _usbOtp;
+              }
             }
             if (info.isLocked) {
               final lockCode = _lockCodeController.text.replaceAll(' ', '');
@@ -497,7 +509,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     maintainSize: true,
                     maintainAnimation: true,
                     maintainState: true,
-                    child: const LinearProgressIndicator(),
+                    child:
+                        !isAndroid
+                            ? const LinearProgressIndicator()
+                            : const SizedBox(),
                   ),
                 ),
               ],

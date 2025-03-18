@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,46 @@
 
 package com.yubico.authenticator
 
+import com.yubico.authenticator.device.DeviceListener
+import com.yubico.authenticator.device.DeviceManager
 import com.yubico.yubikit.core.YubiKeyDevice
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import java.util.concurrent.Executors
 
 /**
  * Provides behavior to run when a YubiKey is inserted/tapped for a specific view of the app.
  */
-abstract class AppContextManager {
+abstract class AppContextManager(
+    protected val deviceManager: DeviceManager
+) : DeviceListener {
+
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    protected val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+
     abstract suspend fun processYubiKey(device: YubiKeyDevice): Boolean
 
-    open fun dispose() {}
+    abstract fun supports(appContext: OperationContext): Boolean
+
+    open fun activate() {
+        deviceManager.addDeviceListener(this)
+    }
+
+    open fun deactivate() {
+        deviceManager.removeDeviceListener(this)
+    }
+
+    open fun dispose() {
+        coroutineScope.cancel()
+    }
 
     open fun onPause() {}
 
     open fun onError(e: Exception) {}
+
+    abstract fun hasPending() : Boolean
 }
 
-class ContextDisposedException : Exception()
+class FunctionalityMissingException : Exception()

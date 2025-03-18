@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
+import '../management/models.dart';
 import 'app_methods.dart';
 import 'devices.dart';
 import 'models.dart';
-
-final _log = Logger('android.state');
 
 const _contextChannel = MethodChannel('android.state.appContext');
 
@@ -36,6 +33,25 @@ final androidAllowScreenshotsProvider =
     StateNotifierProvider<AllowScreenshotsNotifier, bool>(
       (ref) => AllowScreenshotsNotifier(),
     );
+
+class DeviceInfoComparator {
+  /// Compares two instances of DeviceInfo and determines whether they
+  /// belong the the same physical device.
+  static bool customCompare(DeviceInfo? prev, DeviceInfo? next) {
+    if (prev != null && next != null) {
+      if (prev.serial == null && next.serial == null) {
+        // compare without config
+        final simpleConfig = DeviceConfig({}, 0, 0, 0);
+        return next.copyWith(config: simpleConfig) ==
+            prev.copyWith(config: simpleConfig);
+      } else {
+        // serial number based comparison
+        return prev.serial == next.serial;
+      }
+    }
+    return prev == null && next == null;
+  }
+}
 
 class AllowScreenshotsNotifier extends StateNotifier<bool> {
   AllowScreenshotsNotifier() : super(false);
@@ -79,7 +95,16 @@ class NfcAdapterState extends StateNotifier<bool> {
   }
 }
 
-enum NfcState { disabled, idle, ongoing, success, failure }
+enum NfcState {
+  disabled,
+  idle,
+  ongoing,
+  success,
+  failure,
+  usbActivityOngoing,
+  usbActivitySuccess,
+  usbActivityFailure,
+}
 
 class NfcStateNotifier extends StateNotifier<NfcState> {
   NfcStateNotifier() : super(NfcState.disabled);
@@ -91,6 +116,9 @@ class NfcStateNotifier extends StateNotifier<NfcState> {
       2 => NfcState.ongoing,
       3 => NfcState.success,
       4 => NfcState.failure,
+      5 => NfcState.usbActivityOngoing,
+      6 => NfcState.usbActivitySuccess,
+      7 => NfcState.usbActivityFailure,
       _ => NfcState.disabled,
     };
 
@@ -132,51 +160,46 @@ final androidAppContextHandler = Provider<AndroidAppContextHandler>(
   (ref) => AndroidAppContextHandler(),
 );
 
-CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
-  final notifier = AndroidCurrentSectionNotifier(
-    ref.watch(androidSectionPriority),
+final androidCurrentSectionNotifierProvider = Provider(
+  (ref) => AndroidCurrentSectionNotifier(
     ref.watch(androidAppContextHandler),
-  );
-  ref.listen<AsyncValue<YubiKeyData>>(currentDeviceDataProvider, (_, data) {
-    notifier._notifyDeviceChanged(data.whenOrNull(data: ((data) => data)));
-  }, fireImmediately: true);
-  return notifier;
+    ref.watch(prefProvider),
+    ref.watch(supportedSectionsProvider),
+  ),
+);
+
+CurrentSectionNotifier androidCurrentSectionNotifier(Ref ref) {
+  return ref.read(androidCurrentSectionNotifierProvider);
 }
 
 class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
-  final List<Section> _supportedSectionsByPriority;
   final AndroidAppContextHandler _appContextHandler;
+  final SharedPreferences _prefs;
+
+  static const String _key = 'APP_STATE_LAST_SECTION';
 
   AndroidCurrentSectionNotifier(
-    this._supportedSectionsByPriority,
     this._appContextHandler,
-  ) : super(Section.home);
+    this._prefs,
+    final List<Section> supportedSections,
+  ) : super(_fromName(_prefs.getString(_key), supportedSections));
 
   @override
-  void setCurrentSection(Section section) {
+  void setCurrentSection(Section section, {bool notify = true}) {
+    if (section != Section.home) {
+      _prefs.setString(_key, section.name);
+    }
+    if (notify) {
+      _appContextHandler.switchAppContext(section);
+    }
     state = section;
-    _log.debug('Setting current section to $section');
-    _appContextHandler.switchAppContext(state);
   }
 
-  void _notifyDeviceChanged(YubiKeyData? data) {
-    if (data == null) {
-      _log.debug('Keeping current section because key was disconnected');
-      return;
-    }
-
-    final supportedSections = _supportedSectionsByPriority.where(
-      (e) => e.getAvailability(data) == Availability.enabled,
-    );
-
-    if (supportedSections.contains(state)) {
-      // the key supports current section
-      _log.debug('Keeping current section because new key support $state');
-      return;
-    }
-
-    setCurrentSection(supportedSections.firstOrNull ?? Section.home);
-  }
+  static Section _fromName(String? name, List<Section> supportedSections) =>
+      supportedSections.firstWhere(
+        (element) => element.name == name,
+        orElse: () => supportedSections.first,
+      );
 }
 
 class AndroidAttachedDevicesNotifier extends AttachedDevicesNotifier {

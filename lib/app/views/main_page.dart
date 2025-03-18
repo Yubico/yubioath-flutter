@@ -65,7 +65,11 @@ class MainPage extends ConsumerWidget {
       }
 
       if (isAndroid &&
-          ((next.hasValue && prev?.isLoading == true) || next.isLoading)) {
+          DeviceInfoComparator.customCompare(
+            prev?.hasValue == true ? prev?.value?.info : null,
+            next.hasValue ? next.value?.info : null,
+          )) {
+        // prev and next are the same device, don't pop any dialogs
         return;
       }
 
@@ -81,6 +85,7 @@ class MainPage extends ConsumerWidget {
               'icon_pack_dialog',
               'toggle_readers_dialog',
               'android_qr_scanner_view',
+              'android_nfc_activity_overlay',
             ].contains(route.settings.name);
       });
     });

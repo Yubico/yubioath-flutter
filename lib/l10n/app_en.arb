@@ -1112,6 +1112,11 @@
     "s_nfc_tap_your_yubikey": "Tap your YubiKey",
     "l_nfc_failed_to_scan": "Failed to scan, try again",
 
+    "@_usb": {},
+    "s_usb_processing": "Reading data from YubiKey",
+    "s_usb_dont_remove": "Don't remove the key\u2026",
+    "l_usb_read_error": "Failed to read data from YubiKey",
+
     "@_ndef": {},
     "p_ndef_set_otp": "Successfully copied OTP code from YubiKey to clipboard.",
     "p_ndef_set_password": "Successfully copied password from YubiKey to clipboard.",

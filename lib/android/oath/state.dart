@@ -195,8 +195,7 @@ Exception handlePlatformException(
         return CancellationException();
       }
     case PlatformException pe:
-      if (pe.code == 'ContextDisposedException') {
-        // pop stack to show FIDO view
+      if (pe.code == 'FunctionalityMissingException') {
         toast(l10n.l_add_account_func_missing, popStack: true);
         return CancellationException();
       } else if (pe.code == 'IllegalArgumentException') {
