@@ -63,7 +63,10 @@ dependencies:
   vector_graphics: ^1.1.15
   vector_graphics_compiler: ^1.1.16
   path: ^1.9.1
-  file_picker: ^9.2.0
+  file_picker:
+    git:
+      url: https://github.com/AdamVe/flutter_file_picker.git
+      ref: 431f81cc6baf440c2ec885f136719e0a88a0e096
   archive: ^4.0.4
   crypto: ^3.0.2
   tray_manager: ^0.3.1
