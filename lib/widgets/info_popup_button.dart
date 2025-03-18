@@ -34,56 +34,64 @@ class InfoPopupButton extends StatelessWidget {
     this.size,
   });
 
-  Widget _buildInfoContent(BuildContext context) {
+  Widget _buildInfoContent() {
     return SingleChildScrollView(child: infoText);
+  }
+
+  void _showPopupMenu(BuildContext context) {
+    final RenderBox chipBox = context.findRenderObject()! as RenderBox;
+    final RenderBox overlay =
+        Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        chipBox.localToGlobal(
+          chipBox.size.bottomLeft(Offset.zero),
+          ancestor: overlay,
+        ),
+        chipBox.localToGlobal(
+          chipBox.size.bottomRight(Offset.zero),
+          ancestor: overlay,
+        ),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu(
+      context: context,
+      constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
+      position: position,
+      popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
+      items: [PopupMenuItem(enabled: false, child: _buildInfoContent())],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    if (!displayDialog) {
-      return PopupMenuButton(
+
+    return SizedBox(
+      height: size,
+      width: size,
+      child: IconButton(
         tooltip: l10n.s_more_info,
-        constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
-        popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-        borderRadius: BorderRadius.circular(25),
-        child: SizedBox(
-          height: size,
-          width: size,
-          child: Icon(
-            Symbols.help,
-            size: iconSize,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        itemBuilder: (context) {
-          return [
-            PopupMenuItem(enabled: false, child: _buildInfoContent(context)),
-          ];
-        },
-      );
-    } else {
-      return SizedBox(
-        height: size,
-        width: size,
-        child: IconButton(
-          tooltip: l10n.s_more_info,
-          onPressed: () {
-            // Show info content in dialog on smaller screens and mobile
+        onPressed: () {
+          // Show info content in dialog on smaller screens and mobile
+          if (displayDialog) {
             showDialog(
               context: context,
-              builder:
-                  (context) => BasicDialog(content: _buildInfoContent(context)),
+              builder: (context) => BasicDialog(content: _buildInfoContent()),
             );
-          },
-          icon: Icon(
-            Symbols.help,
-            size: iconSize,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          padding: EdgeInsets.zero,
+          } else {
+            _showPopupMenu(context);
+          }
+        },
+        icon: Icon(
+          Symbols.help,
+          size: iconSize,
+          color: Theme.of(context).colorScheme.primary,
         ),
-      );
-    }
+        padding: EdgeInsets.zero,
+      ),
+    );
   }
 }
