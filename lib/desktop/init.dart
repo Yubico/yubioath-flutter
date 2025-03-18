@@ -125,7 +125,7 @@ Future<Widget> initialize(List<String> argv) async {
   parser.addFlag(_hidden);
   parser.addFlag(_shown);
   final args = parser.parse(argv);
-  _initLogging(args);
+  final levelFromArg = _initLogging(args);
 
   await windowManager.ensureInitialized();
   SharedPreferences prefs;
@@ -233,6 +233,9 @@ Future<Widget> initialize(List<String> argv) async {
       currentSectionProvider.overrideWith(
         (ref) => desktopCurrentSectionNotifier(ref),
       ),
+      logPanelVisibilityProvider.overrideWith(
+        (ref) => LogPanelVisibilityNotifier(levelFromArg),
+      ),
       // OATH
       oathStateProvider.overrideWithProvider(desktopOathState.call),
       credentialListProvider.overrideWithProvider(
@@ -312,7 +315,7 @@ Future<RpcSession> _initHelper(String exe) async {
   return rpc;
 }
 
-void _initLogging(ArgResults args) {
+bool _initLogging(ArgResults args) {
   final path = args[_logFile];
   final levelName = args[_logLevel];
 
@@ -342,12 +345,15 @@ void _initLogging(ArgResults args) {
     }
   });
 
+  bool levelFromArg = false;
+
   if (levelName != null) {
     try {
       Level level = Levels.LEVELS.firstWhere(
         (level) => level.name == levelName.toUpperCase(),
       );
       Logger.root.level = level;
+      levelFromArg = true;
       _log.info('Log level initialized from command line argument');
     } catch (error) {
       _log.error('Failed to set log level', error);
@@ -355,6 +361,7 @@ void _initLogging(ArgResults args) {
   }
 
   _log.info('Logging initialized, outputting to stderr');
+  return levelFromArg;
 }
 
 void _initLicenses() async {

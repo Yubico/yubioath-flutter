@@ -85,12 +85,16 @@
     "s_security_key": "セキュリティキー",
     "s_slots": "スロット",
     "s_help_and_about": "ヘルプと概要",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "トラブルシューティング",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "トラブルシューティングとサポート",
     "s_help_and_feedback": "ヘルプとフィードバック",
     "s_home": "ホーム",
     "s_user_guide": "ユーザーガイド",
     "s_i_need_help": "ヘルプが必要",
-    "s_troubleshooting": "トラブルシューティング",
     "s_terms_of_use": "利用規約",
     "s_privacy_policy": "プライバシーポリシー",
     "s_open_src_licenses": "オープンソースライセンス",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "YubiKeyの接続時に起動",
     "l_launch_app_on_usb_on": "これにより、他のアプリがUSB経由でYubiKeyを使用できなくなります",
     "l_launch_app_on_usb_off": "他のアプリがUSB経由でYubiKeyを使用できます",
+    "s_privacy_options": null,
     "s_allow_screenshots": "スクリーンショットを許可",
+    "l_allow_screenshots_desc": null,
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "スキャンの準備完了",
@@ -1125,6 +1131,5 @@
     "s_color": "色",
     "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",
     "p_rename_will_change_custom_name": "YubiKeyのラベルが変更されます。",
-
     "@_eof": {}
 }

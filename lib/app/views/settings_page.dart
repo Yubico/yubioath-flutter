@@ -346,6 +346,10 @@ class SettingsPage extends ConsumerWidget {
                 ListTitle(l10n.s_usb_options),
                 const UsbOpenAppView(),
               ],
+              if (isAndroid) ...[
+                ListTitle(l10n.s_privacy_options),
+                const AllowScreenshotsView(),
+              ],
               ListTitle(l10n.s_appearance),
               const _ThemeModeView(),
               const _IconsView(),

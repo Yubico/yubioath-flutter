@@ -66,7 +66,7 @@ class HomeMessagePage extends ConsumerWidget {
       header: header,
       message: message,
       footnote: footnote,
-      keyActionsBuilder: (context) => homeBuildActions(context, null, ref),
+      keyActionsBuilder: (context) => HomeActions(),
       actionButtonBuilder: actionButtonBuilder,
       actionsBuilder: actionsBuilder,
       fileDropOverlay: fileDropOverlay,

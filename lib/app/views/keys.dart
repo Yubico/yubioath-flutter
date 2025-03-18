@@ -21,6 +21,8 @@ final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
 final headerSliverGlobalKey = GlobalKey();
 // This is global so we can access it from the global Ctrl+F shortcut.
 final searchField = GlobalKey();
+// Logging panel key (needed to calculate its height)
+final loggingPanelKey = GlobalKey();
 
 const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');
@@ -64,6 +66,7 @@ const factoryResetReset = Key('$_prefix.yubikey_factory_reset_reset');
 // settings page
 const settingDrawerIcon = Key('$_prefix.settings_drawer_icon');
 const helpDrawerIcon = Key('$_prefix.setting_drawer_icon');
+const loggingPanelButton = Key('$_prefix.settings_logging_panel_button');
 const themeModeSetting = Key('$_prefix.settings.theme_mode');
 const languageSetting = Key('$_prefix.settings.language');
 const toggleDevicesSetting = Key('$_prefix.settings.toggle_devices');

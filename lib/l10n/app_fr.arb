@@ -85,12 +85,16 @@
     "s_security_key": "Clé de sécurité",
     "s_slots": "Slots",
     "s_help_and_about": "Aide et à propos",
+    "s_hide_log_panel": null,
+    "s_show_log_panel": null,
+    "s_troubleshooting": "Dépannage",
+    "l_sensitive_data_logged": null,
+    "l_warning_allow_screenshots": null,
     "l_help_and_about_desc": "Dépannage et assistance",
     "s_help_and_feedback": "Aide/commentaires",
     "s_home": "Accueil",
     "s_user_guide": "Guide d'utilisation",
     "s_i_need_help": "J'ai besoin d'aide",
-    "s_troubleshooting": "Dépannage",
     "s_terms_of_use": "Conditions d'utilisation",
     "s_privacy_policy": "Confidentialité",
     "s_open_src_licenses": "Licences Open Source",
@@ -1104,7 +1108,9 @@
     "l_launch_app_on_usb": "Lancer lorsque la YubiKey est connectée",
     "l_launch_app_on_usb_on": "Cela empêche d'autres applications d'utiliser la YubiKey en USB",
     "l_launch_app_on_usb_off": "D'autres applications peuvent utiliser la YubiKey en USB",
+    "s_privacy_options": null,
     "s_allow_screenshots": "Autoriser captures d'écran",
+    "l_allow_screenshots_desc": null,
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "Prêt à numériser",
@@ -1125,6 +1131,5 @@
     "s_color": "Couleur",
     "p_set_will_add_custom_name": "Cela donnera un nom personnalisé à votre YubiKey.",
     "p_rename_will_change_custom_name": "Cela changera l'étiquette de votre YubiKey.",
-
     "@_eof": {}
 }

@@ -83,6 +83,9 @@ Future<Widget> initialize() async {
       clipboardProvider.overrideWith(
         (ref) => ref.watch(androidClipboardProvider),
       ),
+      logPanelVisibilityProvider.overrideWith(
+        (ref) => LogPanelVisibilityNotifier(kDebugMode),
+      ),
       androidSdkVersionProvider.overrideWithValue(await getAndroidSdkVersion()),
       androidNfcSupportProvider.overrideWithValue(await getHasNfc()),
       supportedSectionsProvider.overrideWithValue([

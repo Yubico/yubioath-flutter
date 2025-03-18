@@ -204,3 +204,24 @@ class UsbOpenAppView extends ConsumerWidget {
     );
   }
 }
+
+class AllowScreenshotsView extends ConsumerWidget {
+  const AllowScreenshotsView({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
+    return SwitchListTile(
+      title: Text(l10n.s_allow_screenshots),
+      subtitle: Text(l10n.l_allow_screenshots_desc),
+      value: allowScreenshots,
+      key: keys.allowScreenshotsSetting,
+      onChanged: (value) {
+        ref
+            .read(androidAllowScreenshotsProvider.notifier)
+            .setAllowScreenshots(value);
+      },
+    );
+  }
+}
