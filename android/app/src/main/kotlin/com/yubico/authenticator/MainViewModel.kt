@@ -25,6 +25,7 @@ import com.yubico.authenticator.OperationContext.entries
 import com.yubico.authenticator.device.Info
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.management.Capability
+import com.yubico.yubikit.management.FormFactor
 
 enum class OperationContext(val value: Int) {
     Default(-1),
@@ -61,7 +62,7 @@ enum class OperationContext(val value: Int) {
                 }
             }
 
-            if (name.contains("bio", ignoreCase = true) && !isNfc) {
+            if (formFactor in listOf(FormFactor.USB_C_BIO.value, FormFactor.USB_A_BIO.value)) {
                 operationContexts.add(FidoFingerprints)
             }
             operationContexts.add(Management)
