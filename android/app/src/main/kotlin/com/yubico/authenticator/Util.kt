@@ -19,6 +19,3 @@ package com.yubico.authenticator
 fun ByteArray.asString() = joinToString(
     separator = ""
 ) { b -> "%02x".format(b) }
-
-fun AppContextManager.supportsAny(contexts: List<OperationContext>) =
-    contexts.firstOrNull { context -> supports(context) } != null

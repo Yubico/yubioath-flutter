@@ -359,8 +359,7 @@ class MainActivity : FlutterFragmentActivity() {
         val supportedContexts = deviceInfo.getSupportedContexts()
 
         contextManagers.values.firstOrNull(AppContextManager::hasPending)?.let {
-            if (it.supportsAny(supportedContexts)) {
-
+            if (supportedContexts.any { context -> it.supports(context) }) {
                 if (contextManager != it) {
                     contextManager?.deactivate()
                     it.activate()
