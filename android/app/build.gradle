@@ -92,6 +92,7 @@ dependencies {
     api "com.yubico.yubikit:management:$project.yubiKitVersion"
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
     api "com.yubico.yubikit:fido:$project.yubiKitVersion"
+    api "com.yubico.yubikit:piv:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1'

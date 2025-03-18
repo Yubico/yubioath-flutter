@@ -34,6 +34,7 @@ import '../core/state.dart';
 import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import '../piv/state.dart';
 import 'app_methods.dart';
 import 'fido/state.dart';
 import 'logger.dart';
@@ -42,6 +43,7 @@ import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
 import 'overlay/nfc/nfc_event_notifier.dart';
 import 'overlay/nfc/nfc_overlay.dart';
+import 'piv/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'window_state_provider.dart';
@@ -91,6 +93,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.accounts,
         Section.fingerprints,
         Section.passkeys,
+        Section.certificates,
       ]),
       // this specifies the priority of sections to show when
       // the connected YubiKey does not support current section
@@ -98,12 +101,17 @@ Future<Widget> initialize({Level? level}) async {
         Section.accounts,
         Section.fingerprints,
         Section.passkeys,
+        Section.certificates,
         Section.home,
       ]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
       defaultColorProvider.overrideWithValue(await getPrimaryColor()),
+
+      // PIV
+      pivStateProvider.overrideWithProvider(androidPivState.call),
+      pivSlotsProvider.overrideWithProvider(androidPivSlots.call),
 
       // FIDO
       fidoStateProvider.overrideWithProvider(androidFidoStateProvider.call),
@@ -121,7 +129,7 @@ Future<Widget> initialize({Level? level}) async {
                 // TODO: Load feature flags from file/config?
                 //..loadConfig(config)
                 // Disable unimplemented feature
-                ..setFeature(features.piv, false)
+                ..setFeature(features.piv, true)
                 ..setFeature(features.otp, false)
                 ..setFeature(features.management, true);
             });

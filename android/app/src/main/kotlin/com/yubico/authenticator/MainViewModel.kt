@@ -34,8 +34,8 @@ enum class OperationContext(val value: Int) {
     FidoU2f(2),
     FidoFingerprints(3),
     FidoPasskeys(4),
-    YubiOtp(5),
-    Piv(6),
+    Piv(5),
+    YubiOtp(6),
     OpenPgp(7),
     HsmAuth(8),
     Management(9);
@@ -47,6 +47,7 @@ enum class OperationContext(val value: Int) {
 
             val capabilitiesToContext = mapOf(
                 Capability.OATH to Oath,
+                Capability.PIV to Piv,
                 Capability.FIDO2 to FidoPasskeys
             )
 

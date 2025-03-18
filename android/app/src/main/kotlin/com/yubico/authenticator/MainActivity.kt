@@ -53,6 +53,8 @@ import com.yubico.authenticator.management.ManagementManager
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
+import com.yubico.authenticator.piv.PivManager
+import com.yubico.authenticator.piv.PivViewModel
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.NfcStateDispatcher
@@ -91,6 +93,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
     private val oathViewModel: OathViewModel by viewModels()
     private val fidoViewModel: FidoViewModel by viewModels()
+    private val pivViewModel: PivViewModel by viewModels()
 
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
@@ -497,6 +500,8 @@ class MainActivity : FlutterFragmentActivity() {
             fidoViewModel.fingerprints.streamTo(this, messenger, "android.fido.fingerprints"),
             fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
             fidoViewModel.registerFingerprint.streamTo(this, messenger, "android.fido.registerFp"),
+            pivViewModel.state.streamTo(this, messenger, "android.piv.state"),
+            pivViewModel.slots.streamTo(this, messenger, "android.piv.slots")
         )
 
         viewModel.appContext.observe(this) {
@@ -528,6 +533,15 @@ class MainActivity : FlutterFragmentActivity() {
             fidoViewModel,
             viewModel
         )
+        val pivContextManager = PivManager(
+            messenger,
+            deviceManager,
+            this,
+            appMethodChannel,
+            nfcOverlayManager,
+            pivViewModel,
+            viewModel
+        )
         val managementContextManager = ManagementManager(messenger, deviceManager)
 
         contextManagers = mapOf(
@@ -536,6 +550,7 @@ class MainActivity : FlutterFragmentActivity() {
             OperationContext.FidoPasskeys to fidoContextManager,
             OperationContext.FidoFingerprints to fidoContextManager,
             OperationContext.Management to managementContextManager,
+            OperationContext.Piv to pivContextManager,
             // currently not supported
             OperationContext.FidoU2f to homeContextManager,
             OperationContext.HsmAuth to homeContextManager,
