@@ -314,7 +314,7 @@
             }
         }
     },
-    "l_attempts_remaining": "{retries, plural, one {}=1{{retries} verbleibender Versuch}other{{retries} verbleibende Versuche}}",
+    "l_attempts_remaining": "{retries, plural, =1{{retries} verbleibender Versuch}other{{retries} verbleibende Versuche}}",
     "@l_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -322,7 +322,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": "Falsche PIN, {retries, plural, one {}=1{{retries} verbleibender Versuch}other{{retries} verbleibende Versuche}}",
+    "l_wrong_pin_attempts_remaining": "Falsche PIN, {retries, plural, =1{{retries} verbleibender Versuch}other{{retries} verbleibende Versuche}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -330,7 +330,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": "Falsche PUK, {retries, plural, one {}=1{{retries} verbleibender Versuch}other{{retries} verbleibende Versuche}}",
+    "l_wrong_puk_attempts_remaining": "Falsche PUK, {retries, plural, =1{{retries} verbleibender Versuch}other{{retries} verbleibende Versuche}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {

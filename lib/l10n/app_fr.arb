@@ -322,7 +322,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": "PIN erroné, {retries, plural, one {}=1{{retries} tentative restante}other{{retries} tentatives restantes}}",
+    "l_wrong_pin_attempts_remaining": "PIN erroné, {retries, plural, =1{{retries} tentative restante}other{{retries} tentatives restantes}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -330,7 +330,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": "PUK erroné, {retries, plural, one {}=1{{retries} tentative restante}other{{retries} tentatives restantes}}",
+    "l_wrong_puk_attempts_remaining": "PUK erroné, {retries, plural, =1{{retries} tentative restante}other{{retries} tentatives restantes}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {

@@ -314,7 +314,7 @@
             }
         }
     },
-    "l_attempts_remaining": "{retries, plural, one {} few {Pozostały {retries} próby} many {Pozostało {retries} prób}=1{Pozostała {retries} próba}other{Pozostało {retries} prób}}",
+    "l_attempts_remaining": "{retries, plural, few {Pozostały {retries} próby}many {Pozostało {retries} prób}=1{Pozostała {retries} próba}other{Pozostało {retries} prób}}",
     "@l_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -322,7 +322,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": "Kod PIN jest nieprawidłowy. {retries, plural, one {} few {Pozostały {retries} próby} many {Pozostało {retries} prób}=1{Pozostała {retries} próba}other{Pozostało {retries} prób}}",
+    "l_wrong_pin_attempts_remaining": "Kod PIN jest nieprawidłowy. {retries, plural, few {Pozostały {retries} próby}many {Pozostało {retries} prób}=1{Pozostała {retries} próba}other{Pozostało {retries} prób}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -330,7 +330,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": "Kod PUK jest nieprawidłowy. {retries, plural, one {} few {Pozostały {retries} próby} many {Pozostało {retries} prób}=1{Pozostała {retries} próba}other{Pozostało {retries} prób}}",
+    "l_wrong_puk_attempts_remaining": "Kod PUK jest nieprawidłowy. {retries, plural, few {Pozostały {retries} próby}many {Pozostało {retries} prób}=1{Pozostała {retries} próba}other{Pozostało {retries} prób}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {
