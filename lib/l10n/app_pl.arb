@@ -408,7 +408,7 @@
             }
         }
     },
-    "p_new_piv_pin_puk_complexity_active_requirements": "{name} musi składać się z co najmniej {length} znaków, zawierać min. 2 unikalne znaki i nie może być powszechnie używanym kodem, np. \"{common}\".",
+    "p_new_piv_pin_puk_complexity_active_requirements": "{name} musi składać się z co najmniej {length} znaków, zawierać min. 2 unikalne znaki i nie może być powszechnie używanym {name} kodem, np. \"{common}\".",
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {
@@ -511,7 +511,7 @@
     "s_add_accounts": "Dodaj konta",
     "p_add_description": "Aby zeskanować kod QR, upewnij się, że pełny kod jest widoczny na ekranie i kliknij poniższy przycisk. Możesz również przeciągnąć zapisany obraz do tego okna. Jeśli masz zapisane poświadczenie w formie tekstowej, wpisz dane ręcznie.",
     "l_drop_qr_description": "Zeskanuj kod QR, aby dodać konta",
-    "p_add_account_three_ways": "Są 3 sposoby dodawania kont.",
+    "p_add_account_three_ways": "Są trzy sposoby dodawania kont.",
     "s_scanning": "Skanowanie (zalecane)",
     "p_scanning_desc": "Przed zeskanowaniem kodu QR upewnij się, że pełny kod jest widoczny na ekranie.",
     "s_drag_and_drop": "Przeciągnij i upuść",

@@ -408,7 +408,7 @@
             }
         }
     },
-    "p_new_piv_pin_puk_complexity_active_requirements": "Un {name} doit être composé d'au moins {length} caractères, contenir au moins 2 caractères uniques et ne pas être un {name} couramment utilisé, comme \"{common}\".",
+    "p_new_piv_pin_puk_complexity_active_requirements": "Un code {name} doit être composé d'au moins {length} caractères, contenir au moins 2 caractères uniques et ne pas être un {name} couramment utilisé, comme \"{common}\".",
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {
@@ -1058,7 +1058,7 @@
     "s_custom_icons": "Icônes personnalisées",
     "l_set_icons_for_accounts": "Définir des icônes pour les comptes",
     "p_custom_icons_description": "Les packs d'icônes permettent de distinguer plus facilement vos comptes avec des logos et couleurs familiers.",
-    "p_custom_icons_format_desc": "Les packs d'icônes utilisent le format {aegis_icon_pack} . Vous pouvez télécharger un pack d'icônes préétabli ou créer votre propre pack.",
+    "p_custom_icons_format_desc": "Les packs d'icônes utilisent le format {aegis_icon_pack}. Vous pouvez télécharger un pack d'icônes préétabli ou créer votre propre pack.",
     "@p_custom_icons_format_desc": {
         "placeholders": {
             "aegis_icon_pack": {

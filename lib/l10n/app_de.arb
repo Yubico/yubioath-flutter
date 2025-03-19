@@ -127,7 +127,7 @@
     "@_language": {},
     "s_language": "Sprache",
     "l_enable_community_translations": "Community-Übersetzungen aktivieren",
-    "p_community_translations_desc": "Die Übersetzungen werden von der Community auf {crowdin}gepflegt.",
+    "p_community_translations_desc": "Die Übersetzungen werden von der Community auf {crowdin} gepflegt.",
     "@p_community_translations_desc": {
         "placeholders": {
             "crowdin": {
