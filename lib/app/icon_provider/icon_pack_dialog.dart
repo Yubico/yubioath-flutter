@@ -34,10 +34,7 @@ import 'icon_pack_manager.dart';
 class IconPackDialog extends ConsumerWidget {
   const IconPackDialog({super.key});
 
-  // TODO: create shortURL this
-  Uri get _learnMoreAegisUri => Uri.parse(
-    'https://docs.yubico.com/software/yubikey/tools/authenticator/auth-guide/oath.html#custom-icons',
-  );
+  Uri get _learnMoreAegisUri => Uri.parse('https://yubi.co/ya-custom-icons');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
