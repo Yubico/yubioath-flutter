@@ -38,7 +38,7 @@ Visit https://yubico.com to learn more.
 |Windows 10 & above, x64
 
 |macOS
-|macOS 11 (Big Sur) & above
+|macOS 13 (Ventura) & above
 |macOS 10.15 (Catalina)
 
 |Linux
