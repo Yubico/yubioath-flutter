@@ -22,6 +22,7 @@ import com.yubico.authenticator.device.restrictedNfcDeviceInfo
 import com.yubico.authenticator.device.unknownDeviceWithCapability
 import com.yubico.authenticator.device.unknownFido2DeviceInfo
 import com.yubico.authenticator.device.unknownOathDeviceInfo
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.Version
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -64,7 +65,7 @@ class DeviceInfoHelper {
             }.recoverCatching { t ->
                 logger.debug("SmartCard connection not available: {}", t.message)
                 device.openConnection(FidoConnection::class.java)
-                    .use { Workarounds.readInfo(it, pid) }
+                    .use { DeviceUtil.readInfo(it, pid) }
             }.recoverCatching { t ->
                 logger.debug("FIDO connection not available: {}", t.message)
                 device.openConnection(OtpConnection::class.java)
@@ -107,7 +108,8 @@ class DeviceInfoHelper {
                 }
             }
 
-            return Workarounds.getDeviceInfo(device, deviceInfo, pid)
+            val name = DeviceUtil.getName(deviceInfo, pid?.type)
+            return Info(name, device is NfcYubiKeyDevice, pid?.value, deviceInfo)
         }
 
         private fun isNfcRestricted(connection: SmartCardConnection): Boolean =
