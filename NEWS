@@ -1,3 +1,10 @@
+* Version 7.2.0 (released 2025-03-26)
+ ** Android: Add support for Toggle Applications.
+ ** UI: Improve usability of several dialogs in the app.
+ ** UI: Move custom icons from Accounts to Settings, and use for Passkeys as well.
+ ** UI: Language is now explicitly configurable in Settings.
+ ** Bug fixes and improvements.
+
 * Version 7.1.1 (released 2024-10-30) Desktop-only release
  ** Fix: Entering the wrong PIV PIN/PUK when attempting to change PIN/PUK was not handled correctly, causing extra PIN/PUK attempts to be wasted.
  ** Fix: Add explicit screen reader announcement for "Touch your YubiKey" which wasn't being read on Windows.
