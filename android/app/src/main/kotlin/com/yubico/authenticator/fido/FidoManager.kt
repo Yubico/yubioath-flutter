@@ -351,7 +351,11 @@ class FidoManager(
                 pinStore.setPin(null)
                 fidoViewModel.updateCredentials(null)
 
-                pinRetries = if (pinStore.hasPin()) clientPin.pinRetries.count else null
+                pinRetries = if (fidoSession.cachedInfo.options["clientPin"] == true)
+                    // pinRetries exists only if the authenticator has a PIN set
+                    clientPin.pinRetries.count
+                else
+                    null
 
                 fidoViewModel.setSessionState(
                     Session(
