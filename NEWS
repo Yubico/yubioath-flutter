@@ -1,3 +1,6 @@
+* Version 7.2.2 Android only release
+ ** Fix: correctly handle FIDO PIN entry
+
 * Version 7.2.1 Android only release
  ** Fix: crash when reopening the app after longer period of inactivity
  ** Fix: handle invalid input when setting FIDO PIN
