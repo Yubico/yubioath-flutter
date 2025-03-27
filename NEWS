@@ -1,4 +1,4 @@
-* Version 7.2.1 Android only release
+* Version 7.2.1 (released 2025-03-27) Android-only release
  ** Fix: crash when reopening the app after longer period of inactivity
  ** Fix: handle invalid input when setting FIDO PIN
 
