@@ -350,7 +350,8 @@ class FidoManager(
             ) {
                 pinStore.setPin(null)
                 fidoViewModel.updateCredentials(null)
-                pinRetries = clientPin.pinRetries.count
+
+                pinRetries = if (pinStore.hasPin()) clientPin.pinRetries.count else null
 
                 fidoViewModel.setSessionState(
                     Session(
