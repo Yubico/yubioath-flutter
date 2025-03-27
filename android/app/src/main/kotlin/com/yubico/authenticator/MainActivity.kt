@@ -92,7 +92,6 @@ class MainActivity : FlutterFragmentActivity() {
     private val oathViewModel: OathViewModel by viewModels()
     private val fidoViewModel: FidoViewModel by viewModels()
 
-    private lateinit var appPreferences: AppPreferences
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
     private var hasNfc: Boolean = false
@@ -141,7 +140,6 @@ class MainActivity : FlutterFragmentActivity() {
         } else null
 
         yubikit = YubiKitManager(UsbYubiKeyManager(this), nfcManager)
-        appPreferences = AppPreferences(this)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -468,6 +466,7 @@ class MainActivity : FlutterFragmentActivity() {
     private lateinit var deviceManager: DeviceManager
     private lateinit var appContextChannel: AppContextChannel
     private lateinit var nfcOverlayManager: NfcOverlayManager
+    private lateinit var appPreferences: AppPreferences
     private lateinit var flutterLog: FlutterLog
     private lateinit var flutterStreams: List<Closeable>
     private lateinit var appMethodChannel: AppMethodChannel
@@ -484,6 +483,7 @@ class MainActivity : FlutterFragmentActivity() {
         deviceManager = DeviceManager(this, viewModel, appMethodChannel, nfcOverlayManager)
         appContextChannel = AppContextChannel(messenger, this.lifecycleScope, viewModel)
 
+        appPreferences = AppPreferences(this)
         appLinkMethodChannel = AppLinkMethodChannel(messenger)
 
         nfcStateListener.appMethodChannel = appMethodChannel
