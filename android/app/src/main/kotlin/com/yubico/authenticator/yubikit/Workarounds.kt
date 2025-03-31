@@ -42,6 +42,7 @@ import com.yubico.yubikit.support.DeviceUtil
 import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
 import java.nio.ByteBuffer
+import kotlin.experimental.and
 
 object Workarounds {
     private val logger = LoggerFactory.getLogger("Workarounds")
@@ -153,7 +154,7 @@ object Workarounds {
                 val response = protocol.select(AppId.OTP)
                 if (response[0] == 3.toByte() && response.size > 6) {
                     return Mode.entries
-                        .first { it.value == response[6] }.interfaces
+                        .first { mode -> mode.value == response[6] and 0b00000111 }.interfaces
                 }
 
             } catch (_: ApplicationNotAvailableException) {
