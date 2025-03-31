@@ -1,15 +1,11 @@
-name: Linux
+name: Linux arm64
 
 on: [push, pull_request]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:20.04
-      env:
-        DEBIAN_FRONTEND: noninteractive
+    runs-on: tla-arm64-ubuntu-runner-01
 
     steps:
     - uses: actions/checkout@v4
@@ -23,18 +19,20 @@ jobs:
       run: |
         export PYVER_MINOR=${PYVER%.*}
         echo "PYVER_MINOR: $PYVER_MINOR"
-        apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
-        add-apt-repository -y ppa:git-core/ppa
-        add-apt-repository -y ppa:deadsnakes/ppa
-        apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
+        export PATH="$HOME/.local/bin:/usr/local/bin/:$PATH"
+        sudo apt-get update
+        sudo apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
+        sudo add-apt-repository -y ppa:git-core/ppa
+        sudo add-apt-repository -y ppa:deadsnakes/ppa
+        sudo apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv python$PYVER_MINOR-distutils pip pipx
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
+        sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python
+        sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
         PYVER_TEMP=`/usr/local/bin/python --version`
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
+        python -m ensurepip --upgrade
         python -m ensurepip --user
         python -m pip install -U pip pipx
 
@@ -50,7 +48,7 @@ jobs:
 
     - name: Check app versions
       run: |
-        python set-version.py
+        python3 set-version.py
         git diff --exit-code
 
     - name: Cache helper
@@ -65,18 +63,25 @@ jobs:
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
-        apt-get install -qq swig libpcsclite-dev build-essential cmake
+        sudo apt-get install -qq swig libpcsclite-dev build-essential cmake
         export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pipx/poetry on PATH
         pipx install poetry
         ./build-helper.sh
 
+    - name: Install missing environment dependencies
+      run: |
+        sudo apt-get install -qq unzip libayatana-appindicator3-1 libayatana-indicator3-7 libdbusmenu-glib4 libdbusmenu-gtk3-4
+
+
     - name: Install Flutter dependencies
       run: |
-        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
+        sudo apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq
 
     - uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        channel: 'main'
+        # for weird reasons, arm64 only works on main
+        # https://github.com/subosito/flutter-action/issues/268
         flutter-version: ${{ env.FLUTTER }}
 
     - name: Configure Flutter
@@ -102,26 +107,26 @@ jobs:
 
     - name: Embedd appindicator
       run: |
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libtray_manager_plugin.so
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-appindicator3.so.1
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-indicator3.so.7
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-glib.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-glib.so.4
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-gtk3.so.4
+        patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libtray_manager_plugin.so
+        cp -L /usr/lib/aarch64-linux-gnu/libayatana-appindicator3.so.1 build/linux/arm64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libayatana-appindicator3.so.1
+        cp -L /usr/lib/aarch64-linux-gnu/libayatana-indicator3.so.7 build/linux/arm64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libayatana-indicator3.so.7
+        cp -L /usr/lib/aarch64-linux-gnu/libdbusmenu-glib.so.4 build/linux/arm64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libdbusmenu-glib.so.4
+        cp -L /usr/lib/aarch64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/arm64/release/bundle/lib/
+        patchelf --set-rpath '$ORIGIN' build/linux/arm64/release/bundle/lib/libdbusmenu-gtk3.so.4
 
     - name: Rename and archive app
       run: |
         export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-        export BASENAME="yubioath-desktop-${REF}-linux"
+        export BASENAME="yubioath-desktop-${REF}-linux-arm64"
         mkdir deploy
-        mv build/linux/x64/release/bundle "build/${BASENAME}"
+        mv build/linux/arm64/release/bundle "build/${BASENAME}"
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: yubioath-desktop-linux
+        name: yubioath-desktop-linux-arm64
         path: deploy
