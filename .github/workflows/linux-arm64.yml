@@ -24,7 +24,7 @@ jobs:
         sudo apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         sudo add-apt-repository -y ppa:git-core/ppa
         sudo add-apt-repository -y ppa:deadsnakes/ppa
-        sudo apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv python$PYVER_MINOR-distutils pip pipx
+        sudo apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv python$PYVER_MINOR-venv pip pipx
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python
         sudo ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
