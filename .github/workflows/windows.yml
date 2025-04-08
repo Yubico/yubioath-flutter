@@ -116,7 +116,7 @@ jobs:
     - name: list files
       run: ls -a
     
-    - name: run scribe
+    - name: run scribe msi
       run: >
         docker run
         --user $(id -u):$(id -g)
@@ -126,6 +126,19 @@ jobs:
         --project-id scribe-prod-987134
         --bucket scribe-u-pub-yubioath-flutter-f94pro
         --config /scribe/.github/scribe-sign.yaml
+        submit .
+        --synchronous
+        --download-artifacts
+    - name: run scribe gpg
+      run: >
+        docker run
+        --user $(id -u):$(id -g)
+        --volume $(pwd):/scribe
+        --env-file <(env)
+        ghcr.io/yubico/scribe-ci:v1
+        --project-id scribe-prod-987134
+        --bucket scribe-u-pub-yubioath-flutter-f94pro
+        --config /scribe/.github/scribe-sign-gpg.yaml
         submit .
         --synchronous
         --download-artifacts
