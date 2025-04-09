@@ -39,18 +39,21 @@ void main() {
       await tester.shortWait();
       await tester.tap(find.byKey(themeModeSetting));
       await tester.shortWait();
-      await tester
-          .tap(find.byKey(themeModeOption(ThemeMode.light)).hitTestable());
+      await tester.tap(
+        find.byKey(themeModeOption(ThemeMode.light)).hitTestable(),
+      );
       await tester.longWait();
       await tester.tap(find.byKey(themeModeSetting));
       await tester.shortWait();
-      await tester
-          .tap(find.byKey(themeModeOption(ThemeMode.dark)).hitTestable());
+      await tester.tap(
+        find.byKey(themeModeOption(ThemeMode.dark)).hitTestable(),
+      );
       await tester.longWait();
       await tester.tap(find.byKey(themeModeSetting));
       await tester.shortWait();
-      await tester
-          .tap(find.byKey(themeModeOption(ThemeMode.system)).hitTestable());
+      await tester.tap(
+        find.byKey(themeModeOption(ThemeMode.system)).hitTestable(),
+      );
       await tester.longWait();
     });
     appTestKeyless('changing languages', (WidgetTester tester) async {
@@ -74,17 +77,19 @@ void main() {
     );
     appTest('reset OATH', (WidgetTester tester) async {
       /// reset OATH application
-      //await tester.tapAppDrawerButton(oathAppDrawer);
       await tester.resetOATH();
       await tester.shortWait();
     });
-    appTest('Create OATH Account', (WidgetTester tester) async {
+    appTest('Switch to OATH', (WidgetTester tester) async {
+      /// change to OATH view
       await tester.tapAppDrawerButton(oathAppDrawer);
+      await tester.shortWait();
+    });
+    appTest('Create OATH Account', (WidgetTester tester) async {
       await tester.addAccount(testAccount);
       await tester.shortWait();
     });
     appTest('Delete OATH Account', (WidgetTester tester) async {
-      await tester.tapAppDrawerButton(oathAppDrawer);
       await tester.deleteAccount(testAccount);
       await tester.shortWait();
     });
@@ -114,7 +119,9 @@ void main() {
 
       // 5. Enter DN
       await tester.enterText(
-          find.byKey(subjectField).hitTestable(), 'CN=Generate9e');
+        find.byKey(subjectField).hitTestable(),
+        'CN=Generate9e',
+      );
       await tester.longWait();
 
       // 6. Change algorithm: ECCP384
