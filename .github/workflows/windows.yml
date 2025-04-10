@@ -129,6 +129,15 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
+    - name: unpack signed artifacts-msi
+      run: |
+        mkdir -p signed
+        mv scribe-download/*/sign-source/1.zip signed/
+        rm -rf scribe-download
+        cd signed
+        unzip -j 1.zip || true
+        rm 1.zip
+        cd ..
     - name: run scribe gpg
       run: >
         docker run
@@ -142,14 +151,12 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
-    - name: unpack signed artifacts
+    - name: unpack signed artifacts-gpg
       run: |
-        mkdir -p signed
         mv scribe-download/*/sign-source/1.zip signed/
         cd signed
         unzip -j 1.zip || true
         rm 1.zip
-
     - name: upload signed artifacts
       uses: actions/upload-artifact@v4
       with:
