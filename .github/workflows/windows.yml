@@ -4,9 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -67,6 +65,124 @@ jobs:
           cp $dest\helper\_internal/MSVCP140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
+      - name: Rename and archive app bundle
+        run: |
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
+          $dest = "deploy\yubioath-desktop-$branch-windows"
+          mkdir $dest
+          mv build\windows\x64\runner\Release\* $dest\
+          mv resources\win\release-win.ps1 deploy
+          mv resources deploy
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yubioath-desktop-windows
+          path: deploy
+  sign-source:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repo
+      uses: actions/checkout@v4
+    
+    - name: download artifacts
+      uses: actions/download-artifact@v4
+
+    - name: docker login
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ci@yubico.com
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: write service account credentials
+      env:
+        GAC: ${{ secrets.SCRIBE_SA }}
+      run: |
+        echo "${GAC}" > scribe_sa.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
+    - name: list files
+      run: ls -a
+    
+    - name: run scribe exe
+      run: >
+        docker run
+        --user $(id -u):$(id -g)
+        --volume $(pwd):/scribe
+        --env-file <(env)
+        ghcr.io/yubico/scribe-ci:v1
+        --project-id scribe-prod-987134
+        --bucket scribe-u-pub-yubioath-flutter-f94pro
+        --config /scribe/.github/scribe-sign-exe.yaml
+        submit .
+        --synchronous
+        --download-artifacts
+    - name: unpack signed artifacts-exe
+      run: |
+        mkdir -p signed
+        mv scribe-download/*/sign-source/1.zip signed/
+        rm -rf scribe-download
+        cd signed
+        unzip -j 1.zip || true
+        rm 1.zip
+        cd ..
+  build-msi:
+    needs: [sign-source]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read variables from repo
+        shell: bash
+        run: cat .github/workflows/env >> $GITHUB_ENV
+
+      - name: Check app versions
+        run: |
+          python set-version.py
+          git diff --exit-code
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYVER }}
+
+      - name: Update pip
+        run: python -m pip install --upgrade pip
+
+      - name: Cache helper
+        id: cache-helper
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/windows/helper
+            assets/licenses/helper.json
+          key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+
+      - name: Build the Helper
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        run: |
+          pip install poetry
+          .\build-helper.bat
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: ${{ env.FLUTTER }}
+      - run: flutter config --enable-windows-desktop
+      - run: flutter --version
+      - name: Build the app
+        run: |
+          $version = python set-version.py | select-object -first 1
+          flutter build windows --build-name=$version
+      - name: Check generated files
+        run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
+
+      - name: Move .dll files
+        run: |
+          $dest = "build\windows\x64\runner\Release"
+          cp $dest\helper\_internal/MSVCP140.dll $dest\
+          cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
+          cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
+
       - name: Create an unsigned .msi installer package
         run: |
           $env:PATH += ";$env:WIX\bin"
@@ -90,8 +206,8 @@ jobs:
           name: yubioath-desktop-windows
           path: deploy
           
-  sign-source:
-    needs: [build]
+  sign-msi:
+    needs: [build-msi]
     runs-on: ubuntu-latest
     steps:
     - name: checkout repo

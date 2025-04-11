@@ -8,6 +8,4 @@ jobs:
         action: windows
         files:
           - yubioath-desktop-windows/yubioath-desktop.msi
-          #- yubioath-desktop-windows/*.exe
-          - yubioath-desktop-windows/*/authenticator.exe
-          - yubioath-desktop-windows/*/helper/authenticator-helper.exe
+          
