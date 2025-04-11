@@ -127,6 +127,12 @@ jobs:
         unzip -j 1.zip || true
         rm 1.zip
         cd ..
+    - name: upload signed artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed
+        path: signed/*
+        if-no-files-found: error
   build-msi:
     needs: [sign-source]
     runs-on: windows-latest
