@@ -103,7 +103,7 @@ jobs:
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
     - name: list files
-      run: ls -a
+      run: ls -la
     
     - name: run scribe exe
       run: >
@@ -125,6 +125,7 @@ jobs:
         rm -rf scribe-download
         cd signed
         unzip -j 1.zip || true
+        ls -la
         rm 1.zip
         cd ..
     - name: upload signed artifacts
@@ -133,6 +134,7 @@ jobs:
         name: signed
         path: signed/*
         if-no-files-found: error
+        compression-level: 0
   build-msi:
     needs: [sign-source]
     runs-on: windows-latest
@@ -188,6 +190,10 @@ jobs:
           cp $dest\helper\_internal/MSVCP140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
+          cp signed\authenticator-helper.exe $dest\helper\authenticator-helper.exe
+          cp signed\authenticator.exe $dest\authenticator.exe
 
       - name: Create an unsigned .msi installer package
         run: |
@@ -259,6 +265,7 @@ jobs:
         cd signed
         unzip -j 1.zip || true
         rm 1.zip
+        ls -la
         cd ..
     - name: run scribe gpg
       run: >
@@ -282,6 +289,7 @@ jobs:
     - name: upload signed artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: signed
+        name: signed2
         path: signed/*
         if-no-files-found: error
+        compression-level: 0
