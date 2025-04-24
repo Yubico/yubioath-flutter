@@ -199,7 +199,12 @@ class GlobalShortcuts extends ConsumerWidget {
       ),
       EscapeIntent: CallbackAction<EscapeIntent>(
         onInvoke: (_) {
-          FocusManager.instance.primaryFocus?.unfocus();
+          FocusScopeNode globalScope = FocusScope.of(context);
+          // Avoid moving focus above globalScope
+          if (globalScope.focusedChild != null &&
+              !globalScope.hasPrimaryFocus) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
           return null;
         },
       ),

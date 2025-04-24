@@ -603,7 +603,6 @@ class _AppPageState extends ConsumerState<AppPage> {
         behavior: HitTestBehavior.deferToChild,
         onTap: () {
           Actions.invoke(context, const EscapeIntent());
-          FocusManager.instance.primaryFocus?.unfocus();
         },
         child: SafeArea(
           child: Row(
@@ -685,7 +684,6 @@ class _AppPageState extends ConsumerState<AppPage> {
       appBar: _GestureDetectorAppBar(
         onTap: () {
           Actions.invoke(context, const EscapeIntent());
-          FocusManager.instance.primaryFocus?.unfocus();
         },
         appBar: AppBar(
           bottom: PreferredSize(
