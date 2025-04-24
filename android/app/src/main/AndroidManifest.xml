@@ -95,7 +95,7 @@
             android:theme="@style/NdefActivityTheme"
             android:targetActivity=".NdefActivity">
 
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <data
                     android:host="my.yubico.com"
