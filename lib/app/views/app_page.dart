@@ -30,7 +30,6 @@ import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
-import '../shortcuts.dart';
 import '../state.dart';
 import 'fs_dialog.dart';
 import 'keys.dart';
@@ -599,252 +598,221 @@ class _AppPageState extends ConsumerState<AppPage> {
       );
     }
     if (hasRail || hasManage) {
-      body = GestureDetector(
-        behavior: HitTestBehavior.deferToChild,
-        onTap: () {
-          Actions.invoke(context, const EscapeIntent());
-        },
-        child: SafeArea(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (hasRail && (!fullyExpanded || !showNavigation))
-                SizedBox(
-                  width: 72,
-                  child: _VisibilityListener(
-                    targetKey: _navKey,
-                    controller: _navController,
-                    child: SingleChildScrollView(
-                      child: NavigationContent(
-                        key: _navKey,
-                        shouldPop: false,
-                        extended: false,
-                      ),
-                    ),
-                  ),
-                ),
-              if (fullyExpanded && showNavigation)
-                SizedBox(
-                  width: 280,
-                  child: _VisibilityListener(
-                    controller: _navController,
-                    targetKey: _navExpandedKey,
-                    child: SingleChildScrollView(
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: NavigationContent(
-                          key: _navExpandedKey,
-                          shouldPop: false,
-                          extended: true,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              const SizedBox(width: 8),
-              Expanded(child: body),
-              if (hasManage &&
-                  !hasDetailsOrKeyActions &&
-                  showDetailView &&
-                  widget.capabilities != null &&
-                  widget.capabilities?.first != Capability.u2f)
-                // Add a placeholder for the Manage/Details column. Exceptions are:
-                // - the "Security Key" because it does not have any actions/details.
-                // - pages without Capabilities
-                const SizedBox(width: 336), // simulate column
-              if (hasManage && hasDetailsOrKeyActions && showDetailView)
-                _VisibilityListener(
-                  controller: _detailsController,
-                  targetKey: _detailsViewGlobalKey,
+      body = SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (hasRail && (!fullyExpanded || !showNavigation))
+              SizedBox(
+                width: 72,
+                child: _VisibilityListener(
+                  targetKey: _navKey,
+                  controller: _navController,
                   child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: SizedBox(
-                        width: 320,
-                        child: Column(
-                          key: _detailsViewGlobalKey,
-                          children: [
-                            if (widget.detailViewBuilder != null)
-                              widget.detailViewBuilder!(context),
-                            if (widget.keyActionsBuilder != null)
-                              widget.keyActionsBuilder!(context),
-                          ],
-                        ),
+                    child: NavigationContent(
+                      key: _navKey,
+                      shouldPop: false,
+                      extended: false,
+                    ),
+                  ),
+                ),
+              ),
+            if (fullyExpanded && showNavigation)
+              SizedBox(
+                width: 280,
+                child: _VisibilityListener(
+                  controller: _navController,
+                  targetKey: _navExpandedKey,
+                  child: SingleChildScrollView(
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: NavigationContent(
+                        key: _navExpandedKey,
+                        shouldPop: false,
+                        extended: true,
                       ),
                     ),
                   ),
                 ),
-            ],
-          ),
+              ),
+            const SizedBox(width: 8),
+            Expanded(child: body),
+            if (hasManage &&
+                !hasDetailsOrKeyActions &&
+                showDetailView &&
+                widget.capabilities != null &&
+                widget.capabilities?.first != Capability.u2f)
+              // Add a placeholder for the Manage/Details column. Exceptions are:
+              // - the "Security Key" because it does not have any actions/details.
+              // - pages without Capabilities
+              const SizedBox(width: 336), // simulate column
+            if (hasManage && hasDetailsOrKeyActions && showDetailView)
+              _VisibilityListener(
+                controller: _detailsController,
+                targetKey: _detailsViewGlobalKey,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: SizedBox(
+                      width: 320,
+                      child: Column(
+                        key: _detailsViewGlobalKey,
+                        children: [
+                          if (widget.detailViewBuilder != null)
+                            widget.detailViewBuilder!(context),
+                          if (widget.keyActionsBuilder != null)
+                            widget.keyActionsBuilder!(context),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       );
     }
     return Scaffold(
       key: scaffoldGlobalKey,
-      appBar: _GestureDetectorAppBar(
-        onTap: () {
-          Actions.invoke(context, const EscapeIntent());
-        },
-        appBar: AppBar(
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1.0),
-            child: ListenableBuilder(
-              listenable: _scrolledUnderController,
-              builder: (context, child) {
-                final visible = _scrolledUnderController.someIsScrolledUnder;
-                return AnimatedOpacity(
-                  opacity: visible ? 1 : 0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Container(
-                    color: Theme.of(context).hoverColor,
-                    height: 1.0,
-                  ),
-                );
-              },
-            ),
+      appBar: AppBar(
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: ListenableBuilder(
+            listenable: _scrolledUnderController,
+            builder: (context, child) {
+              final visible = _scrolledUnderController.someIsScrolledUnder;
+              return AnimatedOpacity(
+                opacity: visible ? 1 : 0,
+                duration: const Duration(milliseconds: 300),
+                child: Container(
+                  color: Theme.of(context).hoverColor,
+                  height: 1.0,
+                ),
+              );
+            },
           ),
-          iconTheme: IconThemeData(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          scrolledUnderElevation: 0.0,
-          leadingWidth: hasRail ? 84 : null,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: _buildAppBarTitle(context, hasRail, hasManage, fullyExpanded),
-          centerTitle: true,
-          leading:
-              hasRail
-                  ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: IconButton(
-                            icon: Icon(
-                              Symbols.menu,
-                              semanticLabel: navigationText,
-                            ),
-                            tooltip: navigationText,
-                            onPressed:
-                                fullyExpanded
-                                    ? () {
-                                      ref
-                                          .read(
-                                            _navigationVisibilityProvider
-                                                .notifier,
-                                          )
-                                          .toggleExpanded();
-                                    }
-                                    : () {
-                                      scaffoldGlobalKey.currentState
-                                          ?.openDrawer();
-                                    },
+        ),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        scrolledUnderElevation: 0.0,
+        leadingWidth: hasRail ? 84 : null,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: _buildAppBarTitle(context, hasRail, hasManage, fullyExpanded),
+        centerTitle: true,
+        leading:
+            hasRail
+                ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: IconButton(
+                          icon: Icon(
+                            Symbols.menu,
+                            semanticLabel: navigationText,
                           ),
+                          tooltip: navigationText,
+                          onPressed:
+                              fullyExpanded
+                                  ? () {
+                                    ref
+                                        .read(
+                                          _navigationVisibilityProvider
+                                              .notifier,
+                                        )
+                                        .toggleExpanded();
+                                  }
+                                  : () {
+                                    scaffoldGlobalKey.currentState
+                                        ?.openDrawer();
+                                  },
                         ),
                       ),
-                      const SizedBox(width: 12),
-                    ],
-                  )
-                  : Builder(
-                    builder: (context) {
-                      // Need to wrap with builder to get Scaffold context
-                      return IconButton(
-                        tooltip: l10n.s_show_navigation,
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                        icon: Icon(
-                          Symbols.menu,
-                          semanticLabel: l10n.s_show_navigation,
-                        ),
-                      );
-                    },
-                  ),
-          actions: [
-            if (widget.actionButtonBuilder == null &&
-                (widget.keyActionsBuilder != null && !hasManage))
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: IconButton(
-                  key: actionsIconButtonKey,
-                  onPressed: () {
-                    showBlurDialog(
-                      context: context,
-                      barrierColor: Colors.transparent,
-                      builder:
-                          (context) => FsDialog(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 32),
-                              child: widget.keyActionsBuilder!(context),
-                            ),
-                          ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                )
+                : Builder(
+                  builder: (context) {
+                    // Need to wrap with builder to get Scaffold context
+                    return IconButton(
+                      tooltip: l10n.s_show_navigation,
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      icon: Icon(
+                        Symbols.menu,
+                        semanticLabel: l10n.s_show_navigation,
+                      ),
                     );
                   },
-                  icon:
-                      widget.keyActionsBadge
-                          ? Badge(
-                            child: Icon(
-                              Symbols.more_vert,
-                              semanticLabel: l10n.s_show_menu,
-                            ),
-                          )
-                          : Icon(
+                ),
+        actions: [
+          if (widget.actionButtonBuilder == null &&
+              (widget.keyActionsBuilder != null && !hasManage))
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: IconButton(
+                key: actionsIconButtonKey,
+                onPressed: () {
+                  showBlurDialog(
+                    context: context,
+                    barrierColor: Colors.transparent,
+                    builder:
+                        (context) => FsDialog(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 32),
+                            child: widget.keyActionsBuilder!(context),
+                          ),
+                        ),
+                  );
+                },
+                icon:
+                    widget.keyActionsBadge
+                        ? Badge(
+                          child: Icon(
                             Symbols.more_vert,
                             semanticLabel: l10n.s_show_menu,
                           ),
-                  iconSize: 24,
-                  tooltip: l10n.s_show_menu,
-                  padding: const EdgeInsets.all(12),
-                ),
+                        )
+                        : Icon(
+                          Symbols.more_vert,
+                          semanticLabel: l10n.s_show_menu,
+                        ),
+                iconSize: 24,
+                tooltip: l10n.s_show_menu,
+                padding: const EdgeInsets.all(12),
               ),
-            if (hasManage &&
-                (widget.keyActionsBuilder != null ||
-                    widget.detailViewBuilder != null))
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: IconButton(
-                  key: toggleDetailViewIconButtonKey,
-                  onPressed: () {
-                    ref
-                        .read(_detailViewVisibilityProvider.notifier)
-                        .toggleExpanded();
-                  },
-                  icon: const Icon(Symbols.more_vert, weight: 600.0),
-                  iconSize: 24,
-                  tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
-                  padding: const EdgeInsets.all(12),
-                ),
+            ),
+          if (hasManage &&
+              (widget.keyActionsBuilder != null ||
+                  widget.detailViewBuilder != null))
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: IconButton(
+                key: toggleDetailViewIconButtonKey,
+                onPressed: () {
+                  ref
+                      .read(_detailViewVisibilityProvider.notifier)
+                      .toggleExpanded();
+                },
+                icon: const Icon(Symbols.more_vert, weight: 600.0),
+                iconSize: 24,
+                tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
+                padding: const EdgeInsets.all(12),
               ),
-            if (widget.actionButtonBuilder != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: widget.actionButtonBuilder!.call(context),
-              ),
-          ],
-        ),
+            ),
+          if (widget.actionButtonBuilder != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: widget.actionButtonBuilder!.call(context),
+            ),
+        ],
       ),
       drawer: hasDrawer ? _buildDrawer(context) : null,
       body: body,
     );
   }
-}
-
-class _GestureDetectorAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
-  final AppBar appBar;
-  final void Function() onTap;
-
-  const _GestureDetectorAppBar({required this.appBar, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onTap: onTap,
-      child: appBar,
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class CapabilityBadge extends ConsumerWidget {
