@@ -47,6 +47,13 @@ class NavigationItem extends StatefulWidget {
 
 class _NavigationItemState extends State<NavigationItem> {
   final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
