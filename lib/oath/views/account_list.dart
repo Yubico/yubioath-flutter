@@ -45,7 +45,10 @@ class AccountList extends ConsumerWidget {
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
-      return Center(child: Text(l10n.s_no_accounts));
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Center(child: Text(l10n.s_no_accounts)),
+      );
     }
 
     final pinnedCreds = credentials.where(
