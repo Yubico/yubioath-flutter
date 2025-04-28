@@ -599,76 +599,93 @@ class _AppPageState extends ConsumerState<AppPage> {
     }
     if (hasRail || hasManage) {
       body = SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (hasRail && (!fullyExpanded || !showNavigation))
-              SizedBox(
-                width: 72,
-                child: _VisibilityListener(
-                  targetKey: _navKey,
-                  controller: _navController,
-                  child: SingleChildScrollView(
-                    child: NavigationContent(
-                      key: _navKey,
-                      shouldPop: false,
-                      extended: false,
-                    ),
-                  ),
-                ),
-              ),
-            if (fullyExpanded && showNavigation)
-              SizedBox(
-                width: 280,
-                child: _VisibilityListener(
-                  controller: _navController,
-                  targetKey: _navExpandedKey,
-                  child: SingleChildScrollView(
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: NavigationContent(
-                        key: _navExpandedKey,
-                        shouldPop: false,
-                        extended: true,
+        child: FocusTraversalGroup(
+          policy: OrderedTraversalPolicy(),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (hasRail && (!fullyExpanded || !showNavigation))
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(1),
+                  child: SizedBox(
+                    width: 72,
+                    child: _VisibilityListener(
+                      targetKey: _navKey,
+                      controller: _navController,
+                      child: SingleChildScrollView(
+                        child: NavigationContent(
+                          key: _navKey,
+                          shouldPop: false,
+                          extended: false,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            const SizedBox(width: 8),
-            Expanded(child: body),
-            if (hasManage &&
-                !hasDetailsOrKeyActions &&
-                showDetailView &&
-                widget.capabilities != null &&
-                widget.capabilities?.first != Capability.u2f)
-              // Add a placeholder for the Manage/Details column. Exceptions are:
-              // - the "Security Key" because it does not have any actions/details.
-              // - pages without Capabilities
-              const SizedBox(width: 336), // simulate column
-            if (hasManage && hasDetailsOrKeyActions && showDetailView)
-              _VisibilityListener(
-                controller: _detailsController,
-                targetKey: _detailsViewGlobalKey,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: SizedBox(
-                      width: 320,
-                      child: Column(
-                        key: _detailsViewGlobalKey,
-                        children: [
-                          if (widget.detailViewBuilder != null)
-                            widget.detailViewBuilder!(context),
-                          if (widget.keyActionsBuilder != null)
-                            widget.keyActionsBuilder!(context),
-                        ],
+              if (fullyExpanded && showNavigation)
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(2),
+                  child: SizedBox(
+                    width: 280,
+                    child: _VisibilityListener(
+                      controller: _navController,
+                      targetKey: _navExpandedKey,
+                      child: SingleChildScrollView(
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: NavigationContent(
+                            key: _navExpandedKey,
+                            shouldPop: false,
+                            extended: true,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: FocusTraversalOrder(
+                  order: NumericFocusOrder(3),
+                  child: body,
+                ),
               ),
-          ],
+              if (hasManage &&
+                  !hasDetailsOrKeyActions &&
+                  showDetailView &&
+                  widget.capabilities != null &&
+                  widget.capabilities?.first != Capability.u2f)
+                // Add a placeholder for the Manage/Details column. Exceptions are:
+                // - the "Security Key" because it does not have any actions/details.
+                // - pages without Capabilities
+                const SizedBox(width: 336), // simulate column
+              if (hasManage && hasDetailsOrKeyActions && showDetailView)
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(4),
+                  child: _VisibilityListener(
+                    controller: _detailsController,
+                    targetKey: _detailsViewGlobalKey,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: SizedBox(
+                          width: 320,
+                          child: Column(
+                            key: _detailsViewGlobalKey,
+                            children: [
+                              if (widget.detailViewBuilder != null)
+                                widget.detailViewBuilder!(context),
+                              if (widget.keyActionsBuilder != null)
+                                widget.keyActionsBuilder!(context),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       );
     }
