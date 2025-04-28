@@ -624,7 +624,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 ),
               if (fullyExpanded && showNavigation)
                 FocusTraversalOrder(
-                  order: NumericFocusOrder(2),
+                  order: NumericFocusOrder(1),
                   child: SizedBox(
                     width: 280,
                     child: _VisibilityListener(
@@ -646,7 +646,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               const SizedBox(width: 8),
               Expanded(
                 child: FocusTraversalOrder(
-                  order: NumericFocusOrder(3),
+                  order: NumericFocusOrder(2),
                   child: body,
                 ),
               ),
@@ -661,7 +661,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 const SizedBox(width: 336), // simulate column
               if (hasManage && hasDetailsOrKeyActions && showDetailView)
                 FocusTraversalOrder(
-                  order: NumericFocusOrder(4),
+                  order: NumericFocusOrder(3),
                   child: _VisibilityListener(
                     controller: _detailsController,
                     targetKey: _detailsViewGlobalKey,
