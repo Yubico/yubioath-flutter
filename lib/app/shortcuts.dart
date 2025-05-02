@@ -24,68 +24,185 @@ import 'package:window_manager/window_manager.dart';
 import '../about_page.dart';
 import '../core/state.dart';
 import '../desktop/state.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'message.dart';
 import 'models.dart';
+import 'shortcuts_dialog.dart';
 import 'state.dart';
 import 'views/keys.dart';
 import 'views/settings_page.dart';
 
-class CloseIntent extends Intent {
-  const CloseIntent();
+abstract class AppIntent extends Intent {
+  String getDescription(AppLocalizations l10n);
 }
 
-class HideIntent extends Intent {
-  const HideIntent();
+class ShortcutsIntent extends AppIntent {
+  ShortcutsIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Keyboard shortcuts';
 }
 
-class SearchIntent extends Intent {
-  const SearchIntent();
+class CloseIntent extends AppIntent {
+  CloseIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Close window';
 }
 
-class EscapeIntent extends Intent {
-  const EscapeIntent();
+class HideIntent extends AppIntent {
+  HideIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Hide window';
 }
 
-class NextDeviceIntent extends Intent {
-  const NextDeviceIntent();
+class SearchIntent extends AppIntent {
+  SearchIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Search';
 }
 
-class SettingsIntent extends Intent {
-  const SettingsIntent();
+class EscapeIntent extends AppIntent {
+  EscapeIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Back/Cancel';
 }
 
-class AboutIntent extends Intent {
-  const AboutIntent();
+class NextDeviceIntent extends AppIntent {
+  NextDeviceIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Next device';
 }
 
-class OpenIntent<T> extends Intent {
+class PreviousDeviceItent extends AppIntent {
+  PreviousDeviceItent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Previous device';
+}
+
+class SettingsIntent extends AppIntent {
+  SettingsIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Open settings';
+}
+
+class AboutIntent extends AppIntent {
+  AboutIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Open help and about';
+}
+
+class OpenIntent<T> extends AppIntent {
   final T target;
-  const OpenIntent(this.target);
+  OpenIntent(this.target);
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Open item';
 }
 
-class CopyIntent<T> extends Intent {
+class CopyIntent<T> extends AppIntent {
   final T target;
-  const CopyIntent(this.target);
+  CopyIntent(this.target);
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Copy OATH code';
 }
 
-class EditIntent<T> extends Intent {
+class EditIntent<T> extends AppIntent {
   final T target;
-  const EditIntent(this.target);
+  EditIntent(this.target);
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Edit item';
 }
 
-class DeleteIntent<T> extends Intent {
+class DeleteIntent<T> extends AppIntent {
   final T target;
-  const DeleteIntent(this.target);
+  DeleteIntent(this.target);
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Delete item';
 }
 
-class RefreshIntent<T> extends Intent {
+class RefreshIntent<T> extends AppIntent {
   final T target;
-  const RefreshIntent(this.target);
+  RefreshIntent(this.target);
+
+  @override
+  String getDescription(AppLocalizations l10n) => 'Calculate OATH code';
 }
 
 /// Use cmd on macOS, use ctrl on the other platforms
-SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
-    SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
+SingleActivator ctrlOrCmd(LogicalKeyboardKey key, {bool shift = false}) =>
+    SingleActivator(
+      key,
+      meta: Platform.isMacOS,
+      control: !Platform.isMacOS,
+      shift: false,
+    );
+
+Map<SingleActivator, AppIntent> toShortcuts(
+  Map<AppIntent, List<SingleActivator>> intents,
+) {
+  return {
+    for (var entry in intents.entries)
+      for (var activator in entry.value) activator: entry.key,
+  };
+}
+
+Map<AppIntent, List<SingleActivator>> getItemIntents<T>(T item) {
+  return {
+    RefreshIntent<T>(item): [ctrlOrCmd(LogicalKeyboardKey.keyR)],
+    CopyIntent<T>(item): [
+      ctrlOrCmd(LogicalKeyboardKey.keyC),
+      SingleActivator(LogicalKeyboardKey.copy),
+    ],
+    DeleteIntent<T>(item): [SingleActivator(LogicalKeyboardKey.delete)],
+    OpenIntent<T>(item): [
+      SingleActivator(LogicalKeyboardKey.enter),
+      SingleActivator(LogicalKeyboardKey.space),
+    ],
+  };
+}
+
+Map<AppIntent, List<SingleActivator>> getGlobalIntents() {
+  return {
+    ShortcutsIntent(): [
+      ctrlOrCmd(LogicalKeyboardKey.slash),
+      ctrlOrCmd(LogicalKeyboardKey.keyS),
+    ],
+    SearchIntent(): [ctrlOrCmd(LogicalKeyboardKey.keyF)],
+    EscapeIntent(): [SingleActivator(LogicalKeyboardKey.escape)],
+
+    if (isDesktop) ...{
+      NextDeviceIntent(): [
+        SingleActivator(LogicalKeyboardKey.tab, control: true),
+      ],
+      PreviousDeviceItent(): [
+        SingleActivator(LogicalKeyboardKey.tab, control: true, shift: true),
+      ],
+      AboutIntent(): [SingleActivator(LogicalKeyboardKey.f1)],
+    },
+    if (Platform.isMacOS) ...{
+      HideIntent(): [SingleActivator(LogicalKeyboardKey.keyW, meta: true)],
+      CloseIntent(): [SingleActivator(LogicalKeyboardKey.keyQ, meta: true)],
+      SettingsIntent(): [SingleActivator(LogicalKeyboardKey.comma, meta: true)],
+    },
+    if (Platform.isWindows) ...{
+      HideIntent(): [SingleActivator(LogicalKeyboardKey.keyW, control: true)],
+    },
+    if (Platform.isLinux) ...{
+      CloseIntent(): [SingleActivator(LogicalKeyboardKey.keyQ, control: true)],
+    },
+  };
+}
 
 /// Common shortcuts for items
 class ItemShortcuts<T> extends StatelessWidget {
@@ -94,23 +211,40 @@ class ItemShortcuts<T> extends StatelessWidget {
   const ItemShortcuts({super.key, required this.item, required this.child});
 
   @override
-  Widget build(BuildContext context) => Shortcuts(
-    shortcuts: {
-      ctrlOrCmd(LogicalKeyboardKey.keyR): RefreshIntent<T>(item),
-      ctrlOrCmd(LogicalKeyboardKey.keyC): CopyIntent<T>(item),
-      const SingleActivator(LogicalKeyboardKey.copy): CopyIntent<T>(item),
-      const SingleActivator(LogicalKeyboardKey.delete): DeleteIntent<T>(item),
-      const SingleActivator(LogicalKeyboardKey.enter): OpenIntent<T>(item),
-      const SingleActivator(LogicalKeyboardKey.space): OpenIntent<T>(item),
-    },
-    child: child,
-  );
+  Widget build(BuildContext context) =>
+      Shortcuts(shortcuts: toShortcuts(getItemIntents(item)), child: child);
 }
 
 /// Global keyboard shortcuts
 class GlobalShortcuts extends ConsumerWidget {
   final Widget child;
   const GlobalShortcuts({super.key, required this.child});
+
+  void _switchDevice(bool next, WidgetRef ref) {
+    ref.read(withContextProvider)((context) async {
+      // Only allow switching keys if no other views are open,
+      // with the exception of the drawer.
+      if (!Navigator.of(context).canPop() ||
+          scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
+        final attached =
+            ref
+                .read(attachedDevicesProvider)
+                .whereType<UsbYubiKeyNode>()
+                .toList();
+        if (attached.length > 1) {
+          final current = ref.read(currentDeviceProvider);
+          if (current != null && current is UsbYubiKeyNode) {
+            final index = attached.indexOf(current);
+            ref
+                .read(currentDeviceProvider.notifier)
+                .setCurrentDevice(
+                  attached[(index + (next ? 1 : -1)) % attached.length],
+                );
+          }
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Actions(
@@ -143,29 +277,13 @@ class GlobalShortcuts extends ConsumerWidget {
       ),
       NextDeviceIntent: CallbackAction<NextDeviceIntent>(
         onInvoke: (_) {
-          ref.read(withContextProvider)((context) async {
-            // Only allow switching keys if no other views are open,
-            // with the exception of the drawer.
-            if (!Navigator.of(context).canPop() ||
-                scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
-              final attached =
-                  ref
-                      .read(attachedDevicesProvider)
-                      .whereType<UsbYubiKeyNode>()
-                      .toList();
-              if (attached.length > 1) {
-                final current = ref.read(currentDeviceProvider);
-                if (current != null && current is UsbYubiKeyNode) {
-                  final index = attached.indexOf(current);
-                  ref
-                      .read(currentDeviceProvider.notifier)
-                      .setCurrentDevice(
-                        attached[(index + 1) % attached.length],
-                      );
-                }
-              }
-            }
-          });
+          _switchDevice(true, ref);
+          return null;
+        },
+      ),
+      PreviousDeviceItent: CallbackAction<PreviousDeviceItent>(
+        onInvoke: (_) {
+          _switchDevice(false, ref);
           return null;
         },
       ),
@@ -177,6 +295,19 @@ class GlobalShortcuts extends ConsumerWidget {
                 context: context,
                 builder: (context) => const SettingsPage(),
                 routeSettings: const RouteSettings(name: 'settings'),
+              );
+            }
+          });
+          return null;
+        },
+      ),
+      ShortcutsIntent: CallbackAction<ShortcutsIntent>(
+        onInvoke: (_) {
+          ref.read(withContextProvider)((context) async {
+            if (!Navigator.of(context).canPop()) {
+              await showBlurDialog(
+                context: context,
+                builder: (context) => ShortcutsDialog(),
               );
             }
           });
@@ -210,32 +341,6 @@ class GlobalShortcuts extends ConsumerWidget {
         },
       ),
     },
-    child: Shortcuts(
-      shortcuts: {
-        ctrlOrCmd(LogicalKeyboardKey.keyF): const SearchIntent(),
-        const SingleActivator(LogicalKeyboardKey.escape): const EscapeIntent(),
-        if (isDesktop) ...{
-          const SingleActivator(LogicalKeyboardKey.tab, control: true):
-              const NextDeviceIntent(),
-        },
-        if (Platform.isMacOS) ...{
-          const SingleActivator(LogicalKeyboardKey.keyW, meta: true):
-              const HideIntent(),
-          const SingleActivator(LogicalKeyboardKey.keyQ, meta: true):
-              const CloseIntent(),
-          const SingleActivator(LogicalKeyboardKey.comma, meta: true):
-              const SettingsIntent(),
-        },
-        if (Platform.isWindows) ...{
-          const SingleActivator(LogicalKeyboardKey.keyW, control: true):
-              const HideIntent(),
-        },
-        if (Platform.isLinux) ...{
-          const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
-              const CloseIntent(),
-        },
-      },
-      child: child,
-    ),
+    child: Shortcuts(shortcuts: toShortcuts(getGlobalIntents()), child: child),
   );
 }

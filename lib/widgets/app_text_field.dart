@@ -93,8 +93,7 @@ class AppTextField extends TextField {
         (context) => Shortcuts(
           shortcuts: {
             // Override escape intent
-            const SingleActivator(LogicalKeyboardKey.escape):
-                const EscapeIntent(),
+            const SingleActivator(LogicalKeyboardKey.escape): EscapeIntent(),
           },
           child: DefaultSelectionStyle(
             selectionColor:

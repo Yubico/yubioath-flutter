@@ -44,7 +44,7 @@ class YubicoAuthenticatorApp extends StatelessWidget {
               onTap: () {
                 // If tap is not absorbed downstream, treat it as dead space
                 // and invoke escape intent
-                Actions.invoke(context, const EscapeIntent());
+                Actions.invoke(context, EscapeIntent());
               },
               child: page,
             ),
