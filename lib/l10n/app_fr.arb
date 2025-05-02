@@ -1126,6 +1126,7 @@
     "p_rename_will_change_custom_name": "Cela changera l'étiquette de votre YubiKey.",
 
     "@_shortcuts": {},
+    "s_shortcuts": null,
     "@s_quit_app": {
         "placeholders": {
             "app": {
