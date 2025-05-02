@@ -35,7 +35,10 @@ extension on SingleActivator {
   }
 }
 
-const _ignoredTriggers = [LogicalKeyboardKey.copy];
+const _ignoredTriggers = [
+  LogicalKeyboardKey.copy,
+  LogicalKeyboardKey.numpadDivide,
+];
 
 class ShortcutsDialog extends StatelessWidget {
   const ShortcutsDialog({super.key});
@@ -97,8 +100,16 @@ class _IntentItem extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      spacing: 4.0,
       children: [
-        Text(intent.getDescription(l10n)),
+        Flexible(
+          child: Text(
+            intent.getDescription(l10n),
+            overflow: TextOverflow.fade,
+            maxLines: 1,
+            softWrap: false,
+          ),
+        ),
         _ShortcutsItem(shortcuts: shortcuts),
       ],
     );

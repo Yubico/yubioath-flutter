@@ -1125,5 +1125,33 @@
     "p_set_will_add_custom_name": "Dies gibt deinem YubiKey einen eigenen Namen.",
     "p_rename_will_change_custom_name": "Dies ändert das Label deines YubiKeys.",
 
+    "@_shortcuts": {},
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": null,
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": null,
+    "s_search": null,
+    "s_next_device": null,
+    "s_previous_device": null,
+    "s_open_settings": null,
+    "s_open_help_and_about": null,
+    "s_open_item": null,
+    "s_edit_item": null,
+    "s_delete_item": null,
+    "s_calculate_oath_code": null,
+    "s_open_keyboard_shortcuts": null,
+
     "@_eof": {}
 }

@@ -40,63 +40,66 @@ class ShortcutsIntent extends AppIntent {
   ShortcutsIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Keyboard shortcuts';
+  String getDescription(AppLocalizations l10n) =>
+      l10n.s_open_keyboard_shortcuts;
 }
 
 class CloseIntent extends AppIntent {
   CloseIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Close window';
+  String getDescription(AppLocalizations l10n) =>
+      l10n.s_quit_app(l10n.app_name);
 }
 
 class HideIntent extends AppIntent {
   HideIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Hide window';
+  String getDescription(AppLocalizations l10n) =>
+      l10n.s_hide_app(l10n.app_name);
 }
 
 class SearchIntent extends AppIntent {
   SearchIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Search';
+  String getDescription(AppLocalizations l10n) => l10n.s_search;
 }
 
 class EscapeIntent extends AppIntent {
   EscapeIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Back/Cancel';
+  String getDescription(AppLocalizations l10n) => l10n.s_dismiss;
 }
 
 class NextDeviceIntent extends AppIntent {
   NextDeviceIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Next device';
+  String getDescription(AppLocalizations l10n) => l10n.s_next_device;
 }
 
 class PreviousDeviceItent extends AppIntent {
   PreviousDeviceItent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Previous device';
+  String getDescription(AppLocalizations l10n) => l10n.s_previous_device;
 }
 
 class SettingsIntent extends AppIntent {
   SettingsIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Open settings';
+  String getDescription(AppLocalizations l10n) => l10n.s_open_settings;
 }
 
 class AboutIntent extends AppIntent {
   AboutIntent();
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Open help and about';
+  String getDescription(AppLocalizations l10n) => l10n.s_open_help_and_about;
 }
 
 class OpenIntent<T> extends AppIntent {
@@ -104,7 +107,7 @@ class OpenIntent<T> extends AppIntent {
   OpenIntent(this.target);
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Open item';
+  String getDescription(AppLocalizations l10n) => l10n.s_open_item;
 }
 
 class CopyIntent<T> extends AppIntent {
@@ -112,7 +115,7 @@ class CopyIntent<T> extends AppIntent {
   CopyIntent(this.target);
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Copy OATH code';
+  String getDescription(AppLocalizations l10n) => l10n.l_copy_to_clipboard;
 }
 
 class EditIntent<T> extends AppIntent {
@@ -120,7 +123,7 @@ class EditIntent<T> extends AppIntent {
   EditIntent(this.target);
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Edit item';
+  String getDescription(AppLocalizations l10n) => l10n.s_edit_item;
 }
 
 class DeleteIntent<T> extends AppIntent {
@@ -128,7 +131,7 @@ class DeleteIntent<T> extends AppIntent {
   DeleteIntent(this.target);
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Delete item';
+  String getDescription(AppLocalizations l10n) => l10n.s_delete_item;
 }
 
 class RefreshIntent<T> extends AppIntent {
@@ -136,7 +139,7 @@ class RefreshIntent<T> extends AppIntent {
   RefreshIntent(this.target);
 
   @override
-  String getDescription(AppLocalizations l10n) => 'Calculate OATH code';
+  String getDescription(AppLocalizations l10n) => l10n.s_calculate_oath_code;
 }
 
 /// Use cmd on macOS, use ctrl on the other platforms
@@ -175,8 +178,8 @@ Map<AppIntent, List<SingleActivator>> getItemIntents<T>(T item) {
 Map<AppIntent, List<SingleActivator>> getGlobalIntents() {
   return {
     ShortcutsIntent(): [
+      ctrlOrCmd(LogicalKeyboardKey.numpadDivide),
       ctrlOrCmd(LogicalKeyboardKey.slash),
-      ctrlOrCmd(LogicalKeyboardKey.keyS),
     ],
     SearchIntent(): [ctrlOrCmd(LogicalKeyboardKey.keyF)],
     EscapeIntent(): [SingleActivator(LogicalKeyboardKey.escape)],
