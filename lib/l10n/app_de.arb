@@ -1132,6 +1132,7 @@
     "p_rename_will_change_custom_name": "Dies ändert das Label deines YubiKeys.",
 
     "@_shortcuts": {},
+    "s_shortcuts": null,
     "@s_quit_app": {
         "placeholders": {
             "app": {
