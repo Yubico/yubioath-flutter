@@ -50,6 +50,7 @@ class DeviceInfoHelper {
             SessionVersionOverride.set(null)
             var deviceInfo = readDeviceInfo(device)
             if (deviceInfo.version.major == 0.toByte()) {
+                // development devices will report version 0.x.x
                 SessionVersionOverride.set(Version(5, 7, 2))
                 deviceInfo = readDeviceInfo(device)
             }
