@@ -124,7 +124,7 @@ enum UsbPid {
 }
 
 @freezed
-class Version with _$Version implements Comparable<Version> {
+abstract class Version with _$Version implements Comparable<Version> {
   const Version._();
   @Assert('major >= 0')
   @Assert('major < 256')

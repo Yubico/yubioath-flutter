@@ -206,7 +206,7 @@ enum ManagementKeyType {
 }
 
 @freezed
-class PinMetadata with _$PinMetadata {
+abstract class PinMetadata with _$PinMetadata {
   factory PinMetadata(
     bool defaultValue,
     int totalAttempts,
@@ -218,20 +218,20 @@ class PinMetadata with _$PinMetadata {
 }
 
 @freezed
-class PinVerificationStatus with _$PinVerificationStatus {
+sealed class PinVerificationStatus with _$PinVerificationStatus {
   const factory PinVerificationStatus.success() = PinSuccess;
   factory PinVerificationStatus.failure(PivPinFailureReason reason) =
       PinFailure;
 }
 
 @freezed
-class PivPinFailureReason with _$PivPinFailureReason {
+sealed class PivPinFailureReason with _$PivPinFailureReason {
   factory PivPinFailureReason.invalidPin(int attemptsRemaining) = PivInvalidPin;
   const factory PivPinFailureReason.weakPin() = PivWeakPin;
 }
 
 @freezed
-class ManagementKeyMetadata with _$ManagementKeyMetadata {
+abstract class ManagementKeyMetadata with _$ManagementKeyMetadata {
   factory ManagementKeyMetadata(
     ManagementKeyType keyType,
     bool defaultValue,
@@ -243,7 +243,7 @@ class ManagementKeyMetadata with _$ManagementKeyMetadata {
 }
 
 @freezed
-class SlotMetadata with _$SlotMetadata {
+abstract class SlotMetadata with _$SlotMetadata {
   factory SlotMetadata(
     KeyType keyType,
     PinPolicy pinPolicy,
@@ -257,7 +257,7 @@ class SlotMetadata with _$SlotMetadata {
 }
 
 @freezed
-class PivStateMetadata with _$PivStateMetadata {
+abstract class PivStateMetadata with _$PivStateMetadata {
   factory PivStateMetadata({
     required ManagementKeyMetadata managementKeyMetadata,
     required PinMetadata pinMetadata,
@@ -269,7 +269,7 @@ class PivStateMetadata with _$PivStateMetadata {
 }
 
 @freezed
-class PivState with _$PivState {
+abstract class PivState with _$PivState {
   const PivState._();
 
   factory PivState({
@@ -294,7 +294,7 @@ class PivState with _$PivState {
 }
 
 @freezed
-class CertInfo with _$CertInfo {
+abstract class CertInfo with _$CertInfo {
   factory CertInfo({
     required KeyType? keyType,
     required String subject,
@@ -310,7 +310,7 @@ class CertInfo with _$CertInfo {
 }
 
 @freezed
-class PivSlot with _$PivSlot {
+abstract class PivSlot with _$PivSlot {
   factory PivSlot({
     required SlotId slot,
     SlotMetadata? metadata,
@@ -323,34 +323,35 @@ class PivSlot with _$PivSlot {
 }
 
 @freezed
-class PivExamineResult with _$PivExamineResult {
+sealed class PivExamineResult with _$PivExamineResult {
   factory PivExamineResult.result({
     required bool password,
     required KeyType? keyType,
     required CertInfo? certInfo,
     bool? publicKeyMatch,
-  }) = _ExamineResult;
-  factory PivExamineResult.invalidPassword() = _InvalidPassword;
+  }) = PivExamineResultResult;
+  factory PivExamineResult.invalidPassword() = PivExamineResultInvalidPassword;
 
   factory PivExamineResult.fromJson(Map<String, dynamic> json) =>
       _$PivExamineResultFromJson(json);
 }
 
 @freezed
-class PivGenerateParameters with _$PivGenerateParameters {
-  factory PivGenerateParameters.publicKey() = _GeneratePublicKey;
+sealed class PivGenerateParameters with _$PivGenerateParameters {
+  factory PivGenerateParameters.publicKey() = PivGeneratePublicKeyParameters;
 
   factory PivGenerateParameters.certificate({
     required String subject,
     required DateTime validFrom,
     required DateTime validTo,
-  }) = _GenerateCertificate;
+  }) = PivGenerateCertificateParameters;
 
-  factory PivGenerateParameters.csr({required String subject}) = _GenerateCsr;
+  factory PivGenerateParameters.csr({required String subject}) =
+      PivGenerateCsrParameters;
 }
 
 @freezed
-class PivGenerateResult with _$PivGenerateResult {
+abstract class PivGenerateResult with _$PivGenerateResult {
   factory PivGenerateResult({
     required GenerateType generateType,
     required String publicKey,
@@ -362,7 +363,7 @@ class PivGenerateResult with _$PivGenerateResult {
 }
 
 @freezed
-class PivImportResult with _$PivImportResult {
+abstract class PivImportResult with _$PivImportResult {
   factory PivImportResult({
     required SlotMetadata? metadata,
     required String? publicKey,

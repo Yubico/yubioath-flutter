@@ -102,17 +102,16 @@ class DevicePickerContent extends ConsumerWidget {
                   ref.watch(currentDeviceDataProvider),
                   extended,
                 )
-                : e.map(
-                  usbYubiKey:
-                      (node) => _buildDeviceRow(
-                        context,
-                        ref,
-                        node,
-                        node.info,
-                        extended,
-                      ),
-                  nfcReader: (node) => _NfcDeviceRow(node, extended: extended),
-                ),
+                : switch (e) {
+                  UsbYubiKeyNode() => _buildDeviceRow(
+                    context,
+                    ref,
+                    e,
+                    e.info,
+                    extended,
+                  ),
+                  NfcReaderNode() => _NfcDeviceRow(e, extended: extended),
+                },
       ),
     ];
 
@@ -390,14 +389,13 @@ _DeviceRow _buildDeviceRow(
   bool extended,
 ) {
   final l10n = AppLocalizations.of(context);
-  final subtitle = node.when(
-    usbYubiKey:
-        (_, _, _, info) =>
-            info == null
-                ? l10n.s_yk_inaccessible
-                : _getDeviceInfoString(context, info),
-    nfcReader: (_, _) => l10n.s_select_to_scan,
-  );
+  final subtitle = switch (node) {
+    UsbYubiKeyNode(info: var info) =>
+      info == null
+          ? l10n.s_yk_inaccessible
+          : _getDeviceInfoString(context, info),
+    NfcReaderNode() => l10n.s_select_to_scan,
+  };
 
   final keyCustomization =
       ref.watch(keyCustomizationManagerProvider)[info?.serial];

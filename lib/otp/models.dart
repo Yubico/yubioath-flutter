@@ -42,7 +42,7 @@ enum SlotId {
 }
 
 @freezed
-class OtpState with _$OtpState {
+abstract class OtpState with _$OtpState {
   const OtpState._();
 
   factory OtpState({
@@ -60,13 +60,13 @@ class OtpState with _$OtpState {
 }
 
 @freezed
-class OtpSlot with _$OtpSlot {
+abstract class OtpSlot with _$OtpSlot {
   factory OtpSlot({required SlotId slot, required bool isConfigured}) =
       _OtpSlot;
 }
 
 @freezed
-class SlotConfigurationOptions with _$SlotConfigurationOptions {
+abstract class SlotConfigurationOptions with _$SlotConfigurationOptions {
   // ignore: invalid_annotation_target
   @JsonSerializable(includeIfNull: false)
   factory SlotConfigurationOptions({
@@ -80,7 +80,7 @@ class SlotConfigurationOptions with _$SlotConfigurationOptions {
 }
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
-class SlotConfiguration with _$SlotConfiguration {
+abstract class SlotConfiguration with _$SlotConfiguration {
   const SlotConfiguration._();
 
   // ignore: invalid_annotation_target

@@ -20,7 +20,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'models.freezed.dart';
 
 @freezed
-class NfcOverlayWidgetProperties with _$NfcOverlayWidgetProperties {
+abstract class NfcOverlayWidgetProperties with _$NfcOverlayWidgetProperties {
   factory NfcOverlayWidgetProperties({
     required Widget child,
     @Default(false) bool visible,
