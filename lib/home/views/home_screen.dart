@@ -316,7 +316,7 @@ class _DeviceContent extends ConsumerWidget {
           ),
         if (version != const Version(0, 0, 0))
           Text(
-            l10n.l_firmware_version(version),
+            l10n.l_firmware_version(deviceData.info.getVersionName()),
             style: Theme.of(context).textTheme.titleSmall?.apply(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
