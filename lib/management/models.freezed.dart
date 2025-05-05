@@ -162,9 +162,158 @@ as int?,
 
 
 /// @nodoc
+mixin _$VersionQualifier {
+
+ Version get version; ReleaseType get type; int get iteration;
+/// Create a copy of VersionQualifier
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$VersionQualifierCopyWith<VersionQualifier> get copyWith => _$VersionQualifierCopyWithImpl<VersionQualifier>(this as VersionQualifier, _$identity);
+
+  /// Serializes this VersionQualifier to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VersionQualifier&&(identical(other.version, version) || other.version == version)&&(identical(other.type, type) || other.type == type)&&(identical(other.iteration, iteration) || other.iteration == iteration));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,version,type,iteration);
+
+
+
+}
+
+/// @nodoc
+abstract mixin class $VersionQualifierCopyWith<$Res>  {
+  factory $VersionQualifierCopyWith(VersionQualifier value, $Res Function(VersionQualifier) _then) = _$VersionQualifierCopyWithImpl;
+@useResult
+$Res call({
+ Version version, ReleaseType type, int iteration
+});
+
+
+$VersionCopyWith<$Res> get version;
+
+}
+/// @nodoc
+class _$VersionQualifierCopyWithImpl<$Res>
+    implements $VersionQualifierCopyWith<$Res> {
+  _$VersionQualifierCopyWithImpl(this._self, this._then);
+
+  final VersionQualifier _self;
+  final $Res Function(VersionQualifier) _then;
+
+/// Create a copy of VersionQualifier
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? type = null,Object? iteration = null,}) {
+  return _then(_self.copyWith(
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as Version,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as ReleaseType,iteration: null == iteration ? _self.iteration : iteration // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+/// Create a copy of VersionQualifier
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VersionCopyWith<$Res> get version {
+  
+  return $VersionCopyWith<$Res>(_self.version, (value) {
+    return _then(_self.copyWith(version: value));
+  });
+}
+}
+
+
+/// @nodoc
+@JsonSerializable()
+
+class _VersionQualifier extends VersionQualifier {
+   _VersionQualifier(this.version, this.type, this.iteration): super._();
+  factory _VersionQualifier.fromJson(Map<String, dynamic> json) => _$VersionQualifierFromJson(json);
+
+@override final  Version version;
+@override final  ReleaseType type;
+@override final  int iteration;
+
+/// Create a copy of VersionQualifier
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$VersionQualifierCopyWith<_VersionQualifier> get copyWith => __$VersionQualifierCopyWithImpl<_VersionQualifier>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$VersionQualifierToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VersionQualifier&&(identical(other.version, version) || other.version == version)&&(identical(other.type, type) || other.type == type)&&(identical(other.iteration, iteration) || other.iteration == iteration));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,version,type,iteration);
+
+
+
+}
+
+/// @nodoc
+abstract mixin class _$VersionQualifierCopyWith<$Res> implements $VersionQualifierCopyWith<$Res> {
+  factory _$VersionQualifierCopyWith(_VersionQualifier value, $Res Function(_VersionQualifier) _then) = __$VersionQualifierCopyWithImpl;
+@override @useResult
+$Res call({
+ Version version, ReleaseType type, int iteration
+});
+
+
+@override $VersionCopyWith<$Res> get version;
+
+}
+/// @nodoc
+class __$VersionQualifierCopyWithImpl<$Res>
+    implements _$VersionQualifierCopyWith<$Res> {
+  __$VersionQualifierCopyWithImpl(this._self, this._then);
+
+  final _VersionQualifier _self;
+  final $Res Function(_VersionQualifier) _then;
+
+/// Create a copy of VersionQualifier
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? type = null,Object? iteration = null,}) {
+  return _then(_VersionQualifier(
+null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as Version,null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as ReleaseType,null == iteration ? _self.iteration : iteration // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+/// Create a copy of VersionQualifier
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VersionCopyWith<$Res> get version {
+  
+  return $VersionCopyWith<$Res>(_self.version, (value) {
+    return _then(_self.copyWith(version: value));
+  });
+}
+}
+
+
+/// @nodoc
 mixin _$DeviceInfo {
 
- DeviceConfig get config; int? get serial; Version get version; FormFactor get formFactor; Map<Transport, int> get supportedCapabilities; bool get isLocked; bool get isFips; bool get isSky; bool get pinComplexity; int get fipsCapable; int get fipsApproved; int get resetBlocked;
+ DeviceConfig get config; int? get serial; Version get version; FormFactor get formFactor; Map<Transport, int> get supportedCapabilities; bool get isLocked; bool get isFips; bool get isSky; bool get pinComplexity; int get fipsCapable; int get fipsApproved; int get resetBlocked; VersionQualifier get versionQualifier;
 /// Create a copy of DeviceInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -177,16 +326,16 @@ $DeviceInfoCopyWith<DeviceInfo> get copyWith => _$DeviceInfoCopyWithImpl<DeviceI
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other.supportedCapabilities, supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other.supportedCapabilities, supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked)&&(identical(other.versionQualifier, versionQualifier) || other.versionQualifier == versionQualifier));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked);
+int get hashCode => Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked,versionQualifier);
 
 @override
 String toString() {
-  return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked)';
+  return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked, versionQualifier: $versionQualifier)';
 }
 
 
@@ -197,11 +346,11 @@ abstract mixin class $DeviceInfoCopyWith<$Res>  {
   factory $DeviceInfoCopyWith(DeviceInfo value, $Res Function(DeviceInfo) _then) = _$DeviceInfoCopyWithImpl;
 @useResult
 $Res call({
- DeviceConfig config, int? serial, Version version, FormFactor formFactor, Map<Transport, int> supportedCapabilities, bool isLocked, bool isFips, bool isSky, bool pinComplexity, int fipsCapable, int fipsApproved, int resetBlocked
+ DeviceConfig config, int? serial, Version version, FormFactor formFactor, Map<Transport, int> supportedCapabilities, bool isLocked, bool isFips, bool isSky, bool pinComplexity, int fipsCapable, int fipsApproved, int resetBlocked, VersionQualifier versionQualifier
 });
 
 
-$DeviceConfigCopyWith<$Res> get config;$VersionCopyWith<$Res> get version;
+$DeviceConfigCopyWith<$Res> get config;$VersionCopyWith<$Res> get version;$VersionQualifierCopyWith<$Res> get versionQualifier;
 
 }
 /// @nodoc
@@ -214,7 +363,7 @@ class _$DeviceInfoCopyWithImpl<$Res>
 
 /// Create a copy of DeviceInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? config = null,Object? serial = freezed,Object? version = null,Object? formFactor = null,Object? supportedCapabilities = null,Object? isLocked = null,Object? isFips = null,Object? isSky = null,Object? pinComplexity = null,Object? fipsCapable = null,Object? fipsApproved = null,Object? resetBlocked = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? config = null,Object? serial = freezed,Object? version = null,Object? formFactor = null,Object? supportedCapabilities = null,Object? isLocked = null,Object? isFips = null,Object? isSky = null,Object? pinComplexity = null,Object? fipsCapable = null,Object? fipsApproved = null,Object? resetBlocked = null,Object? versionQualifier = null,}) {
   return _then(_self.copyWith(
 config: null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
 as DeviceConfig,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
@@ -228,7 +377,8 @@ as bool,pinComplexity: null == pinComplexity ? _self.pinComplexity : pinComplexi
 as bool,fipsCapable: null == fipsCapable ? _self.fipsCapable : fipsCapable // ignore: cast_nullable_to_non_nullable
 as int,fipsApproved: null == fipsApproved ? _self.fipsApproved : fipsApproved // ignore: cast_nullable_to_non_nullable
 as int,resetBlocked: null == resetBlocked ? _self.resetBlocked : resetBlocked // ignore: cast_nullable_to_non_nullable
-as int,
+as int,versionQualifier: null == versionQualifier ? _self.versionQualifier : versionQualifier // ignore: cast_nullable_to_non_nullable
+as VersionQualifier,
   ));
 }
 /// Create a copy of DeviceInfo
@@ -249,6 +399,15 @@ $VersionCopyWith<$Res> get version {
   return $VersionCopyWith<$Res>(_self.version, (value) {
     return _then(_self.copyWith(version: value));
   });
+}/// Create a copy of DeviceInfo
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VersionQualifierCopyWith<$Res> get versionQualifier {
+  
+  return $VersionQualifierCopyWith<$Res>(_self.versionQualifier, (value) {
+    return _then(_self.copyWith(versionQualifier: value));
+  });
 }
 }
 
@@ -257,7 +416,7 @@ $VersionCopyWith<$Res> get version {
 @JsonSerializable()
 
 class _DeviceInfo extends DeviceInfo {
-   _DeviceInfo(this.config, this.serial, this.version, this.formFactor, final  Map<Transport, int> supportedCapabilities, this.isLocked, this.isFips, this.isSky, this.pinComplexity, this.fipsCapable, this.fipsApproved, this.resetBlocked): _supportedCapabilities = supportedCapabilities,super._();
+   _DeviceInfo(this.config, this.serial, this.version, this.formFactor, final  Map<Transport, int> supportedCapabilities, this.isLocked, this.isFips, this.isSky, this.pinComplexity, this.fipsCapable, this.fipsApproved, this.resetBlocked, this.versionQualifier): _supportedCapabilities = supportedCapabilities,super._();
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) => _$DeviceInfoFromJson(json);
 
 @override final  DeviceConfig config;
@@ -278,6 +437,7 @@ class _DeviceInfo extends DeviceInfo {
 @override final  int fipsCapable;
 @override final  int fipsApproved;
 @override final  int resetBlocked;
+@override final  VersionQualifier versionQualifier;
 
 /// Create a copy of DeviceInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -292,16 +452,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other._supportedCapabilities, _supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other._supportedCapabilities, _supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked)&&(identical(other.versionQualifier, versionQualifier) || other.versionQualifier == versionQualifier));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(_supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked);
+int get hashCode => Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(_supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked,versionQualifier);
 
 @override
 String toString() {
-  return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked)';
+  return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked, versionQualifier: $versionQualifier)';
 }
 
 
@@ -312,11 +472,11 @@ abstract mixin class _$DeviceInfoCopyWith<$Res> implements $DeviceInfoCopyWith<$
   factory _$DeviceInfoCopyWith(_DeviceInfo value, $Res Function(_DeviceInfo) _then) = __$DeviceInfoCopyWithImpl;
 @override @useResult
 $Res call({
- DeviceConfig config, int? serial, Version version, FormFactor formFactor, Map<Transport, int> supportedCapabilities, bool isLocked, bool isFips, bool isSky, bool pinComplexity, int fipsCapable, int fipsApproved, int resetBlocked
+ DeviceConfig config, int? serial, Version version, FormFactor formFactor, Map<Transport, int> supportedCapabilities, bool isLocked, bool isFips, bool isSky, bool pinComplexity, int fipsCapable, int fipsApproved, int resetBlocked, VersionQualifier versionQualifier
 });
 
 
-@override $DeviceConfigCopyWith<$Res> get config;@override $VersionCopyWith<$Res> get version;
+@override $DeviceConfigCopyWith<$Res> get config;@override $VersionCopyWith<$Res> get version;@override $VersionQualifierCopyWith<$Res> get versionQualifier;
 
 }
 /// @nodoc
@@ -329,7 +489,7 @@ class __$DeviceInfoCopyWithImpl<$Res>
 
 /// Create a copy of DeviceInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? config = null,Object? serial = freezed,Object? version = null,Object? formFactor = null,Object? supportedCapabilities = null,Object? isLocked = null,Object? isFips = null,Object? isSky = null,Object? pinComplexity = null,Object? fipsCapable = null,Object? fipsApproved = null,Object? resetBlocked = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? config = null,Object? serial = freezed,Object? version = null,Object? formFactor = null,Object? supportedCapabilities = null,Object? isLocked = null,Object? isFips = null,Object? isSky = null,Object? pinComplexity = null,Object? fipsCapable = null,Object? fipsApproved = null,Object? resetBlocked = null,Object? versionQualifier = null,}) {
   return _then(_DeviceInfo(
 null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
 as DeviceConfig,freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
@@ -343,7 +503,8 @@ as bool,null == pinComplexity ? _self.pinComplexity : pinComplexity // ignore: c
 as bool,null == fipsCapable ? _self.fipsCapable : fipsCapable // ignore: cast_nullable_to_non_nullable
 as int,null == fipsApproved ? _self.fipsApproved : fipsApproved // ignore: cast_nullable_to_non_nullable
 as int,null == resetBlocked ? _self.resetBlocked : resetBlocked // ignore: cast_nullable_to_non_nullable
-as int,
+as int,null == versionQualifier ? _self.versionQualifier : versionQualifier // ignore: cast_nullable_to_non_nullable
+as VersionQualifier,
   ));
 }
 
@@ -364,6 +525,15 @@ $VersionCopyWith<$Res> get version {
   
   return $VersionCopyWith<$Res>(_self.version, (value) {
     return _then(_self.copyWith(version: value));
+  });
+}/// Create a copy of DeviceInfo
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VersionQualifierCopyWith<$Res> get versionQualifier {
+  
+  return $VersionQualifierCopyWith<$Res>(_self.versionQualifier, (value) {
+    return _then(_self.copyWith(versionQualifier: value));
   });
 }
 }
