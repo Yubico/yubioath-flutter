@@ -7,4 +7,4 @@ jobs:
       - id: 1
         action: gpg
         files:
-          - yubioath-desktop-windows/yubioath-desktop.msi
+          - installer/yubioath-desktop.msi
