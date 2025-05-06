@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
 
       - name: Build Yubikit-android
-        run: ./gradlew build publishToMavenLocal
+        run: NO_GPG_SIGN=true ./gradlew build publishToMavenLocal
         working-directory: ./kit
 
       - uses: actions/checkout@v4
