@@ -199,8 +199,8 @@ jobs:
           cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
           $arr = $env:GITHUB_REF -split '/'
           $branch = $arr[2]
-          cp signed\authenticator-helper.exe $dest\helper\authenticator-helper.exe
-          cp signed\authenticator.exe $dest\authenticator.exe
+          cp authenticator-helper.exe $dest\helper\authenticator-helper.exe
+          cp authenticator.exe $dest\authenticator.exe
 
       - name: Create an unsigned .msi installer package
         run: |
