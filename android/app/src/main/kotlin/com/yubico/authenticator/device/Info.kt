@@ -60,6 +60,8 @@ data class Info(
     val fipsApproved: Int,
     @SerialName("reset_blocked")
     val resetBlocked: Int,
+    @SerialName("version_qualifier")
+    val versionQualifier: VersionQualifier,
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
@@ -84,5 +86,6 @@ data class Info(
         fipsCapable = deviceInfo.fipsCapable,
         fipsApproved = deviceInfo.fipsApproved,
         resetBlocked = deviceInfo.resetBlocked,
+        versionQualifier = VersionQualifier(deviceInfo.versionQualifier)
     )
 }
