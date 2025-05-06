@@ -26,12 +26,14 @@ class InfoPopupButton extends StatelessWidget {
   final bool displayDialog;
   final double? iconSize;
   final double? size;
+  final IconData icon;
   const InfoPopupButton({
     super.key,
     required this.infoText,
     this.displayDialog = false,
     this.iconSize,
     this.size,
+    this.icon = Symbols.help,
   });
 
   Widget _buildInfoContent() {
@@ -86,7 +88,7 @@ class InfoPopupButton extends StatelessWidget {
           }
         },
         icon: Icon(
-          Symbols.help,
+          icon,
           size: iconSize,
           color: Theme.of(context).colorScheme.primary,
         ),

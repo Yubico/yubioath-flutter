@@ -27,7 +27,36 @@ files: [
     # Where translations will be placed
     # e.g. "/resources/%two_letters_code%/%original_file_name%"
     #
-    "translation": "/lib/l10n/app_%two_letters_code%.arb",
+    "translation": "/lib/l10n/app_%locale%.arb",
+    #
+    # Mapping between crowdin language code and languge code that is used
+    # for the file name suffix. For languages with multiple variations it
+    # is required to have one code map to a base code. E.g. for Chinese
+    # zh-CN is considered to be the base, while zh-TW is a variation.
+    #
+    # This mappings needs to be updated when a new language is added
+    #
+    "languages_mapping" : {
+      "locale" : {
+        "cs": "cs",
+        "de": "de",
+        "el": "el",
+        "es-ES": "es",
+        "fr": "fr",
+        "it": "it",
+        "ja": "ja",
+        "nl": "nl",
+        "pl": "pl",
+        "ru": "ru",
+        "sk": "sk",
+        "sv-SE": "sv",
+        "th": "th",
+        "uk": "uk",
+        "vi": "vi",
+        "zh-CN": "zh",
+        "zh-TW" : "zh_TW",
+      }
+    }
 
     #
     # Files or directories for ignore
