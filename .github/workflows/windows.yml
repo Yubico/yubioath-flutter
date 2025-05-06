@@ -142,6 +142,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download /signed dir
+        uses: actions/download-artifact@v4
+        with:
+          name: signed
+
       - name: Read variables from repo
         shell: bash
         run: cat .github/workflows/env >> $GITHUB_ENV
