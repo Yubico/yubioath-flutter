@@ -7,5 +7,5 @@ jobs:
       - id: 1
         action: windows
         files:
-          - yubioath-desktop-windows/yubioath-desktop.msi
+          - installer/yubioath-desktop.msi
           
