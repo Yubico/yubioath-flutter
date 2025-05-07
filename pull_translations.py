@@ -134,5 +134,3 @@ if __name__ == "__main__":
     crowdin_pull(languages)
     post_process_arb_files(languages)
     create_status_file(languages)
-    print("Reformatting arb files...")
-    subprocess.run(["pre-commit", "run", "arb-reformatter", "--all-files"], check=False)
