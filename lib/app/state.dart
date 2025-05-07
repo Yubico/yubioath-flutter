@@ -62,8 +62,11 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
-Future<Map<String, LocaleStatus>> loadLocaleStatus() async {
-  final jsonString = await rootBundle.loadString('assets/l10n/status.json');
+Future<Map<String, LocaleStatus>> loadLocaleStatus({bool cache = true}) async {
+  final jsonString = await rootBundle.loadString(
+    'assets/l10n/status.json',
+    cache: cache,
+  );
   Map<String, dynamic> decoded = jsonDecode(jsonString);
 
   return decoded.map(
@@ -126,9 +129,9 @@ class CurrentLocaleProvider extends StateNotifier<Locale> {
       PlatformDispatcher.instance.locales,
       supportedLocales,
     );
-    final localeStatus = status[locale.toString()]!;
+    final localeStatus = status[locale.toString()];
     // Fallback to english if language is not fully translated
-    if (localeStatus.translated != 100) {
+    if (localeStatus == null || localeStatus.translated != 100) {
       final fallback = supportedLocales.first;
       _log.debug('$locale is not fully translated. Falling back to $fallback');
       return fallback;
