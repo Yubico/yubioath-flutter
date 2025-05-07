@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -31,6 +28,7 @@ import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../icon_provider/icon_pack_dialog.dart';
 import '../l10n_utils.dart';
+import '../models.dart';
 import '../state.dart';
 import 'keys.dart' as keys;
 
@@ -108,15 +106,10 @@ class _LanguageView extends ConsumerWidget {
 
   Uri get _crowdinUri => Uri.parse('https://yubi.co/ya-translations');
 
-  Future<Map<String, dynamic>> _loadStatus() async {
-    final jsonString = await rootBundle.loadString('assets/l10n/status.json');
-    return jsonDecode(jsonString);
-  }
-
   Widget _buildLocaleTitle(
     BuildContext context,
     Locale locale,
-    Map<String, dynamic> status,
+    Map<String, LocaleStatus> status,
   ) {
     final localeStatus = status[locale.toString()];
     if (localeStatus == null) {
@@ -124,17 +117,19 @@ class _LanguageView extends ConsumerWidget {
     }
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    int translated = localeStatus['translated'];
-    int proofread = localeStatus['proofread'];
+    int translated = localeStatus.translated;
+    int proofread = localeStatus.proofread;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(locale.getNativeDisplayName()),
-        if (translated < 99) ...[
+        if (translated != 100) ...[
           const SizedBox(width: 8.0),
           InfoPopupButton(
             size: 30,
             iconSize: 20,
+            iconColor: theme.colorScheme.tertiary,
             icon: Symbols.warning_amber,
             infoText: RichText(
               text: WidgetSpan(
@@ -172,7 +167,7 @@ class _LanguageView extends ConsumerWidget {
     BuildContext context,
     List<Locale> supportedLocales,
     Locale currentLocale,
-    Map<String, dynamic> status,
+    Map<String, LocaleStatus> status,
   ) async =>
       await showDialog<Locale>(
         context: context,
@@ -232,18 +227,16 @@ class _LanguageView extends ConsumerWidget {
       subtitle: Text(currentLocale.getNativeDisplayName()),
       key: keys.languageSetting,
       onTap: () async {
-        final status = await _loadStatus();
-        await ref.read(withContextProvider)((context) async {
-          final newLocale = await _selectLocale(
-            context,
-            ref.read(supportedLocalesProvider),
-            currentLocale,
-            status,
-          );
-          if (newLocale != currentLocale) {
-            ref.read(currentLocaleProvider.notifier).setLocale(newLocale);
-          }
-        });
+        final status = ref.read(localeStatusProvider);
+        final newLocale = await _selectLocale(
+          context,
+          ref.read(supportedLocalesProvider),
+          currentLocale,
+          status,
+        );
+        if (newLocale != currentLocale) {
+          ref.read(currentLocaleProvider.notifier).setLocale(newLocale);
+        }
       },
     );
   }

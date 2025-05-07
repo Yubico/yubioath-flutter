@@ -27,6 +27,7 @@ class InfoPopupButton extends StatelessWidget {
   final double? iconSize;
   final double? size;
   final IconData icon;
+  final Color? iconColor;
   const InfoPopupButton({
     super.key,
     required this.infoText,
@@ -34,6 +35,7 @@ class InfoPopupButton extends StatelessWidget {
     this.iconSize,
     this.size,
     this.icon = Symbols.help,
+    this.iconColor,
   });
 
   Widget _buildInfoContent() {
@@ -90,7 +92,7 @@ class InfoPopupButton extends StatelessWidget {
         icon: Icon(
           icon,
           size: iconSize,
-          color: Theme.of(context).colorScheme.primary,
+          color: iconColor ?? Theme.of(context).colorScheme.primary,
         ),
         padding: EdgeInsets.zero,
       ),

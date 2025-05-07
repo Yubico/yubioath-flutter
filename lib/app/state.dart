@@ -19,7 +19,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,6 +62,20 @@ final supportedThemesProvider = StateProvider<List<ThemeMode>>(
   (ref) => throw UnimplementedError(),
 );
 
+Future<Map<String, LocaleStatus>> loadLocaleStatus() async {
+  final jsonString = await rootBundle.loadString('assets/l10n/status.json');
+  Map<String, dynamic> decoded = jsonDecode(jsonString);
+
+  return decoded.map(
+    (key, value) => MapEntry(key, LocaleStatus.fromJson(value)),
+  );
+}
+
+// This must be initialized before use, in main.dart.
+final localeStatusProvider = Provider<Map<String, LocaleStatus>>((ref) {
+  throw UnimplementedError();
+});
+
 final supportedLocalesProvider = Provider<List<Locale>>((_) {
   // Ensure english has the highest priority
   final supportedLocales = [
@@ -78,6 +92,7 @@ final currentLocaleProvider =
       (ref) => CurrentLocaleProvider(
         ref.watch(prefProvider),
         ref.read(supportedLocalesProvider),
+        ref.read(localeStatusProvider),
       ),
     );
 
@@ -85,8 +100,11 @@ class CurrentLocaleProvider extends StateNotifier<Locale> {
   static const String _key = 'APP_LOCALE';
   final SharedPreferences _prefs;
 
-  CurrentLocaleProvider(this._prefs, List<Locale> supportedLocales)
-    : super(_fromName(_prefs.getString(_key), supportedLocales));
+  CurrentLocaleProvider(
+    this._prefs,
+    List<Locale> supportedLocales,
+    Map<String, LocaleStatus> status,
+  ) : super(_fromName(_prefs.getString(_key), supportedLocales, status));
 
   void setLocale(Locale locale) {
     _log.debug('Set locale to $locale');
@@ -94,16 +112,28 @@ class CurrentLocaleProvider extends StateNotifier<Locale> {
     _prefs.setString(_key, locale.languageCode);
   }
 
-  static Locale _fromName(String? localeStr, List<Locale> supportedLocales) {
+  static Locale _fromName(
+    String? localeStr,
+    List<Locale> supportedLocales,
+    Map<String, LocaleStatus> status,
+  ) {
     if (localeStr != null) {
       // Force locale
       final locale = Locale(localeStr, '');
       return basicLocaleListResolution([locale], supportedLocales);
     }
-    return basicLocaleListResolution(
+    final locale = basicLocaleListResolution(
       PlatformDispatcher.instance.locales,
       supportedLocales,
     );
+    final localeStatus = status[locale.toString()]!;
+    // Fallback to english if language is not fully translated
+    if (localeStatus.translated != 100) {
+      final fallback = supportedLocales.first;
+      _log.debug('$locale is not fully translated. Falling back to $fallback');
+      return fallback;
+    }
+    return locale;
   }
 }
 

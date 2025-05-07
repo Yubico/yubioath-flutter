@@ -1470,3 +1470,177 @@ abstract class _KeyCustomization implements KeyCustomization {
   _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+LocaleStatus _$LocaleStatusFromJson(Map<String, dynamic> json) {
+  return _LocaleStatus.fromJson(json);
+}
+
+/// @nodoc
+mixin _$LocaleStatus {
+  int get translated => throw _privateConstructorUsedError;
+  int get proofread => throw _privateConstructorUsedError;
+
+  /// Serializes this LocaleStatus to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of LocaleStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $LocaleStatusCopyWith<LocaleStatus> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $LocaleStatusCopyWith<$Res> {
+  factory $LocaleStatusCopyWith(
+    LocaleStatus value,
+    $Res Function(LocaleStatus) then,
+  ) = _$LocaleStatusCopyWithImpl<$Res, LocaleStatus>;
+  @useResult
+  $Res call({int translated, int proofread});
+}
+
+/// @nodoc
+class _$LocaleStatusCopyWithImpl<$Res, $Val extends LocaleStatus>
+    implements $LocaleStatusCopyWith<$Res> {
+  _$LocaleStatusCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of LocaleStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? translated = null, Object? proofread = null}) {
+    return _then(
+      _value.copyWith(
+            translated:
+                null == translated
+                    ? _value.translated
+                    : translated // ignore: cast_nullable_to_non_nullable
+                        as int,
+            proofread:
+                null == proofread
+                    ? _value.proofread
+                    : proofread // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$LocaleStatusImplCopyWith<$Res>
+    implements $LocaleStatusCopyWith<$Res> {
+  factory _$$LocaleStatusImplCopyWith(
+    _$LocaleStatusImpl value,
+    $Res Function(_$LocaleStatusImpl) then,
+  ) = __$$LocaleStatusImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int translated, int proofread});
+}
+
+/// @nodoc
+class __$$LocaleStatusImplCopyWithImpl<$Res>
+    extends _$LocaleStatusCopyWithImpl<$Res, _$LocaleStatusImpl>
+    implements _$$LocaleStatusImplCopyWith<$Res> {
+  __$$LocaleStatusImplCopyWithImpl(
+    _$LocaleStatusImpl _value,
+    $Res Function(_$LocaleStatusImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of LocaleStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? translated = null, Object? proofread = null}) {
+    return _then(
+      _$LocaleStatusImpl(
+        translated:
+            null == translated
+                ? _value.translated
+                : translated // ignore: cast_nullable_to_non_nullable
+                    as int,
+        proofread:
+            null == proofread
+                ? _value.proofread
+                : proofread // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$LocaleStatusImpl implements _LocaleStatus {
+  _$LocaleStatusImpl({required this.translated, required this.proofread});
+
+  factory _$LocaleStatusImpl.fromJson(Map<String, dynamic> json) =>
+      _$$LocaleStatusImplFromJson(json);
+
+  @override
+  final int translated;
+  @override
+  final int proofread;
+
+  @override
+  String toString() {
+    return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LocaleStatusImpl &&
+            (identical(other.translated, translated) ||
+                other.translated == translated) &&
+            (identical(other.proofread, proofread) ||
+                other.proofread == proofread));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, translated, proofread);
+
+  /// Create a copy of LocaleStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$LocaleStatusImplCopyWith<_$LocaleStatusImpl> get copyWith =>
+      __$$LocaleStatusImplCopyWithImpl<_$LocaleStatusImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$LocaleStatusImplToJson(this);
+  }
+}
+
+abstract class _LocaleStatus implements LocaleStatus {
+  factory _LocaleStatus({
+    required final int translated,
+    required final int proofread,
+  }) = _$LocaleStatusImpl;
+
+  factory _LocaleStatus.fromJson(Map<String, dynamic> json) =
+      _$LocaleStatusImpl.fromJson;
+
+  @override
+  int get translated;
+  @override
+  int get proofread;
+
+  /// Create a copy of LocaleStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$LocaleStatusImplCopyWith<_$LocaleStatusImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
