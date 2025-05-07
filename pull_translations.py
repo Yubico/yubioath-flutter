@@ -89,7 +89,9 @@ def create_status_file(languages):
 
 def crowdin_pull(languages):
     lang_args = [f"--language={lang}" for lang in languages.keys()]
-    subprocess.run(["crowdin", "pull", *lang_args], check=True)
+    subprocess.run(
+        ["crowdin", "pull", "--skip-untranslated-strings", *lang_args], check=True
+    )
 
 
 def get_language_mappings():
