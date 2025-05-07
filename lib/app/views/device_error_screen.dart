@@ -65,7 +65,7 @@ class DeviceErrorScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return switch (node) {
-      UsbYubiKeyNode(pid: var pid) => _buildUsbPid(context, ref, pid),
+      UsbYubiKeyNode(:final pid) => _buildUsbPid(context, ref, pid),
       NfcReaderNode() => switch (error) {
         'unknown-device' => HomeMessagePage(
           centered: true,

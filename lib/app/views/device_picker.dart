@@ -390,7 +390,7 @@ _DeviceRow _buildDeviceRow(
 ) {
   final l10n = AppLocalizations.of(context);
   final subtitle = switch (node) {
-    UsbYubiKeyNode(info: var info) =>
+    UsbYubiKeyNode(:final info) =>
       info == null
           ? l10n.s_yk_inaccessible
           : _getDeviceInfoString(context, info),
