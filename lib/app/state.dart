@@ -218,6 +218,12 @@ final currentDeviceProvider =
     );
 
 abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
+  @override
+  bool updateShouldNotify(DeviceNode? previous, DeviceNode? next) {
+    // Avoid notifying if device is the same
+    return previous != next;
+  }
+
   setCurrentDevice(DeviceNode? device);
 }
 
