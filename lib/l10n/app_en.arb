@@ -4,7 +4,7 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "English",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
     "s_translated": "Translated: {percentage}%",
     "@s_translated": {
