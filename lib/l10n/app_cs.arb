@@ -22,6 +22,8 @@
             }
         }
     },
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
 
     "s_save": "Uložit",
     "s_cancel": "Zrušit",

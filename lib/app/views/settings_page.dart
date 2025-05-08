@@ -137,6 +137,13 @@ class _LanguageView extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      l10n.l_incomplete_translation,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
                       l10n.s_translated(translated),
                       style: theme.textTheme.labelSmall,
                     ),
@@ -152,6 +159,13 @@ class _LanguageView extends ConsumerWidget {
                     LinearProgressIndicator(
                       value: proofread / 100,
                       trackGap: 0,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      l10n.p_translation_progress_desc,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),

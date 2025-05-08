@@ -22,6 +22,8 @@
             }
         }
     },
+    "l_incomplete_translation": "Incomplete translation",
+    "p_translation_progress_desc": "Progress indicators reflect the maturity of the translation.",
 
     "s_save": "Save",
     "s_cancel": "Cancel",
