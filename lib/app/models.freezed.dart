@@ -821,4 +821,140 @@ as Color?,
 
 }
 
+
+/// @nodoc
+mixin _$LocaleStatus {
+
+ int get translated; int get proofread;
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LocaleStatusCopyWith<LocaleStatus> get copyWith => _$LocaleStatusCopyWithImpl<LocaleStatus>(this as LocaleStatus, _$identity);
+
+  /// Serializes this LocaleStatus to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,translated,proofread);
+
+@override
+String toString() {
+  return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LocaleStatusCopyWith<$Res>  {
+  factory $LocaleStatusCopyWith(LocaleStatus value, $Res Function(LocaleStatus) _then) = _$LocaleStatusCopyWithImpl;
+@useResult
+$Res call({
+ int translated, int proofread
+});
+
+
+
+
+}
+/// @nodoc
+class _$LocaleStatusCopyWithImpl<$Res>
+    implements $LocaleStatusCopyWith<$Res> {
+  _$LocaleStatusCopyWithImpl(this._self, this._then);
+
+  final LocaleStatus _self;
+  final $Res Function(LocaleStatus) _then;
+
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? translated = null,Object? proofread = null,}) {
+  return _then(_self.copyWith(
+translated: null == translated ? _self.translated : translated // ignore: cast_nullable_to_non_nullable
+as int,proofread: null == proofread ? _self.proofread : proofread // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// @nodoc
+@JsonSerializable()
+
+class _LocaleStatus implements LocaleStatus {
+   _LocaleStatus({required this.translated, required this.proofread});
+  factory _LocaleStatus.fromJson(Map<String, dynamic> json) => _$LocaleStatusFromJson(json);
+
+@override final  int translated;
+@override final  int proofread;
+
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LocaleStatusCopyWith<_LocaleStatus> get copyWith => __$LocaleStatusCopyWithImpl<_LocaleStatus>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$LocaleStatusToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,translated,proofread);
+
+@override
+String toString() {
+  return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LocaleStatusCopyWith<$Res> implements $LocaleStatusCopyWith<$Res> {
+  factory _$LocaleStatusCopyWith(_LocaleStatus value, $Res Function(_LocaleStatus) _then) = __$LocaleStatusCopyWithImpl;
+@override @useResult
+$Res call({
+ int translated, int proofread
+});
+
+
+
+
+}
+/// @nodoc
+class __$LocaleStatusCopyWithImpl<$Res>
+    implements _$LocaleStatusCopyWith<$Res> {
+  __$LocaleStatusCopyWithImpl(this._self, this._then);
+
+  final _LocaleStatus _self;
+  final $Res Function(_LocaleStatus) _then;
+
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? translated = null,Object? proofread = null,}) {
+  return _then(_LocaleStatus(
+translated: null == translated ? _self.translated : translated // ignore: cast_nullable_to_non_nullable
+as int,proofread: null == proofread ? _self.proofread : proofread // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
 // dart format on

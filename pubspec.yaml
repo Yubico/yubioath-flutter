@@ -118,6 +118,7 @@ flutter:
     - assets/graphics/
     - assets/licenses/
     - assets/licenses/raw/
+    - assets/l10n/
     - resources/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see

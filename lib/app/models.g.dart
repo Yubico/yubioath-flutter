@@ -20,3 +20,15 @@ Map<String, dynamic> _$KeyCustomizationToJson(_KeyCustomization instance) =>
       if (const _ColorConverter().toJson(instance.color) case final value?)
         'color': value,
     };
+
+_LocaleStatus _$LocaleStatusFromJson(Map<String, dynamic> json) =>
+    _LocaleStatus(
+      translated: (json['translated'] as num).toInt(),
+      proofread: (json['proofread'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$LocaleStatusToJson(_LocaleStatus instance) =>
+    <String, dynamic>{
+      'translated': instance.translated,
+      'proofread': instance.proofread,
+    };
