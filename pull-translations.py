@@ -67,7 +67,7 @@ def post_process_arb_files(languages):
                 # Ensure locale is correct
                 data["@@locale"] = language_mappings[locale]
                 with open(file_path, "w", encoding="utf-8") as f:
-                    json.dump(data, f, indent=2)
+                    json.dump(data, f, indent=4, ensure_ascii=False)
 
 
 def create_status_file(languages):
