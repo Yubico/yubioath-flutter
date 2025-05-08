@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 env_name="crowdin_env"
 # Create venv if it does not exist
@@ -22,3 +23,7 @@ python3 pull-translations.py
 
 # Deactivate venv
 deactivate
+
+# Run arb-formatter
+echo "Reformatting arb files..."
+pre-commit run arb-reformatter --all-files
