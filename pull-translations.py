@@ -27,7 +27,7 @@ import yaml
 def get_languages(threshold):
     languages = {}
     status = subprocess.run(
-        ["crowdin", "status", "--plain"], capture_output=True, text=True
+        ["crowdin", "status", "--plain"], capture_output=True, text=True, check=True
     ).stdout
     kind = None
     for line in status.strip().splitlines():
@@ -112,27 +112,31 @@ if __name__ == "__main__":
     if len(argv) > 1:
         threshold = int(argv[1])
     print(f"Using threshold {threshold}%")
-    print("Fetching language status...")
-    languages = get_languages(threshold)
-    if not languages:
-        print("No languages above threshold were found")
-    else:
-        print(
-            f"Found {len(languages)} languages matching "
-            f"threshold: {', '.join(languages.keys())}"
-        )
-    # Check if we are missing mappings
-    missing_mappings = missing_language_mappings(languages)
-    if missing_mappings:
-        print(
-            "ERROR: No language_mappings were found "
-            f"for: {', '.join(list(missing_mappings))}. "
-            "Create the mappings in 'crowdin.yaml' to continue."
-        )
+    try:
+        print("Fetching language status...")
+        languages = get_languages(threshold)
+        if not languages:
+            print("No languages above threshold were found")
+        else:
+            print(
+                f"Found {len(languages)} languages matching "
+                f"threshold: {', '.join(languages.keys())}"
+            )
+        # Check if we are missing mappings
+        missing_mappings = missing_language_mappings(languages)
+        if missing_mappings:
+            print(
+                "ERROR: No language_mappings were found "
+                f"for: {', '.join(list(missing_mappings))}. "
+                "Create the mappings in 'crowdin.yaml' to continue."
+            )
+            exit(1)
+        print("Deleting existing arb files...")
+        delete_arb_files()
+        print("Fetching translations for languages from crowdin...")
+        crowdin_pull(languages)
+        post_process_arb_files(languages)
+        create_status_file(languages)
+    except subprocess.CalledProcessError as e:
+        print(e.stderr)
         exit(1)
-    print("Deleting existing arb files...")
-    delete_arb_files()
-    print("Fetching translations for languages from crowdin...")
-    crowdin_pull(languages)
-    post_process_arb_files(languages)
-    create_status_file(languages)
