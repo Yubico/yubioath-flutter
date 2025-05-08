@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -24,10 +23,12 @@ import '../../android/views/settings_views.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/info_popup_button.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../icon_provider/icon_pack_dialog.dart';
 import '../l10n_utils.dart';
+import '../models.dart';
 import '../state.dart';
 import 'keys.dart' as keys;
 
@@ -40,16 +41,10 @@ extension on ThemeMode {
 }
 
 extension on Locale {
-  String getDisplayName(AppLocalizations l10n) => switch (languageCode) {
-    'en' => l10n.s_english,
-    'de' => l10n.s_german,
-    'fr' => l10n.s_french,
-    'ja' => l10n.s_japanese,
-    'pl' => l10n.s_polish,
-    'sk' => l10n.s_slovak,
-    'vi' => l10n.s_vietnamese,
-    _ => languageCode,
-  };
+  String getNativeDisplayName() {
+    final l10n = lookupAppLocalizations(this);
+    return l10n.native_language_name;
+  }
 }
 
 class _ThemeModeView extends ConsumerWidget {
@@ -111,10 +106,82 @@ class _LanguageView extends ConsumerWidget {
 
   Uri get _crowdinUri => Uri.parse('https://yubi.co/ya-translations');
 
+  Widget _buildLocaleTitle(
+    BuildContext context,
+    Locale locale,
+    Map<String, LocaleStatus> status,
+  ) {
+    final localeStatus = status[locale.toString()];
+    if (localeStatus == null) {
+      return Text(locale.getNativeDisplayName());
+    }
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    int translated = localeStatus.translated;
+    int proofread = localeStatus.proofread;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(locale.getNativeDisplayName()),
+        if (translated != 100) ...[
+          const SizedBox(width: 8.0),
+          InfoPopupButton(
+            size: 30,
+            iconSize: 20,
+            iconColor: theme.colorScheme.tertiary,
+            icon: Symbols.warning_amber,
+            infoText: RichText(
+              text: WidgetSpan(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.l_incomplete_translation,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      l10n.s_translated(translated),
+                      style: theme.textTheme.labelSmall,
+                    ),
+                    LinearProgressIndicator(
+                      value: translated / 100,
+                      trackGap: 0,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      l10n.s_proofread(proofread),
+                      style: theme.textTheme.labelSmall,
+                    ),
+                    LinearProgressIndicator(
+                      value: proofread / 100,
+                      trackGap: 0,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      l10n.p_translation_progress_desc,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Future<Locale> _selectLocale(
     BuildContext context,
     List<Locale> supportedLocales,
     Locale currentLocale,
+    Map<String, LocaleStatus> status,
   ) async =>
       await showDialog<Locale>(
         context: context,
@@ -125,14 +192,15 @@ class _LanguageView extends ConsumerWidget {
           final colorScheme = theme.colorScheme;
           // Sort locales alphabetically
           supportedLocales.sort(
-            (a, b) => a.getDisplayName(l10n).compareTo(b.getDisplayName(l10n)),
+            (a, b) =>
+                a.getNativeDisplayName().compareTo(b.getNativeDisplayName()),
           );
           return SimpleDialog(
             title: Text(l10n.s_choose_language),
             children: [
               ...supportedLocales.map(
                 (e) => RadioListTile(
-                  title: Text(e.getDisplayName(l10n)),
+                  title: _buildLocaleTitle(context, e, status),
                   value: e,
                   groupValue: currentLocale,
                   toggleable: true,
@@ -170,13 +238,15 @@ class _LanguageView extends ConsumerWidget {
     final currentLocale = ref.watch(currentLocaleProvider);
     return ListTile(
       title: Text(l10n.s_language),
-      subtitle: Text(currentLocale.getDisplayName(l10n)),
+      subtitle: Text(currentLocale.getNativeDisplayName()),
       key: keys.languageSetting,
       onTap: () async {
+        final status = ref.read(localeStatusProvider);
         final newLocale = await _selectLocale(
           context,
           ref.read(supportedLocalesProvider),
           currentLocale,
+          status,
         );
         if (newLocale != currentLocale) {
           ref.read(currentLocaleProvider.notifier).setLocale(newLocale);

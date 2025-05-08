@@ -176,3 +176,12 @@ class _ColorConverter implements JsonConverter<Color?, int?> {
   @override
   int? toJson(Color? object) => object?.toInt32;
 }
+
+@freezed
+class LocaleStatus with _$LocaleStatus {
+  factory LocaleStatus({required int translated, required int proofread}) =
+      _LocaleStatus;
+
+  factory LocaleStatus.fromJson(Map<String, dynamic> json) =>
+      _$LocaleStatusFromJson(json);
+}

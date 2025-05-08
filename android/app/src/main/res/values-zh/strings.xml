@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">成功将 OTP 代码从 YubiKey 复制到剪贴板。</string>
+    <string name="p_ndef_set_password">成功将密码从 YubiKey 复制到剪贴板。</string>
+    <string name="p_ndef_parse_failure">从 Yubikey 解析 OTP 代码失败。</string>
+    <string name="p_ndef_set_clip_failure">尝试从 YubiKey 复制 OTP 代码时，访问剪贴板失败。</string>
+</resources>

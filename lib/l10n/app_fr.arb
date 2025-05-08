@@ -1,28 +1,29 @@
 {
     "@@locale": "fr",
 
-    "@_readme": {
-        "notes": {
-            "0": "All strings start with a Capital letter.",
-            "1": "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
-            "2": "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
-        },
-        "prefixes": {
-            "s_": "A single, or few words. Should be short enough to display on a button, or a header.",
-            "l_": "A single line, can be wrapped. Should not be more than one sentence, and not end with a period.",
-            "p_": "One or more full sentences, with proper punctuation.",
-            "q_": "A question, ending in question mark."
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Français",
+    "@native_language_name": {
+        "description": "The language name in native locale"
+    },
+    "s_translated": "Translated: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
         }
     },
-
-    "@_lint_rules": {
-        "p_ending_chars": ".!",
-        "q_ending_chars": "?",
-        "s_max_words": 5,
-        "s_max_length": 38
+    "s_proofread": "Proofread: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
-
-    "app_name": "Yubico Authenticator",
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
 
     "s_save": "Enregistrer",
     "s_cancel": "Annuler",
@@ -136,14 +137,6 @@
         }
     },
     "s_choose_language": "Sélectionner une langue",
-    "s_english": "Anglais",
-    "s_french": "Français",
-    "s_german": "Allemand",
-    "s_polish": "Polonais",
-    "s_slovak": "Slovaque",
-    "s_vietnamese": "Vietnamien",
-    "s_japanese": "Japonais",
-
 
     "@_theme": {},
     "s_app_theme": "Thème de l'application",

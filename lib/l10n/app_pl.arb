@@ -1,28 +1,29 @@
 {
     "@@locale": "pl",
 
-    "@_readme": {
-        "notes": [
-            "All strings start with a Capital letter.",
-            "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
-            "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
-        ],
-        "prefixes": {
-            "s_": "A single, or few words. Should be short enough to display on a button, or a header.",
-            "l_": "A single line, can be wrapped. Should not be more than one sentence, and not end with a period.",
-            "p_": "One or more full sentences, with proper punctuation.",
-            "q_": "A question, ending in question mark."
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Polski",
+    "@native_language_name": {
+        "description": "The language name in native locale"
+    },
+    "s_translated": "Translated: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
         }
     },
-
-    "@_lint_rules": {
-        "p_ending_chars": ".!",
-        "q_ending_chars": "?",
-        "s_max_words": 4,
-        "s_max_length": 32
+    "s_proofread": "Proofread: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
-
-    "app_name": "Yubico Authenticator",
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
 
     "s_save": "Zapisz",
     "s_cancel": "Anuluj",
@@ -127,7 +128,7 @@
     "@_language": {},
     "s_language": "Język",
     "l_enable_community_translations": "Włącz tłumaczenia społecznościowe",
-    "p_community_translations_desc": "Tłumaczenia są utrzymywane przez społeczność na {crowdin}.",
+    "p_community_translations_desc": "Tłumaczenia są utrzymywane przez społeczność {crowdin}.",
     "@p_community_translations_desc": {
         "placeholders": {
             "crowdin": {
@@ -136,14 +137,6 @@
         }
     },
     "s_choose_language": "Wybierz język",
-    "s_english": "Angielski",
-    "s_french": "Francuski",
-    "s_german": "Niemiecki",
-    "s_polish": "Polski",
-    "s_slovak": "Słowacki",
-    "s_vietnamese": "Wietnamski",
-    "s_japanese": "Japoński",
-
 
     "@_theme": {},
     "s_app_theme": "Motyw aplikacji",

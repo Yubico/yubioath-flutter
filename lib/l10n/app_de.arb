@@ -1,28 +1,29 @@
 {
     "@@locale": "de",
 
-    "@_readme": {
-        "notes": [
-            "Alle Zeichenketten beginnen mit einem Großbuchstaben.",
-            "Gruppieren Sie Zeichenketten nach Kategorie, aber fügen Sie nicht zu einem Bereich hinzu, wenn sie in mehreren Bereichen verwendet werden können.",
-            "Führen Sie check_strings.py für die .arb Datei aus, um Probleme zu finden. Passen Sie @_lint_rules nach Sprache an wie nötig."
-        ],
-        "prefixes": {
-            "s_": "Ein einzelnes Wort oder wenige Wörter. Sollte kurz genug sein, um auf einer Schaltfläche oder einer Überschrift angezeigt zu werden.",
-            "l_": "Eine einzelne Zeile, kann umbgebrochen werden. Sollte nicht mehr als einen Satz umfassen und nicht mit einem Punkt enden.",
-            "p_": "Ein oder mehrere ganze Sätze mit allen Satzzeichen.",
-            "q_": "Eine Frage, die mit einem Fragezeichen endet."
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Deutsch",
+    "@native_language_name": {
+        "description": "The language name in native locale"
+    },
+    "s_translated": "Translated: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
         }
     },
-
-    "@_lint_rules": {
-        "p_ending_chars": ".!",
-        "q_ending_chars": "?",
-        "s_max_words": 4,
-        "s_max_length": 32
+    "s_proofread": "Proofread: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
-
-    "app_name": "Yubico Authenticator",
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
 
     "s_save": "Speichern",
     "s_cancel": "Abbrechen",
@@ -136,14 +137,6 @@
         }
     },
     "s_choose_language": "Sprache wählen",
-    "s_english": "Englisch",
-    "s_french": "Französisch",
-    "s_german": "Deutsch",
-    "s_polish": "Polnisch",
-    "s_slovak": "Slowakisch",
-    "s_vietnamese": "Vietnamesisch",
-    "s_japanese": "Japanisch",
-
 
     "@_theme": {},
     "s_app_theme": "App Theme",
@@ -394,9 +387,9 @@
     "s_pin_required": "PIN erforderlich",
     "p_pin_required_desc": "Diese Aktion erfordert die PIV PIN.",
     "l_piv_pin_blocked": "Gesperrt, verwende die PUK zum Zurücksetzen",
-    "p_piv_pin_blocked_desc": "Die PIN ist blockiert. Benutze PUK um sie zurückzusetzen.",
+    "p_piv_pin_blocked_desc": "Die PIN ist blockiert. Benutze die PUK um sie zurückzusetzen.",
     "l_piv_pin_puk_blocked": "Gesperrt, Zurücksetzen auf Werkseinstellungen erforderlich",
-    "p_piv_pin_puk_blocked_desc": "Sowohl die PIN als auch PUK sind blockiert. Ein Werkseinsatz der PIV-Anwendung ist erforderlich.",
+    "p_piv_pin_puk_blocked_desc": "Sowohl die PIN als auch PUK sind blockiert. Die PIV-Anwendung muss zurückgesetzt werden.",
     "p_new_piv_pin_puk_requirements": "Eine {name} muss mindestens {length} Zeichen lang sein.",
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -431,7 +424,7 @@
         }
     },
     "s_dismiss": "Schließen",
-    "p_default_pin_puk_key_desc": "Es wird empfohlen, den Standard PIN, PUK und Management Key zu ändern.",
+    "p_default_pin_puk_key_desc": "Es wird empfohlen, die Standard PIN, PUK und Management Key zu ändern.",
     "l_warning_default_pin": "Achtung: Standard-PIN verwendet",
     "l_warning_default_puk": "Achtung: Standard-PUK verwendet",
     "l_default_pin_used": "Standard-PIN verwendet",
@@ -1114,7 +1107,7 @@
 
     "@_usb": {},
     "s_usb_processing": "Daten von YubiKey werden gelesen",
-    "s_usb_dont_remove": "Ziehen Sie den Schlüssel nicht ab\u2026",
+    "s_usb_dont_remove": "Bitte entferne nicht deinen YubiKey...",
     "l_usb_read_error": "Lesen der Daten von YubiKey fehlgeschlagen",
 
     "@_ndef": {},
