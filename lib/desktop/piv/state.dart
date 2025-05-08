@@ -399,17 +399,33 @@ class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
         }
       });
 
-      final (type, subject, validFrom, validTo) = parameters.when(
-        publicKey: () => (GenerateType.publicKey, null, null, null),
-        certificate:
-            (subject, validFrom, validTo) => (
-              GenerateType.certificate,
-              subject,
-              dateFormatter.format(validFrom),
-              dateFormatter.format(validTo),
-            ),
-        csr: (subject) => (GenerateType.csr, subject, null, null),
-      );
+      final (type, subject, validFrom, validTo) = switch (parameters) {
+        PivGeneratePublicKeyParameters() => (
+          GenerateType.publicKey,
+          null,
+          null,
+          null,
+        ),
+
+        PivGenerateCertificateParameters(
+          :final subject,
+          :final validFrom,
+          :final validTo,
+        ) =>
+          (
+            GenerateType.certificate,
+            subject,
+            dateFormatter.format(validFrom),
+            dateFormatter.format(validTo),
+          ),
+
+        PivGenerateCsrParameters(:final subject) => (
+          GenerateType.csr,
+          subject,
+          null,
+          null,
+        ),
+      };
 
       final pin = ref.read(_pinProvider(_session.devicePath));
 

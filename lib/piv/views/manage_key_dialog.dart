@@ -109,26 +109,31 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
 
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     if (_usesStoredKey) {
-      final status = (await notifier.verifyPin(_currentController.text)).when(
-        success: () => true,
-        failure: (reason) {
-          reason.maybeWhen(
-            invalidPin: (attemptsRemaining) {
-              _currentController.selection = TextSelection(
-                baseOffset: 0,
-                extentOffset: _currentController.text.length,
-              );
-              _currentFocus.requestFocus();
-              setState(() {
-                _attemptsRemaining = attemptsRemaining;
-                _currentIsWrong = true;
-              });
-            },
-            orElse: () {},
-          );
-          return false;
-        },
-      );
+      bool status = false;
+      switch (await notifier.verifyPin(_currentController.text)) {
+        case PinSuccess():
+          status = true;
+        case PinFailure(:final reason):
+          {
+            switch (reason) {
+              case PivInvalidPin(:final attemptsRemaining):
+                {
+                  _currentController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _currentController.text.length,
+                  );
+                  _currentFocus.requestFocus();
+                  setState(() {
+                    _attemptsRemaining = attemptsRemaining;
+                    _currentIsWrong = true;
+                  });
+                }
+              default:
+              // nothing
+            }
+            status = false;
+          }
+      }
       if (!status) {
         return;
       }

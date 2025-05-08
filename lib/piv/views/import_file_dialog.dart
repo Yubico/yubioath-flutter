@@ -98,10 +98,10 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           password: password.isNotEmpty ? password : null,
         );
 
-    final passwordIsWrong = result.maybeWhen(
-      invalidPassword: () => password.isNotEmpty,
-      orElse: () => true,
-    );
+    final passwordIsWrong = switch (result) {
+      PivExamineResultInvalidPassword() => password.isNotEmpty,
+      PivExamineResultResult() => true,
+    };
     if (passwordIsWrong) {
       _passwordController.selection = TextSelection(
         baseOffset: 0,
@@ -146,160 +146,15 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     }
     final password = _passwordController.text;
 
-    return state.when(
-      invalidPassword:
-          () => ResponsiveDialog(
-            title: Text(l10n.l_import_file),
-            actions: [
-              TextButton(
-                key: keys.unlockButton,
-                onPressed: password.isNotEmpty ? _examine : null,
-                child: Text(l10n.s_unlock),
-              ),
-            ],
-            builder:
-                (context, _) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:
-                        [
-                              Text(l10n.p_password_protected_file),
-                              AppTextField(
-                                autofocus: true,
-                                focusNode: _passwordFocus,
-                                controller: _passwordController,
-                                obscureText: _isObscure,
-                                autofillHints: const [AutofillHints.password],
-                                key: keys.managementKeyField,
-                                decoration: AppInputDecoration(
-                                  border: const OutlineInputBorder(),
-                                  labelText: l10n.s_password,
-                                  errorText:
-                                      _passwordIsWrong
-                                          ? l10n.s_wrong_password
-                                          : null,
-                                  errorMaxLines: 3,
-                                  icon: const Icon(Symbols.password),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _isObscure
-                                          ? Symbols.visibility
-                                          : Symbols.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _isObscure = !_isObscure;
-                                      });
-                                    },
-                                    tooltip:
-                                        _isObscure
-                                            ? l10n.s_show_password
-                                            : l10n.s_hide_password,
-                                  ),
-                                ),
-                                textInputAction: TextInputAction.next,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _passwordIsWrong = false;
-                                  });
-                                },
-                                onSubmitted: (_) {
-                                  if (password.isNotEmpty &&
-                                      !_passwordIsWrong) {
-                                    _examine();
-                                  } else {
-                                    _passwordFocus.requestFocus();
-                                  }
-                                },
-                              ).init(),
-                            ]
-                            .map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                ),
-                                child: e,
-                              ),
-                            )
-                            .toList(),
-                  ),
-                ),
-          ),
-      result: (_, keyType, certInfo, publicKeyMatch) {
-        final isFips =
-            ref.watch(currentDeviceDataProvider).valueOrNull?.info.isFips ??
-            false;
-        final unsupportedKey =
-            keyType != null &&
-            !getSupportedKeyTypes(
-              widget.pivState.version,
-              isFips,
-            ).contains(keyType);
-
+    switch (state) {
+      case PivExamineResultInvalidPassword():
         return ResponsiveDialog(
           title: Text(l10n.l_import_file),
           actions: [
             TextButton(
               key: keys.unlockButton,
-              onPressed:
-                  (keyType == null && certInfo == null) ||
-                          _importing ||
-                          unsupportedKey
-                      ? null
-                      : () async {
-                        final withContext = ref.read(withContextProvider);
-
-                        if (!await confirmOverwrite(
-                          context,
-                          widget.pivSlot,
-                          writeKey: keyType != null,
-                          writeCert: certInfo != null,
-                        )) {
-                          return;
-                        }
-
-                        setState(() {
-                          _importing = true;
-                        });
-
-                        void Function()? close;
-                        try {
-                          close = await withContext<void Function()>(
-                            (context) async => showMessage(
-                              context,
-                              l10n.l_importing_file,
-                              duration: const Duration(seconds: 30),
-                            ),
-                          );
-                          await ref
-                              .read(
-                                pivSlotsProvider(widget.devicePath).notifier,
-                              )
-                              .import(
-                                widget.pivSlot.slot,
-                                _data,
-                                password: password.isNotEmpty ? password : null,
-                                pinPolicy: getPinPolicy(
-                                  widget.pivSlot.slot,
-                                  _allowMatch,
-                                ),
-                              );
-                          await withContext((context) async {
-                            Navigator.of(context).pop(true);
-                            showMessage(context, l10n.s_file_imported);
-                          });
-                        } catch (err) {
-                          // TODO: More error cases
-                          setState(() {
-                            _passwordIsWrong = true;
-                            _importing = false;
-                          });
-                        } finally {
-                          close?.call();
-                        }
-                      },
-              child: Text(l10n.s_import),
+              onPressed: password.isNotEmpty ? _examine : null,
+              child: Text(l10n.s_unlock),
             ),
           ],
           builder:
@@ -309,135 +164,54 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children:
                       [
-                            Text(
-                              l10n.p_import_items_desc(
-                                widget.pivSlot.slot.getDisplayName(l10n),
-                              ),
-                            ),
-                            if (keyType == null && certInfo == null) ...[
-                              Row(
-                                children: [
-                                  Icon(Symbols.error, color: colorScheme.error),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    l10n.l_import_nothing,
-                                    style: errorStyle,
+                            Text(l10n.p_password_protected_file),
+                            AppTextField(
+                              autofocus: true,
+                              focusNode: _passwordFocus,
+                              controller: _passwordController,
+                              obscureText: _isObscure,
+                              autofillHints: const [AutofillHints.password],
+                              key: keys.managementKeyField,
+                              decoration: AppInputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: l10n.s_password,
+                                errorText:
+                                    _passwordIsWrong
+                                        ? l10n.s_wrong_password
+                                        : null,
+                                errorMaxLines: 3,
+                                icon: const Icon(Symbols.password),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _isObscure
+                                        ? Symbols.visibility
+                                        : Symbols.visibility_off,
                                   ),
-                                ],
-                              ),
-                            ],
-                            if (keyType != null) ...[
-                              Row(
-                                children: [
-                                  const Icon(Symbols.key),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    l10n.s_private_key,
-                                    style: textTheme.bodyLarge,
-                                    softWrap: true,
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(l10n.s_algorithm),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    keyType.name.toUpperCase(),
-                                    style: subtitleStyle,
-                                  ),
-                                ],
-                              ),
-                              if (unsupportedKey)
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Symbols.error,
-                                      color: colorScheme.error,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      l10n.l_unsupported_key_type,
-                                      style: errorStyle,
-                                    ),
-                                  ],
+                                  onPressed: () {
+                                    setState(() {
+                                      _isObscure = !_isObscure;
+                                    });
+                                  },
+                                  tooltip:
+                                      _isObscure
+                                          ? l10n.s_show_password
+                                          : l10n.s_hide_password,
                                 ),
-                            ],
-                            if (certInfo != null) ...[
-                              Row(
-                                children: [
-                                  const Icon(Symbols.id_card),
-                                  const SizedBox(width: 8.0),
-                                  Text(
-                                    l10n.s_certificate,
-                                    style: textTheme.bodyLarge,
-                                    softWrap: true,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
                               ),
-                              if (publicKeyMatch == false)
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.tertiary,
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Symbols.warning_amber,
-                                        fill: 1,
-                                        size: 16,
-                                        color: colorScheme.onTertiary,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Flexible(
-                                        child: Text(
-                                          l10n.l_warning_public_key_mismatch,
-                                          style: textTheme.bodySmall?.copyWith(
-                                            color: colorScheme.onTertiary,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              SizedBox(
-                                height:
-                                    140, // Needed for layout, adapt if text sizes changes
-                                child: CertInfoTable(certInfo, null),
-                              ),
-                            ],
-                            if (keyType != null &&
-                                !unsupportedKey &&
-                                widget.showMatch) ...[
-                              Row(
-                                children: [
-                                  const Icon(Symbols.tune),
-                                  const SizedBox(width: 8.0),
-                                  Text(
-                                    l10n.s_options,
-                                    style: textTheme.bodyLarge,
-                                  ),
-                                ],
-                              ),
-                              Text(l10n.p_key_options_bio_desc),
-                              FilterChip(
-                                tooltip: l10n.s_pin_policy,
-                                label: Text(l10n.s_allow_fingerprint),
-                                selected: _allowMatch,
-                                onSelected:
-                                    _importing
-                                        ? null
-                                        : (value) {
-                                          setState(() {
-                                            _allowMatch = value;
-                                          });
-                                        },
-                              ),
-                            ],
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                  _passwordIsWrong = false;
+                                });
+                              },
+                              onSubmitted: (_) {
+                                if (password.isNotEmpty && !_passwordIsWrong) {
+                                  _examine();
+                                } else {
+                                  _passwordFocus.requestFocus();
+                                }
+                              },
+                            ).init(),
                           ]
                           .map(
                             (e) => Padding(
@@ -451,7 +225,243 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                 ),
               ),
         );
-      },
-    );
+
+      case PivExamineResultResult(
+        :final keyType,
+        :final certInfo,
+        :final publicKeyMatch,
+      ):
+        {
+          final isFips =
+              ref.watch(currentDeviceDataProvider).valueOrNull?.info.isFips ??
+              false;
+          final unsupportedKey =
+              keyType != null &&
+              !getSupportedKeyTypes(
+                widget.pivState.version,
+                isFips,
+              ).contains(keyType);
+
+          return ResponsiveDialog(
+            title: Text(l10n.l_import_file),
+            actions: [
+              TextButton(
+                key: keys.unlockButton,
+                onPressed:
+                    (keyType == null && certInfo == null) ||
+                            _importing ||
+                            unsupportedKey
+                        ? null
+                        : () async {
+                          final withContext = ref.read(withContextProvider);
+
+                          if (!await confirmOverwrite(
+                            context,
+                            widget.pivSlot,
+                            writeKey: keyType != null,
+                            writeCert: certInfo != null,
+                          )) {
+                            return;
+                          }
+
+                          setState(() {
+                            _importing = true;
+                          });
+
+                          void Function()? close;
+                          try {
+                            close = await withContext<void Function()>(
+                              (context) async => showMessage(
+                                context,
+                                l10n.l_importing_file,
+                                duration: const Duration(seconds: 30),
+                              ),
+                            );
+                            await ref
+                                .read(
+                                  pivSlotsProvider(widget.devicePath).notifier,
+                                )
+                                .import(
+                                  widget.pivSlot.slot,
+                                  _data,
+                                  password:
+                                      password.isNotEmpty ? password : null,
+                                  pinPolicy: getPinPolicy(
+                                    widget.pivSlot.slot,
+                                    _allowMatch,
+                                  ),
+                                );
+                            await withContext((context) async {
+                              Navigator.of(context).pop(true);
+                              showMessage(context, l10n.s_file_imported);
+                            });
+                          } catch (err) {
+                            // TODO: More error cases
+                            setState(() {
+                              _passwordIsWrong = true;
+                              _importing = false;
+                            });
+                          } finally {
+                            close?.call();
+                          }
+                        },
+                child: Text(l10n.s_import),
+              ),
+            ],
+            builder:
+                (context, _) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:
+                        [
+                              Text(
+                                l10n.p_import_items_desc(
+                                  widget.pivSlot.slot.getDisplayName(l10n),
+                                ),
+                              ),
+                              if (keyType == null && certInfo == null) ...[
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Symbols.error,
+                                      color: colorScheme.error,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.l_import_nothing,
+                                      style: errorStyle,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                              if (keyType != null) ...[
+                                Row(
+                                  children: [
+                                    const Icon(Symbols.key),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.s_private_key,
+                                      style: textTheme.bodyLarge,
+                                      softWrap: true,
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(l10n.s_algorithm),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      keyType.name.toUpperCase(),
+                                      style: subtitleStyle,
+                                    ),
+                                  ],
+                                ),
+                                if (unsupportedKey)
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Symbols.error,
+                                        color: colorScheme.error,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        l10n.l_unsupported_key_type,
+                                        style: errorStyle,
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                              if (certInfo != null) ...[
+                                Row(
+                                  children: [
+                                    const Icon(Symbols.id_card),
+                                    const SizedBox(width: 8.0),
+                                    Text(
+                                      l10n.s_certificate,
+                                      style: textTheme.bodyLarge,
+                                      softWrap: true,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                                if (publicKeyMatch == false)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.tertiary,
+                                      borderRadius: BorderRadius.circular(4.0),
+                                    ),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Symbols.warning_amber,
+                                          fill: 1,
+                                          size: 16,
+                                          color: colorScheme.onTertiary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            l10n.l_warning_public_key_mismatch,
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  color: colorScheme.onTertiary,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                SizedBox(
+                                  height:
+                                      140, // Needed for layout, adapt if text sizes changes
+                                  child: CertInfoTable(certInfo, null),
+                                ),
+                              ],
+                              if (keyType != null &&
+                                  !unsupportedKey &&
+                                  widget.showMatch) ...[
+                                Row(
+                                  children: [
+                                    const Icon(Symbols.tune),
+                                    const SizedBox(width: 8.0),
+                                    Text(
+                                      l10n.s_options,
+                                      style: textTheme.bodyLarge,
+                                    ),
+                                  ],
+                                ),
+                                Text(l10n.p_key_options_bio_desc),
+                                FilterChip(
+                                  tooltip: l10n.s_pin_policy,
+                                  label: Text(l10n.s_allow_fingerprint),
+                                  selected: _allowMatch,
+                                  onSelected:
+                                      _importing
+                                          ? null
+                                          : (value) {
+                                            setState(() {
+                                              _allowMatch = value;
+                                            });
+                                          },
+                                ),
+                              ],
+                            ]
+                            .map(
+                              (e) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: e,
+                              ),
+                            )
+                            .toList(),
+                  ),
+                ),
+          );
+        }
+    }
   }
 }

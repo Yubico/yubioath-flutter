@@ -64,51 +64,50 @@ class DeviceErrorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    return node.map(
-      usbYubiKey: (node) => _buildUsbPid(context, ref, node.pid),
-      nfcReader:
-          (node) => switch (error) {
-            'unknown-device' => HomeMessagePage(
-              centered: true,
-              graphic: Icon(
-                Symbols.help,
-                size: 96,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              header: l10n.s_unknown_device,
-            ),
-            'restricted-nfc' => HomeMessagePage(
-              centered: true,
-              graphic: Icon(
-                Symbols.contactless,
-                size: 96,
-                color: Theme.of(context).colorScheme.tertiary,
-              ),
-              header: l10n.l_deactivate_restricted_nfc,
-              message: l10n.p_deactivate_restricted_nfc_desc,
-              footnote: l10n.p_deactivate_restricted_nfc_footer,
-            ),
-            'no-scp11b-nfc-support' => HomeMessagePage(
-              centered: true,
-              graphic: Icon(
-                Symbols.contactless,
-                size: 96,
-                color: Theme.of(context).colorScheme.tertiary,
-              ),
-              header: l10n.l_configuration_unsupported,
-              message: l10n.p_scp_unsupported,
-            ),
-            _ => HomeMessagePage(
-              centered: true,
-              graphic: Image.asset(
-                'assets/graphics/no-key.png',
-                filterQuality: FilterQuality.medium,
-                scale: 2,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              header: l10n.l_place_on_nfc_reader,
-            ),
-          },
-    );
+    return switch (node) {
+      UsbYubiKeyNode(:final pid) => _buildUsbPid(context, ref, pid),
+      NfcReaderNode() => switch (error) {
+        'unknown-device' => HomeMessagePage(
+          centered: true,
+          graphic: Icon(
+            Symbols.help,
+            size: 96,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          header: l10n.s_unknown_device,
+        ),
+        'restricted-nfc' => HomeMessagePage(
+          centered: true,
+          graphic: Icon(
+            Symbols.contactless,
+            size: 96,
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
+          header: l10n.l_deactivate_restricted_nfc,
+          message: l10n.p_deactivate_restricted_nfc_desc,
+          footnote: l10n.p_deactivate_restricted_nfc_footer,
+        ),
+        'no-scp11b-nfc-support' => HomeMessagePage(
+          centered: true,
+          graphic: Icon(
+            Symbols.contactless,
+            size: 96,
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
+          header: l10n.l_configuration_unsupported,
+          message: l10n.p_scp_unsupported,
+        ),
+        _ => HomeMessagePage(
+          centered: true,
+          graphic: Image.asset(
+            'assets/graphics/no-key.png',
+            filterQuality: FilterQuality.medium,
+            scale: 2,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          header: l10n.l_place_on_nfc_reader,
+        ),
+      },
+    };
   }
 }

@@ -290,28 +290,31 @@ class RpcSession {
       while (!completed) {
         final response = await _connection.getResponse();
         _log.traffic('RECV', jsonEncode(response));
-        response.map(
-          signal: (signal) {
-            final signaler = request.signal;
-            if (signaler != null) {
-              signaler._recv.sink.add(signal);
-            } else {
-              _log.warning('Received unhandled signal: $signal');
+        switch (response) {
+          case Signal():
+            {
+              final signaler = request.signal;
+              if (signaler != null) {
+                signaler._recv.sink.add(response);
+              } else {
+                _log.warning('Received unhandled signal: $response');
+              }
             }
-          },
-          success: (success) {
-            request.completer.complete(success.body);
-            for (final flag in success.flags) {
-              _log.traffic('FLAG', flag);
-              _flags.add(flag);
+          case Success(:final body, :final flags):
+            {
+              request.completer.complete(body);
+              for (final flag in flags) {
+                _log.traffic('FLAG', flag);
+                _flags.add(flag);
+              }
+              completed = true;
             }
-            completed = true;
-          },
-          error: (error) {
-            request.completer.completeError(error);
-            completed = true;
-          },
-        );
+          case RpcError():
+            {
+              request.completer.completeError(response);
+              completed = true;
+            }
+        }
       }
 
       await signalSubscription?.cancel();
