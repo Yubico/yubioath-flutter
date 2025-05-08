@@ -9,7 +9,7 @@ fi
 echo "# Extract .app from .tar.gz"
 tar -xzf yubioath-desktop*.tar.gz
 
-xattr -d com.apple.quarantine "Yubico Authenticator.app"
+xattr -r -d com.apple.quarantine "Yubico Authenticator.app"
 
 if [ -n "$1" ] && [ -n "$2" ] # Standalone
 then
