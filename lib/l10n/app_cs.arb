@@ -388,6 +388,7 @@
     "p_pin_required_desc": "Akce, kterou se chystáte provést, vyžaduje zadání kódu PIV PIN.",
     "l_piv_pin_blocked": "Zablokováno, pro obnovení použijte PUK",
     "p_piv_pin_blocked_desc": "PIN je zablokován. Použijte PUK pro jeho obnovení.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Zablokováno, je potřeba obnovení továrních nastavení",
     "p_piv_pin_puk_blocked_desc": "PIN i PUK jsou zablokovány. Je potřeba resetovat aplikaci PIV.",
     "p_new_piv_pin_puk_requirements": "{name} musí mít alespoň {length} znaků.",

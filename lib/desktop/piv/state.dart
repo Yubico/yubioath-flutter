@@ -51,6 +51,14 @@ final _sessionProvider = Provider.autoDispose.family<
   // Make sure the managementKey and PIN are held for the duration of the session.
   ref.watch(_managementKeyProvider(devicePath));
   ref.watch(_pinProvider(devicePath));
+  // Reset the state if resetBlocked is toggled from != 0 to == 0 (as on Global Reset)
+  ref.listen(currentDeviceDataProvider, (prev, next) {
+    final prevResetBlocked = prev?.value?.info.resetBlocked;
+    final nextResetBlocked = next.value?.info.resetBlocked;
+    if (prevResetBlocked != 0 && nextResetBlocked == 0) {
+      ref.invalidateSelf();
+    }
+  });
   return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
     'ccid',
     'piv',

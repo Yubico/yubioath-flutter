@@ -242,9 +242,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                           hasFeature(features.actions)
                               ? (context) => pivBuildActions(
                                 context,
-                                widget.data.node.path,
+                                widget.data,
                                 pivState,
-                                ref,
                               )
                               : null,
                       keyActionsBadge: pivShowActionsNotifier(pivState),
@@ -257,6 +256,11 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                             });
                           });
                         }
+
+                        final isBio = [
+                          FormFactor.usbABio,
+                          FormFactor.usbCBio,
+                        ].contains(widget.data.info.formFactor);
 
                         final usingDefaultPin =
                             pivState.metadata?.pinMetadata.defaultValue == true;
@@ -293,7 +297,9 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                 MaterialBanner(
                                   padding: EdgeInsets.all(18),
                                   content: Text(
-                                    pukAttempts == 0
+                                    isBio
+                                        ? l10n.p_piv_pin_blocked_bio_desc
+                                        : pukAttempts == 0
                                         ? l10n.p_piv_pin_puk_blocked_desc
                                         : l10n.p_piv_pin_blocked_desc,
                                   ),

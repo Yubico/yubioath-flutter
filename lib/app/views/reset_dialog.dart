@@ -73,6 +73,7 @@ class ResetDialog extends ConsumerStatefulWidget {
 
 class _ResetDialogState extends ConsumerState<ResetDialog> {
   late Capability? _application;
+  late bool _globalReset;
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
@@ -84,7 +85,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     super.initState();
     final nfc = widget.data.node.transport == Transport.nfc;
     _totalSteps = nfc ? 2 : 3;
-    _application = widget.application;
+    _globalReset = _isGlobalReset();
+    _application = !_globalReset ? widget.application : null;
   }
 
   @override
@@ -109,6 +111,20 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     };
   }
 
+  bool _isGlobalReset() {
+    final enabled =
+        widget.data.info.config.enabledCapabilities[widget
+            .data
+            .node
+            .transport] ??
+        0;
+    final isBio = [
+      FormFactor.usbABio,
+      FormFactor.usbCBio,
+    ].contains(widget.data.info.formFactor);
+    return isBio && (enabled & Capability.piv.value) != 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasFeature = ref.watch(featureProvider);
@@ -121,11 +137,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             .transport] ??
         0;
 
-    final isBio = [
-      FormFactor.usbABio,
-      FormFactor.usbCBio,
-    ].contains(widget.data.info.formFactor);
-    final globalReset = isBio && (enabled & Capability.piv.value) != 0;
     final l10n = AppLocalizations.of(context);
     final usbTransport = widget.data.node.transport == Transport.usb;
 
@@ -289,7 +300,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                         });
                       },
                       null =>
-                        globalReset
+                        _globalReset
                             ? () async {
                               setState(() {
                                 _resetting = true;
@@ -324,7 +335,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children:
                   [
-                        if (!globalReset)
+                        if (!_globalReset)
                           Builder(
                             builder: (context) {
                               final width = MediaQuery.of(context).size.width;
@@ -383,7 +394,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                             Capability.piv => l10n.p_warning_piv_reset,
                             Capability.fido2 => l10n.p_warning_deletes_accounts,
                             _ =>
-                              globalReset
+                              _globalReset
                                   ? l10n.p_warning_global_reset
                                   : l10n.p_factory_reset_an_app,
                           },
@@ -400,7 +411,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                             Capability.piv => l10n.p_warning_piv_reset_desc,
                             Capability.fido2 => l10n.p_warning_disable_accounts,
                             _ =>
-                              globalReset
+                              _globalReset
                                   ? l10n.p_warning_global_reset_desc
                                   : l10n.p_factory_reset_desc,
                           }),

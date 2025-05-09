@@ -388,6 +388,7 @@
     "p_pin_required_desc": "L'action que vous allez effectuer nécessite la saisie du PIN PIV.",
     "l_piv_pin_blocked": "Bloqué, utilisez PUK pour réinitialiser",
     "p_piv_pin_blocked_desc": "Le code PIN est bloqué. Utilisez le code PUK pour le réinitialiser.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Bloqué, réinitialisation aux paramètres d'usine nécessaire",
     "p_piv_pin_puk_blocked_desc": "Le code PIN et le code PUK sont tous deux bloqués. Une réinitialisation d'usine de l'application PIV est nécessaire.",
     "p_new_piv_pin_puk_requirements": "Le {name} doit avoir au moins {length} caractères.",

@@ -388,6 +388,7 @@
     "p_pin_required_desc": "您将要执行的操作需要输入 PIV PIN 。",
     "l_piv_pin_blocked": "已封禁，请使用 PUK 以重置",
     "p_piv_pin_blocked_desc": "PIN 已被封禁。请使用 PUK 重置。",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "已封禁，需要出厂重置",
     "p_piv_pin_puk_blocked_desc": "PIN 和 PUK 均被封禁。需要对 PIV 应用程序进行出厂重置。",
     "p_new_piv_pin_puk_requirements": "{name} 的长度必须至少为 {length} 个字符。",
