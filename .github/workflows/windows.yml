@@ -62,7 +62,6 @@ jobs:
       - name: Move .dll files
         run: |
           $dest = "build\windows\x64\runner\Release"
-          dir
           cp $dest\helper\_internal/MSVCP140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
@@ -129,8 +128,8 @@ jobs:
         ls -la
         rm 1.zip
         cd ..
-        cp signed/authenticator-helper.exe yubioath-desktop-windows/yubioath-desktop-dennis-windows/helper/authenticator-helper.exe
-        cp signed/authenticator.exe yubioath-desktop-windows/yubioath-desktop-dennis-windows/authenticator.exe
+        cp signed/authenticator-helper.exe yubioath-desktop-windows/*/helper/authenticator-helper.exe
+        cp signed/authenticator.exe yubioath-desktop-windows/*/authenticator.exe
     - name: upload signed artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -156,9 +155,11 @@ jobs:
 
       - name: Create an unsigned .msi installer package
         run: |
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
           $env:PATH += ";$env:WIX\bin"
-          $env:SRCDIR = "signed-files\yubioath-desktop-dennis-windows\"
-          heat dir .\signed-files\yubioath-desktop-dennis-windows\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
+          $env:SRCDIR = "signed-files\yubioath-desktop-$branch-windows\"
+          heat dir .\signed-files\yubioath-desktop-$branch-windows\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
       - name: Rename and archive app bundle
