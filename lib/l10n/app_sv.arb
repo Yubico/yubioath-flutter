@@ -388,6 +388,7 @@
     "p_pin_required_desc": "Den åtgärd du ska utföra kräver att du anger PIV PIN-koden.",
     "l_piv_pin_blocked": "Blockerad, använd PUK för att återställa",
     "p_piv_pin_blocked_desc": "PIN-koden är blockerad. Använd PUK för att återställa den.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Blockerad, fabriksåterställning krävs",
     "p_piv_pin_puk_blocked_desc": "Både PIN och PUK är blockerade. En fabriksåterställning av PIV applikationen krävs.",
     "p_new_piv_pin_puk_requirements": "A {name} must be at least {length} characters long.",

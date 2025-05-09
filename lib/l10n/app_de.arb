@@ -388,6 +388,7 @@
     "p_pin_required_desc": "Diese Aktion erfordert die PIV PIN.",
     "l_piv_pin_blocked": "Gesperrt, verwende die PUK zum Zurücksetzen",
     "p_piv_pin_blocked_desc": "Die PIN ist blockiert. Benutze die PUK um sie zurückzusetzen.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Gesperrt, Zurücksetzen auf Werkseinstellungen erforderlich",
     "p_piv_pin_puk_blocked_desc": "Sowohl die PIN als auch PUK sind blockiert. Die PIV-Anwendung muss zurückgesetzt werden.",
     "p_new_piv_pin_puk_requirements": "Eine {name} muss mindestens {length} Zeichen lang sein.",

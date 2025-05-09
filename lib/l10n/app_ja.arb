@@ -388,6 +388,7 @@
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
     "p_piv_pin_blocked_desc": "PIN がブロックされています。PUK を使用してリセットしてください。",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットする必要があります",
     "p_piv_pin_puk_blocked_desc": "PIN と PUK の両方がブロックされています。PIV アプリケーションの工場出荷時リセットが必要です。",
     "p_new_piv_pin_puk_requirements": "{name} は {length} 文字以上で設定してください。",

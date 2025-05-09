@@ -388,6 +388,7 @@
     "p_pin_required_desc": "Hành động bạn sắp thực hiện yêu cầu phải nhập Mã PIN PIV.",
     "l_piv_pin_blocked": "Bị khóa, sử dụng PUK để khôi phục",
     "p_piv_pin_blocked_desc": "The PIN is blocked. Use the PUK to reset it.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Bị khóa, cần khôi phục cài đặt gốc",
     "p_piv_pin_puk_blocked_desc": "Both the PIN and PUK are blocked. A factory reset of the PIV application is required.",
     "p_new_piv_pin_puk_requirements": "A {name} must be at least {length} characters long.",

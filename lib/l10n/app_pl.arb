@@ -388,6 +388,7 @@
     "p_pin_required_desc": "Działanie wymaga wpisania kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano. Użyj kodu PUK, aby zresetować",
     "p_piv_pin_blocked_desc": "Kod PIN jest zablokowany. Użyj kodu PUK, aby zresetować.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Zablokowano. Wymagane jest przywrócenie ustawień fabrycznych",
     "p_piv_pin_puk_blocked_desc": "Kody PIN i PUK są zablokowane. Wymagane jest przywrócenie ustawień fabrycznych aplikacji PIV.",
     "p_new_piv_pin_puk_requirements": "{name} musi składać się z co najmniej {length} znaków.",

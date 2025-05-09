@@ -16,12 +16,10 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
@@ -42,9 +40,8 @@ bool pivShowActionsNotifier(PivState state) {
 
 Widget pivBuildActions(
   BuildContext context,
-  DevicePath devicePath,
+  YubiKeyData data,
   PivState pivState,
-  WidgetRef ref,
 ) {
   final colors =
       Theme.of(context).buttonTheme.colorScheme ??
@@ -60,11 +57,11 @@ Widget pivBuildActions(
   final pukAttempts = pivState.metadata?.pukMetadata.attemptsRemaining;
   final alertIcon = Icon(Symbols.warning_amber, color: colors.tertiary);
 
-  final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+  final devicePath = data.node.path;
   final isBio = [
     FormFactor.usbABio,
     FormFactor.usbCBio,
-  ].contains(deviceData?.info.formFactor);
+  ].contains(data.info.formFactor);
 
   return Column(
     children: [
