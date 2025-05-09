@@ -130,12 +130,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final hasFeature = ref.watch(featureProvider);
     final supported =
         widget.data.info.supportedCapabilities[widget.data.node.transport] ?? 0;
-    final enabled =
-        widget.data.info.config.enabledCapabilities[widget
-            .data
-            .node
-            .transport] ??
-        0;
 
     final l10n = AppLocalizations.of(context);
     final usbTransport = widget.data.node.transport == Transport.usb;
@@ -340,6 +334,16 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                             builder: (context) {
                               final width = MediaQuery.of(context).size.width;
                               final showLabels = width > 320;
+                              final enabled =
+                                  widget
+                                      .data
+                                      .info
+                                      .config
+                                      .enabledCapabilities[widget
+                                      .data
+                                      .node
+                                      .transport] ??
+                                  0;
                               return SegmentedButton<Capability>(
                                 emptySelectionAllowed: true,
                                 segments:
