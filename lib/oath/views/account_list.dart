@@ -45,7 +45,10 @@ class AccountList extends ConsumerWidget {
     final credentials = ref.watch(filteredCredentialsProvider(accounts));
     final favorites = ref.watch(favoritesProvider);
     if (credentials.isEmpty) {
-      return Center(child: Text(l10n.s_no_accounts));
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Center(child: Text(l10n.s_no_accounts)),
+      );
     }
 
     final pinnedCreds = credentials.where(
@@ -63,62 +66,59 @@ class AccountList extends ConsumerWidget {
     final normalLayout =
         oathLayout == OathLayout.grid ? FlexLayout.grid : FlexLayout.list;
 
-    return FocusTraversalGroup(
-      policy: WidgetOrderTraversalPolicy(),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (pinnedCreds.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 18, bottom: 8),
-                child: Text(l10n.s_pinned, style: labelStyle),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: FlexBox<OathPair>(
-                  items: pinnedCreds.toList(),
-                  itemBuilder:
-                      (value) => AccountView(
-                        value.credential,
-                        expanded: expanded,
-                        selected: value.credential == selected,
-                        large: pinnedLayout == FlexLayout.grid,
-                      ),
-                  cellMinWidth: 250,
-                  spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
-                  runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
-                  layout: pinnedLayout,
-                ),
-              ),
-            ],
-            if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.only(left: 18, bottom: 8),
-                child: Text(l10n.s_accounts, style: labelStyle),
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (pinnedCreds.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 18, bottom: 8),
+              child: Text(l10n.s_pinned, style: labelStyle),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: FlexBox<OathPair>(
-                items: creds.toList(),
+                items: pinnedCreds.toList(),
                 itemBuilder:
                     (value) => AccountView(
                       value.credential,
                       expanded: expanded,
                       selected: value.credential == selected,
-                      large: normalLayout == FlexLayout.grid,
+                      large: pinnedLayout == FlexLayout.grid,
                     ),
                 cellMinWidth: 250,
-                spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
-                runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
-                layout: normalLayout,
+                spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
+                runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
+                layout: pinnedLayout,
               ),
             ),
           ],
-        ),
+          if (pinnedCreds.isNotEmpty && creds.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.only(left: 18, bottom: 8),
+              child: Text(l10n.s_accounts, style: labelStyle),
+            ),
+          ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: FlexBox<OathPair>(
+              items: creds.toList(),
+              itemBuilder:
+                  (value) => AccountView(
+                    value.credential,
+                    expanded: expanded,
+                    selected: value.credential == selected,
+                    large: normalLayout == FlexLayout.grid,
+                  ),
+              cellMinWidth: 250,
+              spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
+              runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
+              layout: normalLayout,
+            ),
+          ),
+        ],
       ),
     );
   }

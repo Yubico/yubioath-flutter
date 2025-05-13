@@ -25,7 +25,7 @@ import '../state.dart';
 import 'device_picker.dart';
 import 'keys.dart';
 
-class NavigationItem extends StatelessWidget {
+class NavigationItem extends StatefulWidget {
   final Widget leading;
   final String title;
   final bool collapsed;
@@ -42,15 +42,28 @@ class NavigationItem extends StatelessWidget {
   });
 
   @override
+  State<StatefulWidget> createState() => _NavigationItemState();
+}
+
+class _NavigationItemState extends State<NavigationItem> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    if (collapsed) {
+    if (widget.collapsed) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child:
-            selected
+            widget.selected
                 ? Theme(
                   data: theme.copyWith(
                     colorScheme: colorScheme.copyWith(
@@ -59,30 +72,32 @@ class NavigationItem extends StatelessWidget {
                     ),
                   ),
                   child: IconButton.filled(
-                    icon: leading,
-                    tooltip: title,
+                    focusNode: _focusNode,
+                    icon: widget.leading,
+                    tooltip: widget.title,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    onPressed: onTap,
+                    onPressed: widget.onTap,
                   ),
                 )
                 : IconButton(
-                  icon: leading,
-                  tooltip: title,
+                  focusNode: _focusNode,
+                  icon: widget.leading,
+                  tooltip: widget.title,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  onPressed: onTap,
+                  onPressed: widget.onTap,
                 ),
       );
     } else {
       return ListTile(
-        enabled: onTap != null,
+        enabled: widget.onTap != null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-        leading: leading,
-        title: Text(title),
+        leading: widget.leading,
+        title: Text(widget.title),
         minVerticalPadding: 16,
-        onTap: onTap,
-        tileColor: selected ? colorScheme.secondaryContainer : null,
-        textColor: selected ? colorScheme.onSecondaryContainer : null,
-        iconColor: selected ? colorScheme.onSecondaryContainer : null,
+        onTap: widget.onTap,
+        tileColor: widget.selected ? colorScheme.secondaryContainer : null,
+        textColor: widget.selected ? colorScheme.onSecondaryContainer : null,
+        iconColor: widget.selected ? colorScheme.onSecondaryContainer : null,
         contentPadding: const EdgeInsets.only(left: 16.0),
       );
     }

@@ -461,106 +461,151 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                       );
                     }
                     : null,
-            headerSliver: Focus(
-              canRequestFocus: false,
-              onKeyEvent: (node, event) {
-                if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                  node.focusInDirection(TraversalDirection.down);
-                  return KeyEventResult.handled;
-                }
-                if (event.logicalKey == LogicalKeyboardKey.escape) {
-                  searchController.clear();
-                  ref.read(accountsSearchProvider.notifier).setFilter('');
-                  node.unfocus();
-                  setState(() {});
-                  return KeyEventResult.handled;
-                }
-                return KeyEventResult.ignored;
+            headerSliver: Actions(
+              actions: {
+                EscapeIntent: CallbackAction<EscapeIntent>(
+                  onInvoke: (intent) {
+                    if (searchController.text.isNotEmpty) {
+                      searchController.clear();
+                      ref.read(accountsSearchProvider.notifier).setFilter('');
+                      setState(() {});
+                    } else {
+                      searchFocus.unfocus();
+                    }
+                    return null;
+                  },
+                ),
               },
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth;
-                  final textTheme = Theme.of(context).textTheme;
-                  return Consumer(
-                    builder: (context, ref, child) {
-                      final credentials = ref.watch(
-                        filteredCredentialsProvider(
-                          ref.watch(
-                                credentialListProvider(widget.devicePath),
-                              ) ??
-                              [],
-                        ),
-                      );
-                      final favorites = ref.watch(favoritesProvider);
-                      final pinnedCreds = credentials.where(
-                        (entry) => favorites.contains(entry.credential.id),
-                      );
+              child: Shortcuts(
+                shortcuts: {
+                  // Allow directional focus down
+                  SingleActivator(
+                    LogicalKeyboardKey.arrowDown,
+                  ): DirectionalFocusIntent(
+                    TraversalDirection.down,
+                    ignoreTextFields: false,
+                  ),
+                },
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+                    final textTheme = Theme.of(context).textTheme;
+                    return Consumer(
+                      builder: (context, ref, child) {
+                        final credentials = ref.watch(
+                          filteredCredentialsProvider(
+                            ref.watch(
+                                  credentialListProvider(widget.devicePath),
+                                ) ??
+                                [],
+                          ),
+                        );
+                        final favorites = ref.watch(favoritesProvider);
+                        final pinnedCreds = credentials.where(
+                          (entry) => favorites.contains(entry.credential.id),
+                        );
 
-                      final availableLayouts =
-                          pinnedCreds.isEmpty ||
-                                  pinnedCreds.length == credentials.length
-                              ? OathLayout.values.where(
-                                (element) => element != OathLayout.mixed,
-                              )
-                              : OathLayout.values;
-                      final oathLayout = ref.watch(oathLayoutProvider);
+                        final availableLayouts =
+                            pinnedCreds.isEmpty ||
+                                    pinnedCreds.length == credentials.length
+                                ? OathLayout.values.where(
+                                  (element) => element != OathLayout.mixed,
+                                )
+                                : OathLayout.values;
+                        final oathLayout = ref.watch(oathLayoutProvider);
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                          vertical: 8.0,
-                        ),
-                        child:
-                            AppTextField(
-                              key: searchField,
-                              controller: searchController,
-                              canRequestFocus: _canRequestFocus,
-                              focusNode: searchFocus,
-                              // Use the default style, but with a smaller font size:
-                              style: textTheme.titleMedium?.copyWith(
-                                fontSize: textTheme.titleSmall?.fontSize,
-                              ),
-                              decoration: AppInputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(48),
-                                  borderSide: BorderSide(
-                                    width: 0,
-                                    style:
-                                        searchFocus.hasFocus
-                                            ? BorderStyle.solid
-                                            : BorderStyle.none,
-                                  ),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10.0,
+                            vertical: 8.0,
+                          ),
+                          child:
+                              AppTextField(
+                                key: searchField,
+                                controller: searchController,
+                                canRequestFocus: _canRequestFocus,
+                                focusNode: searchFocus,
+                                // Use the default style, but with a smaller font size:
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontSize: textTheme.titleSmall?.fontSize,
                                 ),
-                                contentPadding: const EdgeInsets.all(16),
-                                fillColor: Theme.of(context).hoverColor,
-                                filled: true,
-                                hintText: l10n.s_search_accounts,
-                                isDense: true,
-                                prefixIcon: const Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                    start: 8.0,
-                                  ),
-                                  child: Icon(Icons.search_outlined),
-                                ),
-                                suffixIcons: [
-                                  if (searchController.text.isNotEmpty)
-                                    IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      iconSize: 16,
-                                      onPressed: () {
-                                        searchController.clear();
-                                        ref
-                                            .read(
-                                              accountsSearchProvider.notifier,
-                                            )
-                                            .setFilter('');
-                                        setState(() {});
-                                      },
+                                decoration: AppInputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(48),
+                                    borderSide: BorderSide(
+                                      width: 0,
+                                      style:
+                                          searchFocus.hasFocus
+                                              ? BorderStyle.solid
+                                              : BorderStyle.none,
                                     ),
-                                  if (searchController.text.isEmpty) ...[
-                                    if (width >= 450)
-                                      ...availableLayouts.map(
-                                        (e) => MouseRegion(
+                                  ),
+                                  contentPadding: const EdgeInsets.all(16),
+                                  fillColor: Theme.of(context).hoverColor,
+                                  filled: true,
+                                  hintText: l10n.s_search_accounts,
+                                  isDense: true,
+                                  prefixIcon: const Padding(
+                                    padding: EdgeInsetsDirectional.only(
+                                      start: 8.0,
+                                    ),
+                                    child: Icon(Icons.search_outlined),
+                                  ),
+                                  suffixIcons: [
+                                    if (searchController.text.isNotEmpty)
+                                      IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        iconSize: 16,
+                                        onPressed: () {
+                                          searchController.clear();
+                                          ref
+                                              .read(
+                                                accountsSearchProvider.notifier,
+                                              )
+                                              .setFilter('');
+                                          setState(() {});
+                                        },
+                                      ),
+                                    if (searchController.text.isEmpty) ...[
+                                      if (width >= 450)
+                                        ...availableLayouts.map(
+                                          (e) => MouseRegion(
+                                            onEnter: (event) {
+                                              if (!searchFocus.hasFocus) {
+                                                setState(() {
+                                                  _canRequestFocus = false;
+                                                });
+                                              }
+                                            },
+                                            onExit: (event) {
+                                              setState(() {
+                                                _canRequestFocus = true;
+                                              });
+                                            },
+                                            child: IconButton(
+                                              tooltip: e.getDisplayName(l10n),
+                                              onPressed: () {
+                                                ref
+                                                    .read(
+                                                      oathLayoutProvider
+                                                          .notifier,
+                                                    )
+                                                    .setLayout(e);
+                                              },
+                                              icon: Icon(
+                                                e._icon,
+                                                color:
+                                                    e == oathLayout
+                                                        ? Theme.of(
+                                                          context,
+                                                        ).colorScheme.primary
+                                                        : null,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      if (width < 450)
+                                        MouseRegion(
                                           onEnter: (event) {
                                             if (!searchFocus.hasFocus) {
                                               setState(() {
@@ -573,118 +618,82 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                               _canRequestFocus = true;
                                             });
                                           },
-                                          child: IconButton(
-                                            tooltip: e.getDisplayName(l10n),
-                                            onPressed: () {
-                                              ref
-                                                  .read(
-                                                    oathLayoutProvider.notifier,
-                                                  )
-                                                  .setLayout(e);
-                                            },
-                                            icon: Icon(
-                                              e._icon,
-                                              color:
-                                                  e == oathLayout
-                                                      ? Theme.of(
-                                                        context,
-                                                      ).colorScheme.primary
-                                                      : null,
+                                          child: PopupMenuButton(
+                                            constraints:
+                                                const BoxConstraints.tightFor(),
+                                            tooltip: l10n.s_select_layout,
+                                            popUpAnimationStyle: AnimationStyle(
+                                              duration: Duration.zero,
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                    if (width < 450)
-                                      MouseRegion(
-                                        onEnter: (event) {
-                                          if (!searchFocus.hasFocus) {
-                                            setState(() {
-                                              _canRequestFocus = false;
-                                            });
-                                          }
-                                        },
-                                        onExit: (event) {
-                                          setState(() {
-                                            _canRequestFocus = true;
-                                          });
-                                        },
-                                        child: PopupMenuButton(
-                                          constraints:
-                                              const BoxConstraints.tightFor(),
-                                          tooltip: l10n.s_select_layout,
-                                          popUpAnimationStyle: AnimationStyle(
-                                            duration: Duration.zero,
-                                          ),
-                                          icon: Icon(
-                                            oathLayout._icon,
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                          ),
-                                          itemBuilder:
-                                              (context) => [
-                                                ...availableLayouts.map(
-                                                  (e) => PopupMenuItem(
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Tooltip(
-                                                          message: e
-                                                              .getDisplayName(
-                                                                l10n,
-                                                              ),
-                                                          child: Icon(
-                                                            e._icon,
-                                                            color:
-                                                                e == oathLayout
-                                                                    ? Theme.of(
-                                                                          context,
-                                                                        )
-                                                                        .colorScheme
-                                                                        .primary
-                                                                    : null,
+                                            icon: Icon(
+                                              oathLayout._icon,
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                            ),
+                                            itemBuilder:
+                                                (context) => [
+                                                  ...availableLayouts.map(
+                                                    (e) => PopupMenuItem(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Tooltip(
+                                                            message: e
+                                                                .getDisplayName(
+                                                                  l10n,
+                                                                ),
+                                                            child: Icon(
+                                                              e._icon,
+                                                              color:
+                                                                  e == oathLayout
+                                                                      ? Theme.of(
+                                                                        context,
+                                                                      ).colorScheme.primary
+                                                                      : null,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
+                                                      onTap: () {
+                                                        ref
+                                                            .read(
+                                                              oathLayoutProvider
+                                                                  .notifier,
+                                                            )
+                                                            .setLayout(e);
+                                                      },
                                                     ),
-                                                    onTap: () {
-                                                      ref
-                                                          .read(
-                                                            oathLayoutProvider
-                                                                .notifier,
-                                                          )
-                                                          .setLayout(e);
-                                                    },
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                          ),
                                         ),
-                                      ),
+                                    ],
                                   ],
-                                ],
-                              ),
+                                ),
 
-                              onChanged: (value) {
-                                ref
-                                    .read(accountsSearchProvider.notifier)
-                                    .setFilter(value);
-                                _scrollSearchField();
-                                setState(() {});
-                              },
-                              textInputAction: TextInputAction.next,
-                              onSubmitted: (value) {
-                                Focus.of(
-                                  context,
-                                ).focusInDirection(TraversalDirection.down);
-                              },
-                            ).init(),
-                      );
-                    },
-                  );
-                },
+                                onChanged: (value) {
+                                  ref
+                                      .read(accountsSearchProvider.notifier)
+                                      .setFilter(value);
+                                  _scrollSearchField();
+                                  setState(() {});
+                                },
+                                textInputAction: TextInputAction.next,
+                                onSubmitted: (value) {
+                                  Focus.of(
+                                    context,
+                                  ).focusInDirection(TraversalDirection.down);
+                                },
+                              ).init(),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
             builder: (context, expanded) {
