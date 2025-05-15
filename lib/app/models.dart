@@ -90,7 +90,7 @@ enum Section {
 }
 
 @freezed
-class YubiKeyData with _$YubiKeyData {
+abstract class YubiKeyData with _$YubiKeyData {
   factory YubiKeyData(DeviceNode node, String name, DeviceInfo info) =
       _YubiKeyData;
 }
@@ -114,7 +114,7 @@ class DevicePath {
 }
 
 @freezed
-class DeviceNode with _$DeviceNode {
+sealed class DeviceNode with _$DeviceNode {
   const DeviceNode._();
   factory DeviceNode.usbYubiKey(
     DevicePath path,
@@ -124,14 +124,16 @@ class DeviceNode with _$DeviceNode {
   ) = UsbYubiKeyNode;
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
 
-  Transport get transport =>
-      map(usbYubiKey: (_) => Transport.usb, nfcReader: (_) => Transport.nfc);
+  Transport get transport => switch (this) {
+    UsbYubiKeyNode() => Transport.usb,
+    NfcReaderNode() => Transport.nfc,
+  };
 }
 
 enum ActionStyle { normal, primary, error }
 
 @freezed
-class ActionItem with _$ActionItem {
+abstract class ActionItem with _$ActionItem {
   factory ActionItem({
     required Widget icon,
     required String title,
@@ -146,7 +148,7 @@ class ActionItem with _$ActionItem {
 }
 
 @freezed
-class WindowState with _$WindowState {
+abstract class WindowState with _$WindowState {
   factory WindowState({
     required bool focused,
     required bool visible,
@@ -156,7 +158,7 @@ class WindowState with _$WindowState {
 }
 
 @freezed
-class KeyCustomization with _$KeyCustomization {
+abstract class KeyCustomization with _$KeyCustomization {
   factory KeyCustomization({
     required int serial,
     @JsonKey(includeIfNull: false) String? name,
@@ -175,4 +177,13 @@ class _ColorConverter implements JsonConverter<Color?, int?> {
 
   @override
   int? toJson(Color? object) => object?.toInt32;
+}
+
+@freezed
+abstract class LocaleStatus with _$LocaleStatus {
+  factory LocaleStatus({required int translated, required int proofread}) =
+      _LocaleStatus;
+
+  factory LocaleStatus.fromJson(Map<String, dynamic> json) =>
+      _$LocaleStatusFromJson(json);
 }

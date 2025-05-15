@@ -280,11 +280,13 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   }
 
   void _pollDevice() {
-    switch (_deviceNode) {
-      case UsbYubiKeyNode _:
-        _refreshUsb();
-      case NfcReaderNode _:
-        _pollCard();
+    if (_deviceNode != null) {
+      switch (_deviceNode) {
+        case UsbYubiKeyNode _:
+          _refreshUsb();
+        case NfcReaderNode _:
+          _pollCard();
+      }
     }
   }
 

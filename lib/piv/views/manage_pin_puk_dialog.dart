@@ -113,47 +113,51 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
       ),
     };
 
-    result.when(
-      success: () {
-        if (!mounted) return;
-        Navigator.of(context).pop();
-        showMessage(context, switch (widget.target) {
-          ManageTarget.puk => l10n.s_puk_set,
-          _ => l10n.s_pin_set,
-        });
-      },
-      failure: (reason) {
-        reason.when(
-          invalidPin: (attemptsRemaining) {
-            _currentPinController.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: _currentPinController.text.length,
-            );
-            _currentPinFocus.requestFocus();
-            setState(() {
-              _attemptsRemaining = attemptsRemaining;
-              _currentIsWrong = true;
-              if (_attemptsRemaining == 0) {
-                _pinIsBlocked = true;
+    switch (result) {
+      case PinSuccess():
+        {
+          if (!mounted) return;
+          Navigator.of(context).pop();
+          showMessage(context, switch (widget.target) {
+            ManageTarget.puk => l10n.s_puk_set,
+            _ => l10n.s_pin_set,
+          });
+        }
+      case PinFailure(:final reason):
+        {
+          switch (reason) {
+            case PivInvalidPin(:final attemptsRemaining):
+              {
+                _currentPinController.selection = TextSelection(
+                  baseOffset: 0,
+                  extentOffset: _currentPinController.text.length,
+                );
+                _currentPinFocus.requestFocus();
+                setState(() {
+                  _attemptsRemaining = attemptsRemaining;
+                  _currentIsWrong = true;
+                  if (_attemptsRemaining == 0) {
+                    _pinIsBlocked = true;
+                  }
+                });
               }
-            });
-          },
-          weakPin: () {
-            _newPinController.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: _newPinController.text.length,
-            );
-            _newPinFocus.requestFocus();
-            setState(() {
-              _newPinError = l10n.p_pin_puk_complexity_failure(
-                widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
-              );
-              _newIsWrong = true;
-            });
-          },
-        );
-      },
-    );
+            case PivWeakPin():
+              {
+                _newPinController.selection = TextSelection(
+                  baseOffset: 0,
+                  extentOffset: _newPinController.text.length,
+                );
+                _newPinFocus.requestFocus();
+                setState(() {
+                  _newPinError = l10n.p_pin_puk_complexity_failure(
+                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                  );
+                  _newIsWrong = true;
+                });
+              }
+          }
+        }
+    }
   }
 
   @override

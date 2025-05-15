@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,1464 +10,951 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$YubiKeyData {
-  DeviceNode get node => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  DeviceInfo get info => throw _privateConstructorUsedError;
 
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $YubiKeyDataCopyWith<YubiKeyData> get copyWith =>
-      throw _privateConstructorUsedError;
+ DeviceNode get node; String get name; DeviceInfo get info;
+/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$YubiKeyDataCopyWith<YubiKeyData> get copyWith => _$YubiKeyDataCopyWithImpl<YubiKeyData>(this as YubiKeyData, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is YubiKeyData&&(identical(other.node, node) || other.node == node)&&(identical(other.name, name) || other.name == name)&&(identical(other.info, info) || other.info == info));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,node,name,info);
+
+@override
+String toString() {
+  return 'YubiKeyData(node: $node, name: $name, info: $info)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $YubiKeyDataCopyWith<$Res> {
-  factory $YubiKeyDataCopyWith(
-    YubiKeyData value,
-    $Res Function(YubiKeyData) then,
-  ) = _$YubiKeyDataCopyWithImpl<$Res, YubiKeyData>;
-  @useResult
-  $Res call({DeviceNode node, String name, DeviceInfo info});
+abstract mixin class $YubiKeyDataCopyWith<$Res>  {
+  factory $YubiKeyDataCopyWith(YubiKeyData value, $Res Function(YubiKeyData) _then) = _$YubiKeyDataCopyWithImpl;
+@useResult
+$Res call({
+ DeviceNode node, String name, DeviceInfo info
+});
 
-  $DeviceNodeCopyWith<$Res> get node;
-  $DeviceInfoCopyWith<$Res> get info;
+
+$DeviceNodeCopyWith<$Res> get node;$DeviceInfoCopyWith<$Res> get info;
+
 }
-
 /// @nodoc
-class _$YubiKeyDataCopyWithImpl<$Res, $Val extends YubiKeyData>
+class _$YubiKeyDataCopyWithImpl<$Res>
     implements $YubiKeyDataCopyWith<$Res> {
-  _$YubiKeyDataCopyWithImpl(this._value, this._then);
+  _$YubiKeyDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final YubiKeyData _self;
+  final $Res Function(YubiKeyData) _then;
 
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? node = null, Object? name = null, Object? info = null}) {
-    return _then(
-      _value.copyWith(
-            node:
-                null == node
-                    ? _value.node
-                    : node // ignore: cast_nullable_to_non_nullable
-                        as DeviceNode,
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            info:
-                null == info
-                    ? _value.info
-                    : info // ignore: cast_nullable_to_non_nullable
-                        as DeviceInfo,
-          )
-          as $Val,
-    );
-  }
-
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $DeviceNodeCopyWith<$Res> get node {
-    return $DeviceNodeCopyWith<$Res>(_value.node, (value) {
-      return _then(_value.copyWith(node: value) as $Val);
-    });
-  }
-
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $DeviceInfoCopyWith<$Res> get info {
-    return $DeviceInfoCopyWith<$Res>(_value.info, (value) {
-      return _then(_value.copyWith(info: value) as $Val);
-    });
-  }
+/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? node = null,Object? name = null,Object? info = null,}) {
+  return _then(_self.copyWith(
+node: null == node ? _self.node : node // ignore: cast_nullable_to_non_nullable
+as DeviceNode,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,info: null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+as DeviceInfo,
+  ));
+}
+/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceNodeCopyWith<$Res> get node {
+  
+  return $DeviceNodeCopyWith<$Res>(_self.node, (value) {
+    return _then(_self.copyWith(node: value));
+  });
+}/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceInfoCopyWith<$Res> get info {
+  
+  return $DeviceInfoCopyWith<$Res>(_self.info, (value) {
+    return _then(_self.copyWith(info: value));
+  });
+}
 }
 
-/// @nodoc
-abstract class _$$YubiKeyDataImplCopyWith<$Res>
-    implements $YubiKeyDataCopyWith<$Res> {
-  factory _$$YubiKeyDataImplCopyWith(
-    _$YubiKeyDataImpl value,
-    $Res Function(_$YubiKeyDataImpl) then,
-  ) = __$$YubiKeyDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({DeviceNode node, String name, DeviceInfo info});
-
-  @override
-  $DeviceNodeCopyWith<$Res> get node;
-  @override
-  $DeviceInfoCopyWith<$Res> get info;
-}
-
-/// @nodoc
-class __$$YubiKeyDataImplCopyWithImpl<$Res>
-    extends _$YubiKeyDataCopyWithImpl<$Res, _$YubiKeyDataImpl>
-    implements _$$YubiKeyDataImplCopyWith<$Res> {
-  __$$YubiKeyDataImplCopyWithImpl(
-    _$YubiKeyDataImpl _value,
-    $Res Function(_$YubiKeyDataImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? node = null, Object? name = null, Object? info = null}) {
-    return _then(
-      _$YubiKeyDataImpl(
-        null == node
-            ? _value.node
-            : node // ignore: cast_nullable_to_non_nullable
-                as DeviceNode,
-        null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                as String,
-        null == info
-            ? _value.info
-            : info // ignore: cast_nullable_to_non_nullable
-                as DeviceInfo,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 
-class _$YubiKeyDataImpl implements _YubiKeyData {
-  _$YubiKeyDataImpl(this.node, this.name, this.info);
 
-  @override
-  final DeviceNode node;
-  @override
-  final String name;
-  @override
-  final DeviceInfo info;
+class _YubiKeyData implements YubiKeyData {
+   _YubiKeyData(this.node, this.name, this.info);
+  
 
-  @override
-  String toString() {
-    return 'YubiKeyData(node: $node, name: $name, info: $info)';
-  }
+@override final  DeviceNode node;
+@override final  String name;
+@override final  DeviceInfo info;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$YubiKeyDataImpl &&
-            (identical(other.node, node) || other.node == node) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.info, info) || other.info == info));
-  }
+/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$YubiKeyDataCopyWith<_YubiKeyData> get copyWith => __$YubiKeyDataCopyWithImpl<_YubiKeyData>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, node, name, info);
 
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$YubiKeyDataImplCopyWith<_$YubiKeyDataImpl> get copyWith =>
-      __$$YubiKeyDataImplCopyWithImpl<_$YubiKeyDataImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _YubiKeyData&&(identical(other.node, node) || other.node == node)&&(identical(other.name, name) || other.name == name)&&(identical(other.info, info) || other.info == info));
 }
 
-abstract class _YubiKeyData implements YubiKeyData {
-  factory _YubiKeyData(
-    final DeviceNode node,
-    final String name,
-    final DeviceInfo info,
-  ) = _$YubiKeyDataImpl;
 
-  @override
-  DeviceNode get node;
-  @override
-  String get name;
-  @override
-  DeviceInfo get info;
+@override
+int get hashCode => Object.hash(runtimeType,node,name,info);
 
-  /// Create a copy of YubiKeyData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$YubiKeyDataImplCopyWith<_$YubiKeyDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'YubiKeyData(node: $node, name: $name, info: $info)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$YubiKeyDataCopyWith<$Res> implements $YubiKeyDataCopyWith<$Res> {
+  factory _$YubiKeyDataCopyWith(_YubiKeyData value, $Res Function(_YubiKeyData) _then) = __$YubiKeyDataCopyWithImpl;
+@override @useResult
+$Res call({
+ DeviceNode node, String name, DeviceInfo info
+});
+
+
+@override $DeviceNodeCopyWith<$Res> get node;@override $DeviceInfoCopyWith<$Res> get info;
+
+}
+/// @nodoc
+class __$YubiKeyDataCopyWithImpl<$Res>
+    implements _$YubiKeyDataCopyWith<$Res> {
+  __$YubiKeyDataCopyWithImpl(this._self, this._then);
+
+  final _YubiKeyData _self;
+  final $Res Function(_YubiKeyData) _then;
+
+/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? node = null,Object? name = null,Object? info = null,}) {
+  return _then(_YubiKeyData(
+null == node ? _self.node : node // ignore: cast_nullable_to_non_nullable
+as DeviceNode,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+as DeviceInfo,
+  ));
+}
+
+/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceNodeCopyWith<$Res> get node {
+  
+  return $DeviceNodeCopyWith<$Res>(_self.node, (value) {
+    return _then(_self.copyWith(node: value));
+  });
+}/// Create a copy of YubiKeyData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceInfoCopyWith<$Res> get info {
+  
+  return $DeviceInfoCopyWith<$Res>(_self.info, (value) {
+    return _then(_self.copyWith(info: value));
+  });
+}
 }
 
 /// @nodoc
 mixin _$DeviceNode {
-  DevicePath get path => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )
-    usbYubiKey,
-    required TResult Function(DevicePath path, String name) nfcReader,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )?
-    usbYubiKey,
-    TResult? Function(DevicePath path, String name)? nfcReader,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )?
-    usbYubiKey,
-    TResult Function(DevicePath path, String name)? nfcReader,
-    required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(UsbYubiKeyNode value) usbYubiKey,
-    required TResult Function(NfcReaderNode value) nfcReader,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult? Function(NfcReaderNode value)? nfcReader,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult Function(NfcReaderNode value)? nfcReader,
-    required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
 
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $DeviceNodeCopyWith<DeviceNode> get copyWith =>
-      throw _privateConstructorUsedError;
+ DevicePath get path; String get name;
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DeviceNodeCopyWith<DeviceNode> get copyWith => _$DeviceNodeCopyWithImpl<DeviceNode>(this as DeviceNode, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,path,name);
+
+@override
+String toString() {
+  return 'DeviceNode(path: $path, name: $name)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $DeviceNodeCopyWith<$Res> {
-  factory $DeviceNodeCopyWith(
-    DeviceNode value,
-    $Res Function(DeviceNode) then,
-  ) = _$DeviceNodeCopyWithImpl<$Res, DeviceNode>;
-  @useResult
-  $Res call({DevicePath path, String name});
-}
+abstract mixin class $DeviceNodeCopyWith<$Res>  {
+  factory $DeviceNodeCopyWith(DeviceNode value, $Res Function(DeviceNode) _then) = _$DeviceNodeCopyWithImpl;
+@useResult
+$Res call({
+ DevicePath path, String name
+});
 
+
+
+
+}
 /// @nodoc
-class _$DeviceNodeCopyWithImpl<$Res, $Val extends DeviceNode>
+class _$DeviceNodeCopyWithImpl<$Res>
     implements $DeviceNodeCopyWith<$Res> {
-  _$DeviceNodeCopyWithImpl(this._value, this._then);
+  _$DeviceNodeCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final DeviceNode _self;
+  final $Res Function(DeviceNode) _then;
 
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? path = null, Object? name = null}) {
-    return _then(
-      _value.copyWith(
-            path:
-                null == path
-                    ? _value.path
-                    : path // ignore: cast_nullable_to_non_nullable
-                        as DevicePath,
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,}) {
+  return _then(_self.copyWith(
+path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as DevicePath,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$UsbYubiKeyNodeImplCopyWith<$Res>
-    implements $DeviceNodeCopyWith<$Res> {
-  factory _$$UsbYubiKeyNodeImplCopyWith(
-    _$UsbYubiKeyNodeImpl value,
-    $Res Function(_$UsbYubiKeyNodeImpl) then,
-  ) = __$$UsbYubiKeyNodeImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({DevicePath path, String name, UsbPid pid, DeviceInfo? info});
-
-  $DeviceInfoCopyWith<$Res>? get info;
 }
 
-/// @nodoc
-class __$$UsbYubiKeyNodeImplCopyWithImpl<$Res>
-    extends _$DeviceNodeCopyWithImpl<$Res, _$UsbYubiKeyNodeImpl>
-    implements _$$UsbYubiKeyNodeImplCopyWith<$Res> {
-  __$$UsbYubiKeyNodeImplCopyWithImpl(
-    _$UsbYubiKeyNodeImpl _value,
-    $Res Function(_$UsbYubiKeyNodeImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? path = null,
-    Object? name = null,
-    Object? pid = null,
-    Object? info = freezed,
-  }) {
-    return _then(
-      _$UsbYubiKeyNodeImpl(
-        null == path
-            ? _value.path
-            : path // ignore: cast_nullable_to_non_nullable
-                as DevicePath,
-        null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                as String,
-        null == pid
-            ? _value.pid
-            : pid // ignore: cast_nullable_to_non_nullable
-                as UsbPid,
-        freezed == info
-            ? _value.info
-            : info // ignore: cast_nullable_to_non_nullable
-                as DeviceInfo?,
-      ),
-    );
-  }
-
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $DeviceInfoCopyWith<$Res>? get info {
-    if (_value.info == null) {
-      return null;
-    }
-
-    return $DeviceInfoCopyWith<$Res>(_value.info!, (value) {
-      return _then(_value.copyWith(info: value));
-    });
-  }
-}
 
 /// @nodoc
 
-class _$UsbYubiKeyNodeImpl extends UsbYubiKeyNode {
-  _$UsbYubiKeyNodeImpl(this.path, this.name, this.pid, this.info) : super._();
 
-  @override
-  final DevicePath path;
-  @override
-  final String name;
-  @override
-  final UsbPid pid;
-  @override
-  final DeviceInfo? info;
+class UsbYubiKeyNode extends DeviceNode {
+   UsbYubiKeyNode(this.path, this.name, this.pid, this.info): super._();
+  
 
-  @override
-  String toString() {
-    return 'DeviceNode.usbYubiKey(path: $path, name: $name, pid: $pid, info: $info)';
-  }
+@override final  DevicePath path;
+@override final  String name;
+ final  UsbPid pid;
+ final  DeviceInfo? info;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UsbYubiKeyNodeImpl &&
-            (identical(other.path, path) || other.path == path) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.pid, pid) || other.pid == pid) &&
-            (identical(other.info, info) || other.info == info));
-  }
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UsbYubiKeyNodeCopyWith<UsbYubiKeyNode> get copyWith => _$UsbYubiKeyNodeCopyWithImpl<UsbYubiKeyNode>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, path, name, pid, info);
 
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UsbYubiKeyNodeImplCopyWith<_$UsbYubiKeyNodeImpl> get copyWith =>
-      __$$UsbYubiKeyNodeImplCopyWithImpl<_$UsbYubiKeyNodeImpl>(
-        this,
-        _$identity,
-      );
 
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )
-    usbYubiKey,
-    required TResult Function(DevicePath path, String name) nfcReader,
-  }) {
-    return usbYubiKey(path, name, pid, info);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )?
-    usbYubiKey,
-    TResult? Function(DevicePath path, String name)? nfcReader,
-  }) {
-    return usbYubiKey?.call(path, name, pid, info);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )?
-    usbYubiKey,
-    TResult Function(DevicePath path, String name)? nfcReader,
-    required TResult orElse(),
-  }) {
-    if (usbYubiKey != null) {
-      return usbYubiKey(path, name, pid, info);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(UsbYubiKeyNode value) usbYubiKey,
-    required TResult Function(NfcReaderNode value) nfcReader,
-  }) {
-    return usbYubiKey(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult? Function(NfcReaderNode value)? nfcReader,
-  }) {
-    return usbYubiKey?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult Function(NfcReaderNode value)? nfcReader,
-    required TResult orElse(),
-  }) {
-    if (usbYubiKey != null) {
-      return usbYubiKey(this);
-    }
-    return orElse();
-  }
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsbYubiKeyNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.info, info) || other.info == info));
 }
 
-abstract class UsbYubiKeyNode extends DeviceNode {
-  factory UsbYubiKeyNode(
-    final DevicePath path,
-    final String name,
-    final UsbPid pid,
-    final DeviceInfo? info,
-  ) = _$UsbYubiKeyNodeImpl;
-  UsbYubiKeyNode._() : super._();
 
-  @override
-  DevicePath get path;
-  @override
-  String get name;
-  UsbPid get pid;
-  DeviceInfo? get info;
+@override
+int get hashCode => Object.hash(runtimeType,path,name,pid,info);
 
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$UsbYubiKeyNodeImplCopyWith<_$UsbYubiKeyNodeImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'DeviceNode.usbYubiKey(path: $path, name: $name, pid: $pid, info: $info)';
+}
+
+
 }
 
 /// @nodoc
-abstract class _$$NfcReaderNodeImplCopyWith<$Res>
-    implements $DeviceNodeCopyWith<$Res> {
-  factory _$$NfcReaderNodeImplCopyWith(
-    _$NfcReaderNodeImpl value,
-    $Res Function(_$NfcReaderNodeImpl) then,
-  ) = __$$NfcReaderNodeImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({DevicePath path, String name});
+abstract mixin class $UsbYubiKeyNodeCopyWith<$Res> implements $DeviceNodeCopyWith<$Res> {
+  factory $UsbYubiKeyNodeCopyWith(UsbYubiKeyNode value, $Res Function(UsbYubiKeyNode) _then) = _$UsbYubiKeyNodeCopyWithImpl;
+@override @useResult
+$Res call({
+ DevicePath path, String name, UsbPid pid, DeviceInfo? info
+});
+
+
+$DeviceInfoCopyWith<$Res>? get info;
+
+}
+/// @nodoc
+class _$UsbYubiKeyNodeCopyWithImpl<$Res>
+    implements $UsbYubiKeyNodeCopyWith<$Res> {
+  _$UsbYubiKeyNodeCopyWithImpl(this._self, this._then);
+
+  final UsbYubiKeyNode _self;
+  final $Res Function(UsbYubiKeyNode) _then;
+
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? pid = null,Object? info = freezed,}) {
+  return _then(UsbYubiKeyNode(
+null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as DevicePath,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
+as UsbPid,freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+as DeviceInfo?,
+  ));
 }
 
-/// @nodoc
-class __$$NfcReaderNodeImplCopyWithImpl<$Res>
-    extends _$DeviceNodeCopyWithImpl<$Res, _$NfcReaderNodeImpl>
-    implements _$$NfcReaderNodeImplCopyWith<$Res> {
-  __$$NfcReaderNodeImplCopyWithImpl(
-    _$NfcReaderNodeImpl _value,
-    $Res Function(_$NfcReaderNodeImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? path = null, Object? name = null}) {
-    return _then(
-      _$NfcReaderNodeImpl(
-        null == path
-            ? _value.path
-            : path // ignore: cast_nullable_to_non_nullable
-                as DevicePath,
-        null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                as String,
-      ),
-    );
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceInfoCopyWith<$Res>? get info {
+    if (_self.info == null) {
+    return null;
   }
+
+  return $DeviceInfoCopyWith<$Res>(_self.info!, (value) {
+    return _then(_self.copyWith(info: value));
+  });
+}
 }
 
 /// @nodoc
 
-class _$NfcReaderNodeImpl extends NfcReaderNode {
-  _$NfcReaderNodeImpl(this.path, this.name) : super._();
 
-  @override
-  final DevicePath path;
-  @override
-  final String name;
+class NfcReaderNode extends DeviceNode {
+   NfcReaderNode(this.path, this.name): super._();
+  
 
-  @override
-  String toString() {
-    return 'DeviceNode.nfcReader(path: $path, name: $name)';
-  }
+@override final  DevicePath path;
+@override final  String name;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$NfcReaderNodeImpl &&
-            (identical(other.path, path) || other.path == path) &&
-            (identical(other.name, name) || other.name == name));
-  }
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NfcReaderNodeCopyWith<NfcReaderNode> get copyWith => _$NfcReaderNodeCopyWithImpl<NfcReaderNode>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, path, name);
 
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$NfcReaderNodeImplCopyWith<_$NfcReaderNodeImpl> get copyWith =>
-      __$$NfcReaderNodeImplCopyWithImpl<_$NfcReaderNodeImpl>(this, _$identity);
 
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )
-    usbYubiKey,
-    required TResult Function(DevicePath path, String name) nfcReader,
-  }) {
-    return nfcReader(path, name);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )?
-    usbYubiKey,
-    TResult? Function(DevicePath path, String name)? nfcReader,
-  }) {
-    return nfcReader?.call(path, name);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-      DevicePath path,
-      String name,
-      UsbPid pid,
-      DeviceInfo? info,
-    )?
-    usbYubiKey,
-    TResult Function(DevicePath path, String name)? nfcReader,
-    required TResult orElse(),
-  }) {
-    if (nfcReader != null) {
-      return nfcReader(path, name);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(UsbYubiKeyNode value) usbYubiKey,
-    required TResult Function(NfcReaderNode value) nfcReader,
-  }) {
-    return nfcReader(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult? Function(NfcReaderNode value)? nfcReader,
-  }) {
-    return nfcReader?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(UsbYubiKeyNode value)? usbYubiKey,
-    TResult Function(NfcReaderNode value)? nfcReader,
-    required TResult orElse(),
-  }) {
-    if (nfcReader != null) {
-      return nfcReader(this);
-    }
-    return orElse();
-  }
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NfcReaderNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name));
 }
 
-abstract class NfcReaderNode extends DeviceNode {
-  factory NfcReaderNode(final DevicePath path, final String name) =
-      _$NfcReaderNodeImpl;
-  NfcReaderNode._() : super._();
 
-  @override
-  DevicePath get path;
-  @override
-  String get name;
+@override
+int get hashCode => Object.hash(runtimeType,path,name);
 
-  /// Create a copy of DeviceNode
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$NfcReaderNodeImplCopyWith<_$NfcReaderNodeImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'DeviceNode.nfcReader(path: $path, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NfcReaderNodeCopyWith<$Res> implements $DeviceNodeCopyWith<$Res> {
+  factory $NfcReaderNodeCopyWith(NfcReaderNode value, $Res Function(NfcReaderNode) _then) = _$NfcReaderNodeCopyWithImpl;
+@override @useResult
+$Res call({
+ DevicePath path, String name
+});
+
+
+
+
+}
+/// @nodoc
+class _$NfcReaderNodeCopyWithImpl<$Res>
+    implements $NfcReaderNodeCopyWith<$Res> {
+  _$NfcReaderNodeCopyWithImpl(this._self, this._then);
+
+  final NfcReaderNode _self;
+  final $Res Function(NfcReaderNode) _then;
+
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,}) {
+  return _then(NfcReaderNode(
+null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as DevicePath,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$ActionItem {
-  Widget get icon => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String? get subtitle => throw _privateConstructorUsedError;
-  String? get shortcut => throw _privateConstructorUsedError;
-  Widget? get trailing => throw _privateConstructorUsedError;
-  Intent? get intent => throw _privateConstructorUsedError;
-  ActionStyle? get actionStyle => throw _privateConstructorUsedError;
-  Key? get key => throw _privateConstructorUsedError;
-  Feature? get feature => throw _privateConstructorUsedError;
 
-  /// Create a copy of ActionItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ActionItemCopyWith<ActionItem> get copyWith =>
-      throw _privateConstructorUsedError;
+ Widget get icon; String get title; String? get subtitle; String? get shortcut; Widget? get trailing; Intent? get intent; ActionStyle? get actionStyle; Key? get key; Feature? get feature;
+/// Create a copy of ActionItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ActionItemCopyWith<ActionItem> get copyWith => _$ActionItemCopyWithImpl<ActionItem>(this as ActionItem, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActionItem&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.shortcut, shortcut) || other.shortcut == shortcut)&&(identical(other.trailing, trailing) || other.trailing == trailing)&&(identical(other.intent, intent) || other.intent == intent)&&(identical(other.actionStyle, actionStyle) || other.actionStyle == actionStyle)&&(identical(other.key, key) || other.key == key)&&(identical(other.feature, feature) || other.feature == feature));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,icon,title,subtitle,shortcut,trailing,intent,actionStyle,key,feature);
+
+@override
+String toString() {
+  return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ActionItemCopyWith<$Res> {
-  factory $ActionItemCopyWith(
-    ActionItem value,
-    $Res Function(ActionItem) then,
-  ) = _$ActionItemCopyWithImpl<$Res, ActionItem>;
-  @useResult
-  $Res call({
-    Widget icon,
-    String title,
-    String? subtitle,
-    String? shortcut,
-    Widget? trailing,
-    Intent? intent,
-    ActionStyle? actionStyle,
-    Key? key,
-    Feature? feature,
-  });
-}
+abstract mixin class $ActionItemCopyWith<$Res>  {
+  factory $ActionItemCopyWith(ActionItem value, $Res Function(ActionItem) _then) = _$ActionItemCopyWithImpl;
+@useResult
+$Res call({
+ Widget icon, String title, String? subtitle, String? shortcut, Widget? trailing, Intent? intent, ActionStyle? actionStyle, Key? key, Feature? feature
+});
 
+
+
+
+}
 /// @nodoc
-class _$ActionItemCopyWithImpl<$Res, $Val extends ActionItem>
+class _$ActionItemCopyWithImpl<$Res>
     implements $ActionItemCopyWith<$Res> {
-  _$ActionItemCopyWithImpl(this._value, this._then);
+  _$ActionItemCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ActionItem _self;
+  final $Res Function(ActionItem) _then;
 
-  /// Create a copy of ActionItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? icon = null,
-    Object? title = null,
-    Object? subtitle = freezed,
-    Object? shortcut = freezed,
-    Object? trailing = freezed,
-    Object? intent = freezed,
-    Object? actionStyle = freezed,
-    Object? key = freezed,
-    Object? feature = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            icon:
-                null == icon
-                    ? _value.icon
-                    : icon // ignore: cast_nullable_to_non_nullable
-                        as Widget,
-            title:
-                null == title
-                    ? _value.title
-                    : title // ignore: cast_nullable_to_non_nullable
-                        as String,
-            subtitle:
-                freezed == subtitle
-                    ? _value.subtitle
-                    : subtitle // ignore: cast_nullable_to_non_nullable
-                        as String?,
-            shortcut:
-                freezed == shortcut
-                    ? _value.shortcut
-                    : shortcut // ignore: cast_nullable_to_non_nullable
-                        as String?,
-            trailing:
-                freezed == trailing
-                    ? _value.trailing
-                    : trailing // ignore: cast_nullable_to_non_nullable
-                        as Widget?,
-            intent:
-                freezed == intent
-                    ? _value.intent
-                    : intent // ignore: cast_nullable_to_non_nullable
-                        as Intent?,
-            actionStyle:
-                freezed == actionStyle
-                    ? _value.actionStyle
-                    : actionStyle // ignore: cast_nullable_to_non_nullable
-                        as ActionStyle?,
-            key:
-                freezed == key
-                    ? _value.key
-                    : key // ignore: cast_nullable_to_non_nullable
-                        as Key?,
-            feature:
-                freezed == feature
-                    ? _value.feature
-                    : feature // ignore: cast_nullable_to_non_nullable
-                        as Feature?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of ActionItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? icon = null,Object? title = null,Object? subtitle = freezed,Object? shortcut = freezed,Object? trailing = freezed,Object? intent = freezed,Object? actionStyle = freezed,Object? key = freezed,Object? feature = freezed,}) {
+  return _then(_self.copyWith(
+icon: null == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
+as Widget,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
+as String?,shortcut: freezed == shortcut ? _self.shortcut : shortcut // ignore: cast_nullable_to_non_nullable
+as String?,trailing: freezed == trailing ? _self.trailing : trailing // ignore: cast_nullable_to_non_nullable
+as Widget?,intent: freezed == intent ? _self.intent : intent // ignore: cast_nullable_to_non_nullable
+as Intent?,actionStyle: freezed == actionStyle ? _self.actionStyle : actionStyle // ignore: cast_nullable_to_non_nullable
+as ActionStyle?,key: freezed == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as Key?,feature: freezed == feature ? _self.feature : feature // ignore: cast_nullable_to_non_nullable
+as Feature?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ActionItemImplCopyWith<$Res>
-    implements $ActionItemCopyWith<$Res> {
-  factory _$$ActionItemImplCopyWith(
-    _$ActionItemImpl value,
-    $Res Function(_$ActionItemImpl) then,
-  ) = __$$ActionItemImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    Widget icon,
-    String title,
-    String? subtitle,
-    String? shortcut,
-    Widget? trailing,
-    Intent? intent,
-    ActionStyle? actionStyle,
-    Key? key,
-    Feature? feature,
-  });
 }
 
-/// @nodoc
-class __$$ActionItemImplCopyWithImpl<$Res>
-    extends _$ActionItemCopyWithImpl<$Res, _$ActionItemImpl>
-    implements _$$ActionItemImplCopyWith<$Res> {
-  __$$ActionItemImplCopyWithImpl(
-    _$ActionItemImpl _value,
-    $Res Function(_$ActionItemImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of ActionItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? icon = null,
-    Object? title = null,
-    Object? subtitle = freezed,
-    Object? shortcut = freezed,
-    Object? trailing = freezed,
-    Object? intent = freezed,
-    Object? actionStyle = freezed,
-    Object? key = freezed,
-    Object? feature = freezed,
-  }) {
-    return _then(
-      _$ActionItemImpl(
-        icon:
-            null == icon
-                ? _value.icon
-                : icon // ignore: cast_nullable_to_non_nullable
-                    as Widget,
-        title:
-            null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                    as String,
-        subtitle:
-            freezed == subtitle
-                ? _value.subtitle
-                : subtitle // ignore: cast_nullable_to_non_nullable
-                    as String?,
-        shortcut:
-            freezed == shortcut
-                ? _value.shortcut
-                : shortcut // ignore: cast_nullable_to_non_nullable
-                    as String?,
-        trailing:
-            freezed == trailing
-                ? _value.trailing
-                : trailing // ignore: cast_nullable_to_non_nullable
-                    as Widget?,
-        intent:
-            freezed == intent
-                ? _value.intent
-                : intent // ignore: cast_nullable_to_non_nullable
-                    as Intent?,
-        actionStyle:
-            freezed == actionStyle
-                ? _value.actionStyle
-                : actionStyle // ignore: cast_nullable_to_non_nullable
-                    as ActionStyle?,
-        key:
-            freezed == key
-                ? _value.key
-                : key // ignore: cast_nullable_to_non_nullable
-                    as Key?,
-        feature:
-            freezed == feature
-                ? _value.feature
-                : feature // ignore: cast_nullable_to_non_nullable
-                    as Feature?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 
-class _$ActionItemImpl implements _ActionItem {
-  _$ActionItemImpl({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    this.shortcut,
-    this.trailing,
-    this.intent,
-    this.actionStyle,
-    this.key,
-    this.feature,
-  });
 
-  @override
-  final Widget icon;
-  @override
-  final String title;
-  @override
-  final String? subtitle;
-  @override
-  final String? shortcut;
-  @override
-  final Widget? trailing;
-  @override
-  final Intent? intent;
-  @override
-  final ActionStyle? actionStyle;
-  @override
-  final Key? key;
-  @override
-  final Feature? feature;
+class _ActionItem implements ActionItem {
+   _ActionItem({required this.icon, required this.title, this.subtitle, this.shortcut, this.trailing, this.intent, this.actionStyle, this.key, this.feature});
+  
 
-  @override
-  String toString() {
-    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
-  }
+@override final  Widget icon;
+@override final  String title;
+@override final  String? subtitle;
+@override final  String? shortcut;
+@override final  Widget? trailing;
+@override final  Intent? intent;
+@override final  ActionStyle? actionStyle;
+@override final  Key? key;
+@override final  Feature? feature;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ActionItemImpl &&
-            (identical(other.icon, icon) || other.icon == icon) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.subtitle, subtitle) ||
-                other.subtitle == subtitle) &&
-            (identical(other.shortcut, shortcut) ||
-                other.shortcut == shortcut) &&
-            (identical(other.trailing, trailing) ||
-                other.trailing == trailing) &&
-            (identical(other.intent, intent) || other.intent == intent) &&
-            (identical(other.actionStyle, actionStyle) ||
-                other.actionStyle == actionStyle) &&
-            (identical(other.key, key) || other.key == key) &&
-            (identical(other.feature, feature) || other.feature == feature));
-  }
+/// Create a copy of ActionItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ActionItemCopyWith<_ActionItem> get copyWith => __$ActionItemCopyWithImpl<_ActionItem>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    icon,
-    title,
-    subtitle,
-    shortcut,
-    trailing,
-    intent,
-    actionStyle,
-    key,
-    feature,
-  );
 
-  /// Create a copy of ActionItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ActionItemImplCopyWith<_$ActionItemImpl> get copyWith =>
-      __$$ActionItemImplCopyWithImpl<_$ActionItemImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionItem&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.shortcut, shortcut) || other.shortcut == shortcut)&&(identical(other.trailing, trailing) || other.trailing == trailing)&&(identical(other.intent, intent) || other.intent == intent)&&(identical(other.actionStyle, actionStyle) || other.actionStyle == actionStyle)&&(identical(other.key, key) || other.key == key)&&(identical(other.feature, feature) || other.feature == feature));
 }
 
-abstract class _ActionItem implements ActionItem {
-  factory _ActionItem({
-    required final Widget icon,
-    required final String title,
-    final String? subtitle,
-    final String? shortcut,
-    final Widget? trailing,
-    final Intent? intent,
-    final ActionStyle? actionStyle,
-    final Key? key,
-    final Feature? feature,
-  }) = _$ActionItemImpl;
 
-  @override
-  Widget get icon;
-  @override
-  String get title;
-  @override
-  String? get subtitle;
-  @override
-  String? get shortcut;
-  @override
-  Widget? get trailing;
-  @override
-  Intent? get intent;
-  @override
-  ActionStyle? get actionStyle;
-  @override
-  Key? get key;
-  @override
-  Feature? get feature;
+@override
+int get hashCode => Object.hash(runtimeType,icon,title,subtitle,shortcut,trailing,intent,actionStyle,key,feature);
 
-  /// Create a copy of ActionItem
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ActionItemImplCopyWith<_$ActionItemImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ActionItemCopyWith<$Res> implements $ActionItemCopyWith<$Res> {
+  factory _$ActionItemCopyWith(_ActionItem value, $Res Function(_ActionItem) _then) = __$ActionItemCopyWithImpl;
+@override @useResult
+$Res call({
+ Widget icon, String title, String? subtitle, String? shortcut, Widget? trailing, Intent? intent, ActionStyle? actionStyle, Key? key, Feature? feature
+});
+
+
+
+
+}
+/// @nodoc
+class __$ActionItemCopyWithImpl<$Res>
+    implements _$ActionItemCopyWith<$Res> {
+  __$ActionItemCopyWithImpl(this._self, this._then);
+
+  final _ActionItem _self;
+  final $Res Function(_ActionItem) _then;
+
+/// Create a copy of ActionItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? icon = null,Object? title = null,Object? subtitle = freezed,Object? shortcut = freezed,Object? trailing = freezed,Object? intent = freezed,Object? actionStyle = freezed,Object? key = freezed,Object? feature = freezed,}) {
+  return _then(_ActionItem(
+icon: null == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
+as Widget,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
+as String?,shortcut: freezed == shortcut ? _self.shortcut : shortcut // ignore: cast_nullable_to_non_nullable
+as String?,trailing: freezed == trailing ? _self.trailing : trailing // ignore: cast_nullable_to_non_nullable
+as Widget?,intent: freezed == intent ? _self.intent : intent // ignore: cast_nullable_to_non_nullable
+as Intent?,actionStyle: freezed == actionStyle ? _self.actionStyle : actionStyle // ignore: cast_nullable_to_non_nullable
+as ActionStyle?,key: freezed == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as Key?,feature: freezed == feature ? _self.feature : feature // ignore: cast_nullable_to_non_nullable
+as Feature?,
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$WindowState {
-  bool get focused => throw _privateConstructorUsedError;
-  bool get visible => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
-  bool get hidden => throw _privateConstructorUsedError;
 
-  /// Create a copy of WindowState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $WindowStateCopyWith<WindowState> get copyWith =>
-      throw _privateConstructorUsedError;
+ bool get focused; bool get visible; bool get active; bool get hidden;
+/// Create a copy of WindowState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$WindowStateCopyWith<WindowState> get copyWith => _$WindowStateCopyWithImpl<WindowState>(this as WindowState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WindowState&&(identical(other.focused, focused) || other.focused == focused)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.active, active) || other.active == active)&&(identical(other.hidden, hidden) || other.hidden == hidden));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,focused,visible,active,hidden);
+
+@override
+String toString() {
+  return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $WindowStateCopyWith<$Res> {
-  factory $WindowStateCopyWith(
-    WindowState value,
-    $Res Function(WindowState) then,
-  ) = _$WindowStateCopyWithImpl<$Res, WindowState>;
-  @useResult
-  $Res call({bool focused, bool visible, bool active, bool hidden});
-}
+abstract mixin class $WindowStateCopyWith<$Res>  {
+  factory $WindowStateCopyWith(WindowState value, $Res Function(WindowState) _then) = _$WindowStateCopyWithImpl;
+@useResult
+$Res call({
+ bool focused, bool visible, bool active, bool hidden
+});
 
+
+
+
+}
 /// @nodoc
-class _$WindowStateCopyWithImpl<$Res, $Val extends WindowState>
+class _$WindowStateCopyWithImpl<$Res>
     implements $WindowStateCopyWith<$Res> {
-  _$WindowStateCopyWithImpl(this._value, this._then);
+  _$WindowStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final WindowState _self;
+  final $Res Function(WindowState) _then;
 
-  /// Create a copy of WindowState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? focused = null,
-    Object? visible = null,
-    Object? active = null,
-    Object? hidden = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            focused:
-                null == focused
-                    ? _value.focused
-                    : focused // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            visible:
-                null == visible
-                    ? _value.visible
-                    : visible // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            active:
-                null == active
-                    ? _value.active
-                    : active // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            hidden:
-                null == hidden
-                    ? _value.hidden
-                    : hidden // ignore: cast_nullable_to_non_nullable
-                        as bool,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of WindowState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? focused = null,Object? visible = null,Object? active = null,Object? hidden = null,}) {
+  return _then(_self.copyWith(
+focused: null == focused ? _self.focused : focused // ignore: cast_nullable_to_non_nullable
+as bool,visible: null == visible ? _self.visible : visible // ignore: cast_nullable_to_non_nullable
+as bool,active: null == active ? _self.active : active // ignore: cast_nullable_to_non_nullable
+as bool,hidden: null == hidden ? _self.hidden : hidden // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-/// @nodoc
-abstract class _$$WindowStateImplCopyWith<$Res>
-    implements $WindowStateCopyWith<$Res> {
-  factory _$$WindowStateImplCopyWith(
-    _$WindowStateImpl value,
-    $Res Function(_$WindowStateImpl) then,
-  ) = __$$WindowStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({bool focused, bool visible, bool active, bool hidden});
 }
 
-/// @nodoc
-class __$$WindowStateImplCopyWithImpl<$Res>
-    extends _$WindowStateCopyWithImpl<$Res, _$WindowStateImpl>
-    implements _$$WindowStateImplCopyWith<$Res> {
-  __$$WindowStateImplCopyWithImpl(
-    _$WindowStateImpl _value,
-    $Res Function(_$WindowStateImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of WindowState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? focused = null,
-    Object? visible = null,
-    Object? active = null,
-    Object? hidden = null,
-  }) {
-    return _then(
-      _$WindowStateImpl(
-        focused:
-            null == focused
-                ? _value.focused
-                : focused // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        visible:
-            null == visible
-                ? _value.visible
-                : visible // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        active:
-            null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        hidden:
-            null == hidden
-                ? _value.hidden
-                : hidden // ignore: cast_nullable_to_non_nullable
-                    as bool,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 
-class _$WindowStateImpl implements _WindowState {
-  _$WindowStateImpl({
-    required this.focused,
-    required this.visible,
-    required this.active,
-    this.hidden = false,
-  });
 
-  @override
-  final bool focused;
-  @override
-  final bool visible;
-  @override
-  final bool active;
-  @override
-  @JsonKey()
-  final bool hidden;
+class _WindowState implements WindowState {
+   _WindowState({required this.focused, required this.visible, required this.active, this.hidden = false});
+  
 
-  @override
-  String toString() {
-    return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
-  }
+@override final  bool focused;
+@override final  bool visible;
+@override final  bool active;
+@override@JsonKey() final  bool hidden;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$WindowStateImpl &&
-            (identical(other.focused, focused) || other.focused == focused) &&
-            (identical(other.visible, visible) || other.visible == visible) &&
-            (identical(other.active, active) || other.active == active) &&
-            (identical(other.hidden, hidden) || other.hidden == hidden));
-  }
+/// Create a copy of WindowState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$WindowStateCopyWith<_WindowState> get copyWith => __$WindowStateCopyWithImpl<_WindowState>(this, _$identity);
 
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, focused, visible, active, hidden);
 
-  /// Create a copy of WindowState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$WindowStateImplCopyWith<_$WindowStateImpl> get copyWith =>
-      __$$WindowStateImplCopyWithImpl<_$WindowStateImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WindowState&&(identical(other.focused, focused) || other.focused == focused)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.active, active) || other.active == active)&&(identical(other.hidden, hidden) || other.hidden == hidden));
 }
 
-abstract class _WindowState implements WindowState {
-  factory _WindowState({
-    required final bool focused,
-    required final bool visible,
-    required final bool active,
-    final bool hidden,
-  }) = _$WindowStateImpl;
 
-  @override
-  bool get focused;
-  @override
-  bool get visible;
-  @override
-  bool get active;
-  @override
-  bool get hidden;
+@override
+int get hashCode => Object.hash(runtimeType,focused,visible,active,hidden);
 
-  /// Create a copy of WindowState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$WindowStateImplCopyWith<_$WindowStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
 }
 
-KeyCustomization _$KeyCustomizationFromJson(Map<String, dynamic> json) {
-  return _KeyCustomization.fromJson(json);
+
 }
+
+/// @nodoc
+abstract mixin class _$WindowStateCopyWith<$Res> implements $WindowStateCopyWith<$Res> {
+  factory _$WindowStateCopyWith(_WindowState value, $Res Function(_WindowState) _then) = __$WindowStateCopyWithImpl;
+@override @useResult
+$Res call({
+ bool focused, bool visible, bool active, bool hidden
+});
+
+
+
+
+}
+/// @nodoc
+class __$WindowStateCopyWithImpl<$Res>
+    implements _$WindowStateCopyWith<$Res> {
+  __$WindowStateCopyWithImpl(this._self, this._then);
+
+  final _WindowState _self;
+  final $Res Function(_WindowState) _then;
+
+/// Create a copy of WindowState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? focused = null,Object? visible = null,Object? active = null,Object? hidden = null,}) {
+  return _then(_WindowState(
+focused: null == focused ? _self.focused : focused // ignore: cast_nullable_to_non_nullable
+as bool,visible: null == visible ? _self.visible : visible // ignore: cast_nullable_to_non_nullable
+as bool,active: null == active ? _self.active : active // ignore: cast_nullable_to_non_nullable
+as bool,hidden: null == hidden ? _self.hidden : hidden // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$KeyCustomization {
-  int get serial => throw _privateConstructorUsedError;
-  @JsonKey(includeIfNull: false)
-  String? get name => throw _privateConstructorUsedError;
-  @JsonKey(includeIfNull: false)
-  @_ColorConverter()
-  Color? get color => throw _privateConstructorUsedError;
+
+ int get serial;@JsonKey(includeIfNull: false) String? get name;@JsonKey(includeIfNull: false)@_ColorConverter() Color? get color;
+/// Create a copy of KeyCustomization
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$KeyCustomizationCopyWith<KeyCustomization> get copyWith => _$KeyCustomizationCopyWithImpl<KeyCustomization>(this as KeyCustomization, _$identity);
 
   /// Serializes this KeyCustomization to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of KeyCustomization
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $KeyCustomizationCopyWith<KeyCustomization> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is KeyCustomization&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,serial,name,color);
+
+@override
+String toString() {
+  return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $KeyCustomizationCopyWith<$Res> {
-  factory $KeyCustomizationCopyWith(
-    KeyCustomization value,
-    $Res Function(KeyCustomization) then,
-  ) = _$KeyCustomizationCopyWithImpl<$Res, KeyCustomization>;
-  @useResult
-  $Res call({
-    int serial,
-    @JsonKey(includeIfNull: false) String? name,
-    @JsonKey(includeIfNull: false) @_ColorConverter() Color? color,
-  });
-}
+abstract mixin class $KeyCustomizationCopyWith<$Res>  {
+  factory $KeyCustomizationCopyWith(KeyCustomization value, $Res Function(KeyCustomization) _then) = _$KeyCustomizationCopyWithImpl;
+@useResult
+$Res call({
+ int serial,@JsonKey(includeIfNull: false) String? name,@JsonKey(includeIfNull: false)@_ColorConverter() Color? color
+});
 
+
+
+
+}
 /// @nodoc
-class _$KeyCustomizationCopyWithImpl<$Res, $Val extends KeyCustomization>
+class _$KeyCustomizationCopyWithImpl<$Res>
     implements $KeyCustomizationCopyWith<$Res> {
-  _$KeyCustomizationCopyWithImpl(this._value, this._then);
+  _$KeyCustomizationCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final KeyCustomization _self;
+  final $Res Function(KeyCustomization) _then;
 
-  /// Create a copy of KeyCustomization
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? serial = null,
-    Object? name = freezed,
-    Object? color = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            serial:
-                null == serial
-                    ? _value.serial
-                    : serial // ignore: cast_nullable_to_non_nullable
-                        as int,
-            name:
-                freezed == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String?,
-            color:
-                freezed == color
-                    ? _value.color
-                    : color // ignore: cast_nullable_to_non_nullable
-                        as Color?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of KeyCustomization
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? serial = null,Object? name = freezed,Object? color = freezed,}) {
+  return _then(_self.copyWith(
+serial: null == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,color: freezed == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as Color?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$KeyCustomizationImplCopyWith<$Res>
-    implements $KeyCustomizationCopyWith<$Res> {
-  factory _$$KeyCustomizationImplCopyWith(
-    _$KeyCustomizationImpl value,
-    $Res Function(_$KeyCustomizationImpl) then,
-  ) = __$$KeyCustomizationImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int serial,
-    @JsonKey(includeIfNull: false) String? name,
-    @JsonKey(includeIfNull: false) @_ColorConverter() Color? color,
-  });
 }
 
-/// @nodoc
-class __$$KeyCustomizationImplCopyWithImpl<$Res>
-    extends _$KeyCustomizationCopyWithImpl<$Res, _$KeyCustomizationImpl>
-    implements _$$KeyCustomizationImplCopyWith<$Res> {
-  __$$KeyCustomizationImplCopyWithImpl(
-    _$KeyCustomizationImpl _value,
-    $Res Function(_$KeyCustomizationImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of KeyCustomization
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? serial = null,
-    Object? name = freezed,
-    Object? color = freezed,
-  }) {
-    return _then(
-      _$KeyCustomizationImpl(
-        serial:
-            null == serial
-                ? _value.serial
-                : serial // ignore: cast_nullable_to_non_nullable
-                    as int,
-        name:
-            freezed == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String?,
-        color:
-            freezed == color
-                ? _value.color
-                : color // ignore: cast_nullable_to_non_nullable
-                    as Color?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$KeyCustomizationImpl implements _KeyCustomization {
-  _$KeyCustomizationImpl({
-    required this.serial,
-    @JsonKey(includeIfNull: false) this.name,
-    @JsonKey(includeIfNull: false) @_ColorConverter() this.color,
-  });
 
-  factory _$KeyCustomizationImpl.fromJson(Map<String, dynamic> json) =>
-      _$$KeyCustomizationImplFromJson(json);
+class _KeyCustomization implements KeyCustomization {
+   _KeyCustomization({required this.serial, @JsonKey(includeIfNull: false) this.name, @JsonKey(includeIfNull: false)@_ColorConverter() this.color});
+  factory _KeyCustomization.fromJson(Map<String, dynamic> json) => _$KeyCustomizationFromJson(json);
 
-  @override
-  final int serial;
-  @override
-  @JsonKey(includeIfNull: false)
-  final String? name;
-  @override
-  @JsonKey(includeIfNull: false)
-  @_ColorConverter()
-  final Color? color;
+@override final  int serial;
+@override@JsonKey(includeIfNull: false) final  String? name;
+@override@JsonKey(includeIfNull: false)@_ColorConverter() final  Color? color;
 
-  @override
-  String toString() {
-    return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
-  }
+/// Create a copy of KeyCustomization
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$KeyCustomizationCopyWith<_KeyCustomization> get copyWith => __$KeyCustomizationCopyWithImpl<_KeyCustomization>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$KeyCustomizationImpl &&
-            (identical(other.serial, serial) || other.serial == serial) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.color, color) || other.color == color));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, serial, name, color);
-
-  /// Create a copy of KeyCustomization
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
-      __$$KeyCustomizationImplCopyWithImpl<_$KeyCustomizationImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$KeyCustomizationImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$KeyCustomizationToJson(this, );
 }
 
-abstract class _KeyCustomization implements KeyCustomization {
-  factory _KeyCustomization({
-    required final int serial,
-    @JsonKey(includeIfNull: false) final String? name,
-    @JsonKey(includeIfNull: false) @_ColorConverter() final Color? color,
-  }) = _$KeyCustomizationImpl;
-
-  factory _KeyCustomization.fromJson(Map<String, dynamic> json) =
-      _$KeyCustomizationImpl.fromJson;
-
-  @override
-  int get serial;
-  @override
-  @JsonKey(includeIfNull: false)
-  String? get name;
-  @override
-  @JsonKey(includeIfNull: false)
-  @_ColorConverter()
-  Color? get color;
-
-  /// Create a copy of KeyCustomization
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$KeyCustomizationImplCopyWith<_$KeyCustomizationImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _KeyCustomization&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,serial,name,color);
+
+@override
+String toString() {
+  return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$KeyCustomizationCopyWith<$Res> implements $KeyCustomizationCopyWith<$Res> {
+  factory _$KeyCustomizationCopyWith(_KeyCustomization value, $Res Function(_KeyCustomization) _then) = __$KeyCustomizationCopyWithImpl;
+@override @useResult
+$Res call({
+ int serial,@JsonKey(includeIfNull: false) String? name,@JsonKey(includeIfNull: false)@_ColorConverter() Color? color
+});
+
+
+
+
+}
+/// @nodoc
+class __$KeyCustomizationCopyWithImpl<$Res>
+    implements _$KeyCustomizationCopyWith<$Res> {
+  __$KeyCustomizationCopyWithImpl(this._self, this._then);
+
+  final _KeyCustomization _self;
+  final $Res Function(_KeyCustomization) _then;
+
+/// Create a copy of KeyCustomization
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? serial = null,Object? name = freezed,Object? color = freezed,}) {
+  return _then(_KeyCustomization(
+serial: null == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,color: freezed == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as Color?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$LocaleStatus {
+
+ int get translated; int get proofread;
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LocaleStatusCopyWith<LocaleStatus> get copyWith => _$LocaleStatusCopyWithImpl<LocaleStatus>(this as LocaleStatus, _$identity);
+
+  /// Serializes this LocaleStatus to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,translated,proofread);
+
+@override
+String toString() {
+  return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LocaleStatusCopyWith<$Res>  {
+  factory $LocaleStatusCopyWith(LocaleStatus value, $Res Function(LocaleStatus) _then) = _$LocaleStatusCopyWithImpl;
+@useResult
+$Res call({
+ int translated, int proofread
+});
+
+
+
+
+}
+/// @nodoc
+class _$LocaleStatusCopyWithImpl<$Res>
+    implements $LocaleStatusCopyWith<$Res> {
+  _$LocaleStatusCopyWithImpl(this._self, this._then);
+
+  final LocaleStatus _self;
+  final $Res Function(LocaleStatus) _then;
+
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? translated = null,Object? proofread = null,}) {
+  return _then(_self.copyWith(
+translated: null == translated ? _self.translated : translated // ignore: cast_nullable_to_non_nullable
+as int,proofread: null == proofread ? _self.proofread : proofread // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// @nodoc
+@JsonSerializable()
+
+class _LocaleStatus implements LocaleStatus {
+   _LocaleStatus({required this.translated, required this.proofread});
+  factory _LocaleStatus.fromJson(Map<String, dynamic> json) => _$LocaleStatusFromJson(json);
+
+@override final  int translated;
+@override final  int proofread;
+
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LocaleStatusCopyWith<_LocaleStatus> get copyWith => __$LocaleStatusCopyWithImpl<_LocaleStatus>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$LocaleStatusToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,translated,proofread);
+
+@override
+String toString() {
+  return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LocaleStatusCopyWith<$Res> implements $LocaleStatusCopyWith<$Res> {
+  factory _$LocaleStatusCopyWith(_LocaleStatus value, $Res Function(_LocaleStatus) _then) = __$LocaleStatusCopyWithImpl;
+@override @useResult
+$Res call({
+ int translated, int proofread
+});
+
+
+
+
+}
+/// @nodoc
+class __$LocaleStatusCopyWithImpl<$Res>
+    implements _$LocaleStatusCopyWith<$Res> {
+  __$LocaleStatusCopyWithImpl(this._self, this._then);
+
+  final _LocaleStatus _self;
+  final $Res Function(_LocaleStatus) _then;
+
+/// Create a copy of LocaleStatus
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? translated = null,Object? proofread = null,}) {
+  return _then(_LocaleStatus(
+translated: null == translated ? _self.translated : translated // ignore: cast_nullable_to_non_nullable
+as int,proofread: null == proofread ? _self.proofread : proofread // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on

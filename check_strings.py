@@ -18,6 +18,7 @@
 import json
 import os
 import sys
+from pathlib import Path
 
 non_words = (":",)
 errors = []
@@ -102,6 +103,17 @@ def lint_strings(strings, rules):
             errors.extend([f"  {e}" for e in errs])
 
 
+def get_lint_rules(language_code):
+    l10n_config_path = "lib/l10n/config.json"
+    with open(l10n_config_path, "r", encoding="utf-8") as f:
+        l10n_config = json.load(f)
+        return (
+            l10n_config.get(language_code, {}).get("lint_rules")
+            or l10n_config["default"]["lint_rules"]
+        )
+    return {}
+
+
 if len(sys.argv) != 2:
     print("USAGE: check_strings.py <ARB_FILE>")
     sys.exit(1)
@@ -114,7 +126,8 @@ with open(target, encoding="utf-8") as f:
 strings = {k: v for k, v in values.items() if not k.startswith("@")}
 
 print(target, f"- checking {len(strings)} strings")
-lint_strings(strings, values.get("@_lint_rules", {}))
+language_code = Path(target).stem.split("_")[1]
+lint_strings(strings, get_lint_rules(language_code))
 check_duplicate_values(strings)
 
 with open(os.path.join(os.path.dirname(target), "app_en.arb"), encoding="utf-8") as f:

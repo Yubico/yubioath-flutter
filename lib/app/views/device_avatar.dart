@@ -50,36 +50,33 @@ class DeviceAvatar extends StatelessWidget {
       );
 
   factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>
-      node.map(
-        usbYubiKey: (node) {
-          final info = node.info;
-          if (info != null) {
-            return DeviceAvatar.yubiKeyData(
-              YubiKeyData(node, node.name, info),
-              radius: radius,
-            );
-          }
-          return DeviceAvatar(
-            radius: radius,
-            child: const CircleAvatar(
-              backgroundColor: Colors.transparent,
-              child: ProductImage(
-                name: '',
-                formFactor: FormFactor.unknown,
-                isNfc: false,
+      switch (node) {
+        UsbYubiKeyNode() =>
+          node.info != null
+              ? DeviceAvatar.yubiKeyData(
+                YubiKeyData(node, node.name, node.info!),
+                radius: radius,
+              )
+              : DeviceAvatar(
+                radius: radius,
+                child: const CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  child: ProductImage(
+                    name: '',
+                    formFactor: FormFactor.unknown,
+                    isNfc: false,
+                  ),
+                ),
               ),
-            ),
-          );
-        },
-        nfcReader:
-            (_) => DeviceAvatar(
-              radius: radius,
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Symbols.contactless),
-              ),
-            ),
-      );
+
+        NfcReaderNode() => DeviceAvatar(
+          radius: radius,
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Symbols.contactless),
+          ),
+        ),
+      };
 
   factory DeviceAvatar.currentDevice(WidgetRef ref, {double? radius}) {
     final deviceNode = ref.watch(currentDeviceProvider);

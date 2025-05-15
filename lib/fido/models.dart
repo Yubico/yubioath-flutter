@@ -22,7 +22,7 @@ part 'models.g.dart';
 enum InteractionEvent { remove, insert, touch }
 
 @freezed
-class FidoState with _$FidoState {
+abstract class FidoState with _$FidoState {
   const FidoState._();
 
   factory FidoState({
@@ -56,20 +56,20 @@ class FidoState with _$FidoState {
 }
 
 @freezed
-class PinResult with _$PinResult {
-  factory PinResult.success() = _PinSuccess;
-  factory PinResult.failed(FidoPinFailureReason reason) = _PinFailure;
+sealed class PinResult with _$PinResult {
+  factory PinResult.success() = PinResultSuccess;
+  factory PinResult.failed(FidoPinFailureReason reason) = PinResultFailure;
 }
 
 @freezed
-class FidoPinFailureReason with _$FidoPinFailureReason {
+sealed class FidoPinFailureReason with _$FidoPinFailureReason {
   factory FidoPinFailureReason.invalidPin(int retries, bool authBlocked) =
       FidoInvalidPin;
   const factory FidoPinFailureReason.weakPin() = FidoWeakPin;
 }
 
 @freezed
-class Fingerprint with _$Fingerprint {
+abstract class Fingerprint with _$Fingerprint {
   const Fingerprint._();
   factory Fingerprint(String templateId, String? name) = _Fingerprint;
 
@@ -80,14 +80,15 @@ class Fingerprint with _$Fingerprint {
 }
 
 @freezed
-class FingerprintEvent with _$FingerprintEvent {
-  factory FingerprintEvent.capture(int remaining) = _EventCapture;
-  factory FingerprintEvent.complete(Fingerprint fingerprint) = _EventComplete;
-  factory FingerprintEvent.error(int code) = _EventError;
+sealed class FingerprintEvent with _$FingerprintEvent {
+  factory FingerprintEvent.capture(int remaining) = FingerprintEventCapture;
+  factory FingerprintEvent.complete(Fingerprint fingerprint) =
+      FingerprintEventComplete;
+  factory FingerprintEvent.error(int code) = FingerprintEventError;
 }
 
 @freezed
-class FidoCredential with _$FidoCredential {
+abstract class FidoCredential with _$FidoCredential {
   factory FidoCredential({
     required String rpId,
     required String credentialId,
