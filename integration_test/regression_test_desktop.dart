@@ -66,11 +66,11 @@ void main() {
       await tester.shortWait();
       await tester.tap(find.byKey(languageSetting).hitTestable());
       await tester.shortWait();
-      await tester.tap(find.bySemanticsLabel('French').hitTestable());
+      await tester.tap(find.bySemanticsLabel('Français').hitTestable());
       await tester.shortWait();
       await tester.tap(find.byKey(languageSetting).hitTestable());
       await tester.shortWait();
-      await tester.tap(find.bySemanticsLabel('Anglais').hitTestable());
+      await tester.tap(find.bySemanticsLabel('English').hitTestable());
       await tester.shortWait();
     });
   });
