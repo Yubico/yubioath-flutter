@@ -34,6 +34,11 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   group('Keyless tests', () {
+    appTest('Switch to Home', (WidgetTester tester) async {
+      /// change to OATH view
+      await tester.tapAppDrawerButton(homeDrawer);
+      await tester.shortWait();
+    });
     appTestKeyless('changing themes', (WidgetTester tester) async {
       await tester.tap(find.byKey(settingDrawerIcon).hitTestable());
       await tester.shortWait();
@@ -65,7 +70,7 @@ void main() {
       await tester.shortWait();
       await tester.tap(find.byKey(languageSetting).hitTestable());
       await tester.shortWait();
-      await tester.tap(find.bySemanticsLabel('English').hitTestable());
+      await tester.tap(find.bySemanticsLabel('Anglais').hitTestable());
       await tester.shortWait();
     });
   });
@@ -78,7 +83,7 @@ void main() {
     appTest('reset OATH', (WidgetTester tester) async {
       /// reset OATH application
       await tester.resetOATH();
-      await tester.shortWait();
+      await tester.longWait();
     });
     appTest('Switch to OATH', (WidgetTester tester) async {
       /// change to OATH view
@@ -97,16 +102,21 @@ void main() {
   group('PIV Tests', () {
     appTest('reset PIV', (WidgetTester tester) async {
       await tester.resetPiv();
+      await tester.longWait();
+    });
+    appTest('Switch to PIV', (WidgetTester tester) async {
+      /// change to OATH view
+      await tester.tapAppDrawerButton(pivAppDrawer);
       await tester.shortWait();
     });
     appTest('Generate certificate in 9e', (WidgetTester tester) async {
       // 1. open PIV view
       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
       await tester.tap(pivDrawerButton);
-      await tester.longWait();
+      await tester.shortWait();
       // 2. click meatball menu for 9e
       await tester.tap(find.byKey(appListItem9e).hitTestable());
-      await tester.longWait();
+      await tester.shortWait();
       // 3. click generate
       await tester.tap(find.byKey(generateAction).hitTestable());
       await tester.longWait();
@@ -122,12 +132,13 @@ void main() {
         find.byKey(subjectField).hitTestable(),
         'CN=Generate9e',
       );
-      await tester.longWait();
+      await tester.shortWait();
 
       // 6. Change algorithm: ECCP384
       // 7. Date [unchanged]
       // 8. click save
       await tester.tap(find.byKey(saveButton).hitTestable());
+      await tester.longWait();
       await tester.longWait();
     });
     appTest('Generate certificate in 9e', (WidgetTester tester) async {
