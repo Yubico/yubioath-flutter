@@ -69,6 +69,7 @@ const languageSetting = Key('$_prefix.settings.language');
 const toggleDevicesSetting = Key('$_prefix.settings.toggle_devices');
 const customIconSetting = Key('$_prefix.settings.custom_icons');
 Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
+//Key languageOption(Locale mode) => Key('$_prefix.language_mode.${mode.countryCode}');
 const tosButton = Key('$_prefix.tos_button');
 const privacyButton = Key('$_prefix.privacy_button');
 const licensesButton = Key('$_prefix.licenses_button');
