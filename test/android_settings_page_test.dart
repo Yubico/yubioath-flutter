@@ -164,6 +164,9 @@ Future<Widget> androidWidget({
     prefProvider.overrideWithValue(
       sharedPrefs ?? await SharedPreferences.getInstance(),
     ),
+    localeStatusProvider.overrideWithValue(
+      await loadLocaleStatus(cache: false),
+    ),
     androidSdkVersionProvider.overrideWithValue(sdkVersion),
     supportedThemesProvider.overrideWith(
       (ref) => ref.watch(androidSupportedThemesProvider),

@@ -20,7 +20,7 @@ part 'models.freezed.dart';
 part 'models.g.dart';
 
 @Freezed(unionKey: 'kind')
-class RpcResponse with _$RpcResponse {
+sealed class RpcResponse with _$RpcResponse {
   factory RpcResponse.success(Map<String, dynamic> body, List<String> flags) =
       Success;
   factory RpcResponse.signal(String status, Map<String, dynamic> body) = Signal;
@@ -35,7 +35,7 @@ class RpcResponse with _$RpcResponse {
 }
 
 @freezed
-class RpcState with _$RpcState {
+abstract class RpcState with _$RpcState {
   const factory RpcState(String version, bool isAdmin) = _RpcState;
 
   factory RpcState.fromJson(Map<String, dynamic> json) =>

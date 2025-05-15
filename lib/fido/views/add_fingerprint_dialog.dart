@@ -108,38 +108,41 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
         .listen(
           (event) {
             setState(() {
-              event.when(
-                capture: (remaining) {
-                  _color = _animateColor(
-                    true,
-                    atPeak: () {
-                      setState(() {
-                        _samples += 1;
-                        _remaining = remaining;
-                      });
-                    },
-                    reverse: remaining > 0,
-                  );
-                },
-                complete: (fingerprint) {
-                  _remaining = 0;
-                  // Add delay to show that progressbar is filled
-                  Timer(const Duration(milliseconds: 200), () {
-                    setState(() {
-                      _fingerprint = fingerprint;
-                    });
-                    // This needs a short delay to ensure the field is enabled first
-                    Timer(
-                      const Duration(milliseconds: 100),
-                      _nameFocus.requestFocus,
+              switch (event) {
+                case FingerprintEventCapture(:final remaining):
+                  {
+                    _color = _animateColor(
+                      true,
+                      atPeak: () {
+                        setState(() {
+                          _samples += 1;
+                          _remaining = remaining;
+                        });
+                      },
+                      reverse: remaining > 0,
                     );
-                  });
-                },
-                error: (code) {
-                  _log.debug('Fingerprint capture error (code: $code)');
-                  _color = _animateColor(false);
-                },
-              );
+                  }
+                case FingerprintEventComplete(:final fingerprint):
+                  {
+                    _remaining = 0;
+                    // Add delay to show that progressbar is filled
+                    Timer(const Duration(milliseconds: 200), () {
+                      setState(() {
+                        _fingerprint = fingerprint;
+                      });
+                      // This needs a short delay to ensure the field is enabled first
+                      Timer(
+                        const Duration(milliseconds: 100),
+                        _nameFocus.requestFocus,
+                      );
+                    });
+                  }
+                case FingerprintEventError(:final code):
+                  {
+                    _log.debug('Fingerprint capture error (code: $code)');
+                    _color = _animateColor(false);
+                  }
+              }
             });
           },
           onError: (error, stacktrace) {

@@ -215,6 +215,7 @@ Future<Widget> initialize(List<String> argv) async {
   return ProviderScope(
     overrides: [
       prefProvider.overrideWithValue(prefs),
+      localeStatusProvider.overrideWithValue(await loadLocaleStatus()),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
         (ref) => ref.watch(desktopWindowStateProvider),

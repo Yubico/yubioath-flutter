@@ -32,6 +32,7 @@ import '../state.dart';
 class PinDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final PivState pivState;
+
   const PinDialog(this.devicePath, this.pivState, {super.key});
 
   @override
@@ -65,30 +66,35 @@ class _PinDialogState extends ConsumerState<PinDialog> {
       final status = await ref
           .read(pivStateProvider(widget.devicePath).notifier)
           .verifyPin(_pinController.text);
-      status.when(
-        success: () {
-          navigator.pop(true);
-        },
-        failure: (reason) {
-          reason.maybeWhen(
-            invalidPin: (attemptsRemaining) {
-              _pinController.selection = TextSelection(
-                baseOffset: 0,
-                extentOffset: _pinController.text.length,
-              );
-              _pinFocus.requestFocus();
-              setState(() {
-                _attemptsRemaining = attemptsRemaining;
-                _pinIsWrong = true;
-                if (_attemptsRemaining == 0) {
-                  _pinIsBlocked = true;
+
+      switch (status) {
+        case PinSuccess():
+          {
+            navigator.pop(true);
+          }
+        case PinFailure(:final reason):
+          {
+            switch (reason) {
+              case PivInvalidPin(:final attemptsRemaining):
+                {
+                  _pinController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _pinController.text.length,
+                  );
+                  _pinFocus.requestFocus();
+                  setState(() {
+                    _attemptsRemaining = attemptsRemaining;
+                    _pinIsWrong = true;
+                    if (_attemptsRemaining == 0) {
+                      _pinIsBlocked = true;
+                    }
+                  });
                 }
-              });
-            },
-            orElse: () {},
-          );
-        },
-      );
+              default:
+              // nothing
+            }
+          }
+      }
     } on CancellationException catch (_) {
       navigator.pop(false);
     }

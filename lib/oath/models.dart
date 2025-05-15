@@ -62,7 +62,7 @@ enum OathType {
 enum KeystoreState { unknown, allowed, failed }
 
 @freezed
-class OathCredential with _$OathCredential {
+abstract class OathCredential with _$OathCredential {
   factory OathCredential(
     String deviceId,
     String id,
@@ -88,7 +88,7 @@ class _IssuerConverter implements JsonConverter<String?, String?> {
 }
 
 @freezed
-class OathCode with _$OathCode {
+abstract class OathCode with _$OathCode {
   factory OathCode(String value, int validFrom, int validTo) = _OathCode;
 
   factory OathCode.fromJson(Map<String, dynamic> json) =>
@@ -96,7 +96,7 @@ class OathCode with _$OathCode {
 }
 
 @freezed
-class OathPair with _$OathPair {
+abstract class OathPair with _$OathPair {
   factory OathPair(OathCredential credential, OathCode? code) = _OathPair;
 
   factory OathPair.fromJson(Map<String, dynamic> json) =>
@@ -104,7 +104,7 @@ class OathPair with _$OathPair {
 }
 
 @freezed
-class OathState with _$OathState {
+abstract class OathState with _$OathState {
   const OathState._();
 
   factory OathState(
@@ -124,7 +124,7 @@ class OathState with _$OathState {
 }
 
 @freezed
-class CredentialData with _$CredentialData {
+abstract class CredentialData with _$CredentialData {
   const CredentialData._();
 
   factory CredentialData({

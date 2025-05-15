@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Kopierade framgångsrikt OTP-kod från YubiKey till urklipp.</string>
+    <string name="p_ndef_set_password">Kopierade lösenordet från YubiKey till urklipp.</string>
+    <string name="p_ndef_parse_failure">Misslyckades med att tolka OTP-koden från YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Det gick inte att komma åt urklipp när man försökte kopiera OTP-kod från YubiKey.</string>
+</resources>

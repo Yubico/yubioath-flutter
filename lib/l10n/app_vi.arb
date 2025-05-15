@@ -1,28 +1,29 @@
 {
     "@@locale": "vi",
 
-    "@_readme": {
-        "notes": [
-            "Tất cả chuỗi bắt đầu bằng chữ cái viết hoa.",
-            "Nhóm chuỗi theo danh mục, nhưng không cần thiết ràng buộc chúng với một phần của ứng dụng nếu chúng có thể được sử dụng lại giữa nhiều phần.",
-            "Chạy check_strings.py trên tệp .arb để phát hiện vấn đề, điều chỉnh @_lint_rules theo yêu cầu cho từng ngôn ngữ."
-        ],
-        "prefixes": {
-            "s_": "Một hoặc vài từ. Nên đủ ngắn để hiển thị trên nút hoặc tiêu đề.",
-            "l_": "Một dòng đơn, có thể xuống dòng. Không nên quá một câu, và không kết thúc bằng dấu chấm.",
-            "p_": "Một hoặc nhiều câu đầy đủ, với dấu chấm câu thích hợp.",
-            "q_": "Một câu hỏi, kết thúc bằng dấu hỏi chấm."
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Tiếng Việt",
+    "@native_language_name": {
+        "description": "The language name in native locale"
+    },
+    "s_translated": "Translated: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
         }
     },
-
-    "@_lint_rules": {
-        "p_ending_chars": ".!",
-        "q_ending_chars": "?",
-        "s_max_words": 4,
-        "s_max_length": 32
+    "s_proofread": "Proofread: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
-
-    "app_name": "Yubico Authenticator",
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
 
     "s_save": "Lưu",
     "s_cancel": "Hủy",
@@ -136,14 +137,6 @@
         }
     },
     "s_choose_language": "Chọn ngôn ngữ",
-    "s_english": "Tiếng Anh",
-    "s_french": "Tiếng Pháp",
-    "s_german": "Tiếng Đức",
-    "s_polish": "Đánh bóng",
-    "s_slovak": "Tiếng Slovak",
-    "s_vietnamese": "Tiếng Việt",
-    "s_japanese": "Tiếng Nhật",
-
 
     "@_theme": {},
     "s_app_theme": "Chủ đề ứng dụng",
@@ -395,6 +388,7 @@
     "p_pin_required_desc": "Hành động bạn sắp thực hiện yêu cầu phải nhập Mã PIN PIV.",
     "l_piv_pin_blocked": "Bị khóa, sử dụng PUK để khôi phục",
     "p_piv_pin_blocked_desc": "The PIN is blocked. Use the PUK to reset it.",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "Bị khóa, cần khôi phục cài đặt gốc",
     "p_piv_pin_puk_blocked_desc": "Both the PIN and PUK are blocked. A factory reset of the PIV application is required.",
     "p_new_piv_pin_puk_requirements": "A {name} must be at least {length} characters long.",

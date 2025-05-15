@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -151,7 +150,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                               helperText:
                                   pinRetries != null && pinRetries <= 3
                                       ? l10n.l_attempts_remaining(pinRetries)
-                                      : '', // Prevents dialog resizing
+                                      : '',
+                              // Prevents dialog resizing
                               errorText:
                                   _currentIsWrong ? _currentPinError : null,
                               errorMaxLines: 3,
@@ -343,49 +343,57 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
           .setPin(newPin, oldPin: oldPin);
-      result.whenOrNull(
-        success: () {
-          Navigator.of(context).pop(true);
-          showMessage(context, l10n.s_pin_set);
-        },
-        failed: (reason) {
-          reason.when(
-            invalidPin: (retries, authBlocked) {
-              _currentPinController.selection = TextSelection(
-                baseOffset: 0,
-                extentOffset: _currentPinController.text.length,
-              );
-              _currentPinFocus.requestFocus();
-              setState(() {
-                if (authBlocked || retries == 0) {
-                  _currentPinError =
-                      retries == 0
-                          ? l10n.l_pin_blocked_reset
-                          : l10n.l_pin_soft_locked;
-                  _currentIsWrong = true;
-                  _isBlocked = true;
-                } else {
-                  _currentPinError = l10n.l_wrong_pin_attempts_remaining(
-                    retries,
+      switch (result) {
+        case PinResultSuccess():
+          {
+            await ref.read(withContextProvider)((context) async {
+              Navigator.of(context).pop(true);
+              showMessage(context, l10n.s_pin_set);
+            });
+          }
+        case PinResultFailure(:final reason):
+          {
+            switch (reason) {
+              case FidoInvalidPin(:final retries, :final authBlocked):
+                {
+                  _currentPinController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _currentPinController.text.length,
                   );
-                  _currentIsWrong = true;
+                  _currentPinFocus.requestFocus();
+                  setState(() {
+                    if (authBlocked || retries == 0) {
+                      _currentPinError =
+                          retries == 0
+                              ? l10n.l_pin_blocked_reset
+                              : l10n.l_pin_soft_locked;
+                      _currentIsWrong = true;
+                      _isBlocked = true;
+                    } else {
+                      _currentPinError = l10n.l_wrong_pin_attempts_remaining(
+                        retries,
+                      );
+                      _currentIsWrong = true;
+                    }
+                  });
                 }
-              });
-            },
-            weakPin: () {
-              _newPinController.selection = TextSelection(
-                baseOffset: 0,
-                extentOffset: _newPinController.text.length,
-              );
-              _newPinFocus.requestFocus();
-              setState(() {
-                _newPinError = l10n.p_pin_puk_complexity_failure(l10n.s_pin);
-                _newIsWrong = true;
-              });
-            },
-          );
-        },
-      );
+              case FidoWeakPin():
+                {
+                  _newPinController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _newPinController.text.length,
+                  );
+                  _newPinFocus.requestFocus();
+                  setState(() {
+                    _newPinError = l10n.p_pin_puk_complexity_failure(
+                      l10n.s_pin,
+                    );
+                    _newIsWrong = true;
+                  });
+                }
+            }
+          }
+      }
     } on CancellationException catch (_) {
       // ignored
     } catch (e) {

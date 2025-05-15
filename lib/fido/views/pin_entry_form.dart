@@ -15,7 +15,6 @@
  */
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -73,25 +72,31 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
       final result = await ref
           .read(fidoStateProvider(widget._deviceData.node.path).notifier)
           .unlock(_pinController.text);
-      result.whenOrNull(
-        failed: (reason) {
-          reason.maybeWhen(
-            invalidPin: (retries, authBlocked) {
-              _pinController.selection = TextSelection(
-                baseOffset: 0,
-                extentOffset: _pinController.text.length,
-              );
-              _pinFocus.requestFocus();
-              setState(() {
-                _pinIsWrong = true;
-                _retries = retries;
-                _blocked = authBlocked;
-              });
-            },
-            orElse: () {},
-          );
-        },
-      );
+      switch (result) {
+        case PinResultFailure(:final reason):
+          {
+            switch (reason) {
+              case FidoInvalidPin(:final retries, :final authBlocked):
+                {
+                  _pinController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _pinController.text.length,
+                  );
+                  _pinFocus.requestFocus();
+                  setState(() {
+                    _pinIsWrong = true;
+                    _retries = retries;
+                    _blocked = authBlocked;
+                  });
+                }
+              default:
+              // nothing
+            }
+          }
+
+        default:
+        //nothing
+      }
     } on CancellationException catch (_) {
       // ignored
     }
@@ -166,7 +171,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                     helperText:
                         pinRetries != null && pinRetries <= 3
                             ? l10n.l_attempts_remaining(pinRetries)
-                            : '', // Prevents dialog resizing
+                            : '',
+                    // Prevents dialog resizing
                     errorText:
                         (_pinIsWrong || authBlocked) &&
                                 !(authBlocked || _retries == 0)
@@ -192,7 +198,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                     setState(() {
                       _pinIsWrong = false;
                     });
-                  }, // Update state on change
+                  },
+                  // Update state on change
                   onSubmitted: (_) {
                     if (_pinController.text.length >=
                         widget._state.minPinLength) {

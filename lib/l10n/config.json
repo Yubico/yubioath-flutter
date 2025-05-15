@@ -1,0 +1,39 @@
+{
+    "@_readme": {
+        "notes": [
+            "All strings start with a Capital letter.",
+            "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
+            "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
+        ],
+        "prefixes": {
+            "s_": "A single, or few words. Should be short enough to display on a button, or a header.",
+            "l_": "A single line, can be wrapped. Should not be more than one sentence, and not end with a period.",
+            "p_": "One or more full sentences, with proper punctuation.",
+            "q_": "A question, ending in question mark."
+        }
+    },
+    "default": {
+        "lint_rules": {
+            "p_ending_chars": ".!",
+            "q_ending_chars": "?",
+            "s_max_words": 4,
+            "s_max_length": 32
+        }
+    },
+    "fr": {
+        "lint_rules": {
+            "p_ending_chars": ".!",
+            "q_ending_chars": "?",
+            "s_max_words": 5,
+            "s_max_length": 38
+        }
+    },
+    "ja": {
+        "lint_rules": {
+            "p_ending_chars": "。！",
+            "q_ending_chars": "？",
+            "s_max_words": 4,
+            "s_max_length": 32
+        }
+    }
+}

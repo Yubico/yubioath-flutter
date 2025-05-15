@@ -1,28 +1,29 @@
 {
     "@@locale": "ja",
 
-    "@_readme": {
-        "notes": {
-            "0": "All strings start with a Capital letter.",
-            "1": "Group strings by category, but don't needlessly tie them to a section of the app if they can be re-used between several.",
-            "2": "Run check_strings.py on the .arb file to detect problems, tweak @_lint_rules as needed per language."
-        },
-        "prefixes": {
-            "s_": "A single, or few words. Should be short enough to display on a button, or a header.",
-            "l_": "A single line, can be wrapped. Should not be more than one sentence, and not end with a period.",
-            "p_": "One or more full sentences, with proper punctuation.",
-            "q_": "A question, ending in question mark."
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "日本語",
+    "@native_language_name": {
+        "description": "The language name in native locale"
+    },
+    "s_translated": "Translated: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
         }
     },
-
-    "@_lint_rules": {
-        "p_ending_chars": "。！",
-        "q_ending_chars": "？",
-        "s_max_words": 4,
-        "s_max_length": 32
+    "s_proofread": "Proofread: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
-
-    "app_name": "Yubico Authenticator",
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
 
     "s_save": "保存",
     "s_cancel": "キャンセル",
@@ -136,14 +137,6 @@
         }
     },
     "s_choose_language": "言語を選択してください",
-    "s_english": "英語",
-    "s_french": "フランス語",
-    "s_german": "ドイツ語",
-    "s_polish": "ポーランド語",
-    "s_slovak": "スロバキア語",
-    "s_vietnamese": "ベトナム語",
-    "s_japanese": "日本語",
-
 
     "@_theme": {},
     "s_app_theme": "アプリのテーマ",
@@ -301,7 +294,7 @@
     "s_new_puk": "新しい PUK",
     "s_confirm_pin": "PIN を確認",
     "s_confirm_puk": "PUK を確認",
-    "s_unblock_pin": "FIDOのリセット",
+    "s_unblock_pin": "PIN をリセット",
     "l_pin_mismatch": "PIN が一致しません",
     "l_puk_mismatch": "PUK が一致しません",
     "s_pin_set": "PIN を設定しました",
@@ -394,9 +387,10 @@
     "s_pin_required": "PINが必要",
     "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
     "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
-    "p_piv_pin_blocked_desc": "PINがブロックされています。PUKを使用してリセットしてください。",
+    "p_piv_pin_blocked_desc": "PIN がブロックされています。PUK を使用してリセットしてください。",
+    "p_piv_pin_blocked_bio_desc": null,
     "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットする必要があります",
-    "p_piv_pin_puk_blocked_desc": "PIN と PUK の両方がブロックされている。PIV アプリケーションの工場出荷時リセッ トが必要です。",
+    "p_piv_pin_puk_blocked_desc": "PIN と PUK の両方がブロックされています。PIV アプリケーションの工場出荷時リセットが必要です。",
     "p_new_piv_pin_puk_requirements": "{name} は {length} 文字以上で設定してください。",
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -431,7 +425,7 @@
         }
     },
     "s_dismiss": "閉じる",
-    "p_default_pin_puk_key_desc": "デフォルトのPIN、PUK、管理キーを変更することをお勧めします。",
+    "p_default_pin_puk_key_desc": "デフォルトの PIN、PUK、管理キーの変更をお勧めします。",
     "l_warning_default_pin": "警告: デフォルトのPINが使用されています",
     "l_warning_default_puk": "警告: デフォルトのPUKが使用されています",
     "l_default_pin_used": "デフォルトのPINが使用されています",
@@ -511,7 +505,7 @@
     "s_add_accounts": "アカウントを追加",
     "p_add_description": "QRコードをスキャンするには、画面にコード全体が表示されていることを確認してから下のボタンを押してください。保存した画像をフォルダからこのダイアログにドラッグすることもできます。アカウント認証情報の詳細を書面でお持ちの場合は、代わりに手動入力を使用してください。",
     "l_drop_qr_description": "QRコードをドロップしてアカウントを追加",
-    "p_add_account_three_ways": "アカウントの追加には、三 通りの方法があります。",
+    "p_add_account_three_ways": "アカウントの追加には、3 通りの方法があります。",
     "s_scanning": "スキャン (推奨)",
     "p_scanning_desc": "QR コードをスキャンする前に、画面にコード全体が表示されているか確認してください。",
     "s_drag_and_drop": "ドラッグアンドドロップ",
@@ -1113,9 +1107,9 @@
     "l_nfc_failed_to_scan": "スキャンに失敗しました。もう一度お試しください",
 
     "@_usb": {},
-    "s_usb_processing": "YubiKeyからデータを読み込む",
+    "s_usb_processing": "YubiKey からデータの読み込み中",
     "s_usb_dont_remove": "キーを取り外さないでください\u2026",
-    "l_usb_read_error": "YubiKey からのデータの読み込みに失敗しました",
+    "l_usb_read_error": "YubiKey からデータを読み込めませんでした",
 
     "@_ndef": {},
     "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",

@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,1346 +10,794 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-OathCredential _$OathCredentialFromJson(Map<String, dynamic> json) {
-  return _OathCredential.fromJson(json);
-}
 
 /// @nodoc
 mixin _$OathCredential {
-  String get deviceId => throw _privateConstructorUsedError;
-  String get id => throw _privateConstructorUsedError;
-  @_IssuerConverter()
-  String? get issuer => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  OathType get oathType => throw _privateConstructorUsedError;
-  int get period => throw _privateConstructorUsedError;
-  bool get touchRequired => throw _privateConstructorUsedError;
+
+ String get deviceId; String get id;@_IssuerConverter() String? get issuer; String get name; OathType get oathType; int get period; bool get touchRequired;
+/// Create a copy of OathCredential
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OathCredentialCopyWith<OathCredential> get copyWith => _$OathCredentialCopyWithImpl<OathCredential>(this as OathCredential, _$identity);
 
   /// Serializes this OathCredential to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of OathCredential
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $OathCredentialCopyWith<OathCredential> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathCredential&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.id, id) || other.id == id)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.period, period) || other.period == period)&&(identical(other.touchRequired, touchRequired) || other.touchRequired == touchRequired));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,deviceId,id,issuer,name,oathType,period,touchRequired);
+
+@override
+String toString() {
+  return 'OathCredential(deviceId: $deviceId, id: $id, issuer: $issuer, name: $name, oathType: $oathType, period: $period, touchRequired: $touchRequired)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $OathCredentialCopyWith<$Res> {
-  factory $OathCredentialCopyWith(
-    OathCredential value,
-    $Res Function(OathCredential) then,
-  ) = _$OathCredentialCopyWithImpl<$Res, OathCredential>;
-  @useResult
-  $Res call({
-    String deviceId,
-    String id,
-    @_IssuerConverter() String? issuer,
-    String name,
-    OathType oathType,
-    int period,
-    bool touchRequired,
-  });
-}
+abstract mixin class $OathCredentialCopyWith<$Res>  {
+  factory $OathCredentialCopyWith(OathCredential value, $Res Function(OathCredential) _then) = _$OathCredentialCopyWithImpl;
+@useResult
+$Res call({
+ String deviceId, String id,@_IssuerConverter() String? issuer, String name, OathType oathType, int period, bool touchRequired
+});
 
+
+
+
+}
 /// @nodoc
-class _$OathCredentialCopyWithImpl<$Res, $Val extends OathCredential>
+class _$OathCredentialCopyWithImpl<$Res>
     implements $OathCredentialCopyWith<$Res> {
-  _$OathCredentialCopyWithImpl(this._value, this._then);
+  _$OathCredentialCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final OathCredential _self;
+  final $Res Function(OathCredential) _then;
 
-  /// Create a copy of OathCredential
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? deviceId = null,
-    Object? id = null,
-    Object? issuer = freezed,
-    Object? name = null,
-    Object? oathType = null,
-    Object? period = null,
-    Object? touchRequired = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            deviceId:
-                null == deviceId
-                    ? _value.deviceId
-                    : deviceId // ignore: cast_nullable_to_non_nullable
-                        as String,
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            issuer:
-                freezed == issuer
-                    ? _value.issuer
-                    : issuer // ignore: cast_nullable_to_non_nullable
-                        as String?,
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            oathType:
-                null == oathType
-                    ? _value.oathType
-                    : oathType // ignore: cast_nullable_to_non_nullable
-                        as OathType,
-            period:
-                null == period
-                    ? _value.period
-                    : period // ignore: cast_nullable_to_non_nullable
-                        as int,
-            touchRequired:
-                null == touchRequired
-                    ? _value.touchRequired
-                    : touchRequired // ignore: cast_nullable_to_non_nullable
-                        as bool,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of OathCredential
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? deviceId = null,Object? id = null,Object? issuer = freezed,Object? name = null,Object? oathType = null,Object? period = null,Object? touchRequired = null,}) {
+  return _then(_self.copyWith(
+deviceId: null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,issuer: freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,oathType: null == oathType ? _self.oathType : oathType // ignore: cast_nullable_to_non_nullable
+as OathType,period: null == period ? _self.period : period // ignore: cast_nullable_to_non_nullable
+as int,touchRequired: null == touchRequired ? _self.touchRequired : touchRequired // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-/// @nodoc
-abstract class _$$OathCredentialImplCopyWith<$Res>
-    implements $OathCredentialCopyWith<$Res> {
-  factory _$$OathCredentialImplCopyWith(
-    _$OathCredentialImpl value,
-    $Res Function(_$OathCredentialImpl) then,
-  ) = __$$OathCredentialImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String deviceId,
-    String id,
-    @_IssuerConverter() String? issuer,
-    String name,
-    OathType oathType,
-    int period,
-    bool touchRequired,
-  });
 }
 
-/// @nodoc
-class __$$OathCredentialImplCopyWithImpl<$Res>
-    extends _$OathCredentialCopyWithImpl<$Res, _$OathCredentialImpl>
-    implements _$$OathCredentialImplCopyWith<$Res> {
-  __$$OathCredentialImplCopyWithImpl(
-    _$OathCredentialImpl _value,
-    $Res Function(_$OathCredentialImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of OathCredential
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? deviceId = null,
-    Object? id = null,
-    Object? issuer = freezed,
-    Object? name = null,
-    Object? oathType = null,
-    Object? period = null,
-    Object? touchRequired = null,
-  }) {
-    return _then(
-      _$OathCredentialImpl(
-        null == deviceId
-            ? _value.deviceId
-            : deviceId // ignore: cast_nullable_to_non_nullable
-                as String,
-        null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                as String,
-        freezed == issuer
-            ? _value.issuer
-            : issuer // ignore: cast_nullable_to_non_nullable
-                as String?,
-        null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                as String,
-        null == oathType
-            ? _value.oathType
-            : oathType // ignore: cast_nullable_to_non_nullable
-                as OathType,
-        null == period
-            ? _value.period
-            : period // ignore: cast_nullable_to_non_nullable
-                as int,
-        null == touchRequired
-            ? _value.touchRequired
-            : touchRequired // ignore: cast_nullable_to_non_nullable
-                as bool,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$OathCredentialImpl implements _OathCredential {
-  _$OathCredentialImpl(
-    this.deviceId,
-    this.id,
-    @_IssuerConverter() this.issuer,
-    this.name,
-    this.oathType,
-    this.period,
-    this.touchRequired,
-  );
 
-  factory _$OathCredentialImpl.fromJson(Map<String, dynamic> json) =>
-      _$$OathCredentialImplFromJson(json);
+class _OathCredential implements OathCredential {
+   _OathCredential(this.deviceId, this.id, @_IssuerConverter() this.issuer, this.name, this.oathType, this.period, this.touchRequired);
+  factory _OathCredential.fromJson(Map<String, dynamic> json) => _$OathCredentialFromJson(json);
 
-  @override
-  final String deviceId;
-  @override
-  final String id;
-  @override
-  @_IssuerConverter()
-  final String? issuer;
-  @override
-  final String name;
-  @override
-  final OathType oathType;
-  @override
-  final int period;
-  @override
-  final bool touchRequired;
+@override final  String deviceId;
+@override final  String id;
+@override@_IssuerConverter() final  String? issuer;
+@override final  String name;
+@override final  OathType oathType;
+@override final  int period;
+@override final  bool touchRequired;
 
-  @override
-  String toString() {
-    return 'OathCredential(deviceId: $deviceId, id: $id, issuer: $issuer, name: $name, oathType: $oathType, period: $period, touchRequired: $touchRequired)';
-  }
+/// Create a copy of OathCredential
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OathCredentialCopyWith<_OathCredential> get copyWith => __$OathCredentialCopyWithImpl<_OathCredential>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OathCredentialImpl &&
-            (identical(other.deviceId, deviceId) ||
-                other.deviceId == deviceId) &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.issuer, issuer) || other.issuer == issuer) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.oathType, oathType) ||
-                other.oathType == oathType) &&
-            (identical(other.period, period) || other.period == period) &&
-            (identical(other.touchRequired, touchRequired) ||
-                other.touchRequired == touchRequired));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    deviceId,
-    id,
-    issuer,
-    name,
-    oathType,
-    period,
-    touchRequired,
-  );
-
-  /// Create a copy of OathCredential
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OathCredentialImplCopyWith<_$OathCredentialImpl> get copyWith =>
-      __$$OathCredentialImplCopyWithImpl<_$OathCredentialImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$OathCredentialImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$OathCredentialToJson(this, );
 }
 
-abstract class _OathCredential implements OathCredential {
-  factory _OathCredential(
-    final String deviceId,
-    final String id,
-    @_IssuerConverter() final String? issuer,
-    final String name,
-    final OathType oathType,
-    final int period,
-    final bool touchRequired,
-  ) = _$OathCredentialImpl;
-
-  factory _OathCredential.fromJson(Map<String, dynamic> json) =
-      _$OathCredentialImpl.fromJson;
-
-  @override
-  String get deviceId;
-  @override
-  String get id;
-  @override
-  @_IssuerConverter()
-  String? get issuer;
-  @override
-  String get name;
-  @override
-  OathType get oathType;
-  @override
-  int get period;
-  @override
-  bool get touchRequired;
-
-  /// Create a copy of OathCredential
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OathCredentialImplCopyWith<_$OathCredentialImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathCredential&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.id, id) || other.id == id)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.period, period) || other.period == period)&&(identical(other.touchRequired, touchRequired) || other.touchRequired == touchRequired));
 }
 
-OathCode _$OathCodeFromJson(Map<String, dynamic> json) {
-  return _OathCode.fromJson(json);
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,deviceId,id,issuer,name,oathType,period,touchRequired);
+
+@override
+String toString() {
+  return 'OathCredential(deviceId: $deviceId, id: $id, issuer: $issuer, name: $name, oathType: $oathType, period: $period, touchRequired: $touchRequired)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OathCredentialCopyWith<$Res> implements $OathCredentialCopyWith<$Res> {
+  factory _$OathCredentialCopyWith(_OathCredential value, $Res Function(_OathCredential) _then) = __$OathCredentialCopyWithImpl;
+@override @useResult
+$Res call({
+ String deviceId, String id,@_IssuerConverter() String? issuer, String name, OathType oathType, int period, bool touchRequired
+});
+
+
+
+
+}
+/// @nodoc
+class __$OathCredentialCopyWithImpl<$Res>
+    implements _$OathCredentialCopyWith<$Res> {
+  __$OathCredentialCopyWithImpl(this._self, this._then);
+
+  final _OathCredential _self;
+  final $Res Function(_OathCredential) _then;
+
+/// Create a copy of OathCredential
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? deviceId = null,Object? id = null,Object? issuer = freezed,Object? name = null,Object? oathType = null,Object? period = null,Object? touchRequired = null,}) {
+  return _then(_OathCredential(
+null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String,null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
+as String?,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == oathType ? _self.oathType : oathType // ignore: cast_nullable_to_non_nullable
+as OathType,null == period ? _self.period : period // ignore: cast_nullable_to_non_nullable
+as int,null == touchRequired ? _self.touchRequired : touchRequired // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$OathCode {
-  String get value => throw _privateConstructorUsedError;
-  int get validFrom => throw _privateConstructorUsedError;
-  int get validTo => throw _privateConstructorUsedError;
+
+ String get value; int get validFrom; int get validTo;
+/// Create a copy of OathCode
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OathCodeCopyWith<OathCode> get copyWith => _$OathCodeCopyWithImpl<OathCode>(this as OathCode, _$identity);
 
   /// Serializes this OathCode to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of OathCode
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $OathCodeCopyWith<OathCode> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathCode&&(identical(other.value, value) || other.value == value)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,value,validFrom,validTo);
+
+@override
+String toString() {
+  return 'OathCode(value: $value, validFrom: $validFrom, validTo: $validTo)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $OathCodeCopyWith<$Res> {
-  factory $OathCodeCopyWith(OathCode value, $Res Function(OathCode) then) =
-      _$OathCodeCopyWithImpl<$Res, OathCode>;
-  @useResult
-  $Res call({String value, int validFrom, int validTo});
-}
+abstract mixin class $OathCodeCopyWith<$Res>  {
+  factory $OathCodeCopyWith(OathCode value, $Res Function(OathCode) _then) = _$OathCodeCopyWithImpl;
+@useResult
+$Res call({
+ String value, int validFrom, int validTo
+});
 
+
+
+
+}
 /// @nodoc
-class _$OathCodeCopyWithImpl<$Res, $Val extends OathCode>
+class _$OathCodeCopyWithImpl<$Res>
     implements $OathCodeCopyWith<$Res> {
-  _$OathCodeCopyWithImpl(this._value, this._then);
+  _$OathCodeCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final OathCode _self;
+  final $Res Function(OathCode) _then;
 
-  /// Create a copy of OathCode
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-    Object? validFrom = null,
-    Object? validTo = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            value:
-                null == value
-                    ? _value.value
-                    : value // ignore: cast_nullable_to_non_nullable
-                        as String,
-            validFrom:
-                null == validFrom
-                    ? _value.validFrom
-                    : validFrom // ignore: cast_nullable_to_non_nullable
-                        as int,
-            validTo:
-                null == validTo
-                    ? _value.validTo
-                    : validTo // ignore: cast_nullable_to_non_nullable
-                        as int,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of OathCode
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? value = null,Object? validFrom = null,Object? validTo = null,}) {
+  return _then(_self.copyWith(
+value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,validFrom: null == validFrom ? _self.validFrom : validFrom // ignore: cast_nullable_to_non_nullable
+as int,validTo: null == validTo ? _self.validTo : validTo // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
 }
 
-/// @nodoc
-abstract class _$$OathCodeImplCopyWith<$Res>
-    implements $OathCodeCopyWith<$Res> {
-  factory _$$OathCodeImplCopyWith(
-    _$OathCodeImpl value,
-    $Res Function(_$OathCodeImpl) then,
-  ) = __$$OathCodeImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String value, int validFrom, int validTo});
 }
 
-/// @nodoc
-class __$$OathCodeImplCopyWithImpl<$Res>
-    extends _$OathCodeCopyWithImpl<$Res, _$OathCodeImpl>
-    implements _$$OathCodeImplCopyWith<$Res> {
-  __$$OathCodeImplCopyWithImpl(
-    _$OathCodeImpl _value,
-    $Res Function(_$OathCodeImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of OathCode
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-    Object? validFrom = null,
-    Object? validTo = null,
-  }) {
-    return _then(
-      _$OathCodeImpl(
-        null == value
-            ? _value.value
-            : value // ignore: cast_nullable_to_non_nullable
-                as String,
-        null == validFrom
-            ? _value.validFrom
-            : validFrom // ignore: cast_nullable_to_non_nullable
-                as int,
-        null == validTo
-            ? _value.validTo
-            : validTo // ignore: cast_nullable_to_non_nullable
-                as int,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$OathCodeImpl implements _OathCode {
-  _$OathCodeImpl(this.value, this.validFrom, this.validTo);
 
-  factory _$OathCodeImpl.fromJson(Map<String, dynamic> json) =>
-      _$$OathCodeImplFromJson(json);
+class _OathCode implements OathCode {
+   _OathCode(this.value, this.validFrom, this.validTo);
+  factory _OathCode.fromJson(Map<String, dynamic> json) => _$OathCodeFromJson(json);
 
-  @override
-  final String value;
-  @override
-  final int validFrom;
-  @override
-  final int validTo;
+@override final  String value;
+@override final  int validFrom;
+@override final  int validTo;
 
-  @override
-  String toString() {
-    return 'OathCode(value: $value, validFrom: $validFrom, validTo: $validTo)';
-  }
+/// Create a copy of OathCode
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OathCodeCopyWith<_OathCode> get copyWith => __$OathCodeCopyWithImpl<_OathCode>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OathCodeImpl &&
-            (identical(other.value, value) || other.value == value) &&
-            (identical(other.validFrom, validFrom) ||
-                other.validFrom == validFrom) &&
-            (identical(other.validTo, validTo) || other.validTo == validTo));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, value, validFrom, validTo);
-
-  /// Create a copy of OathCode
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OathCodeImplCopyWith<_$OathCodeImpl> get copyWith =>
-      __$$OathCodeImplCopyWithImpl<_$OathCodeImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$OathCodeImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$OathCodeToJson(this, );
 }
 
-abstract class _OathCode implements OathCode {
-  factory _OathCode(
-    final String value,
-    final int validFrom,
-    final int validTo,
-  ) = _$OathCodeImpl;
-
-  factory _OathCode.fromJson(Map<String, dynamic> json) =
-      _$OathCodeImpl.fromJson;
-
-  @override
-  String get value;
-  @override
-  int get validFrom;
-  @override
-  int get validTo;
-
-  /// Create a copy of OathCode
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OathCodeImplCopyWith<_$OathCodeImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathCode&&(identical(other.value, value) || other.value == value)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
 }
 
-OathPair _$OathPairFromJson(Map<String, dynamic> json) {
-  return _OathPair.fromJson(json);
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,value,validFrom,validTo);
+
+@override
+String toString() {
+  return 'OathCode(value: $value, validFrom: $validFrom, validTo: $validTo)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OathCodeCopyWith<$Res> implements $OathCodeCopyWith<$Res> {
+  factory _$OathCodeCopyWith(_OathCode value, $Res Function(_OathCode) _then) = __$OathCodeCopyWithImpl;
+@override @useResult
+$Res call({
+ String value, int validFrom, int validTo
+});
+
+
+
+
+}
+/// @nodoc
+class __$OathCodeCopyWithImpl<$Res>
+    implements _$OathCodeCopyWith<$Res> {
+  __$OathCodeCopyWithImpl(this._self, this._then);
+
+  final _OathCode _self;
+  final $Res Function(_OathCode) _then;
+
+/// Create a copy of OathCode
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? value = null,Object? validFrom = null,Object? validTo = null,}) {
+  return _then(_OathCode(
+null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,null == validFrom ? _self.validFrom : validFrom // ignore: cast_nullable_to_non_nullable
+as int,null == validTo ? _self.validTo : validTo // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$OathPair {
-  OathCredential get credential => throw _privateConstructorUsedError;
-  OathCode? get code => throw _privateConstructorUsedError;
+
+ OathCredential get credential; OathCode? get code;
+/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OathPairCopyWith<OathPair> get copyWith => _$OathPairCopyWithImpl<OathPair>(this as OathPair, _$identity);
 
   /// Serializes this OathPair to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $OathPairCopyWith<OathPair> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathPair&&(identical(other.credential, credential) || other.credential == credential)&&(identical(other.code, code) || other.code == code));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,credential,code);
+
+@override
+String toString() {
+  return 'OathPair(credential: $credential, code: $code)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $OathPairCopyWith<$Res> {
-  factory $OathPairCopyWith(OathPair value, $Res Function(OathPair) then) =
-      _$OathPairCopyWithImpl<$Res, OathPair>;
-  @useResult
-  $Res call({OathCredential credential, OathCode? code});
+abstract mixin class $OathPairCopyWith<$Res>  {
+  factory $OathPairCopyWith(OathPair value, $Res Function(OathPair) _then) = _$OathPairCopyWithImpl;
+@useResult
+$Res call({
+ OathCredential credential, OathCode? code
+});
 
-  $OathCredentialCopyWith<$Res> get credential;
-  $OathCodeCopyWith<$Res>? get code;
+
+$OathCredentialCopyWith<$Res> get credential;$OathCodeCopyWith<$Res>? get code;
+
 }
-
 /// @nodoc
-class _$OathPairCopyWithImpl<$Res, $Val extends OathPair>
+class _$OathPairCopyWithImpl<$Res>
     implements $OathPairCopyWith<$Res> {
-  _$OathPairCopyWithImpl(this._value, this._then);
+  _$OathPairCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final OathPair _self;
+  final $Res Function(OathPair) _then;
 
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? credential = null, Object? code = freezed}) {
-    return _then(
-      _value.copyWith(
-            credential:
-                null == credential
-                    ? _value.credential
-                    : credential // ignore: cast_nullable_to_non_nullable
-                        as OathCredential,
-            code:
-                freezed == code
-                    ? _value.code
-                    : code // ignore: cast_nullable_to_non_nullable
-                        as OathCode?,
-          )
-          as $Val,
-    );
+/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? credential = null,Object? code = freezed,}) {
+  return _then(_self.copyWith(
+credential: null == credential ? _self.credential : credential // ignore: cast_nullable_to_non_nullable
+as OathCredential,code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as OathCode?,
+  ));
+}
+/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OathCredentialCopyWith<$Res> get credential {
+  
+  return $OathCredentialCopyWith<$Res>(_self.credential, (value) {
+    return _then(_self.copyWith(credential: value));
+  });
+}/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OathCodeCopyWith<$Res>? get code {
+    if (_self.code == null) {
+    return null;
   }
 
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $OathCredentialCopyWith<$Res> get credential {
-    return $OathCredentialCopyWith<$Res>(_value.credential, (value) {
-      return _then(_value.copyWith(credential: value) as $Val);
-    });
-  }
-
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $OathCodeCopyWith<$Res>? get code {
-    if (_value.code == null) {
-      return null;
-    }
-
-    return $OathCodeCopyWith<$Res>(_value.code!, (value) {
-      return _then(_value.copyWith(code: value) as $Val);
-    });
-  }
+  return $OathCodeCopyWith<$Res>(_self.code!, (value) {
+    return _then(_self.copyWith(code: value));
+  });
+}
 }
 
-/// @nodoc
-abstract class _$$OathPairImplCopyWith<$Res>
-    implements $OathPairCopyWith<$Res> {
-  factory _$$OathPairImplCopyWith(
-    _$OathPairImpl value,
-    $Res Function(_$OathPairImpl) then,
-  ) = __$$OathPairImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({OathCredential credential, OathCode? code});
-
-  @override
-  $OathCredentialCopyWith<$Res> get credential;
-  @override
-  $OathCodeCopyWith<$Res>? get code;
-}
-
-/// @nodoc
-class __$$OathPairImplCopyWithImpl<$Res>
-    extends _$OathPairCopyWithImpl<$Res, _$OathPairImpl>
-    implements _$$OathPairImplCopyWith<$Res> {
-  __$$OathPairImplCopyWithImpl(
-    _$OathPairImpl _value,
-    $Res Function(_$OathPairImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? credential = null, Object? code = freezed}) {
-    return _then(
-      _$OathPairImpl(
-        null == credential
-            ? _value.credential
-            : credential // ignore: cast_nullable_to_non_nullable
-                as OathCredential,
-        freezed == code
-            ? _value.code
-            : code // ignore: cast_nullable_to_non_nullable
-                as OathCode?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$OathPairImpl implements _OathPair {
-  _$OathPairImpl(this.credential, this.code);
 
-  factory _$OathPairImpl.fromJson(Map<String, dynamic> json) =>
-      _$$OathPairImplFromJson(json);
+class _OathPair implements OathPair {
+   _OathPair(this.credential, this.code);
+  factory _OathPair.fromJson(Map<String, dynamic> json) => _$OathPairFromJson(json);
 
-  @override
-  final OathCredential credential;
-  @override
-  final OathCode? code;
+@override final  OathCredential credential;
+@override final  OathCode? code;
 
-  @override
-  String toString() {
-    return 'OathPair(credential: $credential, code: $code)';
-  }
+/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OathPairCopyWith<_OathPair> get copyWith => __$OathPairCopyWithImpl<_OathPair>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OathPairImpl &&
-            (identical(other.credential, credential) ||
-                other.credential == credential) &&
-            (identical(other.code, code) || other.code == code));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, credential, code);
-
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OathPairImplCopyWith<_$OathPairImpl> get copyWith =>
-      __$$OathPairImplCopyWithImpl<_$OathPairImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$OathPairImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$OathPairToJson(this, );
 }
 
-abstract class _OathPair implements OathPair {
-  factory _OathPair(final OathCredential credential, final OathCode? code) =
-      _$OathPairImpl;
-
-  factory _OathPair.fromJson(Map<String, dynamic> json) =
-      _$OathPairImpl.fromJson;
-
-  @override
-  OathCredential get credential;
-  @override
-  OathCode? get code;
-
-  /// Create a copy of OathPair
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OathPairImplCopyWith<_$OathPairImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathPair&&(identical(other.credential, credential) || other.credential == credential)&&(identical(other.code, code) || other.code == code));
 }
 
-OathState _$OathStateFromJson(Map<String, dynamic> json) {
-  return _OathState.fromJson(json);
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,credential,code);
+
+@override
+String toString() {
+  return 'OathPair(credential: $credential, code: $code)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OathPairCopyWith<$Res> implements $OathPairCopyWith<$Res> {
+  factory _$OathPairCopyWith(_OathPair value, $Res Function(_OathPair) _then) = __$OathPairCopyWithImpl;
+@override @useResult
+$Res call({
+ OathCredential credential, OathCode? code
+});
+
+
+@override $OathCredentialCopyWith<$Res> get credential;@override $OathCodeCopyWith<$Res>? get code;
+
+}
+/// @nodoc
+class __$OathPairCopyWithImpl<$Res>
+    implements _$OathPairCopyWith<$Res> {
+  __$OathPairCopyWithImpl(this._self, this._then);
+
+  final _OathPair _self;
+  final $Res Function(_OathPair) _then;
+
+/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? credential = null,Object? code = freezed,}) {
+  return _then(_OathPair(
+null == credential ? _self.credential : credential // ignore: cast_nullable_to_non_nullable
+as OathCredential,freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as OathCode?,
+  ));
+}
+
+/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OathCredentialCopyWith<$Res> get credential {
+  
+  return $OathCredentialCopyWith<$Res>(_self.credential, (value) {
+    return _then(_self.copyWith(credential: value));
+  });
+}/// Create a copy of OathPair
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OathCodeCopyWith<$Res>? get code {
+    if (_self.code == null) {
+    return null;
+  }
+
+  return $OathCodeCopyWith<$Res>(_self.code!, (value) {
+    return _then(_self.copyWith(code: value));
+  });
+}
+}
+
 
 /// @nodoc
 mixin _$OathState {
-  String get deviceId => throw _privateConstructorUsedError;
-  Version get version => throw _privateConstructorUsedError;
-  bool get hasKey => throw _privateConstructorUsedError;
-  bool get remembered => throw _privateConstructorUsedError;
-  bool get locked => throw _privateConstructorUsedError;
-  KeystoreState get keystore => throw _privateConstructorUsedError;
+
+ String get deviceId; Version get version; bool get hasKey; bool get remembered; bool get locked; KeystoreState get keystore;
+/// Create a copy of OathState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OathStateCopyWith<OathState> get copyWith => _$OathStateCopyWithImpl<OathState>(this as OathState, _$identity);
 
   /// Serializes this OathState to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of OathState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $OathStateCopyWith<OathState> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathState&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.version, version) || other.version == version)&&(identical(other.hasKey, hasKey) || other.hasKey == hasKey)&&(identical(other.remembered, remembered) || other.remembered == remembered)&&(identical(other.locked, locked) || other.locked == locked)&&(identical(other.keystore, keystore) || other.keystore == keystore));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,deviceId,version,hasKey,remembered,locked,keystore);
+
+@override
+String toString() {
+  return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $OathStateCopyWith<$Res> {
-  factory $OathStateCopyWith(OathState value, $Res Function(OathState) then) =
-      _$OathStateCopyWithImpl<$Res, OathState>;
-  @useResult
-  $Res call({
-    String deviceId,
-    Version version,
-    bool hasKey,
-    bool remembered,
-    bool locked,
-    KeystoreState keystore,
-  });
+abstract mixin class $OathStateCopyWith<$Res>  {
+  factory $OathStateCopyWith(OathState value, $Res Function(OathState) _then) = _$OathStateCopyWithImpl;
+@useResult
+$Res call({
+ String deviceId, Version version, bool hasKey, bool remembered, bool locked, KeystoreState keystore
+});
 
-  $VersionCopyWith<$Res> get version;
+
+$VersionCopyWith<$Res> get version;
+
 }
-
 /// @nodoc
-class _$OathStateCopyWithImpl<$Res, $Val extends OathState>
+class _$OathStateCopyWithImpl<$Res>
     implements $OathStateCopyWith<$Res> {
-  _$OathStateCopyWithImpl(this._value, this._then);
+  _$OathStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final OathState _self;
+  final $Res Function(OathState) _then;
 
-  /// Create a copy of OathState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? deviceId = null,
-    Object? version = null,
-    Object? hasKey = null,
-    Object? remembered = null,
-    Object? locked = null,
-    Object? keystore = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            deviceId:
-                null == deviceId
-                    ? _value.deviceId
-                    : deviceId // ignore: cast_nullable_to_non_nullable
-                        as String,
-            version:
-                null == version
-                    ? _value.version
-                    : version // ignore: cast_nullable_to_non_nullable
-                        as Version,
-            hasKey:
-                null == hasKey
-                    ? _value.hasKey
-                    : hasKey // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            remembered:
-                null == remembered
-                    ? _value.remembered
-                    : remembered // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            locked:
-                null == locked
-                    ? _value.locked
-                    : locked // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            keystore:
-                null == keystore
-                    ? _value.keystore
-                    : keystore // ignore: cast_nullable_to_non_nullable
-                        as KeystoreState,
-          )
-          as $Val,
-    );
-  }
-
-  /// Create a copy of OathState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $VersionCopyWith<$Res> get version {
-    return $VersionCopyWith<$Res>(_value.version, (value) {
-      return _then(_value.copyWith(version: value) as $Val);
-    });
-  }
+/// Create a copy of OathState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? deviceId = null,Object? version = null,Object? hasKey = null,Object? remembered = null,Object? locked = null,Object? keystore = null,}) {
+  return _then(_self.copyWith(
+deviceId: null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as Version,hasKey: null == hasKey ? _self.hasKey : hasKey // ignore: cast_nullable_to_non_nullable
+as bool,remembered: null == remembered ? _self.remembered : remembered // ignore: cast_nullable_to_non_nullable
+as bool,locked: null == locked ? _self.locked : locked // ignore: cast_nullable_to_non_nullable
+as bool,keystore: null == keystore ? _self.keystore : keystore // ignore: cast_nullable_to_non_nullable
+as KeystoreState,
+  ));
 }
-
-/// @nodoc
-abstract class _$$OathStateImplCopyWith<$Res>
-    implements $OathStateCopyWith<$Res> {
-  factory _$$OathStateImplCopyWith(
-    _$OathStateImpl value,
-    $Res Function(_$OathStateImpl) then,
-  ) = __$$OathStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String deviceId,
-    Version version,
-    bool hasKey,
-    bool remembered,
-    bool locked,
-    KeystoreState keystore,
+/// Create a copy of OathState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VersionCopyWith<$Res> get version {
+  
+  return $VersionCopyWith<$Res>(_self.version, (value) {
+    return _then(_self.copyWith(version: value));
   });
-
-  @override
-  $VersionCopyWith<$Res> get version;
+}
 }
 
-/// @nodoc
-class __$$OathStateImplCopyWithImpl<$Res>
-    extends _$OathStateCopyWithImpl<$Res, _$OathStateImpl>
-    implements _$$OathStateImplCopyWith<$Res> {
-  __$$OathStateImplCopyWithImpl(
-    _$OathStateImpl _value,
-    $Res Function(_$OathStateImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of OathState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? deviceId = null,
-    Object? version = null,
-    Object? hasKey = null,
-    Object? remembered = null,
-    Object? locked = null,
-    Object? keystore = null,
-  }) {
-    return _then(
-      _$OathStateImpl(
-        null == deviceId
-            ? _value.deviceId
-            : deviceId // ignore: cast_nullable_to_non_nullable
-                as String,
-        null == version
-            ? _value.version
-            : version // ignore: cast_nullable_to_non_nullable
-                as Version,
-        hasKey:
-            null == hasKey
-                ? _value.hasKey
-                : hasKey // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        remembered:
-            null == remembered
-                ? _value.remembered
-                : remembered // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        locked:
-            null == locked
-                ? _value.locked
-                : locked // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        keystore:
-            null == keystore
-                ? _value.keystore
-                : keystore // ignore: cast_nullable_to_non_nullable
-                    as KeystoreState,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$OathStateImpl extends _OathState {
-  _$OathStateImpl(
-    this.deviceId,
-    this.version, {
-    required this.hasKey,
-    required this.remembered,
-    required this.locked,
-    required this.keystore,
-  }) : super._();
 
-  factory _$OathStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$OathStateImplFromJson(json);
+class _OathState extends OathState {
+   _OathState(this.deviceId, this.version, {required this.hasKey, required this.remembered, required this.locked, required this.keystore}): super._();
+  factory _OathState.fromJson(Map<String, dynamic> json) => _$OathStateFromJson(json);
 
-  @override
-  final String deviceId;
-  @override
-  final Version version;
-  @override
-  final bool hasKey;
-  @override
-  final bool remembered;
-  @override
-  final bool locked;
-  @override
-  final KeystoreState keystore;
+@override final  String deviceId;
+@override final  Version version;
+@override final  bool hasKey;
+@override final  bool remembered;
+@override final  bool locked;
+@override final  KeystoreState keystore;
 
-  @override
-  String toString() {
-    return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
-  }
+/// Create a copy of OathState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OathStateCopyWith<_OathState> get copyWith => __$OathStateCopyWithImpl<_OathState>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OathStateImpl &&
-            (identical(other.deviceId, deviceId) ||
-                other.deviceId == deviceId) &&
-            (identical(other.version, version) || other.version == version) &&
-            (identical(other.hasKey, hasKey) || other.hasKey == hasKey) &&
-            (identical(other.remembered, remembered) ||
-                other.remembered == remembered) &&
-            (identical(other.locked, locked) || other.locked == locked) &&
-            (identical(other.keystore, keystore) ||
-                other.keystore == keystore));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    deviceId,
-    version,
-    hasKey,
-    remembered,
-    locked,
-    keystore,
-  );
-
-  /// Create a copy of OathState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>
-      __$$OathStateImplCopyWithImpl<_$OathStateImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$OathStateImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$OathStateToJson(this, );
 }
 
-abstract class _OathState extends OathState {
-  factory _OathState(
-    final String deviceId,
-    final Version version, {
-    required final bool hasKey,
-    required final bool remembered,
-    required final bool locked,
-    required final KeystoreState keystore,
-  }) = _$OathStateImpl;
-  _OathState._() : super._();
-
-  factory _OathState.fromJson(Map<String, dynamic> json) =
-      _$OathStateImpl.fromJson;
-
-  @override
-  String get deviceId;
-  @override
-  Version get version;
-  @override
-  bool get hasKey;
-  @override
-  bool get remembered;
-  @override
-  bool get locked;
-  @override
-  KeystoreState get keystore;
-
-  /// Create a copy of OathState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OathStateImplCopyWith<_$OathStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathState&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.version, version) || other.version == version)&&(identical(other.hasKey, hasKey) || other.hasKey == hasKey)&&(identical(other.remembered, remembered) || other.remembered == remembered)&&(identical(other.locked, locked) || other.locked == locked)&&(identical(other.keystore, keystore) || other.keystore == keystore));
 }
 
-CredentialData _$CredentialDataFromJson(Map<String, dynamic> json) {
-  return _CredentialData.fromJson(json);
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,deviceId,version,hasKey,remembered,locked,keystore);
+
+@override
+String toString() {
+  return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
 }
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OathStateCopyWith<$Res> implements $OathStateCopyWith<$Res> {
+  factory _$OathStateCopyWith(_OathState value, $Res Function(_OathState) _then) = __$OathStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String deviceId, Version version, bool hasKey, bool remembered, bool locked, KeystoreState keystore
+});
+
+
+@override $VersionCopyWith<$Res> get version;
+
+}
+/// @nodoc
+class __$OathStateCopyWithImpl<$Res>
+    implements _$OathStateCopyWith<$Res> {
+  __$OathStateCopyWithImpl(this._self, this._then);
+
+  final _OathState _self;
+  final $Res Function(_OathState) _then;
+
+/// Create a copy of OathState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? deviceId = null,Object? version = null,Object? hasKey = null,Object? remembered = null,Object? locked = null,Object? keystore = null,}) {
+  return _then(_OathState(
+null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String,null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as Version,hasKey: null == hasKey ? _self.hasKey : hasKey // ignore: cast_nullable_to_non_nullable
+as bool,remembered: null == remembered ? _self.remembered : remembered // ignore: cast_nullable_to_non_nullable
+as bool,locked: null == locked ? _self.locked : locked // ignore: cast_nullable_to_non_nullable
+as bool,keystore: null == keystore ? _self.keystore : keystore // ignore: cast_nullable_to_non_nullable
+as KeystoreState,
+  ));
+}
+
+/// Create a copy of OathState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VersionCopyWith<$Res> get version {
+  
+  return $VersionCopyWith<$Res>(_self.version, (value) {
+    return _then(_self.copyWith(version: value));
+  });
+}
+}
+
 
 /// @nodoc
 mixin _$CredentialData {
-  String? get issuer => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get secret => throw _privateConstructorUsedError;
-  OathType get oathType => throw _privateConstructorUsedError;
-  HashAlgorithm get hashAlgorithm => throw _privateConstructorUsedError;
-  int get digits => throw _privateConstructorUsedError;
-  int get period => throw _privateConstructorUsedError;
-  int get counter => throw _privateConstructorUsedError;
+
+ String? get issuer; String get name; String get secret; OathType get oathType; HashAlgorithm get hashAlgorithm; int get digits; int get period; int get counter;
+/// Create a copy of CredentialData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CredentialDataCopyWith<CredentialData> get copyWith => _$CredentialDataCopyWithImpl<CredentialData>(this as CredentialData, _$identity);
 
   /// Serializes this CredentialData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of CredentialData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $CredentialDataCopyWith<CredentialData> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CredentialData&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.hashAlgorithm, hashAlgorithm) || other.hashAlgorithm == hashAlgorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.counter, counter) || other.counter == counter));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,issuer,name,secret,oathType,hashAlgorithm,digits,period,counter);
+
+@override
+String toString() {
+  return 'CredentialData(issuer: $issuer, name: $name, secret: $secret, oathType: $oathType, hashAlgorithm: $hashAlgorithm, digits: $digits, period: $period, counter: $counter)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $CredentialDataCopyWith<$Res> {
-  factory $CredentialDataCopyWith(
-    CredentialData value,
-    $Res Function(CredentialData) then,
-  ) = _$CredentialDataCopyWithImpl<$Res, CredentialData>;
-  @useResult
-  $Res call({
-    String? issuer,
-    String name,
-    String secret,
-    OathType oathType,
-    HashAlgorithm hashAlgorithm,
-    int digits,
-    int period,
-    int counter,
-  });
-}
+abstract mixin class $CredentialDataCopyWith<$Res>  {
+  factory $CredentialDataCopyWith(CredentialData value, $Res Function(CredentialData) _then) = _$CredentialDataCopyWithImpl;
+@useResult
+$Res call({
+ String? issuer, String name, String secret, OathType oathType, HashAlgorithm hashAlgorithm, int digits, int period, int counter
+});
 
+
+
+
+}
 /// @nodoc
-class _$CredentialDataCopyWithImpl<$Res, $Val extends CredentialData>
+class _$CredentialDataCopyWithImpl<$Res>
     implements $CredentialDataCopyWith<$Res> {
-  _$CredentialDataCopyWithImpl(this._value, this._then);
+  _$CredentialDataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final CredentialData _self;
+  final $Res Function(CredentialData) _then;
 
-  /// Create a copy of CredentialData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? issuer = freezed,
-    Object? name = null,
-    Object? secret = null,
-    Object? oathType = null,
-    Object? hashAlgorithm = null,
-    Object? digits = null,
-    Object? period = null,
-    Object? counter = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            issuer:
-                freezed == issuer
-                    ? _value.issuer
-                    : issuer // ignore: cast_nullable_to_non_nullable
-                        as String?,
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            secret:
-                null == secret
-                    ? _value.secret
-                    : secret // ignore: cast_nullable_to_non_nullable
-                        as String,
-            oathType:
-                null == oathType
-                    ? _value.oathType
-                    : oathType // ignore: cast_nullable_to_non_nullable
-                        as OathType,
-            hashAlgorithm:
-                null == hashAlgorithm
-                    ? _value.hashAlgorithm
-                    : hashAlgorithm // ignore: cast_nullable_to_non_nullable
-                        as HashAlgorithm,
-            digits:
-                null == digits
-                    ? _value.digits
-                    : digits // ignore: cast_nullable_to_non_nullable
-                        as int,
-            period:
-                null == period
-                    ? _value.period
-                    : period // ignore: cast_nullable_to_non_nullable
-                        as int,
-            counter:
-                null == counter
-                    ? _value.counter
-                    : counter // ignore: cast_nullable_to_non_nullable
-                        as int,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of CredentialData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? issuer = freezed,Object? name = null,Object? secret = null,Object? oathType = null,Object? hashAlgorithm = null,Object? digits = null,Object? period = null,Object? counter = null,}) {
+  return _then(_self.copyWith(
+issuer: freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,secret: null == secret ? _self.secret : secret // ignore: cast_nullable_to_non_nullable
+as String,oathType: null == oathType ? _self.oathType : oathType // ignore: cast_nullable_to_non_nullable
+as OathType,hashAlgorithm: null == hashAlgorithm ? _self.hashAlgorithm : hashAlgorithm // ignore: cast_nullable_to_non_nullable
+as HashAlgorithm,digits: null == digits ? _self.digits : digits // ignore: cast_nullable_to_non_nullable
+as int,period: null == period ? _self.period : period // ignore: cast_nullable_to_non_nullable
+as int,counter: null == counter ? _self.counter : counter // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
 }
 
-/// @nodoc
-abstract class _$$CredentialDataImplCopyWith<$Res>
-    implements $CredentialDataCopyWith<$Res> {
-  factory _$$CredentialDataImplCopyWith(
-    _$CredentialDataImpl value,
-    $Res Function(_$CredentialDataImpl) then,
-  ) = __$$CredentialDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String? issuer,
-    String name,
-    String secret,
-    OathType oathType,
-    HashAlgorithm hashAlgorithm,
-    int digits,
-    int period,
-    int counter,
-  });
 }
 
-/// @nodoc
-class __$$CredentialDataImplCopyWithImpl<$Res>
-    extends _$CredentialDataCopyWithImpl<$Res, _$CredentialDataImpl>
-    implements _$$CredentialDataImplCopyWith<$Res> {
-  __$$CredentialDataImplCopyWithImpl(
-    _$CredentialDataImpl _value,
-    $Res Function(_$CredentialDataImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of CredentialData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? issuer = freezed,
-    Object? name = null,
-    Object? secret = null,
-    Object? oathType = null,
-    Object? hashAlgorithm = null,
-    Object? digits = null,
-    Object? period = null,
-    Object? counter = null,
-  }) {
-    return _then(
-      _$CredentialDataImpl(
-        issuer:
-            freezed == issuer
-                ? _value.issuer
-                : issuer // ignore: cast_nullable_to_non_nullable
-                    as String?,
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        secret:
-            null == secret
-                ? _value.secret
-                : secret // ignore: cast_nullable_to_non_nullable
-                    as String,
-        oathType:
-            null == oathType
-                ? _value.oathType
-                : oathType // ignore: cast_nullable_to_non_nullable
-                    as OathType,
-        hashAlgorithm:
-            null == hashAlgorithm
-                ? _value.hashAlgorithm
-                : hashAlgorithm // ignore: cast_nullable_to_non_nullable
-                    as HashAlgorithm,
-        digits:
-            null == digits
-                ? _value.digits
-                : digits // ignore: cast_nullable_to_non_nullable
-                    as int,
-        period:
-            null == period
-                ? _value.period
-                : period // ignore: cast_nullable_to_non_nullable
-                    as int,
-        counter:
-            null == counter
-                ? _value.counter
-                : counter // ignore: cast_nullable_to_non_nullable
-                    as int,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$CredentialDataImpl extends _CredentialData {
-  _$CredentialDataImpl({
-    this.issuer,
-    required this.name,
-    required this.secret,
-    this.oathType = defaultOathType,
-    this.hashAlgorithm = defaultHashAlgorithm,
-    this.digits = defaultDigits,
-    this.period = defaultPeriod,
-    this.counter = defaultCounter,
-  }) : super._();
 
-  factory _$CredentialDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CredentialDataImplFromJson(json);
+class _CredentialData extends CredentialData {
+   _CredentialData({this.issuer, required this.name, required this.secret, this.oathType = defaultOathType, this.hashAlgorithm = defaultHashAlgorithm, this.digits = defaultDigits, this.period = defaultPeriod, this.counter = defaultCounter}): super._();
+  factory _CredentialData.fromJson(Map<String, dynamic> json) => _$CredentialDataFromJson(json);
 
-  @override
-  final String? issuer;
-  @override
-  final String name;
-  @override
-  final String secret;
-  @override
-  @JsonKey()
-  final OathType oathType;
-  @override
-  @JsonKey()
-  final HashAlgorithm hashAlgorithm;
-  @override
-  @JsonKey()
-  final int digits;
-  @override
-  @JsonKey()
-  final int period;
-  @override
-  @JsonKey()
-  final int counter;
+@override final  String? issuer;
+@override final  String name;
+@override final  String secret;
+@override@JsonKey() final  OathType oathType;
+@override@JsonKey() final  HashAlgorithm hashAlgorithm;
+@override@JsonKey() final  int digits;
+@override@JsonKey() final  int period;
+@override@JsonKey() final  int counter;
 
-  @override
-  String toString() {
-    return 'CredentialData(issuer: $issuer, name: $name, secret: $secret, oathType: $oathType, hashAlgorithm: $hashAlgorithm, digits: $digits, period: $period, counter: $counter)';
-  }
+/// Create a copy of CredentialData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CredentialDataCopyWith<_CredentialData> get copyWith => __$CredentialDataCopyWithImpl<_CredentialData>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CredentialDataImpl &&
-            (identical(other.issuer, issuer) || other.issuer == issuer) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.secret, secret) || other.secret == secret) &&
-            (identical(other.oathType, oathType) ||
-                other.oathType == oathType) &&
-            (identical(other.hashAlgorithm, hashAlgorithm) ||
-                other.hashAlgorithm == hashAlgorithm) &&
-            (identical(other.digits, digits) || other.digits == digits) &&
-            (identical(other.period, period) || other.period == period) &&
-            (identical(other.counter, counter) || other.counter == counter));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    issuer,
-    name,
-    secret,
-    oathType,
-    hashAlgorithm,
-    digits,
-    period,
-    counter,
-  );
-
-  /// Create a copy of CredentialData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CredentialDataImplCopyWith<_$CredentialDataImpl> get copyWith =>
-      __$$CredentialDataImplCopyWithImpl<_$CredentialDataImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$CredentialDataImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$CredentialDataToJson(this, );
 }
 
-abstract class _CredentialData extends CredentialData {
-  factory _CredentialData({
-    final String? issuer,
-    required final String name,
-    required final String secret,
-    final OathType oathType,
-    final HashAlgorithm hashAlgorithm,
-    final int digits,
-    final int period,
-    final int counter,
-  }) = _$CredentialDataImpl;
-  _CredentialData._() : super._();
-
-  factory _CredentialData.fromJson(Map<String, dynamic> json) =
-      _$CredentialDataImpl.fromJson;
-
-  @override
-  String? get issuer;
-  @override
-  String get name;
-  @override
-  String get secret;
-  @override
-  OathType get oathType;
-  @override
-  HashAlgorithm get hashAlgorithm;
-  @override
-  int get digits;
-  @override
-  int get period;
-  @override
-  int get counter;
-
-  /// Create a copy of CredentialData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CredentialDataImplCopyWith<_$CredentialDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CredentialData&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.hashAlgorithm, hashAlgorithm) || other.hashAlgorithm == hashAlgorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.counter, counter) || other.counter == counter));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,issuer,name,secret,oathType,hashAlgorithm,digits,period,counter);
+
+@override
+String toString() {
+  return 'CredentialData(issuer: $issuer, name: $name, secret: $secret, oathType: $oathType, hashAlgorithm: $hashAlgorithm, digits: $digits, period: $period, counter: $counter)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CredentialDataCopyWith<$Res> implements $CredentialDataCopyWith<$Res> {
+  factory _$CredentialDataCopyWith(_CredentialData value, $Res Function(_CredentialData) _then) = __$CredentialDataCopyWithImpl;
+@override @useResult
+$Res call({
+ String? issuer, String name, String secret, OathType oathType, HashAlgorithm hashAlgorithm, int digits, int period, int counter
+});
+
+
+
+
+}
+/// @nodoc
+class __$CredentialDataCopyWithImpl<$Res>
+    implements _$CredentialDataCopyWith<$Res> {
+  __$CredentialDataCopyWithImpl(this._self, this._then);
+
+  final _CredentialData _self;
+  final $Res Function(_CredentialData) _then;
+
+/// Create a copy of CredentialData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? issuer = freezed,Object? name = null,Object? secret = null,Object? oathType = null,Object? hashAlgorithm = null,Object? digits = null,Object? period = null,Object? counter = null,}) {
+  return _then(_CredentialData(
+issuer: freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,secret: null == secret ? _self.secret : secret // ignore: cast_nullable_to_non_nullable
+as String,oathType: null == oathType ? _self.oathType : oathType // ignore: cast_nullable_to_non_nullable
+as OathType,hashAlgorithm: null == hashAlgorithm ? _self.hashAlgorithm : hashAlgorithm // ignore: cast_nullable_to_non_nullable
+as HashAlgorithm,digits: null == digits ? _self.digits : digits // ignore: cast_nullable_to_non_nullable
+as int,period: null == period ? _self.period : period // ignore: cast_nullable_to_non_nullable
+as int,counter: null == counter ? _self.counter : counter // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on

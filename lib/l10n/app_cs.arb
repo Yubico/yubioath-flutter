@@ -1,0 +1,1129 @@
+{
+    "@@locale": "cs",
+
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Čeština",
+    "@native_language_name": {
+        "description": "The language name in native locale"
+    },
+    "s_translated": "Translated: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "Proofread: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": null,
+    "p_translation_progress_desc": null,
+
+    "s_save": "Uložit",
+    "s_cancel": "Zrušit",
+    "s_close": "Zavřít",
+    "s_delete": "Vymazat",
+    "s_move": "Přesunout",
+    "s_quit": "Ukončit",
+    "s_enable": "Povolit",
+    "s_enabled": "Povoleno",
+    "s_disabled": "Zakázáno",
+    "s_status": "Stav",
+    "s_unlock": "Odemknout",
+    "s_calculate": "Vypočítat",
+    "s_import": "Importovat",
+    "s_overwrite": "Přepsat",
+    "s_done": "Hotovo",
+    "s_label": "Jmenovka",
+    "s_name": "Název",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "Možnosti",
+    "s_details": "Detaily",
+    "s_show_window": "Zobrazit okno",
+    "s_hide_window": "Skrýt okno",
+    "s_show_navigation": "Zobrazit navigaci",
+    "s_expand_navigation": "Rozbalit navigaci",
+    "s_collapse_navigation": "Sbalit navigaci",
+    "s_show_menu": "Zobrazit nabídku",
+    "s_hide_menu": "Skrýt nabídku",
+    "s_more_info": "Více informací",
+    "q_rename_target": "Přejmenovat {label}?",
+    "@q_rename_target": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "<none>",
+
+    "s_about": "O aplikaci",
+    "s_algorithm": "Algoritmus",
+    "s_appearance": "Vzhled",
+    "s_actions": "Akce",
+    "s_manage": "Spravovat",
+    "s_setup": "Nastavení",
+    "s_device": "Zařízení",
+    "s_application": "Aplikace",
+    "s_settings": "Nastavení",
+    "l_settings_desc": "Změnit předvolby aplikace",
+    "s_certificates": "Certifikáty",
+    "s_security_key": "Bezpečnostní klíč",
+    "s_slots": "Sloty",
+    "s_help_and_about": "Nápověda a informace",
+    "l_help_and_about_desc": "Řešení problémů a podpora",
+    "s_help_and_feedback": "Nápověda a zpětná vazba",
+    "s_home": "Domov",
+    "s_user_guide": "Uživatelská příručka",
+    "s_i_need_help": "Potřebuji pomoc",
+    "s_troubleshooting": "Řešení problémů",
+    "s_terms_of_use": "Podmínky použití",
+    "s_privacy_policy": "Zásady ochrany soukromí",
+    "s_open_src_licenses": "Licence open source",
+    "s_please_wait": "Počkejte prosím\u2026",
+    "s_secret_key": "Tajný klíč",
+    "s_show_secret_key": "Zobrazit tajný klíč",
+    "s_hide_secret_key": "Skrýt tajný klíč",
+    "s_private_key": "Soukromý klíč",
+    "s_public_key": "Veřejný klíč",
+    "s_invalid_length": "Neplatná délka",
+    "l_invalid_format_allowed_chars": "Neplatný formát, povolené znaky: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "Neplatné znaky pro vybranou klávesnici",
+    "s_require_touch": "Vyžadovat dotyk",
+    "q_have_account_info": "Máte informace o účtu?",
+    "s_run_diagnostics": "Spustit diagnostiku",
+    "s_log_level": "Úroveň logu: {level}",
+    "@s_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "Počet znaků",
+    "s_learn_more": "Zjistit\u00a0více",
+
+    "@_language": {},
+    "s_language": "Jazyk",
+    "l_enable_community_translations": "Povolit komunitní překlady",
+    "p_community_translations_desc": "Překlady jsou spravovány komunitou na {crowdin}.",
+    "@p_community_translations_desc": {
+        "placeholders": {
+            "crowdin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_choose_language": "Vyberte jazyk",
+
+    "@_theme": {},
+    "s_app_theme": "Motiv aplikace",
+    "s_choose_app_theme": "Vybrat motiv",
+    "s_system_default": "Podle systému",
+    "s_light_mode": "Světlý režim",
+    "s_dark_mode": "Tmavý režim",
+
+    "@_layout": {},
+    "s_list_layout": "Zobrazit jako seznam",
+    "s_grid_layout": "Zobrazit jako mřížku",
+    "s_mixed_layout": "Smíšené zobrazení",
+    "s_select_layout": "Vybrat zobrazení",
+
+    "@_yubikey_selection": {},
+    "s_select_to_scan": "Vyberte pro skenování",
+    "s_hide_reader": "Skrýt čtečku",
+    "s_show_hidden_readers": "Zobrazit skryté čtečky",
+    "s_toggle_readers": "Přepnout čtečky",
+    "l_toggle_readers_desc": "Zobrazit nebo skrýt čtečky",
+    "s_sn_serial": "S/N: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "F/W: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "Sériové číslo: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "Verze firmwaru: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "FIPS způsobilé",
+    "l_fips_approved": "FIPS schváleno",
+
+    "@_yubikey_interactions": {},
+    "l_insert_yk": "Připojte svůj klíč YubiKey",
+    "l_insert_or_tap_yk": "Připojte nebo přiložte klíč YubiKey",
+    "l_unplug_yk": "Odpojte YubiKey",
+    "l_reinsert_yk": "Znovu připojte YubiKey",
+    "l_place_on_nfc_reader": "Položte YubiKey na NFC čtečku",
+    "l_replace_yk_on_reader": "Položte YubiKey zpět na čtečku",
+    "l_remove_yk_from_reader": "Odeberte YubiKey z NFC čtečky",
+    "p_try_reinsert_yk": "Zkuste odpojit a znovu připojit YubiKey.",
+    "s_touch_required": "Vyžaduje se dotyk",
+    "l_touch_button_now": "Dotkněte se tlačítka na vašem YubiKey",
+    "l_keep_touching_yk": "Opakovaně se dotkněte vašeho YubiKey\u2026",
+
+    "@_capabilities": {},
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM Auth",
+
+    "@_app_configuration": {},
+    "s_toggle_applications": "Nastavení aplikací",
+    "s_toggle_interfaces": "Nastavení rozhraní",
+    "p_toggle_applications_desc": "Povolit nebo zakázat aplikace.",
+    "p_toggle_interfaces_desc": "Povolit nebo zakázat rozhraní USB.",
+    "l_toggle_applications_desc": "Povolit/zakázat aplikace",
+    "l_toggle_interfaces_desc": "Povolit/zakázat rozhraní",
+    "s_reconfiguring_yk": "Probíhá konfigurace klíče YubiKey\u2026",
+    "s_config_updated": "Konfigurace aktualizována",
+    "l_config_updated_reinsert": "Konfigurace byla aktualizována, odpojte a znovu připojte váš YubiKey",
+    "s_app_not_supported": "Aplikace není podporována",
+    "l_app_not_supported_on_yk": "Tento YubiKey nepodporuje aplikaci '{app}'",
+    "@l_app_not_supported_on_yk": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "l_app_disabled_desc": "Pro přístup povolte aplikaci '{app}' na vašem YubiKey",
+    "@l_app_disabled_desc": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fido_disabled": "FIDO2 aplikace zakázána",
+    "l_webauthn_req_fido2": "WebAuthn vyžaduje, aby byla aplikace FIDO2 povolena na vašem YubiKey",
+    "s_lock_code": "Kód zámku",
+    "l_wrong_lock_code": "Špatný kód zámku",
+    "s_show_lock_code": "Zobrazit kód zámku",
+    "s_hide_lock_code": "Skrýt kód zámku",
+    "p_lock_code_required_desc": "Akce, kterou se chystáte provést, vyžaduje zadání kódu pro nastavení zámku.",
+
+    "@_connectivity_issues": {},
+    "l_helper_not_responding": "Pomocný proces nereaguje",
+    "l_yk_no_access": "K tomuto klíči YubiKey není možné získat přístup",
+    "s_yk_inaccessible": "Nedostupné zařízení",
+    "l_open_connection_failed": "Nepodařilo se otevřít připojení",
+    "l_ccid_connection_failed": "Nepodařilo se otevřít připojení k čipové kartě",
+    "p_ccid_service_unavailable": "Ujistěte se, že služba čipových karet je v spuštěna.",
+    "p_pcscd_unavailable": "Ujistěte se, že je pcscd nainstalován a spuštěn.",
+    "l_no_yk_present": "Žádný klíč YubiKey není připojen",
+    "s_unknown_type": "Neznámý typ",
+    "s_unknown_device": "Nerozpoznané zařízení",
+    "s_restricted_nfc": "Aktivace NFC",
+    "l_deactivate_restricted_nfc": "Jak aktivovat NFC",
+    "p_deactivate_restricted_nfc_desc": "Připojte svůj YubiKey k jakémukoli zdroji napájení USB, například počítači, po dobu nejméně 3 sekund.\n\nPo zapnutí bude NFC aktivováno a připraveno k použití.",
+    "p_deactivate_restricted_nfc_footer": "Váš YubiKey má z důvodu ochrany proti bezdrátové manipulaci během přepravy omezenou funkci NFC. To znamená, že NFC operace jsou zakázány dokud je neaktivujete.",
+    "s_unsupported_yk": "Nepodporovaný YubiKey",
+    "s_yk_not_recognized": "Zařízení nebylo rozpoznáno",
+    "p_operation_failed_try_again": "Operace se nezdařila, zkuste to prosím znovu.",
+    "l_configuration_unsupported": "Konfigurace není podporována",
+    "p_scp_unsupported": "Pro komunikaci přes NFC vyžaduje YubiKey technologii, která není tímto telefonem podporována. Připojte YubiKey k USB portu telefonu.",
+
+    "@_general_errors": {},
+    "l_error_occurred": "Došlo k chybě",
+    "s_application_error": "Chyba aplikace",
+    "l_import_error": "Chyba importu",
+    "l_file_not_found": "Soubor nebyl nalezen",
+    "l_file_too_big": "Soubor je příliš velký",
+    "l_filesystem_error": "Chyba při operaci souborového systému",
+
+    "@_pins": {},
+    "s_pin": "PIN",
+    "s_puk": "PUK",
+    "s_set_pin": "Nastavit PIN",
+    "s_change_pin": "Změnit PIN",
+    "s_change_puk": "Změnit PUK",
+    "s_show_pin": "Zobrazit PIN",
+    "s_hide_pin": "Skrýt PIN",
+    "s_show_puk": "Zobrazit PUK",
+    "s_hide_puk": "Skrýt PUK",
+    "s_current_pin": "Aktuální PIN",
+    "s_current_puk": "Aktuální PUK",
+    "s_new_pin": "Nový PIN",
+    "s_new_puk": "Nový PUK",
+    "s_confirm_pin": "Potvrdit PIN",
+    "s_confirm_puk": "Potvrdit PUK",
+    "s_unblock_pin": "Resetovat PIN",
+    "l_pin_mismatch": "Zadané PINy se neshodují",
+    "l_puk_mismatch": "Zadané PUKy se neshodují",
+    "s_pin_set": "PIN nastaven",
+    "s_puk_set": "PUK nastaven",
+    "l_set_pin_failed": "Nepodařilo se nastavit kód PIN: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": "{retries, plural, \n  =1{Zbývá {retries} pokus}\n  many{Zbývají {retries} pokusy}\n  other{Zbývá {retries} pokusů}\n}",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Nesprávný PIN, {retries, plural, \n  =1{zbývá {retries} pokus}\n  few{zbývají {retries} pokusy}\n  other{zbývá {retries} pokusů}\n}",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "Nesprávný PUK, {retries, plural, \n  =1{zbývá {retries} pokus}\n  few{zbývají {retries} pokusy}\n  other{zbývá {retries} pokusů}\n}",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "Ochrana kódem FIDO PIN",
+    "s_pin_change_required": "Je vyžadována změna kódu PIN",
+    "l_enter_fido2_pin": "Zadejte FIDO2 PIN pro váš YubiKey",
+    "l_pin_blocked_reset": "PIN je zablokován; uveďte aplikaci FIDO do továrního nastavení",
+    "l_pin_blocked": "PIN je zablokován",
+    "l_set_pin_first": "Je vyžadován PIN",
+    "l_unlock_pin_first": "Odemknout pomocí PIN",
+    "l_pin_soft_locked": "PIN byl zablokován, dokud není YubiKey odpojen a znovu připojen",
+    "l_pin_change_required_desc": "Před použitím této aplikace musí být nastaven nový PIN",
+    "p_enter_current_pin_or_puk": "Zadejte aktuální {name}.",
+    "@p_enter_current_piv_pin_puk": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "p_enter_current_pin_or_reset": "Zadejte aktuální PIN. Pokud neznáte svůj PIN, budete jej muset odblokovat pomocí kódu PUK nebo resetovat YubiKey.",
+    "p_enter_current_pin_or_reset_no_puk": "Zadejte aktuální PIN. Pokud neznáte svůj PIN, budete muset resetovat YubiKey.",
+    "p_enter_current_puk_or_reset": "Zadejte aktuální PUK. Pokud neznáte svůj PUK, budete muset resetovat YubiKey.",
+    "p_new_fido2_pin_requirements": "PIN musí být {min_length}-{max_length} znaků dlouhý a může obsahovat písmena, čísla a speciální znaky.",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "PIN musí být dlouhý {min_length}-{max_length} znaků, obsahuje alespoň {unique_characters} jedinečných znaků a není běžně používaný kód PIN, jako je \"{common_pin}\". Může obsahovat písmena, čísla a speciální znaky.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_ep_attestation": "Ověření podniku",
+    "s_ep_attestation_enabled": "Ověření podniku je povoleno",
+    "q_enable_ep_attestation": "Povolit ověření podniku?",
+    "p_enable_ep_attestation_desc": "Tímto se povolí Ověření podniku umožňující autorizovaným doménám jedinečnou identifikaci vašeho YubiKey.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "Pokud je povoleno, Ověření podniku může být vypnuto pouze resetováním FIDO aplikace.",
+    "s_pin_required": "Vyžadován PIN",
+    "p_pin_required_desc": "Akce, kterou se chystáte provést, vyžaduje zadání kódu PIV PIN.",
+    "l_piv_pin_blocked": "Zablokováno, pro obnovení použijte PUK",
+    "p_piv_pin_blocked_desc": "PIN je zablokován. Použijte PUK pro jeho obnovení.",
+    "p_piv_pin_blocked_bio_desc": null,
+    "l_piv_pin_puk_blocked": "Zablokováno, je potřeba obnovení továrních nastavení",
+    "p_piv_pin_puk_blocked_desc": "PIN i PUK jsou zablokovány. Je potřeba resetovat aplikaci PIV.",
+    "p_new_piv_pin_puk_requirements": "{name} musí mít alespoň {length} znaků.",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "{name} musí mít alespoň {length} znaků, musí obsahovat alespoň 2 jedinečné znaky, a nesmí být běžně používaným {name}, jako je \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "Nový {name} nesplňuje požadavky na složitost.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "Zamítnout",
+    "p_default_pin_puk_key_desc": "Doporučuje se změnit výchozí PIN, PUK a klíč správy.",
+    "l_warning_default_pin": "Varování: používá se výchozí PIN",
+    "l_warning_default_puk": "Varování: používá se výchozí PUK",
+    "l_default_pin_used": "Byl použit výchozí PIN",
+    "l_default_puk_used": "Byl použit výchozí PUK",
+    "l_pin_complexity": "Složitost PIN je vynucena",
+
+    "@_passwords": {},
+    "s_password": "Heslo",
+    "s_manage_password": "Spravovat heslo",
+    "s_set_password": "Nastavit heslo",
+    "s_password_set": "Heslo nastaveno",
+    "s_show_password": "Zobrazit heslo",
+    "s_hide_password": "Skrýt heslo",
+    "l_optional_password_protection": "Volitelná ochrana heslem",
+    "l_password_protection": "Ochrana účtů heslem",
+    "s_new_password": "Nové heslo",
+    "s_current_password": "Aktuální heslo",
+    "s_confirm_password": "Potvrdit heslo",
+    "l_password_mismatch": "Hesla se neshodují",
+    "s_wrong_password": "Chybné heslo",
+    "p_wrong_password": "Chybné heslo. Pokud neznáte své heslo, musíte obnovit YubiKey.",
+    "s_remove_password": "Odstranit heslo",
+    "s_password_removed": "Heslo odstraněno",
+    "s_remember_password": "Zapamatovat heslo",
+    "s_clear_saved_password": "Vymazat zapamatované heslo",
+    "s_password_forgotten": "Zapamatované heslo bylo vymazáno",
+    "l_keystore_unavailable": "Úložiště klíčů OS není k dispozici",
+    "l_remember_pw_failed": "Nepodařilo se zapamatovat heslo",
+    "l_unlock_first": "Odemknout pomocí hesla",
+    "l_set_password_first": "Nastavit heslo",
+    "l_enter_oath_pw": "Zadejte OATH heslo pro váš YubiKey",
+    "p_new_password_requirements": "Heslo může obsahovat písmena, čísla a speciální znaky.",
+
+    "@_management_key": {},
+    "s_management_key": "Klíč správy",
+    "s_current_management_key": "Aktuální klíč správy",
+    "s_new_management_key": "Nový klíč správy",
+    "l_change_management_key": "Změnit klíč správy",
+    "p_change_management_key_desc": "Změňte svůj klíč správy. Volitelně můžete povolit použití PIN kódu namísto klíče správy.",
+    "l_management_key_changed": "Klíč správy změněn",
+    "l_default_key_used": "Používá se výchozí klíč správy",
+    "s_generate_random": "Vytvořit náhodný",
+    "s_use_default": "Použít výchozí",
+    "l_warning_default_key": "Varování: používá se výchozí klíč",
+    "s_protect_key": "Chránit pomocí PIN",
+    "p_protect_key_desc": "Použijte PIN místo klíče správy během operací, které vyžadují ověření klíčem správy.",
+    "s_management_key_algorithm": "Algoritmus klíče správy",
+    "p_management_key_algorithm_desc": "Algoritmus, který má být vybrán pro klíč správy.",
+    "l_pin_protected_key": "Je možno použít PIN",
+    "l_wrong_key": "Špatný klíč",
+    "l_unlock_piv_management": "Odemknout správu PIV",
+    "p_unlock_piv_management_desc": "Akce, kterou se chystáte provést, vyžaduje klíč správy pro PIV.",
+
+    "@_oath_accounts": {},
+    "l_account": "Účet: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "Účty",
+    "s_no_accounts": "Žádné účty",
+    "l_results_for": "Výsledky pro \"{query}\"",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "Začněte s OTP účty",
+    "l_no_accounts_desc": "Přidejte si do vašeho YubiKey účty od jakéhokoli poskytovatele služeb podporujícího OATH TOTP/HOTP",
+    "s_add_account": "Přidat účet",
+    "p_add_account_desc": "Naskenujte QR kód nebo zadejte přihlašovací údaje ručně.",
+    "s_add_accounts": "Přidat účet(-y)",
+    "p_add_description": "Chcete-li naskenovat QR kód, ujistěte se, že je celý kód viditelný na obrazovce a stiskněte tlačítko níže. Do tohoto dialogu můžete také přetáhnout uložený obrázek ze složky. Pokud máte písemné přihlašovací údaje k účtu, použijte místo toho ruční zadání.",
+    "l_drop_qr_description": "Přetáhněte QR kód pro přidání účtu(-ů)",
+    "p_add_account_three_ways": "Existují tři způsoby, jak přidat účty.",
+    "s_scanning": "Skenování (doporučeno)",
+    "p_scanning_desc": "Před skenováním QR kódu se ujistěte, že je celý kód viditelný na obrazovce.",
+    "s_drag_and_drop": "Přetažení",
+    "p_drag_and_drop_desc": "Obrázek obsahující QR kód může být upuštěn kdekoli v zobrazení účtu.",
+    "s_manually": "Ručně",
+    "p_manually_desc": "Údaje o účtu mohou být zadány ručně ve formuláři.",
+    "s_add_manually": "Přidat ručně",
+    "s_account_added": "Účet přidán",
+    "l_account_add_failed": "Přidání účtu se nezdařilo: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "Je vyžadováno heslo",
+    "l_add_account_unlock_required": "Vyžadováno odemknutí",
+    "l_add_account_already_exists": "Účet již existuje",
+    "l_add_account_func_missing": "Chybějící nebo deaktivovaná funkce",
+    "l_account_name_required": "Váš účet musí mít jméno",
+    "l_name_already_exists": "Toto jméno již pro vydavatele existuje",
+    "l_account_already_exists": "Tento účet již na YubiKey existuje",
+    "l_invalid_character_issuer": "Neplatný znak: ':' není u vydavatele povoleno",
+    "l_select_accounts": "Vyberte účet(-y), který chcete přidat na YubiKey",
+    "s_pin_account": "Připnout účet",
+    "s_unpin_account": "Odepnout účet",
+    "s_no_pinned_accounts": "Žádné připnuté účty",
+    "s_pinned": "Připnuté",
+    "l_pin_account_desc": "Mějte své důležité účty pohromadě",
+    "s_rename_account": "Přejmenovat účet",
+    "l_rename_account_desc": "Upravit vydavatele/jméno účtu",
+    "s_account_renamed": "Účet přejmenován",
+    "l_rename_account_failed": "Nepodařilo se přejmenovat účet: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "Tímto se změní způsob zobrazení účtu v seznamu.",
+    "s_delete_account": "Odstranit účet",
+    "q_delete_account": "Odstranit účet?",
+    "l_delete_account_desc": "Odebrat účet z YubiKey",
+    "s_account_deleted": "Účet odstraněn",
+    "p_warning_delete_account": "Varování! Tato akce odstraní účet z vašeho YubiKey.",
+    "p_warning_disable_credential": "Ujistěte se, že jste zakázali tento účet ze služby, se kterou je registrován, abyste se vyhnuli zablokování.",
+    "s_account_name": "Název účtu",
+    "s_search_accounts": "Hledat účty",
+    "l_accounts_used": "Použito {used} z {capacity} účtů",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} číslic",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} sek",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_issuer_optional": "Vydavatel (nepovinné)",
+    "s_counter_based": "Založeno na počítadle",
+    "s_time_based": "Založeno na čase",
+    "l_copy_code_desc": "Vložte kód do jiné aplikace",
+    "l_calculate_code_desc": "Získejte nový kód z vašeho YubiKey",
+
+    "@_fido_credentials": {},
+    "s_rp_id": "RP ID",
+    "s_user_id": "ID uživatele",
+    "s_credential_id": "ID pověření",
+    "s_display_name": "Zobrazované jméno",
+    "s_user_name": "Uživatelské jméno",
+    "l_passkey": "Přístupový klíč: {label}",
+    "@l_passkey": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_passkeys": "Přístupové klíče",
+    "s_no_passkeys": "Žádné přístupové klíče",
+    "l_ready_to_use": "Připraveno k použití",
+    "l_register_sk_on_websites": "Registrovat jako bezpečnostní klíč na webových stránkách",
+    "l_no_discoverable_accounts": "Nejsou uloženy žádné přístupové klíče",
+    "p_non_passkeys_note": "Mohou existovat pověření bez přístupového klíče, ale nemohou být zobrazeny v seznamu.",
+    "s_delete_passkey": "Odstranit přístupový klíč",
+    "q_delete_passkey": "Odstranit přístupový klíč?",
+    "l_delete_passkey_desc": "Odstranit přístupový klíč z YubiKey",
+    "s_passkey_deleted": "Přístupový klíč smazán",
+    "p_warning_delete_passkey": "Varování! Tato akce odstraní přístupový klíč z YubiKey.",
+    "p_warning_delete_passkey_desc": "Již nebudete moci používat tento přístupový klíč pro službu, kde je registrován.",
+    "s_search_passkeys": "Hledat přístupové klíče",
+    "p_passkeys_used": "Použito {used} z {max} přístupových klíčů.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "Biometrie",
+    "l_fingerprint": "Otisk prstu: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "Otisky prstů",
+    "l_fingerprint_captured": "Otisk prstu úspěšně zachycen!",
+    "s_fingerprint_added": "Otisk prstu přidán",
+    "l_adding_fingerprint_failed": "Chyba při přidávání otisku prstu: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "Chyba při nastavování názvu: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "Nastavit otisky prstů",
+    "p_setup_fingerprints_desc": "Před použitím klíče je třeba nastavit otisky prstů.",
+    "s_add_fingerprint": "Přidat otisk prstu",
+    "s_delete_fingerprint": "Odstranit otisk prstu",
+    "q_delete_fingerprint": "Smazat otisk prstu?",
+    "l_delete_fingerprint_desc": "Odstranit otisk prstu z YubiKey",
+    "s_fingerprint_deleted": "Otisk prstu odstraněn",
+    "p_warning_delete_fingerprint": "Tímto odstraníte otisk prstu z vašeho YubiKey.",
+    "s_fingerprints_get_started": "Začínáme s otisky prstů",
+    "p_set_fingerprints_desc": "Než bude možné zaregistrovat otisky prstů, musí být nastaven PIN kód.",
+    "l_no_fps_added": "Nebyly přidány žádné otisky prstů",
+    "s_rename_fp": "Přejmenovat otisk prstu",
+    "l_rename_fp_desc": "Změnit název",
+    "s_fingerprint_renamed": "Otisk prstu přejmenován",
+    "l_rename_fp_failed": "Chyba při přejmenování: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "Přidat jeden nebo více (až pět) otisků prstů",
+    "l_fingerprints_used": "Registrováno {used} z 5 otisků prstů",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "Pro začátek přiložte prst k YubiKey.",
+    "l_name_fingerprint": "Pojmenujte tento otisk prstu",
+
+    "@_fido_errors": {},
+    "l_user_action_timeout_error": "Selhalo z důvodu nečinnosti uživatele",
+    "l_wrong_inserted_yk_error": "Znovu vložený YubiKey neodpovídá počátečnímu zařízení",
+    "l_failed_connecting_to_fido": "Připojení k FIDO rozhraní se nezdařilo",
+
+    "@_certificates": {},
+    "l_self_signed_certificate": "Certifikát s vlastním podpisem",
+    "l_certificate_signing_request": "Žádost o podpis certifikátu (CSR)",
+    "s_certificate": "Certifikát",
+    "s_csr": "CSR",
+    "s_subject": "Předmět",
+    "l_export_csr_file": "Uložit CSR do souboru",
+    "l_export_public_key": "Exportovat veřejný klíč",
+    "l_export_public_key_file": "Uložit veřejný klíč do souboru",
+    "l_export_public_key_desc": "Exportovat veřejný klíč do souboru",
+    "l_public_key_exported": "Veřejný klíč exportován",
+    "l_export_certificate": "Exportovat certifikát",
+    "l_export_certificate_file": "Exportovat certifikát do souboru",
+    "l_export_certificate_desc": "Exportovat certifikát do souboru",
+    "l_certificate_exported": "Certifikát exportován",
+    "l_select_import_file": "Vyberte soubor k importu",
+    "l_import_file": "Importovat soubor",
+    "l_import_desc": "Importovat klíč a/nebo certifikát",
+    "l_import_nothing": "Nic k importu",
+    "l_importing_file": "Importuji soubor\u2026",
+    "s_file_imported": "Soubor importován",
+    "l_unsupported_key_type": "Nepodporovaný typ klíče",
+    "l_delete_certificate": "Odstranit certifikát",
+    "q_delete_certificate": "Odstranit certifikát?",
+    "l_delete_certificate_desc": "Odebrat certifikát z YubiKey",
+    "l_delete_key": "Odstranit klíč",
+    "q_delete_key": "Odstranit klíč?",
+    "l_delete_key_desc": "Odebrat klíč z YubiKey",
+    "l_delete_certificate_or_key": "Odstranit certifikát/klíč",
+    "q_delete_certificate_or_key": "Odstranit certifikát/klíč?",
+    "l_delete_certificate_or_key_desc": "Odstranit certifikát nebo klíč z YubiKey",
+    "l_move_key": "Přesunout klíč",
+    "l_move_key_desc": "Přesunout klíč z jednoho PIV slotu do jiného",
+    "l_change_defaults": "Změnit výchozí přístupové kódy",
+    "s_issuer": "Vydavatel",
+    "s_serial": "Sériové číslo",
+    "s_certificate_fingerprint": "Otisk prstu",
+    "s_valid_from": "Platné od",
+    "s_valid_to": "Platné do",
+    "l_no_certificate": "Není načten žádný certifikát",
+    "l_key_no_certificate": "Klíč bez certifikátu",
+    "s_generate_key": "Generovat klíč",
+    "l_generate_desc": "Vygenerovat nový certifikát nebo CSR",
+    "p_generate_desc": "Toto vygeneruje nový klíč na YubiKey v PIV slotu {slot}.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "Vygenerován soukromý klíč",
+    "p_select_what_to_delete": "Vyberte, co chcete odstranit ze slotu.",
+    "p_warning_delete_certificate": "Varování! Tato akce odstraní certifikát z vašeho YubiKey.",
+    "p_warning_delete_key": "Varování! Tato akce odstraní soukromý klíč z vašeho YubiKey.",
+    "p_warning_delete_certificate_and_key": "Varování! Tato akce odstraní certifikát a soukromý klíč z vašeho YubiKey.",
+    "p_delete_certificate_desc": "Tímto odstraníte certifikát v PIV slotu {slot}.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "Tímto odstraníte soukromý klíč v PIV slotu {slot}.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "Tímto odstraníte certifikát a soukromý klíč v PIV slotu {slot}.",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "Certifikát byl odstraněn",
+    "l_key_deleted": "Klíč byl odstraněn",
+    "l_certificate_and_key_deleted": "Certifikát a klíč byly odstraněny",
+    "l_include_certificate": "Včetně certifikátu",
+    "l_select_destination_slot": "Vyberte cílový slot",
+    "q_move_key_confirm": "Přesunout soukromý klíč v PIV slotu {from_slot}?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "Přesunout soukromý klíč v PIV slotu {from_slot} do slotu {to_slot}?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "Přesunout soukromý klíč a certifikát v PIV slotu {from_slot} do slotu {to_slot}?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "Vybraný soubor je chráněn heslem.",
+    "p_import_items_desc": "Následující položka(y) budou importovány do PIV slotu {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "Veřejný klíč certifikátu se neshoduje se soukromým klíčem ve slotu",
+    "l_key_moved": "Klíč přesunut",
+    "l_key_and_certificate_moved": "Klíč a certifikát byly přesunuty",
+    "p_subject_desc": "Rozlišovaný název (DN) ve formátu podle specifikace RFC 4514.",
+    "l_rfc4514_invalid": "Neplatný formát RFC 4514",
+    "rfc4514_examples": "Příklady:\nCN=Příklad jména\nCN=jsmith,DC=příklad,DC=net",
+    "s_allow_fingerprint": "Povolit otisk prstu",
+    "s_pin_policy": "Zásady PIN",
+    "s_output_format": "Výstupní formát",
+    "s_expiration_date": "Datum expirace",
+    "p_algorithm_desc": "Použít algoritmus klíče.",
+    "p_expiration_date_desc": "Datum vypršení platnosti certifikátu, standardně 1 rok (pouze certifikát).",
+    "p_cert_options_desc": "Algoritmus klíče, který se má použít, výstupní formát a datum vypršení platnosti (pouze certifikát).",
+    "p_cert_options_bio_desc": "Algoritmus klíče, který se má použít, formát výstupu, datum vypršení platnosti (pouze certifikát) a zda lze místo kódu PIN použít biometrické údaje.",
+    "p_key_options_bio_desc": "Povolit použití biometrie namísto kódu PIN.",
+    "q_overwrite_slot": "Přepsat slot?",
+    "p_overwrite_slot_desc": "Toto trvale přepíše existující obsah ve slotu {slot}.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "Certifikát bude přepsán",
+    "l_overwrite_key": "Soukromý klíč bude přepsán",
+    "l_overwrite_key_maybe": "Jakýkoliv existující soukromý klíč v slotu bude přepsán",
+
+    "@_piv_slots": {},
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "Ověření",
+    "s_slot_9c": "Digitální podpis",
+    "s_slot_9d": "Správa klíčů",
+    "s_slot_9e": "Ověření karty",
+    "s_retired_slot": "Zrušená správa klíčů",
+
+    "@_otp_slots": {},
+    "s_otp_slot_one": "Krátký dotyk",
+    "s_otp_slot_two": "Dlouhý dotyk",
+    "l_otp_slot_empty": "Slot je prázdný",
+    "l_otp_slot_configured": "Slot je konfigurován",
+
+    "@_otp_slot_configurations": {},
+    "l_yubiotp_desc": "Program OTP pověření Yubico",
+    "s_challenge_response": "Odpověď na výzvu",
+    "l_challenge_response_desc": "Naprogramujte pověření odpovědi na výzvu",
+    "s_static_password": "Statické heslo",
+    "l_static_password_desc": "Konfigurace statického hesla",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "Program důvěryhodnosti založené na HMAC-SHA1",
+    "s_public_id": "Veřejné ID",
+    "s_private_id": "Soukromé ID",
+    "s_use_serial": "Použít sériové číslo",
+    "l_select_file": "Vybrat soubor",
+    "l_no_export_file": "Žádný exportovaný soubor",
+    "s_no_export": "Žádný export",
+    "s_export": "Exportovat",
+    "l_export_configuration_file": "Exportovat konfiguraci do souboru",
+    "l_exported_can_be_uploaded_at": "Exportované přihlašovací údaje mohou být nahrány na {url}",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "l_keyboard_layout": "Klávesnice {layout}",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+
+    "@_otp_slot_actions": {},
+    "s_delete_slot": "Odstranit pověření",
+    "q_delete_slot": "Smazat pověření?",
+    "l_delete_slot_desc": "Odstranit pověření ve slotu",
+    "p_warning_delete_slot_configuration": "Varování! Tato akce trvale odstraní pověření ze slotu {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "Pověření smazáno",
+    "s_swap": "Prohodit",
+    "s_swap_slots": "Prohodit sloty",
+    "q_swap_slots": "Prohodit sloty?",
+    "l_swap_slots_desc": "Prohodit krátký a dlouhý dotyk",
+    "p_swap_slots_desc": "Tímto se vymění konfigurace slotů.",
+    "l_slots_swapped": "Konfigurace slotů vyměněny",
+    "l_slot_credential_configured": "Konfigurováno pověření {type}",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "Konfigurováno pověření {type} a exportováno do {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "Připojit ⏎",
+    "l_append_enter_desc": "Připojit Enter po emitování OTP",
+
+    "@_otp_errors": {},
+    "p_otp_swap_error": "Nepodařilo se vyměnit sloty! Ujistěte se, že YubiKey nemá omezující přístup.",
+    "l_wrong_access_code": "Špatný přístupový kód",
+
+    "@_otp_access_code": {},
+    "s_access_code": "Přístupový kód",
+    "s_show_access_code": "Zobrazit přístupový kód",
+    "s_hide_access_code": "Skrýt přístupový kód",
+    "p_enter_access_code": "Zadejte přístupový kód pro slot {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+
+
+    "@_permissions": {},
+    "s_enable_nfc": "Povolit NFC",
+    "s_request_access": "Žádost o přístup",
+    "s_permission_denied": "Oprávnění odepřeno",
+    "l_elevating_permissions": "Povýšení oprávnění\u2026",
+    "s_review_permissions": "Zkontrolovat oprávnění",
+    "s_open_windows_settings": "Otevřít nastavení Windows",
+    "l_admin_privileges_required": "Vyžadována oprávnění administrátora",
+    "p_elevated_permissions_required": "Správa tohoto zařízení vyžaduje zvýšená oprávnění. Můžete také použít nastavení Windows pro správu konfigurace FIDO.",
+    "p_webauthn_elevated_permissions_required": "Správa WebAuthn vyžaduje zvýšená oprávnění, případně můžete použít nastavení Windows pro správu konfigurace FIDO.",
+    "l_ms_store_permission_note": "Verze aplikace z Microsoft Store nemusí být schopna povýšit oprávnění",
+    "p_need_camera_permission": "Yubico Authenticator potřebuje oprávnění kamery pro skenování QR kódů.",
+
+    "@_qr_codes": {},
+    "s_qr_scan": "Skenování kódu QR",
+    "l_invalid_qr": "Neplatný QR kód",
+    "l_qr_not_found": "Nenalezen žádný QR kód",
+    "l_qr_scanned": "Naskenovaný QR kód",
+    "l_qr_file_too_large": "Soubor je příliš velký (max {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "Neplatný obrázek",
+    "l_qr_select_file": "Vyberte soubor s QR kódem",
+    "l_qr_not_read": "Nepodařilo se načíst QR kód: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "Namiřte kameru na QR kód pro naskenování",
+    "q_want_to_scan": "Chcete skenovat?",
+    "q_no_qr": "Nemáte QR kód?",
+    "s_enter_manually": "Zadejte ručně",
+    "s_read_from_file": "Číst ze souboru",
+
+    "@_factory_reset": {},
+    "s_reset": "Reset",
+    "s_factory_reset": "Obnovení továrního nastavení",
+    "l_factory_reset_desc": "Obnovit výchozí nastavení YubiKey",
+    "l_factory_reset_required": "Vyžadováno obnovení továrního nastavení",
+    "l_oath_application_reset": "Reset aplikace OATH",
+    "l_fido_app_reset": "Reset aplikace FIDO",
+    "l_reset_failed": "Chyba při provádění reset: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "Reset aplikace PIV",
+    "p_factory_reset_an_app": "Tovární obnovení aplikace na vašem YubiKey.",
+    "p_factory_reset_desc": "Data jsou uložena ve více aplikacích na YubiKey, z nichž některé mohou být resetovány do továrního nastavení nezávisle na sobě.\n\nPro resetování vyberte aplikaci výše.",
+    "p_warning_factory_reset": "Varování! Neodvolatelně smažete všechny OATH TOTP/HOTP účty z vašeho YubiKey.",
+    "p_warning_disable_credentials": "Vaše OATH přihlašovací údaje, stejně jako veškerá nastavení hesel, budou odstraněny z tohoto YubiKey. Ujistěte se, že jste je odstranili z příslušných webových stránek, abyste se vyhnuli zablokování vašich účtů.",
+    "p_warning_deletes_accounts": "Varování! Neodvolatelně smažete z vašeho YubiKey všechny účty U2F a FIDO2 včetně přístupových klíčů.",
+    "p_warning_disable_accounts": "Vaše přihlašovací údaje  včetně kódu PIN, budou odstraněny z tohoto YubiKey. Ujistěte se, že jste je odstranili z příslušných webových stránek, abyste se vyhnuli zablokování vašich účtů.",
+    "p_warning_piv_reset": "Varování! Všechna data uložená pro PIV budou neodvolatelně smazána z vašeho YubiKey.",
+    "p_warning_piv_reset_desc": "To zahrnuje soukromé klíče a certifikáty. Váš PIN, PUK, a klíč správy bude resetován na jejich výchozí tovární hodnoty.",
+    "p_warning_global_reset": "Varování! Tímto se neodvolatelně smažou všechna uložená data, včetně přihlašovacích údajů, z vašeho YubiKey.",
+    "p_warning_global_reset_desc": "Tovární resetování aplikací na vašem YubiKey. PIN bude resetován na tovární výchozí hodnotu a registrované otisky prstů budou odstraněny. Všechny klíče, certifikáty nebo jiné přihlašovací údaje budou trvale odstraněny.",
+
+    "@_copy_to_clipboard": {},
+    "l_copy_to_clipboard": "Kopírovat do schránky",
+    "s_code_copied": "Kód zkopírován",
+    "l_code_copied_clipboard": "Kód zkopírován do schránky",
+    "s_copy_log": "Kopírovat log",
+    "l_log_copied": "Log zkopírován do schránky",
+    "l_diagnostics_copied": "Diagnostická data zkopírována do schránky",
+    "p_target_copied_clipboard": "{label} zkopírován do schránky.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+
+    "@_custom_icons": {},
+    "s_custom_icons": "Ikony účtů",
+    "l_set_icons_for_accounts": "Nastavit ikony účtů",
+    "p_custom_icons_description": "Balíčky ikon pomohou snáze rozpoznat vaše účty s dobře známými logy a barvami.",
+    "p_custom_icons_format_desc": "Balíčky ikon používají formát {aegis_icon_pack}. Předem vytvořený balíček ikon můžete stáhnout, nebo si můžete vytvořit vlastní.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "Nahradit balíček ikon",
+    "l_loading_icon_pack": "Načítání balíčku ikon\u2026",
+    "s_load_icon_pack": "Načíst balíček ikon",
+    "s_remove_icon_pack": "Odstranit balíček ikon",
+    "l_icon_pack_removed": "Balíček ikon odstraněn",
+    "l_remove_icon_pack_failed": "Chyba při odstraňování balíčku ikon",
+    "s_choose_icon_pack": "Vybrat balíček ikon",
+    "l_icon_pack_imported": "Balíček ikon importován",
+    "l_import_icon_pack_failed": "Chyba při importu balíčku ikon: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "Neplatný balíček ikon",
+    "l_icon_pack_copy_failed": "Nepodařilo se zkopírovat soubory balíčku ikon",
+
+    "@_android_settings": {},
+    "s_nfc_options": "Možnosti NFC",
+    "l_on_yk_nfc_tap": "Na YubiKey NFC klepnutí",
+    "l_do_nothing": "Nedělat nic",
+    "l_launch_ya": "Spustit Yubico Authenticator",
+    "l_copy_otp_clipboard": "Kopírovat OTP do schránky",
+    "l_launch_and_copy_otp": "Spustit aplikaci a zkopírovat OTP do schránky",
+    "l_kbd_layout_for_static": "Rozložení klávesnice (pro statické heslo)",
+    "s_choose_kbd_layout": "Vybrat rozložení klávesnice",
+    "l_bypass_touch_requirement": "Obejít požadavek dotyku",
+    "l_bypass_touch_requirement_on": "Účty, které vyžadují dotyk, se automaticky zobrazují přes NFC",
+    "l_bypass_touch_requirement_off": "Účty, které vyžadují dotyk, vyžadují další klepnutí přes NFC",
+    "s_silence_nfc_sounds": "Tichý zvuk NFC",
+    "l_silence_nfc_sounds_on": "Při klepnutí na NFC nebudou přehrány žádné zvuky",
+    "l_silence_nfc_sounds_off": "Při klepnutí na NFC bude přehrán zvuk",
+    "s_usb_options": "Možnosti USB",
+    "l_launch_app_on_usb": "Spustit při připojení YubiKey",
+    "l_launch_app_on_usb_on": "Zabraňuje ostatním aplikacím používat YubiKey přes USB",
+    "l_launch_app_on_usb_off": "Ostatní aplikace mohou používat YubiKey přes USB",
+    "s_allow_screenshots": "Povolit snímky obrazovky",
+
+    "@_nfc": {},
+    "s_nfc_ready_to_scan": "Připraveno ke skenování",
+    "s_nfc_hold_still": "Neodstraňujte YubiKey\u2026",
+    "s_nfc_tap_your_yubikey": "Přiložte YubiKey",
+    "l_nfc_failed_to_scan": "Nepodařilo se naskenovat, zkuste to znovu",
+
+    "@_usb": {},
+    "s_usb_processing": "Čtení dat z YubiKey",
+    "s_usb_dont_remove": "Neodstraňovat klíč\u2026",
+    "l_usb_read_error": "Nepodařilo se načíst data z YubiKey",
+
+    "@_ndef": {},
+    "p_ndef_set_otp": "OTP kód z YubiKey byl úspěšně zkopírován do schránky.",
+    "p_ndef_set_password": "Heslo z YubiKey bylo úspěšně zkopírováno do schránky.",
+    "p_ndef_parse_failure": "Nepodařilo se zpracovat OTP kód z YubiKey.",
+    "p_ndef_set_clip_failure": "Přístup ke schránce se nezdařil při kopírování OTP kódu z YubiKey.",
+
+    "@_key_customization": {},
+    "s_set_label": "Nastavit jmenovku",
+    "s_set_color": "Nastavit barvu",
+    "s_change_label": "Změnit jmenovku",
+    "s_color": "Barva",
+    "p_set_will_add_custom_name": "Tímto nastavíte jmenovku vašeho YubiKey.",
+    "p_rename_will_change_custom_name": "Tímto změníte jmenovku vašeho YubiKey.",
+
+    "@_eof": {}
+}

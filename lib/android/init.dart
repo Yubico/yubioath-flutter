@@ -58,6 +58,7 @@ Future<Widget> initialize() async {
   return ProviderScope(
     overrides: [
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
+      localeStatusProvider.overrideWithValue(await loadLocaleStatus()),
       logLevelProvider.overrideWith((ref) => AndroidLogger()),
       attachedDevicesProvider.overrideWith(
         () => AndroidAttachedDevicesNotifier(),

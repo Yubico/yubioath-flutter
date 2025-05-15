@@ -75,10 +75,16 @@ class RenameAccountDialog extends ConsumerStatefulWidget {
       oathType: credential.oathType,
       period: credential.period,
       existing: existing,
-      rename:
-          (issuer, name) async => await ref
-              .read(credentialListProvider(devicePath).notifier)
-              .renameAccount(credential, issuer, name),
+      rename: (issuer, name) async {
+        final renamed = await ref
+            .read(credentialListProvider(devicePath).notifier)
+            .renameAccount(credential, issuer, name);
+        // Update favorite
+        ref
+            .read(favoritesProvider.notifier)
+            .renameCredential(credential.id, renamed.id);
+        return renamed;
+      },
     );
   }
 }
@@ -120,11 +126,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
         issuer.isNotEmpty ? issuer : null,
         name,
       );
-
-      // Update favorite
-      ref
-          .read(favoritesProvider.notifier)
-          .renameCredential(renamed.id, renamed.id);
 
       await withContext(
         (context) async => showMessage(

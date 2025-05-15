@@ -65,7 +65,7 @@ enum Capability {
 }
 
 @freezed
-class DeviceConfig with _$DeviceConfig {
+abstract class DeviceConfig with _$DeviceConfig {
   factory DeviceConfig(
     Map<Transport, int> enabledCapabilities,
     int? autoEjectTimeout,
@@ -78,7 +78,7 @@ class DeviceConfig with _$DeviceConfig {
 }
 
 @freezed
-class DeviceInfo with _$DeviceInfo {
+abstract class DeviceInfo with _$DeviceInfo {
   const DeviceInfo._(); // Added constructor
 
   factory DeviceInfo(

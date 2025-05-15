@@ -1,0 +1,42 @@
+{
+  "en": {
+    "translated": 100,
+    "proofread": 100
+  },
+  "cs": {
+    "translated": 99,
+    "proofread": 99
+  },
+  "de": {
+    "translated": 99,
+    "proofread": 99
+  },
+  "fr": {
+    "translated": 99,
+    "proofread": 96
+  },
+  "ja": {
+    "translated": 99,
+    "proofread": 70
+  },
+  "pl": {
+    "translated": 99,
+    "proofread": 93
+  },
+  "sk": {
+    "translated": 99,
+    "proofread": 99
+  },
+  "sv": {
+    "translated": 83,
+    "proofread": 10
+  },
+  "vi": {
+    "translated": 82,
+    "proofread": 0
+  },
+  "zh": {
+    "translated": 99,
+    "proofread": 0
+  }
+}

@@ -387,13 +387,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         .read(managementStateProvider(widget.deviceData.node.path).notifier)
         .setMode(interfaces: _interfaces);
     if (!mounted) return;
-    showMessage(
-      context,
-      widget.deviceData.node.maybeMap(
-        nfcReader: (_) => l10n.s_config_updated,
-        orElse: () => l10n.l_config_updated_reinsert,
-      ),
-    );
+    showMessage(context, switch (widget.deviceData.node) {
+      NfcReaderNode() => l10n.s_config_updated,
+      UsbYubiKeyNode() => l10n.l_config_updated_reinsert,
+    });
     Navigator.pop(context);
   }
 

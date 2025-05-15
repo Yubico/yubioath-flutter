@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,1719 +10,872 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-OtpState _$OtpStateFromJson(Map<String, dynamic> json) {
-  return _OtpState.fromJson(json);
-}
 
 /// @nodoc
 mixin _$OtpState {
-  bool get slot1Configured => throw _privateConstructorUsedError;
-  bool get slot2Configured => throw _privateConstructorUsedError;
+
+ bool get slot1Configured; bool get slot2Configured;
+/// Create a copy of OtpState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OtpStateCopyWith<OtpState> get copyWith => _$OtpStateCopyWithImpl<OtpState>(this as OtpState, _$identity);
 
   /// Serializes this OtpState to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of OtpState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $OtpStateCopyWith<OtpState> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpState&&(identical(other.slot1Configured, slot1Configured) || other.slot1Configured == slot1Configured)&&(identical(other.slot2Configured, slot2Configured) || other.slot2Configured == slot2Configured));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,slot1Configured,slot2Configured);
+
+@override
+String toString() {
+  return 'OtpState(slot1Configured: $slot1Configured, slot2Configured: $slot2Configured)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $OtpStateCopyWith<$Res> {
-  factory $OtpStateCopyWith(OtpState value, $Res Function(OtpState) then) =
-      _$OtpStateCopyWithImpl<$Res, OtpState>;
-  @useResult
-  $Res call({bool slot1Configured, bool slot2Configured});
-}
+abstract mixin class $OtpStateCopyWith<$Res>  {
+  factory $OtpStateCopyWith(OtpState value, $Res Function(OtpState) _then) = _$OtpStateCopyWithImpl;
+@useResult
+$Res call({
+ bool slot1Configured, bool slot2Configured
+});
 
+
+
+
+}
 /// @nodoc
-class _$OtpStateCopyWithImpl<$Res, $Val extends OtpState>
+class _$OtpStateCopyWithImpl<$Res>
     implements $OtpStateCopyWith<$Res> {
-  _$OtpStateCopyWithImpl(this._value, this._then);
+  _$OtpStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final OtpState _self;
+  final $Res Function(OtpState) _then;
 
-  /// Create a copy of OtpState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? slot1Configured = null, Object? slot2Configured = null}) {
-    return _then(
-      _value.copyWith(
-            slot1Configured:
-                null == slot1Configured
-                    ? _value.slot1Configured
-                    : slot1Configured // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            slot2Configured:
-                null == slot2Configured
-                    ? _value.slot2Configured
-                    : slot2Configured // ignore: cast_nullable_to_non_nullable
-                        as bool,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of OtpState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? slot1Configured = null,Object? slot2Configured = null,}) {
+  return _then(_self.copyWith(
+slot1Configured: null == slot1Configured ? _self.slot1Configured : slot1Configured // ignore: cast_nullable_to_non_nullable
+as bool,slot2Configured: null == slot2Configured ? _self.slot2Configured : slot2Configured // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-/// @nodoc
-abstract class _$$OtpStateImplCopyWith<$Res>
-    implements $OtpStateCopyWith<$Res> {
-  factory _$$OtpStateImplCopyWith(
-    _$OtpStateImpl value,
-    $Res Function(_$OtpStateImpl) then,
-  ) = __$$OtpStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({bool slot1Configured, bool slot2Configured});
 }
 
-/// @nodoc
-class __$$OtpStateImplCopyWithImpl<$Res>
-    extends _$OtpStateCopyWithImpl<$Res, _$OtpStateImpl>
-    implements _$$OtpStateImplCopyWith<$Res> {
-  __$$OtpStateImplCopyWithImpl(
-    _$OtpStateImpl _value,
-    $Res Function(_$OtpStateImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of OtpState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? slot1Configured = null, Object? slot2Configured = null}) {
-    return _then(
-      _$OtpStateImpl(
-        slot1Configured:
-            null == slot1Configured
-                ? _value.slot1Configured
-                : slot1Configured // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        slot2Configured:
-            null == slot2Configured
-                ? _value.slot2Configured
-                : slot2Configured // ignore: cast_nullable_to_non_nullable
-                    as bool,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$OtpStateImpl extends _OtpState {
-  _$OtpStateImpl({required this.slot1Configured, required this.slot2Configured})
-    : super._();
 
-  factory _$OtpStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$OtpStateImplFromJson(json);
+class _OtpState extends OtpState {
+   _OtpState({required this.slot1Configured, required this.slot2Configured}): super._();
+  factory _OtpState.fromJson(Map<String, dynamic> json) => _$OtpStateFromJson(json);
 
-  @override
-  final bool slot1Configured;
-  @override
-  final bool slot2Configured;
+@override final  bool slot1Configured;
+@override final  bool slot2Configured;
 
-  @override
-  String toString() {
-    return 'OtpState(slot1Configured: $slot1Configured, slot2Configured: $slot2Configured)';
-  }
+/// Create a copy of OtpState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OtpStateCopyWith<_OtpState> get copyWith => __$OtpStateCopyWithImpl<_OtpState>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OtpStateImpl &&
-            (identical(other.slot1Configured, slot1Configured) ||
-                other.slot1Configured == slot1Configured) &&
-            (identical(other.slot2Configured, slot2Configured) ||
-                other.slot2Configured == slot2Configured));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, slot1Configured, slot2Configured);
-
-  /// Create a copy of OtpState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OtpStateImplCopyWith<_$OtpStateImpl> get copyWith =>
-      __$$OtpStateImplCopyWithImpl<_$OtpStateImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$OtpStateImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$OtpStateToJson(this, );
 }
 
-abstract class _OtpState extends OtpState {
-  factory _OtpState({
-    required final bool slot1Configured,
-    required final bool slot2Configured,
-  }) = _$OtpStateImpl;
-  _OtpState._() : super._();
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpState&&(identical(other.slot1Configured, slot1Configured) || other.slot1Configured == slot1Configured)&&(identical(other.slot2Configured, slot2Configured) || other.slot2Configured == slot2Configured));
+}
 
-  factory _OtpState.fromJson(Map<String, dynamic> json) =
-      _$OtpStateImpl.fromJson;
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,slot1Configured,slot2Configured);
 
-  @override
-  bool get slot1Configured;
-  @override
-  bool get slot2Configured;
+@override
+String toString() {
+  return 'OtpState(slot1Configured: $slot1Configured, slot2Configured: $slot2Configured)';
+}
 
-  /// Create a copy of OtpState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OtpStateImplCopyWith<_$OtpStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+
+}
+
+/// @nodoc
+abstract mixin class _$OtpStateCopyWith<$Res> implements $OtpStateCopyWith<$Res> {
+  factory _$OtpStateCopyWith(_OtpState value, $Res Function(_OtpState) _then) = __$OtpStateCopyWithImpl;
+@override @useResult
+$Res call({
+ bool slot1Configured, bool slot2Configured
+});
+
+
+
+
+}
+/// @nodoc
+class __$OtpStateCopyWithImpl<$Res>
+    implements _$OtpStateCopyWith<$Res> {
+  __$OtpStateCopyWithImpl(this._self, this._then);
+
+  final _OtpState _self;
+  final $Res Function(_OtpState) _then;
+
+/// Create a copy of OtpState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? slot1Configured = null,Object? slot2Configured = null,}) {
+  return _then(_OtpState(
+slot1Configured: null == slot1Configured ? _self.slot1Configured : slot1Configured // ignore: cast_nullable_to_non_nullable
+as bool,slot2Configured: null == slot2Configured ? _self.slot2Configured : slot2Configured // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$OtpSlot {
-  SlotId get slot => throw _privateConstructorUsedError;
-  bool get isConfigured => throw _privateConstructorUsedError;
 
-  /// Create a copy of OtpSlot
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $OtpSlotCopyWith<OtpSlot> get copyWith => throw _privateConstructorUsedError;
+ SlotId get slot; bool get isConfigured;
+/// Create a copy of OtpSlot
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OtpSlotCopyWith<OtpSlot> get copyWith => _$OtpSlotCopyWithImpl<OtpSlot>(this as OtpSlot, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.isConfigured, isConfigured) || other.isConfigured == isConfigured));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,slot,isConfigured);
+
+@override
+String toString() {
+  return 'OtpSlot(slot: $slot, isConfigured: $isConfigured)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $OtpSlotCopyWith<$Res> {
-  factory $OtpSlotCopyWith(OtpSlot value, $Res Function(OtpSlot) then) =
-      _$OtpSlotCopyWithImpl<$Res, OtpSlot>;
-  @useResult
-  $Res call({SlotId slot, bool isConfigured});
-}
+abstract mixin class $OtpSlotCopyWith<$Res>  {
+  factory $OtpSlotCopyWith(OtpSlot value, $Res Function(OtpSlot) _then) = _$OtpSlotCopyWithImpl;
+@useResult
+$Res call({
+ SlotId slot, bool isConfigured
+});
 
+
+
+
+}
 /// @nodoc
-class _$OtpSlotCopyWithImpl<$Res, $Val extends OtpSlot>
+class _$OtpSlotCopyWithImpl<$Res>
     implements $OtpSlotCopyWith<$Res> {
-  _$OtpSlotCopyWithImpl(this._value, this._then);
+  _$OtpSlotCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final OtpSlot _self;
+  final $Res Function(OtpSlot) _then;
 
-  /// Create a copy of OtpSlot
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? slot = null, Object? isConfigured = null}) {
-    return _then(
-      _value.copyWith(
-            slot:
-                null == slot
-                    ? _value.slot
-                    : slot // ignore: cast_nullable_to_non_nullable
-                        as SlotId,
-            isConfigured:
-                null == isConfigured
-                    ? _value.isConfigured
-                    : isConfigured // ignore: cast_nullable_to_non_nullable
-                        as bool,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of OtpSlot
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? slot = null,Object? isConfigured = null,}) {
+  return _then(_self.copyWith(
+slot: null == slot ? _self.slot : slot // ignore: cast_nullable_to_non_nullable
+as SlotId,isConfigured: null == isConfigured ? _self.isConfigured : isConfigured // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-/// @nodoc
-abstract class _$$OtpSlotImplCopyWith<$Res> implements $OtpSlotCopyWith<$Res> {
-  factory _$$OtpSlotImplCopyWith(
-    _$OtpSlotImpl value,
-    $Res Function(_$OtpSlotImpl) then,
-  ) = __$$OtpSlotImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({SlotId slot, bool isConfigured});
 }
 
-/// @nodoc
-class __$$OtpSlotImplCopyWithImpl<$Res>
-    extends _$OtpSlotCopyWithImpl<$Res, _$OtpSlotImpl>
-    implements _$$OtpSlotImplCopyWith<$Res> {
-  __$$OtpSlotImplCopyWithImpl(
-    _$OtpSlotImpl _value,
-    $Res Function(_$OtpSlotImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of OtpSlot
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? slot = null, Object? isConfigured = null}) {
-    return _then(
-      _$OtpSlotImpl(
-        slot:
-            null == slot
-                ? _value.slot
-                : slot // ignore: cast_nullable_to_non_nullable
-                    as SlotId,
-        isConfigured:
-            null == isConfigured
-                ? _value.isConfigured
-                : isConfigured // ignore: cast_nullable_to_non_nullable
-                    as bool,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 
-class _$OtpSlotImpl implements _OtpSlot {
-  _$OtpSlotImpl({required this.slot, required this.isConfigured});
 
-  @override
-  final SlotId slot;
-  @override
-  final bool isConfigured;
+class _OtpSlot implements OtpSlot {
+   _OtpSlot({required this.slot, required this.isConfigured});
+  
 
-  @override
-  String toString() {
-    return 'OtpSlot(slot: $slot, isConfigured: $isConfigured)';
-  }
+@override final  SlotId slot;
+@override final  bool isConfigured;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$OtpSlotImpl &&
-            (identical(other.slot, slot) || other.slot == slot) &&
-            (identical(other.isConfigured, isConfigured) ||
-                other.isConfigured == isConfigured));
-  }
+/// Create a copy of OtpSlot
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OtpSlotCopyWith<_OtpSlot> get copyWith => __$OtpSlotCopyWithImpl<_OtpSlot>(this, _$identity);
 
-  @override
-  int get hashCode => Object.hash(runtimeType, slot, isConfigured);
 
-  /// Create a copy of OtpSlot
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$OtpSlotImplCopyWith<_$OtpSlotImpl> get copyWith =>
-      __$$OtpSlotImplCopyWithImpl<_$OtpSlotImpl>(this, _$identity);
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.isConfigured, isConfigured) || other.isConfigured == isConfigured));
 }
 
-abstract class _OtpSlot implements OtpSlot {
-  factory _OtpSlot({
-    required final SlotId slot,
-    required final bool isConfigured,
-  }) = _$OtpSlotImpl;
 
-  @override
-  SlotId get slot;
-  @override
-  bool get isConfigured;
+@override
+int get hashCode => Object.hash(runtimeType,slot,isConfigured);
 
-  /// Create a copy of OtpSlot
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OtpSlotImplCopyWith<_$OtpSlotImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'OtpSlot(slot: $slot, isConfigured: $isConfigured)';
 }
 
-SlotConfigurationOptions _$SlotConfigurationOptionsFromJson(
-  Map<String, dynamic> json,
-) {
-  return _SlotConfigurationOptions.fromJson(json);
+
 }
+
+/// @nodoc
+abstract mixin class _$OtpSlotCopyWith<$Res> implements $OtpSlotCopyWith<$Res> {
+  factory _$OtpSlotCopyWith(_OtpSlot value, $Res Function(_OtpSlot) _then) = __$OtpSlotCopyWithImpl;
+@override @useResult
+$Res call({
+ SlotId slot, bool isConfigured
+});
+
+
+
+
+}
+/// @nodoc
+class __$OtpSlotCopyWithImpl<$Res>
+    implements _$OtpSlotCopyWith<$Res> {
+  __$OtpSlotCopyWithImpl(this._self, this._then);
+
+  final _OtpSlot _self;
+  final $Res Function(_OtpSlot) _then;
+
+/// Create a copy of OtpSlot
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? slot = null,Object? isConfigured = null,}) {
+  return _then(_OtpSlot(
+slot: null == slot ? _self.slot : slot // ignore: cast_nullable_to_non_nullable
+as SlotId,isConfigured: null == isConfigured ? _self.isConfigured : isConfigured // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$SlotConfigurationOptions {
-  bool? get digits8 => throw _privateConstructorUsedError;
-  bool? get requireTouch => throw _privateConstructorUsedError;
-  bool? get appendCr => throw _privateConstructorUsedError;
+
+ bool? get digits8; bool? get requireTouch; bool? get appendCr;
+/// Create a copy of SlotConfigurationOptions
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SlotConfigurationOptionsCopyWith<SlotConfigurationOptions> get copyWith => _$SlotConfigurationOptionsCopyWithImpl<SlotConfigurationOptions>(this as SlotConfigurationOptions, _$identity);
 
   /// Serializes this SlotConfigurationOptions to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of SlotConfigurationOptions
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SlotConfigurationOptionsCopyWith<SlotConfigurationOptions> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotConfigurationOptions&&(identical(other.digits8, digits8) || other.digits8 == digits8)&&(identical(other.requireTouch, requireTouch) || other.requireTouch == requireTouch)&&(identical(other.appendCr, appendCr) || other.appendCr == appendCr));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,digits8,requireTouch,appendCr);
+
+@override
+String toString() {
+  return 'SlotConfigurationOptions(digits8: $digits8, requireTouch: $requireTouch, appendCr: $appendCr)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $SlotConfigurationOptionsCopyWith<$Res> {
-  factory $SlotConfigurationOptionsCopyWith(
-    SlotConfigurationOptions value,
-    $Res Function(SlotConfigurationOptions) then,
-  ) = _$SlotConfigurationOptionsCopyWithImpl<$Res, SlotConfigurationOptions>;
-  @useResult
-  $Res call({bool? digits8, bool? requireTouch, bool? appendCr});
-}
+abstract mixin class $SlotConfigurationOptionsCopyWith<$Res>  {
+  factory $SlotConfigurationOptionsCopyWith(SlotConfigurationOptions value, $Res Function(SlotConfigurationOptions) _then) = _$SlotConfigurationOptionsCopyWithImpl;
+@useResult
+$Res call({
+ bool? digits8, bool? requireTouch, bool? appendCr
+});
 
+
+
+
+}
 /// @nodoc
-class _$SlotConfigurationOptionsCopyWithImpl<
-  $Res,
-  $Val extends SlotConfigurationOptions
->
+class _$SlotConfigurationOptionsCopyWithImpl<$Res>
     implements $SlotConfigurationOptionsCopyWith<$Res> {
-  _$SlotConfigurationOptionsCopyWithImpl(this._value, this._then);
+  _$SlotConfigurationOptionsCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SlotConfigurationOptions _self;
+  final $Res Function(SlotConfigurationOptions) _then;
 
-  /// Create a copy of SlotConfigurationOptions
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? digits8 = freezed,
-    Object? requireTouch = freezed,
-    Object? appendCr = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            digits8:
-                freezed == digits8
-                    ? _value.digits8
-                    : digits8 // ignore: cast_nullable_to_non_nullable
-                        as bool?,
-            requireTouch:
-                freezed == requireTouch
-                    ? _value.requireTouch
-                    : requireTouch // ignore: cast_nullable_to_non_nullable
-                        as bool?,
-            appendCr:
-                freezed == appendCr
-                    ? _value.appendCr
-                    : appendCr // ignore: cast_nullable_to_non_nullable
-                        as bool?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of SlotConfigurationOptions
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? digits8 = freezed,Object? requireTouch = freezed,Object? appendCr = freezed,}) {
+  return _then(_self.copyWith(
+digits8: freezed == digits8 ? _self.digits8 : digits8 // ignore: cast_nullable_to_non_nullable
+as bool?,requireTouch: freezed == requireTouch ? _self.requireTouch : requireTouch // ignore: cast_nullable_to_non_nullable
+as bool?,appendCr: freezed == appendCr ? _self.appendCr : appendCr // ignore: cast_nullable_to_non_nullable
+as bool?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$SlotConfigurationOptionsImplCopyWith<$Res>
-    implements $SlotConfigurationOptionsCopyWith<$Res> {
-  factory _$$SlotConfigurationOptionsImplCopyWith(
-    _$SlotConfigurationOptionsImpl value,
-    $Res Function(_$SlotConfigurationOptionsImpl) then,
-  ) = __$$SlotConfigurationOptionsImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({bool? digits8, bool? requireTouch, bool? appendCr});
 }
 
-/// @nodoc
-class __$$SlotConfigurationOptionsImplCopyWithImpl<$Res>
-    extends
-        _$SlotConfigurationOptionsCopyWithImpl<
-          $Res,
-          _$SlotConfigurationOptionsImpl
-        >
-    implements _$$SlotConfigurationOptionsImplCopyWith<$Res> {
-  __$$SlotConfigurationOptionsImplCopyWithImpl(
-    _$SlotConfigurationOptionsImpl _value,
-    $Res Function(_$SlotConfigurationOptionsImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of SlotConfigurationOptions
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? digits8 = freezed,
-    Object? requireTouch = freezed,
-    Object? appendCr = freezed,
-  }) {
-    return _then(
-      _$SlotConfigurationOptionsImpl(
-        digits8:
-            freezed == digits8
-                ? _value.digits8
-                : digits8 // ignore: cast_nullable_to_non_nullable
-                    as bool?,
-        requireTouch:
-            freezed == requireTouch
-                ? _value.requireTouch
-                : requireTouch // ignore: cast_nullable_to_non_nullable
-                    as bool?,
-        appendCr:
-            freezed == appendCr
-                ? _value.appendCr
-                : appendCr // ignore: cast_nullable_to_non_nullable
-                    as bool?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$SlotConfigurationOptionsImpl implements _SlotConfigurationOptions {
-  _$SlotConfigurationOptionsImpl({
-    this.digits8,
-    this.requireTouch,
-    this.appendCr,
-  });
+class _SlotConfigurationOptions implements SlotConfigurationOptions {
+   _SlotConfigurationOptions({this.digits8, this.requireTouch, this.appendCr});
+  factory _SlotConfigurationOptions.fromJson(Map<String, dynamic> json) => _$SlotConfigurationOptionsFromJson(json);
 
-  factory _$SlotConfigurationOptionsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SlotConfigurationOptionsImplFromJson(json);
+@override final  bool? digits8;
+@override final  bool? requireTouch;
+@override final  bool? appendCr;
 
-  @override
-  final bool? digits8;
-  @override
-  final bool? requireTouch;
-  @override
-  final bool? appendCr;
+/// Create a copy of SlotConfigurationOptions
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SlotConfigurationOptionsCopyWith<_SlotConfigurationOptions> get copyWith => __$SlotConfigurationOptionsCopyWithImpl<_SlotConfigurationOptions>(this, _$identity);
 
-  @override
-  String toString() {
-    return 'SlotConfigurationOptions(digits8: $digits8, requireTouch: $requireTouch, appendCr: $appendCr)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SlotConfigurationOptionsImpl &&
-            (identical(other.digits8, digits8) || other.digits8 == digits8) &&
-            (identical(other.requireTouch, requireTouch) ||
-                other.requireTouch == requireTouch) &&
-            (identical(other.appendCr, appendCr) ||
-                other.appendCr == appendCr));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, digits8, requireTouch, appendCr);
-
-  /// Create a copy of SlotConfigurationOptions
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SlotConfigurationOptionsImplCopyWith<_$SlotConfigurationOptionsImpl>
-  get copyWith => __$$SlotConfigurationOptionsImplCopyWithImpl<
-    _$SlotConfigurationOptionsImpl
-  >(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SlotConfigurationOptionsImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$SlotConfigurationOptionsToJson(this, );
 }
 
-abstract class _SlotConfigurationOptions implements SlotConfigurationOptions {
-  factory _SlotConfigurationOptions({
-    final bool? digits8,
-    final bool? requireTouch,
-    final bool? appendCr,
-  }) = _$SlotConfigurationOptionsImpl;
-
-  factory _SlotConfigurationOptions.fromJson(Map<String, dynamic> json) =
-      _$SlotConfigurationOptionsImpl.fromJson;
-
-  @override
-  bool? get digits8;
-  @override
-  bool? get requireTouch;
-  @override
-  bool? get appendCr;
-
-  /// Create a copy of SlotConfigurationOptions
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SlotConfigurationOptionsImplCopyWith<_$SlotConfigurationOptionsImpl>
-  get copyWith => throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationOptions&&(identical(other.digits8, digits8) || other.digits8 == digits8)&&(identical(other.requireTouch, requireTouch) || other.requireTouch == requireTouch)&&(identical(other.appendCr, appendCr) || other.appendCr == appendCr));
 }
 
-SlotConfiguration _$SlotConfigurationFromJson(Map<String, dynamic> json) {
-  switch (json['type']) {
-    case 'hotp':
-      return _SlotConfigurationHotp.fromJson(json);
-    case 'hmac_sha1':
-      return _SlotConfigurationHmacSha1.fromJson(json);
-    case 'static_password':
-      return _SlotConfigurationStaticPassword.fromJson(json);
-    case 'yubiotp':
-      return _SlotConfigurationYubiOtp.fromJson(json);
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,digits8,requireTouch,appendCr);
 
-    default:
-      throw CheckedFromJsonException(
-        json,
-        'type',
-        'SlotConfiguration',
-        'Invalid union type "${json['type']}"!',
-      );
-  }
+@override
+String toString() {
+  return 'SlotConfigurationOptions(digits8: $digits8, requireTouch: $requireTouch, appendCr: $appendCr)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SlotConfigurationOptionsCopyWith<$Res> implements $SlotConfigurationOptionsCopyWith<$Res> {
+  factory _$SlotConfigurationOptionsCopyWith(_SlotConfigurationOptions value, $Res Function(_SlotConfigurationOptions) _then) = __$SlotConfigurationOptionsCopyWithImpl;
+@override @useResult
+$Res call({
+ bool? digits8, bool? requireTouch, bool? appendCr
+});
+
+
+
+
+}
+/// @nodoc
+class __$SlotConfigurationOptionsCopyWithImpl<$Res>
+    implements _$SlotConfigurationOptionsCopyWith<$Res> {
+  __$SlotConfigurationOptionsCopyWithImpl(this._self, this._then);
+
+  final _SlotConfigurationOptions _self;
+  final $Res Function(_SlotConfigurationOptions) _then;
+
+/// Create a copy of SlotConfigurationOptions
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? digits8 = freezed,Object? requireTouch = freezed,Object? appendCr = freezed,}) {
+  return _then(_SlotConfigurationOptions(
+digits8: freezed == digits8 ? _self.digits8 : digits8 // ignore: cast_nullable_to_non_nullable
+as bool?,requireTouch: freezed == requireTouch ? _self.requireTouch : requireTouch // ignore: cast_nullable_to_non_nullable
+as bool?,appendCr: freezed == appendCr ? _self.appendCr : appendCr // ignore: cast_nullable_to_non_nullable
+as bool?,
+  ));
+}
+
+
+}
+
+SlotConfiguration _$SlotConfigurationFromJson(
+  Map<String, dynamic> json
+) {
+        switch (json['type']) {
+                  case 'hotp':
+          return _SlotConfigurationHotp.fromJson(
+            json
+          );
+                case 'hmac_sha1':
+          return _SlotConfigurationHmacSha1.fromJson(
+            json
+          );
+                case 'static_password':
+          return _SlotConfigurationStaticPassword.fromJson(
+            json
+          );
+                case 'yubiotp':
+          return _SlotConfigurationYubiOtp.fromJson(
+            json
+          );
+        
+          default:
+            throw CheckedFromJsonException(
+  json,
+  'type',
+  'SlotConfiguration',
+  'Invalid union type "${json['type']}"!'
+);
+        }
+      
 }
 
 /// @nodoc
 mixin _$SlotConfiguration {
-  SlotConfigurationOptions? get options => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    hotp,
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    chalresp,
-    required TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )
-    static,
-    required TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )
-    yubiotp,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult? Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult? Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult? Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-    required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SlotConfigurationHotp value) hotp,
-    required TResult Function(_SlotConfigurationHmacSha1 value) chalresp,
-    required TResult Function(_SlotConfigurationStaticPassword value) static,
-    required TResult Function(_SlotConfigurationYubiOtp value) yubiotp,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SlotConfigurationHotp value)? hotp,
-    TResult? Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult? Function(_SlotConfigurationStaticPassword value)? static,
-    TResult? Function(_SlotConfigurationYubiOtp value)? yubiotp,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SlotConfigurationHotp value)? hotp,
-    TResult Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult Function(_SlotConfigurationStaticPassword value)? static,
-    TResult Function(_SlotConfigurationYubiOtp value)? yubiotp,
-    required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
+
+ SlotConfigurationOptions? get options;
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SlotConfigurationCopyWith<SlotConfiguration> get copyWith => _$SlotConfigurationCopyWithImpl<SlotConfiguration>(this as SlotConfiguration, _$identity);
 
   /// Serializes this SlotConfiguration to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SlotConfigurationCopyWith<SlotConfiguration> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotConfiguration&&(identical(other.options, options) || other.options == options));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,options);
+
+@override
+String toString() {
+  return 'SlotConfiguration(options: $options)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $SlotConfigurationCopyWith<$Res> {
-  factory $SlotConfigurationCopyWith(
-    SlotConfiguration value,
-    $Res Function(SlotConfiguration) then,
-  ) = _$SlotConfigurationCopyWithImpl<$Res, SlotConfiguration>;
-  @useResult
-  $Res call({SlotConfigurationOptions? options});
+abstract mixin class $SlotConfigurationCopyWith<$Res>  {
+  factory $SlotConfigurationCopyWith(SlotConfiguration value, $Res Function(SlotConfiguration) _then) = _$SlotConfigurationCopyWithImpl;
+@useResult
+$Res call({
+ SlotConfigurationOptions? options
+});
 
-  $SlotConfigurationOptionsCopyWith<$Res>? get options;
+
+$SlotConfigurationOptionsCopyWith<$Res>? get options;
+
 }
-
 /// @nodoc
-class _$SlotConfigurationCopyWithImpl<$Res, $Val extends SlotConfiguration>
+class _$SlotConfigurationCopyWithImpl<$Res>
     implements $SlotConfigurationCopyWith<$Res> {
-  _$SlotConfigurationCopyWithImpl(this._value, this._then);
+  _$SlotConfigurationCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SlotConfiguration _self;
+  final $Res Function(SlotConfiguration) _then;
 
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? options = freezed}) {
-    return _then(
-      _value.copyWith(
-            options:
-                freezed == options
-                    ? _value.options
-                    : options // ignore: cast_nullable_to_non_nullable
-                        as SlotConfigurationOptions?,
-          )
-          as $Val,
-    );
-  }
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $SlotConfigurationOptionsCopyWith<$Res>? get options {
-    if (_value.options == null) {
-      return null;
-    }
-
-    return $SlotConfigurationOptionsCopyWith<$Res>(_value.options!, (value) {
-      return _then(_value.copyWith(options: value) as $Val);
-    });
-  }
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? options = freezed,}) {
+  return _then(_self.copyWith(
+options: freezed == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
+as SlotConfigurationOptions?,
+  ));
 }
-
-/// @nodoc
-abstract class _$$SlotConfigurationHotpImplCopyWith<$Res>
-    implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$SlotConfigurationHotpImplCopyWith(
-    _$SlotConfigurationHotpImpl value,
-    $Res Function(_$SlotConfigurationHotpImpl) then,
-  ) = __$$SlotConfigurationHotpImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String key, SlotConfigurationOptions? options});
-
-  @override
-  $SlotConfigurationOptionsCopyWith<$Res>? get options;
-}
-
-/// @nodoc
-class __$$SlotConfigurationHotpImplCopyWithImpl<$Res>
-    extends _$SlotConfigurationCopyWithImpl<$Res, _$SlotConfigurationHotpImpl>
-    implements _$$SlotConfigurationHotpImplCopyWith<$Res> {
-  __$$SlotConfigurationHotpImplCopyWithImpl(
-    _$SlotConfigurationHotpImpl _value,
-    $Res Function(_$SlotConfigurationHotpImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? key = null, Object? options = freezed}) {
-    return _then(
-      _$SlotConfigurationHotpImpl(
-        key:
-            null == key
-                ? _value.key
-                : key // ignore: cast_nullable_to_non_nullable
-                    as String,
-        options:
-            freezed == options
-                ? _value.options
-                : options // ignore: cast_nullable_to_non_nullable
-                    as SlotConfigurationOptions?,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$SlotConfigurationHotpImpl extends _SlotConfigurationHotp {
-  const _$SlotConfigurationHotpImpl({
-    required this.key,
-    this.options,
-    final String? $type,
-  }) : $type = $type ?? 'hotp',
-       super._();
-
-  factory _$SlotConfigurationHotpImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SlotConfigurationHotpImplFromJson(json);
-
-  @override
-  final String key;
-  @override
-  final SlotConfigurationOptions? options;
-
-  @JsonKey(name: 'type')
-  final String $type;
-
-  @override
-  String toString() {
-    return 'SlotConfiguration.hotp(key: $key, options: $options)';
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SlotConfigurationOptionsCopyWith<$Res>? get options {
+    if (_self.options == null) {
+    return null;
   }
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SlotConfigurationHotpImpl &&
-            (identical(other.key, key) || other.key == key) &&
-            (identical(other.options, options) || other.options == options));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, key, options);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SlotConfigurationHotpImplCopyWith<_$SlotConfigurationHotpImpl>
-  get copyWith =>
-      __$$SlotConfigurationHotpImplCopyWithImpl<_$SlotConfigurationHotpImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    hotp,
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    chalresp,
-    required TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )
-    static,
-    required TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )
-    yubiotp,
-  }) {
-    return hotp(key, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult? Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult? Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult? Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-  }) {
-    return hotp?.call(key, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-    required TResult orElse(),
-  }) {
-    if (hotp != null) {
-      return hotp(key, options);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SlotConfigurationHotp value) hotp,
-    required TResult Function(_SlotConfigurationHmacSha1 value) chalresp,
-    required TResult Function(_SlotConfigurationStaticPassword value) static,
-    required TResult Function(_SlotConfigurationYubiOtp value) yubiotp,
-  }) {
-    return hotp(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SlotConfigurationHotp value)? hotp,
-    TResult? Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult? Function(_SlotConfigurationStaticPassword value)? static,
-    TResult? Function(_SlotConfigurationYubiOtp value)? yubiotp,
-  }) {
-    return hotp?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SlotConfigurationHotp value)? hotp,
-    TResult Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult Function(_SlotConfigurationStaticPassword value)? static,
-    TResult Function(_SlotConfigurationYubiOtp value)? yubiotp,
-    required TResult orElse(),
-  }) {
-    if (hotp != null) {
-      return hotp(this);
-    }
-    return orElse();
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SlotConfigurationHotpImplToJson(this);
-  }
-}
-
-abstract class _SlotConfigurationHotp extends SlotConfiguration {
-  const factory _SlotConfigurationHotp({
-    required final String key,
-    final SlotConfigurationOptions? options,
-  }) = _$SlotConfigurationHotpImpl;
-  const _SlotConfigurationHotp._() : super._();
-
-  factory _SlotConfigurationHotp.fromJson(Map<String, dynamic> json) =
-      _$SlotConfigurationHotpImpl.fromJson;
-
-  String get key;
-  @override
-  SlotConfigurationOptions? get options;
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SlotConfigurationHotpImplCopyWith<_$SlotConfigurationHotpImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$SlotConfigurationHmacSha1ImplCopyWith<$Res>
-    implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$SlotConfigurationHmacSha1ImplCopyWith(
-    _$SlotConfigurationHmacSha1Impl value,
-    $Res Function(_$SlotConfigurationHmacSha1Impl) then,
-  ) = __$$SlotConfigurationHmacSha1ImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String key, SlotConfigurationOptions? options});
-
-  @override
-  $SlotConfigurationOptionsCopyWith<$Res>? get options;
-}
-
-/// @nodoc
-class __$$SlotConfigurationHmacSha1ImplCopyWithImpl<$Res>
-    extends
-        _$SlotConfigurationCopyWithImpl<$Res, _$SlotConfigurationHmacSha1Impl>
-    implements _$$SlotConfigurationHmacSha1ImplCopyWith<$Res> {
-  __$$SlotConfigurationHmacSha1ImplCopyWithImpl(
-    _$SlotConfigurationHmacSha1Impl _value,
-    $Res Function(_$SlotConfigurationHmacSha1Impl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? key = null, Object? options = freezed}) {
-    return _then(
-      _$SlotConfigurationHmacSha1Impl(
-        key:
-            null == key
-                ? _value.key
-                : key // ignore: cast_nullable_to_non_nullable
-                    as String,
-        options:
-            freezed == options
-                ? _value.options
-                : options // ignore: cast_nullable_to_non_nullable
-                    as SlotConfigurationOptions?,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-@JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$SlotConfigurationHmacSha1Impl extends _SlotConfigurationHmacSha1 {
-  const _$SlotConfigurationHmacSha1Impl({
-    required this.key,
-    this.options,
-    final String? $type,
-  }) : $type = $type ?? 'hmac_sha1',
-       super._();
-
-  factory _$SlotConfigurationHmacSha1Impl.fromJson(Map<String, dynamic> json) =>
-      _$$SlotConfigurationHmacSha1ImplFromJson(json);
-
-  @override
-  final String key;
-  @override
-  final SlotConfigurationOptions? options;
-
-  @JsonKey(name: 'type')
-  final String $type;
-
-  @override
-  String toString() {
-    return 'SlotConfiguration.chalresp(key: $key, options: $options)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SlotConfigurationHmacSha1Impl &&
-            (identical(other.key, key) || other.key == key) &&
-            (identical(other.options, options) || other.options == options));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, key, options);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SlotConfigurationHmacSha1ImplCopyWith<_$SlotConfigurationHmacSha1Impl>
-  get copyWith => __$$SlotConfigurationHmacSha1ImplCopyWithImpl<
-    _$SlotConfigurationHmacSha1Impl
-  >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    hotp,
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    chalresp,
-    required TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )
-    static,
-    required TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )
-    yubiotp,
-  }) {
-    return chalresp(key, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult? Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult? Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult? Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-  }) {
-    return chalresp?.call(key, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-    required TResult orElse(),
-  }) {
-    if (chalresp != null) {
-      return chalresp(key, options);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SlotConfigurationHotp value) hotp,
-    required TResult Function(_SlotConfigurationHmacSha1 value) chalresp,
-    required TResult Function(_SlotConfigurationStaticPassword value) static,
-    required TResult Function(_SlotConfigurationYubiOtp value) yubiotp,
-  }) {
-    return chalresp(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SlotConfigurationHotp value)? hotp,
-    TResult? Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult? Function(_SlotConfigurationStaticPassword value)? static,
-    TResult? Function(_SlotConfigurationYubiOtp value)? yubiotp,
-  }) {
-    return chalresp?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SlotConfigurationHotp value)? hotp,
-    TResult Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult Function(_SlotConfigurationStaticPassword value)? static,
-    TResult Function(_SlotConfigurationYubiOtp value)? yubiotp,
-    required TResult orElse(),
-  }) {
-    if (chalresp != null) {
-      return chalresp(this);
-    }
-    return orElse();
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SlotConfigurationHmacSha1ImplToJson(this);
-  }
-}
-
-abstract class _SlotConfigurationHmacSha1 extends SlotConfiguration {
-  const factory _SlotConfigurationHmacSha1({
-    required final String key,
-    final SlotConfigurationOptions? options,
-  }) = _$SlotConfigurationHmacSha1Impl;
-  const _SlotConfigurationHmacSha1._() : super._();
-
-  factory _SlotConfigurationHmacSha1.fromJson(Map<String, dynamic> json) =
-      _$SlotConfigurationHmacSha1Impl.fromJson;
-
-  String get key;
-  @override
-  SlotConfigurationOptions? get options;
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SlotConfigurationHmacSha1ImplCopyWith<_$SlotConfigurationHmacSha1Impl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$SlotConfigurationStaticPasswordImplCopyWith<$Res>
-    implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$SlotConfigurationStaticPasswordImplCopyWith(
-    _$SlotConfigurationStaticPasswordImpl value,
-    $Res Function(_$SlotConfigurationStaticPasswordImpl) then,
-  ) = __$$SlotConfigurationStaticPasswordImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String password,
-    String keyboardLayout,
-    SlotConfigurationOptions? options,
+  return $SlotConfigurationOptionsCopyWith<$Res>(_self.options!, (value) {
+    return _then(_self.copyWith(options: value));
   });
-
-  @override
-  $SlotConfigurationOptionsCopyWith<$Res>? get options;
+}
 }
 
-/// @nodoc
-class __$$SlotConfigurationStaticPasswordImplCopyWithImpl<$Res>
-    extends
-        _$SlotConfigurationCopyWithImpl<
-          $Res,
-          _$SlotConfigurationStaticPasswordImpl
-        >
-    implements _$$SlotConfigurationStaticPasswordImplCopyWith<$Res> {
-  __$$SlotConfigurationStaticPasswordImplCopyWithImpl(
-    _$SlotConfigurationStaticPasswordImpl _value,
-    $Res Function(_$SlotConfigurationStaticPasswordImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? password = null,
-    Object? keyboardLayout = null,
-    Object? options = freezed,
-  }) {
-    return _then(
-      _$SlotConfigurationStaticPasswordImpl(
-        password:
-            null == password
-                ? _value.password
-                : password // ignore: cast_nullable_to_non_nullable
-                    as String,
-        keyboardLayout:
-            null == keyboardLayout
-                ? _value.keyboardLayout
-                : keyboardLayout // ignore: cast_nullable_to_non_nullable
-                    as String,
-        options:
-            freezed == options
-                ? _value.options
-                : options // ignore: cast_nullable_to_non_nullable
-                    as SlotConfigurationOptions?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$SlotConfigurationStaticPasswordImpl
-    extends _SlotConfigurationStaticPassword {
-  const _$SlotConfigurationStaticPasswordImpl({
-    required this.password,
-    required this.keyboardLayout,
-    this.options,
-    final String? $type,
-  }) : $type = $type ?? 'static_password',
-       super._();
+class _SlotConfigurationHotp extends SlotConfiguration {
+  const _SlotConfigurationHotp({required this.key, this.options, final  String? $type}): $type = $type ?? 'hotp',super._();
+  factory _SlotConfigurationHotp.fromJson(Map<String, dynamic> json) => _$SlotConfigurationHotpFromJson(json);
 
-  factory _$SlotConfigurationStaticPasswordImpl.fromJson(
-    Map<String, dynamic> json,
-  ) => _$$SlotConfigurationStaticPasswordImplFromJson(json);
+ final  String key;
+@override final  SlotConfigurationOptions? options;
 
-  @override
-  final String password;
-  @override
-  final String keyboardLayout;
-  @override
-  final SlotConfigurationOptions? options;
+@JsonKey(name: 'type')
+final String $type;
 
-  @JsonKey(name: 'type')
-  final String $type;
 
-  @override
-  String toString() {
-    return 'SlotConfiguration.static(password: $password, keyboardLayout: $keyboardLayout, options: $options)';
-  }
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SlotConfigurationHotpCopyWith<_SlotConfigurationHotp> get copyWith => __$SlotConfigurationHotpCopyWithImpl<_SlotConfigurationHotp>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SlotConfigurationStaticPasswordImpl &&
-            (identical(other.password, password) ||
-                other.password == password) &&
-            (identical(other.keyboardLayout, keyboardLayout) ||
-                other.keyboardLayout == keyboardLayout) &&
-            (identical(other.options, options) || other.options == options));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, password, keyboardLayout, options);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SlotConfigurationStaticPasswordImplCopyWith<
-    _$SlotConfigurationStaticPasswordImpl
-  >
-  get copyWith => __$$SlotConfigurationStaticPasswordImplCopyWithImpl<
-    _$SlotConfigurationStaticPasswordImpl
-  >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    hotp,
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    chalresp,
-    required TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )
-    static,
-    required TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )
-    yubiotp,
-  }) {
-    return static(password, keyboardLayout, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult? Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult? Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult? Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-  }) {
-    return static?.call(password, keyboardLayout, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-    required TResult orElse(),
-  }) {
-    if (static != null) {
-      return static(password, keyboardLayout, options);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SlotConfigurationHotp value) hotp,
-    required TResult Function(_SlotConfigurationHmacSha1 value) chalresp,
-    required TResult Function(_SlotConfigurationStaticPassword value) static,
-    required TResult Function(_SlotConfigurationYubiOtp value) yubiotp,
-  }) {
-    return static(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SlotConfigurationHotp value)? hotp,
-    TResult? Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult? Function(_SlotConfigurationStaticPassword value)? static,
-    TResult? Function(_SlotConfigurationYubiOtp value)? yubiotp,
-  }) {
-    return static?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SlotConfigurationHotp value)? hotp,
-    TResult Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult Function(_SlotConfigurationStaticPassword value)? static,
-    TResult Function(_SlotConfigurationYubiOtp value)? yubiotp,
-    required TResult orElse(),
-  }) {
-    if (static != null) {
-      return static(this);
-    }
-    return orElse();
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SlotConfigurationStaticPasswordImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$SlotConfigurationHotpToJson(this, );
 }
 
-abstract class _SlotConfigurationStaticPassword extends SlotConfiguration {
-  const factory _SlotConfigurationStaticPassword({
-    required final String password,
-    required final String keyboardLayout,
-    final SlotConfigurationOptions? options,
-  }) = _$SlotConfigurationStaticPasswordImpl;
-  const _SlotConfigurationStaticPassword._() : super._();
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationHotp&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
+}
 
-  factory _SlotConfigurationStaticPassword.fromJson(Map<String, dynamic> json) =
-      _$SlotConfigurationStaticPasswordImpl.fromJson;
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,key,options);
 
-  String get password;
-  String get keyboardLayout;
-  @override
-  SlotConfigurationOptions? get options;
+@override
+String toString() {
+  return 'SlotConfiguration.hotp(key: $key, options: $options)';
+}
 
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SlotConfigurationStaticPasswordImplCopyWith<
-    _$SlotConfigurationStaticPasswordImpl
-  >
-  get copyWith => throw _privateConstructorUsedError;
+
 }
 
 /// @nodoc
-abstract class _$$SlotConfigurationYubiOtpImplCopyWith<$Res>
-    implements $SlotConfigurationCopyWith<$Res> {
-  factory _$$SlotConfigurationYubiOtpImplCopyWith(
-    _$SlotConfigurationYubiOtpImpl value,
-    $Res Function(_$SlotConfigurationYubiOtpImpl) then,
-  ) = __$$SlotConfigurationYubiOtpImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String publicId,
-    String privateId,
-    String key,
-    SlotConfigurationOptions? options,
+abstract mixin class _$SlotConfigurationHotpCopyWith<$Res> implements $SlotConfigurationCopyWith<$Res> {
+  factory _$SlotConfigurationHotpCopyWith(_SlotConfigurationHotp value, $Res Function(_SlotConfigurationHotp) _then) = __$SlotConfigurationHotpCopyWithImpl;
+@override @useResult
+$Res call({
+ String key, SlotConfigurationOptions? options
+});
+
+
+@override $SlotConfigurationOptionsCopyWith<$Res>? get options;
+
+}
+/// @nodoc
+class __$SlotConfigurationHotpCopyWithImpl<$Res>
+    implements _$SlotConfigurationHotpCopyWith<$Res> {
+  __$SlotConfigurationHotpCopyWithImpl(this._self, this._then);
+
+  final _SlotConfigurationHotp _self;
+  final $Res Function(_SlotConfigurationHotp) _then;
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? options = freezed,}) {
+  return _then(_SlotConfigurationHotp(
+key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as String,options: freezed == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
+as SlotConfigurationOptions?,
+  ));
+}
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SlotConfigurationOptionsCopyWith<$Res>? get options {
+    if (_self.options == null) {
+    return null;
+  }
+
+  return $SlotConfigurationOptionsCopyWith<$Res>(_self.options!, (value) {
+    return _then(_self.copyWith(options: value));
   });
-
-  @override
-  $SlotConfigurationOptionsCopyWith<$Res>? get options;
 }
-
-/// @nodoc
-class __$$SlotConfigurationYubiOtpImplCopyWithImpl<$Res>
-    extends
-        _$SlotConfigurationCopyWithImpl<$Res, _$SlotConfigurationYubiOtpImpl>
-    implements _$$SlotConfigurationYubiOtpImplCopyWith<$Res> {
-  __$$SlotConfigurationYubiOtpImplCopyWithImpl(
-    _$SlotConfigurationYubiOtpImpl _value,
-    $Res Function(_$SlotConfigurationYubiOtpImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? publicId = null,
-    Object? privateId = null,
-    Object? key = null,
-    Object? options = freezed,
-  }) {
-    return _then(
-      _$SlotConfigurationYubiOtpImpl(
-        publicId:
-            null == publicId
-                ? _value.publicId
-                : publicId // ignore: cast_nullable_to_non_nullable
-                    as String,
-        privateId:
-            null == privateId
-                ? _value.privateId
-                : privateId // ignore: cast_nullable_to_non_nullable
-                    as String,
-        key:
-            null == key
-                ? _value.key
-                : key // ignore: cast_nullable_to_non_nullable
-                    as String,
-        options:
-            freezed == options
-                ? _value.options
-                : options // ignore: cast_nullable_to_non_nullable
-                    as SlotConfigurationOptions?,
-      ),
-    );
-  }
 }
 
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class _$SlotConfigurationYubiOtpImpl extends _SlotConfigurationYubiOtp {
-  const _$SlotConfigurationYubiOtpImpl({
-    required this.publicId,
-    required this.privateId,
-    required this.key,
-    this.options,
-    final String? $type,
-  }) : $type = $type ?? 'yubiotp',
-       super._();
+class _SlotConfigurationHmacSha1 extends SlotConfiguration {
+  const _SlotConfigurationHmacSha1({required this.key, this.options, final  String? $type}): $type = $type ?? 'hmac_sha1',super._();
+  factory _SlotConfigurationHmacSha1.fromJson(Map<String, dynamic> json) => _$SlotConfigurationHmacSha1FromJson(json);
 
-  factory _$SlotConfigurationYubiOtpImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SlotConfigurationYubiOtpImplFromJson(json);
+ final  String key;
+@override final  SlotConfigurationOptions? options;
 
-  @override
-  final String publicId;
-  @override
-  final String privateId;
-  @override
-  final String key;
-  @override
-  final SlotConfigurationOptions? options;
+@JsonKey(name: 'type')
+final String $type;
 
-  @JsonKey(name: 'type')
-  final String $type;
 
-  @override
-  String toString() {
-    return 'SlotConfiguration.yubiotp(publicId: $publicId, privateId: $privateId, key: $key, options: $options)';
-  }
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SlotConfigurationHmacSha1CopyWith<_SlotConfigurationHmacSha1> get copyWith => __$SlotConfigurationHmacSha1CopyWithImpl<_SlotConfigurationHmacSha1>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SlotConfigurationYubiOtpImpl &&
-            (identical(other.publicId, publicId) ||
-                other.publicId == publicId) &&
-            (identical(other.privateId, privateId) ||
-                other.privateId == privateId) &&
-            (identical(other.key, key) || other.key == key) &&
-            (identical(other.options, options) || other.options == options));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, publicId, privateId, key, options);
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SlotConfigurationYubiOtpImplCopyWith<_$SlotConfigurationYubiOtpImpl>
-  get copyWith => __$$SlotConfigurationYubiOtpImplCopyWithImpl<
-    _$SlotConfigurationYubiOtpImpl
-  >(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    hotp,
-    required TResult Function(String key, SlotConfigurationOptions? options)
-    chalresp,
-    required TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )
-    static,
-    required TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )
-    yubiotp,
-  }) {
-    return yubiotp(publicId, privateId, key, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult? Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult? Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult? Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-  }) {
-    return yubiotp?.call(publicId, privateId, key, options);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String key, SlotConfigurationOptions? options)? hotp,
-    TResult Function(String key, SlotConfigurationOptions? options)? chalresp,
-    TResult Function(
-      String password,
-      String keyboardLayout,
-      SlotConfigurationOptions? options,
-    )?
-    static,
-    TResult Function(
-      String publicId,
-      String privateId,
-      String key,
-      SlotConfigurationOptions? options,
-    )?
-    yubiotp,
-    required TResult orElse(),
-  }) {
-    if (yubiotp != null) {
-      return yubiotp(publicId, privateId, key, options);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SlotConfigurationHotp value) hotp,
-    required TResult Function(_SlotConfigurationHmacSha1 value) chalresp,
-    required TResult Function(_SlotConfigurationStaticPassword value) static,
-    required TResult Function(_SlotConfigurationYubiOtp value) yubiotp,
-  }) {
-    return yubiotp(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SlotConfigurationHotp value)? hotp,
-    TResult? Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult? Function(_SlotConfigurationStaticPassword value)? static,
-    TResult? Function(_SlotConfigurationYubiOtp value)? yubiotp,
-  }) {
-    return yubiotp?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SlotConfigurationHotp value)? hotp,
-    TResult Function(_SlotConfigurationHmacSha1 value)? chalresp,
-    TResult Function(_SlotConfigurationStaticPassword value)? static,
-    TResult Function(_SlotConfigurationYubiOtp value)? yubiotp,
-    required TResult orElse(),
-  }) {
-    if (yubiotp != null) {
-      return yubiotp(this);
-    }
-    return orElse();
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SlotConfigurationYubiOtpImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$SlotConfigurationHmacSha1ToJson(this, );
 }
 
-abstract class _SlotConfigurationYubiOtp extends SlotConfiguration {
-  const factory _SlotConfigurationYubiOtp({
-    required final String publicId,
-    required final String privateId,
-    required final String key,
-    final SlotConfigurationOptions? options,
-  }) = _$SlotConfigurationYubiOtpImpl;
-  const _SlotConfigurationYubiOtp._() : super._();
-
-  factory _SlotConfigurationYubiOtp.fromJson(Map<String, dynamic> json) =
-      _$SlotConfigurationYubiOtpImpl.fromJson;
-
-  String get publicId;
-  String get privateId;
-  String get key;
-  @override
-  SlotConfigurationOptions? get options;
-
-  /// Create a copy of SlotConfiguration
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SlotConfigurationYubiOtpImplCopyWith<_$SlotConfigurationYubiOtpImpl>
-  get copyWith => throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationHmacSha1&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,key,options);
+
+@override
+String toString() {
+  return 'SlotConfiguration.chalresp(key: $key, options: $options)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SlotConfigurationHmacSha1CopyWith<$Res> implements $SlotConfigurationCopyWith<$Res> {
+  factory _$SlotConfigurationHmacSha1CopyWith(_SlotConfigurationHmacSha1 value, $Res Function(_SlotConfigurationHmacSha1) _then) = __$SlotConfigurationHmacSha1CopyWithImpl;
+@override @useResult
+$Res call({
+ String key, SlotConfigurationOptions? options
+});
+
+
+@override $SlotConfigurationOptionsCopyWith<$Res>? get options;
+
+}
+/// @nodoc
+class __$SlotConfigurationHmacSha1CopyWithImpl<$Res>
+    implements _$SlotConfigurationHmacSha1CopyWith<$Res> {
+  __$SlotConfigurationHmacSha1CopyWithImpl(this._self, this._then);
+
+  final _SlotConfigurationHmacSha1 _self;
+  final $Res Function(_SlotConfigurationHmacSha1) _then;
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? options = freezed,}) {
+  return _then(_SlotConfigurationHmacSha1(
+key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as String,options: freezed == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
+as SlotConfigurationOptions?,
+  ));
+}
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SlotConfigurationOptionsCopyWith<$Res>? get options {
+    if (_self.options == null) {
+    return null;
+  }
+
+  return $SlotConfigurationOptionsCopyWith<$Res>(_self.options!, (value) {
+    return _then(_self.copyWith(options: value));
+  });
+}
+}
+
+/// @nodoc
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class _SlotConfigurationStaticPassword extends SlotConfiguration {
+  const _SlotConfigurationStaticPassword({required this.password, required this.keyboardLayout, this.options, final  String? $type}): $type = $type ?? 'static_password',super._();
+  factory _SlotConfigurationStaticPassword.fromJson(Map<String, dynamic> json) => _$SlotConfigurationStaticPasswordFromJson(json);
+
+ final  String password;
+ final  String keyboardLayout;
+@override final  SlotConfigurationOptions? options;
+
+@JsonKey(name: 'type')
+final String $type;
+
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SlotConfigurationStaticPasswordCopyWith<_SlotConfigurationStaticPassword> get copyWith => __$SlotConfigurationStaticPasswordCopyWithImpl<_SlotConfigurationStaticPassword>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SlotConfigurationStaticPasswordToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationStaticPassword&&(identical(other.password, password) || other.password == password)&&(identical(other.keyboardLayout, keyboardLayout) || other.keyboardLayout == keyboardLayout)&&(identical(other.options, options) || other.options == options));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,password,keyboardLayout,options);
+
+@override
+String toString() {
+  return 'SlotConfiguration.static(password: $password, keyboardLayout: $keyboardLayout, options: $options)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SlotConfigurationStaticPasswordCopyWith<$Res> implements $SlotConfigurationCopyWith<$Res> {
+  factory _$SlotConfigurationStaticPasswordCopyWith(_SlotConfigurationStaticPassword value, $Res Function(_SlotConfigurationStaticPassword) _then) = __$SlotConfigurationStaticPasswordCopyWithImpl;
+@override @useResult
+$Res call({
+ String password, String keyboardLayout, SlotConfigurationOptions? options
+});
+
+
+@override $SlotConfigurationOptionsCopyWith<$Res>? get options;
+
+}
+/// @nodoc
+class __$SlotConfigurationStaticPasswordCopyWithImpl<$Res>
+    implements _$SlotConfigurationStaticPasswordCopyWith<$Res> {
+  __$SlotConfigurationStaticPasswordCopyWithImpl(this._self, this._then);
+
+  final _SlotConfigurationStaticPassword _self;
+  final $Res Function(_SlotConfigurationStaticPassword) _then;
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? password = null,Object? keyboardLayout = null,Object? options = freezed,}) {
+  return _then(_SlotConfigurationStaticPassword(
+password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,keyboardLayout: null == keyboardLayout ? _self.keyboardLayout : keyboardLayout // ignore: cast_nullable_to_non_nullable
+as String,options: freezed == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
+as SlotConfigurationOptions?,
+  ));
+}
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SlotConfigurationOptionsCopyWith<$Res>? get options {
+    if (_self.options == null) {
+    return null;
+  }
+
+  return $SlotConfigurationOptionsCopyWith<$Res>(_self.options!, (value) {
+    return _then(_self.copyWith(options: value));
+  });
+}
+}
+
+/// @nodoc
+
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class _SlotConfigurationYubiOtp extends SlotConfiguration {
+  const _SlotConfigurationYubiOtp({required this.publicId, required this.privateId, required this.key, this.options, final  String? $type}): $type = $type ?? 'yubiotp',super._();
+  factory _SlotConfigurationYubiOtp.fromJson(Map<String, dynamic> json) => _$SlotConfigurationYubiOtpFromJson(json);
+
+ final  String publicId;
+ final  String privateId;
+ final  String key;
+@override final  SlotConfigurationOptions? options;
+
+@JsonKey(name: 'type')
+final String $type;
+
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SlotConfigurationYubiOtpCopyWith<_SlotConfigurationYubiOtp> get copyWith => __$SlotConfigurationYubiOtpCopyWithImpl<_SlotConfigurationYubiOtp>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SlotConfigurationYubiOtpToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationYubiOtp&&(identical(other.publicId, publicId) || other.publicId == publicId)&&(identical(other.privateId, privateId) || other.privateId == privateId)&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,publicId,privateId,key,options);
+
+@override
+String toString() {
+  return 'SlotConfiguration.yubiotp(publicId: $publicId, privateId: $privateId, key: $key, options: $options)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SlotConfigurationYubiOtpCopyWith<$Res> implements $SlotConfigurationCopyWith<$Res> {
+  factory _$SlotConfigurationYubiOtpCopyWith(_SlotConfigurationYubiOtp value, $Res Function(_SlotConfigurationYubiOtp) _then) = __$SlotConfigurationYubiOtpCopyWithImpl;
+@override @useResult
+$Res call({
+ String publicId, String privateId, String key, SlotConfigurationOptions? options
+});
+
+
+@override $SlotConfigurationOptionsCopyWith<$Res>? get options;
+
+}
+/// @nodoc
+class __$SlotConfigurationYubiOtpCopyWithImpl<$Res>
+    implements _$SlotConfigurationYubiOtpCopyWith<$Res> {
+  __$SlotConfigurationYubiOtpCopyWithImpl(this._self, this._then);
+
+  final _SlotConfigurationYubiOtp _self;
+  final $Res Function(_SlotConfigurationYubiOtp) _then;
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? publicId = null,Object? privateId = null,Object? key = null,Object? options = freezed,}) {
+  return _then(_SlotConfigurationYubiOtp(
+publicId: null == publicId ? _self.publicId : publicId // ignore: cast_nullable_to_non_nullable
+as String,privateId: null == privateId ? _self.privateId : privateId // ignore: cast_nullable_to_non_nullable
+as String,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as String,options: freezed == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
+as SlotConfigurationOptions?,
+  ));
+}
+
+/// Create a copy of SlotConfiguration
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SlotConfigurationOptionsCopyWith<$Res>? get options {
+    if (_self.options == null) {
+    return null;
+  }
+
+  return $SlotConfigurationOptionsCopyWith<$Res>(_self.options!, (value) {
+    return _then(_self.copyWith(options: value));
+  });
+}
+}
+
+// dart format on
