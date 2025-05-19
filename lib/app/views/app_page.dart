@@ -30,6 +30,7 @@ import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
+import '../shortcuts.dart';
 import '../state.dart';
 import 'fs_dialog.dart';
 import 'keys.dart';
@@ -569,7 +570,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
-  Scaffold _buildScaffold(
+  Widget _buildScaffold(
     BuildContext context,
     bool hasDrawer,
     bool hasRail,
@@ -689,145 +690,153 @@ class _AppPageState extends ConsumerState<AppPage> {
         ),
       );
     }
-    return Scaffold(
-      key: scaffoldGlobalKey,
-      appBar: AppBar(
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: ListenableBuilder(
-            listenable: _scrolledUnderController,
-            builder: (context, child) {
-              final visible = _scrolledUnderController.someIsScrolledUnder;
-              return AnimatedOpacity(
-                opacity: visible ? 1 : 0,
-                duration: const Duration(milliseconds: 300),
-                child: Container(
-                  color: Theme.of(context).hoverColor,
-                  height: 1.0,
-                ),
-              );
-            },
+    return GestureDetector(
+      behavior: HitTestBehavior.deferToChild,
+      onTap: () {
+        // If tap is not absorbed downstream, treat it as dead space
+        // and invoke escape intent
+        Actions.invoke(context, EscapeIntent());
+      },
+      child: Scaffold(
+        key: scaffoldGlobalKey,
+        appBar: AppBar(
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1.0),
+            child: ListenableBuilder(
+              listenable: _scrolledUnderController,
+              builder: (context, child) {
+                final visible = _scrolledUnderController.someIsScrolledUnder;
+                return AnimatedOpacity(
+                  opacity: visible ? 1 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    color: Theme.of(context).hoverColor,
+                    height: 1.0,
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        scrolledUnderElevation: 0.0,
-        leadingWidth: hasRail ? 84 : null,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: _buildAppBarTitle(context, hasRail, hasManage, fullyExpanded),
-        centerTitle: true,
-        leading:
-            hasRail
-                ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: IconButton(
-                          icon: Icon(
-                            Symbols.menu,
-                            semanticLabel: navigationText,
+          iconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          scrolledUnderElevation: 0.0,
+          leadingWidth: hasRail ? 84 : null,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: _buildAppBarTitle(context, hasRail, hasManage, fullyExpanded),
+          centerTitle: true,
+          leading:
+              hasRail
+                  ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: IconButton(
+                            icon: Icon(
+                              Symbols.menu,
+                              semanticLabel: navigationText,
+                            ),
+                            tooltip: navigationText,
+                            onPressed:
+                                fullyExpanded
+                                    ? () {
+                                      ref
+                                          .read(
+                                            _navigationVisibilityProvider
+                                                .notifier,
+                                          )
+                                          .toggleExpanded();
+                                    }
+                                    : () {
+                                      scaffoldGlobalKey.currentState
+                                          ?.openDrawer();
+                                    },
                           ),
-                          tooltip: navigationText,
-                          onPressed:
-                              fullyExpanded
-                                  ? () {
-                                    ref
-                                        .read(
-                                          _navigationVisibilityProvider
-                                              .notifier,
-                                        )
-                                        .toggleExpanded();
-                                  }
-                                  : () {
-                                    scaffoldGlobalKey.currentState
-                                        ?.openDrawer();
-                                  },
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                )
-                : Builder(
-                  builder: (context) {
-                    // Need to wrap with builder to get Scaffold context
-                    return IconButton(
-                      tooltip: l10n.s_show_navigation,
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                      icon: Icon(
-                        Symbols.menu,
-                        semanticLabel: l10n.s_show_navigation,
-                      ),
+                      const SizedBox(width: 12),
+                    ],
+                  )
+                  : Builder(
+                    builder: (context) {
+                      // Need to wrap with builder to get Scaffold context
+                      return IconButton(
+                        tooltip: l10n.s_show_navigation,
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        icon: Icon(
+                          Symbols.menu,
+                          semanticLabel: l10n.s_show_navigation,
+                        ),
+                      );
+                    },
+                  ),
+          actions: [
+            if (widget.actionButtonBuilder == null &&
+                (widget.keyActionsBuilder != null && !hasManage))
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: IconButton(
+                  key: actionsIconButtonKey,
+                  onPressed: () {
+                    showBlurDialog(
+                      context: context,
+                      barrierColor: Colors.transparent,
+                      builder:
+                          (context) => FsDialog(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 32),
+                              child: widget.keyActionsBuilder!(context),
+                            ),
+                          ),
                     );
                   },
-                ),
-        actions: [
-          if (widget.actionButtonBuilder == null &&
-              (widget.keyActionsBuilder != null && !hasManage))
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: IconButton(
-                key: actionsIconButtonKey,
-                onPressed: () {
-                  showBlurDialog(
-                    context: context,
-                    barrierColor: Colors.transparent,
-                    builder:
-                        (context) => FsDialog(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 32),
-                            child: widget.keyActionsBuilder!(context),
-                          ),
-                        ),
-                  );
-                },
-                icon:
-                    widget.keyActionsBadge
-                        ? Badge(
-                          child: Icon(
+                  icon:
+                      widget.keyActionsBadge
+                          ? Badge(
+                            child: Icon(
+                              Symbols.more_vert,
+                              semanticLabel: l10n.s_show_menu,
+                            ),
+                          )
+                          : Icon(
                             Symbols.more_vert,
                             semanticLabel: l10n.s_show_menu,
                           ),
-                        )
-                        : Icon(
-                          Symbols.more_vert,
-                          semanticLabel: l10n.s_show_menu,
-                        ),
-                iconSize: 24,
-                tooltip: l10n.s_show_menu,
-                padding: const EdgeInsets.all(12),
+                  iconSize: 24,
+                  tooltip: l10n.s_show_menu,
+                  padding: const EdgeInsets.all(12),
+                ),
               ),
-            ),
-          if (hasManage &&
-              (widget.keyActionsBuilder != null ||
-                  widget.detailViewBuilder != null))
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: IconButton(
-                key: toggleDetailViewIconButtonKey,
-                onPressed: () {
-                  ref
-                      .read(_detailViewVisibilityProvider.notifier)
-                      .toggleExpanded();
-                },
-                icon: const Icon(Symbols.more_vert, weight: 600.0),
-                iconSize: 24,
-                tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
-                padding: const EdgeInsets.all(12),
+            if (hasManage &&
+                (widget.keyActionsBuilder != null ||
+                    widget.detailViewBuilder != null))
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: IconButton(
+                  key: toggleDetailViewIconButtonKey,
+                  onPressed: () {
+                    ref
+                        .read(_detailViewVisibilityProvider.notifier)
+                        .toggleExpanded();
+                  },
+                  icon: const Icon(Symbols.more_vert, weight: 600.0),
+                  iconSize: 24,
+                  tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
+                  padding: const EdgeInsets.all(12),
+                ),
               ),
-            ),
-          if (widget.actionButtonBuilder != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: widget.actionButtonBuilder!.call(context),
-            ),
-        ],
+            if (widget.actionButtonBuilder != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: widget.actionButtonBuilder!.call(context),
+              ),
+          ],
+        ),
+        drawer: hasDrawer ? _buildDrawer(context) : null,
+        body: body,
       ),
-      drawer: hasDrawer ? _buildDrawer(context) : null,
-      body: body,
     );
   }
 }

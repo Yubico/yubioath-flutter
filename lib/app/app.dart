@@ -40,14 +40,7 @@ class YubicoAuthenticatorApp extends StatelessWidget {
             theme: AppTheme.getLightTheme(primaryColor),
             darkTheme: AppTheme.getDarkTheme(primaryColor),
             themeMode: ref.watch(themeModeProvider),
-            home: GestureDetector(
-              onTap: () {
-                // If tap is not absorbed downstream, treat it as dead space
-                // and invoke escape intent
-                Actions.invoke(context, const EscapeIntent());
-              },
-              child: page,
-            ),
+            home: page,
             debugShowCheckedModeBanner: false,
             locale: ref.watch(currentLocaleProvider),
             supportedLocales: AppLocalizations.supportedLocales,
