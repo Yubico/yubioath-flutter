@@ -570,7 +570,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
-  Scaffold _buildScaffold(
+  Widget _buildScaffold(
     BuildContext context,
     bool hasDrawer,
     bool hasRail,
@@ -599,51 +599,58 @@ class _AppPageState extends ConsumerState<AppPage> {
       );
     }
     if (hasRail || hasManage) {
-      body = GestureDetector(
-        behavior: HitTestBehavior.deferToChild,
-        onTap: () {
-          Actions.invoke(context, const EscapeIntent());
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: SafeArea(
+      body = SafeArea(
+        child: FocusTraversalGroup(
+          policy: OrderedTraversalPolicy(),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (hasRail && (!fullyExpanded || !showNavigation))
-                SizedBox(
-                  width: 72,
-                  child: _VisibilityListener(
-                    targetKey: _navKey,
-                    controller: _navController,
-                    child: SingleChildScrollView(
-                      child: NavigationContent(
-                        key: _navKey,
-                        shouldPop: false,
-                        extended: false,
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(1),
+                  child: SizedBox(
+                    width: 72,
+                    child: _VisibilityListener(
+                      targetKey: _navKey,
+                      controller: _navController,
+                      child: SingleChildScrollView(
+                        child: NavigationContent(
+                          key: _navKey,
+                          shouldPop: false,
+                          extended: false,
+                        ),
                       ),
                     ),
                   ),
                 ),
               if (fullyExpanded && showNavigation)
-                SizedBox(
-                  width: 280,
-                  child: _VisibilityListener(
-                    controller: _navController,
-                    targetKey: _navExpandedKey,
-                    child: SingleChildScrollView(
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: NavigationContent(
-                          key: _navExpandedKey,
-                          shouldPop: false,
-                          extended: true,
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(1),
+                  child: SizedBox(
+                    width: 280,
+                    child: _VisibilityListener(
+                      controller: _navController,
+                      targetKey: _navExpandedKey,
+                      child: SingleChildScrollView(
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: NavigationContent(
+                            key: _navExpandedKey,
+                            shouldPop: false,
+                            extended: true,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               const SizedBox(width: 8),
-              Expanded(child: body),
+              Expanded(
+                child: FocusTraversalOrder(
+                  order: NumericFocusOrder(2),
+                  child: body,
+                ),
+              ),
               if (hasManage &&
                   !hasDetailsOrKeyActions &&
                   showDetailView &&
@@ -654,22 +661,25 @@ class _AppPageState extends ConsumerState<AppPage> {
                 // - pages without Capabilities
                 const SizedBox(width: 336), // simulate column
               if (hasManage && hasDetailsOrKeyActions && showDetailView)
-                _VisibilityListener(
-                  controller: _detailsController,
-                  targetKey: _detailsViewGlobalKey,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: SizedBox(
-                        width: 320,
-                        child: Column(
-                          key: _detailsViewGlobalKey,
-                          children: [
-                            if (widget.detailViewBuilder != null)
-                              widget.detailViewBuilder!(context),
-                            if (widget.keyActionsBuilder != null)
-                              widget.keyActionsBuilder!(context),
-                          ],
+                FocusTraversalOrder(
+                  order: NumericFocusOrder(3),
+                  child: _VisibilityListener(
+                    controller: _detailsController,
+                    targetKey: _detailsViewGlobalKey,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: SizedBox(
+                          width: 320,
+                          child: Column(
+                            key: _detailsViewGlobalKey,
+                            children: [
+                              if (widget.detailViewBuilder != null)
+                                widget.detailViewBuilder!(context),
+                              if (widget.keyActionsBuilder != null)
+                                widget.keyActionsBuilder!(context),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -680,13 +690,15 @@ class _AppPageState extends ConsumerState<AppPage> {
         ),
       );
     }
-    return Scaffold(
-      key: scaffoldGlobalKey,
-      appBar: _GestureDetectorAppBar(
-        onTap: () {
-          Actions.invoke(context, const EscapeIntent());
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
+    return GestureDetector(
+      behavior: HitTestBehavior.deferToChild,
+      onTap: () {
+        // If tap is not absorbed downstream, treat it as dead space
+        // and invoke escape intent
+        Actions.invoke(context, EscapeIntent());
+      },
+      child: Scaffold(
+        key: scaffoldGlobalKey,
         appBar: AppBar(
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1.0),
@@ -822,31 +834,11 @@ class _AppPageState extends ConsumerState<AppPage> {
               ),
           ],
         ),
+        drawer: hasDrawer ? _buildDrawer(context) : null,
+        body: body,
       ),
-      drawer: hasDrawer ? _buildDrawer(context) : null,
-      body: body,
     );
   }
-}
-
-class _GestureDetectorAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
-  final AppBar appBar;
-  final void Function() onTap;
-
-  const _GestureDetectorAppBar({required this.appBar, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onTap: onTap,
-      child: appBar,
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class CapabilityBadge extends ConsumerWidget {

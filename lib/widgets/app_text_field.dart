@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../app/shortcuts.dart';
 import 'app_input_decoration.dart';
 
 /// TextField without autocorrect and suggestions
@@ -88,12 +90,19 @@ class AppTextField extends TextField {
 
   Widget init() => Builder(
     builder:
-        (context) => DefaultSelectionStyle(
-          selectionColor:
-              decoration?.errorText != null
-                  ? Theme.of(context).colorScheme.error
-                  : null,
-          child: this,
+        (context) => Shortcuts(
+          shortcuts: {
+            // Override escape intent
+            const SingleActivator(LogicalKeyboardKey.escape):
+                const EscapeIntent(),
+          },
+          child: DefaultSelectionStyle(
+            selectionColor:
+                decoration?.errorText != null
+                    ? Theme.of(context).colorScheme.error
+                    : null,
+            child: this,
+          ),
         ),
   );
 }
