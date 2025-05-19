@@ -143,13 +143,8 @@ class RefreshIntent<T> extends AppIntent {
 }
 
 /// Use cmd on macOS, use ctrl on the other platforms
-SingleActivator ctrlOrCmd(LogicalKeyboardKey key, {bool shift = false}) =>
-    SingleActivator(
-      key,
-      meta: Platform.isMacOS,
-      control: !Platform.isMacOS,
-      shift: false,
-    );
+SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
+    SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
 
 Map<SingleActivator, AppIntent> toShortcuts(
   Map<AppIntent, List<SingleActivator>> intents,
