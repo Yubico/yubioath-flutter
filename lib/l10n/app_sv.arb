@@ -51,8 +51,12 @@
     "s_show_navigation": "Visa navigering",
     "s_expand_navigation": "Expandera navigering",
     "s_collapse_navigation": "Minimera navigering",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Visa meny",
     "s_hide_menu": "Dölj meny",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "More info",
     "q_rename_target": "Byt namn på {label}?",
     "@q_rename_target": {

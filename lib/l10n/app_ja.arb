@@ -51,8 +51,12 @@
     "s_show_navigation": "ナビゲーションを表示する",
     "s_expand_navigation": "ナビゲーションを展開します",
     "s_collapse_navigation": "ナビゲーションを折りたたみます",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "メニューを表示します",
     "s_hide_menu": "メニューを非表示にします",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "詳細情報",
     "q_rename_target": "{label} の名前を変更しますか？",
     "@q_rename_target": {

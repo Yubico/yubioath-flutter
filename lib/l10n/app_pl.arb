@@ -51,8 +51,12 @@
     "s_show_navigation": "Pokaż nawigację",
     "s_expand_navigation": "Rozwiń nawigację",
     "s_collapse_navigation": "Zwiń nawigację",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Pokaż menu",
     "s_hide_menu": "Ukryj menu",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "Więcej informacji",
     "q_rename_target": "Zmienić nazwę {label}?",
     "@q_rename_target": {

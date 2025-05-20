@@ -51,8 +51,12 @@
     "s_show_navigation": "Zobraziť navigáciu",
     "s_expand_navigation": "Rozšíriť navigáciu",
     "s_collapse_navigation": "Zbaliť navigáciu",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Zobraziť ponuku",
     "s_hide_menu": "Skryť ponuku",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "Viac informácií",
     "q_rename_target": "Premenovať {label}?",
     "@q_rename_target": {

@@ -102,6 +102,21 @@ class AboutIntent extends AppIntent {
   String getDescription(AppLocalizations l10n) => l10n.s_open_help_and_about;
 }
 
+class NavigationIntent extends AppIntent {
+  NavigationIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) =>
+      l10n.s_expand_collapse_navigation;
+}
+
+class DetailViewIntent extends AppIntent {
+  DetailViewIntent();
+
+  @override
+  String getDescription(AppLocalizations l10n) => l10n.s_toggle_menu_bar;
+}
+
 class OpenIntent<T> extends AppIntent {
   final T target;
   OpenIntent(this.target);
@@ -143,8 +158,17 @@ class RefreshIntent<T> extends AppIntent {
 }
 
 /// Use cmd on macOS, use ctrl on the other platforms
-SingleActivator ctrlOrCmd(LogicalKeyboardKey key) =>
-    SingleActivator(key, meta: Platform.isMacOS, control: !Platform.isMacOS);
+SingleActivator ctrlOrCmd(
+  LogicalKeyboardKey key, {
+  bool alt = false,
+  bool shift = false,
+}) => SingleActivator(
+  key,
+  meta: Platform.isMacOS,
+  control: !Platform.isMacOS,
+  alt: alt,
+  shift: shift,
+);
 
 Map<SingleActivator, AppIntent> toShortcuts(
   Map<AppIntent, List<SingleActivator>> intents,
@@ -176,6 +200,8 @@ Map<AppIntent, List<SingleActivator>> getGlobalIntents() {
       ctrlOrCmd(LogicalKeyboardKey.numpadDivide),
       ctrlOrCmd(LogicalKeyboardKey.slash),
     ],
+    NavigationIntent(): [ctrlOrCmd(LogicalKeyboardKey.keyB)],
+    DetailViewIntent(): [ctrlOrCmd(LogicalKeyboardKey.keyB, alt: true)],
     SearchIntent(): [ctrlOrCmd(LogicalKeyboardKey.keyF)],
     EscapeIntent(): [SingleActivator(LogicalKeyboardKey.escape)],
 
@@ -309,6 +335,22 @@ class GlobalShortcuts extends ConsumerWidget {
               );
             }
           });
+          return null;
+        },
+      ),
+      NavigationIntent: CallbackAction<NavigationIntent>(
+        onInvoke: (_) {
+          // Notify to toggle visibility of navigation
+          final controller = ref.read(navigationVisibilityProvider.notifier);
+          controller.state = !controller.state;
+          return null;
+        },
+      ),
+      DetailViewIntent: CallbackAction<DetailViewIntent>(
+        onInvoke: (_) {
+          // Notify to toggle visibility of detail view
+          final controller = ref.read(sideMenuVisibilityProvider.notifier);
+          controller.state = !controller.state;
           return null;
         },
       ),

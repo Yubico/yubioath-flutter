@@ -51,8 +51,12 @@
     "s_show_navigation": "Zobrazit navigaci",
     "s_expand_navigation": "Rozbalit navigaci",
     "s_collapse_navigation": "Sbalit navigaci",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Zobrazit nabídku",
     "s_hide_menu": "Skrýt nabídku",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "Více informací",
     "q_rename_target": "Přejmenovat {label}?",
     "@q_rename_target": {

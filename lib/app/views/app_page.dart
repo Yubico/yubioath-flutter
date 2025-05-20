@@ -36,13 +36,13 @@ import 'fs_dialog.dart';
 import 'keys.dart';
 import 'navigation.dart';
 
-final _navigationVisibilityProvider =
+final _navigationBarVisibilityProvider =
     StateNotifierProvider<_VisibilityNotifier, bool>(
       (ref) =>
           _VisibilityNotifier('NAVIGATION_VISIBILITY', ref.watch(prefProvider)),
     );
 
-final _detailViewVisibilityProvider =
+final _sideMenuBarVisibilityProvider =
     StateNotifierProvider<_VisibilityNotifier, bool>(
       (ref) => _VisibilityNotifier(
         'DETAIL_VIEW_VISIBILITY',
@@ -123,6 +123,7 @@ class _AppPageState extends ConsumerState<AppPage> {
   late _VisibilitiesController _scrolledUnderController;
 
   final ScrollController _sliverTitleScrollController = ScrollController();
+  bool _isKeyActionsDialogOpen = false;
 
   @override
   void initState() {
@@ -146,27 +147,35 @@ class _AppPageState extends ConsumerState<AppPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        if (width < 400 ||
-            (isAndroid && width < 600 && width < constraints.maxHeight)) {
-          return _buildScaffold(context, true, false, false);
-        }
-        if (width < 800) {
-          return _buildScaffold(context, true, true, false);
-        }
-        if (width < 1000) {
-          return _buildScaffold(context, true, true, true);
-        } else {
-          // Fully expanded layout, close existing drawer if open
-          final scaffoldState = scaffoldGlobalKey.currentState;
-          if (scaffoldState?.isDrawerOpen == true) {
-            scaffoldState?.closeDrawer();
-          }
-          return _buildScaffold(context, false, true, true);
-        }
+    return GestureDetector(
+      behavior: HitTestBehavior.deferToChild,
+      onTap: () {
+        // If tap is not absorbed downstream, treat it as dead space
+        // and invoke escape intent
+        Actions.invoke(context, EscapeIntent());
       },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          if (width < 400 ||
+              (isAndroid && width < 600 && width < constraints.maxHeight)) {
+            return _buildScaffold(context, true, false, false);
+          }
+          if (width < 800) {
+            return _buildScaffold(context, true, true, false);
+          }
+          if (width < 1000) {
+            return _buildScaffold(context, true, true, true);
+          } else {
+            // Fully expanded layout, close existing drawer if open
+            final scaffoldState = scaffoldGlobalKey.currentState;
+            if (scaffoldState?.isDrawerOpen == true) {
+              scaffoldState?.closeDrawer();
+            }
+            return _buildScaffold(context, false, true, true);
+          }
+        },
+      ),
     );
   }
 
@@ -347,19 +356,24 @@ class _AppPageState extends ConsumerState<AppPage> {
     bool hasManage,
     bool fullyExpanded,
   ) {
-    final showNavigation = ref.watch(_navigationVisibilityProvider);
-    final showDetailView = ref.watch(_detailViewVisibilityProvider);
+    final showExpandedNavigationBar = ref.watch(
+      _navigationBarVisibilityProvider,
+    );
+    final showExpandedSideMenuBar = ref.watch(_sideMenuBarVisibilityProvider);
 
     EdgeInsets padding;
     if (fullyExpanded) {
       padding = EdgeInsets.only(
-        left: showNavigation ? 280 : 72,
-        right: showDetailView ? 320 : 0.0,
+        left: showExpandedNavigationBar ? 280 : 72,
+        right: showExpandedSideMenuBar ? 320 : 0.0,
       );
     } else if (!hasRail && hasManage) {
       padding = const EdgeInsets.only(right: 320);
     } else if (hasRail && hasManage) {
-      padding = EdgeInsets.only(left: 72, right: showDetailView ? 320 : 0.0);
+      padding = EdgeInsets.only(
+        left: 72,
+        right: showExpandedSideMenuBar ? 320 : 0.0,
+      );
     } else if (hasRail && !hasManage) {
       padding = const EdgeInsets.only(left: 72);
     } else {
@@ -388,9 +402,13 @@ class _AppPageState extends ConsumerState<AppPage> {
   }
 
   Widget _buildMainContent(BuildContext context, bool expanded) {
-    final showDetailView = ref.watch(_detailViewVisibilityProvider);
+    final showExpandedSideMenuBar = ref.watch(_sideMenuBarVisibilityProvider);
     final actions =
-        widget.actionsBuilder?.call(context, expanded && showDetailView) ?? [];
+        widget.actionsBuilder?.call(
+          context,
+          expanded && showExpandedSideMenuBar,
+        ) ??
+        [];
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment:
@@ -398,7 +416,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               ? CrossAxisAlignment.center
               : CrossAxisAlignment.start,
       children: [
-        widget.builder(context, expanded && showDetailView),
+        widget.builder(context, expanded && showExpandedSideMenuBar),
         if (actions.isNotEmpty)
           Align(
             alignment:
@@ -570,6 +588,51 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
+  void _handleNavigationVisibility(BuildContext context, bool canExpand) {
+    if (canExpand) {
+      ref.read(_navigationBarVisibilityProvider.notifier).toggleExpanded();
+    } else {
+      final scaffoldState = scaffoldGlobalKey.currentState;
+      if (scaffoldState?.isDrawerOpen == false) {
+        scaffoldState?.openDrawer();
+      } else {
+        scaffoldState?.closeDrawer();
+      }
+    }
+  }
+
+  void _handleDetailViewVisibility(BuildContext context, bool canExpand) async {
+    if (canExpand &&
+        (widget.keyActionsBuilder != null ||
+            widget.detailViewBuilder != null)) {
+      ref.read(_sideMenuBarVisibilityProvider.notifier).toggleExpanded();
+    }
+    if (!canExpand &&
+        widget.actionButtonBuilder == null &&
+        widget.keyActionsBuilder != null) {
+      if (!Navigator.of(context).canPop()) {
+        _isKeyActionsDialogOpen = true;
+        await showBlurDialog(
+          context: context,
+          barrierColor: Colors.transparent,
+          builder:
+              (context) => FsDialog(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 32),
+                  child: widget.keyActionsBuilder!(context),
+                ),
+              ),
+        );
+        _isKeyActionsDialogOpen = false;
+      } else {
+        if (_isKeyActionsDialogOpen) {
+          Navigator.of(context).pop();
+          _isKeyActionsDialogOpen = false;
+        }
+      }
+    }
+  }
+
   Widget _buildScaffold(
     BuildContext context,
     bool hasDrawer,
@@ -578,15 +641,17 @@ class _AppPageState extends ConsumerState<AppPage> {
   ) {
     final l10n = AppLocalizations.of(context);
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
-    final showNavigation = ref.watch(_navigationVisibilityProvider);
-    final showDetailView = ref.watch(_detailViewVisibilityProvider);
+    final showExpandedNavigationBar = ref.watch(
+      _navigationBarVisibilityProvider,
+    );
+    final showExpandedSideMenuBar = ref.watch(_sideMenuBarVisibilityProvider);
     final hasDetailsOrKeyActions =
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
     var navigationText =
         fullyExpanded
-            ? (showNavigation
+            ? (showExpandedNavigationBar
                 ? l10n.s_collapse_navigation
                 : l10n.s_expand_navigation)
             : l10n.s_show_navigation;
@@ -605,7 +670,7 @@ class _AppPageState extends ConsumerState<AppPage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (hasRail && (!fullyExpanded || !showNavigation))
+              if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
                 FocusTraversalOrder(
                   order: NumericFocusOrder(1),
                   child: SizedBox(
@@ -623,7 +688,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                     ),
                   ),
                 ),
-              if (fullyExpanded && showNavigation)
+              if (fullyExpanded && showExpandedNavigationBar)
                 FocusTraversalOrder(
                   order: NumericFocusOrder(1),
                   child: SizedBox(
@@ -653,14 +718,16 @@ class _AppPageState extends ConsumerState<AppPage> {
               ),
               if (hasManage &&
                   !hasDetailsOrKeyActions &&
-                  showDetailView &&
+                  showExpandedSideMenuBar &&
                   widget.capabilities != null &&
                   widget.capabilities?.first != Capability.u2f)
                 // Add a placeholder for the Manage/Details column. Exceptions are:
                 // - the "Security Key" because it does not have any actions/details.
                 // - pages without Capabilities
                 const SizedBox(width: 336), // simulate column
-              if (hasManage && hasDetailsOrKeyActions && showDetailView)
+              if (hasManage &&
+                  hasDetailsOrKeyActions &&
+                  showExpandedSideMenuBar)
                 FocusTraversalOrder(
                   order: NumericFocusOrder(3),
                   child: _VisibilityListener(
@@ -690,153 +757,143 @@ class _AppPageState extends ConsumerState<AppPage> {
         ),
       );
     }
-    return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onTap: () {
-        // If tap is not absorbed downstream, treat it as dead space
-        // and invoke escape intent
-        Actions.invoke(context, EscapeIntent());
-      },
-      child: Scaffold(
-        key: scaffoldGlobalKey,
-        appBar: AppBar(
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1.0),
-            child: ListenableBuilder(
-              listenable: _scrolledUnderController,
-              builder: (context, child) {
-                final visible = _scrolledUnderController.someIsScrolledUnder;
-                return AnimatedOpacity(
-                  opacity: visible ? 1 : 0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Container(
-                    color: Theme.of(context).hoverColor,
-                    height: 1.0,
-                  ),
-                );
-              },
+    return Consumer(
+      builder: (context, ref, _) {
+        ref.listen(
+          navigationVisibilityProvider,
+          (prev, next) => _handleNavigationVisibility(context, fullyExpanded),
+        );
+        ref.listen(
+          sideMenuVisibilityProvider,
+          (prev, next) => _handleDetailViewVisibility(context, hasManage),
+        );
+        return Scaffold(
+          key: scaffoldGlobalKey,
+          appBar: AppBar(
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1.0),
+              child: ListenableBuilder(
+                listenable: _scrolledUnderController,
+                builder: (context, child) {
+                  final visible = _scrolledUnderController.someIsScrolledUnder;
+                  return AnimatedOpacity(
+                    opacity: visible ? 1 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Container(
+                      color: Theme.of(context).hoverColor,
+                      height: 1.0,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          iconTheme: IconThemeData(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          scrolledUnderElevation: 0.0,
-          leadingWidth: hasRail ? 84 : null,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: _buildAppBarTitle(context, hasRail, hasManage, fullyExpanded),
-          centerTitle: true,
-          leading:
-              hasRail
-                  ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: IconButton(
-                            icon: Icon(
-                              Symbols.menu,
-                              semanticLabel: navigationText,
-                            ),
-                            tooltip: navigationText,
-                            onPressed:
-                                fullyExpanded
-                                    ? () {
-                                      ref
-                                          .read(
-                                            _navigationVisibilityProvider
-                                                .notifier,
-                                          )
-                                          .toggleExpanded();
-                                    }
-                                    : () {
-                                      scaffoldGlobalKey.currentState
-                                          ?.openDrawer();
-                                    },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                    ],
-                  )
-                  : Builder(
-                    builder: (context) {
-                      // Need to wrap with builder to get Scaffold context
-                      return IconButton(
-                        tooltip: l10n.s_show_navigation,
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                        icon: Icon(
-                          Symbols.menu,
-                          semanticLabel: l10n.s_show_navigation,
-                        ),
-                      );
-                    },
-                  ),
-          actions: [
-            if (widget.actionButtonBuilder == null &&
-                (widget.keyActionsBuilder != null && !hasManage))
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: IconButton(
-                  key: actionsIconButtonKey,
-                  onPressed: () {
-                    showBlurDialog(
-                      context: context,
-                      barrierColor: Colors.transparent,
-                      builder:
-                          (context) => FsDialog(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 32),
-                              child: widget.keyActionsBuilder!(context),
+            iconTheme: IconThemeData(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            scrolledUnderElevation: 0.0,
+            leadingWidth: hasRail ? 84 : null,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: _buildAppBarTitle(
+              context,
+              hasRail,
+              hasManage,
+              fullyExpanded,
+            ),
+            centerTitle: true,
+            leading:
+                hasRail
+                    ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: IconButton(
+                              icon: Icon(
+                                Symbols.menu,
+                                semanticLabel: navigationText,
+                              ),
+                              tooltip: navigationText,
+                              onPressed:
+                                  () => _handleNavigationVisibility(
+                                    context,
+                                    fullyExpanded,
+                                  ),
                             ),
                           ),
-                    );
-                  },
-                  icon:
-                      widget.keyActionsBadge
-                          ? Badge(
-                            child: Icon(
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                    )
+                    : Builder(
+                      builder: (context) {
+                        // Need to wrap with builder to get Scaffold context
+                        return IconButton(
+                          tooltip: l10n.s_show_navigation,
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                          icon: Icon(
+                            Symbols.menu,
+                            semanticLabel: l10n.s_show_navigation,
+                          ),
+                        );
+                      },
+                    ),
+            actions: [
+              if (widget.actionButtonBuilder == null &&
+                  (widget.keyActionsBuilder != null && !hasManage))
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    key: actionsIconButtonKey,
+                    onPressed:
+                        () => _handleDetailViewVisibility(context, hasManage),
+                    icon:
+                        widget.keyActionsBadge
+                            ? Badge(
+                              child: Icon(
+                                Symbols.more_vert,
+                                semanticLabel: l10n.s_show_menu,
+                              ),
+                            )
+                            : Icon(
                               Symbols.more_vert,
                               semanticLabel: l10n.s_show_menu,
                             ),
-                          )
-                          : Icon(
-                            Symbols.more_vert,
-                            semanticLabel: l10n.s_show_menu,
-                          ),
-                  iconSize: 24,
-                  tooltip: l10n.s_show_menu,
-                  padding: const EdgeInsets.all(12),
+                    iconSize: 24,
+                    tooltip: l10n.s_show_menu,
+                    padding: const EdgeInsets.all(12),
+                  ),
                 ),
-              ),
-            if (hasManage &&
-                (widget.keyActionsBuilder != null ||
-                    widget.detailViewBuilder != null))
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: IconButton(
-                  key: toggleDetailViewIconButtonKey,
-                  onPressed: () {
-                    ref
-                        .read(_detailViewVisibilityProvider.notifier)
-                        .toggleExpanded();
-                  },
-                  icon: const Icon(Symbols.more_vert, weight: 600.0),
-                  iconSize: 24,
-                  tooltip: showDetailView ? l10n.s_hide_menu : l10n.s_show_menu,
-                  padding: const EdgeInsets.all(12),
+              if (hasManage &&
+                  (widget.keyActionsBuilder != null ||
+                      widget.detailViewBuilder != null))
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    key: toggleDetailViewIconButtonKey,
+                    onPressed:
+                        () => _handleDetailViewVisibility(context, hasManage),
+                    icon: Icon(
+                      Symbols.dock_to_left,
+                      fill: showExpandedSideMenuBar ? 1 : 0,
+                      weight: 600.0,
+                    ),
+                    iconSize: 24,
+                    tooltip: l10n.s_toggle_menu_bar,
+                    padding: const EdgeInsets.all(12),
+                  ),
                 ),
-              ),
-            if (widget.actionButtonBuilder != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: widget.actionButtonBuilder!.call(context),
-              ),
-          ],
-        ),
-        drawer: hasDrawer ? _buildDrawer(context) : null,
-        body: body,
-      ),
+              if (widget.actionButtonBuilder != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: widget.actionButtonBuilder!.call(context),
+                ),
+            ],
+          ),
+          drawer: hasDrawer ? _buildDrawer(context) : null,
+          body: body,
+        );
+      },
     );
   }
 }

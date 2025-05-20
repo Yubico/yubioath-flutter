@@ -51,8 +51,12 @@
     "s_show_navigation": "Navigation anzeigen",
     "s_expand_navigation": "Navigation erweitern",
     "s_collapse_navigation": "Navigation minimieren",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Menü anzeigen",
     "s_hide_menu": "Menü ausblenden",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "Weitere Infos",
     "q_rename_target": "{label} umbenennen?",
     "@q_rename_target": {

@@ -51,8 +51,12 @@
     "s_show_navigation": "Hiển thị điều hướng",
     "s_expand_navigation": "Mở rộng điều hướng",
     "s_collapse_navigation": "Thu gọn điều hướng",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Hiển thị thực đơn",
     "s_hide_menu": "Ẩn thực đơn",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "More info",
     "q_rename_target": "Đổi tên {label}?",
     "@q_rename_target": {

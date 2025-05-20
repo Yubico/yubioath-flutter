@@ -51,8 +51,12 @@
     "s_show_navigation": "显示导航按钮",
     "s_expand_navigation": "展开导航栏",
     "s_collapse_navigation": "折叠导航栏",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "显示菜单",
     "s_hide_menu": "隐藏菜单",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "更多信息",
     "q_rename_target": "重新命名 {label}？",
     "@q_rename_target": {
