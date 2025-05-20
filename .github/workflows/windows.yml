@@ -38,6 +38,7 @@ jobs:
         run: |
           pip install poetry
           .\build-helper.bat
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -52,10 +53,12 @@ jobs:
           pip install pre-commit
           pre-commit run --all-files
           flutter test
+
       - name: Build the app
         run: |
           $version = python set-version.py | select-object -first 1
           flutter build windows --build-name=$version
+
       - name: Check generated files
         run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
 
@@ -65,6 +68,7 @@ jobs:
           cp $dest\helper\_internal/MSVCP140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
           cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
+
       - name: Rename and archive app bundle
         run: |
           $arr = $env:GITHUB_REF -split '/'
@@ -74,11 +78,13 @@ jobs:
           mv build\windows\x64\runner\Release\* $dest\
           mv resources\win\release-win.ps1 deploy
           mv resources deploy
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: yubioath-desktop-windows
           path: deploy
+
   sign-source:
     needs: [build]
     runs-on: ubuntu-latest
@@ -102,8 +108,6 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-    - name: list files
-      run: ls -la
     
     - name: run scribe exe
       run: >
@@ -118,6 +122,7 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
+
     - name: unpack signed artifacts-exe
       run: |
         mkdir -p signed
@@ -130,6 +135,7 @@ jobs:
         cd ..
         cp signed/authenticator-helper.exe yubioath-desktop-windows/*/helper/authenticator-helper.exe
         cp signed/authenticator.exe yubioath-desktop-windows/*/authenticator.exe
+
     - name: upload signed artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -137,6 +143,7 @@ jobs:
         path: yubioath-desktop-windows
         if-no-files-found: error
         compression-level: 0
+
   build-msi:
     needs: [sign-source]
     runs-on: windows-latest
@@ -150,9 +157,6 @@ jobs:
         shell: bash
         run: cat .github/workflows/env >> $GITHUB_ENV
 
-      - name: list files
-        run: dir
-
       - name: Create an unsigned .msi installer package
         run: |
           $arr = $env:GITHUB_REF -split '/'
@@ -162,6 +166,7 @@ jobs:
           heat dir .\signed-files\yubioath-desktop-$branch-windows\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
           candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
+
       - name: Rename and archive app bundle
         run: |
           $arr = $env:GITHUB_REF -split '/'
@@ -169,6 +174,7 @@ jobs:
           $dest = "installer\yubioath-desktop-$branch-windows"
           mkdir installer
           mv yubioath-desktop.msi installer
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -198,8 +204,6 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-    - name: list files
-      run: ls -a
     
     - name: run scribe msi
       run: >
@@ -214,6 +218,7 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
+
     - name: unpack signed artifacts-msi
       run: |
         mkdir -p signed
@@ -224,6 +229,7 @@ jobs:
         rm 1.zip
         ls -la
         cd ..
+
     - name: run scribe gpg
       run: >
         docker run
@@ -237,12 +243,14 @@ jobs:
         submit .
         --synchronous
         --download-artifacts
+
     - name: unpack signed artifacts-gpg
       run: |
         mv scribe-download/*/sign-source/1.zip signed/
         cd signed
         unzip -j 1.zip || true
         rm 1.zip
+
     - name: upload signed artifacts
       uses: actions/upload-artifact@v4
       with:
