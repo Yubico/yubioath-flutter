@@ -1127,6 +1127,9 @@
 
     "@_shortcuts": {},
     "s_shortcuts": "Shortcuts",
+    "s_keyboard_shortcuts": "Keyboard shortcuts",
+    "s_global_shortcuts": "Global shortcuts",
+    "s_application_shortcuts": "Application shortcuts",
     "@s_quit_app": {
         "placeholders": {
             "app": {

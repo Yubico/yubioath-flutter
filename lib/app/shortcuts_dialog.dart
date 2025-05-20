@@ -26,6 +26,7 @@ extension on SingleActivator {
 
     String keyLabel;
     if (trigger == LogicalKeyboardKey.space) {
+      // Use 'Space' instead of ' '
       keyLabel = 'Space';
     } else {
       keyLabel = trigger.keyLabel;
@@ -45,11 +46,12 @@ class ShortcutsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final itemIntents = getItemIntents(Object());
     final globalIntents = getGlobalIntents();
     return ResponsiveDialog(
-      title: Text('Keyboard Shortcuts'),
+      title: Text(l10n.s_keyboard_shortcuts),
       showDialogCloseButton: false,
       builder: (context, fullScreen) {
         return Padding(
@@ -61,7 +63,10 @@ class ShortcutsDialog extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Global shortcuts', style: theme.textTheme.titleMedium),
+                  Text(
+                    l10n.s_global_shortcuts,
+                    style: theme.textTheme.titleMedium,
+                  ),
                   const Divider(),
                 ],
               ),
@@ -73,7 +78,7 @@ class ShortcutsDialog extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Application shortcuts',
+                    l10n.s_application_shortcuts,
                     style: theme.textTheme.titleMedium,
                   ),
                   const Divider(),
@@ -159,7 +164,7 @@ class _ShortcutsItem extends StatelessWidget {
           if (i < filtered.length - 1)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text('or'),
+              child: Text('/'),
             ),
         ],
       ],
