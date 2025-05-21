@@ -80,8 +80,8 @@ class _BasicDialogState extends State<BasicDialog> {
           ),
           icon: widget.icon,
           scrollable: true,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 16,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
             horizontal: 18.0,
           ),
           content: Container(

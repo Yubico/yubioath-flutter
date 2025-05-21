@@ -400,7 +400,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     final withContext = ref.read(withContextProvider);
 
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
     return FileDropTarget(
@@ -528,61 +527,72 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                               size: 30,
                                               iconSize: 20,
                                               displayDialog: fullScreen,
-                                              infoText: RichText(
-                                                text: TextSpan(
-                                                  style: textTheme.bodySmall
-                                                      ?.copyWith(
-                                                        color:
-                                                            colorScheme
-                                                                .onSurfaceVariant,
-                                                      ),
+                                              infoText: Text.rich(
+                                                TextSpan(
                                                   children: [
                                                     TextSpan(
                                                       text:
                                                           l10n.p_add_account_three_ways,
+                                                      style: TextStyle(
+                                                        color:
+                                                            colorScheme
+                                                                .onSurfaceVariant,
+                                                      ),
                                                     ),
                                                     TextSpan(text: '\n' * 2),
                                                     TextSpan(
                                                       text: l10n.s_scanning,
-                                                      style: textTheme.bodySmall
-                                                          ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
                                                     ),
                                                     TextSpan(text: '\n'),
                                                     TextSpan(
                                                       text:
                                                           l10n.p_scanning_desc,
+                                                      style: TextStyle(
+                                                        color:
+                                                            colorScheme
+                                                                .onSurfaceVariant,
+                                                      ),
                                                     ),
                                                     TextSpan(text: '\n' * 2),
                                                     TextSpan(
                                                       text:
                                                           l10n.s_drag_and_drop,
-                                                      style: textTheme.bodySmall
-                                                          ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
                                                     ),
                                                     TextSpan(text: '\n'),
                                                     TextSpan(
                                                       text:
                                                           l10n.p_drag_and_drop_desc,
+                                                      style: TextStyle(
+                                                        color:
+                                                            colorScheme
+                                                                .onSurfaceVariant,
+                                                      ),
                                                     ),
                                                     TextSpan(text: '\n' * 2),
                                                     TextSpan(
                                                       text: l10n.s_manually,
-                                                      style: textTheme.bodySmall
-                                                          ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
                                                     ),
                                                     TextSpan(text: '\n'),
                                                     TextSpan(
                                                       text:
                                                           l10n.p_manually_desc,
+                                                      style: TextStyle(
+                                                        color:
+                                                            colorScheme
+                                                                .onSurfaceVariant,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),

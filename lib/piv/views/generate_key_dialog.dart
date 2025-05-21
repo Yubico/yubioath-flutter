@@ -318,45 +318,54 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     size: 30,
                                     iconSize: 20,
                                     displayDialog: fullScreen,
-                                    infoText: RichText(
-                                      text: TextSpan(
-                                        style: textTheme.bodySmall?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
+                                    infoText: Text.rich(
+                                      TextSpan(
                                         children: [
                                           TextSpan(
                                             text: l10n.s_algorithm,
-                                            style: textTheme.bodySmall
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                ),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                           TextSpan(text: '\n'),
-                                          TextSpan(text: l10n.p_algorithm_desc),
+                                          TextSpan(
+                                            text: l10n.p_algorithm_desc,
+                                            style: TextStyle(
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
                                           TextSpan(text: '\n' * 2),
                                           TextSpan(
                                             text: l10n.s_expiration_date,
-                                            style: textTheme.bodySmall
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                ),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                           TextSpan(text: '\n'),
                                           TextSpan(
                                             text: l10n.p_expiration_date_desc,
+                                            style: TextStyle(
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                            ),
                                           ),
                                           if (widget.showMatch) ...[
                                             TextSpan(text: '\n' * 2),
                                             TextSpan(
                                               text: l10n.s_pin_policy,
-                                              style: textTheme.bodySmall
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                             ),
                                             TextSpan(text: '\n'),
                                             TextSpan(
                                               text: l10n.p_key_options_bio_desc,
+                                              style: TextStyle(
+                                                color:
+                                                    colorScheme
+                                                        .onSurfaceVariant,
+                                              ),
                                             ),
                                           ],
                                         ],
