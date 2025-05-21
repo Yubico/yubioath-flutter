@@ -86,6 +86,7 @@ jobs:
           path: deploy
 
   sign-source:
+    if: startsWith(github.ref, 'refs/heads/main')
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -145,6 +146,7 @@ jobs:
         compression-level: 0
 
   build-msi:
+    if: startsWith(github.ref, 'refs/heads/main')
     needs: [sign-source]
     runs-on: windows-latest
     steps:
@@ -182,6 +184,7 @@ jobs:
           path: installer
           
   sign-msi:
+    if: startsWith(github.ref, 'refs/heads/main')
     needs: [build-msi]
     runs-on: ubuntu-latest
     steps:
