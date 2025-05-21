@@ -1,11 +1,11 @@
-name: Windows
+name: Windows arm64
 
 on: [push, pull_request]
 
 jobs:
   build:
 
-    runs-on: windows-11-armx
+    runs-on: windows-11-arm
 
     steps:
       - uses: actions/checkout@v4
