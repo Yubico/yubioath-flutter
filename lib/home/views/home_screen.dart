@@ -30,7 +30,6 @@ import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
-import '../../widgets/product_image.dart';
 import 'key_actions.dart';
 import 'manage_label_dialog.dart';
 
@@ -58,7 +57,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             .node
             .transport] ??
         0;
-    final primaryColor = ref.watch(primaryColorProvider);
 
     // We need this to avoid unwanted app switch animation
     if (hide) {
@@ -82,51 +80,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               _DeviceContent(widget.deviceData, keyCustomization),
               const SizedBox(height: 16.0),
-              Row(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(
-                    flex: 8,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 8,
-                          children:
-                              Capability.values
-                                  .where(
-                                    (c) => enabledCapabilities & c.value != 0,
-                                  )
-                                  .map(
-                                    (c) => CapabilityBadge(c, noTooltip: true),
-                                  )
-                                  .toList(),
-                        ),
-                        if (widget.deviceData.info.fipsCapable != 0)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 38),
-                            child: _FipsLegend(),
-                          ),
-                      ],
-                    ),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 8,
+                    children:
+                        Capability.values
+                            .where((c) => enabledCapabilities & c.value != 0)
+                            .map((c) => CapabilityBadge(c, noTooltip: true))
+                            .toList(),
                   ),
-                  if (widget.deviceData.info.version != const Version(0, 0, 0))
-                    Flexible(
-                      flex: 6,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 200),
-                        child: _HeroAvatar(
-                          color: keyCustomization?.color ?? primaryColor,
-                          child: ProductImage(
-                            name: widget.deviceData.name,
-                            formFactor: widget.deviceData.info.formFactor,
-                            isNfc: widget.deviceData.info.supportedCapabilities
-                                .containsKey(Transport.nfc),
-                          ),
-                        ),
-                      ),
+                  if (widget.deviceData.info.fipsCapable != 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 38),
+                      child: _FipsLegend(),
                     ),
                 ],
               ),
@@ -435,34 +404,6 @@ class _ColorButtonState extends State<_ColorButton> {
         size: 16,
         color: widget.isSelected ? Colors.white : Colors.transparent,
       ),
-    );
-  }
-}
-
-class _HeroAvatar extends StatelessWidget {
-  final Widget child;
-  final Color color;
-
-  const _HeroAvatar({required this.color, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            color.withValues(alpha: 0.6),
-            color.withValues(alpha: 0.25),
-            (DialogTheme.of(context).backgroundColor ??
-                    theme.colorScheme.surfaceContainerHigh)
-                .withValues(alpha: 0),
-          ],
-        ),
-      ),
-      padding: const EdgeInsets.all(12),
-      child: child,
     );
   }
 }
