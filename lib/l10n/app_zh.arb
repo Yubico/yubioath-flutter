@@ -51,8 +51,12 @@
     "s_show_navigation": "显示导航按钮",
     "s_expand_navigation": "展开导航栏",
     "s_collapse_navigation": "折叠导航栏",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "显示菜单",
     "s_hide_menu": "隐藏菜单",
+    "s_show_menu_bar": null,
+    "s_hide_menu_bar": null,
+    "s_toggle_menu_bar": null,
     "s_more_info": "更多信息",
     "q_rename_target": "重新命名 {label}？",
     "@q_rename_target": {
@@ -1124,6 +1128,38 @@
     "s_color": "颜色",
     "p_set_will_add_custom_name": "这将为你的 YubiKey 起一个自定义名称。",
     "p_rename_will_change_custom_name": "这将更改您的 YubiKey 的标签。",
+
+    "@_shortcuts": {},
+    "s_shortcuts": null,
+    "s_keyboard_shortcuts": null,
+    "s_global_shortcuts": null,
+    "s_application_shortcuts": null,
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": null,
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": null,
+    "s_search": null,
+    "s_next_device": null,
+    "s_previous_device": null,
+    "s_open_settings": null,
+    "s_open_help_and_about": null,
+    "s_open_item": null,
+    "s_edit_item": null,
+    "s_delete_item": null,
+    "s_calculate_oath_code": null,
+    "s_open_keyboard_shortcuts": null,
 
     "@_eof": {}
 }

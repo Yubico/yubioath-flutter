@@ -26,6 +26,7 @@ import 'android/state.dart';
 import 'app/app_url_launcher.dart';
 import 'app/logging.dart';
 import 'app/message.dart';
+import 'app/shortcuts.dart';
 import 'app/state.dart';
 import 'app/views/keys.dart';
 import 'core/state.dart';
@@ -143,6 +144,21 @@ class AboutPage extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    if (isDesktop)
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                          Actions.maybeInvoke(context, ShortcutsIntent());
+                        },
+                        child: Text(
+                          l10n.s_shortcuts,
+                          style: const TextStyle(
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 const Padding(
