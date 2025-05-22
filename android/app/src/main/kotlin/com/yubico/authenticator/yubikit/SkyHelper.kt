@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,8 @@ class SkyHelper(private val compatUtil: CompatUtil) {
             supportedCapabilities = Capabilities(usb = 0),
             fipsCapable = 0,
             fipsApproved = 0,
-            resetBlocked = 0
+            resetBlocked = 0,
+            versionQualifier = com.yubico.authenticator.device.VersionQualifier()
         )
     }
 

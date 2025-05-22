@@ -29,6 +29,26 @@ Map<String, dynamic> _$DeviceConfigToJson(_DeviceConfig instance) =>
 
 const _$TransportEnumMap = {Transport.usb: 'usb', Transport.nfc: 'nfc'};
 
+_VersionQualifier _$VersionQualifierFromJson(Map<String, dynamic> json) =>
+    _VersionQualifier(
+      Version.fromJson(json['version'] as List<dynamic>),
+      $enumDecode(_$ReleaseTypeEnumMap, json['type']),
+      (json['iteration'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$VersionQualifierToJson(_VersionQualifier instance) =>
+    <String, dynamic>{
+      'version': instance.version,
+      'type': _$ReleaseTypeEnumMap[instance.type]!,
+      'iteration': instance.iteration,
+    };
+
+const _$ReleaseTypeEnumMap = {
+  ReleaseType.alpha: 0,
+  ReleaseType.beta: 1,
+  ReleaseType.release: 2,
+};
+
 _DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => _DeviceInfo(
   DeviceConfig.fromJson(json['config'] as Map<String, dynamic>),
   (json['serial'] as num?)?.toInt(),
@@ -44,6 +64,7 @@ _DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => _DeviceInfo(
   (json['fips_capable'] as num).toInt(),
   (json['fips_approved'] as num).toInt(),
   (json['reset_blocked'] as num).toInt(),
+  VersionQualifier.fromJson(json['version_qualifier'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
@@ -62,6 +83,7 @@ Map<String, dynamic> _$DeviceInfoToJson(_DeviceInfo instance) =>
       'fips_capable': instance.fipsCapable,
       'fips_approved': instance.fipsApproved,
       'reset_blocked': instance.resetBlocked,
+      'version_qualifier': instance.versionQualifier,
     };
 
 const _$FormFactorEnumMap = {

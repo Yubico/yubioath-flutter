@@ -31,7 +31,7 @@ from ykman.base import PID
 from ykman.device import scan_devices, list_all_devices
 from ykman.diagnostics import get_diagnostics
 from ykman.logging import set_log_level
-from yubikit.core import TRANSPORT, NotSupportedError
+from yubikit.core import TRANSPORT, NotSupportedError, _override_version
 from yubikit.core.smartcard import (
     SmartCardConnection,
     ApduError,
@@ -43,7 +43,7 @@ from yubikit.core.smartcard.scp import Scp11KeyParams
 from yubikit.core.otp import OtpConnection
 from yubikit.core.fido import FidoConnection
 from yubikit.support import get_name, read_info
-from yubikit.management import CAPABILITY
+from yubikit.management import CAPABILITY, RELEASE_TYPE
 from yubikit.securitydomain import SecurityDomainSession
 from yubikit.logging import LOG_LEVEL
 
@@ -317,6 +317,8 @@ class AbstractDeviceNode(RpcNode):
     def _read_data(self, conn):
         pid = self._device.pid
         self._info = read_info(conn, pid)
+        if self._info.version_qualifier.type != RELEASE_TYPE.FINAL:
+            _override_version(self._info.version_qualifier.version)
         name = get_name(self._info, pid.yubikey_type if pid else None)
         return dict(
             pid=pid,
