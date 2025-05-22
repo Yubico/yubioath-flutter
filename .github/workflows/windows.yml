@@ -257,7 +257,7 @@ jobs:
     - name: upload signed artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: signed2
+        name: signed-installer
         path: signed/*
         if-no-files-found: error
         compression-level: 0
