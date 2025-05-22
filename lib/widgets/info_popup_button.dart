@@ -22,7 +22,7 @@ import '../generated/l10n/app_localizations.dart';
 import 'basic_dialog.dart';
 
 class InfoPopupButton extends StatelessWidget {
-  final RichText infoText;
+  final Text infoText;
   final bool displayDialog;
   final double? iconSize;
   final double? size;
@@ -34,12 +34,24 @@ class InfoPopupButton extends StatelessWidget {
     this.displayDialog = false,
     this.iconSize,
     this.size,
-    this.icon = Symbols.help,
+    this.icon = Symbols.info,
     this.iconColor,
   });
 
-  Widget _buildInfoContent() {
-    return SingleChildScrollView(child: infoText);
+  Widget _buildInfoContent(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final defaultTextStyle =
+        displayDialog ? textTheme.bodyMedium : textTheme.bodySmall;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: DefaultTextStyle(
+          style: defaultTextStyle ?? TextStyle(),
+          child: infoText,
+        ),
+      ),
+    );
   }
 
   void _showPopupMenu(BuildContext context) {
@@ -63,9 +75,10 @@ class InfoPopupButton extends StatelessWidget {
     showMenu(
       context: context,
       constraints: BoxConstraints(maxWidth: 250, maxHeight: 400),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       position: position,
       popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-      items: [PopupMenuItem(enabled: false, child: _buildInfoContent())],
+      items: [PopupMenuItem(enabled: false, child: _buildInfoContent(context))],
     );
   }
 
@@ -83,7 +96,11 @@ class InfoPopupButton extends StatelessWidget {
           if (displayDialog) {
             showDialog(
               context: context,
-              builder: (context) => BasicDialog(content: _buildInfoContent()),
+              builder:
+                  (context) => BasicDialog(
+                    icon: Icon(icon),
+                    content: _buildInfoContent(context),
+                  ),
             );
           } else {
             _showPopupMenu(context);

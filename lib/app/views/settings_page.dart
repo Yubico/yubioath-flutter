@@ -131,8 +131,8 @@ class _LanguageView extends ConsumerWidget {
             iconSize: 20,
             iconColor: theme.colorScheme.tertiary,
             icon: Symbols.warning_amber,
-            infoText: RichText(
-              text: WidgetSpan(
+            infoText: Text.rich(
+              WidgetSpan(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
