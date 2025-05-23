@@ -84,6 +84,7 @@ jobs:
         git config --global --add safe.directory $FLUTTER_ROOT
         flutter config --enable-linux-desktop
         flutter --version
+        flutter pub get
 
     - name: Run lints/tests
       env:
