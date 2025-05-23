@@ -48,6 +48,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER }}
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
+      - run: flutter pub get
 
       - name: Run lints/tests
         env:
