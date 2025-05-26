@@ -410,3 +410,6 @@ class DismissedBanners extends StateNotifier<List<String>> {
     _prefs.setStringList(getFullKey(_serial), state);
   }
 }
+
+final navigationVisibilityProvider = StateProvider<bool>((ref) => false);
+final sideMenuVisibilityProvider = StateProvider<bool>((ref) => false);

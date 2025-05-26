@@ -28,6 +28,7 @@ class ResponsiveDialog extends StatefulWidget {
   final Function()? onCancel;
   final bool allowCancel;
   final double dialogMaxWidth;
+  final bool showDialogCloseButton;
 
   const ResponsiveDialog({
     super.key,
@@ -37,6 +38,7 @@ class ResponsiveDialog extends StatefulWidget {
     this.onCancel,
     this.allowCancel = true,
     this.dialogMaxWidth = 600,
+    this.showDialogCloseButton = true,
   });
 
   @override
@@ -100,15 +102,16 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed:
-                widget.allowCancel
-                    ? () {
-                      Navigator.of(context).pop();
-                    }
-                    : null,
-            child: Text(_getCancelText(context)),
-          ),
+          if (widget.showDialogCloseButton)
+            TextButton(
+              onPressed:
+                  widget.allowCancel
+                      ? () {
+                        Navigator.of(context).pop();
+                      }
+                      : null,
+              child: Text(_getCancelText(context)),
+            ),
           ...widget.actions,
         ],
       ),
