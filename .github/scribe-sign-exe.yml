@@ -1,0 +1,11 @@
+stub: yubioath-flutter
+releaseType: public
+jobs:
+  - name: sign-source
+    platform: linux
+    steps:
+      - id: 1
+        action: windows
+        files:
+          - yubioath-desktop-windows/*/authenticator.exe
+          - yubioath-desktop-windows/*/helper/authenticator-helper.exe
