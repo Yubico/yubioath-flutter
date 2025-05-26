@@ -19,7 +19,7 @@ packages = [{ include = "helper" }]
 
 
 [tool.poetry.group.dev.dependencies]
-pyinstaller = { version = "^6.10", python = "<3.14" }
+pyinstaller = { version = "^6.13", python = "<3.14" }
 pytest = "^8.0.0"
 mypy = "^1.7.1"
 types-Pillow = "^10.2.0.0"
