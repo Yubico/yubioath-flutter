@@ -89,10 +89,19 @@ jobs:
           path: deploy
 
   sign-source:
-    if: github.ref =~ '^refs/tags/\d+\.\d+\.\d+(-RC\d+)?$'
+    if: startsWith(github.ref, 'refs/tags/')
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+    - name: Check tag format
+      run: |
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+(-RC[0-9]+)?$ ]]; then
+          echo "Tag matches format"
+        else
+          echo "Invalid tag format"
+          exit 1
+        fi
+
     - name: checkout repo
       uses: actions/checkout@v4
     
@@ -149,10 +158,20 @@ jobs:
         compression-level: 0
 
   build-msi:
-    if: github.ref =~ '^refs/tags/\d+\.\d+\.\d+(-RC\d+)?$'
+    if: startsWith(github.ref, 'refs/tags/')
     needs: [sign-source]
     runs-on: windows-latest
     steps:
+      - name: Check tag format
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+(-RC[0-9]+)?$ ]]; then
+            echo "Tag matches format"
+          else
+            echo "Invalid tag format"
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
 
       - name: Download /signed dir
@@ -187,10 +206,19 @@ jobs:
           path: installer
           
   sign-msi:
-    if: github.ref =~ '^refs/tags/\d+\.\d+\.\d+(-RC\d+)?$'
+    if: startsWith(github.ref, 'refs/tags/')
     needs: [build-msi]
     runs-on: ubuntu-latest
     steps:
+    - name: Check tag
+      run: |
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+(-RC[0-9]+)?$ ]]; then
+          echo "Tag matches format"
+        else
+          echo "Invalid tag format"
+          exit 1
+        fi
+
     - name: checkout repo
       uses: actions/checkout@v4
     
