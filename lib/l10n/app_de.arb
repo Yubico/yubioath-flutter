@@ -53,19 +53,8 @@
     "s_collapse_navigation": "Navigation minimieren",
     "s_expand_collapse_navigation": null,
     "s_show_menu": "Menü anzeigen",
-    "s_hide_menu": "Menü ausblenden",
-    "s_show_menu_bar": null,
-    "s_hide_menu_bar": null,
     "s_toggle_menu_bar": null,
     "s_more_info": "Weitere Infos",
-    "q_rename_target": "{label} umbenennen?",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -127,11 +116,9 @@
         }
     },
     "s_character_count": "Anzahl Zeichen",
-    "s_learn_more": "Mehr\u00a0erfahren",
 
     "@_language": {},
     "s_language": "Sprache",
-    "l_enable_community_translations": "Community-Übersetzungen aktivieren",
     "p_community_translations_desc": "Die Übersetzungen werden von der Community auf {crowdin} gepflegt.",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -228,23 +215,6 @@
     "s_reconfiguring_yk": "YubiKey wird neu konfiguriert\u2026",
     "s_config_updated": "Konfiguration aktualisiert",
     "l_config_updated_reinsert": "Konfiguration aktualisiert, entferne deinen YubiKey und schließe ihn wieder an",
-    "s_app_not_supported": "Anwendung nicht unterstützt",
-    "l_app_not_supported_on_yk": "Der verwendete YubiKey unterstützt die Anwendung '{app}' nicht",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "Für Zugriff aktiviere die Anwendung '{app}' auf deinem YubiKey",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "FIDO2 deaktiviert",
     "l_webauthn_req_fido2": "WebAuthn erfordert, dass die FIDO2 Anwendung auf deinem YubiKey aktiviert ist",
     "s_lock_code": "Lock Code",
@@ -269,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "Verbinde deinen YubiKey für mindestens 3 Sekunden mit einer USB-Stromquelle, z. B. einem Computer.\n\nSobald er mit Strom versorgt wird, wird NFC aktiviert und ist einsatzbereit.",
     "p_deactivate_restricted_nfc_footer": "Dein YubiKey ist mit einem Schutz vor drahtloser Manipulation während des Transports ausgestattet. Dies bedeutet, dass die NFC-Funktionen vorübergehend deaktiviert sind, bis du sie aktivierst.",
     "s_unsupported_yk": "Nicht unterstützter YubiKey",
-    "s_yk_not_recognized": "Gerät nicht erkannt",
     "p_operation_failed_try_again": "Die Aktion ist fehlgeschlagen, bitte versuche es erneut.",
     "l_configuration_unsupported": "Konfiguration nicht unterstützt",
     "p_scp_unsupported": "Dein Handy scheint die Kommunikation per NFC nicht zu unterstützen. Bitte schließe den YubiKey an den USB-Anschluss Deines Handys an.",
@@ -344,17 +313,6 @@
     "l_unlock_pin_first": "Mit PIN entsperren",
     "l_pin_soft_locked": "PIN ist geblockt bis der YubiKey entfernt und wieder angeschlossen wird",
     "l_pin_change_required_desc": "Vor Verwendung der Anwendung muss eine neue PIN gesetzt werden",
-    "p_enter_current_pin_or_puk": "Gib deine aktuelle {name} ein.",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "Gib deine aktuelle PIN ein. Falls du die PIN nicht kennst, musst du sie mit der PUK entsperren oder deinen YubiKey zurücksetzen.",
-    "p_enter_current_pin_or_reset_no_puk": "Gib deine aktuelle PIN ein. Falls du die PIN nicht kennst, musst du deinen YubiKey zurücksetzen.",
-    "p_enter_current_puk_or_reset": "Gib deine aktuelle PUK ein. Wenn du die PUK nicht kennst, musst du deinen YubiKey zurücksetzen.",
     "p_new_fido2_pin_requirements": "Eine PIN muss aus {min_length}-{max_length} Zeichen bestehen und kann Buchstaben, Ziffern und Sonderzeichen enthalten.",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -443,7 +401,6 @@
     "s_password_set": "Passwort gesetzt",
     "s_show_password": "Passwort anzeigen",
     "s_hide_password": "Passwort ausblenden",
-    "l_optional_password_protection": "Optionaler Passwortschutz",
     "l_password_protection": "Passwortschutz von Konten",
     "s_new_password": "Neues Passwort",
     "s_current_password": "Aktuelles Passwort",
@@ -468,7 +425,6 @@
     "s_current_management_key": "Aktueller Management Key",
     "s_new_management_key": "Neuer Management Key",
     "l_change_management_key": "Management Key ändern",
-    "p_change_management_key_desc": "Ändere deinen Management Key. Du kannst alternativ auch die Verwendung der PIN anstatt des Management Keys erlauben.",
     "l_management_key_changed": "Management Key geändert",
     "l_default_key_used": "Standard Management Key verwendet",
     "s_generate_random": "Zufällig generieren",
@@ -507,7 +463,6 @@
     "s_add_account": "Konto hinzufügen",
     "p_add_account_desc": "QR-Code scannen oder die Zugangsdaten manuell eingeben.",
     "s_add_accounts": "Konten hinzufügen",
-    "p_add_description": "Um einen QR-Code zu scannen, stelle sicher, dass der komplette Code sichtbar ist und wähle die entsprechende Schaltfläche. Du kannst auch ein gespeichertes Bild auf diesen Dialog ziehen. Alternativ kannst du die Kontoinformation auch manuell hinzufügen.",
     "l_drop_qr_description": "QR-Code per Drag & Drop hierhin ziehen, um Konten hinzuzufügen",
     "p_add_account_three_ways": "Es gibt drei Möglichkeiten, Konten hinzuzufügen.",
     "s_scanning": "Scannen (empfohlen)",
@@ -516,7 +471,6 @@
     "p_drag_and_drop_desc": "Ein Bild, das einen QR-Code enthält, kann an einer beliebigen Stelle in der Kontenansicht abgelegt werden.",
     "s_manually": "Manuell",
     "p_manually_desc": "Zugangsdaten können manuell in das Formular eingegeben werden.",
-    "s_add_manually": "Manuell hinzufügen",
     "s_account_added": "Konto hinzugefügt",
     "l_account_add_failed": "Fehler beim Hinzufügen des Kontos: {message}",
     "@l_account_add_failed": {
@@ -599,14 +553,6 @@
     "s_credential_id": "Anmeldedaten ID",
     "s_display_name": "Anzeigename",
     "s_user_name": "Benutzername",
-    "l_passkey": "Passkey: {label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "Passkeys",
     "s_no_passkeys": "Keine Passkeys",
     "l_ready_to_use": "Bereit zur Verwendung",
@@ -703,7 +649,6 @@
     "l_self_signed_certificate": "Selbstsigniertes Zertifikat",
     "l_certificate_signing_request": "Certificate Signing Request (CSR)",
     "s_certificate": "Zertifikat",
-    "s_csr": "CSR",
     "s_subject": "Betreff",
     "l_export_csr_file": "CSR in Datei speichern",
     "l_export_public_key": "Öffentlichen Schlüssel exportieren",
@@ -835,8 +780,6 @@
     "s_expiration_date": "Ablaufdatum",
     "p_algorithm_desc": "Zu verwendender Schlüsselalgorithmus.",
     "p_expiration_date_desc": "Datum, an dem das Zertifikat abläuft, standardmäßig 1 Jahr (betrifft nur das Zertifikat).",
-    "p_cert_options_desc": "Verwendeter Schlüssel-Algorithmus, Ausgabeformat und Ablaufdatum (nur bei  Zertifikat).",
-    "p_cert_options_bio_desc": "Zu verwendender Schlüssel-Algorithmus, Ausgabeformat, Ablaufdatum (nur bei Zertifikaten) und ob Fingerabdrücke anstelle der PIN verwendet werden können.",
     "p_key_options_bio_desc": "Erlaube die Verwendung von Fingerabdrücken anstelle der PIN.",
     "q_overwrite_slot": "Slot überschreiben?",
     "p_overwrite_slot_desc": "Dies überschreibt dauerhaft evtl. vorhandenen Inhalt in Slot {slot}.",
@@ -1125,7 +1068,6 @@
     "s_set_label": "Label konfigurieren",
     "s_set_color": "Farbe definieren",
     "s_change_label": "Label ändern",
-    "s_color": "Farbe",
     "p_set_will_add_custom_name": "Dies gibt deinem YubiKey einen eigenen Namen.",
     "p_rename_will_change_custom_name": "Dies ändert das Label deines YubiKeys.",
 
