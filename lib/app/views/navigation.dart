@@ -113,6 +113,7 @@ extension SectionUi on Section {
     Section.fingerprints => Symbols.fingerprint,
     Section.slots => Symbols.touch_app,
     Section.certificates => Symbols.id_card,
+    Section.settings => Symbols.settings,
   };
 
   Key get key => switch (this) {
@@ -123,6 +124,7 @@ extension SectionUi on Section {
     Section.fingerprints => fidoFingerprintsAppDrawer,
     Section.slots => otpAppDrawer,
     Section.certificates => pivAppDrawer,
+    Section.settings => settingsDrawer,
   };
 }
 
@@ -150,6 +152,8 @@ class NavigationContent extends ConsumerWidget {
                 )
                 .toList()
             : [Section.home];
+    final settingsSection = Section.settings;
+    final appSections = availableSections.where((s) => s != settingsSection);
     final currentSection = ref.watch(currentSectionProvider);
 
     return Padding(
@@ -169,35 +173,60 @@ class NavigationContent extends ConsumerWidget {
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Normal YubiKey Applications
-                ...availableSections.map(
-                  (app) => NavigationItem(
-                    key: app.key,
-                    title: app.getDisplayName(l10n),
-                    leading: Icon(
-                      app._icon,
-                      fill: app == currentSection ? 1.0 : 0.0,
-                      semanticLabel:
-                          !extended ? app.getDisplayName(l10n) : null,
+                Column(
+                  children: [
+                    ...appSections.map(
+                      (app) => NavigationItem(
+                        key: app.key,
+                        title: app.getDisplayName(l10n),
+                        leading: Icon(
+                          app._icon,
+                          fill: app == currentSection ? 1.0 : 0.0,
+                          semanticLabel:
+                              !extended ? app.getDisplayName(l10n) : null,
+                        ),
+                        collapsed: !extended,
+                        selected: app == currentSection,
+                        onTap:
+                            data == null && currentSection == Section.home ||
+                                    data != null &&
+                                        app.getAvailability(data) ==
+                                            Availability.enabled
+                                ? () {
+                                  ref
+                                      .read(currentSectionProvider.notifier)
+                                      .setCurrentSection(app);
+                                  if (shouldPop) {
+                                    Navigator.of(context).pop();
+                                  }
+                                }
+                                : null,
+                      ),
                     ),
-                    collapsed: !extended,
-                    selected: app == currentSection,
-                    onTap:
-                        data == null && currentSection == Section.home ||
-                                data != null &&
-                                    app.getAvailability(data) ==
-                                        Availability.enabled
-                            ? () {
-                              ref
-                                  .read(currentSectionProvider.notifier)
-                                  .setCurrentSection(app);
-                              if (shouldPop) {
-                                Navigator.of(context).pop();
-                              }
-                            }
-                            : null,
+                  ],
+                ),
+                NavigationItem(
+                  key: settingsSection.key,
+                  title: settingsSection.getDisplayName(l10n),
+                  leading: Icon(
+                    settingsSection._icon,
+                    fill: settingsSection == currentSection ? 1.0 : 0.0,
+                    semanticLabel:
+                        !extended ? settingsSection.getDisplayName(l10n) : null,
                   ),
+                  collapsed: !extended,
+                  selected: settingsSection == currentSection,
+                  onTap: () {
+                    ref
+                        .read(currentSectionProvider.notifier)
+                        .setCurrentSection(settingsSection);
+                    if (shouldPop) {
+                      Navigator.of(context).pop();
+                    }
+                  },
                 ),
               ],
             ),

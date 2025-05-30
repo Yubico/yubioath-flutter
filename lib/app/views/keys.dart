@@ -43,6 +43,7 @@ const otpAppDrawer = Key('$_prefix.drawer.otp');
 const pivAppDrawer = Key('$_prefix.drawer.piv');
 const hsmauthAppDrawer = Key('$_prefix.drawer.hsmauth');
 const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
+const settingsDrawer = Key('$_prefix.drawer.settings');
 
 // drawer yubikey more items
 const yubikeyPopupMenuButton = Key('$_prefix.yubikey_popup_menu_button');

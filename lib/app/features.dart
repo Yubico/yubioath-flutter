@@ -21,6 +21,7 @@ final oath = root.feature('oath');
 final fido = root.feature('fido');
 final piv = root.feature('piv');
 final otp = root.feature('otp');
+final settings = root.feature('settings');
 
 final management = root.feature('management');
 

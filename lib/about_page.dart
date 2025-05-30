@@ -253,7 +253,7 @@ class LoggingPanel extends ConsumerWidget {
           selected: logLevel != Level.INFO,
           labelBuilder:
               (value) => Text(
-                l10n.s_log_level(
+                l10n.s_current_log_level(
                   value.name[0] + value.name.substring(1).toLowerCase(),
                 ),
               ),

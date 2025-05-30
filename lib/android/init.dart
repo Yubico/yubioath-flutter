@@ -91,6 +91,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.accounts,
         Section.fingerprints,
         Section.passkeys,
+        Section.settings,
       ]),
       // this specifies the priority of sections to show when
       // the connected YubiKey does not support current section
@@ -99,6 +100,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.fingerprints,
         Section.passkeys,
         Section.home,
+        Section.settings,
       ]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),

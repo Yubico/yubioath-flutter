@@ -34,6 +34,7 @@ import '../../piv/views/piv_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
+import 'settings_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -154,6 +155,7 @@ class MainPage extends ConsumerWidget {
                 Section.fingerprints => FingerprintsScreen(data),
                 Section.certificates => PivScreen(data),
                 Section.slots => OtpScreen(data.node.path),
+                Section.settings => const SettingsPage(),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),

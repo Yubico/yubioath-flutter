@@ -95,6 +95,7 @@ void setupAppMethodsChannel(WidgetRef ref) {
             1 => Section.accounts,
             3 => Section.fingerprints,
             4 => Section.passkeys,
+            7 => Section.settings,
             _ => Section.home,
           };
 
