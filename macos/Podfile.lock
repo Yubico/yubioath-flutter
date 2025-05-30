@@ -56,7 +56,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
-  desktop_drop: 69eeff437544aa619c8db7f4481b3a65f7696898
+  desktop_drop: e52397f93b3daec9fe1d504f1d5a21b76403d8ae
   file_picker: e716a70a9fe5fd9e09ebc922d7541464289443af
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   local_notifier: e9506bc66fc70311e8bc7291fb70f743c081e4ff

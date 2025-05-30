@@ -29,6 +29,8 @@ jobs:
       - run: |
           flutter config
           flutter --version
+          flutter pub get
+        working-directory: ./app
 
       - name: Check app versions
         run: |

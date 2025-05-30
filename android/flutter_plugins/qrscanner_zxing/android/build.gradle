@@ -2,14 +2,14 @@ group 'com.yubico.authenticator.flutter_plugins.qrscanner_zxing'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '2.1.20'
+    ext.kotlin_version = '2.1.21'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.9.2'
+        classpath 'com.android.tools.build:gradle:8.10.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
