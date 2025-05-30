@@ -39,7 +39,8 @@ enum Section {
   fingerprints([Capability.fido2]),
   passkeys([Capability.fido2]),
   certificates([Capability.piv]),
-  slots([Capability.otp]);
+  slots([Capability.otp]),
+  settings();
 
   final List<Capability> capabilities;
 
@@ -53,6 +54,7 @@ enum Section {
     Section.passkeys => l10n.s_passkeys,
     Section.certificates => l10n.s_certificates,
     Section.slots => l10n.s_slots,
+    Section.settings => l10n.s_settings,
   };
 
   Availability getAvailability(YubiKeyData data) {

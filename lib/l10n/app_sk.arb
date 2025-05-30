@@ -74,6 +74,11 @@
     "s_device": "Zariadenie",
     "s_application": "Aplikácia",
     "s_settings": "Nastavenia",
+    "s_reset_settings": null,
+    "l_reset_settings_desc": null,
+    "s_general": null,
+    "s_external": null,
+    "s_support": null,
     "l_settings_desc": "Zmeniť predvoľby aplikácie",
     "s_certificates": "Certifikáty",
     "s_security_key": "Bezpečnostný kľúč",
@@ -81,6 +86,8 @@
     "s_help_and_about": "Pomoc a informácie",
     "l_help_and_about_desc": "Odstraňovanie problémov a podpora",
     "s_help_and_feedback": "Pomoc a spätná väzba",
+    "s_help": null,
+    "s_app_information": null,
     "s_home": "Domov",
     "s_user_guide": "Používateľská príručka",
     "s_i_need_help": "Potrebujem pomoc",
@@ -106,9 +113,13 @@
     "l_invalid_keyboard_character": "Neplatné znaky pre vybranú klávesnicu",
     "s_require_touch": "Vyžadovať dotyk",
     "q_have_account_info": "Máte informácie o účte?",
+    "s_log_and_diagnostics": null,
+    "s_debugging_tools": null,
     "s_run_diagnostics": "Spustiť diagnostiku",
-    "s_log_level": "Úroveň záznamu: {level}",
-    "@s_log_level": {
+    "l_run_diagnostics_desc": null,
+    "s_logging_level": null,
+    "s_current_log_level": null,
+    "@s_current_log_level": {
         "placeholders": {
             "level": {
                 "type": "String"
@@ -116,8 +127,8 @@
         }
     },
     "s_character_count": "Počet znakov",
-
     "@_language": {},
+
     "s_language": "Jazyk",
     "p_community_translations_desc": "Preklady sú spravované komunitou na stránke {crowdin}.",
     "@p_community_translations_desc": {
@@ -128,21 +139,21 @@
         }
     },
     "s_choose_language": "Vybrať jazyk",
-
     "@_theme": {},
+
     "s_app_theme": "Téma aplikácie",
     "s_choose_app_theme": "Vyberte tému",
     "s_system_default": "Predvolená systémová",
     "s_light_mode": "Svetlý režim",
     "s_dark_mode": "Tmavý režim",
-
     "@_layout": {},
+
     "s_list_layout": "Vzhľad ako zoznam",
     "s_grid_layout": "Vzhľad ako mriežka",
     "s_mixed_layout": "Zmiešané rozloženie",
     "s_select_layout": "Vybrať rozloženie",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "Vyberte na skenovanie",
     "s_hide_reader": "Skryť čítačku",
     "s_show_hidden_readers": "Zobraziť skryté čítačky",
@@ -182,8 +193,8 @@
     },
     "l_fips_capable": "Schopné využívať FIPS",
     "l_fips_approved": "Schválené FIPS",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "Vložte svoj kľúč YubiKey",
     "l_insert_or_tap_yk": "Vložte alebo ťuknite na tlačidlo YubiKey",
     "l_unplug_yk": "Odpojte svoj YubiKey",
@@ -195,8 +206,8 @@
     "s_touch_required": "Vyžaduje sa dotyk",
     "l_touch_button_now": "Teraz sa dotknite tlačidla na svojom YubiKey",
     "l_keep_touching_yk": "Opakovane sa dotýkajte tlačidla YubiKey\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -204,8 +215,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Auth",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "Aktivácia aplikácií",
     "s_toggle_interfaces": "Prepínanie rozhraní",
     "p_toggle_applications_desc": "Povoliť alebo zakázať aplikácie cez dostupné spôsoby prenosu.",
@@ -222,8 +233,8 @@
     "s_show_lock_code": "Zobraziť kód zámku",
     "s_hide_lock_code": "Skryť kód zámku",
     "p_lock_code_required_desc": "Akcia, ktorú sa chystáte vykonať, si vyžaduje zadanie kódu zámku nastavenia.",
-
     "@_connectivity_issues": {},
+
     "l_helper_not_responding": "Proces Helper nereaguje",
     "l_yk_no_access": "K tomuto YubiKey nie je možné získať prístup",
     "s_yk_inaccessible": "Zariadenie nie je dostupné",
@@ -242,16 +253,16 @@
     "p_operation_failed_try_again": "Operácia sa nepodarila, skúste to prosím znova.",
     "l_configuration_unsupported": "Nastavenie nie je podporované",
     "p_scp_unsupported": "Na komunikáciu cez NFC vyžaduje YubiKey technológiu, ktorú tento telefón nepodporuje. Pripojte YubiKey k USB portu telefónu.",
-
     "@_general_errors": {},
+
     "l_error_occurred": "Vyskytla sa chyba",
     "s_application_error": "Chyba aplikácie",
     "l_import_error": "Chyba importu",
     "l_file_not_found": "Súbor nebol nájdený",
     "l_file_too_big": "Súbor je príliš veľký",
     "l_filesystem_error": "Chyba operácie súborového systému",
-
     "@_pins": {},
+
     "s_pin": "PIN",
     "s_puk": "PUK",
     "s_set_pin": "Nastaviť PIN",
@@ -393,8 +404,8 @@
     "l_default_pin_used": "Používa sa predvolený PIN",
     "l_default_puk_used": "Používa sa predvolený PUK",
     "l_pin_complexity": "Vynútená zložitosť kódu PIN",
-
     "@_passwords": {},
+
     "s_password": "Heslo",
     "s_manage_password": "Spravovať heslo",
     "s_set_password": "Nastaviť heslo",
@@ -419,8 +430,8 @@
     "l_set_password_first": "Nastaviť heslo",
     "l_enter_oath_pw": "Zadajte heslo OATH pre svoj YubiKey",
     "p_new_password_requirements": "Heslo môže obsahovať písmená, číslice a špeciálne znaky.",
-
     "@_management_key": {},
+
     "s_management_key": "Spravovací kľúč",
     "s_current_management_key": "Aktuálny spravovací kľúč",
     "s_new_management_key": "Nový spravovací kľúč",
@@ -438,8 +449,8 @@
     "l_wrong_key": "Nesprávny kľúč",
     "l_unlock_piv_management": "Odomknúť spravovanie PIV",
     "p_unlock_piv_management_desc": "Akcia, ktorú sa chystáte vykonať, vyžaduje spravovací kľúč PIV.",
-
     "@_oath_accounts": {},
+
     "l_account": "Účet: {label}",
     "@l_account": {
         "placeholders": {
@@ -546,8 +557,8 @@
     "s_time_based": "Založené na čase",
     "l_copy_code_desc": "Vložiť kód do inej aplikácie",
     "l_calculate_code_desc": "Získať nový kód z vášho YubiKey",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP ID",
     "s_user_id": "ID používateľa",
     "s_credential_id": "ID poverenia",
@@ -639,13 +650,13 @@
     },
     "p_press_fingerprint_begin": "Začnite stlačením prsta na YubiKey.",
     "l_name_fingerprint": "Pomenujte tento odtlačok prsta",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "Nepodarilo sa z dôvodu nečinnosti používateľa",
     "l_wrong_inserted_yk_error": "Opätovne vložený kľúč YubiKey nezodpovedá pôvodnému zariadeniu",
     "l_failed_connecting_to_fido": "Zlyhalo pripojenie k rozhraniu FIDO",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": "Certifikát s vlastným podpisom",
     "l_certificate_signing_request": "Žiadosť o podpísanie certifikátu (CSR)",
     "s_certificate": "Certifikát",
@@ -793,8 +804,8 @@
     "l_overwrite_cert": "Certifikát bude prepísaný",
     "l_overwrite_key": "Súkromný kľúč bude prepísaný",
     "l_overwrite_key_maybe": "Akýkoľvek existujúci súkromný kľúč v slote sa prepíše",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
@@ -811,14 +822,14 @@
     "s_slot_9d": "Spravovanie kľúčov",
     "s_slot_9e": "Autentifikácia karty",
     "s_retired_slot": "Správa vyradených kľúčov",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "Krátky dotyk",
     "s_otp_slot_two": "Dlhý dotyk",
     "l_otp_slot_empty": "Slot je prázdny",
     "l_otp_slot_configured": "Slot je nastavený",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "Naprogramujte poverenie Yubico OTP",
     "s_challenge_response": "Výzva-odpoveď",
     "l_challenge_response_desc": "Naprogramovať poverenie typu výzva-odpoveď",
@@ -850,8 +861,8 @@
             }
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "Odstrániť poverenie",
     "q_delete_slot": "Odstrániť poverenie?",
     "l_delete_slot_desc": "Odstrániť poverenie v slote",
@@ -891,12 +902,12 @@
     },
     "s_append_enter": "Pripojiť ⏎",
     "l_append_enter_desc": "Pripojiť stlačenie klávesu Enter po vyslaní OTP",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "Nepodarilo sa vymeniť sloty! Uistite sa, že kľúč YubiKey nemá obmedzený prístup.",
     "l_wrong_access_code": "Nesprávny prístupový kód",
-
     "@_otp_access_code": {},
+
     "s_access_code": "Prístupový kód",
     "s_show_access_code": "Zobraziť prístupový kód",
     "s_hide_access_code": "Skryť prístupový kód",
@@ -908,9 +919,9 @@
             }
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "Povoliť NFC",
     "s_request_access": "Požiadať o prístup",
     "s_permission_denied": "Prístup zamietnutý",
@@ -922,8 +933,8 @@
     "p_webauthn_elevated_permissions_required": "Spravovanie WebAuthn vyžaduje zvýšené oprávnenia. Alternatívne môžete na správu nastavenia FIDO použiť Nastavenia systému Windows.",
     "l_ms_store_permission_note": "Verzia aplikácie v obchode Microsoft Store nemusí byť schopná zvýšiť oprávnenia",
     "p_need_camera_permission": "Aplikácia Yubico Authenticator potrebuje na skenovanie QR kódov povolenia kamery.",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "Skenovať QR kód",
     "l_invalid_qr": "Neplatný QR kód",
     "l_qr_not_found": "Nenašiel sa žiadny QR kód",
@@ -951,8 +962,8 @@
     "q_no_qr": "Žiadny QR kód?",
     "s_enter_manually": "Zadať ručne",
     "s_read_from_file": "Čítať zo súboru",
-
     "@_factory_reset": {},
+
     "s_reset": "Obnoviť",
     "s_factory_reset": "Obnoviť výrobné nastavenia",
     "l_factory_reset_desc": "Obnoviť predvolené nastavenia YubiKey",
@@ -978,12 +989,13 @@
     "p_warning_piv_reset_desc": "To zahŕňa súkromné kľúče a certifikáty. Vaše PIN, PUK a kľúč na spravovanie sa obnovia na predvolené hodnoty z výroby.",
     "p_warning_global_reset": "Varovanie! Týmto sa z vášho YubiKey nenávratne vymažú všetky uložené údaje vrátane poverení.",
     "p_warning_global_reset_desc": "Obnovenie výrobných nastavení aplikácií na vašom YubiKey. PIN kód sa obnoví na predvolenú hodnotu z výroby a registrované odtlačky prstov sa odstránia. Všetky kľúče, certifikáty alebo iné poverenia budú natrvalo odstránené.",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "Kopírovať do schránky",
     "s_code_copied": "Kód skopírovaný",
     "l_code_copied_clipboard": "Kód bol skopírovaný do schránky",
     "s_copy_log": "Kopírovať záznam",
+    "l_copy_log_clipboard": null,
     "l_log_copied": "Záznam skopírovaný do schránky",
     "l_diagnostics_copied": "Diagnostické údaje boli skopírované do schránky",
     "p_target_copied_clipboard": "{label} skopírovaná do schránky.",
@@ -994,8 +1006,8 @@
             }
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "Vlastné ikony",
     "l_set_icons_for_accounts": "Nastaviť ikony pre účty",
     "p_custom_icons_description": "Vďaka balíkom ikon môžete svoje účty ľahšie rozlíšiť pomocou známych log a farieb.",
@@ -1025,10 +1037,13 @@
     },
     "l_invalid_icon_pack": "Neplatný balík ikon",
     "l_icon_pack_copy_failed": "Nepodarilo sa skopírovať súbory balíka ikon",
-
     "@_android_settings": {},
+
     "s_nfc_options": "Možnosti NFC",
+    "s_nfc_and_usb_options": null,
+    "l_nfc_and_usb_options_desc": null,
     "l_on_yk_nfc_tap": "Ťuknite na YubiKey NFC",
+    "l_on_yk_usb_insert": null,
     "l_do_nothing": "Neurobiť nič",
     "l_launch_ya": "Spustiť Yubico Authenticator",
     "l_copy_otp_clipboard": "Skopírovať OTP do schránky",
@@ -1046,31 +1061,30 @@
     "l_launch_app_on_usb_on": "Toto zabráni používaniu YubiKey cez USB inými aplikáciami",
     "l_launch_app_on_usb_off": "Ostatné aplikácie môžu používať YubiKey cez USB",
     "s_allow_screenshots": "Povoliť snímky obrazovky",
-
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "Pripravené na skenovanie",
     "s_nfc_hold_still": "Prosím držte pevne\u2026",
     "s_nfc_tap_your_yubikey": "Ťuknite na svoj YubiKey",
     "l_nfc_failed_to_scan": "Skenovanie sa nepodarilo, skúste to znova",
-
     "@_usb": {},
+
     "s_usb_processing": "Čítanie údajov z YubiKey",
     "s_usb_dont_remove": "Neodstraňujte kľúč\u2026",
     "l_usb_read_error": "Nepodarilo sa načítať údaje z YubiKey",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "OTP kód sa úspešne skopíroval z YubiKey do schránky.",
     "p_ndef_set_password": "Heslo bolo úspešne skopírované z YubiKey do schránky.",
     "p_ndef_parse_failure": "Nepodarilo sa spracovať OTP kód z YubiKey.",
     "p_ndef_set_clip_failure": "Nepodarilo sa získať prístup k schránke pri pokuse o skopírovanie OTP kódu z YubiKey.",
-
     "@_key_customization": {},
+
     "s_set_label": "Nastaviť menovku",
     "s_set_color": "Nastaviť farbu",
     "s_change_label": "Zmeniť menovku",
     "p_set_will_add_custom_name": "Týmto sa vášmu kľúču YubiKey pridelí vlastný názov.",
     "p_rename_will_change_custom_name": "Týmto sa zmení menovka vášho kľúča YubiKey.",
-
     "@_shortcuts": {},
     "s_shortcuts": "Skratky",
     "s_keyboard_shortcuts": "Klávesové skratky",
@@ -1104,4 +1118,5 @@
     "s_open_keyboard_shortcuts": "Otvoriť klávesové skratky",
 
     "@_eof": {}
+
 }
