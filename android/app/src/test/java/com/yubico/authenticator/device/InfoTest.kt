@@ -20,8 +20,10 @@ import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.Version
 import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.management.FormFactor
+import com.yubico.yubikit.management.VersionQualifier
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -59,16 +61,37 @@ class InfoTest {
         assertEquals("TestD", info.name)
         assertTrue(info.isNfc)
         assertNull(info.usbPid)
+        assertNotNull(info.versionQualifier)
+        assertEquals(0.toByte(), info.versionQualifier.version.major)
+        assertEquals(0.toByte(), info.versionQualifier.version.minor)
+        assertEquals(0.toByte(), info.versionQualifier.version.micro)
+        assertEquals(2u, info.versionQualifier.type.toUInt())
+        assertEquals(0u, info.versionQualifier.iteration)
     }
 
-    private fun DeviceInfo.withTransport(transport: Transport, capabilities : Int = 0) : DeviceInfo {
+    private fun DeviceInfo.withTransport(transport: Transport, capabilities: Int = 0): DeviceInfo {
         `when`(hasTransport(transport)).thenReturn(true)
         `when`(getSupportedCapabilities(transport)).thenReturn(capabilities)
         return this
     }
 
-    private fun DeviceInfo.withoutTransport(transport: Transport) : DeviceInfo {
+    private fun DeviceInfo.withoutTransport(transport: Transport): DeviceInfo {
         `when`(hasTransport(transport)).thenReturn(false)
+        return this
+    }
+
+    private fun DeviceInfo.withVersionQualifier(
+        version: Version,
+        type: VersionQualifier.Type,
+        iteration: Int
+    ): DeviceInfo {
+        `when`(versionQualifier).thenReturn(
+            VersionQualifier(
+                version,
+                type,
+                iteration
+            )
+        )
         return this
     }
 
@@ -98,5 +121,39 @@ class InfoTest {
         val deviceInfo = deviceInfoMock.withoutTransport(Transport.USB)
         val info = Info(name = "TestD", isNfc = false, usbPid = null, deviceInfo = deviceInfo)
         assertNull(info.supportedCapabilities.usb)
+    }
+
+    @Test
+    fun testVersionQualifier() {
+        var deviceInfo = deviceInfoMock.withVersionQualifier(
+            Version(5, 7, 3),
+            VersionQualifier.Type.BETA,
+            5
+        )
+        var info = Info(name = "TestD", isNfc = false, usbPid = null, deviceInfo = deviceInfo)
+        assertEquals(5.toByte(), info.versionQualifier.version.major)
+        assertEquals(7.toByte(), info.versionQualifier.version.minor)
+        assertEquals(3.toByte(), info.versionQualifier.version.micro)
+
+        assertEquals(5u, info.versionQualifier.iteration)
+
+        assertEquals(VersionQualifier.Type.BETA.ordinal.toUByte(), info.versionQualifier.type)
+
+        deviceInfo = deviceInfoMock.withVersionQualifier(
+            Version(5, 7, 3),
+            VersionQualifier.Type.ALPHA,
+            5
+        )
+        info = Info(name = "TestD", isNfc = false, usbPid = null, deviceInfo = deviceInfo)
+        assertEquals(VersionQualifier.Type.ALPHA.ordinal.toUByte(), info.versionQualifier.type)
+
+        deviceInfo = deviceInfoMock.withVersionQualifier(
+            Version(5, 7, 3),
+            VersionQualifier.Type.FINAL,
+            5
+        )
+        info = Info(name = "TestD", isNfc = false, usbPid = null, deviceInfo = deviceInfo)
+        assertEquals(VersionQualifier.Type.FINAL.ordinal.toUByte(), info.versionQualifier.type)
+
     }
 }

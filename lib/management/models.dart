@@ -77,6 +77,28 @@ abstract class DeviceConfig with _$DeviceConfig {
       _$DeviceConfigFromJson(json);
 }
 
+enum ReleaseType {
+  @JsonValue(0)
+  alpha,
+  @JsonValue(1)
+  beta,
+  @JsonValue(2)
+  release,
+}
+
+@freezed
+abstract class VersionQualifier with _$VersionQualifier {
+  VersionQualifier._();
+  factory VersionQualifier(Version version, ReleaseType type, int iteration) =
+      _VersionQualifier;
+
+  factory VersionQualifier.fromJson(Map<String, dynamic> json) =>
+      _$VersionQualifierFromJson(json);
+
+  @override
+  String toString() => '$version.${type.name}.$iteration';
+}
+
 @freezed
 abstract class DeviceInfo with _$DeviceInfo {
   const DeviceInfo._(); // Added constructor
@@ -94,6 +116,7 @@ abstract class DeviceInfo with _$DeviceInfo {
     int fipsCapable,
     int fipsApproved,
     int resetBlocked,
+    VersionQualifier versionQualifier,
   ) = _DeviceInfo;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
@@ -104,5 +127,14 @@ abstract class DeviceInfo with _$DeviceInfo {
     final capable = fipsCapable & capability.value != 0;
     final approved = capable && fipsApproved & capability.value != 0;
     return (capable, approved);
+  }
+
+  String getVersionName() {
+    switch (versionQualifier.type) {
+      case ReleaseType.release:
+        return version.toString();
+      default:
+        return versionQualifier.toString();
+    }
   }
 }
