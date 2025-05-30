@@ -1,8 +1,6 @@
 name: Windows
 
-on:
-  workflow_dispatch:
-  push:
+on: push
 
 jobs:
   build:
@@ -143,7 +141,6 @@ jobs:
         rm -rf scribe-download
         cd signed
         unzip -j 1.zip || true
-        ls -la
         rm 1.zip
         cd ..
         cp signed/authenticator-helper.exe yubioath-desktop-windows/*/helper/authenticator-helper.exe
@@ -261,7 +258,6 @@ jobs:
         cd signed
         unzip -j 1.zip || true
         rm 1.zip
-        ls -la
         cd ..
 
     - name: run scribe gpg
