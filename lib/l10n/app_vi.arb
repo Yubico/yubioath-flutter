@@ -53,19 +53,8 @@
     "s_collapse_navigation": "Thu gọn điều hướng",
     "s_expand_collapse_navigation": null,
     "s_show_menu": "Hiển thị thực đơn",
-    "s_hide_menu": "Ẩn thực đơn",
-    "s_show_menu_bar": null,
-    "s_hide_menu_bar": null,
     "s_toggle_menu_bar": null,
     "s_more_info": "More info",
-    "q_rename_target": "Đổi tên {label}?",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -127,11 +116,9 @@
         }
     },
     "s_character_count": "Số lượng ký tự",
-    "s_learn_more": "Tìm hiểu thêm",
 
     "@_language": {},
     "s_language": "Ngôn ngữ",
-    "l_enable_community_translations": "Bật dịch thuật cộng đồng",
     "p_community_translations_desc": "Translations are community maintained on {crowdin}.",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -228,23 +215,6 @@
     "s_reconfiguring_yk": "Đang cấu hình lại YubiKey\u2026",
     "s_config_updated": "Đã cập nhật cấu hình",
     "l_config_updated_reinsert": "Đã cập nhật cấu hình, rút và cắm lại YubiKey của bạn",
-    "s_app_not_supported": "Ứng dụng không được hỗ trợ",
-    "l_app_not_supported_on_yk": "YubiKey được sử dụng không hỗ trợ ứng dụng '{app}'",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "Bật ứng dụng '{app}' trên YubiKey của bạn để truy cập",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "FIDO2 đã bị tắt",
     "l_webauthn_req_fido2": "WebAuthn yêu cầu ứng dụng FIDO2 được bật trên YubiKey của bạn",
     "s_lock_code": "Mã khóa",
@@ -269,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "Kết nối YubiKey của bạn với bất kỳ nguồn điện USB nào, chẳng hạn như máy tính, trong ít nhất 3 giây.\n\nKhi đã có nguồn điện, NFC sẽ được kích hoạt và sẵn sàng sử dụng.",
     "p_deactivate_restricted_nfc_footer": "YubiKey của bạn được trang bị NFC Giới hạn, một tính năng được thiết kế để bảo vệ chống lại thao tác không dây trong quá trình vận chuyển. Điều này có nghĩa là các hoạt động NFC tạm thời bị tắt cho đến khi bạn kích hoạt chúng.",
     "s_unsupported_yk": "YubiKey không được hỗ trợ",
-    "s_yk_not_recognized": "Thiết bị không được nhận diện",
     "p_operation_failed_try_again": "Thao tác không thành công, vui lòng thử lại.",
     "l_configuration_unsupported": "Cấu hình không được hỗ trợ",
     "p_scp_unsupported": "Để giao tiếp qua NFC, YubiKey yêu cầu công nghệ không được điện thoại này hỗ trợ. Vui lòng cắm YubiKey vào cổng USB của điện thoại.",
@@ -344,17 +313,6 @@
     "l_unlock_pin_first": "Mở khóa bằng Mã PIN",
     "l_pin_soft_locked": "Mã PIN đã bị khóa cho đến khi YubiKey được tháo ra và cắm lại",
     "l_pin_change_required_desc": "Cần thiết lập một Mã PIN mới trước khi bạn có thể sử dụng ứng dụng này",
-    "p_enter_current_pin_or_puk": "Enter your current {name}.",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải mở khóa bằng Mã PUK hoặc khôi phục cài đặt gốc YubiKey.",
-    "p_enter_current_pin_or_reset_no_puk": "Nhập Mã PIN hiện tại của bạn. Nếu bạn không biết Mã PIN, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
-    "p_enter_current_puk_or_reset": "Nhập Mã PUK hiện tại của bạn. Nếu bạn không biết Mã PUK, bạn sẽ cần phải khôi phục cài đặt gốc YubiKey.",
     "p_new_fido2_pin_requirements": "A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -443,7 +401,6 @@
     "s_password_set": "Mật khẩu đã được đặt",
     "s_show_password": "Hiển thị mật khẩu",
     "s_hide_password": "Ẩn mật khẩu",
-    "l_optional_password_protection": "Bảo vệ mật khẩu tùy chọn",
     "l_password_protection": "Bảo vệ mật khẩu của các tài khoản",
     "s_new_password": "Mật khẩu mới",
     "s_current_password": "Mật khẩu hiện tại",
@@ -468,7 +425,6 @@
     "s_current_management_key": "Khóa quản lý hiện tại",
     "s_new_management_key": "Khóa quản lý mới",
     "l_change_management_key": "Thay đổi khóa quản lý",
-    "p_change_management_key_desc": "Thay đổi khóa quản lý của bạn. Bạn có thể chọn cho phép sử dụng Mã PIN thay vì khóa quản lý.",
     "l_management_key_changed": "Khóa quản lý đã được thay đổi",
     "l_default_key_used": "Đã sử dụng khóa quản lý mặc định",
     "s_generate_random": "Tạo ngẫu nhiên",
@@ -507,7 +463,6 @@
     "s_add_account": "Thêm tài khoản",
     "p_add_account_desc": "Scan QR code or enter the credential details manually.",
     "s_add_accounts": "Thêm tài khoản(s)",
-    "p_add_description": "Để quét mã QR, hãy chắc chắn rằng mã QR được hiển thị đầy đủ trên màn hình và nhấn nút bên dưới. Bạn cũng có thể kéo một hình ảnh đã lưu từ thư mục vào hộp thoại này. Nếu bạn có thông tin tài khoản dưới dạng văn bản, hãy sử dụng nhập thủ công thay vào đó.",
     "l_drop_qr_description": "Kéo mã QR để thêm tài khoản(s)",
     "p_add_account_three_ways": "There are three ways of adding accounts.",
     "s_scanning": "Scanning (recommended)",
@@ -516,7 +471,6 @@
     "p_drag_and_drop_desc": "An image containing a QR code may be dropped anywhere in the Accounts view.",
     "s_manually": "Manually",
     "p_manually_desc": "Account credential details may be entered manually in the form.",
-    "s_add_manually": "Thêm thủ công",
     "s_account_added": "Tài khoản đã được thêm",
     "l_account_add_failed": "Thêm tài khoản thất bại: {message}",
     "@l_account_add_failed": {
@@ -599,14 +553,6 @@
     "s_credential_id": "Credential ID",
     "s_display_name": "Tên hiển thị",
     "s_user_name": "Tên người dùng",
-    "l_passkey": "Mã bảo mật: {label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "Mã bảo mật",
     "s_no_passkeys": "Không có mã bảo mật",
     "l_ready_to_use": "Sẵn sàng sử dụng",
@@ -703,7 +649,6 @@
     "l_self_signed_certificate": "Self-signed certificate",
     "l_certificate_signing_request": "Certificate Signing Request (CSR)",
     "s_certificate": "Chứng chỉ",
-    "s_csr": "CSR",
     "s_subject": "Chủ thể",
     "l_export_csr_file": "Lưu CSR vào tập tin",
     "l_export_public_key": "Xuất khóa công khai",
@@ -835,8 +780,6 @@
     "s_expiration_date": "Expiration date",
     "p_algorithm_desc": "Key algorithm to use.",
     "p_expiration_date_desc": "Date when the certificate expires, default 1 year (certificate only).",
-    "p_cert_options_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra và ngày hết hạn (chứng chỉ chỉ).",
-    "p_cert_options_bio_desc": "Thuật toán khóa để sử dụng, định dạng đầu ra, ngày hết hạn (chứng chỉ chỉ) và nếu sinh trắc học có thể được sử dụng thay cho PIN.",
     "p_key_options_bio_desc": "Cho phép sử dụng sinh trắc học thay cho PIN.",
     "q_overwrite_slot": "Overwrite slot?",
     "p_overwrite_slot_desc": "Điều này sẽ ghi đè vĩnh viễn nội dung hiện có trong khe {slot}.",
@@ -1125,7 +1068,6 @@
     "s_set_label": "Đặt nhãn",
     "s_set_color": "Đặt màu",
     "s_change_label": "Thay đổi nhãn",
-    "s_color": "Màu sắc",
     "p_set_will_add_custom_name": "Điều này sẽ đặt tên tùy chỉnh cho YubiKey của bạn.",
     "p_rename_will_change_custom_name": "Điều này sẽ thay đổi nhãn của YubiKey của bạn.",
 

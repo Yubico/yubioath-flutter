@@ -53,19 +53,8 @@
     "s_collapse_navigation": "折叠导航栏",
     "s_expand_collapse_navigation": null,
     "s_show_menu": "显示菜单",
-    "s_hide_menu": "隐藏菜单",
-    "s_show_menu_bar": null,
-    "s_hide_menu_bar": null,
     "s_toggle_menu_bar": null,
     "s_more_info": "更多信息",
-    "q_rename_target": "重新命名 {label}？",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -127,11 +116,9 @@
         }
     },
     "s_character_count": "字符数",
-    "s_learn_more": "了解更多",
 
     "@_language": {},
     "s_language": "语言",
-    "l_enable_community_translations": "启用社区翻译",
     "p_community_translations_desc": "翻译由 {crowdin} 上的社区维护。",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -228,23 +215,6 @@
     "s_reconfiguring_yk": "正在重新配置 YubiKey\u2026",
     "s_config_updated": "配置已更新",
     "l_config_updated_reinsert": "配置已更新，拔出并重新插入您的 YubiKey",
-    "s_app_not_supported": "应用程序不受支持",
-    "l_app_not_supported_on_yk": "所使用的 YubiKey 不支持 \"{app}\"应用程序",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "在您的 YubiKey 上启用 \"{app}\"应用程序以使用此功能",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "FIDO2 已禁用",
     "l_webauthn_req_fido2": "WebAuthn 要求您的 YubiKey 启用 FIDO2 应用程序",
     "s_lock_code": "锁定密码",
@@ -269,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "将 YubiKey 与任何 USB 电源（如电脑）连接至少 3 秒钟。\n\n接通电源后，NFC 将被激活并可随时使用。",
     "p_deactivate_restricted_nfc_footer": "您的 YubiKey 拥有限制 NFC 功能，该功能旨在防止运输过程中的无线操控。这意味着在您进行激活之前，NFC 功能将暂时失效。",
     "s_unsupported_yk": "不支持的 YubiKey",
-    "s_yk_not_recognized": "设备无法识别",
     "p_operation_failed_try_again": "操作失败，请重试。",
     "l_configuration_unsupported": "配置不受支持",
     "p_scp_unsupported": "要通过 NFC 进行通信，YubiKey 需要本手机不支持的技术。请将 YubiKey 插入手机的 USB 端口。",
@@ -344,17 +313,6 @@
     "l_unlock_pin_first": "使用 PIN 解锁",
     "l_pin_soft_locked": "在重新拔插YubiKey之前，PIN 已被锁定",
     "l_pin_change_required_desc": "您必须先设置新的 PIN 才能使用此应用程序",
-    "p_enter_current_pin_or_puk": "输入您当前的 {name}。",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "输入您当前的 PIN 。如果不知道 PIN ，则需要使用 PUK 解锁或重置 YubiKey。",
-    "p_enter_current_pin_or_reset_no_puk": "输入您当前的 PIN 。如果不知道 PIN ，则需要重置 YubiKey。",
-    "p_enter_current_puk_or_reset": "输入您当前的 PUK 。如果您不知道 PUK ，则需要重置 YubiKey。",
     "p_new_fido2_pin_requirements": "PIN 长度必须为 {min_length}-{max_length} 个字符，可包含字母、数字和特殊字符。",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -443,7 +401,6 @@
     "s_password_set": "密码已设置",
     "s_show_password": "显示密码",
     "s_hide_password": "隐藏密码",
-    "l_optional_password_protection": "可选密码保护",
     "l_password_protection": "账户密码保护",
     "s_new_password": "新密码",
     "s_current_password": "当前密码",
@@ -468,7 +425,6 @@
     "s_current_management_key": "当前管理密钥",
     "s_new_management_key": "新的管理密钥",
     "l_change_management_key": "更改管理密钥",
-    "p_change_management_key_desc": "更改管理密钥。您可以选择允许使用 PIN 代替管理密钥。",
     "l_management_key_changed": "管理密钥已更改",
     "l_default_key_used": "默认管理密钥已使用",
     "s_generate_random": "随机生成",
@@ -507,7 +463,6 @@
     "s_add_account": "添加帐号",
     "p_add_account_desc": "扫描二维码或手动输入凭证。",
     "s_add_accounts": "添加账户",
-    "p_add_description": "要扫描二维码，请确保完整的二维码在屏幕上可见，然后按下面的按钮。您也可以将文件夹中保存的图像拖到此对话框中。如果您有账户凭据详细信息写入，请使用手动输入代替。",
     "l_drop_qr_description": "拖放二维码以添加账户",
     "p_add_account_three_ways": "有三种添加账户的方法。",
     "s_scanning": "扫描（推荐）",
@@ -516,7 +471,6 @@
     "p_drag_and_drop_desc": "包含二维码的图像可以放置在账户视图的任何位置。",
     "s_manually": "手动",
     "p_manually_desc": "可在表格中手动输入账户凭证详细信息。",
-    "s_add_manually": "手动添加",
     "s_account_added": "账户已添加",
     "l_account_add_failed": "添加账户失败： {message}",
     "@l_account_add_failed": {
@@ -599,14 +553,6 @@
     "s_credential_id": "凭证 ID",
     "s_display_name": "显示名称",
     "s_user_name": "用户名",
-    "l_passkey": "通行密钥： {label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "通行密钥",
     "s_no_passkeys": "无通行密钥",
     "l_ready_to_use": "随时可用",
@@ -703,7 +649,6 @@
     "l_self_signed_certificate": "自签名证书",
     "l_certificate_signing_request": "证书签名请求（CSR）",
     "s_certificate": "证书",
-    "s_csr": "CSR",
     "s_subject": "标题",
     "l_export_csr_file": "将 CSR 保存到文件",
     "l_export_public_key": "导出公钥",
@@ -835,8 +780,6 @@
     "s_expiration_date": "有效期至",
     "p_algorithm_desc": "使用的密钥算法。",
     "p_expiration_date_desc": "证书过期日期，默认为 1 年（仅限证书）。",
-    "p_cert_options_desc": "使用的密钥算法、输出格式和到期日期（仅限证书）。",
-    "p_cert_options_bio_desc": "使用的密钥算法、输出格式、有效期（仅限证书），以及是否可使用生物识别技术代替 PIN 。",
     "p_key_options_bio_desc": "允许使用生物识别技术代替 PIN 。",
     "q_overwrite_slot": "覆盖槽位？",
     "p_overwrite_slot_desc": "这将永久覆盖槽位 {slot} 中的现有内容。",
@@ -1125,7 +1068,6 @@
     "s_set_label": "设置标签",
     "s_set_color": "设置颜色",
     "s_change_label": "更改标签",
-    "s_color": "颜色",
     "p_set_will_add_custom_name": "这将为你的 YubiKey 起一个自定义名称。",
     "p_rename_will_change_custom_name": "这将更改您的 YubiKey 的标签。",
 

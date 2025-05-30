@@ -53,19 +53,8 @@
     "s_collapse_navigation": "Sbalit navigaci",
     "s_expand_collapse_navigation": null,
     "s_show_menu": "Zobrazit nabídku",
-    "s_hide_menu": "Skrýt nabídku",
-    "s_show_menu_bar": null,
-    "s_hide_menu_bar": null,
     "s_toggle_menu_bar": null,
     "s_more_info": "Více informací",
-    "q_rename_target": "Přejmenovat {label}?",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -127,11 +116,9 @@
         }
     },
     "s_character_count": "Počet znaků",
-    "s_learn_more": "Zjistit\u00a0více",
 
     "@_language": {},
     "s_language": "Jazyk",
-    "l_enable_community_translations": "Povolit komunitní překlady",
     "p_community_translations_desc": "Překlady jsou spravovány komunitou na {crowdin}.",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -228,23 +215,6 @@
     "s_reconfiguring_yk": "Probíhá konfigurace klíče YubiKey\u2026",
     "s_config_updated": "Konfigurace aktualizována",
     "l_config_updated_reinsert": "Konfigurace byla aktualizována, odpojte a znovu připojte váš YubiKey",
-    "s_app_not_supported": "Aplikace není podporována",
-    "l_app_not_supported_on_yk": "Tento YubiKey nepodporuje aplikaci '{app}'",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "Pro přístup povolte aplikaci '{app}' na vašem YubiKey",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "FIDO2 aplikace zakázána",
     "l_webauthn_req_fido2": "WebAuthn vyžaduje, aby byla aplikace FIDO2 povolena na vašem YubiKey",
     "s_lock_code": "Kód zámku",
@@ -269,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "Připojte svůj YubiKey k jakémukoli zdroji napájení USB, například počítači, po dobu nejméně 3 sekund.\n\nPo zapnutí bude NFC aktivováno a připraveno k použití.",
     "p_deactivate_restricted_nfc_footer": "Váš YubiKey má z důvodu ochrany proti bezdrátové manipulaci během přepravy omezenou funkci NFC. To znamená, že NFC operace jsou zakázány dokud je neaktivujete.",
     "s_unsupported_yk": "Nepodporovaný YubiKey",
-    "s_yk_not_recognized": "Zařízení nebylo rozpoznáno",
     "p_operation_failed_try_again": "Operace se nezdařila, zkuste to prosím znovu.",
     "l_configuration_unsupported": "Konfigurace není podporována",
     "p_scp_unsupported": "Pro komunikaci přes NFC vyžaduje YubiKey technologii, která není tímto telefonem podporována. Připojte YubiKey k USB portu telefonu.",
@@ -344,17 +313,6 @@
     "l_unlock_pin_first": "Odemknout pomocí PIN",
     "l_pin_soft_locked": "PIN byl zablokován, dokud není YubiKey odpojen a znovu připojen",
     "l_pin_change_required_desc": "Před použitím této aplikace musí být nastaven nový PIN",
-    "p_enter_current_pin_or_puk": "Zadejte aktuální {name}.",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "Zadejte aktuální PIN. Pokud neznáte svůj PIN, budete jej muset odblokovat pomocí kódu PUK nebo resetovat YubiKey.",
-    "p_enter_current_pin_or_reset_no_puk": "Zadejte aktuální PIN. Pokud neznáte svůj PIN, budete muset resetovat YubiKey.",
-    "p_enter_current_puk_or_reset": "Zadejte aktuální PUK. Pokud neznáte svůj PUK, budete muset resetovat YubiKey.",
     "p_new_fido2_pin_requirements": "PIN musí být {min_length}-{max_length} znaků dlouhý a může obsahovat písmena, čísla a speciální znaky.",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -443,7 +401,6 @@
     "s_password_set": "Heslo nastaveno",
     "s_show_password": "Zobrazit heslo",
     "s_hide_password": "Skrýt heslo",
-    "l_optional_password_protection": "Volitelná ochrana heslem",
     "l_password_protection": "Ochrana účtů heslem",
     "s_new_password": "Nové heslo",
     "s_current_password": "Aktuální heslo",
@@ -468,7 +425,6 @@
     "s_current_management_key": "Aktuální klíč správy",
     "s_new_management_key": "Nový klíč správy",
     "l_change_management_key": "Změnit klíč správy",
-    "p_change_management_key_desc": "Změňte svůj klíč správy. Volitelně můžete povolit použití PIN kódu namísto klíče správy.",
     "l_management_key_changed": "Klíč správy změněn",
     "l_default_key_used": "Používá se výchozí klíč správy",
     "s_generate_random": "Vytvořit náhodný",
@@ -507,7 +463,6 @@
     "s_add_account": "Přidat účet",
     "p_add_account_desc": "Naskenujte QR kód nebo zadejte přihlašovací údaje ručně.",
     "s_add_accounts": "Přidat účet(-y)",
-    "p_add_description": "Chcete-li naskenovat QR kód, ujistěte se, že je celý kód viditelný na obrazovce a stiskněte tlačítko níže. Do tohoto dialogu můžete také přetáhnout uložený obrázek ze složky. Pokud máte písemné přihlašovací údaje k účtu, použijte místo toho ruční zadání.",
     "l_drop_qr_description": "Přetáhněte QR kód pro přidání účtu(-ů)",
     "p_add_account_three_ways": "Existují tři způsoby, jak přidat účty.",
     "s_scanning": "Skenování (doporučeno)",
@@ -516,7 +471,6 @@
     "p_drag_and_drop_desc": "Obrázek obsahující QR kód může být upuštěn kdekoli v zobrazení účtu.",
     "s_manually": "Ručně",
     "p_manually_desc": "Údaje o účtu mohou být zadány ručně ve formuláři.",
-    "s_add_manually": "Přidat ručně",
     "s_account_added": "Účet přidán",
     "l_account_add_failed": "Přidání účtu se nezdařilo: {message}",
     "@l_account_add_failed": {
@@ -599,14 +553,6 @@
     "s_credential_id": "ID pověření",
     "s_display_name": "Zobrazované jméno",
     "s_user_name": "Uživatelské jméno",
-    "l_passkey": "Přístupový klíč: {label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "Přístupové klíče",
     "s_no_passkeys": "Žádné přístupové klíče",
     "l_ready_to_use": "Připraveno k použití",
@@ -703,7 +649,6 @@
     "l_self_signed_certificate": "Certifikát s vlastním podpisem",
     "l_certificate_signing_request": "Žádost o podpis certifikátu (CSR)",
     "s_certificate": "Certifikát",
-    "s_csr": "CSR",
     "s_subject": "Předmět",
     "l_export_csr_file": "Uložit CSR do souboru",
     "l_export_public_key": "Exportovat veřejný klíč",
@@ -835,8 +780,6 @@
     "s_expiration_date": "Datum expirace",
     "p_algorithm_desc": "Použít algoritmus klíče.",
     "p_expiration_date_desc": "Datum vypršení platnosti certifikátu, standardně 1 rok (pouze certifikát).",
-    "p_cert_options_desc": "Algoritmus klíče, který se má použít, výstupní formát a datum vypršení platnosti (pouze certifikát).",
-    "p_cert_options_bio_desc": "Algoritmus klíče, který se má použít, formát výstupu, datum vypršení platnosti (pouze certifikát) a zda lze místo kódu PIN použít biometrické údaje.",
     "p_key_options_bio_desc": "Povolit použití biometrie namísto kódu PIN.",
     "q_overwrite_slot": "Přepsat slot?",
     "p_overwrite_slot_desc": "Toto trvale přepíše existující obsah ve slotu {slot}.",
@@ -1125,7 +1068,6 @@
     "s_set_label": "Nastavit jmenovku",
     "s_set_color": "Nastavit barvu",
     "s_change_label": "Změnit jmenovku",
-    "s_color": "Barva",
     "p_set_will_add_custom_name": "Tímto nastavíte jmenovku vašeho YubiKey.",
     "p_rename_will_change_custom_name": "Tímto změníte jmenovku vašeho YubiKey.",
 
