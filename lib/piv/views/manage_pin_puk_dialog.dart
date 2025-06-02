@@ -94,7 +94,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     super.dispose();
   }
 
-  _submit() async {
+  void _submit() async {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     final l10n = AppLocalizations.of(context);
 

@@ -70,7 +70,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     _confirmPasswordFocus.unfocus();
   }
 
-  _submit() async {
+  void _submit() async {
     _removeFocus();
 
     try {

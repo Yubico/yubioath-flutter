@@ -66,11 +66,11 @@ final _oathLockKeyProvider =
 class _LockKeyNotifier extends StateNotifier<String?> {
   _LockKeyNotifier(super.state);
 
-  setKey(String key) {
+  void setKey(String key) {
     state = key;
   }
 
-  unsetKey() {
+  void unsetKey() {
     state = null;
   }
 }
@@ -393,7 +393,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     }
   }
 
-  refresh() async {
+  void refresh() async {
     if (_locked) return;
     _log.debug('refreshing credentials...');
     var result = await _session.command('calculate_all', target: ['accounts']);
@@ -429,7 +429,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     }
   }
 
-  _scheduleRefresh() {
+  void _scheduleRefresh() {
     _timer?.cancel();
     if (_locked) return;
     if (state == null) {
