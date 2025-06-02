@@ -58,7 +58,7 @@ class IconPackIcon extends ConsumerWidget {
           _ => defaultWidget,
         };
       },
-      error: (_, __) => defaultWidget,
+      error: (_, _) => defaultWidget,
       loading: () => defaultWidget,
     );
   }

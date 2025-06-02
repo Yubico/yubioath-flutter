@@ -95,7 +95,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     super.dispose();
   }
 
-  _submit() async {
+  Future<void> _submit() async {
     final currentValidFormat =
         _usesStoredKey || Format.hex.isValid(_currentController.text);
     final newValidFormat = Format.hex.isValid(_keyController.text);

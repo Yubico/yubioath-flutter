@@ -119,7 +119,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     }
   }
 
-  _loadCredentialData(CredentialData data) {
+  void _loadCredentialData(CredentialData data) {
     setState(() {
       _issuerController.text = data.issuer?.trim() ?? '';
       _accountController.text = data.name.trim();

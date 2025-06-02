@@ -257,7 +257,7 @@ abstract class CurrentDeviceNotifier extends Notifier<DeviceNode?> {
     return previous != next;
   }
 
-  setCurrentDevice(DeviceNode? device);
+  void setCurrentDevice(DeviceNode? device);
 }
 
 final currentSectionProvider =
@@ -268,7 +268,7 @@ final currentSectionProvider =
 abstract class CurrentSectionNotifier extends StateNotifier<Section> {
   CurrentSectionNotifier(super.initial);
 
-  setCurrentSection(Section section);
+  void setCurrentSection(Section section);
 }
 
 abstract class QrScanner {

@@ -59,7 +59,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
     super.dispose();
   }
 
-  _submit() async {
+  Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
     try {
       final renamed = await ref

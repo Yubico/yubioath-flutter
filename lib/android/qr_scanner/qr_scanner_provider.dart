@@ -144,7 +144,7 @@ class AndroidQrScanner implements QrScanner {
   }
 }
 
-QrScanner? Function(dynamic) androidQrScannerProvider(hasCamera) {
+QrScanner? Function(dynamic) androidQrScannerProvider(dynamic hasCamera) {
   return (ref) =>
       hasCamera ? AndroidQrScanner(ref.watch(withContextProvider)) : null;
 }

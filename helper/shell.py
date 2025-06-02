@@ -71,7 +71,7 @@ class RpcShell(cmd.Cmd):
             raise
 
     @property
-    def prompt(self):
+    def prompt(self):  # type: ignore[override]
         return "/" + "/".join(self._path) + "> "
 
     def resolve_path(self, line):
