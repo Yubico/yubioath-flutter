@@ -25,6 +25,7 @@ import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.core.Transport
+import com.yubico.yubikit.core.UsbInterface.Mode
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.otp.OtpConnection
@@ -94,12 +95,10 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
     ): String = connectionHelper.useDevice { yubiKeyDevice ->
         try {
             withManagementSession(yubiKeyDevice) {
-                Workarounds.setMode(
-                    it,
-                    yubiKeyDevice,
-                    interfaces,
-                    challengeResponseTimeout,
-                    autoEjectTimeout
+                it.setMode(
+                    Mode.getMode(interfaces),
+                    challengeResponseTimeout.toByte(),
+                    autoEjectTimeout?.toShort() ?: 0
                 )
             }
             runCatching { getDeviceInfo(yubiKeyDevice) }.getOrNull()?.let {

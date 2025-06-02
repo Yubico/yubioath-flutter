@@ -120,7 +120,7 @@ Widget homeBuildActions(
             actionStyle: ActionStyle.primary,
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
-              Actions.maybeInvoke(context, const SettingsIntent());
+              Actions.maybeInvoke(context, SettingsIntent());
             },
           ),
           ActionListItem(
@@ -131,7 +131,7 @@ Widget homeBuildActions(
             actionStyle: ActionStyle.primary,
             onTap: (context) {
               Navigator.of(context).popUntil((route) => route.isFirst);
-              Actions.maybeInvoke(context, const AboutIntent());
+              Actions.maybeInvoke(context, AboutIntent());
             },
           ),
         ],

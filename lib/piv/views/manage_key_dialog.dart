@@ -189,7 +189,6 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
     final currentType =
         widget.pivState.metadata?.managementKeyMetadata.keyType ??
         defaultManagementKeyType;
@@ -461,36 +460,39 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                     size: 30,
                                     iconSize: 20,
                                     displayDialog: fullScreen,
-                                    infoText: RichText(
-                                      text: TextSpan(
-                                        style: textTheme.bodySmall?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
+                                    infoText: Text.rich(
+                                      TextSpan(
                                         children: [
                                           TextSpan(
                                             text:
                                                 l10n.s_management_key_algorithm,
-                                            style: textTheme.bodySmall
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                ),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                           TextSpan(text: '\n'),
                                           TextSpan(
                                             text:
                                                 l10n.p_management_key_algorithm_desc,
+                                            style: TextStyle(
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                            ),
                                           ),
                                           TextSpan(text: '\n' * 2),
                                           TextSpan(
                                             text: l10n.s_protect_key,
-                                            style: textTheme.bodySmall
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                ),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                           TextSpan(text: '\n'),
                                           TextSpan(
                                             text: l10n.p_protect_key_desc,
+                                            style: TextStyle(
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                            ),
                                           ),
                                         ],
                                       ),

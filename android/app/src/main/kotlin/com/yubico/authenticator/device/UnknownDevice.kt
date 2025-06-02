@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2024 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ val UnknownDevice = Info(
     supportedCapabilities = Capabilities(),
     fipsCapable = 0,
     fipsApproved = 0,
-    resetBlocked = 0
+    resetBlocked = 0,
+    versionQualifier = VersionQualifier(),
 )
 
 fun unknownDeviceWithCapability(transport: Transport, bit: Int = 0) : Info {

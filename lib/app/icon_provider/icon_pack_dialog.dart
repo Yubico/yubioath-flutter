@@ -41,7 +41,6 @@ class IconPackDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final iconPack = ref.watch(iconPackProvider);
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     return FileDropTarget(
       onFileDropped: (file) async {
         final importStatus = await ref
@@ -102,8 +101,7 @@ class IconPackDialog extends ConsumerWidget {
                                     'Aegis Icon Pack',
                                   ),
                                   {'Aegis Icon Pack': _learnMoreAegisUri},
-                                  textStyle: textTheme.bodySmall,
-                                  linkStyle: textTheme.bodySmall?.copyWith(
+                                  linkStyle: TextStyle(
                                     color: theme.colorScheme.primary,
                                   ),
                                 ),

@@ -27,7 +27,7 @@ import '../core/state.dart';
 import 'models.dart';
 
 final accountsSearchProvider =
-    StateNotifierProvider<AccountsSearchNotifier, String>(
+    StateNotifierProvider.autoDispose<AccountsSearchNotifier, String>(
       (ref) => AccountsSearchNotifier(),
     );
 

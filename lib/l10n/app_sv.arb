@@ -51,17 +51,10 @@
     "s_show_navigation": "Visa navigering",
     "s_expand_navigation": "Expandera navigering",
     "s_collapse_navigation": "Minimera navigering",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Visa meny",
-    "s_hide_menu": "Dölj meny",
+    "s_toggle_menu_bar": null,
     "s_more_info": "More info",
-    "q_rename_target": "Byt namn på {label}?",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -123,11 +116,9 @@
         }
     },
     "s_character_count": "Antal tecken",
-    "s_learn_more": "Läs\u00a0mer",
 
     "@_language": {},
     "s_language": "Språk",
-    "l_enable_community_translations": "Aktivera översättningar av community",
     "p_community_translations_desc": "Translations are community maintained on {crowdin}.",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -224,23 +215,6 @@
     "s_reconfiguring_yk": "Omkonfigurering av YubiKey\u2026",
     "s_config_updated": "Konfigurationen uppdaterad",
     "l_config_updated_reinsert": "Konfigurationen uppdaterad, ta bort och sätt tillbaka din YubiKey",
-    "s_app_not_supported": "Applikationen stöds inte",
-    "l_app_not_supported_on_yk": "Den använda YubiKey stöder inte '{app}' applikation",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "Aktivera applikationen \"{app}\" på din YubiKey för att få åtkomst till",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "FIDO2 avaktiverad",
     "l_webauthn_req_fido2": "WebAuthn kräver att FIDO2-applikationen är aktiverad på din YubiKey",
     "s_lock_code": "Låskod",
@@ -265,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "Anslut din YubiKey till en USB-strömkälla, t.ex. en dator, i minst 3 sekunder.\n\nNär den är strömförsörjd aktiveras NFC och är klar att användas.",
     "p_deactivate_restricted_nfc_footer": "Din YubiKey är utrustad med Restricted NFC, en funktion som är utformad för att skydda mot trådlös manipulation under transport. Detta innebär att NFC-funktioner är tillfälligt inaktiverade tills du aktiverar dem.",
     "s_unsupported_yk": "YubiKey som inte stöds",
-    "s_yk_not_recognized": "Enheten känns inte igen",
     "p_operation_failed_try_again": "Åtgärden misslyckades, vänligen försök igen.",
     "l_configuration_unsupported": "Konfiguration stöds inte",
     "p_scp_unsupported": "För att kommunicera via NFC kräver YubiKey teknik som inte stöds av den här telefonen. Anslut YubiKey till telefonens USB-port.",
@@ -340,17 +313,6 @@
     "l_unlock_pin_first": "Lås upp med PIN-kod",
     "l_pin_soft_locked": "PIN-koden har spärrats tills YubiKey tas ut och sätts in igen",
     "l_pin_change_required_desc": "En ny PIN-kod måste anges innan du kan använda denna applikation",
-    "p_enter_current_pin_or_puk": "Ange ditt nuvarande {name}.",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "Ange din nuvarande PIN-kod. Om du inte vet din PIN-kod måste du avblockera den med PUK eller återställa YubiKey.",
-    "p_enter_current_pin_or_reset_no_puk": "Ange din aktuella PIN-kod. Om du inte vet din PIN-kod måste du återställa YubiKey.",
-    "p_enter_current_puk_or_reset": "Ange din aktuella PUK. Om du inte känner till din PUK måste du återställa YubiKey.",
     "p_new_fido2_pin_requirements": "A PIN must be {min_length}-{max_length} characters long and may contain letters, numbers and special characters.",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -439,7 +401,6 @@
     "s_password_set": "Lösenordsinställning",
     "s_show_password": "Visa lösenord",
     "s_hide_password": "Dölj lösenord",
-    "l_optional_password_protection": "Valfritt lösenordsskydd",
     "l_password_protection": "Lösenordsskydd för konton",
     "s_new_password": "Nytt lösenord",
     "s_current_password": "Nuvarande lösenord",
@@ -464,7 +425,6 @@
     "s_current_management_key": "Current management key",
     "s_new_management_key": "New management key",
     "l_change_management_key": "Change management key",
-    "p_change_management_key_desc": "Ändra din hanteringsnyckel. Du kan även välja att tillåta att PIN-koden används i stället för managementnyckeln.",
     "l_management_key_changed": "Förvaltningsnyckel ändrad",
     "l_default_key_used": "Standardhanteringsnyckel används",
     "s_generate_random": "Generera slumpmässigt",
@@ -503,7 +463,6 @@
     "s_add_account": "Lägg till konto",
     "p_add_account_desc": "Scan QR code or enter the credential details manually.",
     "s_add_accounts": "Lägg till konto(n)",
-    "p_add_description": "För att skanna en QR-kod, se till att hela koden är synlig på skärmen och tryck på knappen nedan. Du kan också dra en sparad bild från en mapp till den här dialogrutan. Om du har kontouppgifterna i skriftlig form kan du istället använda den manuella inmatningen.",
     "l_drop_qr_description": "Släpp QR-kod för att lägga till konto(n)",
     "p_add_account_three_ways": "There are three ways of adding accounts.",
     "s_scanning": "Scanning (recommended)",
@@ -512,7 +471,6 @@
     "p_drag_and_drop_desc": "An image containing a QR code may be dropped anywhere in the Accounts view.",
     "s_manually": "Manually",
     "p_manually_desc": "Account credential details may be entered manually in the form.",
-    "s_add_manually": "Lägg till manuellt",
     "s_account_added": "Konto tillagt",
     "l_account_add_failed": "Misslyckades med att lägga till konto: {message}",
     "@l_account_add_failed": {
@@ -595,14 +553,6 @@
     "s_credential_id": "Legitimations-ID",
     "s_display_name": "Visningsnamn",
     "s_user_name": "Användarnamn",
-    "l_passkey": "Nyckel: {label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "Nycklar",
     "s_no_passkeys": "Inga nycklar",
     "l_ready_to_use": "Klar att använda",
@@ -699,7 +649,6 @@
     "l_self_signed_certificate": "Self-signed certificate",
     "l_certificate_signing_request": "Certificate Signing Request (CSR)",
     "s_certificate": "Certifikat",
-    "s_csr": "CSR",
     "s_subject": "Ämne",
     "l_export_csr_file": "Spara CSR till fil",
     "l_export_public_key": "Exportera offentlig nyckel",
@@ -831,8 +780,6 @@
     "s_expiration_date": "Expiration date",
     "p_algorithm_desc": "Key algorithm to use.",
     "p_expiration_date_desc": "Date when the certificate expires, default 1 year (certificate only).",
-    "p_cert_options_desc": "Nyckelalgoritm som ska användas, utdataformat och utgångsdatum (endast certifikat).",
-    "p_cert_options_bio_desc": "Nyckelalgoritm som ska användas, utdataformat, utgångsdatum (endast certifikat) och om biometri kan användas i stället för PIN-kod.",
     "p_key_options_bio_desc": "Tillåt att biometri används i stället för PIN-kod.",
     "q_overwrite_slot": "Overwrite slot?",
     "p_overwrite_slot_desc": "Detta kommer permanent att skriva över befintligt innehåll i slot {slot}.",
@@ -1121,9 +1068,40 @@
     "s_set_label": "Ställ in etikett",
     "s_set_color": "Ställ in färg",
     "s_change_label": "Ändra etikett",
-    "s_color": "Färg",
     "p_set_will_add_custom_name": "Detta ger din YubiKey ett eget namn.",
     "p_rename_will_change_custom_name": "Detta kommer att ändra etiketten på din YubiKey.",
+
+    "@_shortcuts": {},
+    "s_shortcuts": null,
+    "s_keyboard_shortcuts": null,
+    "s_global_shortcuts": null,
+    "s_application_shortcuts": null,
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": null,
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": null,
+    "s_search": null,
+    "s_next_device": null,
+    "s_previous_device": null,
+    "s_open_settings": null,
+    "s_open_help_and_about": null,
+    "s_open_item": null,
+    "s_edit_item": null,
+    "s_delete_item": null,
+    "s_calculate_oath_code": null,
+    "s_open_keyboard_shortcuts": null,
 
     "@_eof": {}
 }

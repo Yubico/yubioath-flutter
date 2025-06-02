@@ -22,7 +22,7 @@ import '../widgets/flex_box.dart';
 import 'models.dart';
 
 final passkeysSearchProvider =
-    StateNotifierProvider<PasskeysSearchNotifier, String>(
+    StateNotifierProvider.autoDispose<PasskeysSearchNotifier, String>(
       (ref) => PasskeysSearchNotifier(),
     );
 

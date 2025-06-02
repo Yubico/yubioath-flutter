@@ -125,7 +125,7 @@ String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   return [
     if (serial != null) l10n.s_sn_serial(serial),
     if (info.version.isAtLeast(1))
-      l10n.s_fw_version(info.version)
+      l10n.s_fw_version(info.getVersionName())
     else
       l10n.s_unknown_type,
   ].join(' ');

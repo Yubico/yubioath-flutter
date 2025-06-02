@@ -20,7 +20,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Creates [RichText] from [text] where the keys of [urls] are replaced
 /// with clickable links.
-RichText injectLinksInText(
+Text injectLinksInText(
   String text,
   Map<String, Uri> urls, {
   TextStyle? textStyle,
@@ -61,5 +61,5 @@ RichText injectLinksInText(
     }
     index += 1;
   }
-  return RichText(text: TextSpan(style: textStyle, children: spans));
+  return Text.rich(TextSpan(style: textStyle, children: spans));
 }

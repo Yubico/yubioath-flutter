@@ -51,17 +51,10 @@
     "s_show_navigation": "ナビゲーションを表示する",
     "s_expand_navigation": "ナビゲーションを展開します",
     "s_collapse_navigation": "ナビゲーションを折りたたみます",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "メニューを表示します",
-    "s_hide_menu": "メニューを非表示にします",
+    "s_toggle_menu_bar": null,
     "s_more_info": "詳細情報",
-    "q_rename_target": "{label} の名前を変更しますか？",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -123,11 +116,9 @@
         }
     },
     "s_character_count": "文字数",
-    "s_learn_more": "詳細情報\u00a0",
 
     "@_language": {},
     "s_language": "言語",
-    "l_enable_community_translations": "コミュニティ翻訳を有効にする",
     "p_community_translations_desc": "翻訳は {crowdin} でコミュニティによりメンテナンスされています。",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -224,23 +215,6 @@
     "s_reconfiguring_yk": "YubiKeyを再設定しています...",
     "s_config_updated": "設定が更新されました",
     "l_config_updated_reinsert": "設定が更新されました。YubiKey を取り外して再挿入してください",
-    "s_app_not_supported": "アプリケーションがサポートされていません",
-    "l_app_not_supported_on_yk": "ご使用のYubiKeyでは{app}アプリケーションはサポートされていません",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "アクセスするにはYubiKeyで{app}アプリケーションを有効にしてください",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "FIDO2が無効です",
     "l_webauthn_req_fido2": "WebAuthnでは、FIDO2アプリケーションをYubiKeyで有効にする必要があります",
     "s_lock_code": "ロックコード",
@@ -265,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "YubiKey をコンピューターなどの USB 電源に 3 秒以上接続してください。\n\n初回の電源投入後は NFC が有効化され、使用できるようになります。",
     "p_deactivate_restricted_nfc_footer": "YubiKey には輸送中の無線による改ざんから保護するための制限付き NFC が搭載されています。NFC 操作はあなたが有効化するまで一時的に無効になります。",
     "s_unsupported_yk": "サポートされていないYubiKey",
-    "s_yk_not_recognized": "デバイスが認識されません",
     "p_operation_failed_try_again": "操作に失敗しました。もう一度やり直してください。",
     "l_configuration_unsupported": "設定に対応していません",
     "p_scp_unsupported": "YubiKey が NFCで通信するには、この携帯電話が対応していない技術が必要です。YubiKey を携帯電話の USB ポートに接続してください。",
@@ -340,17 +313,6 @@
     "l_unlock_pin_first": "PIN でロック解除",
     "l_pin_soft_locked": "YubiKeyを取り外して再挿入するまで、PINがブロックされています",
     "l_pin_change_required_desc": "このアプリケーションを使用する前に新しいPINを設定する必要があります",
-    "p_enter_current_pin_or_puk": "現在の {name} を入力してください。",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "現在のPINを入力してください。PINがわからない場合は、PUKでブロックを解除するか、YubiKeyをリセットする必要があります。",
-    "p_enter_current_pin_or_reset_no_puk": "現在のPINを入力してください。PINがわからない場合は、YubiKeyをリセットする必要があります。",
-    "p_enter_current_puk_or_reset": "現在のPUKを入力してください。PUKがわからない場合は、YubiKeyをリセットする必要があります。",
     "p_new_fido2_pin_requirements": "新しい PIN を入力してください。PIN は {min_length}-{max_length} 文字で、英数字と特殊文字を使用できます。",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -439,7 +401,6 @@
     "s_password_set": "パスワードが設定されました",
     "s_show_password": "パスワードを表示",
     "s_hide_password": "パスワードを非表示",
-    "l_optional_password_protection": "オプションのパスワード保護",
     "l_password_protection": "アカウントのパスワード保護",
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
@@ -464,7 +425,6 @@
     "s_current_management_key": "現在の管理キー",
     "s_new_management_key": "新しい管理キー",
     "l_change_management_key": "管理キーを変更",
-    "p_change_management_key_desc": "管理キーを変更してください。管理キーの代わりにPINを使用できるように選択することも可能です。",
     "l_management_key_changed": "管理キーが変更されました",
     "l_default_key_used": "デフォルトの管理キーが使用されます",
     "s_generate_random": "ランダム生成",
@@ -503,7 +463,6 @@
     "s_add_account": "アカウントを追加",
     "p_add_account_desc": "QR コードをスキャンするか、資格情報を入力してください。",
     "s_add_accounts": "アカウントを追加",
-    "p_add_description": "QRコードをスキャンするには、画面にコード全体が表示されていることを確認してから下のボタンを押してください。保存した画像をフォルダからこのダイアログにドラッグすることもできます。アカウント認証情報の詳細を書面でお持ちの場合は、代わりに手動入力を使用してください。",
     "l_drop_qr_description": "QRコードをドロップしてアカウントを追加",
     "p_add_account_three_ways": "アカウントの追加には、3 通りの方法があります。",
     "s_scanning": "スキャン (推奨)",
@@ -512,7 +471,6 @@
     "p_drag_and_drop_desc": "アカウント表示の任意の場所に QR コードを含む画像をドロップします。",
     "s_manually": "手動",
     "p_manually_desc": "フォームにアカウント資格情報の詳細を入力します。",
-    "s_add_manually": "手動で追加",
     "s_account_added": "アカウントが追加されました",
     "l_account_add_failed": "アカウントを追加できませんでした：{message}",
     "@l_account_add_failed": {
@@ -595,14 +553,6 @@
     "s_credential_id": "証明書ID",
     "s_display_name": "表示名",
     "s_user_name": "ユーザー名",
-    "l_passkey": "パスキー：{label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "パスキー",
     "s_no_passkeys": "パスキーがありません",
     "l_ready_to_use": "使用可能",
@@ -699,7 +649,6 @@
     "l_self_signed_certificate": "自己署名証明書",
     "l_certificate_signing_request": "証明書署名要求 (CSR)",
     "s_certificate": "証明書",
-    "s_csr": "CSR",
     "s_subject": "サブジェクト",
     "l_export_csr_file": "CSRをファイルに保存",
     "l_export_public_key": "公開鍵をエクスポート",
@@ -831,8 +780,6 @@
     "s_expiration_date": "有効期限",
     "p_algorithm_desc": "使用する鍵アルゴリズム。",
     "p_expiration_date_desc": "証明書が失効する日付、デフォルトでは 1 年 (証明書のみ)。",
-    "p_cert_options_desc": "使用する鍵アルゴリズム、出力形式、および有効期限（証明書のみ）。",
-    "p_cert_options_bio_desc": "使用する鍵アルゴリズム、出力フォーマット、有効期限 (証明書のみ)、PIN の代わりに生体認証を使用できるようにするかを設定します。",
     "p_key_options_bio_desc": "PIN の代わりに生体認証を使用できるようにします。",
     "q_overwrite_slot": "スロットを上書きしますか？",
     "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
@@ -1121,9 +1068,40 @@
     "s_set_label": "ラベルを設定",
     "s_set_color": "色を設定",
     "s_change_label": "ラベルを変更",
-    "s_color": "色",
     "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",
     "p_rename_will_change_custom_name": "YubiKeyのラベルが変更されます。",
+
+    "@_shortcuts": {},
+    "s_shortcuts": null,
+    "s_keyboard_shortcuts": null,
+    "s_global_shortcuts": null,
+    "s_application_shortcuts": null,
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": null,
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": null,
+    "s_search": null,
+    "s_next_device": null,
+    "s_previous_device": null,
+    "s_open_settings": null,
+    "s_open_help_and_about": null,
+    "s_open_item": null,
+    "s_edit_item": null,
+    "s_delete_item": null,
+    "s_calculate_oath_code": null,
+    "s_open_keyboard_shortcuts": null,
 
     "@_eof": {}
 }

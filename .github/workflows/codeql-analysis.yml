@@ -55,6 +55,8 @@ jobs:
       - run: |
           flutter config
           flutter --version
+          flutter pub get
+        working-directory: ./app
 
       - if: matrix.language == 'kotlin'
         name: Run flutter tests

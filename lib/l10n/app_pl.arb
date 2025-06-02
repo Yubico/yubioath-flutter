@@ -51,17 +51,10 @@
     "s_show_navigation": "Pokaż nawigację",
     "s_expand_navigation": "Rozwiń nawigację",
     "s_collapse_navigation": "Zwiń nawigację",
+    "s_expand_collapse_navigation": null,
     "s_show_menu": "Pokaż menu",
-    "s_hide_menu": "Ukryj menu",
+    "s_toggle_menu_bar": null,
     "s_more_info": "Więcej informacji",
-    "q_rename_target": "Zmienić nazwę {label}?",
-    "@q_rename_target": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "l_bullet": "• {item}",
     "@l_bullet": {
         "placeholders": {
@@ -123,11 +116,9 @@
         }
     },
     "s_character_count": "Liczba znaków",
-    "s_learn_more": "Dowiedz się więcej",
 
     "@_language": {},
     "s_language": "Język",
-    "l_enable_community_translations": "Włącz tłumaczenia społecznościowe",
     "p_community_translations_desc": "Tłumaczenia są utrzymywane przez społeczność {crowdin}.",
     "@p_community_translations_desc": {
         "placeholders": {
@@ -224,23 +215,6 @@
     "s_reconfiguring_yk": "Rekonfigurowanie klucza YubiKey\u2026",
     "s_config_updated": "Konfiguracja została zaktualizowana",
     "l_config_updated_reinsert": "Konfiguracja została zaktualizowana. Podłącz ponownie klucz YubiKey",
-    "s_app_not_supported": "Aplikacja nie jest obsługiwana",
-    "l_app_not_supported_on_yk": "Używany klucz YubiKey nie obsługuje aplikacji '{app}'",
-    "@l_app_not_supported_on_yk": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
-    "l_app_disabled_desc": "Włącz aplikację '{app}' w kluczu YubiKey, aby uzyskać do niej dostęp",
-    "@l_app_disabled_desc": {
-        "placeholders": {
-            "app": {
-                "type": "String"
-            }
-        }
-    },
     "s_fido_disabled": "Aplikacja FIDO2 została wyłączona",
     "l_webauthn_req_fido2": "WebAuthn wymaga włączenia aplikacji FIDO2 w kluczu YubiKey",
     "s_lock_code": "Kod blokady",
@@ -265,7 +239,6 @@
     "p_deactivate_restricted_nfc_desc": "Podłącz YubiKey do dowolnego źródła zasilania USB, takiego jak komputer, na co najmniej 3 sekundy.\n\nPo włączeniu zasilania, NFC zostanie aktywowane i będzie gotowe do użycia.",
     "p_deactivate_restricted_nfc_footer": "Klucz YubiKey jest wyposażony w funkcję \"Restricted NFC\", zaprojektowaną w celu zabezpieczenia przed manipulacją bezprzewodową podczas transportu. Oznacza to, że operacje NFC są tymczasowo wyłączone do momentu ich aktywacji.",
     "s_unsupported_yk": "Klucz YubiKey jest nieobsługiwany",
-    "s_yk_not_recognized": "Urządzenie nie zostało rozpoznane",
     "p_operation_failed_try_again": "Operacja nie powiodła się. Spróbuj ponownie.",
     "l_configuration_unsupported": "Konfiguracja nie jest obsługiwana",
     "p_scp_unsupported": "Aby komunikować się przez NFC, klucz YubiKey wymaga technologii, która nie jest obsługiwana przez ten telefon. Podłącz YubiKey do portu USB telefonu.",
@@ -340,17 +313,6 @@
     "l_unlock_pin_first": "Odblokuj kodem PIN",
     "l_pin_soft_locked": "Kod PIN został zablokowany do momentu ponownego podłączenia klucza YubiKey",
     "l_pin_change_required_desc": "Przed użyciem tej aplikacji ustaw nowy kod PIN",
-    "p_enter_current_pin_or_puk": "Wprowadź swój obecny {name}.",
-    "@p_enter_current_piv_pin_puk": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-            }
-        }
-    },
-    "p_enter_current_pin_or_reset": "Wpisz obecny kod PIN. Jeśli go nie pamiętasz, zresetuj klucz YubiKey lub odblokuj go za pomocą kodu PUK.",
-    "p_enter_current_pin_or_reset_no_puk": "Wpisz obecny kod PIN. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
-    "p_enter_current_puk_or_reset": "Wpisz obecny kod PUK. Jeśli go nie pamiętasz, zresetuj klucz YubiKey.",
     "p_new_fido2_pin_requirements": "Kod PIN musi mieć długość od {min_length} do {max_length} znaków i może zawierać litery, cyfry oraz znaki specjalne.",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -439,7 +401,6 @@
     "s_password_set": "Hasło zostało ustawione",
     "s_show_password": "Pokaż hasło",
     "s_hide_password": "Ukryj hasło",
-    "l_optional_password_protection": "Opcjonalna ochrona hasłem",
     "l_password_protection": "Ochrona kont hasłem",
     "s_new_password": "Nowe hasło",
     "s_current_password": "Obecne hasło",
@@ -464,7 +425,6 @@
     "s_current_management_key": "Obecny klucz zarządzania",
     "s_new_management_key": "Nowy klucz zarządzania",
     "l_change_management_key": "Zmień klucz zarządzania",
-    "p_change_management_key_desc": "Zmień klucz zarządzania. Możesz opcjonalnie używać kodu PIN.",
     "l_management_key_changed": "Klucz zarządzania został zmieniony",
     "l_default_key_used": "Używany jest domyślny klucz zarządzania",
     "s_generate_random": "Generuj losowo",
@@ -503,7 +463,6 @@
     "s_add_account": "Dodaj konto",
     "p_add_account_desc": "Zeskanuj kod QR lub wpisz poświadczenie ręcznie.",
     "s_add_accounts": "Dodaj konta",
-    "p_add_description": "Aby zeskanować kod QR, upewnij się, że pełny kod jest widoczny na ekranie i kliknij poniższy przycisk. Możesz również przeciągnąć zapisany obraz do tego okna. Jeśli masz zapisane poświadczenie w formie tekstowej, wpisz dane ręcznie.",
     "l_drop_qr_description": "Zeskanuj kod QR, aby dodać konta",
     "p_add_account_three_ways": "Są trzy sposoby dodawania kont.",
     "s_scanning": "Skanowanie (zalecane)",
@@ -512,7 +471,6 @@
     "p_drag_and_drop_desc": "Obraz zawierający kod QR możesz upuścić w dowolnym miejscu w widoku Konta.",
     "s_manually": "Ręcznie",
     "p_manually_desc": "Poświadczenia konta możesz wpisać ręcznie.",
-    "s_add_manually": "Dodaj ręcznie",
     "s_account_added": "Konto zostało dodane",
     "l_account_add_failed": "Nie udało się dodać konta: {message}",
     "@l_account_add_failed": {
@@ -595,14 +553,6 @@
     "s_credential_id": "Credential ID",
     "s_display_name": "Nazwa wyświetlana",
     "s_user_name": "Nazwa użytkownika",
-    "l_passkey": "Klucz dostępu: {label}",
-    "@l_passkey": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
     "s_passkeys": "Klucze dostępu",
     "s_no_passkeys": "Brak kluczy dostępu",
     "l_ready_to_use": "Gotowy do użycia",
@@ -699,7 +649,6 @@
     "l_self_signed_certificate": "Certyfikat z własnym podpisem",
     "l_certificate_signing_request": "Żądanie podpisania certyfikatu (CSR)",
     "s_certificate": "Certyfikat",
-    "s_csr": "CSR",
     "s_subject": "Temat",
     "l_export_csr_file": "Zapisz CSR do pliku",
     "l_export_public_key": "Eksportuj klucz publiczny",
@@ -831,8 +780,6 @@
     "s_expiration_date": "Data wygaśnięcia",
     "p_algorithm_desc": "Algorytm do generowania klucza.",
     "p_expiration_date_desc": "Data wygaśnięcia certyfikatu, domyślnie 1 rok (tylko certyfikat).",
-    "p_cert_options_desc": "Algorytm klucza do użycia, format wyjściowy i data wygaśnięcia (tylko certyfikat).",
-    "p_cert_options_bio_desc": "Algorytm klucza do użycia, format wyjściowy, data wygaśnięcia (tylko certyfikat) i informacja czy dane biometryczne mogą zostać użyte zamiast kodu PIN.",
     "p_key_options_bio_desc": "Umożliwia korzystanie z danych biometrycznych zamiast kodu PIN.",
     "q_overwrite_slot": "Nadpisać slot?",
     "p_overwrite_slot_desc": "Spowoduje to trwałe nadpisanie obecnej zawartości w slocie {slot}.",
@@ -1121,9 +1068,40 @@
     "s_set_label": "Ustaw etykietę",
     "s_set_color": "Ustaw kolor",
     "s_change_label": "Zmień etykietę",
-    "s_color": "Kolor",
     "p_set_will_add_custom_name": "Spowoduje to nazwanie klucza YubiKey.",
     "p_rename_will_change_custom_name": "Spowoduje to zmianę etykiety klucza YubiKey.",
+
+    "@_shortcuts": {},
+    "s_shortcuts": null,
+    "s_keyboard_shortcuts": null,
+    "s_global_shortcuts": null,
+    "s_application_shortcuts": null,
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": null,
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": null,
+    "s_search": null,
+    "s_next_device": null,
+    "s_previous_device": null,
+    "s_open_settings": null,
+    "s_open_help_and_about": null,
+    "s_open_item": null,
+    "s_edit_item": null,
+    "s_delete_item": null,
+    "s_calculate_oath_code": null,
+    "s_open_keyboard_shortcuts": null,
 
     "@_eof": {}
 }
