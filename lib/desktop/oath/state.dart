@@ -354,7 +354,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
       target: ['accounts'],
       params: {'uri': otpauth.toString(), 'require_touch': requireTouch},
     );
-    refresh();
+    await refresh();
     return OathCredential.fromJson(result);
   }
 
@@ -393,7 +393,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     }
   }
 
-  void refresh() async {
+  Future<void> refresh() async {
     if (_locked) return;
     _log.debug('refreshing credentials...');
     var result = await _session.command('calculate_all', target: ['accounts']);

@@ -50,7 +50,7 @@ class _RpcStateNotifier extends StateNotifier<RpcState> {
     _init();
   }
 
-  void _init() async {
+  Future<void> _init() async {
     final response = await _rpc?.command('get', []);
     if (mounted && response != null) {
       state = RpcState.fromJson(response['data']);
