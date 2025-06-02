@@ -354,7 +354,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
       target: ['accounts'],
       params: {'uri': otpauth.toString(), 'require_touch': requireTouch},
     );
-    await refresh();
+    unawaited(refresh());
     return OathCredential.fromJson(result);
   }
 
