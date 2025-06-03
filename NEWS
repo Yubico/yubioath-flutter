@@ -1,9 +1,18 @@
+* Version 7.2.3
+ ** UI: Improved language dialog.
+ ** UI: Add help dialog for keyboard shortcuts.
+ ** UI: Fixes to focus and keyboard navigation.
+ ** Linux: Fixes to the tray and application icons.
+ ** Android: Fix issue for YubiKey NEO with touch-eject enabled.
+ ** Android: Compatibility improvements for Android 16.
+ ** Binaries compiled with Flutter 3.32.1 and Python 3.13.3 (desktop).
+
 * Version 7.2.2 (released 2025-03-27) Android-only release
- ** Fix: correctly handle FIDO PIN entry
+ ** Fix: correctly handle FIDO PIN entry.
 
 * Version 7.2.1 (released 2025-03-27) Android-only release
- ** Fix: crash when reopening the app after longer period of inactivity
- ** Fix: handle invalid input when setting FIDO PIN
+ ** Fix: crash when reopening the app after longer period of inactivity.
+ ** Fix: handle invalid input when setting FIDO PIN.
 
 * Version 7.2.0 (released 2025-03-26)
  ** Android: Add support for Toggle Applications.
