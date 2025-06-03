@@ -553,8 +553,8 @@
     "s_credential_id": "Legitimations-ID",
     "s_display_name": "Visningsnamn",
     "s_user_name": "Användarnamn",
-    "s_passkeys": "Nycklar",
-    "s_no_passkeys": "Inga nycklar",
+    "s_passkeys": "Passkeys",
+    "s_no_passkeys": "Inga passkeys",
     "l_ready_to_use": "Klar att använda",
     "l_register_sk_on_websites": "Registrera som säkerhetsnyckel på webbplatser",
     "l_no_discoverable_accounts": "Inga passkeys lagrade",
@@ -566,7 +566,7 @@
     "p_warning_delete_passkey": "Varning! Denna åtgärd kommer att ta bort vald passkey från din YubiKey.",
     "p_warning_delete_passkey_desc": "Du kommer inte längre att kunna använda den här passkey för den tjänst där den är registrerad.",
     "s_search_passkeys": "Sök passkeys",
-    "p_passkeys_used": "{used} av {max} använda nycklar.",
+    "p_passkeys_used": "{used} av {max} använda passkeys.",
     "@p_passkeys_used": {
         "placeholders": {
             "used": {
@@ -972,7 +972,7 @@
     "p_factory_reset_desc": "Data lagras i flera applikationer på YubiKey, varav vissa kan fabriksåterställas oberoende av varandra.\n\nVälj en applikation ovan för att återställa.",
     "p_warning_factory_reset": "Varning för detta! Detta kommer oåterkalleligen att radera alla OATH TOTP / HOTP-konton från din YubiKey.",
     "p_warning_disable_credentials": "Dina OATH-uppgifter, liksom alla lösenord, kommer att tas bort från denna YubiKey. Se till att inaktivera dessa från deras respektive webbplatser för att undvika att bli utelåsta från dina konton.",
-    "p_warning_deletes_accounts": "Varning för detta! Detta kommer oåterkalleligen att radera alla U2F- och FIDO2-konton, inklusive passerkort, från din YubiKey.",
+    "p_warning_deletes_accounts": "Varning! Detta kommer oåterkalleligen att radera alla U2F- och FIDO2-konton, inklusive passkeys, från din YubiKey.",
     "p_warning_disable_accounts": "Dina inloggningsuppgifter, liksom eventuella PIN-koder, kommer att tas bort från denna YubiKey. Se till att inaktivera dessa från deras respektive webbplatser för att undvika att bli utelåsta från dina konton.",
     "p_warning_piv_reset": "Varning för detta! Alla data som lagras för PIV kommer oåterkalleligen att raderas från din YubiKey.",
     "p_warning_piv_reset_desc": "Detta inkluderar privata nycklar och certifikat. Din PIN-kod, PUK-kod och administrationsnyckel återställs till fabriksinställningarna.",
