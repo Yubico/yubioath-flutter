@@ -4,9 +4,9 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "日本語",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "翻訳済み: {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "校閲済み: {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "未翻訳",
+    "p_translation_progress_desc": "進捗メーターで翻訳の進行状況を表示しています。",
 
     "s_save": "保存",
     "s_cancel": "キャンセル",
@@ -48,9 +48,9 @@
     "s_details": "詳細",
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを非表示",
-    "s_show_navigation": "ナビゲーションを表示する",
-    "s_expand_navigation": "ナビゲーションを展開します",
-    "s_collapse_navigation": "ナビゲーションを折りたたみます",
+    "s_show_navigation": "ナビゲーションを表示します",
+    "s_expand_navigation": null,
+    "s_collapse_navigation": null,
     "s_expand_collapse_navigation": null,
     "s_show_menu": "メニューを表示します",
     "s_toggle_menu_bar": null,
@@ -71,7 +71,7 @@
     "s_actions": "操作",
     "s_manage": "管理",
     "s_setup": "セットアップ",
-    "s_device": "端末",
+    "s_device": "デバイス",
     "s_application": "アプリケーション",
     "s_settings": "設定",
     "l_settings_desc": "アプリの設定を変更します",
@@ -140,7 +140,7 @@
     "s_list_layout": "リストレイアウト",
     "s_grid_layout": "グリッドレイアウト",
     "s_mixed_layout": "ミックスレイアウト",
-    "s_select_layout": "レイアウトを選択してください",
+    "s_select_layout": "レイアウトを選択",
 
     "@_yubikey_selection": {},
     "s_select_to_scan": "選択してスキャン",
@@ -191,7 +191,7 @@
     "l_place_on_nfc_reader": "YubiKey を NFC リーダーに合わせてください",
     "l_replace_yk_on_reader": "YubiKey をもう一度 NFC リーダーに合わせてください",
     "l_remove_yk_from_reader": "YubiKey を NFC リーダーから外してください",
-    "p_try_reinsert_yk": "YubiKey を外して、もう一度挿入してください。",
+    "p_try_reinsert_yk": "YubiKey を取り外して、もう一度挿入してください。",
     "s_touch_required": "タッチが必要です",
     "l_touch_button_now": "YubiKey のボタンをタッチしてください",
     "l_keep_touching_yk": "YubiKey を繰り返しタッチしてください...",
@@ -213,32 +213,32 @@
     "l_toggle_applications_desc": "アプリケーションを有効/無効にします",
     "l_toggle_interfaces_desc": "インターフェイスを有効/無効にします",
     "s_reconfiguring_yk": "YubiKeyを再設定しています...",
-    "s_config_updated": "設定が更新されました",
-    "l_config_updated_reinsert": "設定が更新されました。YubiKey を取り外して再挿入してください",
+    "s_config_updated": "設定を更新しました",
+    "l_config_updated_reinsert": "設定を更新しました。YubiKey を取り外して再挿入してください",
     "s_fido_disabled": "FIDO2が無効です",
-    "l_webauthn_req_fido2": "WebAuthnでは、FIDO2アプリケーションをYubiKeyで有効にする必要があります",
+    "l_webauthn_req_fido2": "WebAuthn を使用するには、YubiKey で FIDO2 アプリケーションを有効にしてください",
     "s_lock_code": "ロックコード",
     "l_wrong_lock_code": "ロックコードが正しくありません",
     "s_show_lock_code": "ロックコードを表示",
     "s_hide_lock_code": "ロックコードを隠す",
-    "p_lock_code_required_desc": "実行しようとしているアクションには、設定ロックコードを入力する必要があります。",
+    "p_lock_code_required_desc": "操作を実行するには、設定ロックコードを入力する必要があります。",
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "ヘルパープロセスが応答していません",
     "l_yk_no_access": "この YubiKey にアクセスできません",
-    "s_yk_inaccessible": "端末にアクセスできません",
+    "s_yk_inaccessible": "デバイスにアクセスできません",
     "l_open_connection_failed": "接続を開けませんでした",
     "l_ccid_connection_failed": "スマートカード接続を開けませんでした",
     "p_ccid_service_unavailable": "スマートカードサービスが機能していることを確認してください。",
     "p_pcscd_unavailable": "pcscdがインストールされ、実行中であることを確認してください。",
     "l_no_yk_present": "YubiKey がありません",
-    "s_unknown_type": "不明なタイプ",
-    "s_unknown_device": "認識されないデバイス",
+    "s_unknown_type": "タイプが不明です",
+    "s_unknown_device": "認識できないデバイスです",
     "s_restricted_nfc": "NFC の有効化",
     "l_deactivate_restricted_nfc": "NFC 有効化の方法",
     "p_deactivate_restricted_nfc_desc": "YubiKey をコンピューターなどの USB 電源に 3 秒以上接続してください。\n\n初回の電源投入後は NFC が有効化され、使用できるようになります。",
     "p_deactivate_restricted_nfc_footer": "YubiKey には輸送中の無線による改ざんから保護するための制限付き NFC が搭載されています。NFC 操作はあなたが有効化するまで一時的に無効になります。",
-    "s_unsupported_yk": "サポートされていないYubiKey",
+    "s_unsupported_yk": "対応していない YubiKey です",
     "p_operation_failed_try_again": "操作に失敗しました。もう一度やり直してください。",
     "l_configuration_unsupported": "設定に対応していません",
     "p_scp_unsupported": "YubiKey が NFCで通信するには、この携帯電話が対応していない技術が必要です。YubiKey を携帯電話の USB ポートに接続してください。",
@@ -248,7 +248,7 @@
     "s_application_error": "アプリケーションエラー",
     "l_import_error": "インポートエラー",
     "l_file_not_found": "ファイルが見つかりません",
-    "l_file_too_big": "ファイルサイズが大きすぎます",
+    "l_file_too_big": "ファイルのサイズが大きすぎます",
     "l_filesystem_error": "ファイルのシステム操作エラー",
 
     "@_pins": {},
@@ -305,14 +305,14 @@
         }
     },
     "s_fido_pin_protection": "FIDO PIN保護",
-    "s_pin_change_required": "PINの変更が必要",
-    "l_enter_fido2_pin": "YubiKeyのFIDO2 PINを入力してください",
-    "l_pin_blocked_reset": "PINがブロックされています。FIDOアプリケーションを工場出荷時の状態にリセットしてください",
-    "l_pin_blocked": "PINがブロックされています",
-    "l_set_pin_first": "PIN が必要です",
-    "l_unlock_pin_first": "PIN でロック解除",
-    "l_pin_soft_locked": "YubiKeyを取り外して再挿入するまで、PINがブロックされています",
-    "l_pin_change_required_desc": "このアプリケーションを使用する前に新しいPINを設定する必要があります",
+    "s_pin_change_required": "PIN を変更してください",
+    "l_enter_fido2_pin": "YubiKey の FIDO2 PIN を入力してください",
+    "l_pin_blocked_reset": "PIN がブロックされています。FIDO アプリケーションを工場出荷時の状態にリセットしてください",
+    "l_pin_blocked": "PIN がブロックされています",
+    "l_set_pin_first": "PIN を設定してください",
+    "l_unlock_pin_first": "PIN でロック解除してください",
+    "l_pin_soft_locked": "YubiKey を取り外して挿入し直すまで、PIN がブロックされています",
+    "l_pin_change_required_desc": "このアプリケーションを使用する前に新しい PIN を設定してください",
     "p_new_fido2_pin_requirements": "新しい PIN を入力してください。PIN は {min_length}-{max_length} 文字で、英数字と特殊文字を使用できます。",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
@@ -346,12 +346,12 @@
     "q_enable_ep_attestation": "Enterprise Attestation を有効にしますか？",
     "p_enable_ep_attestation_desc": "Enterprise Attestation が有効になり、認可されたドメインが YubiKey を一意に識別できるようになります。",
     "p_enable_ep_attestation_disable_with_factory_reset": "一度 Enterprise Attestation を有効にすると、無効にするには FIDO の工場出荷時リセットを実行する必要があります。",
-    "s_pin_required": "PINが必要",
-    "p_pin_required_desc": "実行しようとしているアクションでは、PIV PINを入力する必要があります。",
-    "l_piv_pin_blocked": "ブロックされています。リセットするにはPUKを使用してください",
+    "s_pin_required": "PIN が必要",
+    "p_pin_required_desc": "実行しようとしている操作では、PIV PIN を入力する必要があります。",
+    "l_piv_pin_blocked": "ブロックされています。PUK を使用してリセットしてください",
     "p_piv_pin_blocked_desc": "PIN がブロックされています。PUK を使用してリセットしてください。",
     "p_piv_pin_blocked_bio_desc": null,
-    "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットする必要があります",
+    "l_piv_pin_puk_blocked": "ブロックされています。工場出荷時の状態にリセットしてください",
     "p_piv_pin_puk_blocked_desc": "PIN と PUK の両方がブロックされています。PIV アプリケーションの工場出荷時リセットが必要です。",
     "p_new_piv_pin_puk_requirements": "{name} は {length} 文字以上で設定してください。",
     "@p_new_piv_pin_puk_requirements": {
@@ -378,7 +378,7 @@
             }
         }
     },
-    "p_pin_puk_complexity_failure": "新しい {name} は複雑な要件を満たしていません。",
+    "p_pin_puk_complexity_failure": "新しい {name} は複雑さの要件を満たしていません。",
     "@p_pin_puk_complexity_failure": {
         "placeholders": {
             "name": {
@@ -388,19 +388,19 @@
     },
     "s_dismiss": "閉じる",
     "p_default_pin_puk_key_desc": "デフォルトの PIN、PUK、管理キーの変更をお勧めします。",
-    "l_warning_default_pin": "警告: デフォルトのPINが使用されています",
-    "l_warning_default_puk": "警告: デフォルトのPUKが使用されています",
-    "l_default_pin_used": "デフォルトのPINが使用されています",
-    "l_default_puk_used": "既定のPUKを使用",
-    "l_pin_complexity": "複雑な PIN ルール",
+    "l_warning_default_pin": "警告: デフォルトの PIN を使用されています",
+    "l_warning_default_puk": "警告: デフォルトの PUK を使用しています",
+    "l_default_pin_used": "デフォルトの PIN を使用しています",
+    "l_default_puk_used": "デフォルトの PUK を使用しています",
+    "l_pin_complexity": "PIN の複雑さのルール",
 
     "@_passwords": {},
     "s_password": "パスワード",
     "s_manage_password": "パスワードを管理",
     "s_set_password": "パスワードを設定",
-    "s_password_set": "パスワードが設定されました",
-    "s_show_password": "パスワードを表示",
-    "s_hide_password": "パスワードを非表示",
+    "s_password_set": "パスワードを設定しました",
+    "s_show_password": "パスワードを表示します",
+    "s_hide_password": "パスワードを隠します",
     "l_password_protection": "アカウントのパスワード保護",
     "s_new_password": "新しいパスワード",
     "s_current_password": "現在のパスワード",
@@ -409,15 +409,15 @@
     "s_wrong_password": "パスワードが正しくありません",
     "p_wrong_password": "パスワードが間違っています。パスワードがわからない場合は、Yubikey をリセットする必要があります。",
     "s_remove_password": "パスワードを削除",
-    "s_password_removed": "パスワードが削除されました",
-    "s_remember_password": "パスワードを記憶",
-    "s_clear_saved_password": "保存したパスワードを消去",
-    "s_password_forgotten": "パスワードが消去されました",
-    "l_keystore_unavailable": "OSのキーストアを利用できません",
+    "s_password_removed": "パスワードを削除しました",
+    "s_remember_password": "パスワードを記憶する",
+    "s_clear_saved_password": "保存しているパスワードを消去",
+    "s_password_forgotten": "記憶していたパスワードを消去しました",
+    "l_keystore_unavailable": "OS のキーストアが利用できません",
     "l_remember_pw_failed": "パスワードを記憶できませんでした",
     "l_unlock_first": "パスワードでロック解除",
     "l_set_password_first": "パスワードを設定",
-    "l_enter_oath_pw": "YubiKeyのOATHパスワードを入力",
+    "l_enter_oath_pw": "YubiKey の OATH パスワードを入力してください",
     "p_new_password_requirements": "パスワードには、英数字と特殊文字を使用できます。",
 
     "@_management_key": {},
@@ -425,22 +425,22 @@
     "s_current_management_key": "現在の管理キー",
     "s_new_management_key": "新しい管理キー",
     "l_change_management_key": "管理キーを変更",
-    "l_management_key_changed": "管理キーが変更されました",
-    "l_default_key_used": "デフォルトの管理キーが使用されます",
-    "s_generate_random": "ランダム生成",
+    "l_management_key_changed": "管理キーを変更しました",
+    "l_default_key_used": "デフォルトの管理キーを使用しています",
+    "s_generate_random": "ランダムに生成します",
     "s_use_default": "デフォルトを使用",
-    "l_warning_default_key": "警告：デフォルトのキーが使用されます",
-    "s_protect_key": "PINで保護",
+    "l_warning_default_key": "警告: デフォルトのキーを使用しています",
+    "s_protect_key": "PIN で保護する",
     "p_protect_key_desc": "管理キーが必要な操作で、代わりに PIN を使用します。",
     "s_management_key_algorithm": "鍵のアルゴリズムを管理",
     "p_management_key_algorithm_desc": "管理キーのアルゴリズムを選択します。",
-    "l_pin_protected_key": "代わりにPINを使用できます",
+    "l_pin_protected_key": "PIN を代わりに使用できます",
     "l_wrong_key": "キーが正しくありません",
     "l_unlock_piv_management": "PIV管理をロック解除",
     "p_unlock_piv_management_desc": "この操作では、PIV 管理キーが必要です。",
 
     "@_oath_accounts": {},
-    "l_account": "アカウント：{label}",
+    "l_account": "アカウント: {label}",
     "@l_account": {
         "placeholders": {
             "label": {
@@ -450,7 +450,7 @@
     },
     "s_accounts": "アカウント",
     "s_no_accounts": "アカウントなし",
-    "l_results_for": "\"{query} \"の結果",
+    "l_results_for": "「{query}」の結果",
     "@l_results_for": {
         "placeholders": {
             "query": {
@@ -458,21 +458,21 @@
             }
         }
     },
-    "l_authenticator_get_started": "OTPアカウントの使用を開始",
-    "l_no_accounts_desc": "OATH TOTP/HOTPをサポートするサービスプロバイダからYubiKeyにアカウントを追加",
+    "l_authenticator_get_started": "OTP アカウントの使用をはじめる",
+    "l_no_accounts_desc": "OATH TOTP/HOTP に対応したサービスプロバイダーのアカウントを YubiKey に追加してください",
     "s_add_account": "アカウントを追加",
     "p_add_account_desc": "QR コードをスキャンするか、資格情報を入力してください。",
     "s_add_accounts": "アカウントを追加",
-    "l_drop_qr_description": "QRコードをドロップしてアカウントを追加",
-    "p_add_account_three_ways": "アカウントの追加には、3 通りの方法があります。",
+    "l_drop_qr_description": "QR コードをドラッグ&ドロップしてアカウントを追加",
+    "p_add_account_three_ways": "3 通りの方法でアカウントを追加できます。",
     "s_scanning": "スキャン (推奨)",
     "p_scanning_desc": "QR コードをスキャンする前に、画面にコード全体が表示されているか確認してください。",
     "s_drag_and_drop": "ドラッグアンドドロップ",
     "p_drag_and_drop_desc": "アカウント表示の任意の場所に QR コードを含む画像をドロップします。",
     "s_manually": "手動",
     "p_manually_desc": "フォームにアカウント資格情報の詳細を入力します。",
-    "s_account_added": "アカウントが追加されました",
-    "l_account_add_failed": "アカウントを追加できませんでした：{message}",
+    "s_account_added": "アカウントを追加しました",
+    "l_account_add_failed": "アカウントを追加できませんでした: {message}",
     "@l_account_add_failed": {
         "placeholders": {
             "message": {
@@ -484,20 +484,20 @@
     "l_add_account_unlock_required": "ロック解除が必要です",
     "l_add_account_already_exists": "既に存在するアカウントです",
     "l_add_account_func_missing": "機能が存在しないか無効です",
-    "l_account_name_required": "アカウントには名前が必要です",
+    "l_account_name_required": "アカウントには名前を付けてください",
     "l_name_already_exists": "この名前は発行者にすでに存在します",
-    "l_account_already_exists": "このアカウントはYubiKeyにすでに存在します",
-    "l_invalid_character_issuer": "無効な文字：':'は発行者には使用できません",
-    "l_select_accounts": "YubiKeyに追加するアカウントを選択",
+    "l_account_already_exists": "このアカウントは YubiKey にすでに存在します",
+    "l_invalid_character_issuer": "無効な文字: 「:」は発行者には使用できません",
+    "l_select_accounts": "YubiKey に追加するアカウントを選択",
     "s_pin_account": "アカウントをピン留めする",
-    "s_unpin_account": "アカウントのピン留めを解除",
-    "s_no_pinned_accounts": "ピン留めされたアカウントはありません",
+    "s_unpin_account": "アカウントのピン留めを外す",
+    "s_no_pinned_accounts": "ピン留めされているアカウントはありません",
     "s_pinned": "ピン留め",
-    "l_pin_account_desc": "重要なアカウントをまとめて保持",
+    "l_pin_account_desc": "重要なアカウントを固定します",
     "s_rename_account": "アカウント名を変更",
-    "l_rename_account_desc": "アカウントの発行者/名前を編集",
-    "s_account_renamed": "アカウントの名前が変更されました",
-    "l_rename_account_failed": "アカウント名の変更に失敗しました: {message}",
+    "l_rename_account_desc": "アカウントの発行者/名前を編集します",
+    "s_account_renamed": "アカウントの名前を変更しました",
+    "l_rename_account_failed": "アカウント名を変更できませんでした: {message}",
     "@l_rename_account_failed": {
         "placeholders": {
             "message": {
@@ -505,12 +505,12 @@
             }
         }
     },
-    "p_rename_will_change_account_displayed": "これにより、リスト内のアカウントの表示が変更されます。",
+    "p_rename_will_change_account_displayed": "リスト内でのアカウントの表示内容が変更されます。",
     "s_delete_account": "アカウントを削除",
     "q_delete_account": "アカウントを削除しますか？",
-    "l_delete_account_desc": "YubiKeyからアカウントを削除",
-    "s_account_deleted": "アカウントが削除されました",
-    "p_warning_delete_account": "警告！このアクションにより、YubiKeyからアカウントが削除されます。",
+    "l_delete_account_desc": "YubiKey からアカウントを削除します",
+    "s_account_deleted": "アカウントを削除しました",
+    "p_warning_delete_account": "警告！YubiKey からアカウントが削除されます。",
     "p_warning_disable_credential": "ログインできなくならないように、まず登録しているサービスからこの資格情報を無効にしてください。",
     "s_account_name": "アカウント名",
     "s_search_accounts": "アカウントを検索",
@@ -525,7 +525,7 @@
             }
         }
     },
-    "s_num_digits": "{num}桁",
+    "s_num_digits": "{num} 桁",
     "@s_num_digits": {
         "placeholders": {
             "num": {
@@ -533,7 +533,7 @@
             }
         }
     },
-    "s_num_sec": "{num}秒",
+    "s_num_sec": "{num} 秒",
     "@s_num_sec": {
         "placeholders": {
             "num": {
@@ -541,28 +541,28 @@
             }
         }
     },
-    "s_issuer_optional": "発行者（オプション）",
+    "s_issuer_optional": "発行者 (オプション)",
     "s_counter_based": "カウンターベース",
     "s_time_based": "時間ベース",
-    "l_copy_code_desc": "コードを別のアプリケーションに貼り付け",
-    "l_calculate_code_desc": "YubiKeyから新しいコードを取得",
+    "l_copy_code_desc": "別のアプリケーションにコードを貼り付けて使用してください",
+    "l_calculate_code_desc": "YubiKey から新しいコードを取得します",
 
     "@_fido_credentials": {},
     "s_rp_id": "RP ID",
     "s_user_id": "ユーザー ID",
-    "s_credential_id": "証明書ID",
+    "s_credential_id": "Credential ID",
     "s_display_name": "表示名",
     "s_user_name": "ユーザー名",
     "s_passkeys": "パスキー",
-    "s_no_passkeys": "パスキーがありません",
+    "s_no_passkeys": "パスキーはありません",
     "l_ready_to_use": "使用可能",
-    "l_register_sk_on_websites": "Webサイトでセキュリティキーとして登録してください",
-    "l_no_discoverable_accounts": "パスキーが保存されていません",
-    "p_non_passkeys_note": "パスキー以外の資格情報が存在する可能性がありますが、一覧に表示されません。",
+    "l_register_sk_on_websites": "ウェブサイトサイトでセキュリティキーとして登録してください",
+    "l_no_discoverable_accounts": "パスキーは保存されていません",
+    "p_non_passkeys_note": "パスキー以外の資格情報が存在する可能性がありますが、一覧はに表示されません。",
     "s_delete_passkey": "パスキーを削除",
     "q_delete_passkey": "パスキーを削除しますか？",
-    "l_delete_passkey_desc": "YubiKeyからパスキーを削除します",
-    "s_passkey_deleted": "パスキーが削除されました",
+    "l_delete_passkey_desc": "YubiKey からパスキーを削除します",
+    "s_passkey_deleted": "パスキーを削除しました",
     "p_warning_delete_passkey": "警告！この操作は Yubikey からパスキーを削除します。",
     "p_warning_delete_passkey_desc": "登録しているサービスで、このパスキーが使用できなくなります。",
     "s_search_passkeys": "パスキーを検索",
@@ -620,7 +620,7 @@
     "s_rename_fp": "指紋の名前を変更",
     "l_rename_fp_desc": "名前を変更します",
     "s_fingerprint_renamed": "指紋の名前が変更されました",
-    "l_rename_fp_failed": "名前変更エラー：{message}",
+    "l_rename_fp_failed": "名前変更のエラー: {message}",
     "@l_rename_fp_failed": {
         "placeholders": {
             "message": {
@@ -642,51 +642,51 @@
 
     "@_fido_errors": {},
     "l_user_action_timeout_error": "ユーザーの操作がないため失敗しました",
-    "l_wrong_inserted_yk_error": "再挿入されたYubiKeyが初期デバイスと一致しません",
-    "l_failed_connecting_to_fido": "FIDOインターフェイスへの接続に失敗しました",
+    "l_wrong_inserted_yk_error": "挿入し直した YubiKey が元のデバイスと一致しません",
+    "l_failed_connecting_to_fido": "FIDO インターフェイスへ接続できませんでした",
 
     "@_certificates": {},
     "l_self_signed_certificate": "自己署名証明書",
     "l_certificate_signing_request": "証明書署名要求 (CSR)",
     "s_certificate": "証明書",
     "s_subject": "サブジェクト",
-    "l_export_csr_file": "CSRをファイルに保存",
+    "l_export_csr_file": "CSR をファイルに保存",
     "l_export_public_key": "公開鍵をエクスポート",
     "l_export_public_key_file": "公開鍵をファイルに保存",
-    "l_export_public_key_desc": "公開鍵をファイルにエクスポートする",
+    "l_export_public_key_desc": "公開鍵をファイルにエクスポートします",
     "l_public_key_exported": "公開鍵がエクスポートされました",
     "l_export_certificate": "証明書をエクスポート",
     "l_export_certificate_file": "証明書をファイルにエクスポート",
-    "l_export_certificate_desc": "証明書をファイルにエクスポート",
-    "l_certificate_exported": "証明書がエクスポートされました",
-    "l_select_import_file": "インポートするファイルを選択",
+    "l_export_certificate_desc": "証明書をファイルにエクスポートします",
+    "l_certificate_exported": "証明書をエクスポートしました",
+    "l_select_import_file": "インポートするファイルの選択",
     "l_import_file": "ファイルをインポート",
-    "l_import_desc": "キーまたは証明書（あるいはその両方）をインポート",
+    "l_import_desc": "鍵と証明書をインポートします",
     "l_import_nothing": "インポートするものがありません",
     "l_importing_file": "ファイルをインポートしています\u2026",
-    "s_file_imported": "ファイルがインポートされました",
-    "l_unsupported_key_type": "サポートされていないキーの種類",
+    "s_file_imported": "ファイルをインポートしました",
+    "l_unsupported_key_type": "対応していない鍵の種類です",
     "l_delete_certificate": "証明書を削除",
     "q_delete_certificate": "証明書を削除しますか？",
-    "l_delete_certificate_desc": "YubiKeyから証明書を削除します",
-    "l_delete_key": "キーを削除",
+    "l_delete_certificate_desc": "YubiKey から証明書を削除します",
+    "l_delete_key": "鍵を削除",
     "q_delete_key": "鍵を削除しますか？",
-    "l_delete_key_desc": "YubiKey からキーを削除する",
-    "l_delete_certificate_or_key": "証明書/キーを削除",
+    "l_delete_key_desc": "YubiKey から鍵を削除します",
+    "l_delete_certificate_or_key": "証明書/鍵を削除",
     "q_delete_certificate_or_key": "証明書/鍵を削除しますか？",
-    "l_delete_certificate_or_key_desc": "YubiKey から証明書または鍵を削除する",
-    "l_move_key": "キーを移動",
-    "l_move_key_desc": "あるPIVスロットから別のスロットにキーを移動する",
+    "l_delete_certificate_or_key_desc": "YubiKey から証明書または鍵を削除します",
+    "l_move_key": "鍵を移動",
+    "l_move_key_desc": "鍵を別の PIV スロットにキーを移動します",
     "l_change_defaults": "デフォルトのアクセスコードを変更する",
     "s_issuer": "発行者",
     "s_serial": "シリアル",
     "s_certificate_fingerprint": "フィンガープリント",
-    "s_valid_from": "有効開始日",
-    "s_valid_to": "有効終了日",
-    "l_no_certificate": "ロードされている証明書はありません",
-    "l_key_no_certificate": "鍵が証明書なしでロードされました",
+    "s_valid_from": "発効",
+    "s_valid_to": "失効",
+    "l_no_certificate": "証明書は読み込まれませんでした",
+    "l_key_no_certificate": "証明書のない鍵を読み込みました",
     "s_generate_key": "鍵を生成",
-    "l_generate_desc": "新しい証明書またはCSRを生成します",
+    "l_generate_desc": "新しい証明書または CSR を生成します",
     "p_generate_desc": "Yubikey の PIV スロット {slot} に新しい鍵を生成します。",
     "@p_generate_desc": {
         "placeholders": {
@@ -696,10 +696,10 @@
         }
     },
     "s_private_key_generated": "秘密鍵が生成されました",
-    "p_select_what_to_delete": "スロットから削除するものを選択します。",
-    "p_warning_delete_certificate": "警告！このアクションにより、YubiKeyから証明書が削除されます。",
-    "p_warning_delete_key": "警告！この操作はあなたのYubiKeyから秘密鍵を削除します。",
-    "p_warning_delete_certificate_and_key": "警告! この操作は証明書と秘密鍵をあなたのYubiKeyから削除します。",
+    "p_select_what_to_delete": "削除するものをスロットから選択してください。",
+    "p_warning_delete_certificate": "警告！YubiKey から証明書が削除されます。",
+    "p_warning_delete_key": "警告！YubiKeyから秘密鍵を削除します。",
+    "p_warning_delete_certificate_and_key": "警告！証明書と秘密鍵を YubiKey から削除します。",
     "p_delete_certificate_desc": "PIV スロット {slot} の証明書を削除します。",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -724,12 +724,12 @@
             }
         }
     },
-    "l_certificate_deleted": "証明書が削除されました",
-    "l_key_deleted": "キーを削除しました",
-    "l_certificate_and_key_deleted": "証明書とキーが削除されました",
+    "l_certificate_deleted": "証明書を削除しました",
+    "l_key_deleted": "鍵を削除しました",
+    "l_certificate_and_key_deleted": "証明書と鍵を削除しました",
     "l_include_certificate": "証明書を含める",
-    "l_select_destination_slot": "宛先スロットを選択",
-    "q_move_key_confirm": "PIVスロット {from_slot}で秘密鍵を移動しますか？",
+    "l_select_destination_slot": "移動先のスロットを選択",
+    "q_move_key_confirm": "PIVスロット {from_slot} の秘密鍵を移動しますか？",
     "@q_move_key_confirm": {
         "placeholders": {
             "from_slot": {
@@ -737,7 +737,7 @@
             }
         }
     },
-    "q_move_key_to_slot_confirm": "PIVスロット {from_slot} の秘密鍵をスロット {to_slot}に移動しますか？",
+    "q_move_key_to_slot_confirm": "PIVスロット {from_slot} の秘密鍵をスロット {to_slot} に移動しますか？",
     "@q_move_key_to_slot_confirm": {
         "placeholders": {
             "from_slot": {
@@ -769,11 +769,11 @@
         }
     },
     "l_warning_public_key_mismatch": "証明書の公開鍵がスロットにある秘密鍵と一致しません",
-    "l_key_moved": "キーを移動しました",
-    "l_key_and_certificate_moved": "キーと証明書が移動されました",
+    "l_key_moved": "鍵が移動されました",
+    "l_key_and_certificate_moved": "鍵と証明書が移動されました",
     "p_subject_desc": "RFC 4514仕様に準拠した形式の識別名（DN）。",
     "l_rfc4514_invalid": "無効なRFC 4514形式",
-    "rfc4514_examples": "例：\nCN=Example Name CN=jsmith,DC=example,\nDC=net",
+    "rfc4514_examples": "例:\nCN=Example Name CN=jsmith,DC=example,\nDC=net",
     "s_allow_fingerprint": "指紋認証を許可する",
     "s_pin_policy": "PIN ポリシー",
     "s_output_format": "出力フォーマット",
@@ -782,7 +782,7 @@
     "p_expiration_date_desc": "証明書が失効する日付、デフォルトでは 1 年 (証明書のみ)。",
     "p_key_options_bio_desc": "PIN の代わりに生体認証を使用できるようにします。",
     "q_overwrite_slot": "スロットを上書きしますか？",
-    "p_overwrite_slot_desc": "これにより、スロット{slot}内の既存コンテンツが完全に上書きされます。",
+    "p_overwrite_slot_desc": "これにより、スロット {slot} 内の既存コンテンツが完全に上書きされます。",
     "@p_overwrite_slot_desc": {
         "placeholders": {
             "slot": {
@@ -795,7 +795,7 @@
     "l_overwrite_key_maybe": "スロット内の既存の秘密鍵がすべて上書きされます",
 
     "@_piv_slots": {},
-    "s_slot_display_name": "{name}（{hexid}）",
+    "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
             "name": {
@@ -810,31 +810,31 @@
     "s_slot_9c": "デジタル署名",
     "s_slot_9d": "鍵管理",
     "s_slot_9e": "カード認証",
-    "s_retired_slot": "退職した鍵管理",
+    "s_retired_slot": "以前の鍵の管理",
 
     "@_otp_slots": {},
-    "s_otp_slot_one": "短いタッチ",
-    "s_otp_slot_two": "長いタッチ",
-    "l_otp_slot_empty": "スロットが空です",
-    "l_otp_slot_configured": "スロットが構成されています",
+    "s_otp_slot_one": "短くタッチ",
+    "s_otp_slot_two": "長くタッチ",
+    "l_otp_slot_empty": "スロットは空です",
+    "l_otp_slot_configured": "このスロットは設定済みです",
 
     "@_otp_slot_configurations": {},
-    "l_yubiotp_desc": "Yubico OTP認証情報をプログラムします",
+    "l_yubiotp_desc": "Yubico OTP 資格情報をプログラムします",
     "s_challenge_response": "チャレンジレスポンス",
-    "l_challenge_response_desc": "チャレンジレスポンス認証情報をプログラムします",
+    "l_challenge_response_desc": "チャレンジレスポンス資格情報をプログラムします",
     "s_static_password": "静的パスワード",
     "l_static_password_desc": "静的パスワードを設定します",
     "s_hotp": "OATH-HOTP",
-    "l_hotp_desc": "HMAC-SHA1ベースの認証情報をプログラムします",
-    "s_public_id": "公開ID",
-    "s_private_id": "非公開ID",
-    "s_use_serial": "シリアルを使用",
+    "l_hotp_desc": "HMAC-SHA1 ベースの資格情報をプログラムします",
+    "s_public_id": "公開 ID",
+    "s_private_id": "非公開 ID",
+    "s_use_serial": "シリアルを使用する",
     "l_select_file": "ファイルを選択",
     "l_no_export_file": "エクスポートファイルなし",
     "s_no_export": "エクスポートなし",
     "s_export": "エクスポート",
     "l_export_configuration_file": "設定をファイルにエクスポート",
-    "l_exported_can_be_uploaded_at": "エクスポートされた資格情報は {url} にアップロードできます",
+    "l_exported_can_be_uploaded_at": "エクスポートした資格情報は {url} にアップロードできます",
     "@l_exported_can_be_uploaded_at": {
         "placeholders": {
             "url": {
@@ -852,10 +852,10 @@
     },
 
     "@_otp_slot_actions": {},
-    "s_delete_slot": "認証情報を削除",
+    "s_delete_slot": "資格情報を削除する",
     "q_delete_slot": "資格情報を削除しますか？",
-    "l_delete_slot_desc": "スロット内の認証情報を削除",
-    "p_warning_delete_slot_configuration": "警告！このアクションにより、スロット{slot_id}から認証情報が完全に削除されます。",
+    "l_delete_slot_desc": "スロット内の資格情報を削除します",
+    "p_warning_delete_slot_configuration": "警告！スロット {slot_id} から資格情報が完全に削除されます。",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
             "slot_id": {
@@ -863,14 +863,14 @@
             }
         }
     },
-    "l_slot_deleted": "認証情報が削除されました",
+    "l_slot_deleted": "資格情報を削除しました",
     "s_swap": "交換",
-    "s_swap_slots": "スロットを交換",
+    "s_swap_slots": "スロットの交換",
     "q_swap_slots": "スロットを交換しますか？",
-    "l_swap_slots_desc": "短いタッチ/長いタッチを交換",
-    "p_swap_slots_desc": "これにより、2つのスロットの構成が交換されます。",
-    "l_slots_swapped": "スロット構成が交換されました",
-    "l_slot_credential_configured": "{type}認証情報を設定しました",
+    "l_swap_slots_desc": "短いタッチ/長いタッチを交換します",
+    "p_swap_slots_desc": "2 つのスロットの設定内容が交換されます。",
+    "l_slots_swapped": "スロットの設定内容を交換しました",
+    "l_slot_credential_configured": "{type} 資格情報を設定しました",
     "@l_slot_credential_configured": {
         "placeholders": {
             "type": {
@@ -878,7 +878,7 @@
             }
         }
     },
-    "l_slot_credential_configured_and_exported": "{type}認証情報を設定し、{file}にエクスポートしました",
+    "l_slot_credential_configured_and_exported": "{type} 資格情報を設定し、{file} にエクスポートしました",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
             "type": {
@@ -889,15 +889,15 @@
             }
         }
     },
-    "s_append_enter": "⏎を追加",
-    "l_append_enter_desc": "OTPを発行した後にEnterキーストロークを追加します",
+    "s_append_enter": "⏎ を追加",
+    "l_append_enter_desc": "OTP を発行した後に Enter キーストロークを追加します",
 
     "@_otp_errors": {},
-    "p_otp_swap_error": "スロットの交換に失敗しました！YubiKeyが制限されたアクセスを持っていないことを確認してください。",
+    "p_otp_swap_error": "スロットを交換できませんでした！YubiKey がアクセス制限されていないことを確認してください。",
     "l_wrong_access_code": "アクセスコードが間違っています",
 
     "@_otp_access_code": {},
-    "s_access_code": "アクセスコード：",
+    "s_access_code": "アクセスコード",
     "s_show_access_code": "アクセスコードを表示",
     "s_hide_access_code": "アクセスコードを隠す",
     "p_enter_access_code": "スロット {slot} のアクセスコードを入力してください。",
@@ -914,21 +914,21 @@
     "s_enable_nfc": "NFCを有効にする",
     "s_request_access": "アクセスを要求する",
     "s_permission_denied": "権限が拒否されました",
-    "l_elevating_permissions": "権限を昇格させています\u2026",
+    "l_elevating_permissions": "権限を取得しています\u2026",
     "s_review_permissions": "権限を確認",
-    "s_open_windows_settings": "Windowsの設定を開く",
+    "s_open_windows_settings": "Windows の設定を開く",
     "l_admin_privileges_required": "管理者権限が必要です",
-    "p_elevated_permissions_required": "このデバイスを管理するには昇格された権限が必要です。",
-    "p_webauthn_elevated_permissions_required": "WebAuthn管理には昇格された権限が必要です。",
-    "l_ms_store_permission_note": "Microsoft Storeアプリのバージョンは、権限を高めることができない可能性があります",
-    "p_need_camera_permission": "Yubico AuthenticatorでQRコードをスキャンするには、カメラへのアクセス許可が必要です。",
+    "p_elevated_permissions_required": "このデバイスを管理するには管理者権限が必要です。",
+    "p_webauthn_elevated_permissions_required": "WebAuthn の管理には管理者権限が必要です。",
+    "l_ms_store_permission_note": "Microsoft Store 版では、権限を取得できない可能性があります",
+    "p_need_camera_permission": "QR コードをスキャンするには、Yubico Authenticator にカメラへのアクセスを許可してください。",
 
     "@_qr_codes": {},
-    "s_qr_scan": "QRコードをスキャン",
-    "l_invalid_qr": "無効なQRコード",
-    "l_qr_not_found": "QRコードが見つかりません",
-    "l_qr_scanned": "スキャンした QR コード",
-    "l_qr_file_too_large": "ファイルが大きすぎます（最大{max}）",
+    "s_qr_scan": "QR コードをスキャン",
+    "l_invalid_qr": "QR コードが無効です",
+    "l_qr_not_found": "QR コードが見つかりません",
+    "l_qr_scanned": "QR コードをスキャンしました",
+    "l_qr_file_too_large": "ファイルが大きすぎます (最大 {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
             "max": {
@@ -936,9 +936,9 @@
             }
         }
     },
-    "l_qr_invalid_image_file": "無効な画像ファイル",
-    "l_qr_select_file": "QRコードを含むファイルを選択してください",
-    "l_qr_not_read": "QRコードの読み取りに失敗しました：{message}",
+    "l_qr_invalid_image_file": "画像ファイルが無効です",
+    "l_qr_select_file": "QR コードを含むファイルを選択してください",
+    "l_qr_not_read": "QRコードの読み取りに失敗しました: {message}",
     "@l_qr_not_read": {
         "placeholders": {
             "message": {
@@ -946,20 +946,20 @@
             }
         }
     },
-    "l_point_camera_scan": "スキャンするにはカメラをQRコードに向けてください",
+    "l_point_camera_scan": "カメラを QR コードに向けてスキャンしてください",
     "q_want_to_scan": "スキャンしますか？",
-    "q_no_qr": "QRコードがありませんか？",
+    "q_no_qr": "QR コードがありませんか？",
     "s_enter_manually": "手動で入力",
-    "s_read_from_file": "ファイルから読み込む",
+    "s_read_from_file": "ファイルから読み取る",
 
     "@_factory_reset": {},
     "s_reset": "リセット",
     "s_factory_reset": "工場出荷時の状態にリセット",
-    "l_factory_reset_desc": "YubiKey の既定値を復元",
+    "l_factory_reset_desc": "YubiKey の既定値を復元します",
     "l_factory_reset_required": "工場出荷時の状態にリセットする必要があります",
-    "l_oath_application_reset": "OATHアプリケーションのリセット",
-    "l_fido_app_reset": "FIDOアプリケーションのリセット",
-    "l_reset_failed": "リセットの実行エラー：{message}",
+    "l_oath_application_reset": "OATH アプリケーションのリセット",
+    "l_fido_app_reset": "FIDO アプリケーションのリセット",
+    "l_reset_failed": "リセットの実行エラー: {message}",
     "@l_reset_failed": {
         "placeholders": {
             "message": {
@@ -967,26 +967,26 @@
             }
         }
     },
-    "l_piv_app_reset": "PIVアプリケーションのリセット",
-    "p_factory_reset_an_app": "YubiKeyのアプリケーションを工場出荷時の状態にリセットします。",
-    "p_factory_reset_desc": "データは、YubiKeyの複数のアプリケーションに保存されています。一部のアプリケーションは、単独で工場出荷時の状態にリセットできます。\n\nリセットするには上のアプリケーションを選択してください。",
-    "p_warning_factory_reset": "警告！これにより、すべてのOATH TOTP/HOTPアカウントがYubiKeyから削除されます。削除は取り消すことができません。",
+    "l_piv_app_reset": "PIV アプリケーションのリセット",
+    "p_factory_reset_an_app": "YubiKey のアプリケーションを工場出荷時の状態にリセットします。",
+    "p_factory_reset_desc": "データが YubiKey の複数のアプリケーションに保存されています。一部のアプリケーションは、単独で工場出荷時の状態にリセットできます。\n\n上のボタンからリセットしたいアプリケーションを選択してください。",
+    "p_warning_factory_reset": "警告！すべての OATH TOTP/HOTP アカウントが YubiKey から削除されます。削除されたデータは回復できません。",
     "p_warning_disable_credentials": "あなたの OATH 認証情報、および設定されているパスワードは、この YubiKey から削除されます。アカウントにログインできなくならないように、それぞれのウェブサイトから該当する認証情報を無効にしてください。",
-    "p_warning_deletes_accounts": "警告！これにより、すべてのU2FおよびFIDO2アカウントがパスキーを含めてYubiKeyから削除されます。削除は取り消すことができません。",
+    "p_warning_deletes_accounts": "警告！パスキーを含めたすべての U2F および FIDO2 アカウントが YubiKey から削除されます。削除されたデータは回復できません。",
     "p_warning_disable_accounts": "あなたの認証情報および設定された PIN は、この YubiKey から削除されます。アカウントにログインできなくならないように、それぞれのウェブサイトから該当する認証情報を無効にしてください。",
-    "p_warning_piv_reset": "警告！PIVに関連して保存されたすべてのデータがYubiKeyから削除されます。削除は取り消すことができません。",
-    "p_warning_piv_reset_desc": "これには、秘密鍵と証明書が含まれます。PIN、PUK、および管理キーが工場出荷時のデフォルト値にリセットされます。",
-    "p_warning_global_reset": "警告！これにより、すべての保存済みデータが認証情報を含めてYubiKeyから削除されます。削除は取り消すことができません。",
+    "p_warning_piv_reset": "警告！PIV に保存されたすべてのデータが YubiKey から削除されます。削除されたデータは回復できません。",
+    "p_warning_piv_reset_desc": "秘密鍵と証明書が含まれます。PIN、PUK、および管理キーが工場出荷時のデフォルト値にリセットされます。",
+    "p_warning_global_reset": "警告！資格情報を含めた保存されているすべてのデータが YubiKey から削除されます。削除されたデータは回復できません。",
     "p_warning_global_reset_desc": "YubiKey のアプリケーションを工場出荷時の状態にリセットします。PIN は工場出荷時のデフォルト値にリセットされ、登録されていた指紋は削除されます。鍵、証明書、その他の認証情報はすべて完全に削除されます。",
 
     "@_copy_to_clipboard": {},
     "l_copy_to_clipboard": "クリップボードにコピー",
-    "s_code_copied": "コードがコピーされました",
-    "l_code_copied_clipboard": "コードがクリップボードにコピーされました",
+    "s_code_copied": "コードをコピーしました",
+    "l_code_copied_clipboard": "コードをクリップボードにコピーしました",
     "s_copy_log": "ログをコピー",
-    "l_log_copied": "ログがクリップボードにコピーされました",
-    "l_diagnostics_copied": "診断データがクリップボードにコピーされました",
-    "p_target_copied_clipboard": "{label}がクリップボードにコピーされました。",
+    "l_log_copied": "ログをクリップボードにコピーしました",
+    "l_diagnostics_copied": "診断データをクリップボードにコピーしました",
+    "p_target_copied_clipboard": "{label} をクリップボードにコピーしました。",
     "@p_target_copied_clipboard": {
         "placeholders": {
             "label": {
@@ -997,8 +997,8 @@
 
     "@_custom_icons": {},
     "s_custom_icons": "カスタムアイコン",
-    "l_set_icons_for_accounts": "アカウントのアイコンを設定",
-    "p_custom_icons_description": "アイコンパックを使用すると、見慣れたロゴや色によりアカウントを識別しやすくなります。",
+    "l_set_icons_for_accounts": "アカウントのアイコンを設定します",
+    "p_custom_icons_description": "アイコンパックを使用すると、見慣れたロゴや色が表示されてアカウントを識別しやすくなります。",
     "p_custom_icons_format_desc": "アイコンパックは、{aegis_icon_pack} フォーマットを使用しています。既存のアイコンパックをダウンロードすることも、新たに作成することもできます。",
     "@p_custom_icons_format_desc": {
         "placeholders": {
@@ -1007,15 +1007,15 @@
             }
         }
     },
-    "s_replace_icon_pack": "アイコンパックを交換",
-    "l_loading_icon_pack": "アイコンパックをロードしています\u2026",
-    "s_load_icon_pack": "アイコンパックをロード",
-    "s_remove_icon_pack": "アイコンパックを削除",
-    "l_icon_pack_removed": "アイコンパックが削除されました",
+    "s_replace_icon_pack": "別のアイコンパックを選択",
+    "l_loading_icon_pack": "アイコンパックを読み込んでいます\u2026",
+    "s_load_icon_pack": "アイコンパックを読み込む",
+    "s_remove_icon_pack": "アイコンパックを削除します",
+    "l_icon_pack_removed": "アイコンパックを削除しました",
     "l_remove_icon_pack_failed": "アイコンパックの削除エラー",
-    "s_choose_icon_pack": "アイコンパックを選択",
-    "l_icon_pack_imported": "アイコンパックがインポートされました",
-    "l_import_icon_pack_failed": "アイコンパックのインポートエラー：{message}",
+    "s_choose_icon_pack": "アイコンパックの選択",
+    "l_icon_pack_imported": "アイコンパックをインポートしました",
+    "l_import_icon_pack_failed": "アイコンパックのインポートエラー: {message}",
     "@l_import_icon_pack_failed": {
         "placeholders": {
             "message": {
@@ -1023,29 +1023,29 @@
             }
         }
     },
-    "l_invalid_icon_pack": "無効なアイコンパック",
+    "l_invalid_icon_pack": "アイコンパックが無効です",
     "l_icon_pack_copy_failed": "アイコンパックファイルをコピーできませんでした",
 
     "@_android_settings": {},
     "s_nfc_options": "NFCオプション",
     "l_on_yk_nfc_tap": "YubiKey NFCのタップ時の動作",
     "l_do_nothing": "何もしない",
-    "l_launch_ya": "Yubico Authenticatorを起動",
-    "l_copy_otp_clipboard": "OTPをクリップボードにコピー",
+    "l_launch_ya": "Yubico Authenticator を起動",
+    "l_copy_otp_clipboard": "OTP をクリップボードにコピー",
     "l_launch_and_copy_otp": "アプリを起動してOTPをコピー",
-    "l_kbd_layout_for_static": "キーボードレイアウト（静的パスワード用）",
+    "l_kbd_layout_for_static": "キーボードレイアウト (静的パスワード用)",
     "s_choose_kbd_layout": "キーボードレイアウトを選択",
-    "l_bypass_touch_requirement": "タッチ要件をスキップ",
+    "l_bypass_touch_requirement": "タッチ要件をバイパスする",
     "l_bypass_touch_requirement_on": "タッチが必要なアカウントがNFCを介して自動的に表示されます",
     "l_bypass_touch_requirement_off": "タッチが必要なアカウントはNFCを介して追加のタップが必要です",
-    "s_silence_nfc_sounds": "NFCサウンドを消す",
-    "l_silence_nfc_sounds_on": "NFCタップ時にサウンドが再生されません",
-    "l_silence_nfc_sounds_off": "NFCタップ時にサウンドが再生されます",
+    "s_silence_nfc_sounds": "NFC 通知音を鳴らさない",
+    "l_silence_nfc_sounds_on": "NFC にかざしても音声を再生しません",
+    "l_silence_nfc_sounds_off": "NFC にかざすと音声を再生します",
     "s_usb_options": "USBオプション",
-    "l_launch_app_on_usb": "YubiKeyの接続時に起動",
-    "l_launch_app_on_usb_on": "これにより、他のアプリがUSB経由でYubiKeyを使用できなくなります",
-    "l_launch_app_on_usb_off": "他のアプリがUSB経由でYubiKeyを使用できます",
-    "s_allow_screenshots": "スクリーンショットを許可",
+    "l_launch_app_on_usb": "YubiKey の接続で起動する",
+    "l_launch_app_on_usb_on": "これにより、他のアプリが USB 経由で YubiKey を使用できなくなります",
+    "l_launch_app_on_usb_off": "他のアプリは USB 経由で YubiKey を使用できます",
+    "s_allow_screenshots": "スクリーンショットを許可する",
 
     "@_nfc": {},
     "s_nfc_ready_to_scan": "スキャンの準備完了",
@@ -1054,22 +1054,22 @@
     "l_nfc_failed_to_scan": "スキャンに失敗しました。もう一度お試しください",
 
     "@_usb": {},
-    "s_usb_processing": "YubiKey からデータの読み込み中",
+    "s_usb_processing": "YubiKey からデータを読み込み中",
     "s_usb_dont_remove": "キーを取り外さないでください\u2026",
     "l_usb_read_error": "YubiKey からデータを読み込めませんでした",
 
     "@_ndef": {},
-    "p_ndef_set_otp": "OTPコードがYubiKeyからクリップボードに正常にコピーされました。",
-    "p_ndef_set_password": "パスワードがYubiKeyからクリップボードに正常にコピーされました。",
-    "p_ndef_parse_failure": "YubiKeyからのOTPコードを解析できませんでした。",
-    "p_ndef_set_clip_failure": "YubiKeyからのOTPコードのコピー試行時にクリップボードにアクセスできませんでした。",
+    "p_ndef_set_otp": "OTP コードを YubiKey からクリップボードにコピーしました。",
+    "p_ndef_set_password": "パスワードを YubiKey からクリップボードにコピーしました。",
+    "p_ndef_parse_failure": "YubiKey から OTP コードを解析できませんでした。",
+    "p_ndef_set_clip_failure": "OTP コードを YubiKey からコピーしようと試みましたが、クリップボードにアクセスできませんでした。",
 
     "@_key_customization": {},
-    "s_set_label": "ラベルを設定",
+    "s_set_label": "ラベルを設定します",
     "s_set_color": "色を設定",
-    "s_change_label": "ラベルを変更",
-    "p_set_will_add_custom_name": "これにより、YubiKey にカスタム名を付けることができます。",
-    "p_rename_will_change_custom_name": "YubiKeyのラベルが変更されます。",
+    "s_change_label": "ラベルを変更します",
+    "p_set_will_add_custom_name": "YubiKey に任意の名前を付けます。",
+    "p_rename_will_change_custom_name": "YubiKey のラベルを変更します。",
 
     "@_shortcuts": {},
     "s_shortcuts": null,

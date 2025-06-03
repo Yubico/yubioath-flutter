@@ -4,9 +4,9 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "Slovenčina",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "Preložené: {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "Schválené: {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "Neúplný preklad",
+    "p_translation_progress_desc": "Ukazovatele pokroku odrážajú úroveň prekladu.",
 
     "s_save": "Uložiť",
     "s_cancel": "Zrušiť",
@@ -49,11 +49,11 @@
     "s_show_window": "Zobraziť okno",
     "s_hide_window": "Skryť okno",
     "s_show_navigation": "Zobraziť navigáciu",
-    "s_expand_navigation": "Rozšíriť navigáciu",
-    "s_collapse_navigation": "Zbaliť navigáciu",
-    "s_expand_collapse_navigation": null,
+    "s_expand_navigation": "Rozbaliť navigačný panel",
+    "s_collapse_navigation": "Zbaliť navigačný panel",
+    "s_expand_collapse_navigation": "Rozbaliť/zbaliť navigačný panel",
     "s_show_menu": "Zobraziť ponuku",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "Prepnúť panel ponuky",
     "s_more_info": "Viac informácií",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -350,7 +350,7 @@
     "p_pin_required_desc": "Akcia, ktorú sa chystáte vykonať, vyžaduje zadanie kódu PIV PIN.",
     "l_piv_pin_blocked": "Zablokované, na obnovenie použite PUK",
     "p_piv_pin_blocked_desc": "PIN kód je zablokovaný. Na jeho obnovenie použite PUK.",
-    "p_piv_pin_blocked_bio_desc": null,
+    "p_piv_pin_blocked_bio_desc": "PIN kód je zablokovaný. Je potrebné obnoviť výrobné nastavenia.",
     "l_piv_pin_puk_blocked": "Zablokované, je potrebné obnovenie výrobných nastavení",
     "p_piv_pin_puk_blocked_desc": "PIN aj PUK sú zablokované. Vyžaduje sa obnovenie výrobných nastavení aplikácie PIV.",
     "p_new_piv_pin_puk_requirements": "{name} musí mať aspoň {length} znakov.",
@@ -386,7 +386,7 @@
             }
         }
     },
-    "s_dismiss": "Zrušiť",
+    "s_dismiss": "Zamietnuť",
     "p_default_pin_puk_key_desc": "Odporúča sa zmeniť predvolený PIN kód, PUK kód a spravovací kľúč.",
     "l_warning_default_pin": "Varovanie: Používa sa predvolený PIN kód",
     "l_warning_default_puk": "Varovanie: Používa sa predvolený PUK kód",
@@ -1072,10 +1072,10 @@
     "p_rename_will_change_custom_name": "Týmto sa zmení menovka vášho kľúča YubiKey.",
 
     "@_shortcuts": {},
-    "s_shortcuts": null,
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_shortcuts": "Skratky",
+    "s_keyboard_shortcuts": "Klávesové skratky",
+    "s_global_shortcuts": "Globálne skratky",
+    "s_application_shortcuts": "Skratky aplikácie",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1083,7 +1083,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "Opustiť {app}",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1091,17 +1091,17 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_help_and_about": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "Skryť {app}",
+    "s_search": "Hľadať",
+    "s_next_device": "Ďalšie zariadenie",
+    "s_previous_device": "Predchádzajúce zariadenie",
+    "s_open_settings": "Otvoriť nastavenia",
+    "s_open_help_and_about": "Otvoriť pomoc a informácie",
+    "s_open_item": "Otvoriť položku",
+    "s_edit_item": "Upraviť položku",
+    "s_delete_item": "Odstrániť položku",
+    "s_calculate_oath_code": "Vypočítať OATH kód",
+    "s_open_keyboard_shortcuts": "Otvoriť klávesové skratky",
 
     "@_eof": {}
 }

@@ -4,9 +4,9 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "Čeština",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "Přeloženo: {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "Zkontrolováno: {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "Nedokončený překlad",
+    "p_translation_progress_desc": "Ukazatele průběhu odrážejí zralost překladu.",
 
     "s_save": "Uložit",
     "s_cancel": "Zrušit",
@@ -49,11 +49,11 @@
     "s_show_window": "Zobrazit okno",
     "s_hide_window": "Skrýt okno",
     "s_show_navigation": "Zobrazit navigaci",
-    "s_expand_navigation": "Rozbalit navigaci",
-    "s_collapse_navigation": "Sbalit navigaci",
-    "s_expand_collapse_navigation": null,
+    "s_expand_navigation": "Rozbalit navigační panel",
+    "s_collapse_navigation": "Skrýt navigační panel",
+    "s_expand_collapse_navigation": "Rozbalit/skrýt navigační panel",
     "s_show_menu": "Zobrazit nabídku",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "Přepnout panel nabídky",
     "s_more_info": "Více informací",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -350,7 +350,7 @@
     "p_pin_required_desc": "Akce, kterou se chystáte provést, vyžaduje zadání kódu PIV PIN.",
     "l_piv_pin_blocked": "Zablokováno, pro obnovení použijte PUK",
     "p_piv_pin_blocked_desc": "PIN je zablokován. Použijte PUK pro jeho obnovení.",
-    "p_piv_pin_blocked_bio_desc": null,
+    "p_piv_pin_blocked_bio_desc": "PIN je zablokován. Je vyžadováno obnovení továrního nastavení.",
     "l_piv_pin_puk_blocked": "Zablokováno, je potřeba obnovení továrních nastavení",
     "p_piv_pin_puk_blocked_desc": "PIN i PUK jsou zablokovány. Je potřeba resetovat aplikaci PIV.",
     "p_new_piv_pin_puk_requirements": "{name} musí mít alespoň {length} znaků.",
@@ -558,7 +558,7 @@
     "l_ready_to_use": "Připraveno k použití",
     "l_register_sk_on_websites": "Registrovat jako bezpečnostní klíč na webových stránkách",
     "l_no_discoverable_accounts": "Nejsou uloženy žádné přístupové klíče",
-    "p_non_passkeys_note": "Mohou existovat pověření bez přístupového klíče, ale nemohou být zobrazeny v seznamu.",
+    "p_non_passkeys_note": "Registrovaná pověření bez přístupového klíče nelze zobrazit.",
     "s_delete_passkey": "Odstranit přístupový klíč",
     "q_delete_passkey": "Odstranit přístupový klíč?",
     "l_delete_passkey_desc": "Odstranit přístupový klíč z YubiKey",
@@ -1028,7 +1028,7 @@
 
     "@_android_settings": {},
     "s_nfc_options": "Možnosti NFC",
-    "l_on_yk_nfc_tap": "Na YubiKey NFC klepnutí",
+    "l_on_yk_nfc_tap": "Při přiložení YubiKey",
     "l_do_nothing": "Nedělat nic",
     "l_launch_ya": "Spustit Yubico Authenticator",
     "l_copy_otp_clipboard": "Kopírovat OTP do schránky",
@@ -1037,10 +1037,10 @@
     "s_choose_kbd_layout": "Vybrat rozložení klávesnice",
     "l_bypass_touch_requirement": "Obejít požadavek dotyku",
     "l_bypass_touch_requirement_on": "Účty, které vyžadují dotyk, se automaticky zobrazují přes NFC",
-    "l_bypass_touch_requirement_off": "Účty, které vyžadují dotyk, vyžadují další klepnutí přes NFC",
+    "l_bypass_touch_requirement_off": "Účty, které vyžadují dotyk, vyžadují další přiložení YubiKey NFC",
     "s_silence_nfc_sounds": "Tichý zvuk NFC",
-    "l_silence_nfc_sounds_on": "Při klepnutí na NFC nebudou přehrány žádné zvuky",
-    "l_silence_nfc_sounds_off": "Při klepnutí na NFC bude přehrán zvuk",
+    "l_silence_nfc_sounds_on": "Při přiložení nebudou přehrány žádné zvuky",
+    "l_silence_nfc_sounds_off": "Při přiložení bude přehrán zvuk",
     "s_usb_options": "Možnosti USB",
     "l_launch_app_on_usb": "Spustit při připojení YubiKey",
     "l_launch_app_on_usb_on": "Zabraňuje ostatním aplikacím používat YubiKey přes USB",
@@ -1072,10 +1072,10 @@
     "p_rename_will_change_custom_name": "Tímto změníte jmenovku vašeho YubiKey.",
 
     "@_shortcuts": {},
-    "s_shortcuts": null,
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_shortcuts": "Zkratky",
+    "s_keyboard_shortcuts": "Klávesové zkratky",
+    "s_global_shortcuts": "Globální klávesové zkratky",
+    "s_application_shortcuts": "Klávesové zkratky aplikace",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1083,7 +1083,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "Ukončit {app}",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1091,17 +1091,17 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_help_and_about": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "Skrýt {app}",
+    "s_search": "Vyhledávání",
+    "s_next_device": "Další zařízení",
+    "s_previous_device": "Předchozí zařízení",
+    "s_open_settings": "Otevřít nastavení",
+    "s_open_help_and_about": "Otevřít nápovědu a informace",
+    "s_open_item": "Otevřít položku",
+    "s_edit_item": "Upravit položku",
+    "s_delete_item": "Smazat položku",
+    "s_calculate_oath_code": "Vypočítat kód OATH",
+    "s_open_keyboard_shortcuts": "Zobrazit klávesové zkratky",
 
     "@_eof": {}
 }

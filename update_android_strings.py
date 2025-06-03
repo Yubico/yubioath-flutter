@@ -40,37 +40,41 @@ def read_arb_file(file_path):
         return json.load(file)
 
 
-def get_lang_file_dir(lang):
+def get_lang_file_dir(lang, region):
     """Return path of Android resource directory for lang."""
-    return (
-        f"android/app/src/main/res/values-{lang}"
-        if lang != "en"
-        else "android/app/src/main/res/values"
-    )
+    if lang == "en" and region is None:
+        return "android/app/src/main/res/values"
+
+    suffix = f"-{lang}"
+    if region:
+        suffix += f"-r{region}"
+    return f"android/app/src/main/res/values{suffix}"
 
 
-def get_lang_file(lang):
+def get_lang_file(lang, region):
     """Return path of Android string resource file for lang."""
-    return p.join(get_lang_file_dir(lang), "strings.xml")
+    return p.join(get_lang_file_dir(lang, region), "strings.xml")
 
 
-def process_android_res(lang, arb, keys_to_translate):
+def process_android_res(lang, region, arb, keys_to_translate):
     """Generate or update Android string resource for lang.
 
     Parameters
     ----------
     lang : str
          language code
+    region: str | None
+         region code
     arb : dict
          content of flutter ARB file
     keys_to_translate : list
          string resources which will be generated or updated
     """
-    res_dir = get_lang_file_dir(lang)
+    res_dir = get_lang_file_dir(lang, region)
     if not p.exists(res_dir):
         os.makedirs(res_dir)
 
-    res_path = get_lang_file(lang)
+    res_path = get_lang_file(lang, region)
 
     res = (
         ET.parse(res_path).getroot() if p.exists(res_path) else ET.Element("resources")
@@ -108,8 +112,11 @@ if __name__ == "__main__":
 
     for arb_file in os.listdir(arb_files):
         if arb_file.startswith("app_") and arb_file.endswith(".arb"):
-            lang = arb_file.split("_")[1].split(".")[0]
+            suffix = arb_file.split("_", 1)[1].split(".")[0]
+            parts = suffix.split("_")
+            lang = parts[0]
+            region = parts[1] if len(parts) > 1 else None
             arb_path = p.join(arb_files, arb_file)
             arb = read_arb_file(arb_path)
-            if process_android_res(lang, arb, english_strings):
-                print(f"Processed: {get_lang_file(lang)}")
+            if process_android_res(lang, region, arb, english_strings):
+                print(f"Processed: {get_lang_file(lang, region)}")

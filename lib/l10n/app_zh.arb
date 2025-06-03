@@ -4,9 +4,9 @@
     "app_name": "Yubico 身份验证器",
     "native_language_name": "简体中文",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "已翻译：{percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "待校对：{percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "未完成的翻译",
+    "p_translation_progress_desc": "进度指标反映了翻译的成熟度。",
 
     "s_save": "保存",
     "s_cancel": "取消",
@@ -51,9 +51,9 @@
     "s_show_navigation": "显示导航按钮",
     "s_expand_navigation": "展开导航栏",
     "s_collapse_navigation": "折叠导航栏",
-    "s_expand_collapse_navigation": null,
+    "s_expand_collapse_navigation": "展开/折叠导航栏",
     "s_show_menu": "显示菜单",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "切换菜单栏",
     "s_more_info": "更多信息",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -73,7 +73,7 @@
     "s_setup": "设置",
     "s_device": "设备",
     "s_application": "应用程序",
-    "s_settings": "设定",
+    "s_settings": "设置",
     "l_settings_desc": "更改应用程序首选项",
     "s_certificates": "证书",
     "s_security_key": "安全密钥",
@@ -105,7 +105,7 @@
     },
     "l_invalid_keyboard_character": "所选键盘字符无效",
     "s_require_touch": "需要触摸",
-    "q_have_account_info": "有帐户信息吗？",
+    "q_have_account_info": "有账户信息吗？",
     "s_run_diagnostics": "运行诊断",
     "s_log_level": "日志级别： {level}",
     "@s_log_level": {
@@ -180,16 +180,16 @@
             }
         }
     },
-    "l_fips_capable": "FIPS 能够使用",
-    "l_fips_approved": "FIPS 已批准",
+    "l_fips_capable": "FIPS 兼容",
+    "l_fips_approved": "FIPS 已认证",
 
     "@_yubikey_interactions": {},
     "l_insert_yk": "插入您的 YubiKey",
-    "l_insert_or_tap_yk": "插入或读取 YubiKey",
+    "l_insert_or_tap_yk": "插入或轻触 YubiKey",
     "l_unplug_yk": "拔出您的 YubiKey",
     "l_reinsert_yk": "重新插入您的 YubiKey",
-    "l_place_on_nfc_reader": "请把您的 YubiKey 放在读卡器上",
-    "l_replace_yk_on_reader": "请把您的 YubiKey 放回读卡器上",
+    "l_place_on_nfc_reader": "请把您的 YubiKey 放在NFC读取器上",
+    "l_replace_yk_on_reader": "请把您的 YubiKey 放回读取器上",
     "l_remove_yk_from_reader": "请从NFC读取器上取走您的 YubiKey",
     "p_try_reinsert_yk": "尝试拔出并重新插入您的 Yubikey。",
     "s_touch_required": "需要触摸",
@@ -208,7 +208,7 @@
     "@_app_configuration": {},
     "s_toggle_applications": "切换应用程序",
     "s_toggle_interfaces": "切换接口",
-    "p_toggle_applications_desc": "通过可用的传输启用或禁用应用程序。",
+    "p_toggle_applications_desc": "在可用的使用方式上启用或禁用应用程序。",
     "p_toggle_interfaces_desc": "启用或禁用 USB 接口。",
     "l_toggle_applications_desc": "启用/禁用应用程序",
     "l_toggle_interfaces_desc": "启用/禁用接口",
@@ -221,14 +221,14 @@
     "l_wrong_lock_code": "锁定密码错误",
     "s_show_lock_code": "显示锁定密码",
     "s_hide_lock_code": "隐藏锁定密码",
-    "p_lock_code_required_desc": "要执行的操作需要输入配置锁定密码。",
+    "p_lock_code_required_desc": "执行的操作需要输入配置锁定密码。",
 
     "@_connectivity_issues": {},
     "l_helper_not_responding": "帮助进程没有响应",
     "l_yk_no_access": "此 YubiKey 无法访问",
     "s_yk_inaccessible": "设备不可访问",
     "l_open_connection_failed": "无法建立连接",
-    "l_ccid_connection_failed": "未能打开智能卡连接",
+    "l_ccid_connection_failed": "未能建立智能卡连接",
     "p_ccid_service_unavailable": "请确保您的智能卡服务正常运行。",
     "p_pcscd_unavailable": "请确认 pcscd 已安装并运行。",
     "l_no_yk_present": "没有 YubiKey",
@@ -237,7 +237,7 @@
     "s_restricted_nfc": "NFC 激活",
     "l_deactivate_restricted_nfc": "如何激活 NFC",
     "p_deactivate_restricted_nfc_desc": "将 YubiKey 与任何 USB 电源（如电脑）连接至少 3 秒钟。\n\n接通电源后，NFC 将被激活并可随时使用。",
-    "p_deactivate_restricted_nfc_footer": "您的 YubiKey 拥有限制 NFC 功能，该功能旨在防止运输过程中的无线操控。这意味着在您进行激活之前，NFC 功能将暂时失效。",
+    "p_deactivate_restricted_nfc_footer": "您的 YubiKey 具有 NFC 限制功能，该功能旨在防止运输过程中的无线接触使用。这意味着在您进行激活之前，NFC 功能将暂时禁用。",
     "s_unsupported_yk": "不支持的 YubiKey",
     "p_operation_failed_try_again": "操作失败，请重试。",
     "l_configuration_unsupported": "配置不受支持",
@@ -307,7 +307,7 @@
     "s_fido_pin_protection": "FIDO PIN 保护",
     "s_pin_change_required": "需要更改 PIN",
     "l_enter_fido2_pin": "输入 YubiKey 的 FIDO2 PIN",
-    "l_pin_blocked_reset": "PIN 已被封禁；出厂重置 FIDO 应用程序",
+    "l_pin_blocked_reset": "PIN 已被封禁，将 FIDO 应用程序恢复出厂设置",
     "l_pin_blocked": "PIN 已被封禁",
     "l_set_pin_first": "需要 PIN",
     "l_unlock_pin_first": "使用 PIN 解锁",
@@ -345,14 +345,14 @@
     "s_ep_attestation_enabled": "企业认证已启用",
     "q_enable_ep_attestation": "启用企业认证？",
     "p_enable_ep_attestation_desc": "这将启用企业认证，允许授权域唯一识别您的 YubiKey。",
-    "p_enable_ep_attestation_disable_with_factory_reset": "一旦启用企业认证，就只能通过执行 FIDO 出厂重置进行禁用。",
+    "p_enable_ep_attestation_disable_with_factory_reset": "一旦启用企业认证，就只能将 FIDO 恢复出厂设置来进行禁用。",
     "s_pin_required": "需要 PIN",
     "p_pin_required_desc": "您将要执行的操作需要输入 PIV PIN 。",
     "l_piv_pin_blocked": "已封禁，请使用 PUK 以重置",
     "p_piv_pin_blocked_desc": "PIN 已被封禁。请使用 PUK 重置。",
-    "p_piv_pin_blocked_bio_desc": null,
-    "l_piv_pin_puk_blocked": "已封禁，需要出厂重置",
-    "p_piv_pin_puk_blocked_desc": "PIN 和 PUK 均被封禁。需要对 PIV 应用程序进行出厂重置。",
+    "p_piv_pin_blocked_bio_desc": "PIN已被封禁。需要恢复出厂设置。",
+    "l_piv_pin_puk_blocked": "已封禁，需要恢复出厂设置",
+    "p_piv_pin_puk_blocked_desc": "PIN 和 PUK 均被封禁。需要对 PIV 应用程序恢复出厂设置。",
     "p_new_piv_pin_puk_requirements": "{name} 的长度必须至少为 {length} 个字符。",
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -392,7 +392,7 @@
     "l_warning_default_puk": "警告：使用了默认 PUK ",
     "l_default_pin_used": "默认 PIN 已使用",
     "l_default_puk_used": "默认 PUK 已使用",
-    "l_pin_complexity": "PIN 复杂性已执行",
+    "l_pin_complexity": "PIN 复杂性已强制要求",
 
     "@_passwords": {},
     "s_password": "密码",
@@ -448,8 +448,8 @@
             }
         }
     },
-    "s_accounts": "账号",
-    "s_no_accounts": "没有账号",
+    "s_accounts": "账户",
+    "s_no_accounts": "没有账户",
     "l_results_for": "\"{query}\" 的结果",
     "@l_results_for": {
         "placeholders": {
@@ -458,9 +458,9 @@
             }
         }
     },
-    "l_authenticator_get_started": "开始使用 OTP 帐号",
-    "l_no_accounts_desc": "从任何支持OATH TOTP/HOTP的提供商添加账户到你的YubiKey",
-    "s_add_account": "添加帐号",
+    "l_authenticator_get_started": "开始使用 OTP 账户",
+    "l_no_accounts_desc": "从任何支持 OATH TOTP/HOTP 的提供商添加账户到你的 YubiKey",
+    "s_add_account": "添加账户",
     "p_add_account_desc": "扫描二维码或手动输入凭证。",
     "s_add_accounts": "添加账户",
     "l_drop_qr_description": "拖放二维码以添加账户",
@@ -485,8 +485,8 @@
     "l_add_account_already_exists": "账户已存在",
     "l_add_account_func_missing": "功能缺失或禁用",
     "l_account_name_required": "您的帐号必须有一个名称",
-    "l_name_already_exists": "发行人已存在此名称",
-    "l_account_already_exists": "此帐户已存在于 YubiKey 中",
+    "l_name_already_exists": "发行者名称已存在",
+    "l_account_already_exists": "此账户已存在于 YubiKey 中",
     "l_invalid_character_issuer": "无效字符：发行人中不允许使用\":\"",
     "l_select_accounts": "选择要添加到 YubiKey 的账户（们）",
     "s_pin_account": "置顶账户",
@@ -494,9 +494,9 @@
     "s_no_pinned_accounts": "没有置顶账户",
     "s_pinned": "已置顶",
     "l_pin_account_desc": "将您的重要账户集中在一起",
-    "s_rename_account": "重命名账号",
-    "l_rename_account_desc": "编辑帐号的发行商/名称",
-    "s_account_renamed": "帐户已重命名",
+    "s_rename_account": "重命名账户",
+    "l_rename_account_desc": "编辑账户的发行者/名称",
+    "s_account_renamed": "账户已重命名",
     "l_rename_account_failed": "重命名账户失败： {message}",
     "@l_rename_account_failed": {
         "placeholders": {
@@ -511,10 +511,10 @@
     "l_delete_account_desc": "从您的 YubiKey 中删除账户",
     "s_account_deleted": "账户已删除",
     "p_warning_delete_account": "警告！此操作将从您的 Yubikey 删除账户。",
-    "p_warning_disable_credential": "请确保已从注册的服务中禁用此账户，以避免被锁定。",
+    "p_warning_disable_credential": "请确保已从注册的服务中禁用此账户，以避免无法登录。",
     "s_account_name": "账户名",
     "s_search_accounts": "搜索账户",
-    "l_accounts_used": "{used} 使用的 {capacity} 账户",
+    "l_accounts_used": "已使用{used} 个账户 ，总共{capacity} 账户可用",
     "@l_accounts_used": {
         "placeholders": {
             "used": {
@@ -541,7 +541,7 @@
             }
         }
     },
-    "s_issuer_optional": "发行商(可选)",
+    "s_issuer_optional": "发行者（可选）",
     "s_counter_based": "基于计数器",
     "s_time_based": "基于时间",
     "l_copy_code_desc": "将验证码粘贴到另一个应用程序中",
@@ -555,7 +555,7 @@
     "s_user_name": "用户名",
     "s_passkeys": "通行密钥",
     "s_no_passkeys": "无通行密钥",
-    "l_ready_to_use": "随时可用",
+    "l_ready_to_use": "准备就绪",
     "l_register_sk_on_websites": "在网站上注册为安全密钥",
     "l_no_discoverable_accounts": "未存储通行密钥",
     "p_non_passkeys_note": "非密钥凭证可能存在，但无法列出。",
@@ -563,9 +563,9 @@
     "q_delete_passkey": "删除通行密钥？",
     "l_delete_passkey_desc": "从 YubiKey 中移除密钥",
     "s_passkey_deleted": "通行密钥已删除",
-    "p_warning_delete_passkey": "警告！此操作将从您的 YubiKey 中删除通行秘钥。",
-    "p_warning_delete_passkey_desc": "您将不再能够使用此密钥进行注册的服务。",
-    "s_search_passkeys": "搜索通行秘钥",
+    "p_warning_delete_passkey": "警告！此操作将从您的 YubiKey 中删除通行密钥。",
+    "p_warning_delete_passkey_desc": "您将不能使用由此密钥注册的服务。",
+    "s_search_passkeys": "搜索通行密钥",
     "p_passkeys_used": "{used} {max} 使用的通行秘钥。",
     "@p_passkeys_used": {
         "placeholders": {
@@ -607,7 +607,7 @@
         }
     },
     "s_setup_fingerprints": "设置指纹",
-    "p_setup_fingerprints_desc": "在使用秘钥之前，需要先设置指纹。",
+    "p_setup_fingerprints_desc": "在使用密钥之前，需要先设置指纹。",
     "s_add_fingerprint": "添加指纹",
     "s_delete_fingerprint": "删除指纹",
     "q_delete_fingerprint": "要删除指纹吗？",
@@ -629,7 +629,7 @@
         }
     },
     "l_add_one_or_more_fps": "添加一个或多个（最多五个）指纹",
-    "l_fingerprints_used": "{used}/5个指纹已登记",
+    "l_fingerprints_used": "{used}/5个指纹已被登记",
     "@l_fingerprints_used": {
         "placeholders": {
             "used": {
@@ -641,7 +641,7 @@
     "l_name_fingerprint": "为这个指纹命名",
 
     "@_fido_errors": {},
-    "l_user_action_timeout_error": "因用户未活动而失败",
+    "l_user_action_timeout_error": "因用户不活动而失败",
     "l_wrong_inserted_yk_error": "重新插入的 YubiKey 与初始设备不匹配",
     "l_failed_connecting_to_fido": "连接 FIDO 接口失败",
 
@@ -649,7 +649,7 @@
     "l_self_signed_certificate": "自签名证书",
     "l_certificate_signing_request": "证书签名请求（CSR）",
     "s_certificate": "证书",
-    "s_subject": "标题",
+    "s_subject": "主体",
     "l_export_csr_file": "将 CSR 保存到文件",
     "l_export_public_key": "导出公钥",
     "l_export_public_key_file": "保存公钥到文件",
@@ -661,7 +661,7 @@
     "l_certificate_exported": "证书已导出",
     "l_select_import_file": "选择要导入的文件",
     "l_import_file": "导入文件",
-    "l_import_desc": "导入密钥或证书",
+    "l_import_desc": "导入密钥和（或）证书",
     "l_import_nothing": "没有可导入的内容",
     "l_importing_file": "正在导入文件\u2026",
     "s_file_imported": "文件已导入",
@@ -679,12 +679,12 @@
     "l_move_key_desc": "将一个密钥从一个 PIV 槽位移动到另一个",
     "l_change_defaults": "更改默认访问码",
     "s_issuer": "发行者",
-    "s_serial": "串口",
+    "s_serial": "序列号",
     "s_certificate_fingerprint": "指纹",
     "s_valid_from": "有效期从",
     "s_valid_to": "有效期至",
     "l_no_certificate": "未加载证书",
-    "l_key_no_certificate": "未加载证书的密钥",
+    "l_key_no_certificate": "已加载无密钥的证书",
     "s_generate_key": "生成密钥",
     "l_generate_desc": "生成新证书或 CSR",
     "p_generate_desc": "这将在 YubiKey 的 PIV 槽位 {slot} 中上生成一个新密钥。",
@@ -697,7 +697,7 @@
     },
     "s_private_key_generated": "私钥已生成",
     "p_select_what_to_delete": "选择要从槽位中删除的内容。",
-    "p_warning_delete_certificate": "警告！此操作将从您的 YubiKey 中删除帐号。",
+    "p_warning_delete_certificate": "警告！此操作将从您的 YubiKey 中删除证书。",
     "p_warning_delete_key": "警告！此操作将从您的 Yubikey 中删除私钥。",
     "p_warning_delete_certificate_and_key": "警告！此操作将从您的 YubiKey 中删除证书和私钥。",
     "p_delete_certificate_desc": "这将删除 PIV 槽位 {slot}中的证书。",
@@ -708,7 +708,7 @@
             }
         }
     },
-    "p_delete_key_desc": "这将删除 PIV 槽位 {slot}中的密钥。",
+    "p_delete_key_desc": "这将删除 PIV 槽位 {slot}中的私钥。",
     "@p_delete_key_desc": {
         "placeholders": {
             "slot": {
@@ -716,7 +716,7 @@
             }
         }
     },
-    "p_delete_certificate_and_key_desc": "这将删除 PIV 槽位 {slot}中的证书和密钥。",
+    "p_delete_certificate_and_key_desc": "这将删除 PIV 槽位 {slot}中的证书和私钥。",
     "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {
@@ -729,7 +729,7 @@
     "l_certificate_and_key_deleted": "证书和密钥已删除",
     "l_include_certificate": "包含证书",
     "l_select_destination_slot": "选择目标槽位",
-    "q_move_key_confirm": "移动 PIV 槽位 {from_slot} 中的密钥？",
+    "q_move_key_confirm": "移动 PIV 槽位 {from_slot} 中的私钥？",
     "@q_move_key_confirm": {
         "placeholders": {
             "from_slot": {
@@ -737,7 +737,7 @@
             }
         }
     },
-    "q_move_key_to_slot_confirm": "将 PIV 槽位 {from_slot} 中的密钥移至槽位 {to_slot} ？",
+    "q_move_key_to_slot_confirm": "将 PIV 槽位 {from_slot} 中的私钥移至槽位 {to_slot} ？",
     "@q_move_key_to_slot_confirm": {
         "placeholders": {
             "from_slot": {
@@ -771,14 +771,14 @@
     "l_warning_public_key_mismatch": "证书的公钥与槽位中的私钥不匹配",
     "l_key_moved": "密钥已移动",
     "l_key_and_certificate_moved": "移动密钥和证书",
-    "p_subject_desc": "根据 RFC 4514 规格格式化的可识别的名称(DN)。",
-    "l_rfc4514_invalid": "RFC格式无效",
+    "p_subject_desc": "一个满足 RFC 4514 标准的可识别的名称(DN)。",
+    "l_rfc4514_invalid": "无效的RFC 4514 格式",
     "rfc4514_examples": "示例:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "允许使用指纹",
     "s_pin_policy": "PIN 策略",
     "s_output_format": "输出格式",
     "s_expiration_date": "有效期至",
-    "p_algorithm_desc": "使用的密钥算法。",
+    "p_algorithm_desc": "要使用的密钥算法。",
     "p_expiration_date_desc": "证书过期日期，默认为 1 年（仅限证书）。",
     "p_key_options_bio_desc": "允许使用生物识别技术代替 PIN 。",
     "q_overwrite_slot": "覆盖槽位？",
@@ -810,7 +810,7 @@
     "s_slot_9c": "数字签名",
     "s_slot_9d": "密钥管理",
     "s_slot_9e": "卡片认证",
-    "s_retired_slot": "退回密钥管理",
+    "s_retired_slot": "退役密钥管理",
 
     "@_otp_slots": {},
     "s_otp_slot_one": "短触",
@@ -819,13 +819,13 @@
     "l_otp_slot_configured": "槽位已配置",
 
     "@_otp_slot_configurations": {},
-    "l_yubiotp_desc": "配置 Yubico OTP 证书",
-    "s_challenge_response": "请求/响应",
-    "l_challenge_response_desc": "配置一个挑战响应凭证",
+    "l_yubiotp_desc": "配置 Yubico OTP 凭证",
+    "s_challenge_response": "挑战/应答",
+    "l_challenge_response_desc": "配置一个 挑战/应答 凭证",
     "s_static_password": "静态密码",
     "l_static_password_desc": "配置静态密码",
     "s_hotp": "OATH-HOTP",
-    "l_hotp_desc": "配置基于 HMAC-SHA1 的证书",
+    "l_hotp_desc": "配置基于 HMAC-SHA1 的凭证",
     "s_public_id": "公开ID",
     "s_private_id": "私有ID",
     "s_use_serial": "使用序列号",
@@ -834,7 +834,7 @@
     "s_no_export": "无导出",
     "s_export": "导出",
     "l_export_configuration_file": "将配置导出到文件",
-    "l_exported_can_be_uploaded_at": "导出的证书可上传至 {url}",
+    "l_exported_can_be_uploaded_at": "导出的凭证可上传至 {url}",
     "@l_exported_can_be_uploaded_at": {
         "placeholders": {
             "url": {
@@ -852,10 +852,10 @@
     },
 
     "@_otp_slot_actions": {},
-    "s_delete_slot": "删除凭据",
-    "q_delete_slot": "删除凭据？",
-    "l_delete_slot_desc": "移除槽位中的凭证",
-    "p_warning_delete_slot_configuration": "警告！此操作将永久删除槽位 {slot_id} 中的凭证。",
+    "s_delete_slot": "删除凭证",
+    "q_delete_slot": "删除凭证？",
+    "l_delete_slot_desc": "移除槽位中的凭据",
+    "p_warning_delete_slot_configuration": "警告！此操作将永久删除槽位 {slot_id} 中的凭据。",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
             "slot_id": {
@@ -863,7 +863,7 @@
             }
         }
     },
-    "l_slot_deleted": "凭证已删除",
+    "l_slot_deleted": "凭据已删除",
     "s_swap": "交换",
     "s_swap_slots": "交换槽位",
     "q_swap_slots": "交换槽位？",
@@ -878,7 +878,7 @@
             }
         }
     },
-    "l_slot_credential_configured_and_exported": "配置 {type} 凭证并导出至 {file}",
+    "l_slot_credential_configured_and_exported": "配置 {type} 凭据并导出至 {file}",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
             "type": {
@@ -890,10 +890,10 @@
         }
     },
     "s_append_enter": "附加 ⏎",
-    "l_append_enter_desc": "发送 OTP 后追加回车键",
+    "l_append_enter_desc": "输入 OTP 后追加回车键",
 
     "@_otp_errors": {},
-    "p_otp_swap_error": "交换槽位失败！请确保 YubiKey 没有限制访问权限。",
+    "p_otp_swap_error": "交换槽位失败！请确保 YubiKey 没有被限制访问权限。",
     "l_wrong_access_code": "访问码错误",
 
     "@_otp_access_code": {},
@@ -914,12 +914,12 @@
     "s_enable_nfc": "启用 NFC",
     "s_request_access": "申请权限",
     "s_permission_denied": "权限被拒绝",
-    "l_elevating_permissions": "正在提高权限\u2026",
+    "l_elevating_permissions": "正在提升权限\u2026",
     "s_review_permissions": "检查权限",
     "s_open_windows_settings": "打开 Windows 设置",
     "l_admin_privileges_required": "需要管理员权限",
-    "p_elevated_permissions_required": "管理此设备需要更高的权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
-    "p_webauthn_elevated_permissions_required": "WebAuthn 管理需要更高的权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
+    "p_elevated_permissions_required": "管理此设备需要管理员权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
+    "p_webauthn_elevated_permissions_required": "WebAuthn 管理需要管理员权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
     "l_ms_store_permission_note": "Microsoft Store 版本的应用程序可能无法提升权限",
     "p_need_camera_permission": "Yubico 身份验证器需要相机权限以扫描二维码。",
 
@@ -947,7 +947,7 @@
         }
     },
     "l_point_camera_scan": "将摄像头对准二维码进行扫描",
-    "q_want_to_scan": "想要扫描吗？",
+    "q_want_to_scan": "要扫描吗？",
     "q_no_qr": "没有二维码？",
     "s_enter_manually": "手动输入",
     "s_read_from_file": "从文件读取",
@@ -969,15 +969,15 @@
     },
     "l_piv_app_reset": "重置 PIV 应用程序",
     "p_factory_reset_an_app": "将您 YubiKey 上的一个应用程序恢复出厂设置。",
-    "p_factory_reset_desc": "数据存储在 YubiKey 上的多个应用程序中，其中有些程序可以单独重置出厂。\n\n选择要重置的应用程序。",
+    "p_factory_reset_desc": "数据被存储在 YubiKey 上的多个应用程序中，其中有些程序可以单独。\n\n选择要恢复出厂设置的应用程序。",
     "p_warning_factory_reset": "警告！这将不可逆地删除您的 YubiKey 中的所有 OATH TOTP/HOTP 账户。",
-    "p_warning_disable_credentials": "您的 OATH 凭据以及设置的任何密码都将从此 YubiKey 中删除。请确保从各自的网站上禁用这些功能，以免被锁定帐户。",
+    "p_warning_disable_credentials": "您的 OATH 凭据以及设置的任何密码都将从此 YubiKey 中删除。请确保从各自的网站上禁用这些功能，以免无法访问账户。",
     "p_warning_deletes_accounts": "警告！这将不可撤销地删除 YubiKey 中的所有 U2F 和 FIDO2 账户，包括密钥。",
-    "p_warning_disable_accounts": "您的凭证和设置的任何 PIN 都将从该 YubiKey 中删除。请确保在各自的网站上禁用这些功能，以免被锁定帐户。",
+    "p_warning_disable_accounts": "您的凭证和设置的任何 PIN 都将从该 YubiKey 中删除。请确保在各自的网站上禁用这些功能，以免无法访问账户。",
     "p_warning_piv_reset": "警告！存储在 PIV 上的所有数据将不可逆地从您的 Yubikey 删除。",
     "p_warning_piv_reset_desc": "这包括私钥和证书。您的 PIN、PUK 和管理密钥将被重置为出厂默认值。",
     "p_warning_global_reset": "警告！这将不可逆地删除 YubiKey 中所有已保存的数据，包括证书。",
-    "p_warning_global_reset_desc": "出厂重置 YubiKey 上的应用程序。密码将重置为出厂默认值，已注册的指纹将被删除。任何密钥、证书或其他凭证都将被永久删除。",
+    "p_warning_global_reset_desc": "将 YubiKey 上的应用程序恢复出厂设置。PIN将重置为出厂默认值，已注册的指纹将被删除。任何密钥、证书或其他凭证都将被永久删除。",
 
     "@_copy_to_clipboard": {},
     "l_copy_to_clipboard": "复制到剪贴板",
@@ -1035,9 +1035,9 @@
     "l_launch_and_copy_otp": "启动应用程序并复制 OTP （一次性密码）",
     "l_kbd_layout_for_static": "键盘布局（用于静态密码）",
     "s_choose_kbd_layout": "选择键盘布局",
-    "l_bypass_touch_requirement": "绕过触摸要求",
-    "l_bypass_touch_requirement_on": "需要触摸的账户会自动在 NFC 中显示",
-    "l_bypass_touch_requirement_off": "需要触摸的账户需要额外读取 NFC",
+    "l_bypass_touch_requirement": "跳过触摸需求",
+    "l_bypass_touch_requirement_on": "需要触摸的账户会在 NFC 中自动显示",
+    "l_bypass_touch_requirement_off": "需要触摸的账户需要额外再使用 NFC 轻触一次",
     "s_silence_nfc_sounds": "静音 NFC 提示音",
     "l_silence_nfc_sounds_on": "读取 NFC 时不会播放任何声音",
     "l_silence_nfc_sounds_off": "声音将在 NFC 读取时播放",
@@ -1048,14 +1048,14 @@
     "s_allow_screenshots": "允许截图",
 
     "@_nfc": {},
-    "s_nfc_ready_to_scan": "扫描已准备就绪",
+    "s_nfc_ready_to_scan": "已准备好扫描",
     "s_nfc_hold_still": "保持不动\u2026",
     "s_nfc_tap_your_yubikey": "读取您的 YubiKey",
     "l_nfc_failed_to_scan": "扫描失败，请重试",
 
     "@_usb": {},
     "s_usb_processing": "从 YubiKey 读取数据",
-    "s_usb_dont_remove": "不要拔下Key\u2026",
+    "s_usb_dont_remove": "不要拔下密钥\u2026",
     "l_usb_read_error": "从 YubiKey 读取数据失败",
 
     "@_ndef": {},
@@ -1072,10 +1072,10 @@
     "p_rename_will_change_custom_name": "这将更改您的 YubiKey 的标签。",
 
     "@_shortcuts": {},
-    "s_shortcuts": null,
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_shortcuts": "快捷方式",
+    "s_keyboard_shortcuts": "键盘快捷键",
+    "s_global_shortcuts": "全局快捷键",
+    "s_application_shortcuts": "应用程序快捷键",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1083,7 +1083,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "退出 {app}",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1091,17 +1091,17 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_help_and_about": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "隐藏 {app}",
+    "s_search": "搜索",
+    "s_next_device": "下一个设备",
+    "s_previous_device": "上一个设备",
+    "s_open_settings": "打开设置",
+    "s_open_help_and_about": "打开帮助和关于",
+    "s_open_item": "打开项目",
+    "s_edit_item": "编辑项目",
+    "s_delete_item": "删除项目",
+    "s_calculate_oath_code": "计算 OATH 代码",
+    "s_open_keyboard_shortcuts": "打开键盘快捷键",
 
     "@_eof": {}
 }

@@ -126,7 +126,7 @@ with open(target, encoding="utf-8") as f:
 strings = {k: v for k, v in values.items() if not k.startswith("@")}
 
 print(target, f"- checking {len(strings)} strings")
-language_code = Path(target).stem.split("_")[1]
+language_code = Path(target).stem.split("_", 1)[1]
 lint_strings(strings, get_lint_rules(language_code))
 check_duplicate_values(strings)
 

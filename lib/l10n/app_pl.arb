@@ -4,9 +4,9 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "Polski",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "Przetłumaczono: {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "Zatwierdzono: {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "Niekompletne tłumaczenie",
+    "p_translation_progress_desc": "Wskaźniki odzwierciedlają postęp tłumaczenia.",
 
     "s_save": "Zapisz",
     "s_cancel": "Anuluj",
@@ -49,11 +49,11 @@
     "s_show_window": "Pokaż okno",
     "s_hide_window": "Ukryj okno",
     "s_show_navigation": "Pokaż nawigację",
-    "s_expand_navigation": "Rozwiń nawigację",
-    "s_collapse_navigation": "Zwiń nawigację",
-    "s_expand_collapse_navigation": null,
+    "s_expand_navigation": "Rozwiń pasek nawigacji",
+    "s_collapse_navigation": "Zwiń pasek nawigacji",
+    "s_expand_collapse_navigation": "Przełącz pasek nawigacji",
     "s_show_menu": "Pokaż menu",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "Przełącz pasek menu",
     "s_more_info": "Więcej informacji",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -350,7 +350,7 @@
     "p_pin_required_desc": "Działanie wymaga wpisania kodu PIN PIV.",
     "l_piv_pin_blocked": "Zablokowano. Użyj kodu PUK, aby zresetować",
     "p_piv_pin_blocked_desc": "Kod PIN jest zablokowany. Użyj kodu PUK, aby zresetować.",
-    "p_piv_pin_blocked_bio_desc": null,
+    "p_piv_pin_blocked_bio_desc": "Kod PIN jest zablokowany. Wymagane jest przywrócenie ustawień fabrycznych.",
     "l_piv_pin_puk_blocked": "Zablokowano. Wymagane jest przywrócenie ustawień fabrycznych",
     "p_piv_pin_puk_blocked_desc": "Kody PIN i PUK są zablokowane. Wymagane jest przywrócenie ustawień fabrycznych aplikacji PIV.",
     "p_new_piv_pin_puk_requirements": "{name} musi składać się z co najmniej {length} znaków.",
@@ -563,7 +563,7 @@
     "q_delete_passkey": "Usunąć klucz dostępu?",
     "l_delete_passkey_desc": "Usuń klucz dostępu z klucza YubiKey",
     "s_passkey_deleted": "Klucz dostępu został usunięty",
-    "p_warning_delete_passkey": "Uwaga! Spowoduje to usunięcie klucza dostępu z YubiKey.",
+    "p_warning_delete_passkey": "Ostrzeżenie! Spowoduje to usunięcie klucza dostępu z YubiKey.",
     "p_warning_delete_passkey_desc": "Użycie tego klucza dostępu nie będzie już możliwe.",
     "s_search_passkeys": "Szukaj kluczy dostępu",
     "p_passkeys_used": "Użyto {used} z {max} kluczy dostępu.",
@@ -698,8 +698,8 @@
     "s_private_key_generated": "Klucz prywatny został wygeneroewany",
     "p_select_what_to_delete": "Wybierz, co usunąć ze slotu.",
     "p_warning_delete_certificate": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu z klucza YubiKey.",
-    "p_warning_delete_key": "Uwaga! Spowoduje to usunięcie klucza prywatnego z YubiKey.",
-    "p_warning_delete_certificate_and_key": "Uwaga! Spowoduje to usunięcie certyfikatu i klucza prywatnego z YubiKey.",
+    "p_warning_delete_key": "Ostrzeżenie! Spowoduje to usunięcie klucza prywatnego z YubiKey.",
+    "p_warning_delete_certificate_and_key": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu i klucza prywatnego z YubiKey.",
     "p_delete_certificate_desc": "Spowoduje to usunięcie certyfikatu ze slotu PIV {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -927,7 +927,7 @@
     "s_qr_scan": "Zeskanuj kod QR",
     "l_invalid_qr": "Kod QR jest nieprawidłowy",
     "l_qr_not_found": "Nie znaleziono kodu QR",
-    "l_qr_scanned": "Zeskanowany kod QR",
+    "l_qr_scanned": "Kod QR został zeskanowany",
     "l_qr_file_too_large": "Plik jest zbyt duży (maksymalnie {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
@@ -1072,10 +1072,10 @@
     "p_rename_will_change_custom_name": "Spowoduje to zmianę etykiety klucza YubiKey.",
 
     "@_shortcuts": {},
-    "s_shortcuts": null,
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_shortcuts": "Skróty",
+    "s_keyboard_shortcuts": "Skróty klawiszowe",
+    "s_global_shortcuts": "Skróty globalne",
+    "s_application_shortcuts": "Skróty aplikacji",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1083,7 +1083,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "Wyjdź z {app}",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1091,17 +1091,17 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_help_and_about": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "Ukryj {app}",
+    "s_search": "Szukaj",
+    "s_next_device": "Następne urządzenie",
+    "s_previous_device": "Poprzednie urządzenie",
+    "s_open_settings": "Otwórz ustawienia",
+    "s_open_help_and_about": "Otwórz pomoc i informacje",
+    "s_open_item": "Otwórz element",
+    "s_edit_item": "Edytuj element",
+    "s_delete_item": "Usuń element",
+    "s_calculate_oath_code": "Oblicz kod OATH",
+    "s_open_keyboard_shortcuts": "Otwórz skróty klawiszowe",
 
     "@_eof": {}
 }

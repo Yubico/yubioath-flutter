@@ -131,9 +131,11 @@ class CurrentLocaleProvider extends StateNotifier<Locale> {
     );
     final localeStatus = status[locale.toString()];
     // Fallback to english if language is not fully translated
-    if (localeStatus == null || localeStatus.translated != 100) {
+    if (localeStatus == null || localeStatus.translated < 97) {
       final fallback = supportedLocales.first;
-      _log.debug('$locale is not fully translated. Falling back to $fallback');
+      _log.debug(
+        '$locale does not meet translation threshold. Falling back to $fallback',
+      );
       return fallback;
     }
     return locale;
