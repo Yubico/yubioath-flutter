@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     for arb_file in os.listdir(arb_files):
         if arb_file.startswith("app_") and arb_file.endswith(".arb"):
-            lang = arb_file.split("_")[1].split(".")[0]
+            lang = arb_file.split("_", 1)[1].split(".")[0]
             arb_path = p.join(arb_files, arb_file)
             arb = read_arb_file(arb_path)
             if process_android_res(lang, arb, english_strings):

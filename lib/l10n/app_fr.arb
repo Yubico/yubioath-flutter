@@ -4,9 +4,9 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "Français",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "Traduit : {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "Relecture : {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "Traduction incomplète",
+    "p_translation_progress_desc": "Les indicateurs de progrès reflètent la maturité de la traduction.",
 
     "s_save": "Enregistrer",
     "s_cancel": "Annuler",
@@ -49,11 +49,11 @@
     "s_show_window": "Montrer fenêtre",
     "s_hide_window": "Masquer fenêtre",
     "s_show_navigation": "Afficher la navigation",
-    "s_expand_navigation": "Développer la navigation",
-    "s_collapse_navigation": "Réduire la navigation",
-    "s_expand_collapse_navigation": null,
+    "s_expand_navigation": "Développer la barre de navigation",
+    "s_collapse_navigation": "Replier la barre de navigation",
+    "s_expand_collapse_navigation": "Développer/réduire la barre de navigation",
     "s_show_menu": "Afficher le menu",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "Basculer la barre de menu",
     "s_more_info": "Plus d'infos",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -350,7 +350,7 @@
     "p_pin_required_desc": "L'action que vous allez effectuer nécessite la saisie du PIN PIV.",
     "l_piv_pin_blocked": "Bloqué, utilisez PUK pour réinitialiser",
     "p_piv_pin_blocked_desc": "Le code PIN est bloqué. Utilisez le code PUK pour le réinitialiser.",
-    "p_piv_pin_blocked_bio_desc": null,
+    "p_piv_pin_blocked_bio_desc": "Le code PIN est bloqué. Une réinitialisation d'usine est requise.",
     "l_piv_pin_puk_blocked": "Bloqué, réinitialisation aux paramètres d'usine nécessaire",
     "p_piv_pin_puk_blocked_desc": "Le code PIN et le code PUK sont tous deux bloqués. Une réinitialisation d'usine de l'application PIV est nécessaire.",
     "p_new_piv_pin_puk_requirements": "Le {name} doit avoir au moins {length} caractères.",
@@ -1072,10 +1072,10 @@
     "p_rename_will_change_custom_name": "Cela changera l'étiquette de votre YubiKey.",
 
     "@_shortcuts": {},
-    "s_shortcuts": null,
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_shortcuts": "Raccourcis",
+    "s_keyboard_shortcuts": "Raccourcis clavier",
+    "s_global_shortcuts": "Raccourcis globaux",
+    "s_application_shortcuts": "Raccourcis d'application",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1083,7 +1083,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "Quitter {app}",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1091,17 +1091,17 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_help_and_about": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "Cacher {app}",
+    "s_search": "Recherche",
+    "s_next_device": "Appareil suivant",
+    "s_previous_device": "Appareil précédent",
+    "s_open_settings": "Ouvrir les paramètres",
+    "s_open_help_and_about": "Ouvrir l'aide et à propos",
+    "s_open_item": "Ouvrir l'article",
+    "s_edit_item": "Modifier l’article",
+    "s_delete_item": "Supprimer l’article",
+    "s_calculate_oath_code": "Calculer le code OATH",
+    "s_open_keyboard_shortcuts": "Ouvrir les raccourcis clavier",
 
     "@_eof": {}
 }

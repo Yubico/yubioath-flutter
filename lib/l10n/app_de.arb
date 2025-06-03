@@ -4,9 +4,9 @@
     "app_name": "Yubico Authenticator",
     "native_language_name": "Deutsch",
     "@native_language_name": {
-        "description": "The language name in native locale"
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "Translated: {percentage}%",
+    "s_translated": "Übersetzt: {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "Proofread: {percentage}%",
+    "s_proofread": "Überprüft: {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": null,
-    "p_translation_progress_desc": null,
+    "l_incomplete_translation": "Unvollständige Übersetzung",
+    "p_translation_progress_desc": "Die Fortschrittsanzeige reflektiert den Stand der Übersetzung.",
 
     "s_save": "Speichern",
     "s_cancel": "Abbrechen",
@@ -49,11 +49,11 @@
     "s_show_window": "Fenster anzeigen",
     "s_hide_window": "Fenster verstecken",
     "s_show_navigation": "Navigation anzeigen",
-    "s_expand_navigation": "Navigation erweitern",
-    "s_collapse_navigation": "Navigation minimieren",
-    "s_expand_collapse_navigation": null,
+    "s_expand_navigation": "Navigationsleiste erweitern",
+    "s_collapse_navigation": "Navigationsleiste minimieren",
+    "s_expand_collapse_navigation": "Navigationsleiste erweitern/minimieren",
     "s_show_menu": "Menü anzeigen",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "Menüleiste anzeigen/ausblenden",
     "s_more_info": "Weitere Infos",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -350,7 +350,7 @@
     "p_pin_required_desc": "Diese Aktion erfordert die PIV PIN.",
     "l_piv_pin_blocked": "Gesperrt, verwende die PUK zum Zurücksetzen",
     "p_piv_pin_blocked_desc": "Die PIN ist blockiert. Benutze die PUK um sie zurückzusetzen.",
-    "p_piv_pin_blocked_bio_desc": null,
+    "p_piv_pin_blocked_bio_desc": "Die PIN ist gesperrt. Ein Zurücksetzen auf Werkseinstellungen ist erforderlich.",
     "l_piv_pin_puk_blocked": "Gesperrt, Zurücksetzen auf Werkseinstellungen erforderlich",
     "p_piv_pin_puk_blocked_desc": "Sowohl die PIN als auch PUK sind blockiert. Die PIV-Anwendung muss zurückgesetzt werden.",
     "p_new_piv_pin_puk_requirements": "Eine {name} muss mindestens {length} Zeichen lang sein.",
@@ -1072,10 +1072,10 @@
     "p_rename_will_change_custom_name": "Dies ändert das Label deines YubiKeys.",
 
     "@_shortcuts": {},
-    "s_shortcuts": null,
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_shortcuts": "Verknüpfungen",
+    "s_keyboard_shortcuts": "Tastaturkürzel",
+    "s_global_shortcuts": "Globale Verknüpfungen",
+    "s_application_shortcuts": "Anwendungs-Verknüpfungen",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1083,7 +1083,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "{app} beenden",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1091,17 +1091,17 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_help_and_about": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "{app} ausblenden",
+    "s_search": "Suche",
+    "s_next_device": "Nächstes Gerät",
+    "s_previous_device": "Vorheriges Gerät",
+    "s_open_settings": "Einstellungen öffnen",
+    "s_open_help_and_about": "Hilfe und Informationen öffnen",
+    "s_open_item": "Element öffnen",
+    "s_edit_item": "Element bearbeiten",
+    "s_delete_item": "Element löschen",
+    "s_calculate_oath_code": "OATH Code generieren",
+    "s_open_keyboard_shortcuts": "Tastenkürzel-Übersicht öffnen",
 
     "@_eof": {}
 }

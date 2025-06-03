@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Código OTP de YubiKey copiado al portapapeles.</string>
+    <string name="p_ndef_set_password">Contraseña de YubiKey copiada al portapapeles.</string>
+    <string name="p_ndef_parse_failure">Error al analizar el código OTP de la YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Error al acceder al portapapeles al intentar copiar el código OTP desde la YubiKey.</string>
+</resources>

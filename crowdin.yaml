@@ -55,6 +55,7 @@ files: [
         "vi": "vi",
         "zh-CN": "zh",
         "zh-TW" : "zh_TW",
+        "tr": "tr",
       }
     }
 

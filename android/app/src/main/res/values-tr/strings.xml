@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">OTP kodu, YubiKey\'den panoya başarıyla kopyalandı.</string>
+    <string name="p_ndef_set_password">Şifre, YubiKey\'den panoya başarıyla kopyalandı.</string>
+    <string name="p_ndef_parse_failure">YubiKey\'den OTP kodunun ayrıştırılmasında başarısız olundu.</string>
+    <string name="p_ndef_set_clip_failure">YubiKey\'den OTP kodu kopyalamaya çalışırken panoya erişilemedi.</string>
+</resources>
