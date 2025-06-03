@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
 
-    runs-on: tla-arm64-ubuntu-runner-01
+    runs-on: ubuntu-22.04-arm
 
     steps:
     - uses: actions/checkout@v4
