@@ -18,7 +18,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
@@ -101,7 +100,20 @@ String _getIcon() {
   if (Platform.isWindows) {
     return 'resources/icons/com.yubico.yubioath.ico';
   }
-  return 'resources/icons/com.yubico.yubioath-32x32.png';
+
+  // if running in a sandbox, pass the icon name since the path is not visible
+  // in the host system (see https://github.com/leanflutter/tray_manager/pull/43)
+  return _runningInSandbox()
+      ? 'com.yubico.yubioath'
+      : 'resources/icons/com.yubico.yubioath-32x32.png';
+}
+
+// copy from tray_manager package
+// tray_manager-0.5.0/lib/src/helpers/sandbox.dart
+bool _runningInSandbox() {
+  // Check if running in a Flatpak or Snap sandbox
+  return Platform.environment.containsKey('FLATPAK_ID') ||
+      Platform.environment.containsKey('SNAP');
 }
 
 class _Systray extends TrayListener {
