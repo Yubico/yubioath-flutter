@@ -6,6 +6,7 @@
  ** Android: Fix issue for YubiKey NEO with touch-eject enabled.
  ** Android: Compatibility improvements for Android 16.
  ** Binaries compiled with Flutter 3.32.1 and Python 3.13.3 (desktop).
+ ** New translations: Chinese (Simplified and Traditional), Czech, Spanish, Swedish, Turkish.
 
 * Version 7.2.2 (released 2025-03-27) Android-only release
  ** Fix: correctly handle FIDO PIN entry.
