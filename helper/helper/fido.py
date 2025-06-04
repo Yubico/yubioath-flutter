@@ -26,8 +26,6 @@ from fido2.ctap import CtapError
 from fido2.ctap2 import Ctap2, ClientPin, Config
 from fido2.ctap2.credman import CredentialManagement
 from fido2.ctap2.bio import BioEnrollment, FPBioEnrollment, CaptureError
-from fido2.pcsc import CtapPcscDevice
-from fido2.hid import CtapHidDevice
 from yubikit.core.fido import FidoConnection
 from ykman.hid import list_ctap_devices as list_ctap
 from ykman.pcsc import list_devices as list_ccid
@@ -84,12 +82,13 @@ def _handle_pin_error(e, client_pin):
 
 
 class Ctap2Node(RpcNode):
-    def __init__(self, connection):
+    def __init__(self, connection, reader_name):
         super().__init__()
         self.ctap = Ctap2(connection)
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
         self._token = None
+        self._reader_name = reader_name
 
     def __call__(self, *args, **kwargs):
         try:
@@ -121,9 +120,8 @@ class Ctap2Node(RpcNode):
         return data
 
     @staticmethod
-    def _prepare_reset_nfc(device, event, signal):
+    def _prepare_reset_nfc(reader_name, event, signal):
         # TODO: Don't use private member _name.
-        reader_name = device._name
         devices = list_ccid(reader_name)
         if not devices or devices[0].reader.name != reader_name:
             raise ValueError("Unable to isolate NFC reader")
@@ -180,12 +178,10 @@ class Ctap2Node(RpcNode):
     def reset(self, event, signal):
         target = _ctap_id(self.ctap)
         device = self.ctap.device
-        if isinstance(device, CtapPcscDevice):
-            connection = self._prepare_reset_nfc(device, event, signal)
-        elif isinstance(device, CtapHidDevice):
-            connection = self._prepare_reset_usb(device, event, signal)
+        if self._reader_name:
+            connection = self._prepare_reset_nfc(self._reader_name, event, signal)
         else:
-            raise TypeError("Unsupported connection type")
+            connection = self._prepare_reset_usb(device, event, signal)
 
         logger.debug("Performing reset...")
         self.ctap = Ctap2(connection)
