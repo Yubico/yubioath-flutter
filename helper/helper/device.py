@@ -477,19 +477,22 @@ class ReaderDeviceNode(AbstractDeviceNode):
     def fido(self):
         try:
             connection = self._device.open_connection(FidoConnection)
-            return ConnectionNode(self._device, connection, self._info)
+            return ConnectionNode(
+                self._device, connection, self._info, self._device.reader.name
+            )
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
             raise ConnectionException(self._device.fingerprint, "fido", e)
 
 
 class ConnectionNode(RpcNode):
-    def __init__(self, device, connection, info):
+    def __init__(self, device, connection, info, reader_name=None):
         super().__init__()
         self._device = device
         self._transport = device.transport
         self._connection = connection
         self._info = info
+        self._reader_name = reader_name
 
     def __call__(self, *args, **kwargs):
         try:
@@ -529,8 +532,8 @@ class ConnectionNode(RpcNode):
     def get_data(self):
         return dict(version=self._info.version, serial=self._info.serial)
 
-    def _init_child_node(self, child_cls, capability=CAPABILITY(0)):
-        return child_cls(self._connection)
+    def _init_child_node(self, child_cls, capability=CAPABILITY(0), **kwargs):
+        return child_cls(self._connection, **kwargs)
 
     @child(
         condition=lambda self: self._transport == TRANSPORT.USB
@@ -558,7 +561,7 @@ class ConnectionNode(RpcNode):
         and CAPABILITY.FIDO2 in self.capabilities
     )
     def ctap2(self):
-        return self._init_child_node(Ctap2Node)
+        return self._init_child_node(Ctap2Node, reader_name=self._reader_name)
 
     @child(
         condition=lambda self: CAPABILITY.OTP in self.capabilities
@@ -599,7 +602,7 @@ class ScpConnectionNode(ConnectionNode):
         except NotSupportedError:
             pass
 
-    def _init_child_node(self, child_cls, capability=CAPABILITY(0)):
+    def _init_child_node(self, child_cls, capability=CAPABILITY(0), **kwargs):
         if capability in self.fips_capable:
-            return child_cls(self._connection, self.scp_params)
-        return child_cls(self._connection)
+            return child_cls(self._connection, self.scp_params, **kwargs)
+        return child_cls(self._connection, **kwargs)
