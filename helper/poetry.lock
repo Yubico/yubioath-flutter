@@ -726,30 +726,30 @@ setuptools = ">=42.0.0"
 
 [[package]]
 name = "pyscard"
-version = "2.2.2"
+version = "2.2.1"
 description = "Smartcard module for Python."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "pyscard-2.2.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:e658f240276c12f836c28159120da499b0593cf6178469095e09a4ada869b9c6"},
-    {file = "pyscard-2.2.2-cp310-cp310-win32.whl", hash = "sha256:81e3d3ae40cf47725b5835970433197c4a6a9030af9f08ca74b4ddaf08c339c4"},
-    {file = "pyscard-2.2.2-cp310-cp310-win_amd64.whl", hash = "sha256:8f545e55918f6e44eb3dbc6abb6c290efa3f992872e94a4af1ee43f6ecbd160d"},
-    {file = "pyscard-2.2.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:44eaafcec0b0bab0344be5209b1456bc2f34a15303e0ae584e2fe6abbe67f777"},
-    {file = "pyscard-2.2.2-cp311-cp311-win32.whl", hash = "sha256:77577e6c847c253c642b880087616b08223b74e3942f07d3a6019f7067fe2369"},
-    {file = "pyscard-2.2.2-cp311-cp311-win_amd64.whl", hash = "sha256:4e3642fc5b800b4e7ff88742eef01cbb8bd3b3d0f951f56f3fa4fca51ab41bf2"},
-    {file = "pyscard-2.2.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:88e277d809fce5fc29e737ecd135f3871a0813f7d8b27fad5537ed9fa4442a20"},
-    {file = "pyscard-2.2.2-cp312-cp312-macosx_14_0_x86_64.whl", hash = "sha256:535d03d04477ef0cb9812ca0fad4b71fee6984b30ad72f05f644b6e4e743ccd5"},
-    {file = "pyscard-2.2.2-cp312-cp312-win32.whl", hash = "sha256:427164199171d26c565db0d2a577c491253dfdf160408dcd605bd0e8f4f01060"},
-    {file = "pyscard-2.2.2-cp312-cp312-win_amd64.whl", hash = "sha256:9ca0f5f3e38b753539f3c65335536dea8a20ca4c660b320f87368070e7febdbc"},
-    {file = "pyscard-2.2.2-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:1480fc9e760487e4fe18b668647cd88bb4d0fd94e075bba6a00a582a93b6def7"},
-    {file = "pyscard-2.2.2-cp313-cp313-macosx_14_0_x86_64.whl", hash = "sha256:ab1a875666330880ddecacbadc8193dc5c6eb799329e3d6e99281a1de113a4cd"},
-    {file = "pyscard-2.2.2-cp313-cp313-win32.whl", hash = "sha256:48e8e2e004ef105b488422c9943eca5f6f38648a8e377a94017fa07203d05b4a"},
-    {file = "pyscard-2.2.2-cp313-cp313-win_amd64.whl", hash = "sha256:b634d762de8058a039cf013dff3946e5eed6ee5d06fd18fe100ecd6af3eb6c35"},
-    {file = "pyscard-2.2.2-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:ac9eaf1988c9c563a5bf5d54b8c6058ef267a1ad5755d353b9d5a68ec5b2210b"},
-    {file = "pyscard-2.2.2-cp39-cp39-win32.whl", hash = "sha256:17b50d6aba530e9ef9a1a87d2761d52f378453bbb1735fc0bbdcaadc9597fef1"},
-    {file = "pyscard-2.2.2-cp39-cp39-win_amd64.whl", hash = "sha256:3975dc4527996552d9317cc8b3e6a9e7e98c85616c9dc4a34152f622c3c0ffd3"},
-    {file = "pyscard-2.2.2.tar.gz", hash = "sha256:c77481fb86f4a17bc441d7b36551c1d36a9d3a48c4bb30ab8118886e6f275081"},
+    {file = "pyscard-2.2.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:e0e85b8a0a316690be7d5b2e85302651f0443db271a8ca77cb09f8a6fdd6ebfa"},
+    {file = "pyscard-2.2.1-cp310-cp310-win32.whl", hash = "sha256:fcac209666236bd08d876834f8233046713139490b46a37baa19e4eee959d003"},
+    {file = "pyscard-2.2.1-cp310-cp310-win_amd64.whl", hash = "sha256:4a638bc33d6c6b4a95ac4e7b5eb4426b3e1d0c5b74e018a650294473456b43c3"},
+    {file = "pyscard-2.2.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:21b458aef2baaf97a3dc719b7d6d94d9333d5cff703536688ee9881993607328"},
+    {file = "pyscard-2.2.1-cp311-cp311-win32.whl", hash = "sha256:4bec90a07e25220a6eeaa2a6d6e45c60ce40b5e0f0c7059f03f16357c01e66a8"},
+    {file = "pyscard-2.2.1-cp311-cp311-win_amd64.whl", hash = "sha256:aa886dda9d6dfc9acb58902dca1db6da7cf22a6dd284ded08ad6bf1ac7b207fc"},
+    {file = "pyscard-2.2.1-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:cc2157faa3e75bfb81f393215c2fb980757a5f466015acb6cd221769ba5fc52d"},
+    {file = "pyscard-2.2.1-cp312-cp312-macosx_14_0_x86_64.whl", hash = "sha256:8a682ecb2ac56d88f265f2bc0afe032f8ffc2ec544f384d7a0cdea2d08cae35c"},
+    {file = "pyscard-2.2.1-cp312-cp312-win32.whl", hash = "sha256:0a96499b4e910ad4a8244d5406dc6afb4c91812e1124b992832b48e9e4d93b7e"},
+    {file = "pyscard-2.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:7acb878270ee58379474646fa6be17dd101b8d870eeadb004f3c2cad736b0b09"},
+    {file = "pyscard-2.2.1-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:803b52f04389456a011ae8b3c02bcdc232e69b32c137b8b5c8695430bb2006af"},
+    {file = "pyscard-2.2.1-cp313-cp313-macosx_14_0_x86_64.whl", hash = "sha256:dc926ba396c1fa6e4db1007b9e62b2f330c79c943c3bbbb893908f589071fc86"},
+    {file = "pyscard-2.2.1-cp313-cp313-win32.whl", hash = "sha256:2aca599294cd5178d359627b9b58a8e636ea3ebd73b70da79a95c684be985c83"},
+    {file = "pyscard-2.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:9c33a6cd75479f3f2e1f812399d228e371f030d6f0630b69c34a02519bbf6dca"},
+    {file = "pyscard-2.2.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:affafc324ed4a8e735c392e7576f8b55c26a7f2c4f529e3ccb2adf88531d85a4"},
+    {file = "pyscard-2.2.1-cp39-cp39-win32.whl", hash = "sha256:b209b6f4c996f9c4a7e04fb3e3e8210f4175986b2bc36ef5d735667d53071381"},
+    {file = "pyscard-2.2.1-cp39-cp39-win_amd64.whl", hash = "sha256:4b7615ff1c6b620136ce554e528affe93bdd9f705601ac23453c2c5d56bf979b"},
+    {file = "pyscard-2.2.1.tar.gz", hash = "sha256:920e688a5108224cb19b915c3fd7ea7cf3d1aa379587ffd087973e84c13f8d94"},
 ]
 
 [package.extras]
@@ -1005,4 +1005,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10, <4"
-content-hash = "c97724d00927a28e9ddc432a1037b9bd1fd1925e1080077647cc0f4c72cb31aa"
+content-hash = "ca7207bf3da30ea58c74fb21fd47faab55d79d23214433c4ecba2dabba262947"

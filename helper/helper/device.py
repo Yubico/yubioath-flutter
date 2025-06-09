@@ -394,20 +394,15 @@ class UsbDeviceNode(AbstractDeviceNode):
 class _ReaderObserver(CardObserver):
     def __init__(self, device):
         self.device = device
-        self.card = None
         self.needs_refresh = True
 
     def update(self, observable, actions):
         added, removed = actions
-        for card in added:
+
+        for card in added + removed:
             if card.reader == self.device.reader.name:
-                if card != self.card:
-                    self.card = card
+                self.needs_refresh = True
                 break
-        else:
-            self.card = None
-        self.needs_refresh = True
-        logger.debug(f"NFC card: {self.card}")
 
 
 RESTRICTED_NDEF = bytes.fromhex("001fd1011b5504") + b"yubico.com/getting-started"
@@ -433,9 +428,6 @@ class ReaderDeviceNode(AbstractDeviceNode):
         return dict(super()._read_data(conn), present=True)
 
     def _refresh_data(self):
-        card = self._observer.card
-        if card is None:
-            return dict(present=False, status="no-card")
         try:
             self._close_child()
             with self._device.open_connection(SmartCardConnection) as conn:
