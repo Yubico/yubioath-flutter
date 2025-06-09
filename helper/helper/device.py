@@ -140,6 +140,7 @@ class ReadersNode(RpcNode):
         self._state = set()
         self._readers = {}
         self._reader_mapping = {}
+        self.scan()
 
     @action(closes_child=False)
     def scan(self):
@@ -468,6 +469,8 @@ class ReaderDeviceNode(AbstractDeviceNode):
     def ccid(self):
         try:
             connection = self._device.open_connection(SmartCardConnection)
+            if not self._info:
+                self._read_data(connection)
             return ScpConnectionNode(self._device, connection, self._info)
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
@@ -476,6 +479,9 @@ class ReaderDeviceNode(AbstractDeviceNode):
     @child
     def fido(self):
         try:
+            if not self._info:
+                with self._device.open_connection(SmartCardConnection) as connection:
+                    self._read_data(connection)
             connection = self._device.open_connection(FidoConnection)
             return ConnectionNode(
                 self._device, connection, self._info, self._device.reader.name

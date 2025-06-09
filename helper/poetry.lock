@@ -927,14 +927,14 @@ files = [
 
 [[package]]
 name = "yubikey-manager"
-version = "5.7.1"
+version = "5.7.2"
 description = "Library and CLI for managing your YubiKey configuration."
 optional = false
 python-versions = "<4,>=3.9"
 groups = ["main"]
 files = [
-    {file = "yubikey_manager-5.7.1-py3-none-any.whl", hash = "sha256:1f8064b2c9964ac6849e5693b2d2ce94e064730d29b2246efb978ce94679f285"},
-    {file = "yubikey_manager-5.7.1.tar.gz", hash = "sha256:0200efca86eb310e19b841a2e365812c83c19f8e65f8c6065e14bbb7b4a58ef3"},
+    {file = "yubikey_manager-5.7.2-py3-none-any.whl", hash = "sha256:3a4d9fb2a2c8965b92d7bf7040d842b0b57de87f4593a211cabb6be2ed64f183"},
+    {file = "yubikey_manager-5.7.2.tar.gz", hash = "sha256:9aeb4035dcff8f6cb792e83f36e6a9152a9b5b65ac2c2e25e5f20d53c6064e62"},
 ]
 
 [package.dependencies]
