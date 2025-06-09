@@ -2,7 +2,7 @@
     "@@locale": "zh_TW",
 
     "app_name": "Yubico 驗證器",
-    "native_language_name": "英文",
+    "native_language_name": "繁體中文",
     "@native_language_name": {
         "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
@@ -669,14 +669,14 @@
     "l_delete_certificate": "刪除憑證",
     "q_delete_certificate": "刪除憑證嗎?",
     "l_delete_certificate_desc": "從您的 YubiKey 移除憑證",
-    "l_delete_key": "刪除金鑰",
+    "l_delete_key": "刪除密鑰",
     "q_delete_key": "刪除密鑰嗎?",
     "l_delete_key_desc": "從您的 YubiKey 移除密鑰",
-    "l_delete_certificate_or_key": "刪除憑證/金鑰",
-    "q_delete_certificate_or_key": "刪除憑證/金鑰嗎？",
-    "l_delete_certificate_or_key_desc": "從您的 YubiKey 移除憑證或金鑰",
-    "l_move_key": "移動金鑰",
-    "l_move_key_desc": "將金鑰從一個 PIV 插槽移到另一個插槽中",
+    "l_delete_certificate_or_key": "刪除憑證/密鑰",
+    "q_delete_certificate_or_key": "刪除憑證/密鑰嗎？",
+    "l_delete_certificate_or_key_desc": "從您的 YubiKey 移除憑證或密鑰",
+    "l_move_key": "移動密鑰",
+    "l_move_key_desc": "將密鑰從一個 PIV 插槽移到另一個插槽中",
     "l_change_defaults": "變更預設存取密碼",
     "s_issuer": "發行者",
     "s_serial": "序號",
@@ -684,8 +684,8 @@
     "s_valid_from": "有效期自",
     "s_valid_to": "有效期至",
     "l_no_certificate": "未載入憑證",
-    "l_key_no_certificate": "未載入憑證的金鑰",
-    "s_generate_key": "生成金鑰",
+    "l_key_no_certificate": "未載入憑證的密鑰",
+    "s_generate_key": "生成密鑰",
     "l_generate_desc": "產生新的憑證或 CSR",
     "p_generate_desc": "這將在 YubiKey 的 PIV 插槽 {slot}中生成一個新的密鑰。",
     "@p_generate_desc": {
@@ -695,11 +695,11 @@
             }
         }
     },
-    "s_private_key_generated": "私鑰已生成",
+    "s_private_key_generated": "私人密鑰已生成",
     "p_select_what_to_delete": "選擇要從插槽中刪除的內容。",
     "p_warning_delete_certificate": "警告！此動作將從您的 YubiKey 中刪除帳戶。",
-    "p_warning_delete_key": "警告！此動作將從您的 YubiKey 中刪除私鑰。",
-    "p_warning_delete_certificate_and_key": "警告！此動作將從您的 YubiKey 中刪除憑證和私鑰。",
+    "p_warning_delete_key": "警告！此動作將從您的 YubiKey 中刪除私人密鑰。",
+    "p_warning_delete_certificate_and_key": "警告！此動作將從您的 YubiKey 中刪除憑證和私人密鑰。",
     "p_delete_certificate_desc": "這將刪除 PIV 插槽 {slot}中的憑證。",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -708,7 +708,7 @@
             }
         }
     },
-    "p_delete_key_desc": "這將刪除 PIV 插槽 {slot}中的私鑰。",
+    "p_delete_key_desc": "這將刪除 PIV 插槽 {slot}中的私人密鑰。",
     "@p_delete_key_desc": {
         "placeholders": {
             "slot": {
@@ -716,7 +716,7 @@
             }
         }
     },
-    "p_delete_certificate_and_key_desc": "這將刪除 PIV 插槽 {slot}中的憑證和私鑰。",
+    "p_delete_certificate_and_key_desc": "這將刪除 PIV 插槽 {slot}中的憑證和私人密鑰。",
     "@p_delete_certificate_and_key_desc": {
         "placeholders": {
             "slot": {
@@ -725,11 +725,11 @@
         }
     },
     "l_certificate_deleted": "憑證已刪除",
-    "l_key_deleted": "金鑰已刪除",
-    "l_certificate_and_key_deleted": "憑證和金鑰已刪除",
+    "l_key_deleted": "密鑰已刪除",
+    "l_certificate_and_key_deleted": "憑證和密鑰已刪除",
     "l_include_certificate": "包含憑證",
     "l_select_destination_slot": "選擇目標插槽",
-    "q_move_key_confirm": "移動 PIV 插槽 {from_slot}中的私鑰?",
+    "q_move_key_confirm": "移動 PIV 插槽中的私人密鑰 {from_slot}？",
     "@q_move_key_confirm": {
         "placeholders": {
             "from_slot": {
@@ -748,7 +748,7 @@
             }
         }
     },
-    "q_move_key_and_certificate_to_slot_confirm": "將 PIV 插槽 {from_slot} 中的私鑰和憑證移至插槽 {to_slot}?",
+    "q_move_key_and_certificate_to_slot_confirm": "將 PIV 插槽 {from_slot} 中的私人密鑰和憑證移至插槽 {to_slot}？",
     "@q_move_key_and_certificate_to_slot_confirm": {
         "placeholders": {
             "from_slot": {
@@ -760,7 +760,7 @@
         }
     },
     "p_password_protected_file": "選取的檔案受到密碼保護。",
-    "p_import_items_desc": "下列項目將會匯入 PIV 插槽 {slot}。",
+    "p_import_items_desc": "下列項目(s)將會匯入 PIV 插槽 {slot}。",
     "@p_import_items_desc": {
         "placeholders": {
             "slot": {
@@ -768,17 +768,17 @@
             }
         }
     },
-    "l_warning_public_key_mismatch": "憑證的公鑰與插槽中的私鑰不符",
-    "l_key_moved": "金鑰已移動",
-    "l_key_and_certificate_moved": "移動金鑰與憑證",
+    "l_warning_public_key_mismatch": "憑證的公鑰與插槽中的私人密鑰不符",
+    "l_key_moved": "密鑰已移動",
+    "l_key_and_certificate_moved": "移動密鑰與憑證",
     "p_subject_desc": "依照 RFC 4514 規格格式化的識別名 (DN)。",
     "l_rfc4514_invalid": "無效的 RFC 4514 格式",
-    "rfc4514_examples": "範例：\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
+    "rfc4514_examples": "範例：\nCN=Example 名稱\nCN=jsmith,DC=example,DC=net",
     "s_allow_fingerprint": "允許使用指紋",
-    "s_pin_policy": "PIN 政策",
+    "s_pin_policy": "PIN 碼政策",
     "s_output_format": "輸出格式",
     "s_expiration_date": "有效期至",
-    "p_algorithm_desc": "使用的金鑰演算法。",
+    "p_algorithm_desc": "使用的密鑰演算法。",
     "p_expiration_date_desc": "憑證到期的日期，預設為 1 年（僅限憑證）。",
     "p_key_options_bio_desc": "允許使用生物辨識技術取代 PIN 碼。",
     "q_overwrite_slot": "覆寫插槽？",
@@ -791,8 +791,8 @@
         }
     },
     "l_overwrite_cert": "憑證將被覆寫",
-    "l_overwrite_key": "私鑰將被覆寫",
-    "l_overwrite_key_maybe": "插槽中任何現有的私鑰都會被覆蓋",
+    "l_overwrite_key": "私人密鑰將被覆寫",
+    "l_overwrite_key_maybe": "插槽中任何現有的私人密鑰都會被覆蓋",
 
     "@_piv_slots": {},
     "s_slot_display_name": "{name} ({hexid})",
@@ -808,9 +808,9 @@
     },
     "s_slot_9a": "身份驗證",
     "s_slot_9c": "數位簽章",
-    "s_slot_9d": "金鑰管理",
+    "s_slot_9d": "密鑰管理",
     "s_slot_9e": "卡片驗證",
-    "s_retired_slot": "退役金鑰管理",
+    "s_retired_slot": "退役密鑰管理",
 
     "@_otp_slots": {},
     "s_otp_slot_one": "短觸",
@@ -924,10 +924,10 @@
     "p_need_camera_permission": "Yubico Authenticator 需要相機權限才能掃描 QR 碼。",
 
     "@_qr_codes": {},
-    "s_qr_scan": "掃描 QR Code",
-    "l_invalid_qr": "QR code無效",
-    "l_qr_not_found": "找不到 QR Code",
-    "l_qr_scanned": "掃描 QR Code",
+    "s_qr_scan": "掃描 QR 碼",
+    "l_invalid_qr": "QR 碼無效",
+    "l_qr_not_found": "找不到 QR 碼",
+    "l_qr_scanned": "掃描 QR 碼",
     "l_qr_file_too_large": "檔案太大 (max {max})",
     "@l_qr_file_too_large": {
         "placeholders": {
@@ -937,8 +937,8 @@
         }
     },
     "l_qr_invalid_image_file": "無效影像檔案",
-    "l_qr_select_file": "選擇具有 QR 代碼的檔案",
-    "l_qr_not_read": "重新命名帳戶失敗： {message}",
+    "l_qr_select_file": "選擇具有 QR 碼的檔案",
+    "l_qr_not_read": "讀取 QR 碼失敗：{message}",
     "@l_qr_not_read": {
         "placeholders": {
             "message": {
@@ -946,9 +946,9 @@
             }
         }
     },
-    "l_point_camera_scan": "將相機對準 QR 代碼進行掃描",
+    "l_point_camera_scan": "將相機對準 QR 碼進行掃描",
     "q_want_to_scan": "想要掃描嗎？",
-    "q_no_qr": "沒有 QR 代碼？",
+    "q_no_qr": "沒有 QR 碼嗎？",
     "s_enter_manually": "手動輸入",
     "s_read_from_file": "從檔案讀取",
 
@@ -958,7 +958,7 @@
     "l_factory_reset_desc": "還原 YubiKey 預設值",
     "l_factory_reset_required": "需要出廠重設",
     "l_oath_application_reset": "OATH 應用程式重設",
-    "l_fido_app_reset": "OATH 應用程式重設",
+    "l_fido_app_reset": "FIDO 應用程式重設",
     "l_reset_failed": "執行重設時出錯： {message}",
     "@l_reset_failed": {
         "placeholders": {
@@ -967,7 +967,7 @@
             }
         }
     },
-    "l_piv_app_reset": "OATH 應用程式重設",
+    "l_piv_app_reset": "PIV 應用程式重設",
     "p_factory_reset_an_app": "工廠重設 YubiKey 上的應用程式。",
     "p_factory_reset_desc": "資料儲存在 YubiKey 上的多個應用程式中，其中某些應用程式可獨立進行出廠重設。\n\n請選取上方的應用程式進行重設。",
     "p_warning_factory_reset": "警告！這將不可撤銷地從您的 YubiKey 中刪除所有 OATH TOTP/HOTP 帳戶。",
@@ -975,13 +975,13 @@
     "p_warning_deletes_accounts": "警告！這將不可撤銷地從您的 YubiKey 刪除所有 U2F 和 FIDO2 帳戶，包括密碼。",
     "p_warning_disable_accounts": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
     "p_warning_piv_reset": "警告！為 PIV 儲存的所有資料將不可撤銷地從您的 YubiKey 中刪除。",
-    "p_warning_piv_reset_desc": "這包括私人金鑰和憑證。您的 PIN、PUK 和管理金鑰會重設為出廠預設值。",
+    "p_warning_piv_reset_desc": "這包括私人密鑰和憑證。您的 PIN 碼、PUK 碼和管理密鑰會重設為出廠預設值。",
     "p_warning_global_reset": "警告！這將不可撤銷地從您的 YubiKey 刪除所有儲存的資料，包括憑證。",
-    "p_warning_global_reset_desc": "出廠重設 YubiKey 上的應用程式。PIN 將被重設為出廠預設值，已註冊的指紋將被移除。任何金鑰、證書或其他憑證都會被永久移除。",
+    "p_warning_global_reset_desc": "出廠重設 YubiKey 上的應用程式。PIN 碼將被重設為出廠預設值，已註冊的指紋將被移除。任何密鑰、證書或其他憑證都會被永久移除。",
 
     "@_copy_to_clipboard": {},
-    "l_copy_to_clipboard": "複製到剪貼板",
-    "s_code_copied": "代碼已復制",
+    "l_copy_to_clipboard": "複製到剪貼簿",
+    "s_code_copied": "代碼已複製",
     "l_code_copied_clipboard": "驗證碼已複製至剪貼簿",
     "s_copy_log": "複製記錄檔",
     "l_log_copied": "日誌已複製到剪貼簿",
@@ -1055,14 +1055,14 @@
 
     "@_usb": {},
     "s_usb_processing": "從 YubiKey 讀取資料",
-    "s_usb_dont_remove": "不要移除金鑰\u2026",
+    "s_usb_dont_remove": "不要移除密鑰\u2026",
     "l_usb_read_error": "從 YubiKey 讀取資料失敗",
 
     "@_ndef": {},
     "p_ndef_set_otp": "成功將 OTP 代碼從 YubiKey 複製到剪貼簿。",
     "p_ndef_set_password": "成功將密碼從 YubiKey 複製到剪貼簿。",
     "p_ndef_parse_failure": "解析 YubiKey 的 OTP 代碼失敗。",
-    "p_ndef_set_clip_failure": "當嘗試從 YubiKey 複製 OTP 代碼時，存取剪貼板失敗。",
+    "p_ndef_set_clip_failure": "當嘗試從 YubiKey 複製 OTP 代碼時，存取剪貼簿失敗。",
 
     "@_key_customization": {},
     "s_set_label": "設定標籤",

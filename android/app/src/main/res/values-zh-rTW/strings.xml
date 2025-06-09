@@ -3,5 +3,5 @@
     <string name="p_ndef_set_otp">成功將 OTP 代碼從 YubiKey 複製到剪貼簿。</string>
     <string name="p_ndef_set_password">成功將密碼從 YubiKey 複製到剪貼簿。</string>
     <string name="p_ndef_parse_failure">解析 YubiKey 的 OTP 代碼失敗。</string>
-    <string name="p_ndef_set_clip_failure">當嘗試從 YubiKey 複製 OTP 代碼時，存取剪貼板失敗。</string>
+    <string name="p_ndef_set_clip_failure">當嘗試從 YubiKey 複製 OTP 代碼時，存取剪貼簿失敗。</string>
 </resources>
