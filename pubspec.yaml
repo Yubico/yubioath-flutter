@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # This field is updated by running ./set-version.py <version>
 # DO NOT MANUALLY EDIT THIS!
-version: 7.2.3-dev.0+70203
+version: 7.2.4-dev.0+70205
 
 environment:
   sdk: ^3.7.0
