@@ -143,8 +143,10 @@ extension PIVFunctions on WidgetTester {
     await shortWait();
 
     /// 3. open menu
+    /*  this is for smallest width
     await tap(find.byKey(actionsIconButtonKey).hitTestable());
     await shortWait();
+    */
     await tap(find.byKey(yubikeyFactoryResetMenuButton));
     await shortWait();
 
