@@ -108,7 +108,7 @@ jobs:
       uses: actions/download-artifact@v4
 
     - name: docker login
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ci@yubico.com
@@ -224,7 +224,7 @@ jobs:
       uses: actions/download-artifact@v4
 
     - name: docker login
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ci@yubico.com
