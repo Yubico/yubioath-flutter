@@ -100,7 +100,7 @@ class ActionListItem extends StatelessWidget {
 }
 
 class ActionListSection extends ConsumerWidget {
-  final String title;
+  final String? title;
   final List<ActionListItem> children;
   final bool fullWidth;
 
@@ -113,14 +113,14 @@ class ActionListSection extends ConsumerWidget {
 
   factory ActionListSection.fromMenuActions(
     BuildContext context,
-    String title, {
+    String? title, {
     Key? key,
     required List<ActionItem> actions,
     bool fullWidth = false,
   }) {
     return ActionListSection(
-      key: key,
       title,
+      key: key,
       fullWidth: fullWidth,
       children:
           actions.map((action) {
@@ -152,7 +152,9 @@ class ActionListSection extends ConsumerWidget {
     if (enabledChildren.isEmpty) {
       return const SizedBox();
     }
-    final content = Column(children: [ListTitle(title), ...enabledChildren]);
+    final content = Column(
+      children: [if (title != null) ListTitle(title!), ...enabledChildren],
+    );
     if (fullWidth) {
       return content;
     } else {
