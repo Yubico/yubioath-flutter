@@ -431,6 +431,7 @@
     "l_enter_oath_pw": "Gib das OATH Passwort für deinen YubiKey ein",
     "p_new_password_requirements": "Ein Passwort kann Buchstaben, Zahlen und Sonderzeichen enthalten.",
     "@_management_key": {},
+
     "s_management_key": "Management-Key",
     "s_current_management_key": "Aktueller Management-Key",
     "s_new_management_key": "Neuer Management-Key",
@@ -828,6 +829,7 @@
     "l_otp_slot_empty": "Slot ist leer",
     "l_otp_slot_configured": "Slot ist konfiguriert",
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "Konfiguriere Yubico OTP basierte Authentifizierung",
     "s_challenge_response": "Challenge-Response",
     "l_challenge_response_desc": "Konfiguriere Challenge-Response basierte Authentifizierung",
@@ -1005,6 +1007,7 @@
         }
     },
     "@_custom_icons": {},
+
     "s_custom_icons": "Benutzerdefinierte Icons",
     "l_set_icons_for_accounts": "Individuelle Icons für Konten konfigurieren",
     "p_custom_icons_description": "Icon-Pakete machen Ihre Konten mit bekannten Logos und Farben leichter unterscheidbar.",
@@ -1076,13 +1079,14 @@
     "p_ndef_parse_failure": "Beim Auslesen des OTP Codes von deinem YubiKey ist ein Fehler aufgetreten.",
     "p_ndef_set_clip_failure": "Fehler beim Zugriff auf die Zwischenablage als der OTP Code kopiert wurde.",
     "@_key_customization": {},
+
     "s_set_label": "Namen konfigurieren",
     "s_set_color": "Farbe auswählen",
     "s_change_label": "Namen ändern",
     "p_set_will_add_custom_name": "Dies gibt deinem YubiKey einen eigenen Namen.",
     "p_rename_will_change_custom_name": "Dies ändert den Namen deines YubiKeys.",
-
     "@_shortcuts": {},
+
     "s_shortcuts": "Verknüpfungen",
     "s_keyboard_shortcuts": "Tastaturkürzel",
     "s_global_shortcuts": "Globale Verknüpfungen",
@@ -1113,7 +1117,6 @@
     "s_delete_item": "Element löschen",
     "s_calculate_oath_code": "OATH Code generieren",
     "s_open_keyboard_shortcuts": "Tastenkürzel-Übersicht öffnen",
-
     "@_eof": {}
 
 }

@@ -139,7 +139,6 @@
         }
     },
     "s_choose_language": "Välj språk",
-
     "@_theme": {},
 
     "s_app_theme": "Applikationstema",
@@ -194,7 +193,6 @@
     },
     "l_fips_capable": "FIPS kapabel",
     "l_fips_approved": "FIPS godkänd",
-
     "@_yubikey_interactions": {},
 
     "l_insert_yk": "Sätt i din YubiKey",
@@ -236,6 +234,7 @@
     "s_hide_lock_code": "Dölj låskod",
     "p_lock_code_required_desc": "Den åtgärd som du ska utföra kräver att du anger koden för konfigurationslåset.",
     "@_connectivity_issues": {},
+
     "l_helper_not_responding": "Hjälp processen svarar inte",
     "l_yk_no_access": "Det går inte att komma åt denna YubiKey",
     "s_yk_inaccessible": "Enheten är inte åtkomlig",
@@ -431,8 +430,8 @@
     "l_set_password_first": "Ställ in ett lösenord",
     "l_enter_oath_pw": "Ange OATH-lösenordet för din YubiKey",
     "p_new_password_requirements": "Ett lösenord kan innehålla bokstäver, siffror och specialtecken.",
-
     "@_management_key": {},
+
     "s_management_key": "Management nyckel",
     "s_current_management_key": "Nuvarande management-nyckel",
     "s_new_management_key": "Ny management-nyckel",
@@ -450,7 +449,6 @@
     "l_wrong_key": "Fel tangent",
     "l_unlock_piv_management": "Lås upp PIV-hantering",
     "p_unlock_piv_management_desc": "Åtgärden du ska utföra kräver PIV management nyckeln.",
-
     "@_oath_accounts": {},
 
     "l_account": "Konto: {label}",
@@ -658,6 +656,7 @@
     "l_wrong_inserted_yk_error": "Återinsatt YubiKey matchar inte den ursprungliga enheten",
     "l_failed_connecting_to_fido": "Misslyckades med att ansluta till FIDO-gränssnittet",
     "@_certificates": {},
+
     "l_self_signed_certificate": "Självsignerat certifikat",
     "l_certificate_signing_request": "Begäran om certifikatsignering (CSR)",
     "s_certificate": "Certifikat",
@@ -1069,10 +1068,10 @@
     "s_nfc_tap_your_yubikey": "Tryck på din YubiKey",
     "l_nfc_failed_to_scan": "Misslyckades med skanningen, försök igen",
     "@_usb": {},
+
     "s_usb_processing": "Läser data från YubiKey",
     "s_usb_dont_remove": "Låt nyckeln sitta kvar – ta inte bort nyckeln\u2026",
     "l_usb_read_error": "Misslyckades att läsa data från YubiKey",
-
     "@_ndef": {},
 
     "p_ndef_set_otp": "Kopierade framgångsrikt OTP-kod från YubiKey till urklipp.",
@@ -1087,6 +1086,7 @@
     "p_set_will_add_custom_name": "Detta ger din YubiKey ett eget namn.",
     "p_rename_will_change_custom_name": "Detta kommer att ändra etiketten på din YubiKey.",
     "@_shortcuts": {},
+
     "s_shortcuts": "Kortkommandon",
     "s_keyboard_shortcuts": "Tangentbords kortkommandon",
     "s_global_shortcuts": "Globala kortkommandon",
@@ -1117,7 +1117,6 @@
     "s_delete_item": "Radera objekt",
     "s_calculate_oath_code": "Beräkna OATH-kod",
     "s_open_keyboard_shortcuts": "Öppna kortkommandon för tangentbord",
-
     "@_eof": {}
 
 }

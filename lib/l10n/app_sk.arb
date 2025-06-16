@@ -1086,6 +1086,7 @@
     "p_set_will_add_custom_name": "Týmto sa vášmu kľúču YubiKey pridelí vlastný názov.",
     "p_rename_will_change_custom_name": "Týmto sa zmení menovka vášho kľúča YubiKey.",
     "@_shortcuts": {},
+
     "s_shortcuts": "Skratky",
     "s_keyboard_shortcuts": "Klávesové skratky",
     "s_global_shortcuts": "Globálne skratky",
@@ -1116,7 +1117,6 @@
     "s_delete_item": "Odstrániť položku",
     "s_calculate_oath_code": "Vypočítať OATH kód",
     "s_open_keyboard_shortcuts": "Otvoriť klávesové skratky",
-
     "@_eof": {}
 
 }

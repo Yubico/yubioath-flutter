@@ -1086,6 +1086,7 @@
     "p_set_will_add_custom_name": "Cela donnera un nom personnalisé à votre YubiKey.",
     "p_rename_will_change_custom_name": "Cela changera l'étiquette de votre YubiKey.",
     "@_shortcuts": {},
+
     "s_shortcuts": "Raccourcis",
     "s_keyboard_shortcuts": "Raccourcis clavier",
     "s_global_shortcuts": "Raccourcis globaux",
@@ -1116,7 +1117,6 @@
     "s_delete_item": "Supprimer l’article",
     "s_calculate_oath_code": "Calculer le code OATH",
     "s_open_keyboard_shortcuts": "Ouvrir les raccourcis clavier",
-
     "@_eof": {}
 
 }
