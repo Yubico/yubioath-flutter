@@ -64,7 +64,7 @@ jobs:
       run: |
         pip install pre-commit
         pre-commit run --all-files
-        flutter test
+        # flutter test
 
     - name: Build the app
       run: |

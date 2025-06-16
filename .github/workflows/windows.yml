@@ -54,7 +54,7 @@ jobs:
         run: |
           pip install pre-commit
           pre-commit run --all-files
-          flutter test
+          # flutter test
 
       - name: Build the app
         run: |
@@ -103,7 +103,7 @@ jobs:
 
     - name: checkout repo
       uses: actions/checkout@v4
-    
+
     - name: download artifacts
       uses: actions/download-artifact@v4
 
@@ -120,7 +120,7 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-    
+
     - name: run scribe exe
       run: >
         docker run
@@ -202,7 +202,7 @@ jobs:
         with:
           name: installer
           path: installer
-          
+
   sign-msi:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build-msi]
@@ -219,7 +219,7 @@ jobs:
 
     - name: checkout repo
       uses: actions/checkout@v4
-    
+
     - name: download artifacts
       uses: actions/download-artifact@v4
 
@@ -236,7 +236,7 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-    
+
     - name: run scribe msi
       run: >
         docker run

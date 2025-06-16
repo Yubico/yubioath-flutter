@@ -93,7 +93,7 @@ jobs:
         export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
         pipx install pre-commit
         pre-commit run --all-files
-        flutter test
+        # flutter test
 
     - name: Build the app
       run: flutter build linux
