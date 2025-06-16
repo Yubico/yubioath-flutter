@@ -1086,6 +1086,7 @@
     "p_set_will_add_custom_name": "Spowoduje to nazwanie klucza YubiKey.",
     "p_rename_will_change_custom_name": "Spowoduje to zmianę etykiety klucza YubiKey.",
     "@_shortcuts": {},
+
     "s_shortcuts": "Skróty",
     "s_keyboard_shortcuts": "Skróty klawiszowe",
     "s_global_shortcuts": "Skróty globalne",
@@ -1116,7 +1117,6 @@
     "s_delete_item": "Usuń element",
     "s_calculate_oath_code": "Oblicz kod OATH",
     "s_open_keyboard_shortcuts": "Otwórz skróty klawiszowe",
-
     "@_eof": {}
 
 }

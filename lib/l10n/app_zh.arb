@@ -193,7 +193,6 @@
     },
     "l_fips_capable": "FIPS 兼容",
     "l_fips_approved": "FIPS 已认证",
-
     "@_yubikey_interactions": {},
 
     "l_insert_yk": "插入您的 YubiKey",
@@ -234,7 +233,6 @@
     "s_show_lock_code": "显示锁定密码",
     "s_hide_lock_code": "隐藏锁定密码",
     "p_lock_code_required_desc": "执行的操作需要输入配置锁定密码。",
-
     "@_connectivity_issues": {},
 
     "l_helper_not_responding": "帮助进程没有响应",
@@ -406,7 +404,6 @@
     "l_default_pin_used": "默认 PIN 已使用",
     "l_default_puk_used": "默认 PUK 已使用",
     "l_pin_complexity": "PIN 复杂性已强制要求",
-
     "@_passwords": {},
 
     "s_password": "密码",
@@ -654,6 +651,7 @@
     "p_press_fingerprint_begin": "将手指按在 YubiKey 上开始操作。",
     "l_name_fingerprint": "为这个指纹命名",
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "因用户不活动而失败",
     "l_wrong_inserted_yk_error": "重新插入的 YubiKey 与初始设备不匹配",
     "l_failed_connecting_to_fido": "连接 FIDO 接口失败",
@@ -824,7 +822,6 @@
     "s_slot_9d": "密钥管理",
     "s_slot_9e": "卡片认证",
     "s_retired_slot": "退役密钥管理",
-
     "@_otp_slots": {},
 
     "s_otp_slot_one": "短触",
@@ -832,6 +829,7 @@
     "l_otp_slot_empty": "槽位为空",
     "l_otp_slot_configured": "槽位已配置",
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "配置 Yubico OTP 凭证",
     "s_challenge_response": "挑战/应答",
     "l_challenge_response_desc": "配置一个 挑战/应答 凭证",
@@ -864,6 +862,7 @@
         }
     },
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "删除凭证",
     "q_delete_slot": "删除凭证？",
     "l_delete_slot_desc": "移除槽位中的凭据",
@@ -903,8 +902,8 @@
     },
     "s_append_enter": "附加 ⏎",
     "l_append_enter_desc": "输入 OTP 后追加回车键",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "交换槽位失败！请确保 YubiKey 没有被限制访问权限。",
     "l_wrong_access_code": "访问码错误",
     "@_otp_access_code": {},
@@ -990,7 +989,6 @@
     "p_warning_piv_reset_desc": "这包括私钥和证书。您的 PIN、PUK 和管理密钥将被重置为出厂默认值。",
     "p_warning_global_reset": "警告！这将不可逆地删除 YubiKey 中所有已保存的数据，包括证书。",
     "p_warning_global_reset_desc": "将 YubiKey 上的应用程序恢复出厂设置。PIN将重置为出厂默认值，已注册的指纹将被删除。任何密钥、证书或其他凭证都将被永久删除。",
-
     "@_copy_to_clipboard": {},
 
     "l_copy_to_clipboard": "复制到剪贴板",
@@ -1064,6 +1062,7 @@
     "l_launch_app_on_usb_off": "其他应用程序可通过 USB 使用 YubiKey",
     "s_allow_screenshots": "允许截图",
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "已准备好扫描",
     "s_nfc_hold_still": "保持不动\u2026",
     "s_nfc_tap_your_yubikey": "读取您的 YubiKey",
@@ -1087,6 +1086,7 @@
     "p_set_will_add_custom_name": "这将为你的 YubiKey 起一个自定义名称。",
     "p_rename_will_change_custom_name": "这将更改您的 YubiKey 的标签。",
     "@_shortcuts": {},
+
     "s_shortcuts": "快捷方式",
     "s_keyboard_shortcuts": "键盘快捷键",
     "s_global_shortcuts": "全局快捷键",
@@ -1117,7 +1117,6 @@
     "s_delete_item": "删除项目",
     "s_calculate_oath_code": "计算 OATH 代码",
     "s_open_keyboard_shortcuts": "打开键盘快捷键",
-
     "@_eof": {}
 
 }
