@@ -30,6 +30,7 @@ import '../../core/state.dart';
 import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../version.dart';
+import '../../widgets/basic_dialog.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -106,6 +107,13 @@ class _SettingsSectionItem extends StatelessWidget {
         backgroundColor: theme.colorScheme.secondary,
         child: Icon(icon),
       ),
+      trailing:
+          expanded
+              ? null
+              : OutlinedButton(
+                onPressed: Actions.handler(context, openIntent),
+                child: const Icon(Symbols.more_horiz),
+              ),
       tapIntent: isDesktop && !expanded ? null : openIntent,
       doubleTapIntent: isDesktop && !expanded ? openIntent : null,
     );
@@ -194,44 +202,22 @@ class _HelpView extends ConsumerWidget {
     final itemRadius = isDialog ? 0.0 : null;
     final content = Column(
       children: [
+        ListTitle(l10n.s_about),
         Image.asset('assets/graphics/app-icon.png', scale: 1 / 0.75),
         Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Text(
-            l10n.app_name,
-            style: Theme.of(context).textTheme.titleMedium,
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Column(
+            children: [
+              Text(
+                l10n.app_name,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const Text(version),
+            ],
           ),
         ),
-        const Text(version),
         ActionListSection(
-          l10n.s_help,
-          fullWidth: isDialog,
-          children: [
-            ActionListItem(
-              borderRadius: itemRadius,
-              icon: Icon(Symbols.open_in_new),
-              title: l10n.s_user_guide,
-              onTap: (_) => launchDocumentationUrl(),
-            ),
-            ActionListItem(
-              borderRadius: itemRadius,
-              icon: Icon(Symbols.open_in_new),
-              title: l10n.s_i_need_help,
-              onTap: (_) => launchHelpUrl(),
-            ),
-            ActionListItem(
-              borderRadius: itemRadius,
-              icon: Icon(Symbols.keyboard),
-              title: l10n.s_keyboard_shortcuts,
-              onTap: (context) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                Actions.maybeInvoke(context, ShortcutsIntent());
-              },
-            ),
-          ],
-        ),
-        ActionListSection(
-          l10n.s_about,
+          null,
           fullWidth: isDialog,
           children: [
             ActionListItem(
@@ -259,6 +245,33 @@ class _HelpView extends ConsumerWidget {
                     settings: const RouteSettings(name: 'licenses'),
                   ),
                 );
+              },
+            ),
+          ],
+        ),
+        ActionListSection(
+          l10n.s_help,
+          fullWidth: isDialog,
+          children: [
+            ActionListItem(
+              borderRadius: itemRadius,
+              icon: Icon(Symbols.open_in_new),
+              title: l10n.s_user_guide,
+              onTap: (_) => launchDocumentationUrl(),
+            ),
+            ActionListItem(
+              borderRadius: itemRadius,
+              icon: Icon(Symbols.open_in_new),
+              title: l10n.s_i_need_help,
+              onTap: (_) => launchHelpUrl(),
+            ),
+            ActionListItem(
+              borderRadius: itemRadius,
+              icon: Icon(Symbols.keyboard),
+              title: l10n.s_keyboard_shortcuts,
+              onTap: (context) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                Actions.maybeInvoke(context, ShortcutsIntent());
               },
             ),
           ],
@@ -591,7 +604,7 @@ class _LanguageView extends ConsumerWidget {
     );
     if (isDialog) {
       return ResponsiveDialog(
-        title: Text(l10n.s_choose_language),
+        title: Text(l10n.s_language),
         dialogMaxWidth: 400,
         builder:
             (context, fullScreen) => Column(
@@ -711,18 +724,25 @@ class _ToggleReadersItem extends StatelessWidget {
   }
 }
 
-class _LogsView extends ConsumerWidget {
+class _LogsView extends ConsumerStatefulWidget {
   final bool isDialog;
   const _LogsView({required this.isDialog});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _LogsViewState();
+}
+
+class _LogsViewState extends ConsumerState<_LogsView> {
+  bool _diagnosing = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     final tiles = Levels.LEVELS.map(
       (e) => RadioListTile(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+          borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 22),
         title: Transform.translate(
@@ -735,7 +755,7 @@ class _LogsView extends ConsumerWidget {
         onChanged: (value) {
           if (value != null) {
             ref.read(logLevelProvider.notifier).setLogLevel(value);
-            if (isDialog) {
+            if (widget.isDialog) {
               Navigator.pop(context, e);
             }
           }
@@ -750,10 +770,10 @@ class _LogsView extends ConsumerWidget {
         ...tiles,
         ActionListSection(
           l10n.s_actions,
-          fullWidth: isDialog,
+          fullWidth: widget.isDialog,
           children: [
             ActionListItem(
-              borderRadius: isDialog ? 0 : null,
+              borderRadius: widget.isDialog ? 0 : null,
               icon: const Icon(Symbols.content_copy),
               title: l10n.s_copy_log,
               subtitle: l10n.l_copy_log_clipboard,
@@ -771,12 +791,25 @@ class _LogsView extends ConsumerWidget {
               },
             ),
             ActionListItem(
-              borderRadius: isDialog ? 0 : null,
-              icon: const Icon(Symbols.bug_report),
+              borderRadius: widget.isDialog ? 0 : null,
+              icon:
+                  _diagnosing
+                      ? SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          strokeAlign: 2.0,
+                        ),
+                      )
+                      : const Icon(Symbols.bug_report),
               title: l10n.s_run_diagnostics,
               subtitle: l10n.l_run_diagnostics_desc,
               onTap: (context) async {
                 _log.info('Running diagnostics...');
+                setState(() {
+                  _diagnosing = true;
+                });
                 final response = await ref
                     .read(rpcProvider)
                     .requireValue
@@ -794,6 +827,9 @@ class _LogsView extends ConsumerWidget {
                 await ref.read(withContextProvider)((context) async {
                   showMessage(context, l10n.l_diagnostics_copied);
                 });
+                setState(() {
+                  _diagnosing = false;
+                });
               },
             ),
           ],
@@ -801,9 +837,9 @@ class _LogsView extends ConsumerWidget {
       ],
     );
 
-    return isDialog
+    return widget.isDialog
         ? ResponsiveDialog(
-          title: Text(l10n.s_log_and_diagnostics),
+          title: Text(l10n.s_debugging_tools),
           dialogMaxWidth: 400,
           builder: (context, fullScreen) => content,
         )
@@ -1076,6 +1112,41 @@ class _NfcAndUsbItem extends ConsumerWidget {
   }
 }
 
+class _ConfirmResetDialog extends StatelessWidget {
+  const _ConfirmResetDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return BasicDialog(
+      icon: Icon(Symbols.delete_forever),
+      title: Text('Reset settings?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+          child: Text(l10n.s_reset),
+        ),
+      ],
+      content: Text(
+        'This will restore all settings to their default values.',
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+Future<bool> confirmReset(BuildContext context) async {
+  return await showDialog(
+        context: context,
+        builder: (context) => _ConfirmResetDialog(),
+      ) ??
+      false;
+}
+
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
@@ -1138,6 +1209,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     title: l10n.s_reset_settings,
                     subtitle: l10n.l_reset_settings_desc,
                     onTap: (context) async {
+                      if (!await confirmReset(context)) {
+                        return;
+                      }
                       // TODO: maybe this should be handled in a notifier
                       await ref.read(prefProvider).clear();
                       // Need to restore current section
