@@ -37,14 +37,18 @@ jobs:
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
 
+    - name: Install uv
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
     - name: Install dependencies
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         brew update
         brew install swig
         python -m pip install --upgrade pip
-        pipx install poetry
-        pipx inject poetry poetry-plugin-export
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
@@ -62,7 +66,7 @@ jobs:
       env:
         SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
-        pip install pre-commit
+        uv tool install pre-commit
         pre-commit run --all-files
         flutter test
 

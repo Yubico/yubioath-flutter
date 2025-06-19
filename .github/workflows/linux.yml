@@ -62,12 +62,16 @@ jobs:
           assets/licenses/helper.json
         key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
 
+    - name: Install uv
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         apt-get install -qq swig libpcsclite-dev build-essential cmake
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pipx/poetry on PATH
-        pipx install poetry
         ./build-helper.sh
 
     - name: Install Flutter dependencies
@@ -90,8 +94,7 @@ jobs:
       env:
         SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
       run: |
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
-        pipx install pre-commit
+        uv tool install pre-commit
         pre-commit run --all-files
         flutter test
 

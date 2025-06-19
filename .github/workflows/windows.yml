@@ -34,11 +34,15 @@ jobs:
             assets/licenses/helper.json
           key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
 
+      - name: Install uv
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
       - name: Build the Helper
         if: steps.cache-helper.outputs.cache-hit != 'true'
-        run: |
-          pip install poetry
-          .\build-helper.bat
+        run: .\build-helper.bat
 
       - uses: subosito/flutter-action@v2
         with:
@@ -52,7 +56,7 @@ jobs:
         env:
           SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
         run: |
-          pip install pre-commit
+          uv tool install pre-commit
           pre-commit run --all-files
           flutter test
 
@@ -103,7 +107,7 @@ jobs:
 
     - name: checkout repo
       uses: actions/checkout@v4
-    
+
     - name: download artifacts
       uses: actions/download-artifact@v4
 
@@ -120,7 +124,7 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-    
+
     - name: run scribe exe
       run: >
         docker run
@@ -202,7 +206,7 @@ jobs:
         with:
           name: installer
           path: installer
-          
+
   sign-msi:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build-msi]
@@ -219,7 +223,7 @@ jobs:
 
     - name: checkout repo
       uses: actions/checkout@v4
-    
+
     - name: download artifacts
       uses: actions/download-artifact@v4
 
@@ -236,7 +240,7 @@ jobs:
       run: |
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
-    
+
     - name: run scribe msi
       run: >
         docker run
