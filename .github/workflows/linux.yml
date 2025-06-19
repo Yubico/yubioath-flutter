@@ -17,7 +17,10 @@ jobs:
         sparse-checkout: .github/workflows/env
 
     - name: Read variables from repo
-      run: cat .github/workflows/env >> $GITHUB_ENV
+      run: |
+        export $(cat .github/workflows/env)
+        cat .github/workflows/env >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
@@ -65,7 +68,7 @@ jobs:
         path: |
           build/linux/helper
           assets/licenses/helper.json
-        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('build-helper.sh', 'helper/uv.lock', 'helper/helper/**') }}
+        key: ${{ env.CACHE_KEY }}
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'

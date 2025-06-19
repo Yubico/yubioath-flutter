@@ -11,7 +11,10 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Read variables from repo
-      run: cat .github/workflows/env >> $GITHUB_ENV
+      run: |
+        export $(cat .github/workflows/env)
+        cat .github/workflows/env >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -40,7 +43,7 @@ jobs:
         path: |
           build/macos/helper
           assets/licenses/helper.json
-        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+        key: ${{ env.CACHE_KEY }}
 
     - name: Install dependencies
       if: steps.cache-helper.outputs.cache-hit != 'true'

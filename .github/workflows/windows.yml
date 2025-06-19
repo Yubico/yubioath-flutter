@@ -10,7 +10,10 @@ jobs:
 
       - name: Read variables from repo
         shell: bash
-        run: cat .github/workflows/env >> $GITHUB_ENV
+        run: |
+          export $(cat .github/workflows/env)
+          cat .github/workflows/env >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-py-$PYVER-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -37,7 +40,7 @@ jobs:
           path: |
             build/windows/helper
             assets/licenses/helper.json
-          key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+          key: ${{ env.CACHE_KEY }}
 
       - name: Build the Helper
         if: steps.cache-helper.outputs.cache-hit != 'true'
