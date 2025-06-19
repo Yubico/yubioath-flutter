@@ -14,13 +14,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from helper import run_rpc_pipes, run_rpc_socket
-from typing import cast
-
+import io
 import socket
 import sys
-import io
+from typing import cast
 
+from helper import run_rpc_pipes, run_rpc_socket
 
 if __name__ == "__main__":
     if "--tcp" in sys.argv:

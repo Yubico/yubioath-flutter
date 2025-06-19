@@ -12,28 +12,29 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import (
-    RpcResponse,
-    RpcNode,
-    action,
-    child,
-    RpcException,
-    TimeoutException,
-    AuthRequiredException,
-    PinComplexityException,
-)
-from fido2.ctap import CtapError
-from fido2.ctap2 import Ctap2, ClientPin, Config
-from fido2.ctap2.credman import CredentialManagement
-from fido2.ctap2.bio import BioEnrollment, FPBioEnrollment, CaptureError
-from yubikit.core.fido import FidoConnection
-from ykman.hid import list_ctap_devices as list_ctap
-from ykman.pcsc import list_devices as list_ccid
-from smartcard.Exceptions import NoCardException, CardConnectionException
-
+import logging
 from dataclasses import asdict
 from time import sleep
-import logging
+
+from fido2.ctap import CtapError
+from fido2.ctap2 import ClientPin, Config, Ctap2
+from fido2.ctap2.bio import BioEnrollment, CaptureError, FPBioEnrollment
+from fido2.ctap2.credman import CredentialManagement
+from smartcard.Exceptions import CardConnectionException, NoCardException
+from ykman.hid import list_ctap_devices as list_ctap
+from ykman.pcsc import list_devices as list_ccid
+from yubikit.core.fido import FidoConnection
+
+from .base import (
+    AuthRequiredException,
+    PinComplexityException,
+    RpcException,
+    RpcNode,
+    RpcResponse,
+    TimeoutException,
+    action,
+    child,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -226,7 +227,7 @@ class Ctap2Node(RpcNode):
         has_pin = self.ctap.get_info().options["clientPin"]
         try:
             if has_pin:
-                assert pin  # nosec
+                assert pin  # noqa: S101
                 self.client_pin.change_pin(pin, new_pin)
             else:
                 self.client_pin.set_pin(new_pin)

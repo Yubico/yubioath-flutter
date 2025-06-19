@@ -13,17 +13,16 @@ dependencies = [
   "pyscard (==2.2.1)",  # 2.2.2 has issues with CardMonitor
 ]
 
+[dependency-groups]
+dev = [
+  "pyinstaller>=6.10,<7",
+  "mypy>=1.7.1,<2",
+  "delocate (>=0.13,<0.14) ; sys_platform == 'darwin'",
+]
 
 [tool.poetry]
 requires-poetry = ">=2.0"
 packages = [{ include = "helper" }]
-
-
-[tool.poetry.group.dev.dependencies]
-pyinstaller = { version = "^6.10", python = "<3.14" }
-pytest = "^8.0.0"
-mypy = "^1.7.1"
-types-Pillow = "^10.2.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0"]
@@ -39,3 +38,11 @@ check_untyped_defs = true
 [[tool.mypy.overrides]]
 module = ["smartcard.*", "zxingcpp"]
 ignore_missing_imports = true
+
+[tool.ruff.lint]
+select = ["I", "S"]
+exclude = ["tests/*"]
+
+[tool.pyright]
+venvPath = "./helper/"
+venv = ".venv"
