@@ -25,6 +25,11 @@ jobs:
       - name: Update pip
         run: python -m pip install --upgrade pip
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
       - name: Cache helper
         id: cache-helper
         uses: actions/cache@v4
@@ -33,12 +38,6 @@ jobs:
             build/windows/helper
             assets/licenses/helper.json
           key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
-
-      - name: Install uv
-        if: steps.cache-helper.outputs.cache-hit != 'true'
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
 
       - name: Build the Helper
         if: steps.cache-helper.outputs.cache-hit != 'true'
