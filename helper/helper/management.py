@@ -12,29 +12,31 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcResponse, RpcNode, action
-from yubikit.core import (
-    require_version,
-    NotSupportedError,
-    TRANSPORT,
-    USB_INTERFACE,
-    Connection,
-)
-from yubikit.core.smartcard import SmartCardConnection
-from yubikit.core.otp import OtpConnection
-from yubikit.core.fido import FidoConnection
-from yubikit.management import (
-    ManagementSession,
-    DeviceConfig,
-    Mode,
-    CAPABILITY,
-    DEVICE_FLAG,
-)
-from ykman.device import list_all_devices
+import logging
 from dataclasses import asdict
 from time import sleep
 from typing import Type
-import logging
+
+from ykman.device import list_all_devices
+from yubikit.core import (
+    TRANSPORT,
+    USB_INTERFACE,
+    Connection,
+    NotSupportedError,
+    require_version,
+)
+from yubikit.core.fido import FidoConnection
+from yubikit.core.otp import OtpConnection
+from yubikit.core.smartcard import SmartCardConnection
+from yubikit.management import (
+    CAPABILITY,
+    DEVICE_FLAG,
+    DeviceConfig,
+    ManagementSession,
+    Mode,
+)
+
+from .base import RpcNode, RpcResponse, action
 
 logger = logging.getLogger(__name__)
 

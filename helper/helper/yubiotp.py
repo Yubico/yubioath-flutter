@@ -12,25 +12,25 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcNode, action, child, decode_bytes
+import struct
 
-from yubikit.core import NotSupportedError, CommandError
-from yubikit.core.otp import modhex_encode, modhex_decode
+from ykman.otp import format_csv, generate_static_pw
+from ykman.scancodes import KEYBOARD_LAYOUT, encode
+from yubikit.core import CommandError, NotSupportedError
+from yubikit.core.otp import modhex_decode, modhex_encode
+from yubikit.oath import parse_b32_key
 from yubikit.yubiotp import (
-    YubiOtpSession,
     SLOT,
-    SlotConfiguration,
-    UpdateConfiguration,
     HmacSha1SlotConfiguration,
     HotpSlotConfiguration,
+    SlotConfiguration,
     StaticPasswordSlotConfiguration,
+    UpdateConfiguration,
+    YubiOtpSession,
     YubiOtpSlotConfiguration,
 )
-from ykman.otp import generate_static_pw, format_csv
-from yubikit.oath import parse_b32_key
-from ykman.scancodes import KEYBOARD_LAYOUT, encode
 
-import struct
+from .base import RpcNode, action, child, decode_bytes
 
 _FAIL_MSG = (
     "Failed to write to the YubiKey. Make sure the device does not "

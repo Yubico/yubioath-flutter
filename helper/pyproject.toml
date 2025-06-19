@@ -38,3 +38,11 @@ check_untyped_defs = true
 [[tool.mypy.overrides]]
 module = ["smartcard.*", "zxingcpp"]
 ignore_missing_imports = true
+
+[tool.ruff.lint]
+select = ["I", "S"]
+exclude = ["tests/*"]
+
+[tool.pyright]
+venvPath = "./helper/"
+venv = ".venv"

@@ -56,7 +56,7 @@ jobs:
 
       - name: Run lints/tests
         env:
-          SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
+          SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
         run: |
           uv tool install pre-commit
           pre-commit run --all-files

@@ -12,54 +12,56 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import (
-    RpcResponse,
-    RpcNode,
-    action,
-    child,
-    RpcException,
-    ChildResetException,
-    TimeoutException,
-    AuthRequiredException,
-    PinComplexityException,
-)
-from yubikit.core import NotSupportedError, BadResponseError, InvalidPinError
-from yubikit.core.smartcard import ApduError, SW
-from yubikit.piv import (
-    PivSession,
-    OBJECT_ID,
-    MANAGEMENT_KEY_TYPE,
-    SLOT,
-    require_version,
-    KEY_TYPE,
-    PIN_POLICY,
-    TOUCH_POLICY,
-)
-from ykman.piv import (
-    get_pivman_data,
-    get_pivman_protected_data,
-    derive_management_key,
-    pivman_set_mgm_key,
-    pivman_change_pin,
-    generate_self_signed_certificate,
-    generate_csr,
-    generate_chuid,
-    parse_rfc4514_string,
-)
-from ykman.util import (
-    parse_certificates,
-    parse_private_key,
-    get_leaf_certificates,
-    InvalidPasswordError,
-)
-from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
-from cryptography.hazmat.primitives import hashes
+import datetime
+import logging
 from dataclasses import asdict
 from enum import Enum, unique
 from threading import Timer
 from time import time
-import datetime
-import logging
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from ykman.piv import (
+    derive_management_key,
+    generate_chuid,
+    generate_csr,
+    generate_self_signed_certificate,
+    get_pivman_data,
+    get_pivman_protected_data,
+    parse_rfc4514_string,
+    pivman_change_pin,
+    pivman_set_mgm_key,
+)
+from ykman.util import (
+    InvalidPasswordError,
+    get_leaf_certificates,
+    parse_certificates,
+    parse_private_key,
+)
+from yubikit.core import BadResponseError, InvalidPinError, NotSupportedError
+from yubikit.core.smartcard import SW, ApduError
+from yubikit.piv import (
+    KEY_TYPE,
+    MANAGEMENT_KEY_TYPE,
+    OBJECT_ID,
+    PIN_POLICY,
+    SLOT,
+    TOUCH_POLICY,
+    PivSession,
+    require_version,
+)
+
+from .base import (
+    AuthRequiredException,
+    ChildResetException,
+    PinComplexityException,
+    RpcException,
+    RpcNode,
+    RpcResponse,
+    TimeoutException,
+    action,
+    child,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -183,7 +185,7 @@ class PivNode(RpcNode):
         key = None
 
         if self._pivman_data.has_derived_key:
-            assert self._pivman_data.salt  # nosec
+            assert self._pivman_data.salt  # noqa: S101
             key = derive_management_key(pin, self._pivman_data.salt)
         elif self._pivman_data.has_stored_key:
             pivman_prot = get_pivman_protected_data(self.session)
@@ -566,11 +568,11 @@ class SlotNode(RpcNode):
             case GENERATE_TYPE.PUBLIC_KEY:
                 result = public_key_pem
             case GENERATE_TYPE.CSR:
-                assert subject  # nosec
+                assert subject  # noqa: S101
                 csr = generate_csr(self.session, self.slot, public_key, subject)
                 result = csr.public_bytes(encoding=Encoding.PEM).decode()
             case GENERATE_TYPE.CERTIFICATE:
-                assert subject  # nosec
+                assert subject  # noqa: S101
                 now = datetime.datetime.utcnow()
                 then = now + datetime.timedelta(days=365)
                 valid_from = kwargs.pop("valid_from", now.strftime(_date_format))
