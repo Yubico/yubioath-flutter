@@ -61,10 +61,10 @@ extension OathFunctions on WidgetTester {
     await longWait();
     await tap(find.byKey(keys.addAccountAction).hitTestable());
     await longWait();
-    if (isDesktop) {
+    /*    if (isDesktop) {
       await tap(find.byKey(keys.addAccountManuallyButton).hitTestable());
       await longWait();
-    }
+    }*/
   }
 
   Future<void> addAccount(Account a, {bool quiet = true}) async {
@@ -322,8 +322,10 @@ extension OathFunctions on WidgetTester {
     await shortWait();
 
     /// 3. open menu
+    /*   this is for smallest width
     await tap(find.byKey(actionsIconButtonKey).hitTestable());
     await shortWait();
+    */
     await tap(find.byKey(yubikeyFactoryResetMenuButton));
     await shortWait();
 
