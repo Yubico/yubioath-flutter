@@ -829,6 +829,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                       builder: (context) {
                         // Need to wrap with builder to get Scaffold context
                         return IconButton(
+                          key: drawerIconButtonKey,
                           tooltip: l10n.s_show_navigation,
                           onPressed: () => Scaffold.of(context).openDrawer(),
                           icon: Icon(

@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../core/state.dart';
 import 'progress_circle.dart';
 
 class CircleTimer extends StatefulWidget {
@@ -43,7 +44,10 @@ class _CircleTimerState extends State<CircleTimer>
     } else {
       _animator.duration = Duration.zero;
     }
-    _animator.forward();
+    // Don't animate when running tests as this prevents the test from finishing
+    if (!isRunningTest) {
+      _animator.forward();
+    }
   }
 
   @override

@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../app/views/keys.dart';
 import '../core/state.dart';
 import '../generated/l10n/app_localizations.dart';
 
@@ -68,6 +69,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       title: widget.title,
       actions: widget.actions,
       leading: IconButton(
+        key: closeButton,
         tooltip: _getCancelText(context),
         icon: const Icon(Symbols.close),
         onPressed:
@@ -104,6 +106,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         actions: [
           if (widget.showDialogCloseButton)
             TextButton(
+              key: closeButton,
               onPressed:
                   widget.allowCancel
                       ? () {

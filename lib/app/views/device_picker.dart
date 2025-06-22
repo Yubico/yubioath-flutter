@@ -57,7 +57,7 @@ class DevicePickerContent extends ConsumerWidget {
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk;
 
-      androidNoKeyWidget = _DeviceRow(
+      androidNoKeyWidget = DeviceRow(
         leading: const DeviceAvatar(
           child: Padding(
             padding: EdgeInsets.all(8.0),
@@ -76,7 +76,7 @@ class DevicePickerContent extends ConsumerWidget {
 
     List<Widget> children = [
       if (showUsb)
-        _DeviceRow(
+        DeviceRow(
           leading: const DeviceAvatar(
             child: Padding(
               padding: EdgeInsets.all(8.0),
@@ -110,7 +110,7 @@ class DevicePickerContent extends ConsumerWidget {
                     e.info,
                     extended,
                   ),
-                  NfcReaderNode() => _NfcDeviceRow(e, extended: extended),
+                  NfcReaderNode() => NfcDeviceRow(e, extended: extended),
                 },
       ),
     ];
@@ -186,7 +186,7 @@ class _DeviceMenuButton extends ConsumerWidget {
   }
 }
 
-class _DeviceRow extends ConsumerStatefulWidget {
+class DeviceRow extends ConsumerStatefulWidget {
   final Widget leading;
   final String title;
   final String subtitle;
@@ -196,7 +196,7 @@ class _DeviceRow extends ConsumerStatefulWidget {
   final DeviceNode? node;
   final void Function() onTap;
 
-  const _DeviceRow({
+  const DeviceRow({
     super.key,
     required this.leading,
     required this.title,
@@ -209,10 +209,10 @@ class _DeviceRow extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_DeviceRow> createState() => _DeviceRowState();
+  ConsumerState<DeviceRow> createState() => _DeviceRowState();
 }
 
-class _DeviceRowState extends ConsumerState<_DeviceRow> {
+class _DeviceRowState extends ConsumerState<DeviceRow> {
   bool _showContextMenu = false;
 
   @override
@@ -381,7 +381,7 @@ class _DeviceRowState extends ConsumerState<_DeviceRow> {
   }
 }
 
-_DeviceRow _buildDeviceRow(
+DeviceRow _buildDeviceRow(
   BuildContext context,
   WidgetRef ref,
   DeviceNode node,
@@ -401,7 +401,7 @@ _DeviceRow _buildDeviceRow(
       ref.watch(keyCustomizationManagerProvider)[info?.serial];
   String displayName = keyCustomization?.name ?? node.name;
 
-  return _DeviceRow(
+  return DeviceRow(
     key: ValueKey(node.path.key),
     leading: DeviceAvatar.deviceNode(node),
     title: displayName,
@@ -415,7 +415,7 @@ _DeviceRow _buildDeviceRow(
   );
 }
 
-_DeviceRow _buildCurrentDeviceRow(
+DeviceRow _buildCurrentDeviceRow(
   BuildContext context,
   WidgetRef ref,
   DeviceNode node,
@@ -435,7 +435,7 @@ _DeviceRow _buildCurrentDeviceRow(
   String displayName = keyCustomization?.name ?? title;
   Color? displayColor = keyCustomization?.color;
 
-  return _DeviceRow(
+  return DeviceRow(
     key: keys.deviceInfoListTile,
     leading: data.maybeWhen(
       data:
@@ -453,11 +453,11 @@ _DeviceRow _buildCurrentDeviceRow(
   );
 }
 
-class _NfcDeviceRow extends ConsumerWidget {
+class NfcDeviceRow extends ConsumerWidget {
   final DeviceNode node;
   final bool extended;
 
-  const _NfcDeviceRow(this.node, {required this.extended});
+  const NfcDeviceRow(this.node, {super.key, required this.extended});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>

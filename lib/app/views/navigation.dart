@@ -104,7 +104,7 @@ class _NavigationItemState extends State<NavigationItem> {
   }
 }
 
-extension on Section {
+extension SectionUi on Section {
   IconData get _icon => switch (this) {
     Section.home => Symbols.home,
     Section.accounts => Symbols.supervisor_account,
@@ -115,7 +115,7 @@ extension on Section {
     Section.certificates => Symbols.id_card,
   };
 
-  Key get _key => switch (this) {
+  Key get key => switch (this) {
     Section.home => homeDrawer,
     Section.accounts => oathAppDrawer,
     Section.securityKey => u2fAppDrawer,
@@ -173,7 +173,7 @@ class NavigationContent extends ConsumerWidget {
                 // Normal YubiKey Applications
                 ...availableSections.map(
                   (app) => NavigationItem(
-                    key: app._key,
+                    key: app.key,
                     title: app.getDisplayName(l10n),
                     leading: Icon(
                       app._icon,

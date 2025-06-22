@@ -243,6 +243,7 @@ class LoggingPanel extends ConsumerWidget {
       runSpacing: 8.0,
       children: [
         ChoiceFilterChip<Level>(
+          key: logLevelChip,
           avatar: Icon(
             Symbols.insights,
             color: Theme.of(context).colorScheme.primary,

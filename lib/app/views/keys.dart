@@ -25,10 +25,12 @@ final searchField = GlobalKey();
 const _prefix = 'app.keys';
 const deviceInfoListTile = Key('$_prefix.device_info_list_tile');
 const noDeviceAvatar = Key('$_prefix.no_device_avatar');
+const drawerIconButtonKey = Key('$_prefix.drawer_icon_button');
 const actionsIconButtonKey = Key('$_prefix.actions_icon_button');
 const toggleDetailViewIconButtonKey = Key(
   '$_prefix.toggle_detail_view_icon_button',
 );
+const appListItemActionKey = Key('$_prefix.applist_item_action_button');
 
 // drawer items
 const homeDrawer = Key('$_prefix.drawer.home');
@@ -75,8 +77,10 @@ const licensesButton = Key('$_prefix.licenses_button');
 const userGuideButton = Key('$_prefix.user_guide_button');
 const helpButton = Key('$_prefix.help_button');
 const diagnosticsChip = Key('$_prefix.diagnostics_chip');
+const logLevelChip = Key('$_prefix.log_level_chip');
 const logChip = Key('$_prefix.log_chip');
 const screenshotChip = Key('$_prefix.screenshot_chip');
 
 // misc buttons
 const closeButton = Key('$_prefix.close_button');
+const elevateFidoButton = Key('$_prefix.elevate_fido_button');

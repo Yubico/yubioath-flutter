@@ -222,9 +222,17 @@ class _NfcOverlayNotifier extends Notifier<int> {
   Future<void> waitForHide() async {
     final completer = Completer();
 
-    Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    final timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       if (ref.read(nfcOverlayWidgetProperties.select((s) => !s.visible))) {
         timer.cancel();
+        completer.complete();
+      }
+    });
+
+    // Ensure we clean up the timer if the widget is disposed before the completer is completed
+    ref.onDispose(() {
+      timer.cancel();
+      if (!completer.isCompleted) {
         completer.complete();
       }
     });

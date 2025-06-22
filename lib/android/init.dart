@@ -46,11 +46,11 @@ import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'window_state_provider.dart';
 
-Future<Widget> initialize() async {
+Future<Widget> initialize({Level? level}) async {
   _initSystemUi();
 
-  if (kDebugMode) {
-    Logger.root.level = Levels.DEBUG;
+  if (level != null || kDebugMode) {
+    Logger.root.level = level ?? Levels.DEBUG;
   }
 
   _initLicenses();
