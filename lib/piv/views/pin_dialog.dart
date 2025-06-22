@@ -133,7 +133,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                             _pinController.text,
                           ),
                           autofillHints: const [AutofillHints.password],
-                          key: keys.managementKeyField,
+                          key: keys.pinPukField,
                           controller: _pinController,
                           focusNode: _pinFocus,
                           enabled: !_pinIsBlocked,

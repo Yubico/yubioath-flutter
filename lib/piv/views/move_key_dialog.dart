@@ -63,7 +63,7 @@ class _MoveKeyDialogState extends ConsumerState<MoveKeyDialog> {
       title: Text(l10n.l_move_key),
       actions: [
         TextButton(
-          key: keys.deleteButton,
+          key: keys.moveButton,
           onPressed:
               _destination != null
                   ? () async {
@@ -168,6 +168,7 @@ class _MoveKeyDialogState extends ConsumerState<MoveKeyDialog> {
                             ),
                             if (widget.pivSlot.certInfo != null)
                               FilterChip(
+                                key: keys.includeCertificateChip,
                                 label: Text(l10n.l_include_certificate),
                                 selected: _includeCertificate,
                                 onSelected: (value) {

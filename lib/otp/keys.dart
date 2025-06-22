@@ -35,6 +35,7 @@ const deleteAction = Key('$_slotAction.delete');
 const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
 const swapButton = Key('$_prefix.swap');
+const overwriteButton = Key('$_prefix.overwrite');
 
 const secretField = Key('$_prefix.secret');
 const publicIdField = Key('$_prefix.public_id');

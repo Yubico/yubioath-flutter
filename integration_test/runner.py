@@ -4,6 +4,7 @@ from dataclasses import asdict
 from enum import StrEnum
 
 import click
+from fido_prep import setup as setup_fido
 from ykman.device import list_all_devices
 from ykman.pcsc import list_devices
 from yubikit.core.smartcard import SmartCardConnection
@@ -17,6 +18,11 @@ class App(StrEnum):
     otp = "otp"
 
 
+app_setup = {
+    App.fido: setup_fido,
+}
+
+
 @click.command()
 @click.option("--serial", "-s", type=str, help="Device serial number")
 @click.option("--reader", "-r", type=str, help="NFC reader name")
@@ -24,6 +30,7 @@ class App(StrEnum):
 @click.option("--name", "-k", type=str, help="Test names to match against")
 @click.option("--keyless", is_flag=True, help="Run tests without a YubiKey")
 @click.option("--manual", is_flag=True, help="Run tests requiring manual interaction")
+@click.option("--setup/--no-setup", default=None, help="Run pre-test setup for YubiKey")
 @click.option(
     "--app",
     type=click.Choice(list(App)),
@@ -31,7 +38,7 @@ class App(StrEnum):
     default=None,
     help="YubiKey applications to test (default: all)",
 )
-def main(serial, reader, target, name, keyless, manual, app):
+def main(serial, reader, target, name, keyless, manual, setup, app):
     cmd = ["flutter", "test"]
     apps = list(app) if app else list(App)
     dartvars = {}
@@ -82,6 +89,20 @@ def main(serial, reader, target, name, keyless, manual, app):
 
         click.echo(f"⚠️  Using YubiKey with serial {serial}, tests are destructive!")
         dartvars["INFO"] = json.dumps(asdict(info))
+
+        click.echo(f"Running tests for: {', '.join(apps)}")
+        setup_fns = [app_setup[a] for a in apps if a in app_setup]
+
+        if setup_fns:
+            if setup is None:
+                click.echo()
+                setup = click.confirm(
+                    "Configure the YubiKey for tests? This may be destructive!",
+                    default=False,
+                )
+            if setup:
+                for fn in setup_fns:
+                    fn(dev)
 
         msgs.append("Ensure the YubiKey is connected to the test machine")
 

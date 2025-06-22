@@ -39,11 +39,13 @@ const moveAction = Key('$_slotAction.move');
 
 const saveButton = Key('$_prefix.save');
 const deleteButton = Key('$_prefix.delete');
+const moveButton = Key('$_prefix.move');
 const unlockButton = Key('$_prefix.unlock');
 const resetButton = Key('$_prefix.reset');
+const includeCertificateChip = Key('$_prefix.include_certificate');
 
 const managementKeyField = Key('$_prefix.management_key');
-const newManagementKeyField = Key('$_prefix.management_key');
+const newManagementKeyField = Key('$_prefix.new_management_key');
 const managementKeyRefresh = Key('$_prefix.management_key_refresh');
 
 const pinPukField = Key('$_prefix.pin_puk');

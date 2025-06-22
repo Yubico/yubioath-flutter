@@ -384,7 +384,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                             maintainSize: true,
                             maintainAnimation: true,
                             maintainState: true,
-                            child: const LinearProgressIndicator(),
+                            child: LinearProgressIndicator(
+                              value: _generating ? null : 0,
+                            ),
                           ),
                         ),
                       ]
