@@ -16,13 +16,13 @@
 
 import cmd
 import json
-import click
+import logging
 import subprocess  # nosec
 import sys
-
-import logging
 from threading import Thread
 from typing import IO, cast
+
+import click
 
 logger = logging.getLogger(__name__)
 
@@ -244,7 +244,7 @@ def log_stderr(stderr):
 @click.argument("executable", nargs=-1)
 def shell(executable):
     """A basic shell for interacting with the Yubico Authenticator Helper."""
-    helper = subprocess.Popen(  # nosec
+    helper = subprocess.Popen(  # noqa: S603
         executable or [sys.executable, "authenticator-helper.py"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,

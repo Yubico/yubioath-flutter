@@ -12,17 +12,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcException
-import mss
-import zxingcpp
 import base64
 import io
 import os
-import sys
 import subprocess  # nosec
+import sys
 import tempfile
+
+import mss
+import zxingcpp
 from mss.exception import ScreenShotError
 from PIL import Image, UnidentifiedImageError
+
+from .base import RpcException
 
 
 def _capture_screen():
@@ -45,16 +47,15 @@ def _capture_screen():
 
             try:
                 # Try using gnome-screenshot
-                rc = subprocess.call(  # nosec
-                    ["gnome-screenshot", "-f", fname], env=env
-                )
+                rc = subprocess.call(["gnome-screenshot", "-f", fname], env=env)  # noqa: S603, S607
                 if rc == 0:
                     return Image.open(fname)
             except FileNotFoundError:
                 # Try using spectacle (KDE)
                 try:
-                    rc = subprocess.call(  # nosec
-                        ["spectacle", "-b", "-n", "-o", fname], env=env
+                    rc = subprocess.call(  # noqa: S603
+                        ["spectacle", "-b", "-n", "-o", fname],  # noqa: S607
+                        env=env,
                     )
                     if rc == 0:
                         return Image.open(fname)

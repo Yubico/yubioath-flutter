@@ -12,55 +12,55 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import (
-    RpcNode,
-    child,
-    action,
-    RpcException,
-    NoSuchNodeException,
-    ChildResetException,
-)
-from .oath import OathNode
-from .fido import Ctap2Node
-from .yubiotp import YubiOtpNode
-from .management import ManagementNode
-from .piv import PivNode
-from .qr import scan_qr
-from ykman import __version__ as ykman_version
-from ykman.base import PID
-from ykman.device import scan_devices, list_all_devices
-from ykman.diagnostics import get_diagnostics
-from ykman.logging import set_log_level
-from yubikit.core import TRANSPORT, NotSupportedError, _override_version
-from yubikit.core.smartcard import (
-    SmartCardConnection,
-    ApduError,
-    SW,
-    SmartCardProtocol,
-    ApplicationNotAvailableError,
-)
-from yubikit.core.smartcard.scp import Scp11KeyParams
-from yubikit.core.otp import OtpConnection
-from yubikit.core.fido import FidoConnection
-from yubikit.support import get_name, read_info
-from yubikit.management import CAPABILITY, RELEASE_TYPE
-from yubikit.securitydomain import SecurityDomainSession
-from yubikit.logging import LOG_LEVEL
-
-from ykman.pcsc import list_devices, YK_READER_NAME
-from smartcard.Exceptions import SmartcardException, NoCardException
-from smartcard.pcsc.PCSCExceptions import EstablishContextException
-from smartcard.CardMonitoring import CardObserver, CardMonitor
-from fido2.ctap import CtapError
-from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
-from hashlib import sha256
-from dataclasses import asdict
-from typing import Mapping
-
-import os
-import sys
 import ctypes
 import logging
+import os
+import sys
+from dataclasses import asdict
+from hashlib import sha256
+from typing import Mapping
+
+from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
+from fido2.ctap import CtapError
+from smartcard.CardMonitoring import CardMonitor, CardObserver
+from smartcard.Exceptions import NoCardException, SmartcardException
+from smartcard.pcsc.PCSCExceptions import EstablishContextException
+from ykman import __version__ as ykman_version
+from ykman.base import PID
+from ykman.device import list_all_devices, scan_devices
+from ykman.diagnostics import get_diagnostics
+from ykman.logging import set_log_level
+from ykman.pcsc import YK_READER_NAME, list_devices
+from yubikit.core import TRANSPORT, NotSupportedError, _override_version
+from yubikit.core.fido import FidoConnection
+from yubikit.core.otp import OtpConnection
+from yubikit.core.smartcard import (
+    SW,
+    ApduError,
+    ApplicationNotAvailableError,
+    SmartCardConnection,
+    SmartCardProtocol,
+)
+from yubikit.core.smartcard.scp import Scp11KeyParams
+from yubikit.logging import LOG_LEVEL
+from yubikit.management import CAPABILITY, RELEASE_TYPE
+from yubikit.securitydomain import SecurityDomainSession
+from yubikit.support import get_name, read_info
+
+from .base import (
+    ChildResetException,
+    NoSuchNodeException,
+    RpcException,
+    RpcNode,
+    action,
+    child,
+)
+from .fido import Ctap2Node
+from .management import ManagementNode
+from .oath import OathNode
+from .piv import PivNode
+from .qr import scan_qr
+from .yubiotp import YubiOtpNode
 
 logger = logging.getLogger(__name__)
 
@@ -594,7 +594,7 @@ class ScpConnectionNode(ConnectionNode):
                         chain = scp.get_certificate_bundle(ref)
                         if chain:
                             pub_key = chain[-1].public_key()
-                            assert isinstance(pub_key, EllipticCurvePublicKey)  # nosec
+                            assert isinstance(pub_key, EllipticCurvePublicKey)  # noqa: S101
                             self.scp_params = Scp11KeyParams(ref, pub_key)
                             break
         except NotSupportedError:

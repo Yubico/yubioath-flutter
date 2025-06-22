@@ -12,15 +12,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from .base import RpcResponse, RpcException, encode_bytes
-from .device import RootNode
-
-from queue import Queue
-from threading import Thread, Event
-from typing import Callable
-
 import json
 import logging
+from queue import Queue
+from threading import Event, Thread
+from typing import Callable
+
+from .base import RpcException, RpcResponse, encode_bytes
+from .device import RootNode
 
 logger = logging.getLogger(__name__)
 

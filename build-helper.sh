@@ -19,11 +19,11 @@ echo "Building authenticator-helper for $OS..."
 OUTPUT="build/$OS"
 
 cd helper
-poetry install
+uv sync --locked
 
 # Create a universal binary on MacOS
 if [ "$OS" = "macos" ]; then
-	PYTHON=`poetry run python -c "import sys; print(sys.executable)"`
+	PYTHON=`uv run python -c "import sys; print(sys.executable)"`
 	echo "Using Python: $PYTHON"
 	if [ $(lipo -archs $PYTHON | grep -c 'x86_64 arm64') -ne 0 ]; then
 		echo "Fixing single-arch dependencies..."
@@ -35,29 +35,28 @@ if [ "$OS" = "macos" ]; then
 		mkdir -p $HELPER
 
 		# Export exact versions
-		poetry export --without-hashes > $HELPER/requirements.txt
+          	uv pip freeze  > $HELPER/requirements.txt
 		grep cryptography $HELPER/requirements.txt > $HELPER/cryptography.txt
 		grep cffi $HELPER/requirements.txt > $HELPER/cffi.txt
 		grep pillow $HELPER/requirements.txt > $HELPER/pillow.txt
 		# Remove non-universal packages
-		poetry run pip uninstall -y cryptography cffi pillow
+		uv pip uninstall cryptography cffi pillow
 		# Build cffi from source to get universal build
-		poetry run pip install --upgrade -r $HELPER/cffi.txt --no-binary cffi
+		uv pip install --upgrade -r $HELPER/cffi.txt --no-binary cffi
 		# Explicitly install pre-build universal build of cryptography
-		poetry run pip download -r $HELPER/cryptography.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest $HELPER
-		poetry run pip install -r $HELPER/cryptography.txt --no-cache-dir --no-index --find-links $HELPER
+		pip download -r $HELPER/cryptography.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest $HELPER
+		uv pip install -r $HELPER/cryptography.txt --no-cache-dir --no-index --find-links $HELPER
 		# Combine wheels of pillow to get universal build
-		poetry run pip download -r $HELPER/pillow.txt --platform macosx_10_13_x86_64 --only-binary :all: --no-deps --dest $HELPER
-		poetry run pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
-		poetry run pip install delocate
-		poetry run delocate-merge $HELPER/pillow*.whl
+		pip download -r $HELPER/pillow.txt --platform macosx_10_13_x86_64 --only-binary :all: --no-deps --dest $HELPER
+		pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
+		uv run delocate-merge $HELPER/pillow*.whl
 		UNIVERSAL_WHL=$(ls $HELPER/pillow*universal2.whl)
-		poetry run pip install --upgrade $UNIVERSAL_WHL
+		uv pip install --upgrade $UNIVERSAL_WHL
 	fi
 fi
 
 rm -rf ../$OUTPUT/helper
-poetry run pyinstaller authenticator-helper.spec --distpath ../$OUTPUT
+uv run pyinstaller authenticator-helper.spec --distpath ../$OUTPUT
 cd ..
 
 # Fixup permissions (should probably be more strict)
@@ -71,10 +70,10 @@ fi
 
 echo "Generating license files..."
 cd helper
-poetry build
+uv build
 VENV="../$OUTPUT/helper-license-venv"
 rm -rf $VENV
-poetry run python -m venv $VENV
+uv run python -m venv $VENV
 $VENV/bin/pip install --upgrade pip wheel
 $VENV/bin/pip install dist/authenticator_helper-0.1.0-py3-none-any.whl pip-licenses
 $VENV/bin/pip-licenses --format=json --no-license-path --with-license-file --ignore-packages authenticator-helper zxing-cpp --output-file ../assets/licenses/helper.json
