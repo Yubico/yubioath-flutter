@@ -39,6 +39,29 @@ app_setup = {
     help="YubiKey applications to test (default: all)",
 )
 def main(serial, reader, target, name, keyless, manual, setup, app):
+    """Run UI tests for Yubico Authenticator.
+
+    WARNING: This will run tests against a connected YubiKey. Its contents will be destroyed!
+
+    For a full set of tests, run --keyless without a YubiKey connected, then the full keyed
+    testsuite over both USB and NFC, both without and with the --manual flag.
+
+    Example:
+
+    \b
+      $ ./testrunner.sh --keyless
+      $ ./testrunner.sh --serial 123456
+      $ ./testrunner.sh --serial 123456 --manual
+      $ ./testrunner.sh --reader hid --serial 123456
+      $ ./testrunner.sh --reader hid --serial 123456 --manual
+
+    You can also run the tests on an Android device connected via adb:
+
+    \b
+      $ ./testrunner.sh --target pixel --keyless
+      $ ./testrunner.sh --target pixel --serial 123456
+      $ ./testrunner.sh --target pixel --serial 123456 --manual
+    """
     cmd = ["flutter", "test"]
     apps = list(app) if app else list(App)
     dartvars = {}
