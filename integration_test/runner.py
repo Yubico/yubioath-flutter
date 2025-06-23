@@ -1,5 +1,6 @@
 import json
 import subprocess
+import sys
 from dataclasses import asdict
 from enum import StrEnum
 
@@ -62,7 +63,11 @@ def main(serial, reader, target, name, keyless, manual, setup, app):
       $ ./testrunner.sh --target pixel --serial 123456
       $ ./testrunner.sh --target pixel --serial 123456 --manual
     """
-    cmd = ["flutter", "test"]
+    flutter = "flutter"
+    if sys.platform == "win32":
+        flutter += ".bat"
+
+    cmd = [flutter, "test"]
     apps = list(app) if app else list(App)
     dartvars = {}
     msgs = []
