@@ -103,16 +103,19 @@ def main(serial, reader, target, name, keyless, manual, setup, app):
 
         if serial:
             serial = int(serial)
+            click.echo("Connecting to YubiKey with specified serial number...")
             dartvars["TEST_SERIALS"] = serial
             if info.serial != serial:
                 raise click.ClickException(
                     f"Device serial {info.serial} does not match {serial}"
                 )
         else:
+            click.echo("Connecting to YubiKey with no serial number...")
             dartvars["TEST_SERIALS"] = 0
             if info.serial is not None:
                 raise click.ClickException(
-                    f"Device serial {info.serial} does not match None"
+                    f"Connected YubiKey has serial {info.serial}, expecting no serial "
+                    "(use --serial to specify a serial number)"
                 )
 
         click.echo(f"⚠️  Using YubiKey with serial {serial}, tests are destructive!")

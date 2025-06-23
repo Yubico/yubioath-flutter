@@ -12,9 +12,12 @@ Usage:
 import sys
 
 from fido2.client import DefaultClientDataCollector, Fido2Client, UserInteraction
+from fido2.ctap import CtapError
 from fido2.server import Fido2Server
 from ykman import scripting as s
 from yubikit.core.fido import FidoConnection
+
+TEST_PIN = "23452345"
 
 
 # Handle user interaction via CLI prompts
@@ -23,7 +26,7 @@ class CliInteraction(UserInteraction):
         print("👉 Touch your authenticator device now...")
 
     def request_pin(self, permissions, rp_id):
-        return "23452345"
+        return TEST_PIN
 
     def request_uv(self, permissions, rp_id):
         print("User Verification required.")
@@ -36,9 +39,9 @@ def setup(dev, num_users=3):
     )
 
     for i in range(num_users):
-        with dev.open_connection(FidoConnection) as ctap:
+        with dev.open_connection(FidoConnection) as conn:
             client = Fido2Client(
-                ctap,
+                conn,
                 client_data_collector=DefaultClientDataCollector(
                     "https://delete.example.com"
                 ),
@@ -52,7 +55,12 @@ def setup(dev, num_users=3):
                 authenticator_attachment="cross-platform",
             )
 
-            client.make_credential(create_options["publicKey"])
+            try:
+                client.make_credential(create_options["publicKey"])
+            except CtapError:
+                raise ValueError(
+                    "Failed setup. Manually FIDO reset the YubiKey and try again."
+                )
 
 
 if __name__ == "__main__":
