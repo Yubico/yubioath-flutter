@@ -13,7 +13,10 @@ jobs:
         sparse-checkout: .github/workflows/env
 
     - name: Read variables from repo
-      run: cat .github/workflows/env >> $GITHUB_ENV
+      run: |
+        export $(cat .github/workflows/env)
+        cat .github/workflows/env >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
@@ -32,9 +35,6 @@ jobs:
         export PYVERINST=${PYVER_TEMP#* }
         echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
         echo "Installed python version: $PYVERINST"
-        python -m ensurepip --upgrade
-        python -m ensurepip --user
-        python -m pip install -U pip pipx
 
     - name: Verify Python version
       if: ${{ env.PYVERINST != env.PYVER }}
@@ -51,6 +51,11 @@ jobs:
         python3 set-version.py
         git diff --exit-code
 
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
     - name: Cache helper
       id: cache-helper
       uses: actions/cache@v4
@@ -58,20 +63,17 @@ jobs:
         path: |
           build/linux/helper
           assets/licenses/helper.json
-        key: ${{ runner.os }}-py${{ env.PYVER }}-${{ hashFiles('helper/**') }}
+        key: ${{ env.CACHE_KEY }}
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install -qq swig libpcsclite-dev build-essential cmake
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pipx/poetry on PATH
-        pipx install poetry
         ./build-helper.sh
 
     - name: Install missing environment dependencies
       run: |
         sudo apt-get install -qq unzip libayatana-appindicator3-1 libayatana-indicator3-7 libdbusmenu-glib4 libdbusmenu-gtk3-4
-
 
     - name: Install Flutter dependencies
       run: |
@@ -92,10 +94,9 @@ jobs:
 
     - name: Run lints/tests
       env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,flake8,black,bandit' || ''}}
+        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
       run: |
-        export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
-        pipx install pre-commit
+        uv tool install pre-commit
         pre-commit run --all-files
         flutter test
 
