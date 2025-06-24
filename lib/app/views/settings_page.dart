@@ -680,6 +680,7 @@ class _ToggleReadersView extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
         ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 26),
         onChanged: (show) {
           if (!show) {
             ref.read(hiddenDevicesProvider.notifier).hideDevice(e.path);
@@ -687,9 +688,12 @@ class _ToggleReadersView extends ConsumerWidget {
             ref.read(hiddenDevicesProvider.notifier).showDevice(e.path);
           }
         },
-        title: TooltipIfTruncated(
-          text: e.name,
-          style: TextStyle(fontSize: textTheme.bodyMedium?.fontSize),
+        title: Transform.translate(
+          offset: Offset(6, 0),
+          child: TooltipIfTruncated(
+            text: e.name,
+            style: TextStyle(fontSize: textTheme.bodyMedium?.fontSize),
+          ),
         ),
         secondary: Icon(Symbols.contactless),
       ),
