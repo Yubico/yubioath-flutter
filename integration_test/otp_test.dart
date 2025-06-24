@@ -55,13 +55,13 @@ void main() {
         );
 
         if (state.slot1Configured) {
-          // Slot 1 was pre-programmed, swap back
+          // Slot 1 was pre-programmed, swap back from slot 2
           await $.read(otpStateProvider(data.node.path).notifier).swapSlots();
         } else {
-          // Slot 1 was not programmed, delete the test credential
+          // Slot 1 was not programmed, delete the test credential in slot 2
           await $
               .read(otpStateProvider(data.node.path).notifier)
-              .deleteSlot(SlotId.one);
+              .deleteSlot(SlotId.two);
         }
         await $.pumpAndSettle();
 
