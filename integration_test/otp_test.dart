@@ -1,165 +1,240 @@
-/*
- * Copyright (C) 2023 Yubico.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-@Tags(['desktop', 'otp'])
-library;
-
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/otp/keys.dart';
 import 'package:yubico_authenticator/otp/models.dart';
+import 'package:yubico_authenticator/otp/state.dart';
+import 'package:yubico_authenticator/widgets/app_text_field.dart';
 
-import 'utils/otp_test_util.dart';
-import 'utils/test_util.dart';
+import 'utils.dart';
 
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('OTP UI tests', () {
-    appTest('Yubico OTP slot 1', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
-      await tester.shortWait();
+  appGroup(
+    'OTP',
+    (params) {
+      testKey('Swap slots', params, ($, data) async {
+        await $.navigate(Section.slots);
 
-      /// TODO: verify "Slot 1 is empty"
-      await tester.openSlotMenu(SlotId.one);
+        // Ensure slot 2 is empty
+        final state = $.read(otpStateProvider(data.node.path)).value!;
+        expect(
+          state.slot2Configured,
+          isFalse,
+          reason: 'Slot 2 should not be configured initially',
+        );
 
-      await tester.tap(find.byKey(configureYubiOtp).hitTestable());
-      await tester.shortWait();
+        if (!state.slot1Configured) {
+          await $
+              .read(otpStateProvider(data.node.path).notifier)
+              .configureSlot(
+                SlotId.one,
+                configuration: SlotConfiguration.chalresp(key: 'cafed00d'),
+              );
+          await $.pumpAndSettle();
+        }
 
-      // this generates all the fields and saves yubiotp
-      await tester.tap(find.byKey(useSerial).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(generatePrivateId).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(generateSecretKey).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
+        // Swap slots
+        await $.viewAction(swapSlots);
+        await $(swapButton).tap();
+        await $.condition(
+          () =>
+              $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
+              true,
+        );
+        expect(
+          $.read(otpStateProvider(data.node.path)).value?.slot1Configured,
+          isFalse,
+        );
 
-      /// TODO: verify "Slot 1 is configured"
-    });
+        if (state.slot1Configured) {
+          // Slot 1 was pre-programmed, swap back from slot 2
+          await $.read(otpStateProvider(data.node.path).notifier).swapSlots();
+        } else {
+          // Slot 1 was not programmed, delete the test credential in slot 2
+          await $
+              .read(otpStateProvider(data.node.path).notifier)
+              .deleteSlot(SlotId.two);
+        }
+        await $.pumpAndSettle();
 
-    appTest('Challenge-Response slot 1', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
-      await tester.shortWait();
+        // Ensure we're back to the initial state
+        await $.condition(
+          () =>
+              $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
+              false,
+        );
+        expect(
+          $.read(otpStateProvider(data.node.path)).value?.slot1Configured,
+          state.slot1Configured,
+        );
+      });
 
-      /// TODO: verify "Slot 1 is configured"
+      testKey('Program slots', params, ($, data) async {
+        await $.navigate(Section.slots);
 
-      await tester.openSlotMenu(SlotId.one);
+        // Ensure slot 2 is empty
+        final state = $.read(otpStateProvider(data.node.path)).value!;
+        expect(
+          state.slot2Configured,
+          isFalse,
+          reason: 'Slot 2 should not be configured initially',
+        );
 
-      await tester.tap(find.byKey(configureChalResp).hitTestable());
-      await tester.shortWait();
+        final slot2 = $(getAppListItemKey(SlotId.two));
 
-      // this generates and saves chall-resp
-      await tester.tap(find.byKey(generateSecretKey).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
+        // Program a challenge-response credential
+        await $.itemAction(slot2, configureYubiOtp);
 
-      /// TODO:  verify "Slot 1 is configured"
-    });
+        // Save is disabled from the start
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
 
-    appTest('Static Password slot 2', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
-      await tester.shortWait();
+        // Use serial for public ID, if available
+        if (data.info.serial != null) {
+          await $(useSerial).tap();
+          expect(
+            $(publicIdField).widget<AppTextField>().controller?.text.length,
+            equals(12),
+          );
+        } else {
+          // Otherwise, enter a public ID
+          await $(publicIdField).enterText('vvincredible');
+        }
 
-      /// TODO:  verify "Slot 2 is empty"
+        await $(generatePrivateId).tap();
+        await $(generateSecretKey).tap();
 
-      await tester.openSlotMenu(SlotId.two);
+        // Complete the programming successfully
+        await $(saveButton).tap();
+        await $.condition(
+          () =>
+              $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
+              true,
+        );
 
-      await tester.tap(find.byKey(configureStatic).hitTestable());
-      await tester.shortWait();
+        // Close the slot details, if opened
+        final close = $(closeButton);
+        if (close.exists) {
+          await close.tap();
+          expect(slot2, findsOneWidget);
+        }
 
-      // this generates and saves static password
-      await tester.tap(find.byKey(generateSecretKey).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
+        // Program a challenge-response credential, using right-click
+        await $.tester.tap(slot2, buttons: kSecondaryButton);
+        await $.pumpAndSettle();
+        await $(configureChalResp).tap();
 
-      /// TODO:  verify "Slot 2 is configured"
-    });
+        // Save is enabled from the start
+        expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-    appTest('OATH-HOTP slot 2', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
-      await tester.shortWait();
+        // Empty value shows an error and disables the save button
+        await $(saveButton).tap();
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
 
-      /// TODO:  verify "Slot 2 is configured"
+        // Odd-length values show an error and disable the save button
+        await $(secretField).enterText('b0b');
+        await $(saveButton).tap();
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
 
-      await tester.openSlotMenu(SlotId.two);
+        // Complete the programming successfully
+        await $(secretField).enterText('cafed00d');
+        await $(saveButton).tap();
 
-      await tester.tap(find.byKey(configureHotp).hitTestable());
-      await tester.shortWait();
+        // Slot is configured, need overwrite
+        await $(overwriteButton).tap();
 
-      // this writes and saves oath secret
-      await tester.enterText(find.byKey(secretField), 'asdfasdf');
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
+        // Close the slot details, if opened
+        if (close.exists) {
+          await close.tap();
+          expect(slot2, findsOneWidget);
+        }
 
-      /// TODO:  verify "Slot 2 is configured"
-    });
+        // Delete the slot 2 key
+        await $.itemAction(slot2, deleteAction);
+        await $(deleteButton).tap();
+        await $.condition(
+          () =>
+              $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
+              false,
+        );
 
-    appTest('Swap slots', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
-      await tester.shortWait();
+        // Close the slot details, if opened
+        if (close.exists) {
+          await close.tap();
+          expect(slot2, findsWidgets);
+        }
 
-      /// TODO:  verify "Slot 1 is configured"
-      /// TODO:  verify "Slot 2 is configured"
+        // Program a static password
+        await $.itemAction(slot2, configureStatic);
 
-      // taps swap
-      await tester.tapSwapSlotsButton();
-      await tester.tap(find.byKey(swapButton).hitTestable());
-      await tester.shortWait();
+        // Save is enabled from the start
+        expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-      /// TODO:  verify "Slot 1 is configured"
-      /// TODO:  verify "Slot 2 is configured"
-    });
+        // Empty value shows an error and disables the save button
+        await $(saveButton).tap();
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
 
-    appTest('Delete Credentials', (WidgetTester tester) async {
-      await tester.tap(find.byKey(otpAppDrawer).hitTestable());
-      await tester.shortWait();
+        // Invalid modhex shows an error and disables the save button
+        await $(secretField).enterText('invalid modhex');
+        await $(saveButton).tap();
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
 
-      /// TODO:  verify "Slot 1 is configured"
-      /// TODO:  verify "Slot 2 is configured"
+        // Generate a random password and save
+        await $(generateSecretKey).tap();
+        await $(saveButton).tap();
 
-      await tester.openSlotMenu(SlotId.one);
-      await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(deleteButton).hitTestable());
+        // Close the slot details, if opened
+        if (close.exists) {
+          await close.tap();
+          expect(slot2, findsOneWidget);
+        }
 
-      /// TODO:  wait for any toasts to be gone
-      await tester.ultraLongWait();
-      var closeFinder = find.byKey(closeButton);
-      if (closeFinder.evaluate().isNotEmpty) {
-        // close the view
-        await tester.tap(closeFinder);
-        await tester.shortWait();
-      }
+        // Program a HOTP credential
+        await $.itemAction(slot2, configureHotp);
 
-      // we need to right click on slot 2
-      await tester.openSlotMenu(SlotId.two);
-      await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.shortWait();
-      await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.shortWait();
+        // Save is enabled from the start
+        expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-      /// TODO:  verify "Slot 1 is empty"
-      /// TODO:  verify "Slot 2 is empty"
-    });
-  });
+        // Empty value shows an error and disables the save button
+        await $(saveButton).tap();
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+
+        // Invalid base32 shows an error and disables the save button
+        await $(secretField).enterText('11111111');
+        await $(saveButton).tap();
+        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+
+        // Complete the programming successfully, overwriting the previous
+        await $(secretField).enterText('abba');
+        await $(saveButton).tap();
+        await $(overwriteButton).tap();
+
+        // Close the slot details, if opened
+        if (close.exists) {
+          await close.tap();
+          expect(slot2, findsOneWidget);
+        }
+
+        // Programatically delete the slot 2 credential
+        await $
+            .read(otpStateProvider(data.node.path).notifier)
+            .deleteSlot(SlotId.two);
+        await $.pumpAndSettle();
+        await $.condition(
+          () =>
+              $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
+              false,
+        );
+      });
+    },
+    skip: isAndroid,
+    condition: (info) => info.hasCapability(Capability.otp),
+  );
 }

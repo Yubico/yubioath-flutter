@@ -131,9 +131,11 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
                 } finally {
                   // Give the menu some time to rollup before switching state.
                   Timer(const Duration(milliseconds: 300), () {
-                    setState(() {
-                      _showing = false;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _showing = false;
+                      });
+                    }
                   });
                 }
               }

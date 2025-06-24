@@ -1,652 +1,231 @@
-/*
- * Copyright (C) 2023 Yubico.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-@Tags(['desktop', 'piv'])
-library;
-
-import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:yubico_authenticator/app/models.dart';
+import 'package:yubico_authenticator/app/state.dart';
+import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
+import 'package:yubico_authenticator/piv/models.dart';
+import 'package:yubico_authenticator/piv/state.dart';
+import 'package:yubico_authenticator/widgets/choice_filter_chip.dart';
 
-import 'utils/piv_test_util.dart';
-import 'utils/test_util.dart';
+import 'utils.dart';
+
+const changedPin = '23452345';
+const changedPuk = '54325432';
+const changedManagementKey = '080706050403020108070605040302010807060504030201';
 
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-  group('PIV Settings', skip: isAndroid, () {
-    const factoryPin = '123456';
-    const factoryPuk = '12345678';
-    const uno = 'abcdabcd';
-    const due = 'bcdabcda';
-    const tre = 'cdabcdab';
+  appGroup(
+    'PIV',
+    (params) {
+      testKey('Factory Reset', params, ($, data) async {
+        // Reset via Home screen
+        await $.navigate(Section.home);
 
-    appTest('reset PIV (settings-init)', (WidgetTester tester) async {
-      await tester.resetPiv();
-      await tester.shortWait();
-    });
+        await $.viewAction(yubikeyFactoryResetMenuButton);
+        await $(factoryResetPickResetPiv).tap();
+        await $(factoryResetReset).tap();
 
-    appTest('pin lock-unlock', (WidgetTester tester) async {
-      await tester.resetPiv();
-      await tester.shortWait();
+        await $.navigate(Section.certificates);
+        final state = $.read(pivStateProvider(data.node.path)).value!;
 
-      await tester.pinView();
-      await tester.pivFirst();
+        if (data.info.version.isAtLeast(5, 3)) {
+          expect(state.metadata?.managementKeyMetadata.defaultValue, isTrue);
+          expect(state.metadata?.pinMetadata.defaultValue, isTrue);
+          expect(state.metadata?.pukMetadata.defaultValue, isTrue);
+        }
+      });
 
-      await tester.longWait();
-      await tester.pinView();
-      await tester.longWait();
+      testKey('Access management', params, ($, data) async {
+        await $.navigate(Section.certificates);
 
-      await tester.pivLockTest();
+        // We always need a reset state to start with
+        await $.read(pivStateProvider(data.node.path).notifier).reset();
+        await $.pumpAndSettle();
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.shortWait();
+        var state = $.read(pivStateProvider(data.node.path)).value!;
+        expect(state.pinAttempts, greaterThanOrEqualTo(3));
 
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.longWait();
+        // Change PIN
+        await $.viewAction(managePinAction);
+        if (state.metadata == null) {
+          // We expect the default PIN to be set, but we don't know if it is
+          await $(pinPukField).enterText(defaultPin);
+        }
+        await $(newPinPukField).enterText(changedPin);
+        await $(confirmPinPukField).enterText(changedPin);
+        await $(saveButton).tap();
 
-      expect(find.text('Blocked, use PUK to reset'), findsOne);
+        await $.condition(
+          () =>
+              $
+                  .read(pivStateProvider(data.node.path))
+                  .value
+                  ?.metadata
+                  ?.pinMetadata
+                  .defaultValue !=
+              true,
+          reason: 'PIN should not be default',
+        );
 
-      await tester.tap(find.byKey(managePinAction).hitTestable());
-      await tester.shortWait();
+        // Change PUK
+        await $.viewAction(managePukAction);
+        if (state.metadata == null) {
+          // We expect the default PUK to be set, but we don't know if it is
+          await $(pinPukField).enterText(defaultPuk);
+        }
+        await $(newPinPukField).enterText(changedPuk);
+        await $(confirmPinPukField).enterText(changedPuk);
+        await $(saveButton).tap();
+        await $.condition(
+          () =>
+              $
+                  .read(pivStateProvider(data.node.path))
+                  .value
+                  ?.metadata
+                  ?.pukMetadata
+                  .defaultValue !=
+              true,
+          reason: 'PUK should not be default',
+        );
 
-      // PUK field is pre-filled
-      await tester.pivFirst();
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.longWait();
+        // Change Management Key
+        await $.viewAction(manageManagementKeyAction);
+        if (state.metadata == null) {
+          // We expect the default management key to be set, but we don't know if it is
+          await $(managementKeyField).enterText(defaultManagementKey);
+        }
+        await $(newManagementKeyField).enterText(changedManagementKey);
+        await $(saveButton).tap();
 
-      expect(find.text('Blocked, use PUK to reset'), findsNothing);
-    });
+        await $.condition(
+          () =>
+              $
+                  .read(pivStateProvider(data.node.path))
+                  .value
+                  ?.metadata
+                  ?.managementKeyMetadata
+                  .defaultValue !=
+              true,
+          reason: 'Management Key should not be default',
+        );
 
-    appTest('lock PUK, lock PIN, factory reset', (WidgetTester tester) async {
-      await tester.resetPiv();
-      await tester.shortWait();
+        await $.condition(() {
+          final info = $.read(currentDeviceDataProvider).value!.info;
+          final (capable, approved) = info.getFipsStatus(Capability.piv);
+          return capable == approved;
+        }, reason: 'FIPS capable key should be FIPS approved');
+      });
 
-      // set first pin/puk
-      await tester.pinView();
-      await tester.pivFirst();
-      await tester.pukView();
-      await tester.pivFirst();
+      testKey('Key/Certificate management', params, ($, data) async {
+        await $.navigate(Section.certificates);
 
-      // lock pin and puk
-      await tester.pinView();
-      await tester.pivLockTest();
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.shortWait();
-      await tester.pukView();
-      await tester.pivLockTest();
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.shortWait();
-
-      // verify blockedness
-
-      await tester.tap(find.byKey(actionsIconButtonKey).hitTestable());
-      await tester.shortWait();
-
-      expect(find.text('Blocked, factory reset needed'), findsAny);
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.shortWait();
-    });
-    appTest('Change PIN', (WidgetTester tester) async {
-      await tester.resetPiv();
-      await tester.shortWait();
-
-      //reset factorypin
-      await tester.pinView();
-      await tester.pivFirst();
-
-      // onepin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), 'firstpin');
-      await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), uno);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), uno);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-
-      // onepin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), uno);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), due);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), due);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-
-      // onepin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), due);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), tre);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), tre);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-
-      // factorpin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), tre);
-      await tester.shortWait();
-      await tester.enterText(
-        find.byKey(newPinPukField).hitTestable(),
-        factoryPin,
-      );
-      await tester.shortWait();
-      await tester.enterText(
-        find.byKey(confirmPinPukField).hitTestable(),
-        factoryPin,
-      );
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-    });
-    appTest('Change PUK', (WidgetTester tester) async {
-      await tester.resetPiv();
-      await tester.shortWait();
-
-      //reset factorypuk
-      await tester.pinView();
-      await tester.pivFirst();
-
-      // onepin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), 'firstpin');
-      await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), uno);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), uno);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-
-      // onepin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), uno);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), due);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), due);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-
-      // onepin
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), due);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(newPinPukField).hitTestable(), tre);
-      await tester.shortWait();
-      await tester.enterText(find.byKey(confirmPinPukField).hitTestable(), tre);
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-
-      // factorpuk
-      await tester.pinView();
-      await tester.enterText(find.byKey(pinPukField).hitTestable(), tre);
-      await tester.shortWait();
-      await tester.enterText(
-        find.byKey(newPinPukField).hitTestable(),
-        factoryPuk,
-      );
-      await tester.shortWait();
-      await tester.enterText(
-        find.byKey(confirmPinPukField).hitTestable(),
-        factoryPuk,
-      );
-      await tester.shortWait();
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.shortWait();
-    });
-    // group('PIV Management Key', () {
-    //   const newmanagementkey =
-    //       'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbcccc';
-    //   const boundsmanagementkey =
-    //       'llllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkssssllllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkmmmm';
-    //   const shortmanagementkey =
-    //       'aaaabbbbccccaaaabbbbccccaaaabbbbccccaaaabbbbccc';
-    //
-    //   appTest('Out of bounds managementkey key', (WidgetTester tester) async {
-    //     //await tester.resetPiv();
-    //     await tester.shortWait();
-    //
-    //     // short management key
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.longWait();
-    //     // testing out of bounds management key does not work
-    //     await tester.enterText(
-    //         find.text('New management key').hitTestable(), shortmanagementkey);
-    //     await tester.longWait();
-    //
-    //     expect(tester.isTextButtonEnabled(saveButton), false);
-    //     expect(find.text('47/48'), findsOne);
-    //     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    //
-    //     // out of bounds management key
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.shortWait();
-    //     // testing out of bounds management key does not work
-    //     await tester.enterText(
-    //         find.byKey(newManagementKeyField).hitTestable(), shortmanagementkey);
-    //     await tester.shortWait();
-    //
-    //     expect(tester.isTextButtonEnabled(saveButton), false);
-    //     expect(find.text('48/48'), findsOne);
-    //     expect(find.text('llllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkssssllllkkkkmmmmllllkkkkmmmmllllkkkkmmmmllllkkkkmmmm'), findsNothing);
-    //     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    //
-    //
-    //   });
-    //
-    //   appTest('Short managementkey key', (WidgetTester tester) async {
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.longWait();
-    //     // testing too short management key does not work
-    //     await tester.enterText(
-    //         find.byKey(newPinPukField).hitTestable(), shortmanagementkey);
-    //     await tester.longWait();
-    //     expect(tester.isTextButtonEnabled(saveButton), false);
-    //   });
-    //
-    //   appTest('Change managementkey key', (WidgetTester tester) async {
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.shortWait();
-    //     // setting newmanagementkey
-    //     await tester.enterText(
-    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-    //     await tester.longWait();
-    //     await tester.tap(find.byKey(saveButton).hitTestable());
-    //     await tester.longWait();
-    //     // verifying newmanagementkey
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.shortWait();
-    //     await tester.enterText(
-    //         find.byKey(managementKeyField).hitTestable(), newmanagementkey);
-    //     await tester.shortWait();
-    //     await tester.enterText(
-    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(saveButton).hitTestable());
-    //     await tester.longWait();
-    //     await tester.resetPiv();
-    //   });
-    //   appTest('Change managementkey type', (WidgetTester tester) async {
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.shortWait();
-    //     // TODO: this needs to use manageManagementKeyAction chip
-    //     await tester.enterText(
-    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(saveButton).hitTestable());
-    //     await tester.longWait();
-    //
-    //     await tester.resetPiv();
-    //     await tester.shortWait();
-    //   });
-    //   appTest('Change managementkey PIN-lock', (WidgetTester tester) async {
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.shortWait();
-    //     // testing out of bounds management key does not work
-    //     await tester.enterText(
-    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-    //     await tester.shortWait();
-    //     // TODO: Investigate why chip-tap fails
-    //     //await tester.tap(find.byKey(pinLockManagementKeyChip).hitTestable());
-    //     //await tester.shortWait();
-    //     await tester.tap(find.byKey(saveButton).hitTestable());
-    //     await tester.longWait();
-    //     await tester.resetPiv();
-    //     await tester.shortWait();
-    //   });
-    //
-    //   appTest('Random managementkeytype', (WidgetTester tester) async {
-    //     await tester.configurePiv();
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(manageManagementKeyAction).hitTestable());
-    //     await tester.shortWait();
-    //     // rndm 3x, for luck
-    //     await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(managementKeyRefresh).hitTestable());
-    //     await tester.shortWait();
-    //     await tester.enterText(
-    //         find.byKey(newPinPukField).hitTestable(), newmanagementkey);
-    //     await tester.shortWait();
-    //     await tester.tap(find.byKey(saveButton).hitTestable());
-    //     await tester.longWait();
-    //     await tester.resetPiv();
-    //   });
-    //
-    //   appTest('Reset PIV (settings-exit)', (WidgetTester tester) async {
-    //     await tester.resetPiv();
-    //     await tester.shortWait();
-    //   });
-    // });
-  });
-
-  //    Distinguished name schema according to RFC 4514
-  //    https://www.ietf.org/rfc/rfc4514.txt
-  //       CN      commonName (2.5.4.3)
-  //       L       localityName (2.5.4.7)
-  //       ST      stateOrProvinceName (2.5.4.8)
-  //       O       organizationName (2.5.4.10)
-  //       OU      organizationalUnitName (2.5.4.11)
-  //       C       countryName (2.5.4.6)
-  //       STREET  streetAddress (2.5.4.9)
-  //       DC      domainComponent (0.9.2342.19200300.100.1.25)
-  //       UID     userId (0.9.2342.19200300.100.1.1)
-  //       Example: CN=cn,L=l,ST=st,O=o,OU=ou,C=c,STREET=street,DC=dc,DC=net,UID=uid
-
-  group('PIV Certificate load', skip: isAndroid, () {
-    appTest('Reset PIV (load-init)', (WidgetTester tester) async {
-      await tester.resetPiv();
-    });
-    appTest('Generate 9a', (WidgetTester tester) async {
-      // 1. open PIV view
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.longWait();
-      // 2. click meatball menu for 9a
-      await tester.tap(find.byKey(meatballButton9a).hitTestable());
-      await tester.longWait();
-      // 3. click generate
-      await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.longWait();
-      // 4. enter PIN and click Unlock
-      // await tester.enterText(
-      //     find.byKey(managementKeyField).hitTestable(), '123456');
-      // await tester.longWait();
-      // await tester.tap(find.byKey(unlockButton).hitTestable());
-      // await tester.longWait();
-
-      // 5. Enter DN
-      await tester.enterText(
-        find.byKey(subjectField).hitTestable(),
-        'CN=Generate9a',
-      );
-      await tester.longWait();
-
-      // 6. Change algorithm: RSA1024
-      // 7. Date [unchanged]
-      // 8. click save
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      // 9 Verify Subject, verify Date
-      /*      expect(find.byWidgetPredicate((widget) {
-        if (widget is TooltipIfTruncated) {
-          final TooltipIfTruncated textWidget = widget;
-          if (textWidget.key == certInfoSubjectKey &&
-              textWidget.text == 'CN=Generate9a') {
-            return true;
+        // This test assumes the previous test has been run
+        var state = $.read(pivStateProvider(data.node.path)).value!;
+        if (state.metadata != null) {
+          for (final isDefault in [
+            state.metadata!.pinMetadata.defaultValue,
+            state.metadata!.pukMetadata.defaultValue,
+            state.metadata!.managementKeyMetadata.defaultValue,
+          ]) {
+            expect(
+              isDefault,
+              isFalse,
+              reason: 'PIN/PUK/Management Key not set up',
+            );
           }
         }
-        return false;
-      }), findsOneWidget);*/
 
-      await tester.longWait();
-      // 10. Export Certificate
-      // await tester.tap(find.byKey(exportAction).hitTestable());
-      // await tester.enterText(
-      // find.byKey($$Save as$$).hitTestable(), 'Generate9a');
-      // await tester.tap(find.byKey($$Save button$$).hitTestable());
-      // await tester.longWait();
-      // 11. Delete Certificate
-      await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.longWait();
-      await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.longWait();
-    });
-    appTest('Generate 9c', (WidgetTester tester) async {
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.longWait();
-      // 2. click meatball menu for 9c
-      await tester.tap(find.byKey(meatballButton9c).hitTestable());
-      await tester.longWait();
-      // 3. click generate
-      await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.longWait();
-      // 4. enter PIN and click Unlock
-      // await tester.enterText(
-      //     find.byKey(managementKeyField).hitTestable(), '123456');
-      // await tester.longWait();
-      // await tester.tap(find.byKey(unlockButton).hitTestable());
-      // await tester.longWait();
+        pivSlot(SlotId slotId) => $(
+          $(AppListItem<PivSlot>).which(
+            (widget) => (widget as AppListItem<PivSlot>).item.slot == slotId,
+          ),
+        );
 
-      // 5. Enter DN
-      await tester.enterText(
-        find.byKey(subjectField).hitTestable(),
-        'CN=Generate9c',
-      );
-      await tester.longWait();
+        // Generate a certificate
+        await $.itemAction(pivSlot(SlotId.authentication), generateAction);
+        await $(managementKeyField).enterText(changedManagementKey);
+        await $(unlockButton).tap();
+        await $(pinPukField).enterText(changedPin);
+        await $(unlockButton).tap();
 
-      // 6. Change algorithm: RSA2048
-      // 7. set date
-      // 8. click save
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      // 9 Verify Subject, verify Date
-      //      TODO: this seems not to work!
-      // expect(find.byWidgetPredicate((widget) {
-      //   if (widget is TooltipIfTruncated) {
-      //     final TooltipIfTruncated textWidget = widget;
-      //     if (textWidget.key == certInfoSubjectKey &&
-      //         textWidget.text == 'CN=Generate9c') {
-      //       return true;
-      //     }
-      //   }
-      //   return false;
-      // }), findsOneWidget);
-
-      await tester.longWait();
-      // 10. Delete Certificate
-      await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.longWait();
-      await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.longWait();
-    });
-    appTest('Generate 9d', (WidgetTester tester) async {
-      // 1. open PIV view
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.longWait();
-      // 2. click meatball menu for 9d
-      await tester.tap(find.byKey(meatballButton9d).hitTestable());
-      await tester.longWait();
-      // 3. click generate
-      await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.longWait();
-      // 4. enter PIN and click Unlock
-      // await tester.enterText(
-      //     find.byKey(managementKeyField).hitTestable(), '123456');
-      // await tester.longWait();
-      // await tester.tap(find.byKey(unlockButton).hitTestable());
-      // await tester.longWait();
-
-      // 5. Enter DN
-      await tester.enterText(
-        find.byKey(subjectField).hitTestable(),
-        'CN=Generate9d',
-      );
-      await tester.longWait();
-
-      // 6. Change algorithm: ECCP256
-      // 7. Date [unchanged]
-      // 8. click save
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      // 9 Verify Subject, verify Date
-      /*      expect(find.byWidgetPredicate((widget) {
-        if (widget is TooltipIfTruncated) {
-          final TooltipIfTruncated textWidget = widget;
-          if (textWidget.key == certInfoSubjectKey &&
-              textWidget.text == 'CN=Generate9d') {
-            return true;
-          }
+        await $(subjectField).enterText('CN=Test Certificate');
+        await $(saveButton).tap();
+        final close = $(closeButton);
+        if (close.exists) {
+          await close.tap();
         }
-        return false;
-      }), findsOneWidget);*/
+        await $('Test Certificate').waitUntilExists();
+        expect($('Test Certificate'), findsOneWidget);
 
-      await tester.longWait();
-      // 10. Export Certificate
-      // await tester.tap(find.byKey(exportAction).hitTestable());
-      // await tester.enterText(
-      // find.byKey($$Save as$$).hitTestable(), 'Generate9d');
-      // await tester.tap(find.byKey($$Save button$$).hitTestable());
-      // await tester.longWait();
-      // 11. Delete Certificate
-      await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.longWait();
-      await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.longWait();
-    });
-    appTest('Generate 9e', (WidgetTester tester) async {
-      // 1. open PIV view
-      var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-      await tester.tap(pivDrawerButton);
-      await tester.longWait();
-      // 2. click meatball menu for 9e
-      await tester.tap(find.byKey(meatballButton9e).hitTestable());
-      await tester.longWait();
-      // 3. click generate
-      await tester.tap(find.byKey(generateAction).hitTestable());
-      await tester.longWait();
-      // 4. enter PIN and click Unlock
-      // await tester.enterText(
-      //     find.byKey(managementKeyField).hitTestable(), '123456');
-      // await tester.longWait();
-      // await tester.tap(find.byKey(unlockButton).hitTestable());
-      // await tester.longWait();
+        if (data.info.version.isAtLeast(5, 7)) {
+          final slotRetired = pivSlot(SlotId.retired1);
 
-      // 5. Enter DN
-      await tester.enterText(
-        find.byKey(subjectField).hitTestable(),
-        'CN=Generate9e',
-      );
-      await tester.longWait();
-
-      // 6. Change algorithm: ECCP384
-      // 7. Date [unchanged]
-      // 8. click save
-      await tester.tap(find.byKey(saveButton).hitTestable());
-      await tester.longWait();
-      // 9 Verify Subject, verify Date
-      /*      expect(find.byWidgetPredicate((widget) {
-        if (widget is TooltipIfTruncated) {
-          final TooltipIfTruncated textWidget = widget;
-          if (textWidget.key == certInfoSubjectKey &&
-              textWidget.text == 'CN=Generate9e') {
-            return true;
+          // Move the certificate to a different slot
+          await $.itemAction(pivSlot(SlotId.authentication), moveAction);
+          await $(ChoiceFilterChip<SlotId?>).tap();
+          await $(RegExp(SlotId.retired1.hexId)).tap();
+          await $(moveButton).tap();
+          if (close.exists) {
+            await close.tap();
           }
-        }
-        return false;
-      }), findsOneWidget);*/
+          await $.pumpAndSettle(); // List may not update immediately
+          expect(slotRetired, findsOne);
 
-      await tester.longWait();
-      // 10. Export Certificate
-      // await tester.tap(find.byKey(exportAction).hitTestable());
-      // await tester.enterText(
-      // find.byKey($$Save as$$).hitTestable(), 'Generate9e');
-      // await tester.tap(find.byKey($$Save button$$).hitTestable());
-      // await tester.longWait();
-      // 11. Delete Certificate
-      await tester.tap(find.byKey(deleteAction).hitTestable());
-      await tester.longWait();
-      await tester.tap(find.byKey(deleteButton).hitTestable());
-      await tester.longWait();
-    });
-    //     appTest('Import outdated Key+Certificate from file',
-    //         (WidgetTester tester) async {});
-    //
-    //     /// TODO fileload needs to be handled
-    //     appTest('Import neverexpire Key+Certificate from file',
-    //         (WidgetTester tester) async {
-    //       /// TODO fileload needs to be handled
-    //     });
-    //     appTest('Generate a CSR', (WidgetTester tester) async {
-    //       // 1. open PIV view
-    //       var pivDrawerButton = find.byKey(pivAppDrawer).hitTestable();
-    //       await tester.tap(pivDrawerButton);
-    //       await tester.longWait();
-    //       // 2. click meatball menu for 9e
-    //       await tester.tap(find.byKey(meatballButton9e).hitTestable());
-    //       await tester.longWait();
-    //       // 3. click generate
-    //       await tester.tap(find.byKey(generateAction).hitTestable());
-    //       await tester.longWait();
-    //       // 4. enter PIN and click Unlock
-    //       // await tester.enterText(
-    //       //     find.byKey(managementKeyField).hitTestable(), '123456');
-    //       // await tester.longWait();
-    //       // await tester.tap(find.byKey(unlockButton).hitTestable());
-    //       // await tester.longWait();
-    //
-    //       // 5. Enter DN
-    //       await tester.enterText(
-    //           find.byKey(subjectField).hitTestable(), 'CN=Generate9e-CSR');
-    //       await tester.longWait();
-    //       // 6. Change 'output format': CSR
-    //       //      enum models.dart, generate_key_dialog.dart
-    //       // 7. Choose File Name > Save As > 'File Name generate93-csr'
-    //       //    TODO: where are files saved?
-    //       // 8. click save
-    //       await tester.tap(find.byKey(saveButton).hitTestable());
-    //       await tester.longWait();
-    //       // 9 Verify 'No certificate loaded'
-    // /*      expect(find.byWidgetPredicate((widget) {
-    //         if (widget is TooltipIfTruncated) {
-    //           final TooltipIfTruncated textWidget = widget;
-    //           if (textWidget.key == certInfoSubjectKey &&
-    //               textWidget.text == 'CN=Generate9e') {
-    //             return true;
-    //           }
-    //         }
-    //         return false;
-    //       }), findsOneWidget);*/
-    //     });
-    //     // appTest('Reset PIV (load-exit)', (WidgetTester tester) async {
-    //     //   /// TODO: investigate why this reset randomly fails!
-    //     //   await tester.resetPiv();
-    //     //   await tester.shortWait();
-    //     // });
-  });
+          // Move the key without the certificate back, using context menu
+          await $.itemAction(slotRetired, moveAction);
+          await $(ChoiceFilterChip<SlotId?>).tap();
+          await $(RegExp(SlotId.authentication.hexId)).tap();
+          await $(includeCertificateChip).tap();
+          await $(moveButton).tap();
+          if (close.exists) {
+            await close.tap();
+          }
+          expect($('Test Certificate'), findsOneWidget);
+          expect($($.l10n.l_key_no_certificate), findsOne);
+          expect(slotRetired, findsOne);
+
+          // Delete the certificate
+          await $.itemAction(slotRetired, deleteAction);
+          await $(deleteButton).tap();
+          if (close.exists) {
+            await close.tap();
+          }
+          await $.pumpAndSettle(); // List may not update immediately
+          expect($('Test Certificate'), findsNothing);
+          expect(slotRetired, findsNothing);
+        }
+
+        // Delete the key/certificate, using context menu
+        await $.tester.tap(
+          pivSlot(SlotId.authentication),
+          buttons: kSecondaryButton,
+        );
+        await $.pumpAndSettle();
+        await $(deleteAction).tap();
+        //await $.itemAction(pivSlot(SlotId.authentication), deleteAction);
+        await $(deleteButton).tap();
+        if (close.exists) {
+          await close.tap();
+        }
+        await $.condition(() => !$(deleteButton).exists);
+        await $.pumpAndSettle(); // List may not update immediately
+        expect($('Test Certificate'), findsNothing);
+        if (data.info.version.isAtLeast(5, 7)) {
+          expect($($.l10n.l_key_no_certificate), findsNothing);
+        } else if (data.info.version.isAtLeast(5, 3)) {
+          expect($($.l10n.l_key_no_certificate), findsOneWidget);
+        }
+      });
+    },
+    skip: isAndroid,
+    condition: (info) => info.hasCapability(Capability.piv),
+  );
 }

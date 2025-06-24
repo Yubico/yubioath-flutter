@@ -20,6 +20,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/basic_dialog.dart';
+import '../keys.dart';
 import '../models.dart';
 
 class _OverwriteConfirmDialog extends StatelessWidget {
@@ -34,6 +35,7 @@ class _OverwriteConfirmDialog extends StatelessWidget {
       title: Text(l10n.q_overwrite_slot),
       actions: [
         TextButton(
+          key: overwriteButton,
           onPressed: () {
             Navigator.of(context).pop(true);
           },

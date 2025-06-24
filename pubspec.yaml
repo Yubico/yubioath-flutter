@@ -78,8 +78,6 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  test_res:
-    path: integration_test/test_res
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -97,6 +95,8 @@ dev_dependencies:
   custom_lint:
   lint:
     path: lint
+  patrol_finders: ^2.8.2
+  meta: ^1.16.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

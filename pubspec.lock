@@ -265,6 +265,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  dispose_scope:
+    dependency: transitive
+    description:
+      name: dispose_scope
+      sha256: "48ec38ca2631c53c4f8fa96b294c801e55c335db5e3fb9f82cede150cfe5a2af"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -564,7 +580,7 @@ packages:
     source: hosted
     version: "0.1.1"
   meta:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: meta
       sha256: e3641ec5d63ebf0d9b41bd43201a66e3fc79a65db5f61fc181f04cd27aab950c
@@ -651,6 +667,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  patrol_finders:
+    dependency: "direct dev"
+    description:
+      name: patrol_finders
+      sha256: "95e4a8592c27c2cf39871f0c5f80d251a4347a3a61d117646089631459ce299b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.8.2"
+  patrol_log:
+    dependency: transitive
+    description:
+      name: patrol_log
+      sha256: "49c25a41ad5ed7df6ff550c964798ed86cb112cbe2ca4f4d728d85c413b779a8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0"
   petitparser:
     dependency: transitive
     description:
@@ -959,13 +991,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
-  test_res:
-    dependency: "direct dev"
-    description:
-      path: "integration_test/test_res"
-      relative: true
-    source: path
-    version: "0.0.0"
   timing:
     dependency: transitive
     description:

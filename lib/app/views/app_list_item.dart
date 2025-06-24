@@ -21,6 +21,7 @@ import '../../core/state.dart';
 import '../models.dart';
 import '../shortcuts.dart';
 import 'action_popup_menu.dart';
+import 'keys.dart' as keys;
 
 class AppListItem<T> extends ConsumerStatefulWidget {
   final T item;
@@ -181,6 +182,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                             trailing == null
                                 ? null
                                 : Focus(
+                                  key: keys.appListItemActionKey,
                                   skipTraversal: true,
                                   descendantsAreTraversable: false,
                                   child: trailing,

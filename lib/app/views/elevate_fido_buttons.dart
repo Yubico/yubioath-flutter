@@ -25,6 +25,7 @@ import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../message.dart';
 import '../state.dart';
+import 'keys.dart' as keys;
 
 class ElevateFidoButtons extends ConsumerWidget {
   const ElevateFidoButtons({super.key});
@@ -37,6 +38,7 @@ class ElevateFidoButtons extends ConsumerWidget {
       runSpacing: 4,
       children: [
         FilledButton.icon(
+          key: keys.elevateFidoButton,
           label: Text(l10n.s_request_access),
           icon: const Icon(Symbols.lock_open),
           onPressed: () async {

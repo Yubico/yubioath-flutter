@@ -1,38 +1,4 @@
 # define available tags
 tags:
-    # Tests which we want to run on desktop
-    desktop:
-        timeout: none
-
-    # Tests which we want to run on Android
-    android:
-        timeout: none
-
-    # Tests consuming quiet a lot of time
-    slow:
-        timeout: none
-
-    # Minimal tests
-    # quick verification that the framework is working
-    minimal:
-        timeout: none
-
-    # OATH tests
-    oath:
-        timeout: none
-
-    # OTP tests
-    otp:
-        timeout: none
-
-    # PIV tests
-    piv:
-        timeout: none
-
-    # Management tests
-    management:
-        timeout: none
-
-    # Passkey tests
-    passkey:
-        timeout: none
+    # Tests which require manual interaction (insert/remove/touch etc.)
+    manual:

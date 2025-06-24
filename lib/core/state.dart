@@ -23,6 +23,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/models.dart';
 import '../widgets/flex_box.dart';
 
+bool isRunningTest = bool.fromEnvironment('FLUTTER_TEST');
+
 bool get isDesktop => const [
   TargetPlatform.windows,
   TargetPlatform.macOS,

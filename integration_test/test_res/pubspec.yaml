@@ -1,6 +1,0 @@
-name: test_res
-environment:
-  sdk: ^3.7.0
-flutter:
-  assets:
-    - resources/
