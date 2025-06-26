@@ -77,7 +77,6 @@
     "s_reset_settings": null,
     "l_reset_settings_desc": null,
     "s_general": null,
-    "s_external": null,
     "s_support": null,
     "l_settings_desc": "Zmeniť predvoľby aplikácie",
     "s_certificates": "Certifikáty",

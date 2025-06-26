@@ -77,7 +77,6 @@
     "s_reset_settings": null,
     "l_reset_settings_desc": null,
     "s_general": null,
-    "s_external": null,
     "s_support": null,
     "l_settings_desc": "變更應用程式偏好設定",
     "s_certificates": "憑證",

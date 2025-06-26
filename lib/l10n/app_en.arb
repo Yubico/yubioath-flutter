@@ -77,7 +77,6 @@
     "s_reset_settings": "Reset settings",
     "l_reset_settings_desc": "Restore settings to default",
     "s_general": "General",
-    "s_external": "External",
     "s_support": "Support",
     "l_settings_desc": "Change application preferences",
     "s_certificates": "Certificates",

@@ -1281,6 +1281,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       _LanguageItem(selected: _selected, expanded: expanded),
                       if (isAndroid)
                         _NfcAndUsbItem(selected: _selected, expanded: expanded),
+                      if (nfcDevices.isNotEmpty && isDesktop)
+                        _ToggleReadersItem(
+                          selected: _selected,
+                          expanded: expanded,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 16.0),
@@ -1302,28 +1307,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  if (nfcDevices.isNotEmpty && isDesktop) ...[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            l10n.s_external.toUpperCase(),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        _ToggleReadersItem(
-                          selected: _selected,
-                          expanded: expanded,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
-                  ],
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
