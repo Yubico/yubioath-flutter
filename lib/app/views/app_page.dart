@@ -157,22 +157,23 @@ class _AppPageState extends ConsumerState<AppPage> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
+          final height = constraints.maxHeight;
           if (width < 400 ||
               (isAndroid && width < 600 && width < constraints.maxHeight)) {
-            return _buildScaffold(context, true, false, false);
+            return _buildScaffold(context, true, false, false, height);
           }
           if (width < 800) {
-            return _buildScaffold(context, true, true, false);
+            return _buildScaffold(context, true, true, false, height);
           }
           if (width < 1000) {
-            return _buildScaffold(context, true, true, true);
+            return _buildScaffold(context, true, true, true, height);
           } else {
             // Fully expanded layout, close existing drawer if open
             final scaffoldState = scaffoldGlobalKey.currentState;
             if (scaffoldState?.isDrawerOpen == true) {
               scaffoldState?.closeDrawer();
             }
-            return _buildScaffold(context, false, true, true);
+            return _buildScaffold(context, false, true, true, height);
           }
         },
       ),
@@ -193,7 +194,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget _buildDrawer(BuildContext context, double appHeight) {
     return Drawer(
       child: SafeArea(
         child: SingleChildScrollView(
@@ -214,7 +215,13 @@ class _AppPageState extends ConsumerState<AppPage> {
               ),
               Material(
                 type: MaterialType.transparency,
-                child: NavigationContent(key: _navExpandedKey, extended: true),
+                child: NavigationContent(
+                  key: _navExpandedKey,
+                  extended: true,
+                  hasScrollBody: false,
+                  hasMore: false,
+                  appHeight: appHeight,
+                ),
               ),
             ],
           ),
@@ -638,6 +645,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     bool hasDrawer,
     bool hasRail,
     bool hasManage,
+    double appHeight,
   ) {
     final l10n = AppLocalizations.of(context);
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
@@ -678,12 +686,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                     child: _VisibilityListener(
                       targetKey: _navKey,
                       controller: _navController,
-                      child: SingleChildScrollView(
-                        child: NavigationContent(
-                          key: _navKey,
-                          shouldPop: false,
-                          extended: false,
-                        ),
+                      child: NavigationContent(
+                        key: _navKey,
+                        shouldPop: false,
+                        extended: false,
+                        appHeight: appHeight,
                       ),
                     ),
                   ),
@@ -696,14 +703,13 @@ class _AppPageState extends ConsumerState<AppPage> {
                     child: _VisibilityListener(
                       controller: _navController,
                       targetKey: _navExpandedKey,
-                      child: SingleChildScrollView(
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: NavigationContent(
-                            key: _navExpandedKey,
-                            shouldPop: false,
-                            extended: true,
-                          ),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: NavigationContent(
+                          key: _navExpandedKey,
+                          shouldPop: false,
+                          extended: true,
+                          appHeight: appHeight,
                         ),
                       ),
                     ),
@@ -891,7 +897,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 ),
             ],
           ),
-          drawer: hasDrawer ? _buildDrawer(context) : null,
+          drawer: hasDrawer ? _buildDrawer(context, appHeight) : null,
           body: body,
         );
       },
