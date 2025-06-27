@@ -209,31 +209,33 @@ class NavigationContent extends ConsumerWidget {
               child: Column(
                 children: [
                   ...visibleSections.map(
-                    (app) => NavigationItem(
-                      key: app.key,
-                      title: app.getDisplayName(l10n),
-                      leading: Icon(
-                        app._icon,
-                        fill: app == currentSection ? 1.0 : 0.0,
-                        semanticLabel:
-                            !extended ? app.getDisplayName(l10n) : null,
-                      ),
-                      collapsed: !extended,
-                      selected: app == currentSection,
-                      onTap:
-                          data == null && currentSection == Section.home ||
-                                  data != null &&
-                                      app.getAvailability(data) ==
-                                          Availability.enabled
-                              ? () {
-                                ref
-                                    .read(currentSectionProvider.notifier)
-                                    .setCurrentSection(app);
-                                if (shouldPop) {
-                                  Navigator.of(context).pop();
+                    (app) => Flexible(
+                      child: NavigationItem(
+                        key: app.key,
+                        title: app.getDisplayName(l10n),
+                        leading: Icon(
+                          app._icon,
+                          fill: app == currentSection ? 1.0 : 0.0,
+                          semanticLabel:
+                              !extended ? app.getDisplayName(l10n) : null,
+                        ),
+                        collapsed: !extended,
+                        selected: app == currentSection,
+                        onTap:
+                            data == null && currentSection == Section.home ||
+                                    data != null &&
+                                        app.getAvailability(data) ==
+                                            Availability.enabled
+                                ? () {
+                                  ref
+                                      .read(currentSectionProvider.notifier)
+                                      .setCurrentSection(app);
+                                  if (shouldPop) {
+                                    Navigator.of(context).pop();
+                                  }
                                 }
-                              }
-                              : null,
+                                : null,
+                      ),
                     ),
                   ),
                   if (hiddenSections.isNotEmpty)
