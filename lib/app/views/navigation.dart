@@ -31,6 +31,7 @@ class NavigationItem extends StatefulWidget {
   final bool collapsed;
   final bool selected;
   final void Function()? onTap;
+  final BorderRadiusGeometry? borderRadius;
 
   const NavigationItem({
     super.key,
@@ -39,6 +40,7 @@ class NavigationItem extends StatefulWidget {
     this.collapsed = false,
     this.selected = false,
     this.onTap,
+    this.borderRadius,
   });
 
   @override
@@ -90,7 +92,9 @@ class _NavigationItemState extends State<NavigationItem> {
     } else {
       return ListTile(
         enabled: widget.onTap != null,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        shape: RoundedRectangleBorder(
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+        ),
         leading: widget.leading,
         title: Text(widget.title),
         minVerticalPadding: 16,
@@ -176,15 +180,15 @@ class MoreItem extends ConsumerWidget {
 class NavigationContent extends ConsumerWidget {
   final bool shouldPop;
   final bool extended;
-  final bool hasScrollBody;
-  final bool hasMore;
+  final bool shouldCollapse;
+  final bool isDrawer;
   final double appHeight;
   const NavigationContent({
     super.key,
     this.shouldPop = true,
     this.extended = false,
-    this.hasScrollBody = true,
-    this.hasMore = true,
+    this.shouldCollapse = true,
+    this.isDrawer = false,
     required this.appHeight,
   });
 
@@ -196,6 +200,7 @@ class NavigationContent extends ConsumerWidget {
     List<Section> hiddenSections,
     Section currentSection,
     YubiKeyData? data,
+    bool scrollable,
   ) {
     final settingsSection = Section.settings;
     return AnimatedSize(
@@ -210,9 +215,17 @@ class NavigationContent extends ConsumerWidget {
                 children: [
                   ...visibleSections.map(
                     (app) => Flexible(
+                      flex: !scrollable && !shouldCollapse ? 0 : 1,
                       child: NavigationItem(
                         key: app.key,
                         title: app.getDisplayName(l10n),
+                        borderRadius:
+                            isDrawer
+                                ? BorderRadius.only(
+                                  topRight: Radius.circular(24),
+                                  bottomRight: Radius.circular(24),
+                                )
+                                : null,
                         leading: Icon(
                           app._icon,
                           fill: app == currentSection ? 1.0 : 0.0,
@@ -283,8 +296,8 @@ class NavigationContent extends ConsumerWidget {
     YubiKeyData? data,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 8.0,
+      padding: EdgeInsets.only(
+        left: isDrawer ? 0.0 : 8.0,
         right: 8.0,
         bottom: 8.0,
         top: 12,
@@ -293,10 +306,10 @@ class NavigationContent extends ConsumerWidget {
         children: [
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
-            child: DevicePickerContent(extended: extended),
+            child: DevicePickerContent(extended: extended, isDrawer: isDrawer),
           ),
           const SizedBox(height: 32),
-          !scrollable && hasMore
+          !scrollable && shouldCollapse
               ? Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
@@ -329,6 +342,7 @@ class NavigationContent extends ConsumerWidget {
                       hiddenApps,
                       currentSection,
                       data,
+                      scrollable,
                     );
                   },
                 ),
@@ -337,10 +351,11 @@ class NavigationContent extends ConsumerWidget {
                 context,
                 ref,
                 l10n,
-                hasMore ? [] : appSections,
-                hasMore ? appSections : [],
+                shouldCollapse ? [] : appSections,
+                shouldCollapse ? appSections : [],
                 currentSection,
                 data,
+                scrollable,
               ),
         ],
       ),
@@ -368,7 +383,7 @@ class NavigationContent extends ConsumerWidget {
     final currentSection = ref.watch(currentSectionProvider);
 
     final height = appHeight - kToolbarHeight - 1;
-    final shouldScroll = height <= 270 && hasScrollBody;
+    final shouldScroll = height <= 270 && shouldCollapse;
     final content = _buildMainContent(
       context,
       ref,

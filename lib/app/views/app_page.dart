@@ -218,8 +218,8 @@ class _AppPageState extends ConsumerState<AppPage> {
                 child: NavigationContent(
                   key: _navExpandedKey,
                   extended: true,
-                  hasScrollBody: false,
-                  hasMore: false,
+                  shouldCollapse: false,
+                  isDrawer: true,
                   appHeight: appHeight,
                 ),
               ),
