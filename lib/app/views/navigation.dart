@@ -97,7 +97,7 @@ class _NavigationItemState extends State<NavigationItem> {
         ),
         leading: widget.leading,
         title: Text(widget.title),
-        minVerticalPadding: 16,
+        minVerticalPadding: 14.5,
         onTap: widget.onTap,
         tileColor: widget.selected ? colorScheme.secondaryContainer : null,
         textColor: widget.selected ? colorScheme.onSecondaryContainer : null,
