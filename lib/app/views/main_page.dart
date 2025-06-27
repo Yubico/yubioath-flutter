@@ -98,6 +98,12 @@ class MainPage extends ConsumerWidget {
       scale: 2,
       color: Theme.of(context).colorScheme.primary,
     );
+
+    final section = ref.watch(currentSectionProvider);
+    if (section == Section.settings) {
+      return const SettingsPage();
+    }
+
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
@@ -145,8 +151,6 @@ class MainPage extends ConsumerWidget {
           .watch(currentDeviceDataProvider)
           .when(
             data: (data) {
-              final section = ref.watch(currentSectionProvider);
-
               return switch (section) {
                 Section.home => HomeScreen(data),
                 Section.accounts => OathScreen(data.node.path),

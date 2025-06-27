@@ -235,7 +235,11 @@ class NavigationContent extends ConsumerWidget {
                         collapsed: !extended,
                         selected: app == currentSection,
                         onTap:
-                            data == null && currentSection == Section.home ||
+                            data == null &&
+                                        [
+                                          Section.home,
+                                          Section.settings,
+                                        ].contains(currentSection) ||
                                     data != null &&
                                         app.getAvailability(data) ==
                                             Availability.enabled
@@ -263,6 +267,13 @@ class NavigationContent extends ConsumerWidget {
           ),
           NavigationItem(
             key: settingsSection.key,
+            borderRadius:
+                isDrawer
+                    ? BorderRadius.only(
+                      topRight: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    )
+                    : null,
             title: settingsSection.getDisplayName(l10n),
             leading: Icon(
               settingsSection._icon,
