@@ -744,7 +744,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     final tiles = Levels.LEVELS.map(
-      (e) => RadioListTile(
+      (e) => RadioListTile<Level>(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
         ),
@@ -949,6 +949,7 @@ class _NfcKbdLayoutView extends ConsumerWidget {
     final tapAction = ref.watch(androidNfcTapActionProvider);
     final clipKbdLayout = ref.watch(androidNfcKbdLayoutProvider);
     return ListTile(
+      key: keys.nfcKeyboardLayoutSetting,
       title: Text(l10n.l_kbd_layout_for_static),
       subtitle: Text(clipKbdLayout),
       leading: Icon(Symbols.keyboard),
@@ -980,6 +981,7 @@ class _NfcBypassTouchView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final nfcBypassTouch = ref.watch(androidNfcBypassTouchProvider);
     return SwitchListTile(
+      key: keys.nfcBypassTouchSetting,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
       ),
@@ -1009,6 +1011,7 @@ class _NfcSilenceSoundsView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final nfcSilenceSounds = ref.watch(androidNfcSilenceSoundsProvider);
     return SwitchListTile(
+      key: keys.nfcSilenceSoundsSettings,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
       ),
@@ -1041,6 +1044,7 @@ class _UsbOpenAppView extends ConsumerWidget {
       children: [
         ListTitle(l10n.l_on_yk_usb_insert),
         SwitchListTile(
+          key: keys.usbOpenAppSetting,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
           ),

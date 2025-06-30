@@ -53,7 +53,9 @@ Future<Widget> initialize({Level? level}) async {
     Logger.root.level = level ?? Levels.DEBUG;
   }
 
-  _initLicenses();
+  if (kReleaseMode) {
+    _initLicenses();
+  }
 
   return ProviderScope(
     overrides: [

@@ -45,7 +45,7 @@ jobs:
           pre-commit run flutter-l10n-gen --all-files
           pre-commit run dart-format --all-files
           pre-commit run flutter-analyze --all-files
-          # flutter test
+          flutter test
         working-directory: ./app
 
       - name: Build the App

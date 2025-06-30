@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../android/models.dart';
+
 // global keys
 final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
 final headerSliverGlobalKey = GlobalKey();
@@ -81,6 +83,18 @@ const diagnosticsChip = Key('$_prefix.diagnostics_chip');
 const logLevelChip = Key('$_prefix.log_level_chip');
 const logChip = Key('$_prefix.log_chip');
 const screenshotChip = Key('$_prefix.screenshot_chip');
+
+// android settings
+const nfcBypassTouchSetting = Key('$_prefix.nfc_bypass_touch');
+const nfcSilenceSoundsSettings = Key('$_prefix.nfc_silence_sounds');
+const usbOpenAppSetting = Key('$_prefix.usb_open_app');
+
+const nfcTapSetting = Key('$_prefix.nfc_tap');
+Key nfcTapOption(NfcTapAction action) =>
+    Key('$_prefix.tap_action.${action.name}');
+
+const nfcKeyboardLayoutSetting = Key('$_prefix.nfc_keyboard_layout');
+Key keyboardLayoutOption(String name) => Key('$_prefix.keyboard_layout.$name');
 
 // misc buttons
 const closeButton = Key('$_prefix.close_button');

@@ -26,7 +26,7 @@ const readFromImage = Key('$_prefix.read_image_file');
 
 const nfcBypassTouchSetting = Key('$_prefix.nfc_bypass_touch');
 const nfcSilenceSoundsSettings = Key('$_prefix.nfc_silence_sounds');
-const usbOpenApp = Key('$_prefix.usb_open_app');
+const usbOpenAppSetting = Key('$_prefix.usb_open_app');
 
 const nfcTapSetting = Key('$_prefix.nfc_tap');
 Key nfcTapOption(NfcTapAction action) =>
