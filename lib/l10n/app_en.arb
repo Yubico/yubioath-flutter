@@ -1060,6 +1060,7 @@
     "l_launch_app_on_usb_on": "This prevents other apps from using the YubiKey over USB",
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
+    "l_allow_screenshots_desc": "Allow other apps to take screenshots",
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Ready to scan",

@@ -62,6 +62,7 @@ void main() {
   appGroup('Settings', (params) {
     testKeyless('General settings sections', params, ($) async {
       await $.navigate(Section.settings);
+      final close = $(closeButton);
 
       settingsSetion(SettingsSection section) => $(
         $(AppListItem<SettingsSection>).which(
@@ -79,6 +80,9 @@ void main() {
         ),
       ).tap();
       expect($.read(currentLocaleProvider), isNot(currentLocale));
+      if (close.exists) {
+        await close.tap();
+      }
 
       // Change back to the original locale
       await $.selectOrOpenItem(settingsSetion(SettingsSection.language));
@@ -89,22 +93,34 @@ void main() {
         ),
       ).tap();
       expect($.read(currentLocaleProvider), equals(currentLocale));
+      if (close.exists) {
+        await close.tap();
+      }
 
       // Change theme
       await $.selectOrOpenItem(settingsSetion(SettingsSection.theme));
       await $(themeModeOption(ThemeMode.dark)).tap();
       expect($($.l10n.s_dark_mode), findsAtLeast(1));
+      if (close.exists) {
+        await close.tap();
+      }
 
       await $.selectOrOpenItem(settingsSetion(SettingsSection.theme));
       await $(themeModeOption(ThemeMode.light)).tap();
       expect($($.l10n.s_light_mode), findsAtLeast(1));
+      if (close.exists) {
+        await close.tap();
+      }
 
       await $.selectOrOpenItem(settingsSetion(SettingsSection.theme));
       await $(themeModeOption(ThemeMode.system)).tap();
       expect($($.l10n.s_system_default), findsAtLeast(1));
+      if (close.exists) {
+        await close.tap();
+      }
 
       // Enable debug logging
-      await $.selectOrOpenItem(settingsSetion(SettingsSection.logs));
+      await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
       await $(
         find.byWidgetPredicate(
           (widget) =>
@@ -112,9 +128,12 @@ void main() {
         ),
       ).tap();
       expect($(RegExp('WARNING:')), findsOneWidget);
+      if (close.exists) {
+        await close.tap();
+      }
 
       // Enable traffic logging
-      await $.selectOrOpenItem(settingsSetion(SettingsSection.logs));
+      await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
       await $(
         find.byWidgetPredicate(
           (widget) =>
@@ -122,9 +141,12 @@ void main() {
         ),
       ).tap();
       expect($(RegExp('WARNING:.*logged')), findsOneWidget);
+      if (close.exists) {
+        await close.tap();
+      }
 
       // Re-enable info logging
-      await $.selectOrOpenItem(settingsSetion(SettingsSection.logs));
+      await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
       await $(
         find.byWidgetPredicate(
           (widget) =>
@@ -132,15 +154,22 @@ void main() {
         ),
       ).tap();
       expect($(RegExp('WARNING:')), findsNothing);
+      if (close.exists) {
+        await close.tap();
+      }
 
       // Test help & about
       await $.selectOrOpenItem(settingsSetion(SettingsSection.help));
       // Make sure version is visible
       expect($(version), findsOneWidget);
+      if (close.exists) {
+        await close.tap();
+      }
     });
 
     testKeyless('Android settings sections', params, ($) async {
       await $.navigate(Section.settings);
+      final close = $(closeButton);
 
       settingsSetion(SettingsSection section) => $(
         $(AppListItem<SettingsSection>).which(
@@ -216,6 +245,26 @@ void main() {
       // Change back to default on USB insert
       await $(usbOpenAppSetting).tap();
       expect($.read(androidUsbLaunchAppProvider), usbOpenApp);
+      if (close.exists) {
+        await close.tap();
+      }
+
+      // Change allow screenshots settings
+      final allowScreenshots = $.read(androidAllowScreenshotsProvider);
+      expect(allowScreenshots, false);
+
+      await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
+      await $(allowScreenshotsSetting).tap();
+      expect($.read(androidAllowScreenshotsProvider), true);
+      expect($(RegExp('WARNING:.*record')), findsOneWidget);
+
+      // Change back to default allow screenshots
+      await $(allowScreenshotsSetting).tap();
+      expect($.read(androidAllowScreenshotsProvider), allowScreenshots);
+
+      if (close.exists) {
+        await close.tap();
+      }
     }, skip: !isAndroid);
   });
 }

@@ -1060,6 +1060,7 @@
     "l_launch_app_on_usb_on": "Detta förhindrar andra appar från att använda YubiKey via USB",
     "l_launch_app_on_usb_off": "Andra appar kan använda YubiKey via USB",
     "s_allow_screenshots": "Tillåt skärmdumpar",
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Redo att skanna",

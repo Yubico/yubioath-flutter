@@ -1060,6 +1060,7 @@
     "l_launch_app_on_usb_on": "Toto zabráni používaniu YubiKey cez USB inými aplikáciami",
     "l_launch_app_on_usb_off": "Ostatné aplikácie môžu používať YubiKey cez USB",
     "s_allow_screenshots": "Povoliť snímky obrazovky",
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Pripravené na skenovanie",

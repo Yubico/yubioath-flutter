@@ -16,21 +16,8 @@
 
 import 'package:flutter/material.dart';
 
-import 'models.dart';
-
 const _prefix = 'android.keys';
 
 const okButton = Key('$_prefix.ok');
 const manualEntryButton = Key('$_prefix.manual_entry');
 const readFromImage = Key('$_prefix.read_image_file');
-
-const nfcBypassTouchSetting = Key('$_prefix.nfc_bypass_touch');
-const nfcSilenceSoundsSettings = Key('$_prefix.nfc_silence_sounds');
-const usbOpenAppSetting = Key('$_prefix.usb_open_app');
-
-const nfcTapSetting = Key('$_prefix.nfc_tap');
-Key nfcTapOption(NfcTapAction action) =>
-    Key('$_prefix.tap_action.${action.name}');
-
-const nfcKeyboardLayoutSetting = Key('$_prefix.nfc_keyboard_layout');
-Key keyboardLayoutOption(String name) => Key('$_prefix.keyboard_layout.$name');

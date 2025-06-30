@@ -71,7 +71,7 @@ enum SettingsSection {
   customIcons(),
   language(),
   readers(),
-  logs(),
+  debugging(),
   help(),
   nfcAndUsb(),
 }
@@ -767,6 +767,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       ),
     );
 
+    final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -836,6 +837,27 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 });
               },
             ),
+            if (isAndroid)
+              ActionListItem(
+                key: keys.allowScreenshotsSetting,
+                borderRadius: widget.isDialog ? 0 : null,
+                icon: Icon(Symbols.screenshot),
+                title: l10n.s_allow_screenshots,
+                subtitle: l10n.l_allow_screenshots_desc,
+                trailing: Switch(
+                  value: allowScreenshots,
+                  onChanged: (value) {
+                    ref
+                        .read(androidAllowScreenshotsProvider.notifier)
+                        .setAllowScreenshots(value);
+                  },
+                ),
+                onTap: (context) {
+                  ref
+                      .read(androidAllowScreenshotsProvider.notifier)
+                      .setAllowScreenshots(!allowScreenshots);
+                },
+              ),
           ],
         ),
       ],
@@ -861,7 +883,7 @@ class _LogsItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     return _SettingsSectionItem(
-      SettingsSection.logs,
+      SettingsSection.debugging,
       selected: selected,
       expanded: expanded,
       icon: Symbols.auto_graph,
@@ -1169,7 +1191,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return switch (section) {
       SettingsSection.language => _LanguageView(isDialog: isDialog),
       SettingsSection.theme => _ThemeModeView(isDialog: isDialog),
-      SettingsSection.logs => _LogsView(isDialog: isDialog),
+      SettingsSection.debugging => _LogsView(isDialog: isDialog),
       SettingsSection.readers => _ToggleReadersView(isDialog: isDialog),
       SettingsSection.customIcons => _IconsView(isDialog: isDialog),
       SettingsSection.help => _HelpView(isDialog: isDialog),
