@@ -30,6 +30,7 @@ class ActionListItem extends StatelessWidget {
   final void Function(BuildContext context)? onTap;
   final ActionStyle actionStyle;
   final Feature? feature;
+  final double? borderRadius;
 
   const ActionListItem({
     super.key,
@@ -40,6 +41,7 @@ class ActionListItem extends StatelessWidget {
     this.onTap,
     this.actionStyle = ActionStyle.normal,
     this.feature,
+    this.borderRadius,
   });
 
   @override
@@ -63,7 +65,9 @@ class ActionListItem extends StatelessWidget {
               }
               : null,
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius ?? 48),
+        ),
         title: TooltipIfTruncated(
           text: title,
           style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
@@ -96,26 +100,35 @@ class ActionListItem extends StatelessWidget {
 }
 
 class ActionListSection extends ConsumerWidget {
-  final String title;
+  final String? title;
   final List<ActionListItem> children;
+  final bool fullWidth;
 
-  const ActionListSection(this.title, {super.key, required this.children});
+  const ActionListSection(
+    this.title, {
+    super.key,
+    required this.children,
+    this.fullWidth = false,
+  });
 
   factory ActionListSection.fromMenuActions(
     BuildContext context,
-    String title, {
+    String? title, {
     Key? key,
     required List<ActionItem> actions,
+    bool fullWidth = false,
   }) {
     return ActionListSection(
-      key: key,
       title,
+      key: key,
+      fullWidth: fullWidth,
       children:
           actions.map((action) {
             final intent = action.intent;
             return ActionListItem(
               key: action.key,
               feature: action.feature,
+              borderRadius: fullWidth ? 0 : null,
               actionStyle: action.actionStyle ?? ActionStyle.normal,
               icon: action.icon,
               title: action.title,
@@ -139,9 +152,13 @@ class ActionListSection extends ConsumerWidget {
     if (enabledChildren.isEmpty) {
       return const SizedBox();
     }
-    return SizedBox(
-      width: 360,
-      child: Column(children: [ListTitle(title), ...enabledChildren]),
+    final content = Column(
+      children: [if (title != null) ListTitle(title!), ...enabledChildren],
     );
+    if (fullWidth) {
+      return content;
+    } else {
+      return SizedBox(width: 360, child: content);
+    }
   }
 }

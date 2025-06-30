@@ -32,8 +32,13 @@ import 'keys.dart';
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
+  final bool isDrawer;
 
-  const DevicePickerContent({super.key, this.extended = true});
+  const DevicePickerContent({
+    super.key,
+    this.extended = true,
+    this.isDrawer = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,6 +52,13 @@ class DevicePickerContent extends ConsumerWidget {
     final currentNode = ref.watch(currentDeviceProvider);
 
     final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
+    final borderRadius =
+        isDrawer
+            ? BorderRadius.only(
+              topRight: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            )
+            : null;
 
     Widget? androidNoKeyWidget;
     if (isAndroid && devices.isEmpty) {
@@ -58,6 +70,7 @@ class DevicePickerContent extends ConsumerWidget {
               : l10n.l_insert_yk;
 
       androidNoKeyWidget = DeviceRow(
+        borderRadius: borderRadius,
         leading: const DeviceAvatar(
           child: Padding(
             padding: EdgeInsets.all(8.0),
@@ -77,6 +90,7 @@ class DevicePickerContent extends ConsumerWidget {
     List<Widget> children = [
       if (showUsb)
         DeviceRow(
+          borderRadius: borderRadius,
           leading: const DeviceAvatar(
             child: Padding(
               padding: EdgeInsets.all(8.0),
@@ -101,6 +115,7 @@ class DevicePickerContent extends ConsumerWidget {
                   e,
                   ref.watch(currentDeviceDataProvider),
                   extended,
+                  borderRadius,
                 )
                 : switch (e) {
                   UsbYubiKeyNode() => _buildDeviceRow(
@@ -109,8 +124,13 @@ class DevicePickerContent extends ConsumerWidget {
                     e,
                     e.info,
                     extended,
+                    borderRadius,
                   ),
-                  NfcReaderNode() => NfcDeviceRow(e, extended: extended),
+                  NfcReaderNode() => NfcDeviceRow(
+                    e,
+                    extended: extended,
+                    borderRadius: borderRadius,
+                  ),
                 },
       ),
     ];
@@ -195,6 +215,7 @@ class DeviceRow extends ConsumerStatefulWidget {
   final Color? background;
   final DeviceNode? node;
   final void Function() onTap;
+  final BorderRadiusGeometry? borderRadius;
 
   const DeviceRow({
     super.key,
@@ -206,6 +227,7 @@ class DeviceRow extends ConsumerStatefulWidget {
     this.background,
     this.node,
     required this.onTap,
+    this.borderRadius,
   });
 
   @override
@@ -260,7 +282,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
             },
             child: ListTile(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(48),
+                borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 8,
@@ -387,6 +409,7 @@ DeviceRow _buildDeviceRow(
   DeviceNode node,
   DeviceInfo? info,
   bool extended,
+  BorderRadiusGeometry? borderRadius,
 ) {
   final l10n = AppLocalizations.of(context);
   final subtitle = switch (node) {
@@ -403,6 +426,7 @@ DeviceRow _buildDeviceRow(
 
   return DeviceRow(
     key: ValueKey(node.path.key),
+    borderRadius: borderRadius,
     leading: DeviceAvatar.deviceNode(node),
     title: displayName,
     subtitle: subtitle,
@@ -421,6 +445,7 @@ DeviceRow _buildCurrentDeviceRow(
   DeviceNode node,
   AsyncValue<YubiKeyData> data,
   bool extended,
+  BorderRadiusGeometry? borderRadius,
 ) {
   final messages = _getDeviceStrings(context, node, data);
   if (messages.length > 2) {
@@ -437,6 +462,7 @@ DeviceRow _buildCurrentDeviceRow(
 
   return DeviceRow(
     key: keys.deviceInfoListTile,
+    borderRadius: borderRadius,
     leading: data.maybeWhen(
       data:
           (data) =>
@@ -456,10 +482,16 @@ DeviceRow _buildCurrentDeviceRow(
 class NfcDeviceRow extends ConsumerWidget {
   final DeviceNode node;
   final bool extended;
+  final BorderRadiusGeometry? borderRadius;
 
-  const NfcDeviceRow(this.node, {super.key, required this.extended});
+  const NfcDeviceRow(
+    this.node, {
+    super.key,
+    required this.extended,
+    this.borderRadius,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
-      _buildDeviceRow(context, ref, node, null, extended);
+      _buildDeviceRow(context, ref, node, null, extended, borderRadius);
 }

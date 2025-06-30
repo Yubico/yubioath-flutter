@@ -31,6 +31,7 @@ class NavigationItem extends StatefulWidget {
   final bool collapsed;
   final bool selected;
   final void Function()? onTap;
+  final BorderRadiusGeometry? borderRadius;
 
   const NavigationItem({
     super.key,
@@ -39,6 +40,7 @@ class NavigationItem extends StatefulWidget {
     this.collapsed = false,
     this.selected = false,
     this.onTap,
+    this.borderRadius,
   });
 
   @override
@@ -61,7 +63,7 @@ class _NavigationItemState extends State<NavigationItem> {
 
     if (widget.collapsed) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 6.5),
         child:
             widget.selected
                 ? Theme(
@@ -90,10 +92,12 @@ class _NavigationItemState extends State<NavigationItem> {
     } else {
       return ListTile(
         enabled: widget.onTap != null,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        shape: RoundedRectangleBorder(
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+        ),
         leading: widget.leading,
         title: Text(widget.title),
-        minVerticalPadding: 16,
+        minVerticalPadding: 14.5,
         onTap: widget.onTap,
         tileColor: widget.selected ? colorScheme.secondaryContainer : null,
         textColor: widget.selected ? colorScheme.onSecondaryContainer : null,
@@ -113,6 +117,7 @@ extension SectionUi on Section {
     Section.fingerprints => Symbols.fingerprint,
     Section.slots => Symbols.touch_app,
     Section.certificates => Symbols.id_card,
+    Section.settings => Symbols.settings,
   };
 
   Key get key => switch (this) {
@@ -123,17 +128,257 @@ extension SectionUi on Section {
     Section.fingerprints => fidoFingerprintsAppDrawer,
     Section.slots => otpAppDrawer,
     Section.certificates => pivAppDrawer,
+    Section.settings => settingsDrawer,
   };
+}
+
+class MoreItem extends ConsumerWidget {
+  final List<Section> sections;
+  final bool collapsed;
+  final BorderRadiusGeometry? borderRadius;
+  const MoreItem({
+    super.key,
+    required this.sections,
+    this.collapsed = false,
+    this.borderRadius,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return MenuAnchor(
+      menuChildren:
+          sections
+              .map(
+                (e) => ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: 150),
+                  child: MenuItemButton(
+                    leadingIcon: Icon(e._icon),
+                    onPressed: () {
+                      ref
+                          .read(currentSectionProvider.notifier)
+                          .setCurrentSection(e);
+                    },
+                    child: Text(e.getDisplayName(l10n)),
+                  ),
+                ),
+              )
+              .toList(),
+      builder:
+          (context, controller, child) => NavigationItem(
+            leading: Icon(Symbols.more_horiz),
+            borderRadius: borderRadius,
+            title: 'More',
+            collapsed: collapsed,
+            onTap: () {
+              if (controller.isOpen) {
+                controller.close();
+              } else {
+                controller.open();
+              }
+            },
+          ),
+    );
+  }
 }
 
 class NavigationContent extends ConsumerWidget {
   final bool shouldPop;
   final bool extended;
+  final bool isDrawer;
+  final double appHeight;
   const NavigationContent({
     super.key,
     this.shouldPop = true,
     this.extended = false,
+    this.isDrawer = false,
+    required this.appHeight,
   });
+
+  Widget _buildAppListContent(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    List<Section> visibleSections,
+    List<Section> hiddenSections,
+    Section currentSection,
+    YubiKeyData? data,
+    bool scrollable,
+  ) {
+    final settingsSection = Section.settings;
+    final borderRadius =
+        isDrawer
+            ? BorderRadius.only(
+              topRight: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            )
+            : null;
+    return AnimatedSize(
+      duration: Duration(milliseconds: 150),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Normal YubiKey Applications
+          Flexible(
+            child: ClipRect(
+              child: Column(
+                children: [
+                  ...visibleSections.map(
+                    (app) => Flexible(
+                      child: NavigationItem(
+                        key: app.key,
+                        title: app.getDisplayName(l10n),
+                        borderRadius: borderRadius,
+                        leading: Icon(
+                          app._icon,
+                          fill: app == currentSection ? 1.0 : 0.0,
+                          semanticLabel:
+                              !extended ? app.getDisplayName(l10n) : null,
+                        ),
+                        collapsed: !extended,
+                        selected: app == currentSection,
+                        onTap:
+                            data == null &&
+                                        [
+                                          Section.home,
+                                          Section.settings,
+                                        ].contains(currentSection) ||
+                                    data != null &&
+                                        app.getAvailability(data) ==
+                                            Availability.enabled
+                                ? () {
+                                  ref
+                                      .read(currentSectionProvider.notifier)
+                                      .setCurrentSection(app);
+                                  if (shouldPop) {
+                                    Navigator.of(context).pop();
+                                  }
+                                }
+                                : null,
+                      ),
+                    ),
+                  ),
+                  if (hiddenSections.isNotEmpty)
+                    MoreItem(
+                      sections: hiddenSections,
+                      collapsed: !extended,
+                      borderRadius: borderRadius,
+                    ),
+                ],
+              ),
+            ),
+          ),
+          NavigationItem(
+            key: settingsSection.key,
+            borderRadius:
+                isDrawer
+                    ? BorderRadius.only(
+                      topRight: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    )
+                    : null,
+            title: settingsSection.getDisplayName(l10n),
+            leading: Icon(
+              settingsSection._icon,
+              fill: settingsSection == currentSection ? 1.0 : 0.0,
+              semanticLabel:
+                  !extended ? settingsSection.getDisplayName(l10n) : null,
+            ),
+            collapsed: !extended,
+            selected: settingsSection == currentSection,
+            onTap: () {
+              ref
+                  .read(currentSectionProvider.notifier)
+                  .setCurrentSection(settingsSection);
+              if (shouldPop) {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainContent(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    List<Section> appSections,
+    Section currentSection,
+    bool scrollable,
+    YubiKeyData? data,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: isDrawer ? 0.0 : 8.0,
+        right: 8.0,
+        bottom: 8.0,
+        top: 12,
+      ),
+      child: Column(
+        children: [
+          AnimatedSize(
+            duration: const Duration(milliseconds: 150),
+            child: DevicePickerContent(extended: extended, isDrawer: isDrawer),
+          ),
+          const SizedBox(height: 32),
+          !scrollable
+              ? Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final totalHeight = constraints.maxHeight;
+                    final itemHeight = 60;
+
+                    // Total height - settings section
+                    final appListHeight = totalHeight - itemHeight;
+                    var maxVisibleApps = (appListHeight / itemHeight).floor();
+                    if (maxVisibleApps > appSections.length) {
+                      maxVisibleApps = appSections.length;
+                    } else {
+                      // We have the more button so we subtract one
+                      maxVisibleApps -= 1;
+                    }
+
+                    var visibleApps = appSections.take(maxVisibleApps).toList();
+                    if (visibleApps.isNotEmpty &&
+                        currentSection != Section.settings &&
+                        !visibleApps.contains(currentSection)) {
+                      visibleApps.removeLast();
+                      visibleApps.add(currentSection);
+                    }
+                    List<Section> hiddenApps =
+                        Set<Section>.from(
+                          appSections,
+                        ).difference(Set.from(visibleApps)).toList();
+
+                    return _buildAppListContent(
+                      context,
+                      ref,
+                      l10n,
+                      visibleApps,
+                      hiddenApps,
+                      currentSection,
+                      data,
+                      scrollable,
+                    );
+                  },
+                ),
+              )
+              : _buildAppListContent(
+                context,
+                ref,
+                l10n,
+                [],
+                appSections,
+                currentSection,
+                data,
+                scrollable,
+              ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -150,60 +395,26 @@ class NavigationContent extends ConsumerWidget {
                 )
                 .toList()
             : [Section.home];
+    final settingsSection = Section.settings;
+    final appSections =
+        availableSections.where((s) => s != settingsSection).toList();
     final currentSection = ref.watch(currentSectionProvider);
 
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 8.0,
-        right: 8.0,
-        bottom: 8.0,
-        top: 12,
-      ),
-      child: Column(
-        children: [
-          AnimatedSize(
-            duration: const Duration(milliseconds: 150),
-            child: DevicePickerContent(extended: extended),
-          ),
-          const SizedBox(height: 32),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 150),
-            child: Column(
-              children: [
-                // Normal YubiKey Applications
-                ...availableSections.map(
-                  (app) => NavigationItem(
-                    key: app.key,
-                    title: app.getDisplayName(l10n),
-                    leading: Icon(
-                      app._icon,
-                      fill: app == currentSection ? 1.0 : 0.0,
-                      semanticLabel:
-                          !extended ? app.getDisplayName(l10n) : null,
-                    ),
-                    collapsed: !extended,
-                    selected: app == currentSection,
-                    onTap:
-                        data == null && currentSection == Section.home ||
-                                data != null &&
-                                    app.getAvailability(data) ==
-                                        Availability.enabled
-                            ? () {
-                              ref
-                                  .read(currentSectionProvider.notifier)
-                                  .setCurrentSection(app);
-                              if (shouldPop) {
-                                Navigator.of(context).pop();
-                              }
-                            }
-                            : null,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    final height = appHeight - kToolbarHeight - 1;
+    final shouldScroll = height <= 270;
+    final content = _buildMainContent(
+      context,
+      ref,
+      l10n,
+      appSections,
+      currentSection,
+      shouldScroll,
+      data,
     );
+    if (shouldScroll) {
+      return SingleChildScrollView(child: content);
+    } else {
+      return content;
+    }
   }
 }

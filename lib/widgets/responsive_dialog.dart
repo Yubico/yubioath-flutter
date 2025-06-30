@@ -94,13 +94,12 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       child: AlertDialog(
         title: widget.title,
         titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
-        scrollable: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         content: SizedBox(
           width: widget.dialogMaxWidth,
           child: Container(
             key: _childKey,
-            child: widget.builder(context, false),
+            child: SingleChildScrollView(child: widget.builder(context, false)),
           ),
         ),
         actions: [
