@@ -132,12 +132,16 @@ extension SectionUi on Section {
   };
 }
 
-final _moreItemKey = GlobalKey();
-
 class MoreItem extends ConsumerWidget {
   final List<Section> sections;
   final bool collapsed;
-  const MoreItem({super.key, required this.sections, this.collapsed = false});
+  final BorderRadiusGeometry? borderRadius;
+  const MoreItem({
+    super.key,
+    required this.sections,
+    this.collapsed = false,
+    this.borderRadius,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -163,6 +167,7 @@ class MoreItem extends ConsumerWidget {
       builder:
           (context, controller, child) => NavigationItem(
             leading: Icon(Symbols.more_horiz),
+            borderRadius: borderRadius,
             title: 'More',
             collapsed: collapsed,
             onTap: () {
@@ -180,14 +185,12 @@ class MoreItem extends ConsumerWidget {
 class NavigationContent extends ConsumerWidget {
   final bool shouldPop;
   final bool extended;
-  final bool shouldCollapse;
   final bool isDrawer;
   final double appHeight;
   const NavigationContent({
     super.key,
     this.shouldPop = true,
     this.extended = false,
-    this.shouldCollapse = true,
     this.isDrawer = false,
     required this.appHeight,
   });
@@ -203,6 +206,13 @@ class NavigationContent extends ConsumerWidget {
     bool scrollable,
   ) {
     final settingsSection = Section.settings;
+    final borderRadius =
+        isDrawer
+            ? BorderRadius.only(
+              topRight: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            )
+            : null;
     return AnimatedSize(
       duration: Duration(milliseconds: 150),
       child: Column(
@@ -215,17 +225,10 @@ class NavigationContent extends ConsumerWidget {
                 children: [
                   ...visibleSections.map(
                     (app) => Flexible(
-                      flex: !scrollable && !shouldCollapse ? 0 : 1,
                       child: NavigationItem(
                         key: app.key,
                         title: app.getDisplayName(l10n),
-                        borderRadius:
-                            isDrawer
-                                ? BorderRadius.only(
-                                  topRight: Radius.circular(24),
-                                  bottomRight: Radius.circular(24),
-                                )
-                                : null,
+                        borderRadius: borderRadius,
                         leading: Icon(
                           app._icon,
                           fill: app == currentSection ? 1.0 : 0.0,
@@ -257,9 +260,9 @@ class NavigationContent extends ConsumerWidget {
                   ),
                   if (hiddenSections.isNotEmpty)
                     MoreItem(
-                      key: _moreItemKey,
                       sections: hiddenSections,
                       collapsed: !extended,
+                      borderRadius: borderRadius,
                     ),
                 ],
               ),
@@ -320,18 +323,22 @@ class NavigationContent extends ConsumerWidget {
             child: DevicePickerContent(extended: extended, isDrawer: isDrawer),
           ),
           const SizedBox(height: 32),
-          !scrollable && shouldCollapse
+          !scrollable
               ? Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final totalHeight = constraints.maxHeight;
                     final itemHeight = 60;
-                    final hasMore = _moreItemKey.currentContext != null;
-                    final appListHeight =
-                        (totalHeight - itemHeight) - (hasMore ? itemHeight : 0);
-                    var maxVisibleApps = (appListHeight / itemHeight)
-                        .floor()
-                        .clamp(0, appSections.length);
+
+                    // Total height - settings section
+                    final appListHeight = totalHeight - itemHeight;
+                    var maxVisibleApps = (appListHeight / itemHeight).floor();
+                    if (maxVisibleApps > appSections.length) {
+                      maxVisibleApps = appSections.length;
+                    } else {
+                      // We have the more button so we subtract one
+                      maxVisibleApps -= 1;
+                    }
 
                     var visibleApps = appSections.take(maxVisibleApps).toList();
                     if (visibleApps.isNotEmpty &&
@@ -362,8 +369,8 @@ class NavigationContent extends ConsumerWidget {
                 context,
                 ref,
                 l10n,
-                shouldCollapse ? [] : appSections,
-                shouldCollapse ? appSections : [],
+                [],
+                appSections,
                 currentSection,
                 data,
                 scrollable,
@@ -394,7 +401,7 @@ class NavigationContent extends ConsumerWidget {
     final currentSection = ref.watch(currentSectionProvider);
 
     final height = appHeight - kToolbarHeight - 1;
-    final shouldScroll = height <= 270 && shouldCollapse;
+    final shouldScroll = height <= 270;
     final content = _buildMainContent(
       context,
       ref,

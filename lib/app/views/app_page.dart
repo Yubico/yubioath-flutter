@@ -197,34 +197,33 @@ class _AppPageState extends ConsumerState<AppPage> {
   Widget _buildDrawer(BuildContext context, double appHeight) {
     return Drawer(
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: CloseButton(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: CloseButton(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  _buildLogo(context),
-                  const SizedBox(width: 48),
-                ],
-              ),
-              Material(
+                ),
+                _buildLogo(context),
+                const SizedBox(width: 48),
+              ],
+            ),
+            Expanded(
+              child: Material(
                 type: MaterialType.transparency,
                 child: NavigationContent(
                   key: _navExpandedKey,
                   extended: true,
-                  shouldCollapse: false,
                   isDrawer: true,
                   appHeight: appHeight,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
