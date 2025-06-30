@@ -640,6 +640,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     bool hasManage,
   ) {
     final l10n = AppLocalizations.of(context);
+    final windowState = ref.watch(windowStateProvider);
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
     final showExpandedNavigationBar = ref.watch(
       _navigationBarVisibilityProvider,
@@ -673,16 +674,19 @@ class _AppPageState extends ConsumerState<AppPage> {
               if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
                 FocusTraversalOrder(
                   order: NumericFocusOrder(1),
-                  child: SizedBox(
-                    width: 72,
-                    child: _VisibilityListener(
-                      targetKey: _navKey,
-                      controller: _navController,
-                      child: SingleChildScrollView(
-                        child: NavigationContent(
-                          key: _navKey,
-                          shouldPop: false,
-                          extended: false,
+                  child: Opacity(
+                    opacity: !windowState.focused ? 0.5 : 1,
+                    child: SizedBox(
+                      width: 72,
+                      child: _VisibilityListener(
+                        targetKey: _navKey,
+                        controller: _navController,
+                        child: SingleChildScrollView(
+                          child: NavigationContent(
+                            key: _navKey,
+                            shouldPop: false,
+                            extended: false,
+                          ),
                         ),
                       ),
                     ),
@@ -691,18 +695,21 @@ class _AppPageState extends ConsumerState<AppPage> {
               if (fullyExpanded && showExpandedNavigationBar)
                 FocusTraversalOrder(
                   order: NumericFocusOrder(1),
-                  child: SizedBox(
-                    width: 280,
-                    child: _VisibilityListener(
-                      controller: _navController,
-                      targetKey: _navExpandedKey,
-                      child: SingleChildScrollView(
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: NavigationContent(
-                            key: _navExpandedKey,
-                            shouldPop: false,
-                            extended: true,
+                  child: Opacity(
+                    opacity: !windowState.focused ? 0.5 : 1,
+                    child: SizedBox(
+                      width: 280,
+                      child: _VisibilityListener(
+                        controller: _navController,
+                        targetKey: _navExpandedKey,
+                        child: SingleChildScrollView(
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: NavigationContent(
+                              key: _navExpandedKey,
+                              shouldPop: false,
+                              extended: true,
+                            ),
                           ),
                         ),
                       ),
@@ -733,19 +740,22 @@ class _AppPageState extends ConsumerState<AppPage> {
                   child: _VisibilityListener(
                     controller: _detailsController,
                     targetKey: _detailsViewGlobalKey,
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: SizedBox(
-                          width: 320,
-                          child: Column(
-                            key: _detailsViewGlobalKey,
-                            children: [
-                              if (widget.detailViewBuilder != null)
-                                widget.detailViewBuilder!(context),
-                              if (widget.keyActionsBuilder != null)
-                                widget.keyActionsBuilder!(context),
-                            ],
+                    child: Opacity(
+                      opacity: !windowState.focused ? 0.5 : 1,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: SizedBox(
+                            width: 320,
+                            child: Column(
+                              key: _detailsViewGlobalKey,
+                              children: [
+                                if (widget.detailViewBuilder != null)
+                                  widget.detailViewBuilder!(context),
+                                if (widget.keyActionsBuilder != null)
+                                  widget.keyActionsBuilder!(context),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -808,17 +818,20 @@ class _AppPageState extends ConsumerState<AppPage> {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: IconButton(
-                              icon: Icon(
-                                Symbols.menu,
-                                semanticLabel: navigationText,
+                            child: Opacity(
+                              opacity: !windowState.focused ? 0.5 : 1,
+                              child: IconButton(
+                                icon: Icon(
+                                  Symbols.menu,
+                                  semanticLabel: navigationText,
+                                ),
+                                tooltip: navigationText,
+                                onPressed:
+                                    () => _handleNavigationVisibility(
+                                      context,
+                                      fullyExpanded,
+                                    ),
                               ),
-                              tooltip: navigationText,
-                              onPressed:
-                                  () => _handleNavigationVisibility(
-                                    context,
-                                    fullyExpanded,
-                                  ),
                             ),
                           ),
                         ),
@@ -828,13 +841,16 @@ class _AppPageState extends ConsumerState<AppPage> {
                     : Builder(
                       builder: (context) {
                         // Need to wrap with builder to get Scaffold context
-                        return IconButton(
-                          key: drawerIconButtonKey,
-                          tooltip: l10n.s_show_navigation,
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                          icon: Icon(
-                            Symbols.menu,
-                            semanticLabel: l10n.s_show_navigation,
+                        return Opacity(
+                          opacity: !windowState.focused ? 0.5 : 1,
+                          child: IconButton(
+                            key: drawerIconButtonKey,
+                            tooltip: l10n.s_show_navigation,
+                            onPressed: () => Scaffold.of(context).openDrawer(),
+                            icon: Icon(
+                              Symbols.menu,
+                              semanticLabel: l10n.s_show_navigation,
+                            ),
                           ),
                         );
                       },
@@ -844,25 +860,28 @@ class _AppPageState extends ConsumerState<AppPage> {
                   (widget.keyActionsBuilder != null && !hasManage))
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: actionsIconButtonKey,
-                    onPressed:
-                        () => _handleDetailViewVisibility(context, hasManage),
-                    icon:
-                        widget.keyActionsBadge
-                            ? Badge(
-                              child: Icon(
+                  child: Opacity(
+                    opacity: !windowState.focused ? 0.5 : 1,
+                    child: IconButton(
+                      key: actionsIconButtonKey,
+                      onPressed:
+                          () => _handleDetailViewVisibility(context, hasManage),
+                      icon:
+                          widget.keyActionsBadge
+                              ? Badge(
+                                child: Icon(
+                                  Symbols.more_vert,
+                                  semanticLabel: l10n.s_show_menu,
+                                ),
+                              )
+                              : Icon(
                                 Symbols.more_vert,
                                 semanticLabel: l10n.s_show_menu,
                               ),
-                            )
-                            : Icon(
-                              Symbols.more_vert,
-                              semanticLabel: l10n.s_show_menu,
-                            ),
-                    iconSize: 24,
-                    tooltip: l10n.s_show_menu,
-                    padding: const EdgeInsets.all(12),
+                      iconSize: 24,
+                      tooltip: l10n.s_show_menu,
+                      padding: const EdgeInsets.all(12),
+                    ),
                   ),
                 ),
               if (hasManage &&
@@ -870,18 +889,21 @@ class _AppPageState extends ConsumerState<AppPage> {
                       widget.detailViewBuilder != null))
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: toggleDetailViewIconButtonKey,
-                    onPressed:
-                        () => _handleDetailViewVisibility(context, hasManage),
-                    icon: Icon(
-                      Symbols.dock_to_left,
-                      fill: showExpandedSideMenuBar ? 1 : 0,
-                      weight: 600.0,
+                  child: Opacity(
+                    opacity: !windowState.focused ? 0.5 : 1,
+                    child: IconButton(
+                      key: toggleDetailViewIconButtonKey,
+                      onPressed:
+                          () => _handleDetailViewVisibility(context, hasManage),
+                      icon: Icon(
+                        Symbols.dock_to_left,
+                        fill: showExpandedSideMenuBar ? 1 : 0,
+                        weight: 600.0,
+                      ),
+                      iconSize: 24,
+                      tooltip: l10n.s_toggle_menu_bar,
+                      padding: const EdgeInsets.all(12),
                     ),
-                    iconSize: 24,
-                    tooltip: l10n.s_toggle_menu_bar,
-                    padding: const EdgeInsets.all(12),
                   ),
                 ),
               if (widget.actionButtonBuilder != null)
