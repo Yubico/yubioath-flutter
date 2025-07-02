@@ -19,6 +19,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -195,7 +196,7 @@ class _AppPageState extends ConsumerState<AppPage> {
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
-      child: SafeArea(
+      child: _TitlebarSafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -769,127 +770,132 @@ class _AppPageState extends ConsumerState<AppPage> {
         );
         return Scaffold(
           key: scaffoldGlobalKey,
-          appBar: AppBar(
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1.0),
-              child: ListenableBuilder(
-                listenable: _scrolledUnderController,
-                builder: (context, child) {
-                  final visible = _scrolledUnderController.someIsScrolledUnder;
-                  return AnimatedOpacity(
-                    opacity: visible ? 1 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Container(
-                      color: Theme.of(context).hoverColor,
-                      height: 1.0,
-                    ),
-                  );
-                },
+          appBar: _SafeareaAppBar(
+            appBar: AppBar(
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1.0),
+                child: ListenableBuilder(
+                  listenable: _scrolledUnderController,
+                  builder: (context, child) {
+                    final visible =
+                        _scrolledUnderController.someIsScrolledUnder;
+                    return AnimatedOpacity(
+                      opacity: visible ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Container(
+                        color: Theme.of(context).hoverColor,
+                        height: 1.0,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            iconTheme: IconThemeData(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            scrolledUnderElevation: 0.0,
-            leadingWidth: hasRail ? 84 : null,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            title: _buildAppBarTitle(
-              context,
-              hasRail,
-              hasManage,
-              fullyExpanded,
-            ),
-            centerTitle: true,
-            leading:
-                hasRail
-                    ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: IconButton(
-                              icon: Icon(
-                                Symbols.menu,
-                                semanticLabel: navigationText,
+              iconTheme: IconThemeData(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              scrolledUnderElevation: 0.0,
+              leadingWidth: hasRail ? 84 : null,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              title: _buildAppBarTitle(
+                context,
+                hasRail,
+                hasManage,
+                fullyExpanded,
+              ),
+              centerTitle: true,
+              leading:
+                  hasRail
+                      ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
                               ),
-                              tooltip: navigationText,
-                              onPressed:
-                                  () => _handleNavigationVisibility(
-                                    context,
-                                    fullyExpanded,
-                                  ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Symbols.menu,
+                                  semanticLabel: navigationText,
+                                ),
+                                tooltip: navigationText,
+                                onPressed:
+                                    () => _handleNavigationVisibility(
+                                      context,
+                                      fullyExpanded,
+                                    ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                    )
-                    : Builder(
-                      builder: (context) {
-                        // Need to wrap with builder to get Scaffold context
-                        return IconButton(
-                          key: drawerIconButtonKey,
-                          tooltip: l10n.s_show_navigation,
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                          icon: Icon(
-                            Symbols.menu,
-                            semanticLabel: l10n.s_show_navigation,
-                          ),
-                        );
-                      },
-                    ),
-            actions: [
-              if (widget.actionButtonBuilder == null &&
-                  (widget.keyActionsBuilder != null && !hasManage))
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: actionsIconButtonKey,
-                    onPressed:
-                        () => _handleDetailViewVisibility(context, hasManage),
-                    icon:
-                        widget.keyActionsBadge
-                            ? Badge(
-                              child: Icon(
+                          const SizedBox(width: 12),
+                        ],
+                      )
+                      : Builder(
+                        builder: (context) {
+                          // Need to wrap with builder to get Scaffold context
+                          return IconButton(
+                            key: drawerIconButtonKey,
+                            tooltip: l10n.s_show_navigation,
+                            onPressed: () => Scaffold.of(context).openDrawer(),
+                            icon: Icon(
+                              Symbols.menu,
+                              semanticLabel: l10n.s_show_navigation,
+                            ),
+                          );
+                        },
+                      ),
+              actions: [
+                if (widget.actionButtonBuilder == null &&
+                    (widget.keyActionsBuilder != null && !hasManage))
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: IconButton(
+                      key: actionsIconButtonKey,
+                      onPressed:
+                          () => _handleDetailViewVisibility(context, hasManage),
+                      icon:
+                          widget.keyActionsBadge
+                              ? Badge(
+                                child: Icon(
+                                  Symbols.more_vert,
+                                  semanticLabel: l10n.s_show_menu,
+                                ),
+                              )
+                              : Icon(
                                 Symbols.more_vert,
                                 semanticLabel: l10n.s_show_menu,
                               ),
-                            )
-                            : Icon(
-                              Symbols.more_vert,
-                              semanticLabel: l10n.s_show_menu,
-                            ),
-                    iconSize: 24,
-                    tooltip: l10n.s_show_menu,
-                    padding: const EdgeInsets.all(12),
-                  ),
-                ),
-              if (hasManage &&
-                  (widget.keyActionsBuilder != null ||
-                      widget.detailViewBuilder != null))
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: toggleDetailViewIconButtonKey,
-                    onPressed:
-                        () => _handleDetailViewVisibility(context, hasManage),
-                    icon: Icon(
-                      Symbols.dock_to_left,
-                      fill: showExpandedSideMenuBar ? 1 : 0,
-                      weight: 600.0,
+                      iconSize: 24,
+                      tooltip: l10n.s_show_menu,
+                      padding: const EdgeInsets.all(12),
                     ),
-                    iconSize: 24,
-                    tooltip: l10n.s_toggle_menu_bar,
-                    padding: const EdgeInsets.all(12),
                   ),
-                ),
-              if (widget.actionButtonBuilder != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: widget.actionButtonBuilder!.call(context),
-                ),
-            ],
+                if (hasManage &&
+                    (widget.keyActionsBuilder != null ||
+                        widget.detailViewBuilder != null))
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: IconButton(
+                      key: toggleDetailViewIconButtonKey,
+                      onPressed:
+                          () => _handleDetailViewVisibility(context, hasManage),
+                      icon: Icon(
+                        Symbols.dock_to_left,
+                        fill: showExpandedSideMenuBar ? 1 : 0,
+                        weight: 600.0,
+                      ),
+                      iconSize: 24,
+                      tooltip: l10n.s_toggle_menu_bar,
+                      padding: const EdgeInsets.all(12),
+                    ),
+                  ),
+                if (widget.actionButtonBuilder != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: widget.actionButtonBuilder!.call(context),
+                  ),
+              ],
+            ),
           ),
           drawer: hasDrawer ? _buildDrawer(context) : null,
           body: body,
@@ -1192,5 +1198,60 @@ class _NoImplicitScrollPhysics extends ScrollPhysics {
   @override
   _NoImplicitScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return _NoImplicitScrollPhysics(parent: buildParent(ancestor));
+  }
+}
+
+class _SafeareaAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final AppBar appBar;
+
+  const _SafeareaAppBar({required this.appBar});
+
+  @override
+  Widget build(BuildContext context) {
+    return _TitlebarSafeArea(child: appBar);
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 29.0);
+}
+
+class _TitlebarUtils {
+  static const _channel = MethodChannel('titlebar_channel');
+
+  static Future<double> getTitlebarHeight() async {
+    final height = await _channel.invokeMethod<double>('getTitlebarHeight');
+    return height ?? 0.0;
+  }
+}
+
+class _TitlebarSafeArea extends StatefulWidget {
+  final Widget child;
+  const _TitlebarSafeArea({required this.child});
+
+  @override
+  State<StatefulWidget> createState() => _TitlebarSafeAreaState();
+}
+
+class _TitlebarSafeAreaState extends State<_TitlebarSafeArea> {
+  double _titlebarHeight = 0.0;
+
+  Future<void> _updateTitlebarHeight() async {
+    if (Platform.isMacOS) {
+      final height = await _TitlebarUtils.getTitlebarHeight();
+      if (_titlebarHeight != height) {
+        setState(() {
+          _titlebarHeight = height;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _updateTitlebarHeight();
+    return Padding(
+      padding: EdgeInsetsGeometry.only(top: _titlebarHeight),
+      child: widget.child,
+    );
   }
 }
