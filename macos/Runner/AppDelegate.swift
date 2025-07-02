@@ -16,7 +16,6 @@ class AppDelegate: FlutterAppDelegate {
       if let window = NSApp.windows.first {
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
-        window.isMovableByWindowBackground = true
         window.styleMask.insert(.fullSizeContentView)
       }
 
