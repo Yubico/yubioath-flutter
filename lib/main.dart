@@ -20,6 +20,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:macos_window_utils/macos/ns_window_button_type.dart';
+import 'package:macos_window_utils/window_manipulator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'android/init.dart' as android;
@@ -34,6 +36,23 @@ final _log = Logger('main');
 
 void main(List<String> argv) async {
   WidgetsFlutterBinding.ensureInitialized();
+  await WindowManipulator.initialize(enableWindowDelegate: true);
+  await WindowManipulator.makeTitlebarTransparent();
+  await WindowManipulator.enableFullSizeContentView();
+  await WindowManipulator.hideTitle();
+  // await WindowManipulator.addToolbar();
+  await WindowManipulator.overrideStandardWindowButtonPosition(
+    buttonType: NSWindowButtonType.closeButton,
+    offset: Offset(8, 20),
+  );
+  await WindowManipulator.overrideStandardWindowButtonPosition(
+    buttonType: NSWindowButtonType.miniaturizeButton,
+    offset: Offset(28, 20),
+  );
+  await WindowManipulator.overrideStandardWindowButtonPosition(
+    buttonType: NSWindowButtonType.zoomButton,
+    offset: Offset(48, 20),
+  );
 
   try {
     final Widget initializedApp;

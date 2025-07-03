@@ -184,7 +184,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     final color =
         Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Image.asset(
         'assets/graphics/yubico-$color.png',
         alignment: Alignment.centerLeft,
@@ -194,31 +194,51 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget _buildDrawer(BuildContext context, AppLocalizations l10n) {
     return Drawer(
-      child: _TitlebarSafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: CloseButton(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _TitlebarSafeArea(
+              top: false,
+              child: SizedBox(
+                height: kToolbarHeight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Builder(
+                        builder: (context) {
+                          return IconButton(
+                            tooltip: l10n.s_close,
+                            onPressed: () {
+                              Scaffold.of(context).closeDrawer();
+                            },
+                            icon: Icon(Symbols.dock_to_right),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                  _buildLogo(context),
-                  const SizedBox(width: 48),
-                ],
+                ),
               ),
-              Material(
-                type: MaterialType.transparency,
-                child: NavigationContent(key: _navExpandedKey, extended: true),
-              ),
-            ],
-          ),
+            ),
+            Column(
+              children: [
+                _buildLogo(context),
+                Material(
+                  type: MaterialType.transparency,
+                  child: NavigationContent(
+                    key: _navExpandedKey,
+                    extended: true,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -674,16 +694,19 @@ class _AppPageState extends ConsumerState<AppPage> {
               if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
                 FocusTraversalOrder(
                   order: NumericFocusOrder(1),
-                  child: SizedBox(
-                    width: 72,
-                    child: _VisibilityListener(
-                      targetKey: _navKey,
-                      controller: _navController,
-                      child: SingleChildScrollView(
-                        child: NavigationContent(
-                          key: _navKey,
-                          shouldPop: false,
-                          extended: false,
+                  child: ColoredBox(
+                    color: Theme.of(context).hoverColor,
+                    child: SizedBox(
+                      width: 72,
+                      child: _VisibilityListener(
+                        targetKey: _navKey,
+                        controller: _navController,
+                        child: SingleChildScrollView(
+                          child: NavigationContent(
+                            key: _navKey,
+                            shouldPop: false,
+                            extended: false,
+                          ),
                         ),
                       ),
                     ),
@@ -692,18 +715,21 @@ class _AppPageState extends ConsumerState<AppPage> {
               if (fullyExpanded && showExpandedNavigationBar)
                 FocusTraversalOrder(
                   order: NumericFocusOrder(1),
-                  child: SizedBox(
-                    width: 280,
-                    child: _VisibilityListener(
-                      controller: _navController,
-                      targetKey: _navExpandedKey,
-                      child: SingleChildScrollView(
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: NavigationContent(
-                            key: _navExpandedKey,
-                            shouldPop: false,
-                            extended: true,
+                  child: ColoredBox(
+                    color: Theme.of(context).hoverColor,
+                    child: SizedBox(
+                      width: 280,
+                      child: _VisibilityListener(
+                        controller: _navController,
+                        targetKey: _navExpandedKey,
+                        child: SingleChildScrollView(
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: NavigationContent(
+                              key: _navExpandedKey,
+                              shouldPop: false,
+                              extended: true,
+                            ),
                           ),
                         ),
                       ),
@@ -771,9 +797,10 @@ class _AppPageState extends ConsumerState<AppPage> {
         return Scaffold(
           key: scaffoldGlobalKey,
           appBar: _SafeareaAppBar(
+            hasRail: hasRail,
             appBar: AppBar(
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(1.0),
+                preferredSize: Size.fromHeight(1.0),
                 child: ListenableBuilder(
                   listenable: _scrolledUnderController,
                   builder: (context, child) {
@@ -784,7 +811,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                       duration: const Duration(milliseconds: 300),
                       child: Container(
                         color: Theme.of(context).hoverColor,
-                        height: 1.0,
+                        height: visible ? 1.0 : 0.0,
                       ),
                     );
                   },
@@ -794,7 +821,12 @@ class _AppPageState extends ConsumerState<AppPage> {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               scrolledUnderElevation: 0.0,
-              leadingWidth: hasRail ? 84 : null,
+              leadingWidth:
+                  hasRail
+                      ? (!fullyExpanded || !showExpandedNavigationBar)
+                          ? 140
+                          : 280
+                      : null,
               backgroundColor: Theme.of(context).colorScheme.surface,
               title: _buildAppBarTitle(
                 context,
@@ -805,31 +837,64 @@ class _AppPageState extends ConsumerState<AppPage> {
               centerTitle: true,
               leading:
                   hasRail
-                      ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: IconButton(
-                                icon: Icon(
-                                  Symbols.menu,
-                                  semanticLabel: navigationText,
+                      ? (!fullyExpanded || !showExpandedNavigationBar)
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ColoredBox(
+                                color: Theme.of(context).hoverColor,
+                                child: SizedBox(
+                                  width: 72,
+                                  height: kToolbarHeight,
                                 ),
-                                tooltip: navigationText,
-                                onPressed:
-                                    () => _handleNavigationVisibility(
-                                      context,
-                                      fullyExpanded,
-                                    ),
                               ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Symbols.dock_to_right,
+                                      semanticLabel: navigationText,
+                                    ),
+                                    tooltip: navigationText,
+                                    onPressed:
+                                        () => _handleNavigationVisibility(
+                                          context,
+                                          fullyExpanded,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                          : ColoredBox(
+                            color: Theme.of(context).hoverColor,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Symbols.dock_to_right,
+                                      semanticLabel: navigationText,
+                                    ),
+                                    tooltip: navigationText,
+                                    onPressed:
+                                        () => _handleNavigationVisibility(
+                                          context,
+                                          fullyExpanded,
+                                        ),
+                                  ),
+                                ),
+                                // const SizedBox(width: 12),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                        ],
-                      )
+                          )
                       : Builder(
                         builder: (context) {
                           // Need to wrap with builder to get Scaffold context
@@ -838,7 +903,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                             tooltip: l10n.s_show_navigation,
                             onPressed: () => Scaffold.of(context).openDrawer(),
                             icon: Icon(
-                              Symbols.menu,
+                              Symbols.dock_to_right,
                               semanticLabel: l10n.s_show_navigation,
                             ),
                           );
@@ -897,7 +962,7 @@ class _AppPageState extends ConsumerState<AppPage> {
               ],
             ),
           ),
-          drawer: hasDrawer ? _buildDrawer(context) : null,
+          drawer: hasDrawer ? _buildDrawer(context, l10n) : null,
           body: body,
         );
       },
@@ -1203,16 +1268,17 @@ class _NoImplicitScrollPhysics extends ScrollPhysics {
 
 class _SafeareaAppBar extends StatelessWidget implements PreferredSizeWidget {
   final AppBar appBar;
+  final bool hasRail;
 
-  const _SafeareaAppBar({required this.appBar});
+  const _SafeareaAppBar({required this.appBar, required this.hasRail});
 
   @override
   Widget build(BuildContext context) {
-    return _TitlebarSafeArea(child: appBar);
+    return _TitlebarSafeArea(top: false, left: !hasRail, child: appBar);
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 29.0);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class _TitlebarUtils {
@@ -1226,7 +1292,13 @@ class _TitlebarUtils {
 
 class _TitlebarSafeArea extends StatefulWidget {
   final Widget child;
-  const _TitlebarSafeArea({required this.child});
+  final bool top;
+  final bool left;
+  const _TitlebarSafeArea({
+    required this.child,
+    this.top = true,
+    this.left = true,
+  });
 
   @override
   State<StatefulWidget> createState() => _TitlebarSafeAreaState();
@@ -1236,7 +1308,7 @@ class _TitlebarSafeAreaState extends State<_TitlebarSafeArea> {
   double _titlebarHeight = 0.0;
 
   Future<void> _updateTitlebarHeight() async {
-    if (Platform.isMacOS) {
+    if (Platform.isMacOS && widget.top) {
       final height = await _TitlebarUtils.getTitlebarHeight();
       if (_titlebarHeight != height) {
         setState(() {
@@ -1250,7 +1322,10 @@ class _TitlebarSafeAreaState extends State<_TitlebarSafeArea> {
   Widget build(BuildContext context) {
     _updateTitlebarHeight();
     return Padding(
-      padding: EdgeInsetsGeometry.only(top: _titlebarHeight),
+      padding: EdgeInsets.only(
+        top: _titlebarHeight,
+        left: widget.left ? 74 : 0,
+      ),
       child: widget.child,
     );
   }

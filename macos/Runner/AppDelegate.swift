@@ -13,11 +13,12 @@ class AppDelegate: FlutterAppDelegate {
   }
 
   override func applicationDidFinishLaunching(_ notification: Notification) {
-      if let window = NSApp.windows.first {
-        window.titlebarAppearsTransparent = true
-        window.titleVisibility = .hidden
-        window.styleMask.insert(.fullSizeContentView)
-      }
+      // if let window = NSApp.windows.first {
+      //   window.titlebarAppearsTransparent = true
+      //   window.titleVisibility = .hidden
+      //   window.isMovableByWindowBackground = false
+      //   window.styleMask.insert(.fullSizeContentView)
+      // }
 
           // Add the method channel
       if let controller = NSApp.windows.first?.contentViewController as? FlutterViewController {
