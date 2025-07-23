@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "Försök att ta ut och sätta i YubiKey igen.",
     "s_touch_required": "Beröring krävs",
     "l_touch_button_now": "Tryck på knappen på din YubiKey nu",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Fortsätt att röra vid din YubiKey upprepade gånger\u2026",
     "@_capabilities": {},
 

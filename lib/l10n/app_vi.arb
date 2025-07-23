@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "Hãy thử rút và cắm lại YubiKey của bạn.",
     "s_touch_required": "Yêu cầu chạm",
     "l_touch_button_now": "Chạm vào nút trên YubiKey của bạn ngay bây giờ",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Giữ chạm vào YubiKey của bạn liên tục\u2026",
     "@_capabilities": {},
 

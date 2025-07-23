@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "Spróbuj podłączyć ponownie klucz YubiKey.",
     "s_touch_required": "Dotknięcie wymagane",
     "l_touch_button_now": "Dotknij przycisku na kluczu YubiKey",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Wielokrotnie dotykaj klucza YubiKey\u2026",
     "@_capabilities": {},
 

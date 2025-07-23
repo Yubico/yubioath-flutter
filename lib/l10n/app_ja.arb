@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "YubiKey を取り外して、もう一度挿入してください。",
     "s_touch_required": "タッチが必要です",
     "l_touch_button_now": "YubiKey のボタンをタッチしてください",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "YubiKey を繰り返しタッチしてください...",
     "@_capabilities": {},
 

@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "嘗試移除並重新插入您的 YubiKey。",
     "s_touch_required": "需要觸摸",
     "l_touch_button_now": "立即輕觸 YubiKey 上的按鈕",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "持續重複觸碰您的 YubiKey\u2026",
     "@_capabilities": {},
 
