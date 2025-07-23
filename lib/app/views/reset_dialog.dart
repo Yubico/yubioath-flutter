@@ -74,6 +74,7 @@ class ResetDialog extends ConsumerStatefulWidget {
 class _ResetDialogState extends ConsumerState<ResetDialog> {
   late Capability? _application;
   late bool _globalReset;
+  late bool _longTouch;
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
@@ -84,7 +85,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   void initState() {
     super.initState();
     final nfc = widget.data.node.transport == Transport.nfc;
-    _totalSteps = nfc ? 2 : 3;
+    _totalSteps = nfc ? 2 : 4;
     _globalReset = _isGlobalReset();
     _application = !_globalReset ? widget.application : null;
   }
@@ -106,7 +107,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk,
       InteractionEvent.insert =>
         nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk,
-      InteractionEvent.touch => l10n.l_touch_button_now,
+      InteractionEvent.touch =>
+        _longTouch ? l10n.l_long_touch_button_now : l10n.l_touch_button_now,
+      InteractionEvent.wait => l10n.s_please_wait,
       null => '',
     };
   }
@@ -134,7 +137,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final l10n = AppLocalizations.of(context);
     final usbTransport = widget.data.node.transport == Transport.usb;
 
-    double progress = _currentStep == -1 ? 0.0 : _currentStep / (_totalSteps);
+    double progress = _currentStep == -1 ? 0.0 : _currentStep / _totalSteps;
     final needsElevation =
         Platform.isWindows &&
         _application == Capability.fido2 &&
@@ -173,6 +176,13 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                 !_resetting
                     ? switch (_application) {
                       Capability.fido2 => () async {
+                        final ctapInfo =
+                            ref
+                                .read(fidoStateProvider(widget.data.node.path))
+                                .value
+                                ?.info ??
+                            {};
+                        _longTouch = ctapInfo['long_touch_for_reset'] == true;
                         _subscription = ref
                             .read(
                               fidoStateProvider(widget.data.node.path).notifier,
@@ -188,7 +198,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               },
                               onDone: () async {
                                 setState(() {
-                                  _currentStep++;
+                                  _currentStep = _totalSteps;
                                 });
                                 _subscription = null;
                                 if (isAndroid && !usbTransport) {
