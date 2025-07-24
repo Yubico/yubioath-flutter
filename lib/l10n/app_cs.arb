@@ -980,6 +980,14 @@
     "p_warning_disable_credentials": "Vaše OATH přihlašovací údaje, stejně jako veškerá nastavení hesel, budou odstraněny z tohoto YubiKey. Ujistěte se, že jste je odstranili z příslušných webových stránek, abyste se vyhnuli zablokování vašich účtů.",
     "p_warning_deletes_accounts": "Varování! Neodvolatelně smažete z vašeho YubiKey všechny účty U2F a FIDO2 včetně přístupových klíčů.",
     "p_warning_disable_accounts": "Vaše přihlašovací údaje  včetně kódu PIN, budou odstraněny z tohoto YubiKey. Ujistěte se, že jste je odstranili z příslušných webových stránek, abyste se vyhnuli zablokování vašich účtů.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Varování! Všechna data uložená pro PIV budou neodvolatelně smazána z vašeho YubiKey.",
     "p_warning_piv_reset_desc": "To zahrnuje soukromé klíče a certifikáty. Váš PIN, PUK, a klíč správy bude resetován na jejich výchozí tovární hodnoty.",
     "p_warning_global_reset": "Varování! Tímto se neodvolatelně smažou všechna uložená data, včetně přihlašovacích údajů, z vašeho YubiKey.",

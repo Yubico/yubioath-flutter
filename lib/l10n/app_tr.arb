@@ -980,6 +980,14 @@
     "p_warning_disable_credentials": "OATH kimlik bilgilerinizin yanı sıra ayarlanan tüm parolalar YubiKey'den kaldırılacaktır. Hesaplarınızın kilitlenmesini önlemek için bunları ilgili web sitelerinden devre dışı bıraktığınızdan emin olun.",
     "p_warning_deletes_accounts": "Uyarı! Bu işlem, geçiş anahtarları da dahil olmak üzere tüm U2F ve FIDO2 hesaplarını YubiKey'inizden geri alınamaz bir şekilde silecektir.",
     "p_warning_disable_accounts": "Kimlik bilgileriniz ve ayarladığınız herhangi bir PIN bu YubiKey'den kaldırılacaktır. Hesaplarınızın kilitlenmesini önlemek için bunları ilgili web sitelerinden devre dışı bıraktığınızdan emin olun.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Uyarı! PIV içinde saklanan tüm veriler YubiKey'inizden geri alınamaz şekilde silinecektir.",
     "p_warning_piv_reset_desc": "Buna özel anahtarlar ve sertifikalar da dahildir. PIN, PUK ve yönetim anahtarınız fabrika varsayılana sıfırlanacaktır.",
     "p_warning_global_reset": "Uyarı! Bu işlem, kimlik bilgileri de dahil olmak üzere kayıtlı tüm verileri YubiKey'inizden geri alınamaz bir şekilde silecektir.",

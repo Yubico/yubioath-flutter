@@ -18,12 +18,21 @@ import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
+import '../generated/l10n/app_localizations.dart';
 import '../management/models.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
 
-enum Transport { usb, nfc }
+enum Transport {
+  usb,
+  nfc;
+
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+    Transport.usb => l10n.s_usb,
+    Transport.nfc => l10n.s_nfc,
+  };
+}
 
 enum UsbInterface {
   otp(0x01),

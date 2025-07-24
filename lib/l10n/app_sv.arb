@@ -980,6 +980,14 @@
     "p_warning_disable_credentials": "Dina OATH-uppgifter, liksom alla lösenord, kommer att tas bort från denna YubiKey. Se till att inaktivera dessa från deras respektive webbplatser för att undvika att bli utelåsta från dina konton.",
     "p_warning_deletes_accounts": "Varning! Detta kommer oåterkalleligen att radera alla U2F- och FIDO2-konton, inklusive passkeys, från din YubiKey.",
     "p_warning_disable_accounts": "Dina inloggningsuppgifter, liksom eventuella PIN-koder, kommer att tas bort från denna YubiKey. Se till att inaktivera dessa från deras respektive webbplatser för att undvika att bli utelåsta från dina konton.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Varning för detta! Alla data som lagras för PIV kommer oåterkalleligen att raderas från din YubiKey.",
     "p_warning_piv_reset_desc": "Detta inkluderar privata nycklar och certifikat. Din PIN-kod, PUK-kod och administrationsnyckel återställs till fabriksinställningarna.",
     "p_warning_global_reset": "Varning för detta! Detta kommer oåterkalleligen att radera alla sparade data, inklusive inloggningsuppgifter, från din YubiKey.",
