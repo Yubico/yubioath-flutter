@@ -420,6 +420,7 @@ class MainActivity : FlutterFragmentActivity() {
                     OperationContext.Oath,
                     OperationContext.FidoPasskeys,
                     OperationContext.FidoFingerprints,
+                    OperationContext.Piv,
                     OperationContext.Home
                 )
 
