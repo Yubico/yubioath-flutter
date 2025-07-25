@@ -121,9 +121,7 @@ class DevicePickerContent extends ConsumerWidget {
 
 String _getDeviceInfoString(BuildContext context, DeviceInfo info) {
   final l10n = AppLocalizations.of(context);
-  final serial = info.serial;
   return [
-    if (serial != null) l10n.s_sn_serial(serial),
     if (info.version.isAtLeast(1))
       l10n.s_fw_version(info.getVersionName())
     else
