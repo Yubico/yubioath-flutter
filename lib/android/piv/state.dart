@@ -19,24 +19,25 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
+// TODO import 'package:logging/logging.dart';
 
 import '../../app/models.dart';
-import '../../app/state.dart';
-import '../../app/views/user_interaction.dart';
+// TODO import '../../app/state.dart';
+// TODO import '../../app/views/user_interaction.dart';
 import '../../exception/no_data_exception.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
 import '../overlay/nfc/method_channel_notifier.dart' show MethodChannelNotifier;
 
-final _log = Logger('android.piv.state');
+// TODO final _log = Logger('android.piv.state');
 
 final _managementKeyProvider = StateProvider.autoDispose
     .family<String?, DevicePath>((ref, _) => null);
 
-final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
-  (ref, _) => null,
-);
+// TODO
+// final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
+//   (ref, _) => null,
+// );
 
 final androidPivState = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
@@ -143,10 +144,10 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
 
   @override
   Future<bool> authenticate(String managementKey) async {
-    final withContext = ref.watch(withContextProvider);
+    // TODO final withContext = ref.watch(withContextProvider);
 
     //    final signaler = Signaler();
-    UserInteractionController? controller;
+    // TODO UserInteractionController? controller;
     try {
       // signaler.signals.listen((signal) async {
       //   if (signal.status == 'touch') {
@@ -180,16 +181,16 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
         return false;
       }
     } finally {
-      controller?.close();
+      // TODO controller?.close();
     }
   }
 
   @override
   Future<PinVerificationStatus> verifyPin(String pin) async {
-    final pivState = state.valueOrNull;
+    // TODO final pivState = state.valueOrNull;
 
     // final signaler = Signaler();
-    UserInteractionController? controller;
+    // TODO UserInteractionController? controller;
     try {
       //   if (pivState?.protectedKey == true) {
       //     // Might require touch as this will also authenticate
@@ -230,7 +231,7 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       }
       rethrow;
     } finally {
-      controller?.close();
+      // TODO controller?.close();
       ref.invalidateSelf();
     }
   }
