@@ -136,9 +136,9 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
 
   @override
   Future<void> reset() async {
-    // await _session.command('reset');
-    // ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
-    // ref.invalidate(_sessionProvider(_session.devicePath));
+    await piv.invoke('reset');
+    ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
+    //ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
   @override
@@ -162,24 +162,23 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       //   }
       //});
 
-      // final result = await _session.command(
-      //   'authenticate',
-      //   params: {'key': managementKey},
-      //   signal: signaler,
-      // );
+      final result = await piv.invoke(
+        'authenticate',
+        {'key': managementKey},
+        //signal: signaler,
+      );
 
-      // if (result['status']) {
-      //   ref.read(_managementKeyProvider(_devicePath).notifier).state =
-      //       managementKey;
-      //   final oldState = state.valueOrNull;
-      //   if (oldState != null) {
-      //     state = AsyncData(oldState.copyWith(authenticated: true));
-      //   }
-      //   return true;
-      // } else {
-      //   return false;
-      // }
-      return true;
+      if (result['status']) {
+        ref.read(_managementKeyProvider(_devicePath).notifier).state =
+            managementKey;
+        final oldState = state.valueOrNull;
+        if (oldState != null) {
+          state = AsyncData(oldState.copyWith(authenticated: true));
+        }
+        return true;
+      } else {
+        return false;
+      }
     } finally {
       controller?.close();
     }
@@ -209,11 +208,11 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       //       }
       //     });
       //   }
-      //   await _session.command(
-      //     'verify_pin',
-      //     params: {'pin': pin},
-      //     signal: signaler,
-      //   );
+      await piv.invoke(
+        'verifyPin',
+        {'pin': pin},
+        // signal: _signaler
+      );
       //
       //   ref.read(_pinProvider(_devicePath).notifier).state = pin;
 
@@ -239,10 +238,7 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
   @override
   Future<PinVerificationStatus> changePin(String pin, String newPin) async {
     try {
-      // await _session.command(
-      //   'change_pin',
-      //   params: {'pin': pin, 'new_pin': newPin},
-      // );
+      await piv.invoke('changePin', {'pin': pin, 'newPin': newPin});
       // ref.read(_pinProvider(_devicePath).notifier).state = null;
       return const PinVerificationStatus.success();
     } on PlatformException catch (e) {
@@ -270,10 +266,7 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
   @override
   Future<PinVerificationStatus> changePuk(String puk, String newPuk) async {
     try {
-      // await _session.command(
-      //   'change_puk',
-      //   params: {'puk': puk, 'new_puk': newPuk},
-      // );
+      await piv.invoke('changePuk', {'puk': puk, 'newPuk': newPuk});
       return const PinVerificationStatus.success();
     } on PlatformException catch (e) {
       // TODO
@@ -303,14 +296,11 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
     ManagementKeyType managementKeyType = defaultManagementKeyType,
     bool storeKey = false,
   }) async {
-    // await _session.command(
-    //   'set_key',
-    //   params: {
-    //     'key': managementKey,
-    //     'key_type': managementKeyType.value,
-    //     'store_key': storeKey,
-    //   },
-    // );
+    await piv.invoke('setManagementKey', {
+      'key': managementKey,
+      'keyType': managementKeyType.value,
+      'storeKey': storeKey,
+    });
     ref.read(_managementKeyProvider(_devicePath).notifier).state =
         managementKey;
     ref.invalidateSelf();
@@ -319,10 +309,7 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
   @override
   Future<PinVerificationStatus> unblockPin(String puk, String newPin) async {
     try {
-      // await _session.command(
-      //   'unblock_pin',
-      //   params: {'puk': puk, 'new_pin': newPin},
-      // );
+      await piv.invoke('unblockPin', {'puk': puk, 'newPin': newPin});
       return const PinVerificationStatus.success();
     } on PlatformException catch (e) {
       // TODO
@@ -374,7 +361,10 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
           List<PivSlot>? slots =
               json != null
                   ? List.from(
-                    (json as List).map((e) => PivSlot.fromJson(e)).toList(),
+                    (json as List)
+                        .where((e) => _shownSlots.contains(e['slot']))
+                        .map((e) => PivSlot.fromJson(e))
+                        .toList(growable: false),
                   )
                   : [];
 
@@ -389,25 +379,16 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     ref.onDispose(_sub.cancel);
 
     return Completer<List<PivSlot>>().future;
-
-    // _session = ref.watch(_sessionProvider(devicePath));
-    //
-    // final result = await _session.command('get', target: ['slots']);
-    // return (result['children'] as Map<String, dynamic>).values
-    //     .where((e) => _shownSlots.contains(e['slot']))
-    //     .map((e) => PivSlot.fromJson(e))
-    //     .toList();
-    return [];
   }
 
   @override
   Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey) async {
-    // await _session.command(
-    //   'delete',
-    //   target: ['slots', slot.hexId],
-    //   params: {'delete_cert': deleteCert, 'delete_key': deleteKey},
-    // );
-    // ref.invalidateSelf();
+    await piv.invoke('delete', {
+      'slot': slot.hexId,
+      'deleteCert': deleteCert,
+      'deleteKey': deleteKey,
+    });
+    ref.invalidateSelf();
   }
 
   @override
@@ -417,16 +398,13 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     bool overwriteKey,
     bool includeCertificate,
   ) async {
-    // await _session.command(
-    //   'move_key',
-    //   target: ['slots', source.hexId],
-    //   params: {
-    //     'destination': destination.hexId,
-    //     'overwrite_key': overwriteKey,
-    //     'include_certificate': includeCertificate,
-    //   },
-    // );
-    // ref.invalidateSelf();
+    await piv.invoke('moveKey', {
+      'slot': source.hexId,
+      'destination': destination.hexId,
+      'overwriteKey': overwriteKey,
+      'includeCertificate': includeCertificate,
+    });
+    ref.invalidateSelf();
   }
 
   @override
@@ -505,28 +483,23 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     String data, {
     String? password,
   }) async {
-    // final result = await _session.command(
-    //   'examine_file',
-    //   target: ['slots', slot.hexId],
-    //   params: {'data': data, 'password': password},
-    // );
-    //
-    // if (result['status']) {
-    //   return PivExamineResult.fromJson({'runtimeType': 'result', ...result});
-    // } else {
-    //   return PivExamineResult.invalidPassword();
-    // }
-    return PivExamineResult.invalidPassword();
+    final result = await piv.invoke('examineFile', {
+      'slot': slot.hexId,
+      'data': data,
+      'password': password,
+    });
+
+    if (result['status']) {
+      return PivExamineResult.fromJson({'runtimeType': 'result', ...result});
+    } else {
+      return PivExamineResult.invalidPassword();
+    }
   }
 
   @override
   Future<bool> validateRfc4514(String value) async {
-    // final result = await _session.command(
-    //   'validate_rfc4514',
-    //   params: {'data': value},
-    // );
-    // return result['status'];
-    return true;
+    final result = await piv.invoke('validateRfc4514', {'data': value});
+    return result['status'];
   }
 
   @override
@@ -537,32 +510,27 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     PinPolicy pinPolicy = PinPolicy.dfault,
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   }) async {
-    // final result = await _session.command(
-    //   'import_file',
-    //   target: ['slots', slot.hexId],
-    //   params: {
-    //     'data': data,
-    //     'password': password,
-    //     'pin_policy': pinPolicy.value,
-    //     'touch_policy': touchPolicy.value,
-    //   },
-    // );
-    //
-    // ref.invalidateSelf();
-    // return PivImportResult.fromJson(result);
-    return PivImportResult.fromJson({});
+    final result = await piv.invoke('importFile', {
+      'slot': slot.hexId,
+      'data': data,
+      'password': password,
+      'pinPolicy': pinPolicy.value,
+      'touchPolicy': touchPolicy.value,
+    });
+
+    ref.invalidateSelf();
+    return PivImportResult.fromJson(result);
   }
 
   @override
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
-    // final result = await _session.command('get', target: ['slots', slot.hexId]);
-    // final data = result['data'];
-    // final metadata = data['metadata'];
-    // return (
-    //   metadata != null ? SlotMetadata.fromJson(metadata) : null,
-    //   data['certificate'] as String?,
-    // );
-    return (SlotMetadata.fromJson({}), '');
+    final result = await piv.invoke('getSlot', {'slot': slot.hexId});
+    final data = result['data'];
+    final metadata = data['metadata'];
+    return (
+      metadata != null ? SlotMetadata.fromJson(metadata) : null,
+      data['certificate'] as String?,
+    );
   }
 }
 

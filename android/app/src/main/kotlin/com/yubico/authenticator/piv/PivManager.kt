@@ -38,11 +38,6 @@ import com.yubico.yubikit.core.application.BadResponseException
 import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
-import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
-import com.yubico.yubikit.fido.ctap.PinUvAuthDummyProtocol
-import com.yubico.yubikit.fido.ctap.PinUvAuthProtocol
-import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV1
-import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV2
 import com.yubico.yubikit.piv.ManagementKeyType
 import com.yubico.yubikit.piv.Slot
 import io.flutter.plugin.common.BinaryMessenger
@@ -66,21 +61,6 @@ class PivManager(
 
     companion object {
         val updateDeviceInfo = AtomicBoolean(false)
-        fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
-            val pinUvAuthProtocols = infoData.pinUvAuthProtocols
-            val pinSupported = infoData.options["clientPin"] != null
-            if (pinSupported) {
-                for (protocol in pinUvAuthProtocols) {
-                    if (protocol == PinUvAuthProtocolV1.VERSION) {
-                        return PinUvAuthProtocolV1()
-                    }
-                    if (protocol == PinUvAuthProtocolV2.VERSION) {
-                        return PinUvAuthProtocolV2()
-                    }
-                }
-            }
-            return PinUvAuthDummyProtocol()
-        }
     }
 
     private val connectionHelper = PivConnectionHelper(deviceManager)
@@ -119,8 +99,8 @@ class PivManager(
                 )
 
                 "setManagementKey" -> setManagementKey(
-                    (args["managementKey"] as String).hexStringToByteArray(),
-                    args["managementKeyType"] as ManagementKeyType,
+                    (args["key"] as String).hexStringToByteArray(),
+                    args["keyType"] as ManagementKeyType,
                     args["storeKey"] as Boolean
                 )
 
@@ -129,13 +109,48 @@ class PivManager(
                     (args["newPin"] as String).toCharArray(),
                 )
 
+                "delete" -> delete(
+                    (args["slot"] as String),
+                    (args["deleteCert"] as Boolean),
+                    (args["deleteKey"] as Boolean),
+                )
+
+                "moveKey" -> moveKey(
+                    (args["slot"] as String),
+                    (args["destination"] as String),
+                    (args["overwriteKey"] as Boolean),
+                    (args["includeCertificate"] as Boolean),
+                )
+
+                "examineFile" -> examineFile(
+                    (args["slot"] as String),
+                    (args["data"] as String),
+                    (args["password"] as String),
+                )
+
+                "validateRfc4514" -> validateRfc4514(
+                    (args["data"] as String),
+                )
+
+                "importFile" -> importFile(
+                    (args["slot"] as String),
+                    (args["data"] as String),
+                    (args["password"] as String),
+                    (args["pinPolicy"] as Int),
+                    (args["touchPolicy"] as Int),
+                )
+
+                "getSlot" -> getSlot(
+                    (args["slot"] as String),
+                )
+
                 else -> throw NotImplementedError()
             }
         }
     }
 
     override fun supports(appContext: OperationContext): Boolean = when (appContext) {
-        OperationContext.FidoPasskeys, OperationContext.FidoFingerprints -> true
+        OperationContext.Piv -> true
         else -> false
     }
 
@@ -210,28 +225,24 @@ class PivManager(
 
         val sameDevice = previousSerial.value == currentSerial
 
-        if (device is NfcYubiKeyDevice && (sameDevice)) {
+        if (device is NfcYubiKeyDevice && sameDevice) {
             requestHandled = connectionHelper.invokePending(piv)
         } else {
 
-//            if (!sameDevice) {
-//                // different key
-//                logger.debug("This is a different key than previous, invalidating the PIN token")
-//                connectionHelper.cancelPending()
-//            }
-//
-//            val infoData = piv.cachedInfo
-//            val clientPin =
-//                ClientPin(piv, getPreferredPinUvAuthProtocol(infoData))
-//
-//            pinRetries =
-//                if (infoData.options["clientPin"] == true) clientPin.pinRetries.count else null
-//
-//            pivViewModel.setSessionState(
-//                Session(infoData, false, pinRetries)
-//            )
-
-            pivViewModel.setState(PivState(piv, false, false, false, false))
+            if (!sameDevice) {
+                // different key
+                logger.debug("This is a different key than previous, invalidating the PIN token")
+                connectionHelper.cancelPending()
+            }
+            pivViewModel.setState(
+                PivState(
+                    piv,
+                    authenticated = false,
+                    derivedKey = false,
+                    storedKey = false,
+                    supportsBio = false
+                )
+            )
         }
 
         pivViewModel.updateSlots(getSlots(piv));
@@ -300,68 +311,21 @@ class PivManager(
             }
         }
 
-
-    /*
-     for slot in set(SLOT) - {SLOT.ATTESTATION}:
-            metadata = None
-            if self._has_metadata:
-                try:
-                    metadata = self.session.get_slot_metadata(slot)
-                except (ApduError, BadResponseError):
-                    pass
-            try:
-                certificate = self.session.get_certificate(slot)
-            except (ApduError, BadResponseError):
-                # TODO: Differentiate between none and malformed
-                certificate = None
-            self._slots[slot] = (metadata, certificate)
-        if self._child and _slot_for(self._child_name) not in self._slots:
-            self._close_child()
-     */
-    private fun getSlots(
-        piv: YubiKitPivSession
-    ): List<PivSlot> =
+    private fun getSlots(piv: YubiKitPivSession): List<PivSlot> =
         try {
             val supportsMetadata = piv.supports(YubiKitPivSession.FEATURE_METADATA)
             pivViewModel.updateSlots(null)
 
             val slotList = Slot.entries.minus(Slot.ATTESTATION).map {
-                val metadata: com.yubico.yubikit.piv.SlotMetadata? = if (supportsMetadata)
-                    try {
-                        piv.getSlotMetadata(it)
-                    } catch (e: Exception) {
-                        when (e) {
-                            is ApduException, is BadResponseException -> {
-                                null
-                            }
-
-                            else -> throw e
-                        }
-                    }
-                else {
-                    null
-                }
-
-                val certificate = try {
-                    piv.getCertificate(it)
-                } catch (e: Exception) {
-                    when (e) {
-                        is ApduException, is BadResponseException -> {
-                            null
-                        }
-
-                        else -> throw e
-                    }
-                }
+                val metadata = if (supportsMetadata) {
+                    runPivOperation { piv.getSlotMetadata(it) }
+                } else null
+                val certificate = runPivOperation { piv.getCertificate(it) }
 
                 PivSlot(
                     it.value,
-                    if (metadata != null) {
-                        SlotMetadata(metadata)
-                    } else null,
-                    if (certificate != null) {
-                        CertInfo(certificate)
-                    } else null,
+                    metadata?.let(::SlotMetadata),
+                    certificate?.let(::CertInfo),
                     null
                 )
             }
@@ -371,10 +335,94 @@ class PivManager(
 
         }
 
+
+    private suspend fun delete(slot: String, deleteCert: Boolean, deleteKey: Boolean): String =
+        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+            try {
+                ""
+            } finally {
+            }
+        }
+
+    private suspend fun moveKey(
+        slot: String,
+        destination: String,
+        overwriteKey: Boolean,
+        includeCertificate: Boolean
+    ): String =
+        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+            try {
+                ""
+            } finally {
+            }
+        }
+
+    private suspend fun examineFile(
+        slot: String,
+        data: String,
+        password: String
+    ): String =
+        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+            try {
+                ""
+            } finally {
+            }
+        }
+
+    private suspend fun validateRfc4514(
+        data: String
+    ): String =
+        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+            try {
+                ""
+            } finally {
+            }
+        }
+
+
+    private suspend fun importFile(
+        slot: String,
+        data: String,
+        password: String,
+        pinPolicy: Int,
+        touchPolicy: Int
+    ): String =
+        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+            try {
+                ""
+            } finally {
+            }
+        }
+
+    private suspend fun getSlot(
+        slot: String
+    ): String =
+        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+            try {
+                ""
+            } finally {
+            }
+        }
+
     override fun onDisconnected() {
     }
 
     override fun onTimeout() {
         pivViewModel.clearState()
+    }
+
+    /**
+     * Executes a PIV operation and returns null if it fails with a known,
+     * recoverable exception. Other exceptions are re-thrown.
+     */
+    private fun <T> runPivOperation(operation: () -> T): T? {
+        return try {
+            operation()
+        } catch (e: Exception) {
+            when (e) {
+                is ApduException, is BadResponseException -> null
+                else -> throw e
+            }
+        }
     }
 }
