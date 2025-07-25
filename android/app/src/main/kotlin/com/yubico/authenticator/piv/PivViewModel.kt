@@ -27,8 +27,12 @@ class PivViewModel : ViewModel() {
     private val _state = MutableLiveData<ViewModelData>()
     val state: LiveData<ViewModelData> = _state
 
-    private val _currentSerial = MutableLiveData<Int>()
-    val currentSerial: LiveData<Int> = _currentSerial
+    private val _currentSerial = MutableLiveData<Int?>()
+    val currentSerial: LiveData<Int?> = _currentSerial
+
+    fun setSerial(serial: Int?) {
+        _currentSerial.postValue(serial)
+    }
 
     fun state(): PivState? = (_state.value as? ViewModelData.Value<*>)?.data as? PivState?
 

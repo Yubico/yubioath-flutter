@@ -39,6 +39,7 @@ import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.piv.ManagementKeyType
+import com.yubico.yubikit.piv.ObjectId
 import com.yubico.yubikit.piv.Slot
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -110,14 +111,14 @@ class PivManager(
                 )
 
                 "delete" -> delete(
-                    (args["slot"] as String),
+                    Slot.fromStringAlias(args["slot"] as String),
                     (args["deleteCert"] as Boolean),
                     (args["deleteKey"] as Boolean),
                 )
 
                 "moveKey" -> moveKey(
-                    (args["slot"] as String),
-                    (args["destination"] as String),
+                    Slot.fromStringAlias(args["slot"] as String),
+                    Slot.fromStringAlias(args["destination"] as String),
                     (args["overwriteKey"] as Boolean),
                     (args["includeCertificate"] as Boolean),
                 )
@@ -217,9 +218,10 @@ class PivManager(
 
         val previousSerial = pivViewModel.currentSerial
         val currentSerial = piv.serialNumber
+        pivViewModel.setSerial(currentSerial)
         logger.debug(
             "Previous serial: {}, current serial: {}",
-            previousSerial,
+            previousSerial.value,
             currentSerial
         )
 
@@ -335,27 +337,59 @@ class PivManager(
 
         }
 
-
-    private suspend fun delete(slot: String, deleteCert: Boolean, deleteKey: Boolean): String =
+    private suspend fun delete(slot: Slot, deleteCert: Boolean, deleteKey: Boolean): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
+                if (!deleteCert && !deleteKey) {
+                    throw IllegalArgumentException("Missing delete option")
+                }
+
+                if (deleteCert) {
+                    piv.deleteCertificate(slot)
+                    piv.putObject(ObjectId.CHUID, generateChuid())
+                }
+
+                if (deleteKey) {
+                    piv.deleteKey(slot)
+                }
                 ""
             } finally {
             }
         }
 
     private suspend fun moveKey(
-        slot: String,
-        destination: String,
+        src: Slot,
+        dst: Slot,
         overwriteKey: Boolean,
         includeCertificate: Boolean
     ): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
+
+                val sourceObject = if (includeCertificate) {
+                    piv.getObject(src.objectId)
+                } else null
+
+                if (overwriteKey) {
+                    piv.deleteKey(dst)
+                }
+
+                piv.moveKey(src, dst)
+
+                sourceObject?.let {
+                    piv.putObject(dst.objectId, it)
+                    piv.deleteCertificate(src)
+                    piv.putObject(ObjectId.CHUID, generateChuid())
+                }
                 ""
             } finally {
             }
         }
+
+    private fun generateChuid(): ByteArray {
+        // TODO
+        return ByteArray(10)
+    }
 
     private suspend fun examineFile(
         slot: String,
