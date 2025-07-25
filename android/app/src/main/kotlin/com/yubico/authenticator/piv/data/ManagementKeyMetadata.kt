@@ -31,15 +31,9 @@ data class ManagementKeyMetadata(
     @SerialName("touch_policy")
     val touchPolicy: Int
 ) {
-
-    companion object {
-        fun from(managementKeyMetadata: YubiKitManagementKeyMetadata?): ManagementKeyMetadata? =
-            managementKeyMetadata?.let {
-                ManagementKeyMetadata(
-                    it.keyType.value,
-                    it.isDefaultValue,
-                    it.touchPolicy.value
-                )
-            }
-    }
+    constructor(managementKeyMetadata: YubiKitManagementKeyMetadata) : this(
+        managementKeyMetadata.keyType.value,
+        managementKeyMetadata.isDefaultValue,
+        managementKeyMetadata.touchPolicy.value
+    )
 }

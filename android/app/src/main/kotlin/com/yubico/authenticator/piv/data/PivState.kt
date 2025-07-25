@@ -40,60 +40,32 @@ data class PivState(
     val metadata: PivStateMetadata?
 ) : JsonSerializable {
 
-
-    /*
-    {
-  "version" : [ 5, 8, 0 ],
-  "authenticated" : false,
-  "derived_key" : false,
-  "stored_key" : false,
-  "pin_attempts" : 3,
-  "supports_bio" : false,
-  "chuid" : null,
-  "ccc" : null,
-  "metadata" : {
-    "management_key_metadata" : {
-      "key_type" : "AES192",
-      "default_value" : false,
-      "touch_policy" : "NEVER"
-    },
-    "pin_metadata" : {
-      "default_value" : false,
-      "total_attempts" : 3,
-      "attempts_remaining" : 3
-    },
-    "puk_metadata" : {
-      "default_value" : false,
-      "total_attempts" : 3,
-      "attempts_remaining" : 3
-    }
-  }
-}
-     */
-
-
     constructor(
         piv: YubiKitPivSession,
         authenticated: Boolean,
         derivedKey: Boolean,
         storedKey: Boolean,
         supportsBio: Boolean
-    )
-            : this(
+    ) : this(
         Version(
             piv.version.major,
             piv.version.minor,
             piv.version.micro
         ),
-        authenticated, derivedKey, storedKey, piv.pinAttempts, supportsBio,
-        null, null, PivStateMetadata(
-            ManagementKeyMetadata.from(piv.managementKeyMetadata)!!,
-            PinMetadata.from(piv.pinMetadata)!!,
-            PinMetadata.from(piv.pukMetadata)!!
+        authenticated,
+        derivedKey,
+        storedKey,
+        piv.pinAttempts,
+        supportsBio,
+        null,
+        null,
+        PivStateMetadata(
+            ManagementKeyMetadata(piv.managementKeyMetadata),
+            PinMetadata(piv.pinMetadata),
+            PinMetadata(piv.pukMetadata)
         )
 
     )
-
 
     override fun toJson(): String {
         return jsonSerializer.encodeToString(this)

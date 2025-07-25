@@ -30,15 +30,9 @@ data class PinMetadata(
     @SerialName("attempts_remaining")
     val attemptsRemaining: Int
 ) {
-
-    companion object {
-        fun from(pinMetadata: YubiKitPinMetadata?): PinMetadata? =
-            pinMetadata?.let {
-                PinMetadata(
-                    it.isDefaultValue,
-                    it.totalAttempts,
-                    it.attemptsRemaining
-                )
-            }
-    }
+    constructor(pinMetadata: YubiKitPinMetadata) : this(
+        pinMetadata.isDefaultValue,
+        pinMetadata.totalAttempts,
+        pinMetadata.attemptsRemaining
+    )
 }
