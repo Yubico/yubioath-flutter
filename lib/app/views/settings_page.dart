@@ -265,15 +265,16 @@ class _HelpView extends ConsumerWidget {
               title: l10n.s_i_need_help,
               onTap: (_) => launchHelpUrl(),
             ),
-            ActionListItem(
-              borderRadius: itemRadius,
-              icon: Icon(Symbols.keyboard),
-              title: l10n.s_keyboard_shortcuts,
-              onTap: (context) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                Actions.maybeInvoke(context, ShortcutsIntent());
-              },
-            ),
+            if (isDesktop)
+              ActionListItem(
+                borderRadius: itemRadius,
+                icon: Icon(Symbols.keyboard),
+                title: l10n.s_keyboard_shortcuts,
+                onTap: (context) {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Actions.maybeInvoke(context, ShortcutsIntent());
+                },
+              ),
           ],
         ),
       ],
@@ -780,48 +781,49 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 }
               },
             ),
-            ActionListItem(
-              borderRadius: widget.isDialog ? 0 : null,
-              icon:
-                  _diagnosing
-                      ? SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                          strokeAlign: 2.0,
-                        ),
-                      )
-                      : const Icon(Symbols.bug_report),
-              title: l10n.s_run_diagnostics,
-              subtitle: l10n.l_run_diagnostics_desc,
-              onTap: (context) async {
-                _log.info('Running diagnostics...');
-                setState(() {
-                  _diagnosing = true;
-                });
-                final response = await ref
-                    .read(rpcProvider)
-                    .requireValue
-                    .command('diagnose', []);
-                final data = response['diagnostics'] as List;
-                data.insert(0, {
-                  'app_version': version,
-                  'dart': Platform.version,
-                  'os': Platform.operatingSystem,
-                  'os_version': Platform.operatingSystemVersion,
-                });
-                data.insert(data.length - 1, ref.read(featureFlagProvider));
-                final text = const JsonEncoder.withIndent('  ').convert(data);
-                await ref.read(clipboardProvider).setText(text);
-                await ref.read(withContextProvider)((context) async {
-                  showMessage(context, l10n.l_diagnostics_copied);
-                });
-                setState(() {
-                  _diagnosing = false;
-                });
-              },
-            ),
+            if (isDesktop)
+              ActionListItem(
+                borderRadius: widget.isDialog ? 0 : null,
+                icon:
+                    _diagnosing
+                        ? SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                            strokeAlign: 2.0,
+                          ),
+                        )
+                        : const Icon(Symbols.bug_report),
+                title: l10n.s_run_diagnostics,
+                subtitle: l10n.l_run_diagnostics_desc,
+                onTap: (context) async {
+                  _log.info('Running diagnostics...');
+                  setState(() {
+                    _diagnosing = true;
+                  });
+                  final response = await ref
+                      .read(rpcProvider)
+                      .requireValue
+                      .command('diagnose', []);
+                  final data = response['diagnostics'] as List;
+                  data.insert(0, {
+                    'app_version': version,
+                    'dart': Platform.version,
+                    'os': Platform.operatingSystem,
+                    'os_version': Platform.operatingSystemVersion,
+                  });
+                  data.insert(data.length - 1, ref.read(featureFlagProvider));
+                  final text = const JsonEncoder.withIndent('  ').convert(data);
+                  await ref.read(clipboardProvider).setText(text);
+                  await ref.read(withContextProvider)((context) async {
+                    showMessage(context, l10n.l_diagnostics_copied);
+                  });
+                  setState(() {
+                    _diagnosing = false;
+                  });
+                },
+              ),
             if (isAndroid)
               ActionListItem(
                 key: keys.allowScreenshotsSetting,
