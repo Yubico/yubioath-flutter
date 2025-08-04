@@ -343,7 +343,10 @@ class NavigationContent extends ConsumerWidget {
                     var visibleApps = appSections.take(maxVisibleApps).toList();
                     if (visibleApps.isNotEmpty &&
                         currentSection != Section.settings &&
-                        !visibleApps.contains(currentSection)) {
+                        !visibleApps.contains(currentSection) &&
+                        (data != null &&
+                            currentSection.getAvailability(data) ==
+                                Availability.enabled)) {
                       visibleApps.removeLast();
                       visibleApps.add(currentSection);
                     }
