@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Traducción incompleta",
     "p_translation_progress_desc": "Los indicadores de progreso reflejan el grado de avance de la traducción.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Guardar",
     "s_cancel": "Cancelar",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "Idioma",
-    "p_community_translations_desc": "Las traducciones son mantenidas por la comunidad en {crowdin}.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "Elegir idioma",
     "@_theme": {},
 

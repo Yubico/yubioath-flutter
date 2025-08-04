@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": null,
     "p_translation_progress_desc": null,
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Lưu",
     "s_cancel": "Hủy",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "Ngôn ngữ",
-    "p_community_translations_desc": "Bản dịch được duy trì bởi cộng đồng thông qua {crowdin}.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "Chọn ngôn ngữ",
     "@_theme": {},
 

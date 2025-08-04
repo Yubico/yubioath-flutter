@@ -272,6 +272,9 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
 
   void _notifyDeviceChanged(YubiKeyData? data) {
     if (data == null) {
+      if (state == Section.settings) {
+        return;
+      }
       state = _supportedSections.first;
       return;
     }

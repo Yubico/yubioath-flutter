@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Nedokončený překlad",
     "p_translation_progress_desc": "Ukazatele průběhu odrážejí zralost překladu.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Uložit",
     "s_cancel": "Zrušit",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "Jazyk",
-    "p_community_translations_desc": "Překlady jsou spravovány komunitou na {crowdin}.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "Vyberte jazyk",
     "@_theme": {},
 

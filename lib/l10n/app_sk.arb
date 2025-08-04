@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Neúplný preklad",
     "p_translation_progress_desc": "Ukazovatele pokroku odrážajú úroveň prekladu.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Uložiť",
     "s_cancel": "Zrušiť",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "Jazyk",
-    "p_community_translations_desc": "Preklady sú spravované komunitou na stránke {crowdin}.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "Vybrať jazyk",
     "@_theme": {},
 

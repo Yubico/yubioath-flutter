@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Ofullständig översättning",
     "p_translation_progress_desc": "Staplarna återspeglar översättningens mognadsgrad.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Spara",
     "s_cancel": "Avbryt",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "Språk",
-    "p_community_translations_desc": "Översättningar underhålls på {crowdin}.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "Välj språk",
     "@_theme": {},
 

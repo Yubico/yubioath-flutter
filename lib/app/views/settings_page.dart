@@ -487,8 +487,6 @@ class _LanguageView extends ConsumerWidget {
   final bool isDialog;
   const _LanguageView({required this.isDialog});
 
-  Uri get _crowdinUri => Uri.parse('https://yubi.co/ya-translations');
-
   Widget _buildLocaleTitle(
     BuildContext context,
     Locale locale,
@@ -563,9 +561,6 @@ class _LanguageView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
     final currentLocale = ref.watch(currentLocaleProvider);
     final supportedLocales = ref.read(supportedLocalesProvider);
     final status = ref.read(localeStatusProvider);
@@ -574,6 +569,7 @@ class _LanguageView extends ConsumerWidget {
       (a, b) => a.getNativeDisplayName().compareTo(b.getNativeDisplayName()),
     );
 
+    final itemRadius = isDialog ? 0.0 : null;
     final content = Column(
       children: [
         ListTitle(l10n.s_options),
@@ -600,36 +596,25 @@ class _LanguageView extends ConsumerWidget {
             },
           ),
         ),
+        ActionListSection(
+          l10n.s_community,
+          fullWidth: isDialog,
+          children: [
+            ActionListItem(
+              borderRadius: itemRadius,
+              icon: Icon(Symbols.open_in_new),
+              title: l10n.l_localization_project,
+              onTap: (_) => launchCrowdinUrl(),
+            ),
+          ],
+        ),
       ],
     );
     if (isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_language),
         dialogMaxWidth: 400,
-        builder:
-            (context, fullScreen) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                content,
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8.0,
-                  ),
-                  child: injectLinksInText(
-                    // We don't want to translate 'Crowdin'
-                    l10n.p_community_translations_desc('Crowdin'),
-                    {'Crowdin': _crowdinUri},
-                    textStyle: textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    linkStyle: textTheme.labelSmall?.copyWith(
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        builder: (context, fullScreen) => content,
       );
     } else {
       return content;
@@ -1228,34 +1213,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       },
       child: AppPage(
         title: l10n.s_settings,
-        keyActionsBuilder: (context) {
-          return Column(
-            children: [
-              ActionListSection(
-                l10n.s_manage,
-                children: [
-                  ActionListItem(
-                    icon: Icon(Symbols.delete_forever),
-                    title: l10n.s_reset_settings,
-                    subtitle: l10n.l_reset_settings_desc,
-                    onTap: (context) async {
-                      if (!await confirmReset(context)) {
-                        return;
-                      }
-                      // TODO: maybe this should be handled in a notifier
-                      await ref.read(prefProvider).clear();
-                      // Need to restore current section
-                      ref
-                          .read(currentSectionProvider.notifier)
-                          .setCurrentSection(Section.settings);
-                      ref.invalidate(prefProvider);
-                    },
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
+        keyActionsBuilder:
+            _selected == null
+                ? (context) {
+                  return Column(
+                    children: [
+                      ActionListSection(
+                        l10n.s_manage,
+                        children: [
+                          ActionListItem(
+                            icon: Icon(Symbols.delete_forever),
+                            title: l10n.s_reset_settings,
+                            subtitle: l10n.l_reset_settings_desc,
+                            onTap: (context) async {
+                              if (!await confirmReset(context)) {
+                                return;
+                              }
+                              // TODO: maybe this should be handled in a notifier
+                              await ref.read(prefProvider).clear();
+                              // Need to restore current section
+                              ref
+                                  .read(currentSectionProvider.notifier)
+                                  .setCurrentSection(Section.settings);
+                              ref.invalidate(prefProvider);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                : null,
         detailViewBuilder:
             _selected != null
                 ? (context) => _buildSectionView(_selected!, false)

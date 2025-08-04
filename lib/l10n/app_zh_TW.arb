@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "翻譯不完整",
     "p_translation_progress_desc": "進度指標反映翻譯的成熟度。",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "儲存",
     "s_cancel": "取消",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "語言",
-    "p_community_translations_desc": "翻譯由 {crowdin}上的社群維護。",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "選擇語言",
     "@_theme": {},
 

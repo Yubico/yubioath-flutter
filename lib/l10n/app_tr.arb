@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Tamamlanmamış çeviri",
     "p_translation_progress_desc": "İlerleme göstergeleri, çevirinin durumunu yansıtır.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Kaydet",
     "s_cancel": "İptal et",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "Dil",
-    "p_community_translations_desc": "Çeviriler, {crowdin} platformundaki topluluk tarafından yapılmaktadır.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "Dil seçin",
     "@_theme": {},
 

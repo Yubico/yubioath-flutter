@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "未完成的翻译",
     "p_translation_progress_desc": "进度指标反映了翻译的成熟度。",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "保存",
     "s_cancel": "取消",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "语言",
-    "p_community_translations_desc": "翻译由 {crowdin} 上的社区维护。",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "选择语言",
     "@_theme": {},
 

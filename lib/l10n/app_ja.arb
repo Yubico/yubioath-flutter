@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "未翻訳",
     "p_translation_progress_desc": "進捗メーターで翻訳の進行状況を表示しています。",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "保存",
     "s_cancel": "キャンセル",
@@ -129,14 +131,6 @@
     "@_language": {},
 
     "s_language": "言語",
-    "p_community_translations_desc": "翻訳は {crowdin} でコミュニティによりメンテナンスされています。",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
     "s_choose_language": "言語を選択してください",
     "@_theme": {},
 
