@@ -506,12 +506,15 @@ class _LanguageView extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(locale.getNativeDisplayName()),
-        if (translated != 100) ...[
+        if (translated != 100 || proofread != 100) ...[
           const SizedBox(width: 8.0),
           InfoPopupButton(
             size: 30,
             iconSize: 20,
-            iconColor: theme.colorScheme.tertiary,
+            iconColor:
+                (translated == 100 && proofread != 100)
+                    ? theme.disabledColor
+                    : theme.colorScheme.tertiary,
             icon: Symbols.info,
             infoText: Text.rich(
               WidgetSpan(
