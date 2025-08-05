@@ -16,8 +16,16 @@
 
 package com.yubico.authenticator.piv.data
 
+import android.util.Base64
+import com.yubico.yubikit.core.keys.PublicKeyValues
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 typealias YubikitPivSlotMetadata = com.yubico.yubikit.piv.SlotMetadata
 
@@ -30,14 +38,31 @@ data class SlotMetadata(
     @SerialName("touch_policy")
     val touchPolicy: Int,
     val generated: Boolean,
+    @Serializable(with = PublicKeyValuesAsStringSerializer::class)
     @SerialName("public_key")
-    val publicKey: String
+    val publicKey: PublicKeyValues? = null
 ) {
     constructor(slotMetadata: YubikitPivSlotMetadata) : this(
         slotMetadata.keyType.value.toUByte(),
         slotMetadata.pinPolicy.value,
         slotMetadata.touchPolicy.value,
         slotMetadata.isGenerated,
-        slotMetadata.publicKeyValues.toString()
+        slotMetadata.publicKeyValues
     )
+}
+
+object PublicKeyValuesAsStringSerializer : KSerializer<PublicKeyValues?> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
+        "PublicKeyValuesAsString",
+        PrimitiveKind.STRING
+    )
+
+    override fun serialize(encoder: Encoder, value: PublicKeyValues?) {
+        encoder.encodeString(value?.let { Base64.encodeToString(it.encoded, 0) } ?: "")
+    }
+
+    override fun deserialize(decoder: Decoder): PublicKeyValues? {
+        // TODO
+        return null
+    }
 }

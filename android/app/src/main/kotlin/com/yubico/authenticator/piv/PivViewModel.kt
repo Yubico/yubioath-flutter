@@ -22,6 +22,8 @@ import androidx.lifecycle.ViewModel
 import com.yubico.authenticator.ViewModelData
 import com.yubico.authenticator.piv.data.PivSlot
 import com.yubico.authenticator.piv.data.PivState
+import com.yubico.authenticator.piv.data.SlotMetadata
+import com.yubico.yubikit.piv.Slot
 
 class PivViewModel : ViewModel() {
     private val _state = MutableLiveData<ViewModelData>()
@@ -50,4 +52,10 @@ class PivViewModel : ViewModel() {
     fun updateSlots(slots: List<PivSlot>?) {
         _slots.postValue(slots)
     }
+
+    fun getMetadata(slotAlias: String): SlotMetadata? =
+        _slots.value?.first { slot ->
+            slot.slotId == Slot.fromStringAlias(slotAlias).value
+        }?.metadata
+
 }

@@ -23,11 +23,20 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.jsonSerializer
 import com.yubico.authenticator.piv.data.CertInfo
 import com.yubico.authenticator.piv.data.PivSlot
 import com.yubico.authenticator.piv.data.PivState
 import com.yubico.authenticator.piv.data.SlotMetadata
+import com.yubico.authenticator.piv.data.byteArrayToHexString
+import com.yubico.authenticator.piv.data.fingerprint
 import com.yubico.authenticator.piv.data.hexStringToByteArray
+import com.yubico.authenticator.piv.data.isoFormat
+import com.yubico.authenticator.piv.utils.InvalidPasswordException
+import com.yubico.authenticator.piv.utils.KeyMaterial
+import com.yubico.authenticator.piv.utils.KeyMaterialUtils.getLeafCertificates
+import com.yubico.authenticator.piv.utils.KeyMaterialUtils.parse
+import com.yubico.authenticator.piv.utils.KeyMaterialUtils.toPem
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
@@ -35,16 +44,30 @@ import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyConnection
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.application.BadResponseException
+import com.yubico.yubikit.core.application.InvalidPinException
+import com.yubico.yubikit.core.keys.PrivateKeyValues
+import com.yubico.yubikit.core.keys.PublicKeyValues
 import com.yubico.yubikit.core.smartcard.ApduException
+import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.piv.KeyType
 import com.yubico.yubikit.piv.ManagementKeyType
 import com.yubico.yubikit.piv.ObjectId
+import com.yubico.yubikit.piv.PinPolicy
+import com.yubico.yubikit.piv.PivSession
 import com.yubico.yubikit.piv.Slot
+import com.yubico.yubikit.piv.TouchPolicy
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import org.bouncycastle.asn1.x500.X500Name
 import org.slf4j.LoggerFactory
 import java.io.IOException
+import java.security.cert.X509Certificate
 import java.util.Arrays
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -64,6 +87,9 @@ class PivManager(
         val updateDeviceInfo = AtomicBoolean(false)
     }
 
+    private val managementKeyStorage: MutableMap<String, ByteArray> = mutableMapOf()
+    private val pinStorage: MutableMap<String, CharArray> = mutableMapOf()
+
     private val connectionHelper = PivConnectionHelper(deviceManager)
 
     private val pivChannel = MethodChannel(messenger, "android.piv.methods")
@@ -82,7 +108,7 @@ class PivManager(
                 "reset" -> reset()
 
                 "authenticate" -> authenticate(
-                    (args["managementKey"] as String).hexStringToByteArray()
+                    (args["key"] as String).hexStringToByteArray()
                 )
 
                 "verifyPin" -> verifyPin(
@@ -126,17 +152,28 @@ class PivManager(
                 "examineFile" -> examineFile(
                     (args["slot"] as String),
                     (args["data"] as String),
-                    (args["password"] as String),
+                    (args["password"] as String?),
                 )
 
                 "validateRfc4514" -> validateRfc4514(
                     (args["data"] as String),
                 )
 
-                "importFile" -> importFile(
+                "generate" -> generate(
                     (args["slot"] as String),
+                    (args["keyType"] as Int),
+                    (args["pinPolicy"] as Int),
+                    (args["touchPolicy"] as Int),
+                    (args["subject"] as String?),
+                    (args["generateType"] as String),
+                    (args["validFrom"] as String?),
+                    (args["validTo"] as String?)
+                )
+
+                "importFile" -> importFile(
+                    Slot.fromStringAlias(args["slot"] as String),
                     (args["data"] as String),
-                    (args["password"] as String),
+                    (args["password"] as String?),
                     (args["pinPolicy"] as Int),
                     (args["touchPolicy"] as Int),
                 )
@@ -247,7 +284,7 @@ class PivManager(
             )
         }
 
-        pivViewModel.updateSlots(getSlots(piv));
+        pivViewModel.updateSlots(getSlots(piv))
 
         return requestHandled
     }
@@ -258,23 +295,52 @@ class PivManager(
             ""
         }
 
+
+    private fun doAuth(piv: PivSession, serial: String) =
+        try {
+            val managementKey = managementKeyStorage[serial]
+                ?: "010203040506070801020304050607080102030405060708".hexStringToByteArray()
+            piv.authenticate(managementKey)
+        } catch (e: Exception) {
+            managementKeyStorage.remove(serial)
+            throw e
+        }
+
     private suspend fun authenticate(managementKey: ByteArray): String =
         connectionHelper.useSession { piv ->
-            piv.authenticate(managementKey)
-            ""
+            try {
+                val serial = pivViewModel.currentSerial.value.toString()
+                managementKeyStorage[serial] = managementKey
+                doAuth(piv, serial)
+                jsonSerializer.encodeToString(mapOf("status" to true))
+            } catch (e: Exception) {
+                jsonSerializer.encodeToString(mapOf("status" to false))
+            }
+        }
+
+    private fun doVerifyPin(piv: PivSession, serial: String) =
+        try {
+            pinStorage[serial]?.let { piv.verifyPin(it) }
+        } catch (e: Exception) {
+            pinStorage.remove(serial)
+            throw e
         }
 
     private suspend fun verifyPin(pin: CharArray): String =
         connectionHelper.useSession { piv ->
-            piv.verifyPin(pin)
-            ""
+            try {
+                val serial = pivViewModel.currentSerial.value.toString()
+                pinStorage[serial] = pin.clone()
+                handlePinPukErrors { doVerifyPin(piv, serial) }
+            } finally {
+                Arrays.fill(pin, 0.toChar())
+            }
         }
 
     private suspend fun changePin(pin: CharArray, newPin: CharArray): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
-                piv.changePin(pin, newPin)
-                ""
+                handlePinPukErrors { piv.changePin(pin, newPin) }
             } finally {
                 Arrays.fill(newPin, 0.toChar())
                 Arrays.fill(pin, 0.toChar())
@@ -284,8 +350,7 @@ class PivManager(
     private suspend fun changePuk(puk: CharArray, newPuk: CharArray): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
-                piv.changePuk(puk, newPuk)
-                ""
+                handlePinPukErrors { piv.changePuk(puk, newPuk) }
             } finally {
                 Arrays.fill(newPuk, 0.toChar())
                 Arrays.fill(puk, 0.toChar())
@@ -305,13 +370,27 @@ class PivManager(
     private suspend fun unblockPin(puk: CharArray, newPin: CharArray): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
-                piv.unblockPin(puk, newPin)
-                ""
+                handlePinPukErrors { piv.unblockPin(puk, newPin) }
             } finally {
                 Arrays.fill(newPin, 0.toChar())
                 Arrays.fill(puk, 0.toChar())
             }
         }
+
+    private fun handlePinPukErrors(block: () -> Unit) : String {
+        try {
+            block()
+            return jsonSerializer.encodeToString(mapOf("status" to "success"))
+        } catch (invalidPin: InvalidPinException) {
+            return jsonSerializer.encodeToString(mapOf("status" to "invalid-pin",
+                "attemptsRemaining" to invalidPin.attemptsRemaining))
+        } catch (apduException: ApduException) {
+            if (apduException.sw == SW.CONDITIONS_NOT_SATISFIED) {
+                return jsonSerializer.encodeToString(mapOf("status" to "pin-complexity"))
+            }
+        }
+        return jsonSerializer.encodeToString(mapOf("status" to "other-error"))
+    }
 
     private fun getSlots(piv: YubiKitPivSession): List<PivSlot> =
         try {
@@ -340,6 +419,8 @@ class PivManager(
     private suspend fun delete(slot: Slot, deleteCert: Boolean, deleteKey: Boolean): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
+                doAuth(piv, pivViewModel.currentSerial.value.toString())
+
                 if (!deleteCert && !deleteKey) {
                     throw IllegalArgumentException("Missing delete option")
                 }
@@ -366,6 +447,8 @@ class PivManager(
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
 
+                doAuth(piv, pivViewModel.currentSerial.value.toString())
+
                 val sourceObject = if (includeCertificate) {
                     piv.getObject(src.objectId)
                 } else null
@@ -391,39 +474,233 @@ class PivManager(
         return ByteArray(10)
     }
 
-    private suspend fun examineFile(
-        slot: String,
-        data: String,
-        password: String
-    ): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
-            try {
-                ""
-            } finally {
+    private fun chooseCertificate(certificates: List<X509Certificate>?): X509Certificate? {
+        return certificates?.let {
+            when {
+                it.size > 1 -> getLeafCertificates(it).firstOrNull()
+                else -> it.firstOrNull()
+            }
+        }
+    }
+
+    private fun getCertificateInfo(certificate: X509Certificate?) =
+        certificate?.let {
+            buildJsonObject {
+                val keyType = KeyType.fromKey(certificate.publicKey)
+                put("key_type", JsonPrimitive(keyType.value))
+                put("subject", JsonPrimitive(certificate.subjectDN.name))
+                put("issuer", JsonPrimitive(certificate.issuerDN.name))
+                put("serial", JsonPrimitive(certificate.serialNumber.toString()))
+                put("not_valid_before", JsonPrimitive(certificate.notBefore.isoFormat()))
+                put("not_valid_after", JsonPrimitive(certificate.notAfter.isoFormat()))
+                put("fingerprint", JsonPrimitive(certificate.fingerprint()))
             }
         }
 
-    private suspend fun validateRfc4514(
+    private fun publicKeyMatch(certificate: X509Certificate?, metadata: SlotMetadata?) : Boolean? {
+        if (certificate == null || metadata == null) {
+            return null
+        }
+
+        val slotPublicKey = metadata.publicKey
+        val certPublicKey = PublicKeyValues.fromPublicKey(certificate.publicKey)
+
+        return slotPublicKey?.encoded.contentEquals(certPublicKey.encoded)
+    }
+
+    private fun examineFile(
+        slot: String,
+        data: String,
+        password: String?
+    ): String = try {
+        val (certificates, privateKey) = parseFile(data, password)
+        val certificate = chooseCertificate(certificates)
+
+        val result = buildJsonObject {
+            put("status", JsonPrimitive(true))
+            put("password", JsonPrimitive(password != null))
+            put("key_type", privateKey?.let {
+                JsonPrimitive(KeyType.fromKeyParams(PrivateKeyValues.fromPrivateKey(it)).value)
+            } ?: JsonNull)
+            put("cert_info", getCertificateInfo(certificate) ?: JsonNull)
+            pivViewModel.getMetadata(slot)?.let {
+                if (certificate != null && privateKey == null) {
+                    put("public_key_match", JsonPrimitive(publicKeyMatch(certificate, it)))
+                }
+            }
+        }
+
+        jsonSerializer.encodeToString(JsonObject.serializer(), result)
+    } catch (e: InvalidPasswordException) {
+        val result = buildJsonObject {
+            put("status", JsonPrimitive(false))
+        }
+        jsonSerializer.encodeToString(JsonObject.serializer(), result)
+    } finally {
+    }
+
+
+    private fun getX500Name(data: String) = X500Name(data)
+
+
+    private fun validateRfc4514(
         data: String
+    ): String = try {
+        getX500Name(data)
+        jsonSerializer.encodeToString(mapOf("status" to true))
+    } catch (e: IllegalArgumentException) {
+        jsonSerializer.encodeToString(mapOf("status" to false))
+    }
+
+    private suspend fun generate(
+        slot: String,
+        keyType: Int,
+        pinPolicy: Int,
+        touchPolicy: Int,
+        subject: String?,
+        generateType: String,
+        validFrom: String?,
+        validTo: String?
     ): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
-                ""
+
+                val serial = pivViewModel.currentSerial.value.toString()
+                doAuth(piv, serial)
+                doVerifyPin(piv, serial)
+
+                val keyValues = piv.generateKeyValues(
+                    Slot.fromStringAlias(slot),
+                    KeyType.fromValue(keyType),
+                    PinPolicy.fromValue(pinPolicy),
+                    TouchPolicy.fromValue(touchPolicy)
+                )
+
+                val publicKey = keyValues.toPublicKey()
+                val publicKeyPem = publicKey.encoded
+
+                val result = when (generateType) {
+                    "publicKey" -> publicKeyPem.byteArrayToHexString()
+                    "csr" -> {
+                        if (subject == null) {
+                            throw IllegalArgumentException("Subject missing for csr")
+                        }
+                        // TODO implement
+                        //val csrBuilder = JcaPKCS10CertificationRequestBuilder(getX500Name(subject), publicKey)
+                        //val csBuilder = JcaContentSignerBuilder("SHA256withRSA")
+                        //
+                        //val signer = csBuilder.build(keyPair.getPrivate());
+                        //csrBuilder.build(signer)
+                        ""
+                    }
+
+                    "certificate" -> "" // TODO implement
+                    else -> throw IllegalArgumentException("Invalid generate type: $generateType")
+                }
+
+                jsonSerializer.encodeToString(
+                    mapOf(
+                        "public_key" to publicKeyPem.byteArrayToHexString(),
+                        "result" to result
+                    )
+                )
+            } catch (e: Exception) {
+                throw e
             } finally {
+
+            }
+        }
+
+    private fun parseFile(
+        data: String,
+        password: String?
+    ): KeyMaterial = try {
+            parse(data.hexStringToByteArray(), password)
+        } catch (e: Exception) {
+            when (e) {
+                is IllegalArgumentException, is IOException -> KeyMaterial(
+                    emptyList(),
+                    null
+                )
+
+                else -> throw e
             }
         }
 
 
     private suspend fun importFile(
-        slot: String,
+        slot: Slot,
         data: String,
-        password: String,
+        password: String?,
         pinPolicy: Int,
         touchPolicy: Int
     ): String =
         connectionHelper.useSession(updateDeviceInfo = true) { piv ->
             try {
-                ""
+
+                val serial = pivViewModel.currentSerial.value.toString()
+                doAuth(piv, serial)
+
+                val (certificates, privateKey) = parseFile(data, password)
+                // TODO catch invalid password exception
+
+                if (privateKey == null && certificates.isEmpty()) {
+                    throw IllegalArgumentException("Failed to parse")
+                }
+
+                var metadata : SlotMetadata? = null
+                privateKey?.let {
+                    piv.putKey(
+                        slot,
+                        PrivateKeyValues.fromPrivateKey(privateKey),
+                        PinPolicy.fromValue(pinPolicy),
+                        TouchPolicy.fromValue(touchPolicy)
+                    )
+
+                    metadata = try {
+                         SlotMetadata(piv.getSlotMetadata(slot))
+                    } catch (e: Exception) {
+                        when (e) {
+                            // TODO NotSupported
+                            is ApduException, is BadResponseException -> null
+                            else -> throw e
+                        }
+                    }
+                }
+
+                val certificate = chooseCertificate(certificates)
+                certificate?.let {
+                    piv.putCertificate(slot, certificate)
+                    piv.putObject(ObjectId.CHUID, generateChuid())
+                    // TODO self.certificate = certificate
+                }
+
+                val result = buildJsonObject {
+
+                    // TODO get public key from the private key
+                    val publicKey2 = metadata?.let {
+                        it.publicKey?.toPublicKey()
+                    }
+                    put("metadata", metadata?.let {buildJsonObject {
+                        put("key_type", JsonPrimitive(it.keyType.toInt()))
+                        put("pin_policy", JsonPrimitive(it.pinPolicy))
+                        put("touch_policy", JsonPrimitive(it.touchPolicy))
+                        put("generated", JsonPrimitive(it.generated))
+                        put(
+                            "public_key",
+                            it.publicKey?.let { JsonPrimitive(it.toPublicKey().toPem()) }
+                                ?: JsonNull)
+                    }} ?: JsonNull)
+                    put("public_key", privateKey?.let {
+                        JsonPrimitive(publicKey2?.toPem())} ?: JsonNull)
+                    put("certificate",
+                        certificate?.let {
+                            JsonPrimitive(it.encoded.byteArrayToHexString())
+                        } ?: JsonNull
+                    )
+                }
+
+                jsonSerializer.encodeToString(JsonObject.serializer(), result)
             } finally {
             }
         }

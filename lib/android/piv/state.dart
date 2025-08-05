@@ -19,11 +19,13 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 // TODO import 'package:logging/logging.dart';
 
 import '../../app/models.dart';
 // TODO import '../../app/state.dart';
 // TODO import '../../app/views/user_interaction.dart';
+import '../../core/models.dart';
 import '../../exception/no_data_exception.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
@@ -31,8 +33,8 @@ import '../overlay/nfc/method_channel_notifier.dart' show MethodChannelNotifier;
 
 // TODO final _log = Logger('android.piv.state');
 
-final _managementKeyProvider = StateProvider.autoDispose
-    .family<String?, DevicePath>((ref, _) => null);
+// final _managementKeyProvider = StateProvider.autoDispose
+//     .family<String?, DevicePath>((ref, _) => null);
 
 // TODO
 // final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
@@ -45,7 +47,7 @@ final androidPivState = AsyncNotifierProvider.autoDispose
     );
 
 class _AndroidPivStateNotifier extends PivStateNotifier {
-  late DevicePath _devicePath;
+  //late DevicePath _devicePath;
 
   final _events = const EventChannel('android.piv.state');
   late StreamSubscription _sub;
@@ -138,7 +140,7 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
   @override
   Future<void> reset() async {
     await piv.invoke('reset');
-    ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
+    //ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
     //ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
@@ -163,15 +165,17 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       //   }
       //});
 
-      final result = await piv.invoke(
-        'authenticate',
-        {'key': managementKey},
-        //signal: signaler,
+      final result = jsonDecode(
+        await piv.invoke(
+          'authenticate',
+          {'key': managementKey},
+          //signal: signaler,
+        ),
       );
 
       if (result['status']) {
-        ref.read(_managementKeyProvider(_devicePath).notifier).state =
-            managementKey;
+        // ref.read(_managementKeyProvider(_devicePath).notifier).state =
+        //     managementKey;
         final oldState = state.valueOrNull;
         if (oldState != null) {
           state = AsyncData(oldState.copyWith(authenticated: true));
@@ -209,26 +213,16 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       //       }
       //     });
       //   }
-      await piv.invoke(
-        'verifyPin',
-        {'pin': pin},
-        // signal: _signaler
-      );
-      //
-      //   ref.read(_pinProvider(_devicePath).notifier).state = pin;
+      var result = jsonDecode(await piv.invoke('verifyPin', {'pin': pin}));
 
-      return const PinVerificationStatus.success();
-    } on PlatformException catch (e) {
-      // TODO
-      if (e.message == 'invalid-pin') {
-        // TODO
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(
-            // TODO e.body['attempts_remaining']),
-            3,
-          ),
-        );
-      }
+      return switch (result['status']) {
+        'success' => const PinVerificationStatus.success(),
+        'invalid-pin' => PinVerificationStatus.failure(
+          PivPinFailureReason.invalidPin(result['attemptsRemaining']),
+        ),
+        _ => throw 'Invalid response',
+      };
+    } on PlatformException catch (_) {
       rethrow;
     } finally {
       // TODO controller?.close();
@@ -239,25 +233,21 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
   @override
   Future<PinVerificationStatus> changePin(String pin, String newPin) async {
     try {
-      await piv.invoke('changePin', {'pin': pin, 'newPin': newPin});
-      // ref.read(_pinProvider(_devicePath).notifier).state = null;
-      return const PinVerificationStatus.success();
-    } on PlatformException catch (e) {
-      // TODO
-      if (e.message == 'invalid-pin') {
-        // TODO
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(
-            // TODO e.body['attempts_remaining']),
-            3,
-          ),
-        );
-      }
-      if (e.message == 'pin-complexity') {
-        return PinVerificationStatus.failure(
+      final result = jsonDecode(
+        await piv.invoke('changePin', {'pin': pin, 'newPin': newPin}),
+      );
+
+      return switch (result['status']) {
+        'success' => const PinVerificationStatus.success(),
+        'invalid-pin' => PinVerificationStatus.failure(
+          PivPinFailureReason.invalidPin(result['attemptsRemaining']),
+        ),
+        'pin-complexity' => PinVerificationStatus.failure(
           const PivPinFailureReason.weakPin(),
-        );
-      }
+        ),
+        _ => throw 'Invalid response',
+      };
+    } on PlatformException catch (_) {
       rethrow;
     } finally {
       ref.invalidateSelf();
@@ -267,24 +257,20 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
   @override
   Future<PinVerificationStatus> changePuk(String puk, String newPuk) async {
     try {
-      await piv.invoke('changePuk', {'puk': puk, 'newPuk': newPuk});
-      return const PinVerificationStatus.success();
-    } on PlatformException catch (e) {
-      // TODO
-      if (e.message == 'invalid-pin') {
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(
-            // TODO e.body['attempts_remaining']),
-            3,
-          ),
-        );
-      }
-      if (e.message == 'pin-complexity') {
-        // TODO
-        return PinVerificationStatus.failure(
+      final result = jsonDecode(
+        await piv.invoke('changePuk', {'puk': puk, 'newPuk': newPuk}),
+      );
+      return switch (result['status']) {
+        'success' => const PinVerificationStatus.success(),
+        'invalid-pin' => PinVerificationStatus.failure(
+          PivPinFailureReason.invalidPin(result['attemptsRemaining']),
+        ),
+        'pin-complexity' => PinVerificationStatus.failure(
           const PivPinFailureReason.weakPin(),
-        );
-      }
+        ),
+        _ => throw 'Invalid response',
+      };
+    } on PlatformException catch (_) {
       rethrow;
     } finally {
       ref.invalidateSelf();
@@ -302,33 +288,28 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       'keyType': managementKeyType.value,
       'storeKey': storeKey,
     });
-    ref.read(_managementKeyProvider(_devicePath).notifier).state =
-        managementKey;
+    // ref.read(_managementKeyProvider(_devicePath).notifier).state =
+    //     managementKey;
     ref.invalidateSelf();
   }
 
   @override
   Future<PinVerificationStatus> unblockPin(String puk, String newPin) async {
     try {
-      await piv.invoke('unblockPin', {'puk': puk, 'newPin': newPin});
-      return const PinVerificationStatus.success();
-    } on PlatformException catch (e) {
-      // TODO
-      if (e.message == 'invalid-pin') {
-        // TODO
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(
-            // TODO e.body['attempts_remaining']),
-            3,
-          ),
-        );
-      }
-      if (e.message == 'pin-complexity') {
-        // TODO
-        return PinVerificationStatus.failure(
+      final result = jsonDecode(
+        await piv.invoke('unblockPin', {'puk': puk, 'newPin': newPin}),
+      );
+      return switch (result['status']) {
+        'success' => const PinVerificationStatus.success(),
+        'invalid-pin' => PinVerificationStatus.failure(
+          PivPinFailureReason.invalidPin(result['attemptsRemaining']),
+        ),
+        'pin-complexity' => PinVerificationStatus.failure(
           const PivPinFailureReason.weakPin(),
-        );
-      }
+        ),
+        _ => throw 'Invalid response',
+      };
+    } on PlatformException catch (_) {
       rethrow;
     } finally {
       ref.invalidateSelf();
@@ -421,61 +402,78 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     //
     // final signaler = Signaler();
     // UserInteractionController? controller;
-    // try {
-    //   signaler.signals.listen((signal) async {
-    //     if (signal.status == 'touch') {
-    //       controller = await withContext((context) async {
-    //         final l10n = AppLocalizations.of(context);
-    //         return promptUserInteraction(
-    //           context,
-    //           icon: const Icon(Symbols.touch_app),
-    //           title: l10n.s_touch_required,
-    //           description: l10n.l_touch_button_now,
-    //         );
-    //       });
-    //     }
-    //   });
-    //
-    //   final (type, subject, validFrom, validTo) = parameters.when(
-    //     publicKey: () => (GenerateType.publicKey, null, null, null),
-    //     certificate:
-    //         (subject, validFrom, validTo) => (
-    //           GenerateType.certificate,
-    //           subject,
-    //           dateFormatter.format(validFrom),
-    //           dateFormatter.format(validTo),
-    //         ),
-    //     csr: (subject) => (GenerateType.csr, subject, null, null),
-    //   );
-    //
-    //   final pin = ref.read(_pinProvider(_session.devicePath));
-    //
-    //   final result = await _session.command(
-    //     'generate',
-    //     target: ['slots', slot.hexId],
-    //     params: {
-    //       'key_type': keyType.value,
-    //       'pin_policy': pinPolicy.value,
-    //       'touch_policy': touchPolicy.value,
-    //       'subject': subject,
-    //       'generate_type': type.name,
-    //       'valid_from': validFrom,
-    //       'valid_to': validTo,
-    //       'pin': pin,
-    //     },
-    //     signal: signaler,
-    //   );
-    //
-    //   ref.invalidateSelf();
-    //
-    //   return PivGenerateResult.fromJson({
-    //     'generate_type': type.name,
-    //     ...result,
-    //   });
-    // } finally {
-    //   controller?.close();
-    // }
-    return PivGenerateResult.fromJson({});
+    try {
+      //   signaler.signals.listen((signal) async {
+      //     if (signal.status == 'touch') {
+      //       controller = await withContext((context) async {
+      //         final l10n = AppLocalizations.of(context);
+      //         return promptUserInteraction(
+      //           context,
+      //           icon: const Icon(Symbols.touch_app),
+      //           title: l10n.s_touch_required,
+      //           description: l10n.l_touch_button_now,
+      //         );
+      //       });
+      //     }
+      //   });
+      //
+      final (type, subject, validFrom, validTo) = switch (parameters) {
+        PivGeneratePublicKeyParameters() => (
+          GenerateType.publicKey,
+          null,
+          null,
+          null,
+        ),
+
+        PivGenerateCertificateParameters(
+          :final subject,
+          :final validFrom,
+          :final validTo,
+        ) =>
+          (
+            GenerateType.certificate,
+            subject,
+            dateFormatter.format(validFrom),
+            dateFormatter.format(validTo),
+          ),
+
+        PivGenerateCsrParameters(:final subject) => (
+          GenerateType.csr,
+          subject,
+          null,
+          null,
+        ),
+      };
+
+      //final pin = ref.read(_pinProvider(_session.devicePath));
+
+      final result = jsonDecode(
+        await piv.invoke(
+          'generate',
+          {
+            'slot': slot.hexId,
+            'keyType': keyType.value,
+            'pinPolicy': pinPolicy.value,
+            'touchPolicy': touchPolicy.value,
+            'subject': subject,
+            'generateType': type.name,
+            'validFrom': validFrom,
+            'validTo': validTo,
+          },
+          //signal: signaler,
+        ),
+      );
+
+      ref.invalidateSelf();
+
+      return PivGenerateResult.fromJson({
+        'generate_type': type.name,
+        ...result,
+      });
+    } finally {
+      //controller?.close();
+    }
+    //return PivGenerateResult.fromJson({});
   }
 
   @override
@@ -484,11 +482,13 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     String data, {
     String? password,
   }) async {
-    final result = await piv.invoke('examineFile', {
-      'slot': slot.hexId,
-      'data': data,
-      'password': password,
-    });
+    final result = jsonDecode(
+      await piv.invoke('examineFile', {
+        'slot': slot.hexId,
+        'data': data,
+        'password': password,
+      }),
+    );
 
     if (result['status']) {
       return PivExamineResult.fromJson({'runtimeType': 'result', ...result});
@@ -499,7 +499,9 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<bool> validateRfc4514(String value) async {
-    final result = await piv.invoke('validateRfc4514', {'data': value});
+    final result = jsonDecode(
+      await piv.invoke('validateRfc4514', {'data': value}),
+    );
     return result['status'];
   }
 
@@ -511,13 +513,15 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     PinPolicy pinPolicy = PinPolicy.dfault,
     TouchPolicy touchPolicy = TouchPolicy.dfault,
   }) async {
-    final result = await piv.invoke('importFile', {
-      'slot': slot.hexId,
-      'data': data,
-      'password': password,
-      'pinPolicy': pinPolicy.value,
-      'touchPolicy': touchPolicy.value,
-    });
+    final result = jsonDecode(
+      await piv.invoke('importFile', {
+        'slot': slot.hexId,
+        'data': data,
+        'password': password,
+        'pinPolicy': pinPolicy.value,
+        'touchPolicy': touchPolicy.value,
+      }),
+    );
 
     ref.invalidateSelf();
     return PivImportResult.fromJson(result);
