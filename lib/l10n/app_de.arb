@@ -42,6 +42,7 @@
     "s_import": "Importieren",
     "s_overwrite": "Überschreiben",
     "s_done": "Erledigt",
+    "s_more": null,
     "s_label": "Namen",
     "s_name": "Name",
     "s_usb": "USB",

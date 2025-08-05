@@ -42,6 +42,7 @@
     "s_import": "Importovat",
     "s_overwrite": "Přepsat",
     "s_done": "Hotovo",
+    "s_more": null,
     "s_label": "Jmenovka",
     "s_name": "Název",
     "s_usb": "USB",

@@ -42,6 +42,7 @@
     "s_import": "导入",
     "s_overwrite": "覆写",
     "s_done": "完成",
+    "s_more": null,
     "s_label": "标签",
     "s_name": "名字",
     "s_usb": "USB",

@@ -42,6 +42,7 @@
     "s_import": "Nhập khẩu",
     "s_overwrite": "Ghi đè",
     "s_done": "Xong",
+    "s_more": null,
     "s_label": "Nhãn",
     "s_name": "Tên",
     "s_usb": "USB",

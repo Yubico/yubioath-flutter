@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -146,6 +148,7 @@ class MoreItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
     return MenuAnchor(
       menuChildren:
           sections
@@ -154,11 +157,15 @@ class MoreItem extends ConsumerWidget {
                   constraints: BoxConstraints(minWidth: 150),
                   child: MenuItemButton(
                     leadingIcon: Icon(e._icon),
-                    onPressed: () {
-                      ref
-                          .read(currentSectionProvider.notifier)
-                          .setCurrentSection(e);
-                    },
+                    onPressed:
+                        data != null &&
+                                e.getAvailability(data) == Availability.enabled
+                            ? () {
+                              ref
+                                  .read(currentSectionProvider.notifier)
+                                  .setCurrentSection(e);
+                            }
+                            : null,
                     child: Text(e.getDisplayName(l10n)),
                   ),
                 ),
@@ -168,7 +175,7 @@ class MoreItem extends ConsumerWidget {
           (context, controller, child) => NavigationItem(
             leading: Icon(Symbols.more_horiz),
             borderRadius: borderRadius,
-            title: 'More',
+            title: l10n.s_more,
             collapsed: collapsed,
             onTap: () {
               if (controller.isOpen) {
@@ -186,13 +193,11 @@ class NavigationContent extends ConsumerWidget {
   final bool shouldPop;
   final bool extended;
   final bool isDrawer;
-  final double appHeight;
   const NavigationContent({
     super.key,
     this.shouldPop = true,
     this.extended = false,
     this.isDrawer = false,
-    required this.appHeight,
   });
 
   Widget _buildAppListContent(
@@ -203,7 +208,6 @@ class NavigationContent extends ConsumerWidget {
     List<Section> hiddenSections,
     Section currentSection,
     YubiKeyData? data,
-    bool scrollable,
   ) {
     final settingsSection = Section.settings;
     final borderRadius =
@@ -216,57 +220,50 @@ class NavigationContent extends ConsumerWidget {
     return AnimatedSize(
       duration: Duration(milliseconds: 150),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Normal YubiKey Applications
-          Flexible(
-            child: ClipRect(
-              child: Column(
-                children: [
-                  ...visibleSections.map(
-                    (app) => Flexible(
-                      child: NavigationItem(
-                        key: app.key,
-                        title: app.getDisplayName(l10n),
-                        borderRadius: borderRadius,
-                        leading: Icon(
-                          app._icon,
-                          fill: app == currentSection ? 1.0 : 0.0,
-                          semanticLabel:
-                              !extended ? app.getDisplayName(l10n) : null,
-                        ),
-                        collapsed: !extended,
-                        selected: app == currentSection,
-                        onTap:
-                            data == null &&
-                                        [
-                                          Section.home,
-                                          Section.settings,
-                                        ].contains(currentSection) ||
-                                    data != null &&
-                                        app.getAvailability(data) ==
-                                            Availability.enabled
-                                ? () {
-                                  ref
-                                      .read(currentSectionProvider.notifier)
-                                      .setCurrentSection(app);
-                                  if (shouldPop) {
-                                    Navigator.of(context).pop();
-                                  }
-                                }
-                                : null,
-                      ),
-                    ),
+          Column(
+            children: [
+              ...visibleSections.map(
+                (app) => NavigationItem(
+                  key: app.key,
+                  title: app.getDisplayName(l10n),
+                  borderRadius: borderRadius,
+                  leading: Icon(
+                    app._icon,
+                    fill: app == currentSection ? 1.0 : 0.0,
+                    semanticLabel: !extended ? app.getDisplayName(l10n) : null,
                   ),
-                  if (hiddenSections.isNotEmpty)
-                    MoreItem(
-                      sections: hiddenSections,
-                      collapsed: !extended,
-                      borderRadius: borderRadius,
-                    ),
-                ],
+                  collapsed: !extended,
+                  selected: app == currentSection,
+                  onTap:
+                      data == null &&
+                                  [
+                                    Section.home,
+                                    Section.settings,
+                                  ].contains(currentSection) ||
+                              data != null &&
+                                  app.getAvailability(data) ==
+                                      Availability.enabled
+                          ? () {
+                            ref
+                                .read(currentSectionProvider.notifier)
+                                .setCurrentSection(app);
+                            if (shouldPop) {
+                              Navigator.of(context).pop();
+                            }
+                          }
+                          : null,
+                ),
               ),
-            ),
+              if (hiddenSections.isNotEmpty)
+                MoreItem(
+                  sections: hiddenSections,
+                  collapsed: !extended,
+                  borderRadius: borderRadius,
+                ),
+            ],
           ),
           NavigationItem(
             key: settingsSection.key,
@@ -304,9 +301,8 @@ class NavigationContent extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
-    List<Section> appSections,
+    List<Section> availableAppSections,
     Section currentSection,
-    bool scrollable,
     YubiKeyData? data,
   ) {
     return Padding(
@@ -318,66 +314,81 @@ class NavigationContent extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          AnimatedSize(
-            duration: const Duration(milliseconds: 150),
-            child: DevicePickerContent(extended: extended, isDrawer: isDrawer),
-          ),
-          const SizedBox(height: 32),
-          !scrollable
-              ? Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final totalHeight = constraints.maxHeight;
-                    final itemHeight = 60;
-
-                    // Total height - settings section
-                    final appListHeight = totalHeight - itemHeight;
-                    var maxVisibleApps = (appListHeight / itemHeight).floor();
-                    if (maxVisibleApps > appSections.length) {
-                      maxVisibleApps = appSections.length;
-                    } else {
-                      // We have the more button so we subtract one
-                      maxVisibleApps -= 1;
-                    }
-
-                    var visibleApps = appSections.take(maxVisibleApps).toList();
-                    if (visibleApps.isNotEmpty &&
-                        currentSection != Section.settings &&
-                        !visibleApps.contains(currentSection) &&
-                        (data != null &&
-                            currentSection.getAvailability(data) ==
-                                Availability.enabled)) {
-                      visibleApps.removeLast();
-                      visibleApps.add(currentSection);
-                    }
-                    List<Section> hiddenApps =
-                        Set<Section>.from(
-                          appSections,
-                        ).difference(Set.from(visibleApps)).toList();
-
-                    return _buildAppListContent(
-                      context,
-                      ref,
-                      l10n,
-                      visibleApps,
-                      hiddenApps,
-                      currentSection,
-                      data,
-                      scrollable,
-                    );
-                  },
+          Material(
+            elevation: 2.0,
+            type: MaterialType.transparency,
+            child: Column(
+              children: [
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 150),
+                  child: DevicePickerContent(
+                    extended: extended,
+                    isDrawer: isDrawer,
+                  ),
                 ),
-              )
-              : _buildAppListContent(
-                context,
-                ref,
-                l10n,
-                [],
-                appSections,
-                currentSection,
-                data,
-                scrollable,
-              ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final totalHeight = constraints.maxHeight;
+                final itemHeight = 60;
+
+                // Total height - settings section
+                final appListHeight = totalHeight - itemHeight;
+                var maxVisibleApps = (appListHeight / itemHeight).floor();
+                if (maxVisibleApps > availableAppSections.length) {
+                  maxVisibleApps = availableAppSections.length;
+                } else {
+                  // We have the more button so we subtract one
+                  maxVisibleApps -= 1;
+                }
+                // Ensure at least one app is visible
+                maxVisibleApps = max(1, maxVisibleApps);
+
+                var visibleApps =
+                    availableAppSections.take(maxVisibleApps).toList();
+                if (currentSection != Section.settings &&
+                    !visibleApps.contains(currentSection) &&
+                    (data != null &&
+                        currentSection.getAvailability(data) ==
+                            Availability.enabled)) {
+                  visibleApps.removeLast();
+                  visibleApps.add(currentSection);
+                }
+                List<Section> hiddenApps =
+                    Set<Section>.from(
+                      availableAppSections,
+                    ).difference(Set.from(visibleApps)).toList();
+
+                final content = Material(
+                  type: MaterialType.transparency,
+                  elevation: 1.0,
+                  child: _buildAppListContent(
+                    context,
+                    ref,
+                    l10n,
+                    visibleApps,
+                    hiddenApps,
+                    currentSection,
+                    data,
+                  ),
+                );
+
+                // Determine if we should scroll based on total height
+                final shouldScroll =
+                    totalHeight <= 159 - (hiddenApps.isEmpty ? itemHeight : 0);
+
+                if (shouldScroll) {
+                  return SingleChildScrollView(child: content);
+                } else {
+                  return content;
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -399,25 +410,17 @@ class NavigationContent extends ConsumerWidget {
                 .toList()
             : [Section.home];
     final settingsSection = Section.settings;
-    final appSections =
+    final availableAppSections =
         availableSections.where((s) => s != settingsSection).toList();
     final currentSection = ref.watch(currentSectionProvider);
 
-    final height = appHeight - kToolbarHeight - 1;
-    final shouldScroll = height <= 270;
-    final content = _buildMainContent(
+    return _buildMainContent(
       context,
       ref,
       l10n,
-      appSections,
+      availableAppSections,
       currentSection,
-      shouldScroll,
       data,
     );
-    if (shouldScroll) {
-      return SingleChildScrollView(child: content);
-    } else {
-      return content;
-    }
   }
 }

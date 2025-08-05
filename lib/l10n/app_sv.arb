@@ -42,6 +42,7 @@
     "s_import": "Importera",
     "s_overwrite": "Skriv över",
     "s_done": "Klar",
+    "s_more": null,
     "s_label": "Etikett",
     "s_name": "Namn",
     "s_usb": "USB",

@@ -157,23 +157,22 @@ class _AppPageState extends ConsumerState<AppPage> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final height = constraints.maxHeight;
           if (width < 400 ||
               (isAndroid && width < 600 && width < constraints.maxHeight)) {
-            return _buildScaffold(context, true, false, false, height);
+            return _buildScaffold(context, true, false, false);
           }
           if (width < 800) {
-            return _buildScaffold(context, true, true, false, height);
+            return _buildScaffold(context, true, true, false);
           }
           if (width < 1000) {
-            return _buildScaffold(context, true, true, true, height);
+            return _buildScaffold(context, true, true, true);
           } else {
             // Fully expanded layout, close existing drawer if open
             final scaffoldState = scaffoldGlobalKey.currentState;
             if (scaffoldState?.isDrawerOpen == true) {
               scaffoldState?.closeDrawer();
             }
-            return _buildScaffold(context, false, true, true, height);
+            return _buildScaffold(context, false, true, true);
           }
         },
       ),
@@ -194,7 +193,7 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context, double appHeight) {
+  Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: SafeArea(
         child: Column(
@@ -219,7 +218,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                   key: _navExpandedKey,
                   extended: true,
                   isDrawer: true,
-                  appHeight: appHeight,
                 ),
               ),
             ),
@@ -644,7 +642,6 @@ class _AppPageState extends ConsumerState<AppPage> {
     bool hasDrawer,
     bool hasRail,
     bool hasManage,
-    double appHeight,
   ) {
     final l10n = AppLocalizations.of(context);
     final fullyExpanded = !hasDrawer && hasRail && hasManage;
@@ -689,7 +686,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                         key: _navKey,
                         shouldPop: false,
                         extended: false,
-                        appHeight: appHeight,
                       ),
                     ),
                   ),
@@ -708,7 +704,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                           key: _navExpandedKey,
                           shouldPop: false,
                           extended: true,
-                          appHeight: appHeight,
                         ),
                       ),
                     ),
@@ -896,7 +891,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 ),
             ],
           ),
-          drawer: hasDrawer ? _buildDrawer(context, appHeight) : null,
+          drawer: hasDrawer ? _buildDrawer(context) : null,
           body: body,
         );
       },

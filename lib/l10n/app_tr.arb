@@ -42,6 +42,7 @@
     "s_import": "İçe Aktar",
     "s_overwrite": "Geçerli Olanın Üzerine Yaz",
     "s_done": "Tamamlandı",
+    "s_more": null,
     "s_label": "Etiket",
     "s_name": "İsim",
     "s_usb": "Taşınabilir Bellek",

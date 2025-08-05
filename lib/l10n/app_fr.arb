@@ -42,6 +42,7 @@
     "s_import": "Importer",
     "s_overwrite": "Écraser",
     "s_done": "Terminé",
+    "s_more": null,
     "s_label": "Étiquette",
     "s_name": "Nom",
     "s_usb": "USB",

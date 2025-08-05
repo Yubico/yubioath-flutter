@@ -42,6 +42,7 @@
     "s_import": "インポート",
     "s_overwrite": "上書き",
     "s_done": "完了",
+    "s_more": null,
     "s_label": "ラベル",
     "s_name": "名前",
     "s_usb": "USB",

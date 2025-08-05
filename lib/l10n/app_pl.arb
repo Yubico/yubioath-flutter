@@ -42,6 +42,7 @@
     "s_import": "Importuj",
     "s_overwrite": "Nadpisz",
     "s_done": "Gotowe",
+    "s_more": null,
     "s_label": "Etykieta",
     "s_name": "Nazwa",
     "s_usb": "USB",

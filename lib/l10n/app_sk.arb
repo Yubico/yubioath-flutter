@@ -42,6 +42,7 @@
     "s_import": "Importovať",
     "s_overwrite": "Prepísať",
     "s_done": "Hotovo",
+    "s_more": null,
     "s_label": "Menovka",
     "s_name": "Názov",
     "s_usb": "USB",
