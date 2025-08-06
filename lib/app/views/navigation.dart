@@ -334,9 +334,9 @@ class NavigationContent extends ConsumerWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final totalHeight = constraints.maxHeight;
-                final itemHeight = 60;
+                final itemHeight = 53;
 
-                // Total height - settings section
+                // Available height for the app list
                 final appListHeight = totalHeight - itemHeight;
                 var maxVisibleApps = (appListHeight / itemHeight).floor();
                 if (maxVisibleApps > availableAppSections.length) {
@@ -363,6 +363,8 @@ class NavigationContent extends ConsumerWidget {
                       availableAppSections,
                     ).difference(Set.from(visibleApps)).toList();
 
+                // Material is needed to ensure navigation items are scrolled
+                // under the device picker
                 final content = Material(
                   type: MaterialType.transparency,
                   elevation: 1.0,
