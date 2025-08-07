@@ -221,11 +221,18 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                       leading: Radio<GenerateType>(
                                         value: e,
                                         groupValue: _generateType,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _generateType = e;
-                                          });
-                                        },
+                                        onChanged:
+                                            (_keyType == KeyType.x25519 &&
+                                                        e ==
+                                                            GenerateType
+                                                                .publicKey) ||
+                                                    _keyType != KeyType.x25519
+                                                ? (value) {
+                                                  setState(() {
+                                                    _generateType = e;
+                                                  });
+                                                }
+                                                : null,
                                       ),
                                     ),
                                   ),
@@ -258,6 +265,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     items: getSupportedKeyTypes(
                                       widget.pivState.version,
                                       isFips,
+                                      generateType: _generateType,
                                     ),
                                     value: _keyType,
                                     selected: _keyType != defaultKeyType,
