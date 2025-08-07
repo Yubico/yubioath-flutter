@@ -79,11 +79,13 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
+import java.security.Security
 import java.util.concurrent.Executors
 import javax.crypto.Mac
 
@@ -126,6 +128,9 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Security.removeProvider("BC")
+        Security.insertProviderAt(BouncyCastleProvider(), 1)
 
         if (isPortraitOnly()) {
             forcePortraitOrientation()

@@ -32,11 +32,9 @@ import com.yubico.authenticator.piv.data.byteArrayToHexString
 import com.yubico.authenticator.piv.data.fingerprint
 import com.yubico.authenticator.piv.data.hexStringToByteArray
 import com.yubico.authenticator.piv.data.isoFormat
-import com.yubico.authenticator.piv.utils.InvalidPasswordException
-import com.yubico.authenticator.piv.utils.KeyMaterial
-import com.yubico.authenticator.piv.utils.KeyMaterialUtils.getLeafCertificates
-import com.yubico.authenticator.piv.utils.KeyMaterialUtils.parse
-import com.yubico.authenticator.piv.utils.KeyMaterialUtils.toPem
+import com.yubico.authenticator.piv.KeyMaterialParser.getLeafCertificates
+import com.yubico.authenticator.piv.KeyMaterialParser.parse
+import com.yubico.authenticator.piv.KeyMaterialParser.toPem
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
@@ -313,7 +311,7 @@ class PivManager(
                 managementKeyStorage[serial] = managementKey
                 doAuth(piv, serial)
                 jsonSerializer.encodeToString(mapOf("status" to true))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 jsonSerializer.encodeToString(mapOf("status" to false))
             }
         }
@@ -487,7 +485,7 @@ class PivManager(
         certificate?.let {
             buildJsonObject {
                 val keyType = KeyType.fromKey(certificate.publicKey)
-                put("key_type", JsonPrimitive(keyType.value))
+                put("key_type", JsonPrimitive(keyType.value.toInt() and 0xff))
                 put("subject", JsonPrimitive(certificate.subjectDN.name))
                 put("issuer", JsonPrimitive(certificate.issuerDN.name))
                 put("serial", JsonPrimitive(certificate.serialNumber.toString()))
@@ -520,7 +518,10 @@ class PivManager(
             put("status", JsonPrimitive(true))
             put("password", JsonPrimitive(password != null))
             put("key_type", privateKey?.let {
-                JsonPrimitive(KeyType.fromKeyParams(PrivateKeyValues.fromPrivateKey(it)).value)
+                JsonPrimitive(
+                    KeyType.fromKeyParams(
+                        PrivateKeyValues.fromPrivateKey(it)
+                    ).value.toUByte())
             } ?: JsonNull)
             put("cert_info", getCertificateInfo(certificate) ?: JsonNull)
             pivViewModel.getMetadata(slot)?.let {
@@ -531,7 +532,7 @@ class PivManager(
         }
 
         jsonSerializer.encodeToString(JsonObject.serializer(), result)
-    } catch (e: InvalidPasswordException) {
+    } catch (_: InvalidPasswordException) {
         val result = buildJsonObject {
             put("status", JsonPrimitive(false))
         }
@@ -548,7 +549,7 @@ class PivManager(
     ): String = try {
         getX500Name(data)
         jsonSerializer.encodeToString(mapOf("status" to true))
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
         jsonSerializer.encodeToString(mapOf("status" to false))
     }
 
@@ -615,7 +616,7 @@ class PivManager(
         data: String,
         password: String?
     ): KeyMaterial = try {
-            parse(data.hexStringToByteArray(), password)
+            parse(data.hexStringToByteArray(), password?.toCharArray())
         } catch (e: Exception) {
             when (e) {
                 is IllegalArgumentException, is IOException -> KeyMaterial(
