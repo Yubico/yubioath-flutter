@@ -25,10 +25,10 @@ class ListTitle extends StatelessWidget {
   Widget build(BuildContext context) => ListTile(
     dense: true,
     title: Text(
-      title,
+      title.toUpperCase(),
       style:
           textStyle ??
-          Theme.of(context).textTheme.bodyLarge?.copyWith(
+          Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.primary,
           ),
     ),

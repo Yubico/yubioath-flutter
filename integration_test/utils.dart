@@ -300,7 +300,8 @@ extension PatrolTesterUtils on PatrolTester {
       await $(drawerIconButtonKey).tap();
     }
 
-    await targetButton.scrollTo().tap();
+    // TODO: Need to take care of sections that are hidden in the more button
+    await targetButton.tap();
 
     // Android may need some extra time to settle after navigation
     if (isAndroid) {

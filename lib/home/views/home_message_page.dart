@@ -23,7 +23,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/views/message_page.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
-import 'key_actions.dart';
 
 class HomeMessagePage extends ConsumerWidget {
   final Widget? graphic;
@@ -66,7 +65,6 @@ class HomeMessagePage extends ConsumerWidget {
       header: header,
       message: message,
       footnote: footnote,
-      keyActionsBuilder: (context) => homeBuildActions(context, null, ref),
       actionButtonBuilder: actionButtonBuilder,
       actionsBuilder: actionsBuilder,
       fileDropOverlay: fileDropOverlay,

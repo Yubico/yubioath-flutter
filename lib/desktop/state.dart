@@ -267,10 +267,17 @@ class DesktopCurrentSectionNotifier extends CurrentSectionNotifier {
   @override
   void setCurrentSection(Section section) {
     state = section;
-    _prefs.setString(_key, section.name);
+    if (section != Section.settings) {
+      // Save current section only if it's not settings
+      _prefs.setString(_key, section.name);
+    }
   }
 
   void _notifyDeviceChanged(YubiKeyData? data) {
+    if (state == Section.settings) {
+      return;
+    }
+
     if (data == null) {
       state = _supportedSections.first;
       return;

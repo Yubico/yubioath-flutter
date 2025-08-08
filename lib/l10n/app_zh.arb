@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "未完成的翻译",
     "p_translation_progress_desc": "进度指标反映了翻译的成熟度。",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "保存",
     "s_cancel": "取消",
@@ -40,6 +42,7 @@
     "s_import": "导入",
     "s_overwrite": "覆写",
     "s_done": "完成",
+    "s_more": null,
     "s_label": "标签",
     "s_name": "名字",
     "s_usb": "USB",
@@ -74,6 +77,10 @@
     "s_device": "设备",
     "s_application": "应用程序",
     "s_settings": "设置",
+    "s_reset_settings": null,
+    "l_reset_settings_desc": null,
+    "s_general": null,
+    "s_support": null,
     "l_settings_desc": "更改应用程序首选项",
     "s_certificates": "证书",
     "s_security_key": "安全密钥",
@@ -81,6 +88,8 @@
     "s_help_and_about": "帮助和关于",
     "l_help_and_about_desc": "疑难解答和支持",
     "s_help_and_feedback": "帮助与反馈",
+    "s_help": null,
+    "s_app_information": null,
     "s_home": "主页",
     "s_user_guide": "用户指南",
     "s_i_need_help": "寻求帮助",
@@ -106,9 +115,13 @@
     "l_invalid_keyboard_character": "所选键盘字符无效",
     "s_require_touch": "需要触摸",
     "q_have_account_info": "有账户信息吗？",
+    "s_log_and_diagnostics": null,
+    "s_debugging_tools": null,
     "s_run_diagnostics": "运行诊断",
-    "s_log_level": "日志级别： {level}",
-    "@s_log_level": {
+    "l_run_diagnostics_desc": null,
+    "s_logging_level": null,
+    "s_current_log_level": null,
+    "@s_current_log_level": {
         "placeholders": {
             "level": {
                 "type": "String"
@@ -116,33 +129,25 @@
         }
     },
     "s_character_count": "字符数",
-
     "@_language": {},
-    "s_language": "语言",
-    "p_community_translations_desc": "翻译由 {crowdin} 上的社区维护。",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
-    "s_choose_language": "选择语言",
 
+    "s_language": "语言",
+    "s_choose_language": "选择语言",
     "@_theme": {},
+
     "s_app_theme": "应用程序主题",
     "s_choose_app_theme": "选择主题",
     "s_system_default": "系统默认",
     "s_light_mode": "亮色主题",
     "s_dark_mode": "暗色主题",
-
     "@_layout": {},
+
     "s_list_layout": "列表布局",
     "s_grid_layout": "网格布局",
     "s_mixed_layout": "混合布局",
     "s_select_layout": "选择布局",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "选择以扫描",
     "s_hide_reader": "隐藏读取器",
     "s_show_hidden_readers": "显示隐藏的读取器",
@@ -182,8 +187,8 @@
     },
     "l_fips_capable": "FIPS 兼容",
     "l_fips_approved": "FIPS 已认证",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "插入您的 YubiKey",
     "l_insert_or_tap_yk": "插入或轻触 YubiKey",
     "l_unplug_yk": "拔出您的 YubiKey",
@@ -195,8 +200,8 @@
     "s_touch_required": "需要触摸",
     "l_touch_button_now": "现在触摸 YubiKey 上的按钮",
     "l_keep_touching_yk": "不断重复触摸 YubiKey\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -204,8 +209,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Auth",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "切换应用程序",
     "s_toggle_interfaces": "切换接口",
     "p_toggle_applications_desc": "在可用的使用方式上启用或禁用应用程序。",
@@ -222,8 +227,8 @@
     "s_show_lock_code": "显示锁定密码",
     "s_hide_lock_code": "隐藏锁定密码",
     "p_lock_code_required_desc": "执行的操作需要输入配置锁定密码。",
-
     "@_connectivity_issues": {},
+
     "l_helper_not_responding": "帮助进程没有响应",
     "l_yk_no_access": "此 YubiKey 无法访问",
     "s_yk_inaccessible": "设备不可访问",
@@ -242,16 +247,16 @@
     "p_operation_failed_try_again": "操作失败，请重试。",
     "l_configuration_unsupported": "配置不受支持",
     "p_scp_unsupported": "要通过 NFC 进行通信，YubiKey 需要本手机不支持的技术。请将 YubiKey 插入手机的 USB 端口。",
-
     "@_general_errors": {},
+
     "l_error_occurred": "发生了一个错误",
     "s_application_error": "应用程序错误",
     "l_import_error": "导入出错",
     "l_file_not_found": "未找到文件",
     "l_file_too_big": "文件大小过大",
     "l_filesystem_error": "文件系统操作错误",
-
     "@_pins": {},
+
     "s_pin": "PIN",
     "s_puk": "PUK",
     "s_set_pin": "设置 PIN",
@@ -393,8 +398,8 @@
     "l_default_pin_used": "默认 PIN 已使用",
     "l_default_puk_used": "默认 PUK 已使用",
     "l_pin_complexity": "PIN 复杂性已强制要求",
-
     "@_passwords": {},
+
     "s_password": "密码",
     "s_manage_password": "管理密码",
     "s_set_password": "设置密码",
@@ -419,8 +424,8 @@
     "l_set_password_first": "设置密码",
     "l_enter_oath_pw": "请输入 YubiKey 的 OATH 密码",
     "p_new_password_requirements": "密码可以包含字母、数字和特殊字符。",
-
     "@_management_key": {},
+
     "s_management_key": "管理密钥",
     "s_current_management_key": "当前管理密钥",
     "s_new_management_key": "新的管理密钥",
@@ -438,8 +443,8 @@
     "l_wrong_key": "错误的密钥",
     "l_unlock_piv_management": "解锁 PIV 管理",
     "p_unlock_piv_management_desc": "您即将执行的操作需要 PIV 管理密钥。",
-
     "@_oath_accounts": {},
+
     "l_account": "账户：{label}",
     "@l_account": {
         "placeholders": {
@@ -546,8 +551,8 @@
     "s_time_based": "基于时间",
     "l_copy_code_desc": "将验证码粘贴到另一个应用程序中",
     "l_calculate_code_desc": "从您的 YubiKey 获取新代码",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP ID",
     "s_user_id": "用户 ID",
     "s_credential_id": "凭证 ID",
@@ -639,13 +644,13 @@
     },
     "p_press_fingerprint_begin": "将手指按在 YubiKey 上开始操作。",
     "l_name_fingerprint": "为这个指纹命名",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "因用户不活动而失败",
     "l_wrong_inserted_yk_error": "重新插入的 YubiKey 与初始设备不匹配",
     "l_failed_connecting_to_fido": "连接 FIDO 接口失败",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": "自签名证书",
     "l_certificate_signing_request": "证书签名请求（CSR）",
     "s_certificate": "证书",
@@ -793,8 +798,8 @@
     "l_overwrite_cert": "证书将被覆盖",
     "l_overwrite_key": "私钥将被覆盖",
     "l_overwrite_key_maybe": "槽位中的任何现有密钥都将被覆盖",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
@@ -811,14 +816,14 @@
     "s_slot_9d": "密钥管理",
     "s_slot_9e": "卡片认证",
     "s_retired_slot": "退役密钥管理",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "短触",
     "s_otp_slot_two": "长按",
     "l_otp_slot_empty": "槽位为空",
     "l_otp_slot_configured": "槽位已配置",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "配置 Yubico OTP 凭证",
     "s_challenge_response": "挑战/应答",
     "l_challenge_response_desc": "配置一个 挑战/应答 凭证",
@@ -850,8 +855,8 @@
             }
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "删除凭证",
     "q_delete_slot": "删除凭证？",
     "l_delete_slot_desc": "移除槽位中的凭据",
@@ -891,12 +896,12 @@
     },
     "s_append_enter": "附加 ⏎",
     "l_append_enter_desc": "输入 OTP 后追加回车键",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "交换槽位失败！请确保 YubiKey 没有被限制访问权限。",
     "l_wrong_access_code": "访问码错误",
-
     "@_otp_access_code": {},
+
     "s_access_code": "访问码",
     "s_show_access_code": "显示访问码",
     "s_hide_access_code": "隐藏访问码",
@@ -908,9 +913,9 @@
             }
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "启用 NFC",
     "s_request_access": "申请权限",
     "s_permission_denied": "权限被拒绝",
@@ -922,8 +927,8 @@
     "p_webauthn_elevated_permissions_required": "WebAuthn 管理需要管理员权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
     "l_ms_store_permission_note": "Microsoft Store 版本的应用程序可能无法提升权限",
     "p_need_camera_permission": "Yubico 身份验证器需要相机权限以扫描二维码。",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "扫描二维码",
     "l_invalid_qr": "二维码无效",
     "l_qr_not_found": "未发现二维码",
@@ -951,8 +956,8 @@
     "q_no_qr": "没有二维码？",
     "s_enter_manually": "手动输入",
     "s_read_from_file": "从文件读取",
-
     "@_factory_reset": {},
+
     "s_reset": "重置",
     "s_factory_reset": "恢复出厂设置",
     "l_factory_reset_desc": "恢复 YubiKey 的默认设置",
@@ -978,12 +983,13 @@
     "p_warning_piv_reset_desc": "这包括私钥和证书。您的 PIN、PUK 和管理密钥将被重置为出厂默认值。",
     "p_warning_global_reset": "警告！这将不可逆地删除 YubiKey 中所有已保存的数据，包括证书。",
     "p_warning_global_reset_desc": "将 YubiKey 上的应用程序恢复出厂设置。PIN将重置为出厂默认值，已注册的指纹将被删除。任何密钥、证书或其他凭证都将被永久删除。",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "复制到剪贴板",
     "s_code_copied": "代码已复制",
     "l_code_copied_clipboard": "代码已复制到剪贴板",
     "s_copy_log": "复制日志",
+    "l_copy_log_clipboard": null,
     "l_log_copied": "日志已复制到剪贴板",
     "l_diagnostics_copied": "诊断数据已复制到剪贴板",
     "p_target_copied_clipboard": "{label} 已复制到剪贴板。",
@@ -994,8 +1000,8 @@
             }
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "自定义图标",
     "l_set_icons_for_accounts": "为账号设置图标",
     "p_custom_icons_description": "图标包可以通过使用熟悉的徽标和颜色，让您的账号更容易辨识。",
@@ -1025,10 +1031,13 @@
     },
     "l_invalid_icon_pack": "无效的图标包",
     "l_icon_pack_copy_failed": "复制图标包文件失败",
-
     "@_android_settings": {},
+
     "s_nfc_options": "NFC 选项",
+    "s_nfc_and_usb_options": null,
+    "l_nfc_and_usb_options_desc": null,
     "l_on_yk_nfc_tap": "当 YubiKey NFC 读取时",
+    "l_on_yk_usb_insert": null,
     "l_do_nothing": "不进行任何操作",
     "l_launch_ya": "启动 Yubico 身份验证器",
     "l_copy_otp_clipboard": "复制 OTP（一次性密码） 到剪贴板",
@@ -1046,32 +1055,33 @@
     "l_launch_app_on_usb_on": "这可以防止其他应用程序通过 USB 使用 YubiKey",
     "l_launch_app_on_usb_off": "其他应用程序可通过 USB 使用 YubiKey",
     "s_allow_screenshots": "允许截图",
-
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "已准备好扫描",
     "s_nfc_hold_still": "保持不动\u2026",
     "s_nfc_tap_your_yubikey": "读取您的 YubiKey",
     "l_nfc_failed_to_scan": "扫描失败，请重试",
-
     "@_usb": {},
+
     "s_usb_processing": "从 YubiKey 读取数据",
     "s_usb_dont_remove": "不要拔下密钥\u2026",
     "l_usb_read_error": "从 YubiKey 读取数据失败",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "成功将 OTP 代码从 YubiKey 复制到剪贴板。",
     "p_ndef_set_password": "成功将密码从 YubiKey 复制到剪贴板。",
     "p_ndef_parse_failure": "从 Yubikey 解析 OTP 代码失败。",
     "p_ndef_set_clip_failure": "尝试从 YubiKey 复制 OTP 代码时，访问剪贴板失败。",
-
     "@_key_customization": {},
+
     "s_set_label": "设置标签",
     "s_set_color": "设置颜色",
     "s_change_label": "更改标签",
     "p_set_will_add_custom_name": "这将为你的 YubiKey 起一个自定义名称。",
     "p_rename_will_change_custom_name": "这将更改您的 YubiKey 的标签。",
-
     "@_shortcuts": {},
+
     "s_shortcuts": "快捷方式",
     "s_keyboard_shortcuts": "键盘快捷键",
     "s_global_shortcuts": "全局快捷键",
@@ -1102,6 +1112,6 @@
     "s_delete_item": "删除项目",
     "s_calculate_oath_code": "计算 OATH 代码",
     "s_open_keyboard_shortcuts": "打开键盘快捷键",
-
     "@_eof": {}
+
 }

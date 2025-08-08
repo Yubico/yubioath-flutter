@@ -196,28 +196,32 @@ class _AppPageState extends ConsumerState<AppPage> {
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: CloseButton(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: CloseButton(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  _buildLogo(context),
-                  const SizedBox(width: 48),
-                ],
-              ),
-              Material(
+                ),
+                _buildLogo(context),
+                const SizedBox(width: 48),
+              ],
+            ),
+            Expanded(
+              child: Material(
                 type: MaterialType.transparency,
-                child: NavigationContent(key: _navExpandedKey, extended: true),
+                child: NavigationContent(
+                  key: _navExpandedKey,
+                  extended: true,
+                  isDrawer: true,
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -678,12 +682,10 @@ class _AppPageState extends ConsumerState<AppPage> {
                     child: _VisibilityListener(
                       targetKey: _navKey,
                       controller: _navController,
-                      child: SingleChildScrollView(
-                        child: NavigationContent(
-                          key: _navKey,
-                          shouldPop: false,
-                          extended: false,
-                        ),
+                      child: NavigationContent(
+                        key: _navKey,
+                        shouldPop: false,
+                        extended: false,
                       ),
                     ),
                   ),
@@ -696,14 +698,12 @@ class _AppPageState extends ConsumerState<AppPage> {
                     child: _VisibilityListener(
                       controller: _navController,
                       targetKey: _navExpandedKey,
-                      child: SingleChildScrollView(
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: NavigationContent(
-                            key: _navExpandedKey,
-                            shouldPop: false,
-                            extended: true,
-                          ),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: NavigationContent(
+                          key: _navExpandedKey,
+                          shouldPop: false,
+                          extended: true,
                         ),
                       ),
                     ),

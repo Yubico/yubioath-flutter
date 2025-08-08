@@ -34,6 +34,7 @@ import '../../piv/views/piv_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
+import 'settings_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -97,6 +98,12 @@ class MainPage extends ConsumerWidget {
       scale: 2,
       color: Theme.of(context).colorScheme.primary,
     );
+
+    final section = ref.watch(currentSectionProvider);
+    if (section == Section.settings) {
+      return const SettingsPage();
+    }
+
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
@@ -144,8 +151,6 @@ class MainPage extends ConsumerWidget {
           .watch(currentDeviceDataProvider)
           .when(
             data: (data) {
-              final section = ref.watch(currentSectionProvider);
-
               return switch (section) {
                 Section.home => HomeScreen(data),
                 Section.accounts => OathScreen(data.node.path),
@@ -154,6 +159,7 @@ class MainPage extends ConsumerWidget {
                 Section.fingerprints => FingerprintsScreen(data),
                 Section.certificates => PivScreen(data),
                 Section.slots => OtpScreen(data.node.path),
+                Section.settings => const SettingsPage(),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),
