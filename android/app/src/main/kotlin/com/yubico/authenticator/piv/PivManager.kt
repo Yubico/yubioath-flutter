@@ -23,7 +23,6 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.jsonSerializer
 import com.yubico.authenticator.piv.data.CertInfo
 import com.yubico.authenticator.piv.data.PivSlot
 import com.yubico.authenticator.piv.data.PivState
@@ -58,11 +57,8 @@ import com.yubico.yubikit.piv.Slot
 import com.yubico.yubikit.piv.TouchPolicy
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
 import org.bouncycastle.asn1.x500.X500Name
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.security.cert.X509Certificate
@@ -310,9 +306,9 @@ class PivManager(
                 val serial = pivViewModel.currentSerial.value.toString()
                 managementKeyStorage[serial] = managementKey
                 doAuth(piv, serial)
-                jsonSerializer.encodeToString(mapOf("status" to true))
+                JSONObject(mapOf("status" to true)).toString()
             } catch (_: Exception) {
-                jsonSerializer.encodeToString(mapOf("status" to false))
+                JSONObject(mapOf("status" to false)).toString()
             }
         }
 
@@ -378,16 +374,20 @@ class PivManager(
     private fun handlePinPukErrors(block: () -> Unit) : String {
         try {
             block()
-            return jsonSerializer.encodeToString(mapOf("status" to "success"))
+            return JSONObject(mapOf("status" to "success")).toString()
         } catch (invalidPin: InvalidPinException) {
-            return jsonSerializer.encodeToString(mapOf("status" to "invalid-pin",
-                "attemptsRemaining" to invalidPin.attemptsRemaining))
+            return JSONObject(
+                mapOf(
+                    "status" to "invalid-pin",
+                    "attemptsRemaining" to invalidPin.attemptsRemaining
+                )
+            ).toString()
         } catch (apduException: ApduException) {
             if (apduException.sw == SW.CONDITIONS_NOT_SATISFIED) {
-                return jsonSerializer.encodeToString(mapOf("status" to "pin-complexity"))
+                return JSONObject(mapOf("status" to "pin-complexity")).toString()
             }
         }
-        return jsonSerializer.encodeToString(mapOf("status" to "other-error"))
+        return JSONObject(mapOf("status" to "other-error")).toString()
     }
 
     private fun getSlots(piv: YubiKitPivSession): List<PivSlot> =
@@ -483,16 +483,17 @@ class PivManager(
 
     private fun getCertificateInfo(certificate: X509Certificate?) =
         certificate?.let {
-            buildJsonObject {
-                val keyType = KeyType.fromKey(certificate.publicKey)
-                put("key_type", JsonPrimitive(keyType.value.toInt() and 0xff))
-                put("subject", JsonPrimitive(certificate.subjectDN.name))
-                put("issuer", JsonPrimitive(certificate.issuerDN.name))
-                put("serial", JsonPrimitive(certificate.serialNumber.toString()))
-                put("not_valid_before", JsonPrimitive(certificate.notBefore.isoFormat()))
-                put("not_valid_after", JsonPrimitive(certificate.notAfter.isoFormat()))
-                put("fingerprint", JsonPrimitive(certificate.fingerprint()))
-            }
+            JSONObject(
+                mapOf(
+                    "key_type" to (KeyType.fromKey(certificate.publicKey).value.toInt() and 0xff),
+                    "subject" to certificate.subjectDN.name,
+                    "issuer" to certificate.issuerDN.name,
+                    "serial" to certificate.serialNumber.toString(),
+                    "not_valid_before" to certificate.notBefore.isoFormat(),
+                    "not_valid_after" to certificate.notAfter.isoFormat(),
+                    "fingerprint" to certificate.fingerprint(),
+                )
+            )
         }
 
     private fun publicKeyMatch(certificate: X509Certificate?, metadata: SlotMetadata?) : Boolean? {
@@ -514,43 +515,39 @@ class PivManager(
         val (certificates, privateKey) = parseFile(data, password)
         val certificate = chooseCertificate(certificates)
 
-        val result = buildJsonObject {
-            put("status", JsonPrimitive(true))
-            put("password", JsonPrimitive(password != null))
-            put("key_type", privateKey?.let {
-                JsonPrimitive(
+        JSONObject(
+            mapOf(
+                "status" to true,
+                "password" to (password != null),
+                "key_type" to privateKey?.let {
                     KeyType.fromKeyParams(
                         PrivateKeyValues.fromPrivateKey(it)
-                    ).value.toUByte())
-            } ?: JsonNull)
-            put("cert_info", getCertificateInfo(certificate) ?: JsonNull)
+                    ).value.toUByte()
+                },
+                "cert_info" to getCertificateInfo(certificate)
+            )
+        ).apply {
             pivViewModel.getMetadata(slot)?.let {
                 if (certificate != null && privateKey == null) {
-                    put("public_key_match", JsonPrimitive(publicKeyMatch(certificate, it)))
+                    put("public_key_match", publicKeyMatch(certificate, it))
                 }
             }
-        }
-
-        jsonSerializer.encodeToString(JsonObject.serializer(), result)
+        }.toString()
     } catch (_: InvalidPasswordException) {
-        val result = buildJsonObject {
-            put("status", JsonPrimitive(false))
-        }
-        jsonSerializer.encodeToString(JsonObject.serializer(), result)
+        JSONObject(mapOf("status" to false)).toString()
     } finally {
     }
 
 
     private fun getX500Name(data: String) = X500Name(data)
 
-
     private fun validateRfc4514(
         data: String
     ): String = try {
         getX500Name(data)
-        jsonSerializer.encodeToString(mapOf("status" to true))
+        JSONObject(mapOf("status" to true)).toString()
     } catch (_: IllegalArgumentException) {
-        jsonSerializer.encodeToString(mapOf("status" to false))
+        JSONObject(mapOf("status" to false)).toString()
     }
 
     private suspend fun generate(
@@ -599,12 +596,12 @@ class PivManager(
                     else -> throw IllegalArgumentException("Invalid generate type: $generateType")
                 }
 
-                jsonSerializer.encodeToString(
+                JSONObject(
                     mapOf(
                         "public_key" to publicKeyPem.byteArrayToHexString(),
                         "result" to result
                     )
-                )
+                ).toString()
             } catch (e: Exception) {
                 throw e
             } finally {
@@ -676,32 +673,26 @@ class PivManager(
                     // TODO self.certificate = certificate
                 }
 
-                val result = buildJsonObject {
-
-                    // TODO get public key from the private key
-                    val publicKey2 = metadata?.let {
-                        it.publicKey?.toPublicKey()
-                    }
-                    put("metadata", metadata?.let {buildJsonObject {
-                        put("key_type", JsonPrimitive(it.keyType.toInt()))
-                        put("pin_policy", JsonPrimitive(it.pinPolicy))
-                        put("touch_policy", JsonPrimitive(it.touchPolicy))
-                        put("generated", JsonPrimitive(it.generated))
-                        put(
-                            "public_key",
-                            it.publicKey?.let { JsonPrimitive(it.toPublicKey().toPem()) }
-                                ?: JsonNull)
-                    }} ?: JsonNull)
-                    put("public_key", privateKey?.let {
-                        JsonPrimitive(publicKey2?.toPem())} ?: JsonNull)
-                    put("certificate",
-                        certificate?.let {
-                            JsonPrimitive(it.encoded.byteArrayToHexString())
-                        } ?: JsonNull
+                JSONObject(
+                    mapOf(
+                        "metadata" to metadata?.let {
+                            JSONObject(
+                                mapOf(
+                                    "key_type" to it.keyType.toInt(),
+                                    "pin_policy" to it.pinPolicy,
+                                    "touch_policy" to it.touchPolicy,
+                                    "generated" to it.generated,
+                                    "public_key" to it.publicKey?.toPublicKey()?.toPem()
+                                )
+                            )
+                        },
+                        "public_key" to privateKey?.let {
+                            metadata?.publicKey?.toPublicKey()?.toPem()
+                        },
+                        "certificate" to
+                                certificate?.encoded?.byteArrayToHexString()
                     )
-                }
-
-                jsonSerializer.encodeToString(JsonObject.serializer(), result)
+                ).toString()
             } finally {
             }
         }
