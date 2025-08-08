@@ -27,12 +27,15 @@ import org.bouncycastle.openssl.PEMEncryptedKeyPair
 import org.bouncycastle.openssl.PEMKeyPair
 import org.bouncycastle.openssl.PEMParser
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder
+import org.bouncycastle.pkcs.PKCS10CertificationRequest
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.StringReader
+import java.io.StringWriter
 import java.security.KeyFactory
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -56,9 +59,21 @@ object KeyMaterialParser {
     private class InvalidDerFormat : Exception()
 
     fun PublicKey.toPem(): String {
-        val base64 = Base64.encodeToString(encoded, Base64.NO_WRAP)
-        val wrapped = base64.chunked(64).joinToString("\n")
-        return "-----BEGIN PUBLIC KEY-----\n$wrapped\n-----END PUBLIC KEY-----\n"
+        val sw = StringWriter()
+        JcaPEMWriter(sw).use { it.writeObject(this) }
+        return sw.toString()
+    }
+
+    fun PKCS10CertificationRequest.toPem(): String {
+        val sw = StringWriter()
+        JcaPEMWriter(sw).use { it.writeObject(this) }
+        return sw.toString()
+    }
+
+    fun X509Certificate.toPem(): String {
+        val sw = StringWriter()
+        JcaPEMWriter(sw).use { it.writeObject(this) }
+        return sw.toString()
     }
 
     fun getLeafCertificates(certs: List<X509Certificate>): List<X509Certificate> {

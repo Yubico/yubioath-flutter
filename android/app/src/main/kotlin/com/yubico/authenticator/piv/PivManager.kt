@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator.piv
 
+import android.os.Build
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.MainActivity
@@ -62,7 +63,14 @@ import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.security.cert.X509Certificate
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
 import java.util.Arrays
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicBoolean
 
 typealias PivAction = (Result<YubiKitPivSession, Exception>) -> Unit
@@ -154,7 +162,7 @@ class PivManager(
                 )
 
                 "generate" -> generate(
-                    (args["slot"] as String),
+                    Slot.fromStringAlias(args["slot"] as String),
                     (args["keyType"] as Int),
                     (args["pinPolicy"] as Int),
                     (args["touchPolicy"] as Int),
@@ -551,7 +559,7 @@ class PivManager(
     }
 
     private suspend fun generate(
-        slot: String,
+        slot: Slot,
         keyType: Int,
         pinPolicy: Int,
         touchPolicy: Int,
@@ -563,42 +571,60 @@ class PivManager(
         connectionHelper.useSession { piv ->
             try {
 
+                // Bug in yubikit-android KeyType.fromValue
+                val keyTypeValue = KeyType.entries.first { it.value.toUByte().toInt() == keyType }
+
                 val serial = pivViewModel.currentSerial.value.toString()
                 doAuth(piv, serial)
                 doVerifyPin(piv, serial)
 
                 val keyValues = piv.generateKeyValues(
-                    Slot.fromStringAlias(slot),
-                    KeyType.fromValue(keyType),
+                    slot,
+                    keyTypeValue,
                     PinPolicy.fromValue(pinPolicy),
                     TouchPolicy.fromValue(touchPolicy)
                 )
 
                 val publicKey = keyValues.toPublicKey()
-                val publicKeyPem = publicKey.encoded
+                val publicKeyPem = publicKey.toPem()
 
                 val result = when (generateType) {
-                    "publicKey" -> publicKeyPem.byteArrayToHexString()
+                    "publicKey" -> publicKeyPem
                     "csr" -> {
                         if (subject == null) {
                             throw IllegalArgumentException("Subject missing for csr")
                         }
-                        // TODO implement
-                        //val csrBuilder = JcaPKCS10CertificationRequestBuilder(getX500Name(subject), publicKey)
-                        //val csBuilder = JcaContentSignerBuilder("SHA256withRSA")
-                        //
-                        //val signer = csBuilder.build(keyPair.getPrivate());
-                        //csrBuilder.build(signer)
-                        ""
+                        generateCsr(piv, slot, publicKey, subject).toPem()
                     }
 
-                    "certificate" -> "" // TODO implement
+                    "certificate" -> {
+                        if (subject == null) {
+                            throw IllegalArgumentException("Subject missing for csr")
+                        }
+
+                        val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                        format.timeZone = TimeZone.getTimeZone("UTC")
+                        val validFromDate = format.parse(validFrom!!)!!
+                        val validToDate = format.parse(validTo!!)!!
+                        val cert = generateSelfSignedCertificate(
+                            piv,
+                            slot,
+                            publicKey,
+                            subject,
+                            validFromDate,
+                            validToDate
+                        )
+                        val result = cert.toPem()
+                        piv.putCertificate(slot, cert)
+                        piv.putObject(ObjectId.CHUID, generateChuid())
+                        result
+                    }
                     else -> throw IllegalArgumentException("Invalid generate type: $generateType")
                 }
 
                 JSONObject(
                     mapOf(
-                        "public_key" to publicKeyPem.byteArrayToHexString(),
+                        "public_key" to publicKeyPem,
                         "result" to result
                     )
                 ).toString()
