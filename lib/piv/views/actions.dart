@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -182,9 +184,13 @@ class PivActions extends ConsumerWidget {
                       fileName: fileName,
                       allowedExtensions: [fileExt],
                       type: FileType.custom,
+                      bytes:
+                          isAndroid
+                              ? Uint8List.fromList(utf8.encode(data!))
+                              : null,
                       lockParentWindow: true,
                     );
-                    if (filePath != null) {
+                    if (!isAndroid && filePath != null) {
                       // Windows only: Append extension if missing
                       if (Platform.isWindows &&
                           !filePath.toLowerCase().endsWith('.$fileExt')) {
