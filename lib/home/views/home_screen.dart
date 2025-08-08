@@ -30,6 +30,7 @@ import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
+import '../../widgets/serial.dart';
 import 'key_actions.dart';
 import 'manage_label_dialog.dart';
 
@@ -308,11 +309,9 @@ class _DeviceContent extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         if (serial != null)
-          Text(
-            l10n.l_serial_number(serial),
-            style: Theme.of(context).textTheme.titleSmall?.apply(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+          Serial(
+            serial: serial,
+            l10n: l10n,
           ),
         if (version != const Version(0, 0, 0))
           Text(
