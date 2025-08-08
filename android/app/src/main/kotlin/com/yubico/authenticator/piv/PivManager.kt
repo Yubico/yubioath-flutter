@@ -332,7 +332,7 @@ class PivManager(
         }
 
     private suspend fun changePin(pin: CharArray, newPin: CharArray): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
                 handlePinPukErrors { piv.changePin(pin, newPin) }
             } finally {
@@ -342,7 +342,7 @@ class PivManager(
         }
 
     private suspend fun changePuk(puk: CharArray, newPuk: CharArray): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
                 handlePinPukErrors { piv.changePuk(puk, newPuk) }
             } finally {
@@ -356,13 +356,13 @@ class PivManager(
         keyType: ManagementKeyType,
         storeKey: Boolean
     ): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             piv.setManagementKey(keyType, managementKey, false) // review require touch
             ""
         }
 
     private suspend fun unblockPin(puk: CharArray, newPin: CharArray): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
                 handlePinPukErrors { piv.unblockPin(puk, newPin) }
             } finally {
@@ -415,7 +415,7 @@ class PivManager(
         }
 
     private suspend fun delete(slot: Slot, deleteCert: Boolean, deleteKey: Boolean): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
                 doAuth(piv, pivViewModel.currentSerial.value.toString())
 
@@ -442,7 +442,7 @@ class PivManager(
         overwriteKey: Boolean,
         includeCertificate: Boolean
     ): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
 
                 doAuth(piv, pivViewModel.currentSerial.value.toString())
@@ -560,7 +560,7 @@ class PivManager(
         validFrom: String?,
         validTo: String?
     ): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
 
                 val serial = pivViewModel.currentSerial.value.toString()
@@ -633,7 +633,7 @@ class PivManager(
         pinPolicy: Int,
         touchPolicy: Int
     ): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
 
                 val serial = pivViewModel.currentSerial.value.toString()
@@ -700,7 +700,7 @@ class PivManager(
     private suspend fun getSlot(
         slot: String
     ): String =
-        connectionHelper.useSession(updateDeviceInfo = true) { piv ->
+        connectionHelper.useSession { piv ->
             try {
                 ""
             } finally {
