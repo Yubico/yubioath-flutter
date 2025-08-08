@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "Intenta extraer y volver a insertar tu YubiKey.",
     "s_touch_required": "Se requiere un toque",
     "l_touch_button_now": "Toca el botón de tu YubiKey ahora",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Sigue tocando repetidamente tu YubiKey\u2026",
     "@_capabilities": {},
 
@@ -979,6 +980,14 @@
     "p_warning_disable_credentials": "Tus credenciales OATH, así como cualquier contraseña establecida, serán removidas de esta YubiKey. Asegúrate de desactivarlas desde sus respectivos sitios web para evitar ser bloqueado de tus cuentas.",
     "p_warning_deletes_accounts": "¡Advertencia! Esto borrará irrevocablemente todas las cuentas U2F y FIDO2, incluidas las passkeys, de tu YubiKey.",
     "p_warning_disable_accounts": "Tus credenciales, así como cualquier PIN establecido, se eliminarán de esta YubiKey. Asegúrate de desvincularlos de los respectivos sitios web para evitar quedar bloqueado/a de tus cuentas.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "¡Advertencia! Todos los datos almacenados para PIV se eliminarán irrevocablemente de tu YubiKey.",
     "p_warning_piv_reset_desc": "Esto incluye claves privadas y certificados. Su PIN, PUK y clave de administración se restablecerán a sus valores predeterminados de fábrica.",
     "p_warning_global_reset": "¡Advertencia! Esto borrará irrevocablemente todos los datos guardados, incluidas las credenciales, de tu YubiKey.",

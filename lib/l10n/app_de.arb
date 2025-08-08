@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "Versuche deinen YubiKey zu entfernen und wieder anzuschließen.",
     "s_touch_required": "Berührung erforderlich",
     "l_touch_button_now": "Berühre jetzt deinen YubiKey",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Berühre wiederholt deinen YubiKey\u2026",
     "@_capabilities": {},
 
@@ -979,6 +980,14 @@
     "p_warning_disable_credentials": "Deine OATH Anmeldedaten und sämtliche Passwörter werden von diesem YubiKey entfernt. Deaktiviere die Anmeldedaten unbedingt zuerst auf den zugehörigen Webseiten, bevor du fortfährst, um nicht aus deinen Konten ausgesperrt zu werden.",
     "p_warning_deletes_accounts": "Achtung! Dies löscht alle U2F und FIDO2 Konten dauerhaft von deinem YubiKey.",
     "p_warning_disable_accounts": "Deine Anmeldedaten und sämtliche PINs werden von diesem YubiKey entfernt. Deaktiviere die Anmeldedaten unbedingt zuerst auf den zugehörigen Webseiten, bevor du fortfährst, um nicht aus deinen Konten ausgesperrt zu werden.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Achtung! Alle gespeicherten PIV Daten werden dauerhaft von deinem YubiKey gelöscht.",
     "p_warning_piv_reset_desc": "Dies schließt private Schlüssel und Zertifikate mit ein. Deine PIN, PUK und der Management-Key werden auf Werkseinstellung zurückgesetzt.",
     "p_warning_global_reset": "Achtung! Dies löscht alle gespeicherten Daten inkl. Anmeldedaten dauerhaft von deinem YubiKey.",

@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "嘗試移除並重新插入您的 YubiKey。",
     "s_touch_required": "需要觸摸",
     "l_touch_button_now": "立即輕觸 YubiKey 上的按鈕",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "持續重複觸碰您的 YubiKey\u2026",
     "@_capabilities": {},
 
@@ -979,6 +980,14 @@
     "p_warning_disable_credentials": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
     "p_warning_deletes_accounts": "警告！這將不可撤銷地從您的 YubiKey 刪除所有 U2F 和 FIDO2 帳戶，包括密碼。",
     "p_warning_disable_accounts": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "警告！為 PIV 儲存的所有資料將不可撤銷地從您的 YubiKey 中刪除。",
     "p_warning_piv_reset_desc": "這包括私人密鑰和憑證。您的 PIN 碼、PUK 碼和管理密鑰會重設為出廠預設值。",
     "p_warning_global_reset": "警告！這將不可撤銷地從您的 YubiKey 刪除所有儲存的資料，包括憑證。",
