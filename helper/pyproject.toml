@@ -10,7 +10,7 @@ dependencies = [
   "mss (>=9.0.1, <10)",
   "Pillow (>=10.2.0, <11)",
   "zxing-cpp (>=2.2.0, <3)",
-  "pyscard (==2.2.1)",  # 2.2.2 has issues with CardMonitor
+  "pyscard (>=2.0, <3)",
 ]
 
 [dependency-groups]
