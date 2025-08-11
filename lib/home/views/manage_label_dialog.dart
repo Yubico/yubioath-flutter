@@ -69,46 +69,45 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        Text(
-                          initialLabel == null
-                              ? l10n.p_set_will_add_custom_name
-                              : l10n.p_rename_will_change_custom_name,
-                        ),
-                        AppTextField(
-                          autofocus: true,
-                          controller: _labelController,
-                          maxLength: 20,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_label,
-                            helperText: '',
-                            icon: const Icon(Symbols.key),
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                          onSubmitted: (_) {
-                            _submit();
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    Text(
+                      initialLabel == null
+                          ? l10n.p_set_will_add_custom_name
+                          : l10n.p_rename_will_change_custom_name,
+                    ),
+                    AppTextField(
+                      autofocus: true,
+                      controller: _labelController,
+                      maxLength: 20,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_label,
+                        helperText: '',
+                        icon: const Icon(Symbols.key),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      onSubmitted: (_) {
+                        _submit();
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 

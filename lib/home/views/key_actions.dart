@@ -57,29 +57,24 @@ Widget homeBuildActions(
               feature: features.management,
               icon: const Icon(Symbols.construction),
               actionStyle: ActionStyle.primary,
-              title:
-                  deviceData.info.version.major > 4
-                      ? l10n.s_toggle_applications
-                      : l10n.s_toggle_interfaces,
+              title: deviceData.info.version.major > 4
+                  ? l10n.s_toggle_applications
+                  : l10n.s_toggle_interfaces,
               key: yubikeyApplicationToggleMenuButton,
-              subtitle:
-                  interfacesLocked
-                      ? l10n.l_factory_reset_required
-                      : (deviceData.info.version.major > 4
-                          ? l10n.l_toggle_applications_desc
-                          : l10n.l_toggle_interfaces_desc),
-              onTap:
-                  interfacesLocked
-                      ? null
-                      : (context) {
-                        Navigator.of(
-                          context,
-                        ).popUntil((route) => route.isFirst);
-                        showBlurDialog(
-                          context: context,
-                          builder: (context) => ManagementScreen(deviceData),
-                        );
-                      },
+              subtitle: interfacesLocked
+                  ? l10n.l_factory_reset_required
+                  : (deviceData.info.version.major > 4
+                        ? l10n.l_toggle_applications_desc
+                        : l10n.l_toggle_interfaces_desc),
+              onTap: interfacesLocked
+                  ? null
+                  : (context) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      showBlurDialog(
+                        context: context,
+                        builder: (context) => ManagementScreen(deviceData),
+                      );
+                    },
             ),
           if (getResetCapabilities(hasFeature).any(
             (c) =>

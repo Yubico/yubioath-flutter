@@ -52,9 +52,10 @@ class _ToastState extends State<Toast> with SingleTickerProviderStateMixin {
       vsync: this,
     );
     _tween = Tween(begin: 0, end: 1);
-    _opacity = _tween.animate(_animator)..addListener(() {
-      setState(() {});
-    });
+    _opacity = _tween.animate(_animator)
+      ..addListener(() {
+        setState(() {});
+      });
 
     _animate();
   }
@@ -104,18 +105,16 @@ void Function() showToast(
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
   final bool isThemeDark = theme.brightness == Brightness.dark;
-  final Color backgroundColor =
-      isThemeDark
-          ? colorScheme.onSurface
-          : Color.alphaBlend(
-            colorScheme.onSurface.withValues(alpha: 0.80),
-            colorScheme.surface,
-          );
+  final Color backgroundColor = isThemeDark
+      ? colorScheme.onSurface
+      : Color.alphaBlend(
+          colorScheme.onSurface.withValues(alpha: 0.80),
+          colorScheme.surface,
+        );
 
-  final textStyle =
-      ThemeData(
-        brightness: isThemeDark ? Brightness.light : Brightness.dark,
-      ).textTheme.titleMedium;
+  final textStyle = ThemeData(
+    brightness: isThemeDark ? Brightness.light : Brightness.dark,
+  ).textTheme.titleMedium;
 
   OverlayEntry? entry;
   void close() {

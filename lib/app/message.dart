@@ -39,13 +39,12 @@ Future<T?> showBlurDialog<T>({
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
   pageBuilder: (ctx, anim1, anim2) => builder(ctx),
   transitionDuration: const Duration(milliseconds: 150),
-  transitionBuilder:
-      (ctx, anim1, anim2, child) => BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: 20 * anim1.value,
-          sigmaY: 20 * anim1.value,
-        ),
-        child: FadeTransition(opacity: anim1, child: child),
-      ),
+  transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+    filter: ImageFilter.blur(
+      sigmaX: 20 * anim1.value,
+      sigmaY: 20 * anim1.value,
+    ),
+    child: FadeTransition(opacity: anim1, child: child),
+  ),
   routeSettings: routeSettings,
 );

@@ -75,11 +75,9 @@ Future<bool> _authIfNeeded(
     }
     return await showBlurDialog(
           context: context,
-          builder:
-              (context) =>
-                  pivState.protectedKey
-                      ? PinDialog(devicePath, pivState)
-                      : AuthenticationDialog(devicePath, pivState),
+          builder: (context) => pivState.protectedKey
+              ? PinDialog(devicePath, pivState)
+              : AuthenticationDialog(devicePath, pivState),
         ) ??
         false;
   }
@@ -145,9 +143,8 @@ class PivActions extends ConsumerWidget {
                 final l10n = AppLocalizations.of(context);
                 final PivGenerateResult? result = await showBlurDialog(
                   context: context,
-                  builder:
-                      (context) =>
-                          GenerateKeyDialog(devicePath, pivState, intent.slot),
+                  builder: (context) =>
+                      GenerateKeyDialog(devicePath, pivState, intent.slot),
                 );
 
                 if (result != null) {
@@ -167,10 +164,9 @@ class PivActions extends ConsumerWidget {
                   };
 
                   if (fileExt != null) {
-                    String typeName =
-                        generateType == GenerateType.publicKey
-                            ? 'public-key'
-                            : generateType.name;
+                    String typeName = generateType == GenerateType.publicKey
+                        ? 'public-key'
+                        : generateType.name;
                     String fileName = '$typeName-${intent.slot.slot.hexId}';
                     // Needed to avoid adding double extensions on MacOS
                     if (!(Platform.isMacOS &&
@@ -227,13 +223,12 @@ class PivActions extends ConsumerWidget {
                 (context) async =>
                     await showBlurDialog(
                       context: context,
-                      builder:
-                          (context) => ImportFileDialog(
-                            devicePath,
-                            pivState,
-                            intent.slot,
-                            File(picked.paths.first!),
-                          ),
+                      builder: (context) => ImportFileDialog(
+                        devicePath,
+                        pivState,
+                        intent.slot,
+                        File(picked.paths.first!),
+                      ),
                     ) ??
                     false,
               );
@@ -310,12 +305,11 @@ class PivActions extends ConsumerWidget {
                 (context) async =>
                     await showDialog(
                       context: context,
-                      builder:
-                          (context) => DeleteCertificateDialog(
-                            devicePath,
-                            pivState,
-                            intent.target,
-                          ),
+                      builder: (context) => DeleteCertificateDialog(
+                        devicePath,
+                        pivState,
+                        intent.target,
+                      ),
                     ) ??
                     false,
               );
@@ -335,9 +329,8 @@ class PivActions extends ConsumerWidget {
                 (context) async =>
                     await showBlurDialog(
                       context: context,
-                      builder:
-                          (context) =>
-                              MoveKeyDialog(devicePath, pivState, intent.slot),
+                      builder: (context) =>
+                          MoveKeyDialog(devicePath, pivState, intent.slot),
                     ) ??
                     false,
               );
@@ -401,10 +394,9 @@ List<ActionItem> buildSlotActions(
         subtitle: l10n.l_generate_desc,
         intent:
             (pinIsBlocked &&
-                    (requiresPinAuth ||
-                        (!pivState.protectedKey && !defaultPin)))
-                ? null
-                : GenerateIntent(slot),
+                (requiresPinAuth || (!pivState.protectedKey && !defaultPin)))
+            ? null
+            : GenerateIntent(slot),
       ),
       ActionItem(
         key: keys.importAction,
@@ -450,18 +442,16 @@ List<ActionItem> buildSlotActions(
         feature: features.slotsDelete,
         actionStyle: ActionStyle.error,
         icon: const Icon(Symbols.delete),
-        title:
-            hasCert && canDeleteOrMoveKey
-                ? l10n.l_delete_certificate_or_key
-                : hasCert
-                ? l10n.l_delete_certificate
-                : l10n.l_delete_key,
-        subtitle:
-            hasCert && canDeleteOrMoveKey
-                ? l10n.l_delete_certificate_or_key_desc
-                : hasCert
-                ? l10n.l_delete_certificate_desc
-                : l10n.l_delete_key_desc,
+        title: hasCert && canDeleteOrMoveKey
+            ? l10n.l_delete_certificate_or_key
+            : hasCert
+            ? l10n.l_delete_certificate
+            : l10n.l_delete_key,
+        subtitle: hasCert && canDeleteOrMoveKey
+            ? l10n.l_delete_certificate_or_key_desc
+            : hasCert
+            ? l10n.l_delete_certificate_desc
+            : l10n.l_delete_key_desc,
         intent: pinIsBlocked && requiresPinAuth ? null : DeleteIntent(slot),
       ),
   ];

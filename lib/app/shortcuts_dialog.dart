@@ -130,33 +130,33 @@ class _ShortcutsItem extends StatelessWidget {
     final elements = shortcut.getElements();
     return Row(
       spacing: 4.0,
-      children:
-          elements
-              .map(
-                (e) => Container(
-                  constraints: BoxConstraints(minWidth: 32),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  padding: const EdgeInsets.all(6.0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    e,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSecondaryContainer,
-                    ),
-                  ),
+      children: elements
+          .map(
+            (e) => Container(
+              constraints: BoxConstraints(minWidth: 32),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              padding: const EdgeInsets.all(6.0),
+              alignment: Alignment.center,
+              child: Text(
+                e,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSecondaryContainer,
                 ),
-              )
-              .toList(),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final filtered =
-        shortcuts.where((s) => !_ignoredTriggers.contains(s.trigger)).toList();
+    final filtered = shortcuts
+        .where((s) => !_ignoredTriggers.contains(s.trigger))
+        .toList();
     return Row(
       children: [
         for (var i = 0; i < filtered.length; i++) ...[

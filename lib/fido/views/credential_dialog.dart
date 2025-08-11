@@ -49,64 +49,62 @@ class CredentialDialog extends ConsumerWidget {
 
     return FidoActions(
       devicePath: node.path,
-      actions:
-          (context) => {
-            if (hasFeature(features.credentialsDelete))
-              DeleteIntent<FidoCredential>:
-                  CallbackAction<DeleteIntent<FidoCredential>>(
-                    onInvoke: (intent) async {
-                      final deleted =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      // Pop the account dialog if deleted
-                      if (deleted == true) {
-                        await ref.read(withContextProvider)((context) async {
-                          Navigator.of(context).pop();
-                        });
-                      }
-                      return deleted;
-                    },
-                  ),
-          },
-      builder:
-          (context) => ItemShortcuts(
-            item: credential,
-            child: FocusScope(
-              autofocus: true,
-              child: FsDialog(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 48,
-                        bottom: 32,
-                        left: 16,
-                        right: 16,
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Icon(
-                              Symbols.passkey,
-                              size: 100,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          CredentialInfoTable(credential),
-                        ],
-                      ),
-                    ),
-                    ActionListSection.fromMenuActions(
-                      context,
-                      l10n.s_actions,
-                      actions: buildCredentialActions(credential, l10n),
-                    ),
-                  ],
-                ),
+      actions: (context) => {
+        if (hasFeature(features.credentialsDelete))
+          DeleteIntent<FidoCredential>:
+              CallbackAction<DeleteIntent<FidoCredential>>(
+                onInvoke: (intent) async {
+                  final deleted =
+                      await (Actions.invoke(context, intent)
+                          as Future<dynamic>?);
+                  // Pop the account dialog if deleted
+                  if (deleted == true) {
+                    await ref.read(withContextProvider)((context) async {
+                      Navigator.of(context).pop();
+                    });
+                  }
+                  return deleted;
+                },
               ),
+      },
+      builder: (context) => ItemShortcuts(
+        item: credential,
+        child: FocusScope(
+          autofocus: true,
+          child: FsDialog(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 48,
+                    bottom: 32,
+                    left: 16,
+                    right: 16,
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Icon(
+                          Symbols.passkey,
+                          size: 100,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      CredentialInfoTable(credential),
+                    ],
+                  ),
+                ),
+                ActionListSection.fromMenuActions(
+                  context,
+                  l10n.s_actions,
+                  actions: buildCredentialActions(credential, l10n),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
     );
   }
 }

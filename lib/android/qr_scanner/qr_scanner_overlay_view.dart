@@ -105,15 +105,13 @@ class _OverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final color =
-        _status == ScanStatus.error
-            ? Colors.red.shade400
-            : Colors.green.shade400;
-    Paint paint =
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3.0;
+    final color = _status == ScanStatus.error
+        ? Colors.red.shade400
+        : Colors.green.shade400;
+    Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0;
 
     final RRect overlayRRect = _rectProvider(size);
 
@@ -122,8 +120,9 @@ class _OverlayPainter extends CustomPainter {
 
     if (_status == ScanStatus.success) {
       const icon = Symbols.check_circle;
-      final iconSize =
-          overlayRRect.width < 150 ? overlayRRect.width - 5.0 : 150.0;
+      final iconSize = overlayRRect.width < 150
+          ? overlayRRect.width - 5.0
+          : 150.0;
       TextPainter iconPainter = TextPainter(
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.center,

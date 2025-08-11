@@ -140,11 +140,10 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                     showBlurDialog(
                       context: context,
-                      builder:
-                          (context) => ResetDialog(
-                            widget._deviceData,
-                            application: Capability.fido2,
-                          ),
+                      builder: (context) => ResetDialog(
+                        widget._deviceData,
+                        application: Capability.fido2,
+                      ),
                     );
                   },
                   child: Text(l10n.s_reset),
@@ -156,72 +155,65 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
           Text(l10n.l_enter_fido2_pin),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
-            child:
-                AppTextField(
-                  key: pinEntry,
-                  autofocus: true,
-                  obscureText: _isObscure,
-                  autofillHints: const [AutofillHints.password],
-                  controller: _pinController,
-                  focusNode: _pinFocus,
-                  enabled: !authBlocked && !_blocked && (_retries ?? 1) > 0,
-                  decoration: AppInputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.s_pin,
-                    helperText:
-                        pinRetries != null && pinRetries <= 3
-                            ? l10n.l_attempts_remaining(pinRetries)
-                            : '',
-                    // Prevents dialog resizing
-                    errorText:
-                        (_pinIsWrong || authBlocked) &&
-                                !(authBlocked || _retries == 0)
-                            ? _getErrorText()
-                            : null,
-                    errorMaxLines: 3,
-                    icon: const Icon(Symbols.pin),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure
-                            ? Symbols.visibility
-                            : Symbols.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
-                      tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
-                    ),
+            child: AppTextField(
+              key: pinEntry,
+              autofocus: true,
+              obscureText: _isObscure,
+              autofillHints: const [AutofillHints.password],
+              controller: _pinController,
+              focusNode: _pinFocus,
+              enabled: !authBlocked && !_blocked && (_retries ?? 1) > 0,
+              decoration: AppInputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: l10n.s_pin,
+                helperText: pinRetries != null && pinRetries <= 3
+                    ? l10n.l_attempts_remaining(pinRetries)
+                    : '',
+                // Prevents dialog resizing
+                errorText:
+                    (_pinIsWrong || authBlocked) &&
+                        !(authBlocked || _retries == 0)
+                    ? _getErrorText()
+                    : null,
+                errorMaxLines: 3,
+                icon: const Icon(Symbols.pin),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isObscure ? Symbols.visibility : Symbols.visibility_off,
                   ),
-                  onChanged: (value) {
+                  onPressed: () {
                     setState(() {
-                      _pinIsWrong = false;
+                      _isObscure = !_isObscure;
                     });
                   },
-                  // Update state on change
-                  onSubmitted: (_) {
-                    if (_pinController.text.length >=
-                        widget._state.minPinLength) {
-                      _submit();
-                    } else {
-                      _pinFocus.requestFocus();
-                    }
-                  },
-                ).init(),
+                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _pinIsWrong = false;
+                });
+              },
+              // Update state on change
+              onSubmitted: (_) {
+                if (_pinController.text.length >= widget._state.minPinLength) {
+                  _submit();
+                } else {
+                  _pinFocus.requestFocus();
+                }
+              },
+            ).init(),
           ),
           ListTile(
-            leading:
-                noFingerprints
-                    ? Icon(
-                      Symbols.warning_amber,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    )
-                    : null,
-            title:
-                noFingerprints
-                    ? Text(l10n.l_no_fps_added, overflow: TextOverflow.fade)
-                    : null,
+            leading: noFingerprints
+                ? Icon(
+                    Symbols.warning_amber,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  )
+                : null,
+            title: noFingerprints
+                ? Text(l10n.l_no_fps_added, overflow: TextOverflow.fade)
+                : null,
             dense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 0),
             minLeadingWidth: 0,
@@ -231,11 +223,11 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               label: Text(l10n.s_unlock),
               onPressed:
                   !_pinIsWrong &&
-                          _pinController.text.length >=
-                              widget._state.minPinLength &&
-                          !_blocked
-                      ? _submit
-                      : null,
+                      _pinController.text.length >=
+                          widget._state.minPinLength &&
+                      !_blocked
+                  ? _submit
+                  : null,
             ),
           ),
         ],

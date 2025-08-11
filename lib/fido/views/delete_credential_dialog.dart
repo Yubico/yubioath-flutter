@@ -50,16 +50,15 @@ class _DeleteCredentialDialogState
     final l10n = AppLocalizations.of(context);
 
     return BasicDialog(
-      icon:
-          _isDeleting
-              ? Center(
-                child: SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2.0),
-                ),
-              )
-              : Icon(Symbols.delete),
+      icon: _isDeleting
+          ? Center(
+              child: SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(strokeWidth: 2.0),
+              ),
+            )
+          : Icon(Symbols.delete),
       title: Text(l10n.q_delete_passkey),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,34 +77,33 @@ class _DeleteCredentialDialogState
       actions: [
         TextButton(
           key: keys.deleteButton,
-          onPressed:
-              !_isDeleting
-                  ? () async {
-                    try {
-                      setState(() {
-                        _isDeleting = true;
-                      });
-                      await ref
-                          .read(credentialProvider(widget.devicePath).notifier)
-                          .deleteCredential(widget.credential);
-                      await ref.read(withContextProvider)((context) async {
-                        Navigator.of(context).pop(true);
-                        showMessage(context, l10n.s_passkey_deleted);
-                      });
-                    } on CancellationException catch (_) {
-                      // ignored
-                      setState(() {
-                        _isDeleting = false;
-                      });
-                    } catch (_) {
-                      // Need to reset isDeleting for any unexpected errors
-                      setState(() {
-                        _isDeleting = false;
-                      });
-                      rethrow;
-                    }
+          onPressed: !_isDeleting
+              ? () async {
+                  try {
+                    setState(() {
+                      _isDeleting = true;
+                    });
+                    await ref
+                        .read(credentialProvider(widget.devicePath).notifier)
+                        .deleteCredential(widget.credential);
+                    await ref.read(withContextProvider)((context) async {
+                      Navigator.of(context).pop(true);
+                      showMessage(context, l10n.s_passkey_deleted);
+                    });
+                  } on CancellationException catch (_) {
+                    // ignored
+                    setState(() {
+                      _isDeleting = false;
+                    });
+                  } catch (_) {
+                    // Need to reset isDeleting for any unexpected errors
+                    setState(() {
+                      _isDeleting = false;
+                    });
+                    rethrow;
                   }
-                  : null,
+                }
+              : null,
           child: Text(l10n.s_delete),
         ),
       ],

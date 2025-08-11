@@ -42,15 +42,14 @@ PopupMenuItem _buildMenuItem(BuildContext context, ActionItem actionItem) {
   final shortcut = actionItem.shortcut;
   return PopupMenuItem(
     enabled: enabled,
-    onTap:
-        enabled
-            ? () {
-              // Wait for popup menu to close before running action.
-              Timer.run(() {
-                Actions.invoke(context, intent);
-              });
-            }
-            : null,
+    onTap: enabled
+        ? () {
+            // Wait for popup menu to close before running action.
+            Timer.run(() {
+              Actions.invoke(context, intent);
+            });
+          }
+        : null,
     child: ListTile(
       key: actionItem.key,
       enabled: enabled,
@@ -59,10 +58,9 @@ PopupMenuItem _buildMenuItem(BuildContext context, ActionItem actionItem) {
       minLeadingWidth: 0,
       title: Text(actionItem.title),
       leading: actionItem.icon,
-      trailing:
-          shortcut != null
-              ? Opacity(opacity: 0.5, child: Text(shortcut))
-              : null,
+      trailing: shortcut != null
+          ? Opacity(opacity: 0.5, child: Text(shortcut))
+          : null,
     ),
   );
 }

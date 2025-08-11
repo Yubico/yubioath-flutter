@@ -89,19 +89,17 @@ class AppTextField extends TextField {
   }) : super(decoration: decoration);
 
   Widget init() => Builder(
-    builder:
-        (context) => Shortcuts(
-          shortcuts: {
-            // Override escape intent
-            const SingleActivator(LogicalKeyboardKey.escape): EscapeIntent(),
-          },
-          child: DefaultSelectionStyle(
-            selectionColor:
-                decoration?.errorText != null
-                    ? Theme.of(context).colorScheme.error
-                    : null,
-            child: this,
-          ),
-        ),
+    builder: (context) => Shortcuts(
+      shortcuts: {
+        // Override escape intent
+        const SingleActivator(LogicalKeyboardKey.escape): EscapeIntent(),
+      },
+      child: DefaultSelectionStyle(
+        selectionColor: decoration?.errorText != null
+            ? Theme.of(context).colorScheme.error
+            : null,
+        child: this,
+      ),
+    ),
   );
 }

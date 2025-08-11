@@ -58,9 +58,8 @@ class FidoActions extends ConsumerWidget {
                   final deleted = await withContext(
                     (context) => showDialog<bool?>(
                       context: context,
-                      builder:
-                          (context) =>
-                              DeleteCredentialDialog(devicePath, credential),
+                      builder: (context) =>
+                          DeleteCredentialDialog(devicePath, credential),
                     ),
                   );
                   return deleted;
@@ -73,9 +72,8 @@ class FidoActions extends ConsumerWidget {
               final renamed = await ref.read(withContextProvider)(
                 (context) => showBlurDialog<Fingerprint>(
                   context: context,
-                  builder:
-                      (context) =>
-                          RenameFingerprintDialog(devicePath, fingerprint),
+                  builder: (context) =>
+                      RenameFingerprintDialog(devicePath, fingerprint),
                 ),
               );
               return renamed;
@@ -88,9 +86,8 @@ class FidoActions extends ConsumerWidget {
               final deleted = await ref.read(withContextProvider)(
                 (context) => showDialog<bool?>(
                   context: context,
-                  builder:
-                      (context) =>
-                          DeleteFingerprintDialog(devicePath, fingerprint),
+                  builder: (context) =>
+                      DeleteFingerprintDialog(devicePath, fingerprint),
                 ),
               );
               return deleted;

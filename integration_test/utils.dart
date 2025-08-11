@@ -32,10 +32,9 @@ final expectedSerials = _expectedSerials
 const windowSizeName = String.fromEnvironment('WINDOW_SIZE');
 const nfcReader = String.fromEnvironment('READER');
 const _deviceInfoJson = String.fromEnvironment('INFO');
-final _deviceInfo =
-    _deviceInfoJson.isEmpty
-        ? null
-        : DeviceInfo.fromJson(jsonDecode(_deviceInfoJson));
+final _deviceInfo = _deviceInfoJson.isEmpty
+    ? null
+    : DeviceInfo.fromJson(jsonDecode(_deviceInfoJson));
 
 enum WindowSize {
   narrow(Size(378, 840)),
@@ -45,10 +44,9 @@ enum WindowSize {
   final Size size;
   const WindowSize(this.size);
 
-  static WindowSize get standard =>
-      windowSizeName.isNotEmpty
-          ? WindowSize.values.byName(windowSizeName)
-          : WindowSize.wide;
+  static WindowSize get standard => windowSizeName.isNotEmpty
+      ? WindowSize.values.byName(windowSizeName)
+      : WindowSize.wide;
 }
 
 class TestParameters {

@@ -41,14 +41,13 @@ Text injectLinksInText(
         TextSpan(
           text: part,
           style: linkStyle,
-          recognizer:
-              TapGestureRecognizer()
-                ..onTap = () async {
-                  await launchUrl(
-                    urls[part]!,
-                    mode: LaunchMode.externalApplication,
-                  );
-                },
+          recognizer: TapGestureRecognizer()
+            ..onTap = () async {
+              await launchUrl(
+                urls[part]!,
+                mode: LaunchMode.externalApplication,
+              );
+            },
           children: [
             if (index == parts.length - 1)
               // without this the recognizer takes over whole row

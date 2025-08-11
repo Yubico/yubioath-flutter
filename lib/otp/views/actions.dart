@@ -83,9 +83,8 @@ class OtpActions extends ConsumerWidget {
               await withContext((context) async {
                 await showBlurDialog(
                   context: context,
-                  builder:
-                      (context) =>
-                          ConfigureChalrespDialog(devicePath, intent.slot),
+                  builder: (context) =>
+                      ConfigureChalrespDialog(devicePath, intent.slot),
                 );
               });
               return null;
@@ -97,8 +96,8 @@ class OtpActions extends ConsumerWidget {
               await withContext((context) async {
                 await showBlurDialog(
                   context: context,
-                  builder:
-                      (context) => ConfigureHotpDialog(devicePath, intent.slot),
+                  builder: (context) =>
+                      ConfigureHotpDialog(devicePath, intent.slot),
                 );
               });
               return null;
@@ -107,19 +106,17 @@ class OtpActions extends ConsumerWidget {
         if (hasFeature(features.slotsConfigureStatic))
           ConfigureStaticIntent: CallbackAction<ConfigureStaticIntent>(
             onInvoke: (intent) async {
-              final keyboardLayouts =
-                  await ref
-                      .read(otpStateProvider(devicePath).notifier)
-                      .getKeyboardLayouts();
+              final keyboardLayouts = await ref
+                  .read(otpStateProvider(devicePath).notifier)
+                  .getKeyboardLayouts();
               await withContext((context) async {
                 await showBlurDialog(
                   context: context,
-                  builder:
-                      (context) => ConfigureStaticDialog(
-                        devicePath,
-                        intent.slot,
-                        keyboardLayouts,
-                      ),
+                  builder: (context) => ConfigureStaticDialog(
+                    devicePath,
+                    intent.slot,
+                    keyboardLayouts,
+                  ),
                 );
               });
               return null;
@@ -131,9 +128,8 @@ class OtpActions extends ConsumerWidget {
               await withContext((context) async {
                 await showBlurDialog(
                   context: context,
-                  builder:
-                      (context) =>
-                          ConfigureYubiOtpDialog(devicePath, intent.slot),
+                  builder: (context) =>
+                      ConfigureYubiOtpDialog(devicePath, intent.slot),
                 );
               });
               return null;

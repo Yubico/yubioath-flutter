@@ -201,10 +201,9 @@ abstract class CredentialData with _$CredentialData {
     return splitCreds(base64.decode(uri.queryParameters['data']!)).map((
       values,
     ) {
-      String? issuer =
-          values[3] != null
-              ? utf8.decode(values[3], allowMalformed: true)
-              : null;
+      String? issuer = values[3] != null
+          ? utf8.decode(values[3], allowMalformed: true)
+          : null;
       String name = utf8.decode(values[2], allowMalformed: true);
       final nameIndex = name.indexOf(':');
       if (nameIndex >= 0 && issuer == null) {

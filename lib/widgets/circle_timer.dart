@@ -56,9 +56,10 @@ class _CircleTimerState extends State<CircleTimer>
 
     _animator = AnimationController(vsync: this);
     _tween = Tween(end: 0);
-    _progress = _tween.animate(_animator)..addListener(() {
-      setState(() {});
-    });
+    _progress = _tween.animate(_animator)
+      ..addListener(() {
+        setState(() {});
+      });
 
     _animate();
   }

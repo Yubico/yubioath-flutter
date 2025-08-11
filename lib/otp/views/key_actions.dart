@@ -45,16 +45,15 @@ Widget otpBuildActions(
             title: l10n.s_swap_slots,
             subtitle: l10n.l_swap_slots_desc,
             icon: const Icon(Symbols.swap_vert),
-            onTap:
-                (otpState.slot1Configured || otpState.slot2Configured)
-                    ? (context) {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      showDialog(
-                        context: context,
-                        builder: (context) => SwapSlotsDialog(devicePath),
-                      );
-                    }
-                    : null,
+            onTap: (otpState.slot1Configured || otpState.slot2Configured)
+                ? (context) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    showDialog(
+                      context: context,
+                      builder: (context) => SwapSlotsDialog(devicePath),
+                    );
+                  }
+                : null,
           ),
         ],
       ),

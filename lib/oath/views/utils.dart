@@ -94,24 +94,22 @@ Future<void> handleUri(
   } else if (creds.length == 1) {
     await showBlurDialog(
       context: context,
-      builder:
-          (context) => OathAddAccountPage(
-            devicePath,
-            state,
-            credentials: credentials,
-            credentialData: creds[0],
-          ),
+      builder: (context) => OathAddAccountPage(
+        devicePath,
+        state,
+        credentials: credentials,
+        credentialData: creds[0],
+      ),
     );
   } else {
     await showBlurDialog(
       context: context,
-      builder:
-          (context) => OathAddMultiAccountPage(
-            devicePath,
-            state,
-            creds,
-            key: migrateAccountAction,
-          ),
+      builder: (context) => OathAddMultiAccountPage(
+        devicePath,
+        state,
+        creds,
+        key: migrateAccountAction,
+      ),
     );
   }
 }
@@ -198,12 +196,8 @@ Future<void> addOathAccount(
     final credentials = ref.read(credentialsProvider);
     await showBlurDialog(
       context: context,
-      builder:
-          (context) => OathAddAccountPage(
-            devicePath,
-            oathState,
-            credentials: credentials,
-          ),
+      builder: (context) =>
+          OathAddAccountPage(devicePath, oathState, credentials: credentials),
     );
   }
 }

@@ -79,36 +79,35 @@ class _DeleteCertificateDialogState
       actions: [
         TextButton(
           key: keys.deleteButton,
-          onPressed:
-              _deleteKey || _deleteCertificate
-                  ? () async {
-                    try {
-                      await ref
-                          .read(pivSlotsProvider(widget.devicePath).notifier)
-                          .delete(
-                            widget.pivSlot.slot,
-                            _deleteCertificate,
-                            _deleteKey,
-                          );
+          onPressed: _deleteKey || _deleteCertificate
+              ? () async {
+                  try {
+                    await ref
+                        .read(pivSlotsProvider(widget.devicePath).notifier)
+                        .delete(
+                          widget.pivSlot.slot,
+                          _deleteCertificate,
+                          _deleteKey,
+                        );
 
-                      await ref.read(withContextProvider)((context) async {
-                        String message;
-                        if (_deleteCertificate && _deleteKey) {
-                          message = l10n.l_certificate_and_key_deleted;
-                        } else if (_deleteCertificate) {
-                          message = l10n.l_certificate_deleted;
-                        } else {
-                          message = l10n.l_key_deleted;
-                        }
+                    await ref.read(withContextProvider)((context) async {
+                      String message;
+                      if (_deleteCertificate && _deleteKey) {
+                        message = l10n.l_certificate_and_key_deleted;
+                      } else if (_deleteCertificate) {
+                        message = l10n.l_certificate_deleted;
+                      } else {
+                        message = l10n.l_key_deleted;
+                      }
 
-                        Navigator.of(context).pop(true);
-                        showMessage(context, message);
-                      });
-                    } on CancellationException catch (_) {
-                      // ignored
-                    }
+                      Navigator.of(context).pop(true);
+                      showMessage(context, message);
+                    });
+                  } on CancellationException catch (_) {
+                    // ignored
                   }
-                  : null,
+                }
+              : null,
           child: Text(l10n.s_delete),
         ),
       ],
@@ -130,15 +129,15 @@ class _DeleteCertificateDialogState
             Text(
               _deleteCertificate && _deleteKey
                   ? l10n.p_delete_certificate_and_key_desc(
-                    widget.pivSlot.slot.getDisplayName(l10n),
-                  )
+                      widget.pivSlot.slot.getDisplayName(l10n),
+                    )
                   : _deleteCertificate
                   ? l10n.p_delete_certificate_desc(
-                    widget.pivSlot.slot.getDisplayName(l10n),
-                  )
+                      widget.pivSlot.slot.getDisplayName(l10n),
+                    )
                   : l10n.p_delete_key_desc(
-                    widget.pivSlot.slot.getDisplayName(l10n),
-                  ),
+                      widget.pivSlot.slot.getDisplayName(l10n),
+                    ),
             ),
           ],
           if (!_deleteCertificate && !_deleteKey) ...[

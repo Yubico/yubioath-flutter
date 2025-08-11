@@ -50,10 +50,10 @@ class TooltipIfTruncated extends StatelessWidget {
         )..layout(minWidth: 0, maxWidth: constraints.maxWidth);
         return textPainter.didExceedMaxLines
             ? Tooltip(
-              margin: const EdgeInsets.all(16),
-              message: tooltip ?? text,
-              child: textWidget,
-            )
+                margin: const EdgeInsets.all(16),
+                message: tooltip ?? text,
+                child: textWidget,
+              )
             : textWidget;
       },
     );

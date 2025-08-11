@@ -60,21 +60,19 @@ class MessagePageNotInitialized extends ConsumerWidget {
         centered: true,
         delayedContent: isUsbYubiKey,
         graphic: noKeyImage,
-        header:
-            hasNfcSupport && isNfcEnabled
-                ? l10n.l_insert_or_tap_yk
-                : l10n.l_insert_yk,
-        actionsBuilder:
-            (context, expanded) => [
-              if (hasNfcSupport && !isNfcEnabled)
-                ElevatedButton.icon(
-                  label: Text(l10n.s_enable_nfc),
-                  icon: const Icon(Symbols.contactless),
-                  onPressed: () async {
-                    await openNfcSettings();
-                  },
-                ),
-            ],
+        header: hasNfcSupport && isNfcEnabled
+            ? l10n.l_insert_or_tap_yk
+            : l10n.l_insert_yk,
+        actionsBuilder: (context, expanded) => [
+          if (hasNfcSupport && !isNfcEnabled)
+            ElevatedButton.icon(
+              label: Text(l10n.s_enable_nfc),
+              icon: const Icon(Symbols.contactless),
+              onPressed: () async {
+                await openNfcSettings();
+              },
+            ),
+        ],
       );
     } else {
       return MessagePage(
