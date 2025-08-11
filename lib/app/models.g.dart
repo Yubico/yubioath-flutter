@@ -16,9 +16,8 @@ _KeyCustomization _$KeyCustomizationFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$KeyCustomizationToJson(_KeyCustomization instance) =>
     <String, dynamic>{
       'serial': instance.serial,
-      if (instance.name case final value?) 'name': value,
-      if (const _ColorConverter().toJson(instance.color) case final value?)
-        'color': value,
+      'name': ?instance.name,
+      'color': ?const _ColorConverter().toJson(instance.color),
     };
 
 _LocaleStatus _$LocaleStatusFromJson(Map<String, dynamic> json) =>
