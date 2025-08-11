@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.piv
 
-import android.os.Build
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.MainActivity
@@ -24,7 +23,6 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.piv.data.CertInfo
 import com.yubico.authenticator.piv.data.PivSlot
 import com.yubico.authenticator.piv.data.PivState
 import com.yubico.authenticator.piv.data.SlotMetadata
@@ -64,11 +62,7 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.security.cert.X509Certificate
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDate
 import java.util.Arrays
-import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicBoolean
@@ -181,7 +175,7 @@ class PivManager(
                 )
 
                 "getSlot" -> getSlot(
-                    (args["slot"] as String),
+                    Slot.fromStringAlias(args["slot"] as String),
                 )
 
                 else -> throw NotImplementedError()
@@ -410,10 +404,10 @@ class PivManager(
                 val certificate = runPivOperation { piv.getCertificate(it) }
 
                 PivSlot(
-                    it.value,
-                    metadata?.let(::SlotMetadata),
-                    certificate?.let(::CertInfo),
-                    null
+                    slotId = it.value,
+                    metadata = metadata?.let(::SlotMetadata),
+                    certificate = certificate,
+                    publicKeyMatch = null
                 )
             }
 
@@ -696,8 +690,8 @@ class PivManager(
                 certificate?.let {
                     piv.putCertificate(slot, certificate)
                     piv.putObject(ObjectId.CHUID, generateChuid())
-                    // TODO self.certificate = certificate
                 }
+                pivViewModel.updateSlot(slot.stringAlias, metadata, certificate)
 
                 JSONObject(
                     mapOf(
@@ -724,11 +718,18 @@ class PivManager(
         }
 
     private suspend fun getSlot(
-        slot: String
+        slot: Slot
     ): String =
         connectionHelper.useSession { piv ->
             try {
-                ""
+                JSONObject(
+                    mapOf(
+                        "id" to slot.value,
+                        "name" to slot.stringAlias,
+                        "metadata" to pivViewModel.getMetadata(slot.stringAlias),
+                        "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem(),
+                    )
+                ).toString()
             } finally {
             }
         }

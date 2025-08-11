@@ -24,6 +24,7 @@ import com.yubico.authenticator.piv.data.PivSlot
 import com.yubico.authenticator.piv.data.PivState
 import com.yubico.authenticator.piv.data.SlotMetadata
 import com.yubico.yubikit.piv.Slot
+import java.security.cert.X509Certificate
 
 class PivViewModel : ViewModel() {
     private val _state = MutableLiveData<ViewModelData>()
@@ -58,4 +59,16 @@ class PivViewModel : ViewModel() {
             slot.slotId == Slot.fromStringAlias(slotAlias).value
         }?.metadata
 
+    fun getCertificate(slotAlias: String): X509Certificate? =
+        _slots.value?.first { slot ->
+            slot.slotId == Slot.fromStringAlias(slotAlias).value
+        }?.certificate
+
+    fun updateSlot(slotAlias: String, metadata: SlotMetadata?, certificate: X509Certificate?) {
+        val slotId = Slot.fromStringAlias(slotAlias).value
+        _slots.postValue(_slots.value?.map { slot ->
+            if (slot.slotId == slotId) slot.copy(metadata = metadata, certificate = certificate)
+            else slot
+        })
+    }
 }

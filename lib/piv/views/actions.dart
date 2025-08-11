@@ -281,6 +281,8 @@ class PivActions extends ConsumerWidget {
                   fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
                   allowedExtensions: [fileExt],
                   type: FileType.custom,
+                  bytes:
+                      isAndroid ? Uint8List.fromList(utf8.encode(data)) : null,
                   lockParentWindow: true,
                 );
               });
@@ -289,13 +291,15 @@ class PivActions extends ConsumerWidget {
                 return false;
               }
 
-              // Windows only: Append extension if missing
-              if (Platform.isWindows &&
-                  !filePath.toLowerCase().endsWith('.$fileExt')) {
-                filePath += '.$fileExt';
+              if (!isAndroid) {
+                // Windows only: Append extension if missing
+                if (Platform.isWindows &&
+                    !filePath.toLowerCase().endsWith('.$fileExt')) {
+                  filePath += '.$fileExt';
+                }
+                final file = File(filePath);
+                await file.writeAsString(data, flush: true);
               }
-              final file = File(filePath);
-              await file.writeAsString(data, flush: true);
 
               await withContext((context) async {
                 showMessage(context, message);

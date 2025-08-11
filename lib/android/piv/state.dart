@@ -529,12 +529,13 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
-    final result = await piv.invoke('getSlot', {'slot': slot.hexId});
-    final data = result['data'];
-    final metadata = data['metadata'];
+    final result = jsonDecode(
+      await piv.invoke('getSlot', {'slot': slot.hexId}),
+    );
+    final metadata = result['metadata'];
     return (
       metadata != null ? SlotMetadata.fromJson(metadata) : null,
-      data['certificate'] as String?,
+      result['certificate'] as String?,
     );
   }
 }
