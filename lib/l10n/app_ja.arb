@@ -316,6 +316,7 @@
     "s_fido_pin_protection": "FIDO PIN保護",
     "s_pin_change_required": "PIN を変更してください",
     "l_enter_fido2_pin": "YubiKey の FIDO2 PIN を入力してください",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN がブロックされています。FIDO アプリケーションを工場出荷時の状態にリセットしてください",
     "l_pin_blocked": "PIN がブロックされています",
     "l_set_pin_first": "PIN を設定してください",

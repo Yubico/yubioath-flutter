@@ -28,6 +28,7 @@ abstract class FidoState with _$FidoState {
   factory FidoState({
     required Map<String, dynamic> info,
     required bool unlocked,
+    required bool unlockedRead,
     int? pinRetries,
   }) = _FidoState;
 
