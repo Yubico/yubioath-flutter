@@ -79,11 +79,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final l10n = AppLocalizations.of(context);
     final hasPin = widget.state.hasPin;
     final minPinLength = widget.state.minPinLength;
-    final currentMinPinLen =
-        !hasPin
-            ? 0
-            // N.B. current PIN may be shorter than minimum if set before the minimum was increased
-            : (widget.state.forcePinChange ? 4 : widget.state.minPinLength);
+    final currentMinPinLen = !hasPin
+        ? 0
+        // N.B. current PIN may be shorter than minimum if set before the minimum was increased
+        : (widget.state.forcePinChange ? 4 : widget.state.minPinLength);
     final currentPinLenOk =
         _currentPinController.text.length >= currentMinPinLen;
     final newPinLenOk = _newPinController.text.length >= minPinLength;
@@ -111,8 +110,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             .node
             .transport] ??
         0;
-    final maxPinLength =
-        isBio && (enabled & Capability.piv.value) != 0 ? 8 : 63;
+    final maxPinLength = isBio && (enabled & Capability.piv.value) != 0
+        ? 8
+        : 63;
 
     return ResponsiveDialog(
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
@@ -123,208 +123,198 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        if (hasPin) ...[
-                          AppTextField(
-                            key: currentPin,
-                            controller: _currentPinController,
-                            focusNode: _currentPinFocus,
-                            maxLength: maxPinLength,
-                            inputFormatters: [limitBytesLength(maxPinLength)],
-                            buildCounter: buildByteCounterFor(
-                              _currentPinController.text,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    if (hasPin) ...[
+                      AppTextField(
+                        key: currentPin,
+                        controller: _currentPinController,
+                        focusNode: _currentPinFocus,
+                        maxLength: maxPinLength,
+                        inputFormatters: [limitBytesLength(maxPinLength)],
+                        buildCounter: buildByteCounterFor(
+                          _currentPinController.text,
+                        ),
+                        autofocus: true,
+                        obscureText: _isObscureCurrent,
+                        autofillHints: const [AutofillHints.password],
+                        decoration: AppInputDecoration(
+                          enabled: !_isBlocked,
+                          border: const OutlineInputBorder(),
+                          labelText: l10n.s_current_pin,
+                          helperText: pinRetries != null && pinRetries <= 3
+                              ? l10n.l_attempts_remaining(pinRetries)
+                              : '',
+                          // Prevents dialog resizing
+                          errorText: _currentIsWrong ? _currentPinError : null,
+                          errorMaxLines: 3,
+                          icon: const Icon(Symbols.pin),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscureCurrent
+                                  ? Symbols.visibility
+                                  : Symbols.visibility_off,
                             ),
-                            autofocus: true,
-                            obscureText: _isObscureCurrent,
-                            autofillHints: const [AutofillHints.password],
-                            decoration: AppInputDecoration(
-                              enabled: !_isBlocked,
-                              border: const OutlineInputBorder(),
-                              labelText: l10n.s_current_pin,
-                              helperText:
-                                  pinRetries != null && pinRetries <= 3
-                                      ? l10n.l_attempts_remaining(pinRetries)
-                                      : '',
-                              // Prevents dialog resizing
-                              errorText:
-                                  _currentIsWrong ? _currentPinError : null,
-                              errorMaxLines: 3,
-                              icon: const Icon(Symbols.pin),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _isObscureCurrent
-                                      ? Symbols.visibility
-                                      : Symbols.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isObscureCurrent = !_isObscureCurrent;
-                                  });
-                                },
-                                tooltip:
-                                    _isObscureCurrent
-                                        ? l10n.s_show_pin
-                                        : l10n.s_hide_pin,
-                              ),
-                            ),
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
+                            onPressed: () {
                               setState(() {
-                                _currentIsWrong = false;
+                                _isObscureCurrent = !_isObscureCurrent;
                               });
                             },
-                            onSubmitted: (_) {
-                              if (_currentPinController.text.length <
-                                  minPinLength) {
-                                _currentPinFocus.requestFocus();
-                              } else {
-                                _newPinFocus.requestFocus();
-                              }
-                            },
-                          ).init(),
-                          // Used to add more spacing
-                          const SizedBox(height: 0),
-                        ],
-                        AppTextField(
-                          key: newPin,
-                          controller: _newPinController,
-                          focusNode: _newPinFocus,
-                          maxLength: maxPinLength,
-                          inputFormatters: [limitBytesLength(maxPinLength)],
-                          buildCounter: buildByteCounterFor(
-                            _newPinController.text,
+                            tooltip: _isObscureCurrent
+                                ? l10n.s_show_pin
+                                : l10n.s_hide_pin,
                           ),
-                          autofocus: !hasPin,
-                          obscureText: _isObscureNew,
-                          autofillHints: const [AutofillHints.password],
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_new_pin,
-                            enabled: newPinEnabled,
-                            helperText:
-                                hasPinComplexity
-                                    ? l10n
-                                        .p_new_fido2_pin_complexity_active_requirements(
-                                          minPinLength,
-                                          maxPinLength,
-                                          2,
-                                          '123456',
-                                        )
-                                    : l10n.p_new_fido2_pin_requirements(
-                                      minPinLength,
-                                      maxPinLength,
-                                    ),
-                            helperMaxLines: 7,
-                            errorText: _newIsWrong ? _newPinError : null,
-                            errorMaxLines: 3,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: ExcludeFocusTraversal(
-                              excluding: !newPinEnabled,
-                              child: IconButton(
-                                icon: Icon(
-                                  _isObscureNew
-                                      ? Symbols.visibility
-                                      : Symbols.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isObscureNew = !_isObscureNew;
-                                  });
-                                },
-                                tooltip:
-                                    _isObscureNew
-                                        ? l10n.s_show_pin
-                                        : l10n.s_hide_pin,
-                              ),
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
-                            setState(() {
-                              _newIsWrong = false;
-                            });
-                          },
-                          onSubmitted: (_) {
-                            if (_newPinController.text.length < minPinLength) {
-                              _newPinFocus.requestFocus();
-                            } else {
-                              _confirmPinFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        AppTextField(
-                          key: confirmPin,
-                          controller: _confirmPinController,
-                          focusNode: _confirmPinFocus,
-                          maxLength: maxPinLength,
-                          inputFormatters: [limitBytesLength(maxPinLength)],
-                          buildCounter: buildByteCounterFor(
-                            _confirmPinController.text,
-                          ),
-                          obscureText: _isObscureConfirm,
-                          autofillHints: const [AutofillHints.password],
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_confirm_pin,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: ExcludeFocusTraversal(
-                              excluding: !confirmPinEnabled,
-                              child: IconButton(
-                                icon: Icon(
-                                  _isObscureConfirm
-                                      ? Symbols.visibility
-                                      : Symbols.visibility_off,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isObscureConfirm = !_isObscureConfirm;
-                                  });
-                                },
-                                tooltip:
-                                    _isObscureConfirm
-                                        ? l10n.s_show_pin
-                                        : l10n.s_hide_pin,
-                              ),
-                            ),
-                            enabled: confirmPinEnabled,
-                            errorText:
-                                _newPinController.text.length ==
-                                            _confirmPinController.text.length &&
-                                        _newPinController.text !=
-                                            _confirmPinController.text
-                                    ? l10n.l_pin_mismatch
-                                    : null,
-                            helperText:
-                                '', // Prevents resizing when errorText shown
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                          onSubmitted: (_) {
-                            if (isValid) {
-                              _submit();
-                            } else {
-                              _confirmPinFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
                         ),
-                      )
-                      .toList(),
-            ),
-          ),
+                        textInputAction: TextInputAction.next,
+                        onChanged: (value) {
+                          setState(() {
+                            _currentIsWrong = false;
+                          });
+                        },
+                        onSubmitted: (_) {
+                          if (_currentPinController.text.length <
+                              minPinLength) {
+                            _currentPinFocus.requestFocus();
+                          } else {
+                            _newPinFocus.requestFocus();
+                          }
+                        },
+                      ).init(),
+                      // Used to add more spacing
+                      const SizedBox(height: 0),
+                    ],
+                    AppTextField(
+                      key: newPin,
+                      controller: _newPinController,
+                      focusNode: _newPinFocus,
+                      maxLength: maxPinLength,
+                      inputFormatters: [limitBytesLength(maxPinLength)],
+                      buildCounter: buildByteCounterFor(_newPinController.text),
+                      autofocus: !hasPin,
+                      obscureText: _isObscureNew,
+                      autofillHints: const [AutofillHints.password],
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_new_pin,
+                        enabled: newPinEnabled,
+                        helperText: hasPinComplexity
+                            ? l10n.p_new_fido2_pin_complexity_active_requirements(
+                                minPinLength,
+                                maxPinLength,
+                                2,
+                                '123456',
+                              )
+                            : l10n.p_new_fido2_pin_requirements(
+                                minPinLength,
+                                maxPinLength,
+                              ),
+                        helperMaxLines: 7,
+                        errorText: _newIsWrong ? _newPinError : null,
+                        errorMaxLines: 3,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: ExcludeFocusTraversal(
+                          excluding: !newPinEnabled,
+                          child: IconButton(
+                            icon: Icon(
+                              _isObscureNew
+                                  ? Symbols.visibility
+                                  : Symbols.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscureNew = !_isObscureNew;
+                              });
+                            },
+                            tooltip: _isObscureNew
+                                ? l10n.s_show_pin
+                                : l10n.s_hide_pin,
+                          ),
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _newIsWrong = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (_newPinController.text.length < minPinLength) {
+                          _newPinFocus.requestFocus();
+                        } else {
+                          _confirmPinFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    AppTextField(
+                      key: confirmPin,
+                      controller: _confirmPinController,
+                      focusNode: _confirmPinFocus,
+                      maxLength: maxPinLength,
+                      inputFormatters: [limitBytesLength(maxPinLength)],
+                      buildCounter: buildByteCounterFor(
+                        _confirmPinController.text,
+                      ),
+                      obscureText: _isObscureConfirm,
+                      autofillHints: const [AutofillHints.password],
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_confirm_pin,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: ExcludeFocusTraversal(
+                          excluding: !confirmPinEnabled,
+                          child: IconButton(
+                            icon: Icon(
+                              _isObscureConfirm
+                                  ? Symbols.visibility
+                                  : Symbols.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscureConfirm = !_isObscureConfirm;
+                              });
+                            },
+                            tooltip: _isObscureConfirm
+                                ? l10n.s_show_pin
+                                : l10n.s_hide_pin,
+                          ),
+                        ),
+                        enabled: confirmPinEnabled,
+                        errorText:
+                            _newPinController.text.length ==
+                                    _confirmPinController.text.length &&
+                                _newPinController.text !=
+                                    _confirmPinController.text
+                            ? l10n.l_pin_mismatch
+                            : null,
+                        helperText:
+                            '', // Prevents resizing when errorText shown
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      onSubmitted: (_) {
+                        if (isValid) {
+                          _submit();
+                        } else {
+                          _confirmPinFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 
@@ -334,10 +324,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     _confirmPinFocus.unfocus();
 
     final l10n = AppLocalizations.of(context);
-    final oldPin =
-        _currentPinController.text.isNotEmpty
-            ? _currentPinController.text
-            : null;
+    final oldPin = _currentPinController.text.isNotEmpty
+        ? _currentPinController.text
+        : null;
     final newPin = _newPinController.text;
     try {
       final result = await ref
@@ -363,10 +352,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                   _currentPinFocus.requestFocus();
                   setState(() {
                     if (authBlocked || retries == 0) {
-                      _currentPinError =
-                          retries == 0
-                              ? l10n.l_pin_blocked_reset
-                              : l10n.l_pin_soft_locked;
+                      _currentPinError = retries == 0
+                          ? l10n.l_pin_blocked_reset
+                          : l10n.l_pin_soft_locked;
                       _currentIsWrong = true;
                       _isBlocked = true;
                     } else {

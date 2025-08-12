@@ -133,18 +133,17 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
         await ref.read(withContextProvider)((context) async {
           final result = await showBlurDialog(
             context: context,
-            builder:
-                (context) => AccessCodeDialog(
-                  devicePath: widget.devicePath,
-                  otpSlot: widget.otpSlot,
-                  action: (accessCode) async {
-                    await otpNotifier.configureSlot(
-                      widget.otpSlot.slot,
-                      configuration: configuration,
-                      accessCode: accessCode,
-                    );
-                  },
-                ),
+            builder: (context) => AccessCodeDialog(
+              devicePath: widget.devicePath,
+              otpSlot: widget.otpSlot,
+              action: (accessCode) async {
+                await otpNotifier.configureSlot(
+                  widget.otpSlot.slot,
+                  configuration: configuration,
+                  accessCode: accessCode,
+                );
+              },
+            ),
           );
           configurationSucceeded = result ?? false;
         });
@@ -170,131 +169,123 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        AppTextField(
-                          key: keys.secretField,
-                          autofocus: true,
-                          controller: _passwordController,
-                          focusNode: _passwordFocus,
-                          autofillHints:
-                              isAndroid ? [] : const [AutofillHints.password],
-                          maxLength: passwordMaxLength,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_password,
-                            errorText:
-                                _validatePassword && !passwordLengthValid
-                                    ? l10n.s_invalid_length
-                                    : _validatePassword && !passwordFormatValid
-                                    ? l10n.l_invalid_keyboard_character
-                                    : null,
-                            icon: const Icon(Symbols.key),
-                            suffixIcon: IconButton(
-                              key: keys.generateSecretKey,
-                              tooltip: l10n.s_generate_random,
-                              icon: const Icon(Symbols.refresh),
-                              onPressed: () async {
-                                final password = await ref
-                                    .read(
-                                      otpStateProvider(
-                                        widget.devicePath,
-                                      ).notifier,
-                                    )
-                                    .generateStaticPassword(
-                                      passwordMaxLength,
-                                      _keyboardLayout,
-                                    );
-                                setState(() {
-                                  _validatePassword = false;
-                                  _passwordController.text = password;
-                                });
-                              },
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    AppTextField(
+                      key: keys.secretField,
+                      autofocus: true,
+                      controller: _passwordController,
+                      focusNode: _passwordFocus,
+                      autofillHints: isAndroid
+                          ? []
+                          : const [AutofillHints.password],
+                      maxLength: passwordMaxLength,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_password,
+                        errorText: _validatePassword && !passwordLengthValid
+                            ? l10n.s_invalid_length
+                            : _validatePassword && !passwordFormatValid
+                            ? l10n.l_invalid_keyboard_character
+                            : null,
+                        icon: const Icon(Symbols.key),
+                        suffixIcon: IconButton(
+                          key: keys.generateSecretKey,
+                          tooltip: l10n.s_generate_random,
+                          icon: const Icon(Symbols.refresh),
+                          onPressed: () async {
+                            final password = await ref
+                                .read(
+                                  otpStateProvider(widget.devicePath).notifier,
+                                )
+                                .generateStaticPassword(
+                                  passwordMaxLength,
+                                  _keyboardLayout,
+                                );
                             setState(() {
                               _validatePassword = false;
+                              _passwordController.text = password;
                             });
                           },
-                          onSubmitted: (_) {
-                            if (!_validatePassword) {
-                              submit();
-                            } else {
-                              _passwordFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
-                              ),
-                              child: Icon(
-                                Symbols.tune,
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            Flexible(
-                              child: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.start,
-                                spacing: 4.0,
-                                runSpacing: 8.0,
-                                children: [
-                                  FilterChip(
-                                    label: Text(l10n.s_append_enter),
-                                    tooltip: l10n.l_append_enter_desc,
-                                    selected: _appendEnter,
-                                    onSelected: (value) {
-                                      setState(() {
-                                        _appendEnter = value;
-                                      });
-                                    },
-                                  ),
-                                  ChoiceFilterChip(
-                                    items: widget.keyboardLayouts.keys.toList(),
-                                    value: _keyboardLayout,
-                                    selected:
-                                        _keyboardLayout !=
-                                        _defaultKeyboardLayout,
-                                    labelBuilder:
-                                        (value) =>
-                                            Text(l10n.l_keyboard_layout(value)),
-                                    itemBuilder: (value) => Text(value),
-                                    onChanged: (layout) {
-                                      setState(() {
-                                        _keyboardLayout = layout;
-                                        _validatePassword = false;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _validatePassword = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (!_validatePassword) {
+                          submit();
+                        } else {
+                          _passwordFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Icon(
+                            Symbols.tune,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      )
-                      .toList(),
-            ),
-          ),
+                        const SizedBox(width: 16.0),
+                        Flexible(
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.start,
+                            spacing: 4.0,
+                            runSpacing: 8.0,
+                            children: [
+                              FilterChip(
+                                label: Text(l10n.s_append_enter),
+                                tooltip: l10n.l_append_enter_desc,
+                                selected: _appendEnter,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _appendEnter = value;
+                                  });
+                                },
+                              ),
+                              ChoiceFilterChip(
+                                items: widget.keyboardLayouts.keys.toList(),
+                                value: _keyboardLayout,
+                                selected:
+                                    _keyboardLayout != _defaultKeyboardLayout,
+                                labelBuilder: (value) =>
+                                    Text(l10n.l_keyboard_layout(value)),
+                                itemBuilder: (value) => Text(value),
+                                onChanged: (layout) {
+                                  setState(() {
+                                    _keyboardLayout = layout;
+                                    _validatePassword = false;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

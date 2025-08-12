@@ -207,22 +207,19 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
     final lastDevice = prefs.getString(_lastDevice) ?? '';
 
     // Ensure hidden devices are deselected
-    var node =
-        devices
-            .where(
-              (dev) =>
-                  dev.path.key == lastDevice && !hidden.contains(dev.path.key),
-            )
-            .firstOrNull;
+    var node = devices
+        .where(
+          (dev) => dev.path.key == lastDevice && !hidden.contains(dev.path.key),
+        )
+        .firstOrNull;
 
     if (node == null) {
       final parts = lastDevice.split('/');
       if (parts.firstOrNull == 'pid') {
-        node =
-            devices
-                .whereType<UsbYubiKeyNode>()
-                .where((e) => e.pid.value.toString() == parts[1])
-                .firstOrNull;
+        node = devices
+            .whereType<UsbYubiKeyNode>()
+            .where((e) => e.pid.value.toString() == parts[1])
+            .firstOrNull;
       }
     }
 

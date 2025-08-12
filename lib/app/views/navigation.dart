@@ -66,30 +66,29 @@ class _NavigationItemState extends State<NavigationItem> {
     if (widget.collapsed) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.5),
-        child:
-            widget.selected
-                ? Theme(
-                  data: theme.copyWith(
-                    colorScheme: colorScheme.copyWith(
-                      primary: colorScheme.secondaryContainer,
-                      onPrimary: colorScheme.onSecondaryContainer,
-                    ),
+        child: widget.selected
+            ? Theme(
+                data: theme.copyWith(
+                  colorScheme: colorScheme.copyWith(
+                    primary: colorScheme.secondaryContainer,
+                    onPrimary: colorScheme.onSecondaryContainer,
                   ),
-                  child: IconButton.filled(
-                    focusNode: _focusNode,
-                    icon: widget.leading,
-                    tooltip: widget.title,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    onPressed: widget.onTap,
-                  ),
-                )
-                : IconButton(
+                ),
+                child: IconButton.filled(
                   focusNode: _focusNode,
                   icon: widget.leading,
                   tooltip: widget.title,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   onPressed: widget.onTap,
                 ),
+              )
+            : IconButton(
+                focusNode: _focusNode,
+                icon: widget.leading,
+                tooltip: widget.title,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                onPressed: widget.onTap,
+              ),
       );
     } else {
       return ListTile(
@@ -150,41 +149,39 @@ class MoreItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
     return MenuAnchor(
-      menuChildren:
-          sections
-              .map(
-                (e) => ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: 150),
-                  child: MenuItemButton(
-                    leadingIcon: Icon(e._icon),
-                    onPressed:
-                        data != null &&
-                                e.getAvailability(data) == Availability.enabled
-                            ? () {
-                              ref
-                                  .read(currentSectionProvider.notifier)
-                                  .setCurrentSection(e);
-                            }
-                            : null,
-                    child: Text(e.getDisplayName(l10n)),
-                  ),
-                ),
-              )
-              .toList(),
-      builder:
-          (context, controller, child) => NavigationItem(
-            leading: Icon(Symbols.more_horiz),
-            borderRadius: borderRadius,
-            title: l10n.s_more,
-            collapsed: collapsed,
-            onTap: () {
-              if (controller.isOpen) {
-                controller.close();
-              } else {
-                controller.open();
-              }
-            },
-          ),
+      menuChildren: sections
+          .map(
+            (e) => ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 150),
+              child: MenuItemButton(
+                leadingIcon: Icon(e._icon),
+                onPressed:
+                    data != null &&
+                        e.getAvailability(data) == Availability.enabled
+                    ? () {
+                        ref
+                            .read(currentSectionProvider.notifier)
+                            .setCurrentSection(e);
+                      }
+                    : null,
+                child: Text(e.getDisplayName(l10n)),
+              ),
+            ),
+          )
+          .toList(),
+      builder: (context, controller, child) => NavigationItem(
+        leading: Icon(Symbols.more_horiz),
+        borderRadius: borderRadius,
+        title: l10n.s_more,
+        collapsed: collapsed,
+        onTap: () {
+          if (controller.isOpen) {
+            controller.close();
+          } else {
+            controller.open();
+          }
+        },
+      ),
     );
   }
 }
@@ -210,13 +207,12 @@ class NavigationContent extends ConsumerWidget {
     YubiKeyData? data,
   ) {
     final settingsSection = Section.settings;
-    final borderRadius =
-        isDrawer
-            ? BorderRadius.only(
-              topRight: Radius.circular(24),
-              bottomRight: Radius.circular(24),
-            )
-            : null;
+    final borderRadius = isDrawer
+        ? BorderRadius.only(
+            topRight: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          )
+        : null;
     return AnimatedSize(
       duration: Duration(milliseconds: 150),
       child: Column(
@@ -239,22 +235,21 @@ class NavigationContent extends ConsumerWidget {
                   selected: app == currentSection,
                   onTap:
                       data == null &&
-                                  [
-                                    Section.home,
-                                    Section.settings,
-                                  ].contains(currentSection) ||
-                              data != null &&
-                                  app.getAvailability(data) ==
-                                      Availability.enabled
-                          ? () {
-                            ref
-                                .read(currentSectionProvider.notifier)
-                                .setCurrentSection(app);
-                            if (shouldPop) {
-                              Navigator.of(context).pop();
-                            }
+                              [
+                                Section.home,
+                                Section.settings,
+                              ].contains(currentSection) ||
+                          data != null &&
+                              app.getAvailability(data) == Availability.enabled
+                      ? () {
+                          ref
+                              .read(currentSectionProvider.notifier)
+                              .setCurrentSection(app);
+                          if (shouldPop) {
+                            Navigator.of(context).pop();
                           }
-                          : null,
+                        }
+                      : null,
                 ),
               ),
               if (hiddenSections.isNotEmpty)
@@ -267,19 +262,19 @@ class NavigationContent extends ConsumerWidget {
           ),
           NavigationItem(
             key: settingsSection.key,
-            borderRadius:
-                isDrawer
-                    ? BorderRadius.only(
-                      topRight: Radius.circular(24),
-                      bottomRight: Radius.circular(24),
-                    )
-                    : null,
+            borderRadius: isDrawer
+                ? BorderRadius.only(
+                    topRight: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  )
+                : null,
             title: settingsSection.getDisplayName(l10n),
             leading: Icon(
               settingsSection._icon,
               fill: settingsSection == currentSection ? 1.0 : 0.0,
-              semanticLabel:
-                  !extended ? settingsSection.getDisplayName(l10n) : null,
+              semanticLabel: !extended
+                  ? settingsSection.getDisplayName(l10n)
+                  : null,
             ),
             collapsed: !extended,
             selected: settingsSection == currentSection,
@@ -348,8 +343,9 @@ class NavigationContent extends ConsumerWidget {
                 // Ensure at least one app is visible
                 maxVisibleApps = max(1, maxVisibleApps);
 
-                var visibleApps =
-                    availableAppSections.take(maxVisibleApps).toList();
+                var visibleApps = availableAppSections
+                    .take(maxVisibleApps)
+                    .toList();
                 if (currentSection != Section.settings &&
                     !visibleApps.contains(currentSection) &&
                     (data != null &&
@@ -358,10 +354,9 @@ class NavigationContent extends ConsumerWidget {
                   visibleApps.removeLast();
                   visibleApps.add(currentSection);
                 }
-                List<Section> hiddenApps =
-                    Set<Section>.from(
-                      availableAppSections,
-                    ).difference(Set.from(visibleApps)).toList();
+                List<Section> hiddenApps = Set<Section>.from(
+                  availableAppSections,
+                ).difference(Set.from(visibleApps)).toList();
 
                 // Material is needed to ensure navigation items are scrolled
                 // under the device picker
@@ -402,18 +397,18 @@ class NavigationContent extends ConsumerWidget {
     final supportedSections = ref.watch(supportedSectionsProvider);
     final data = ref.watch(currentDeviceDataProvider).valueOrNull;
 
-    final availableSections =
-        data != null
-            ? supportedSections
-                .where(
-                  (section) =>
-                      section.getAvailability(data) != Availability.unsupported,
-                )
-                .toList()
-            : [Section.home];
+    final availableSections = data != null
+        ? supportedSections
+              .where(
+                (section) =>
+                    section.getAvailability(data) != Availability.unsupported,
+              )
+              .toList()
+        : [Section.home];
     final settingsSection = Section.settings;
-    final availableAppSections =
-        availableSections.where((s) => s != settingsSection).toList();
+    final availableAppSections = availableSections
+        .where((s) => s != settingsSection)
+        .toList();
     final currentSection = ref.watch(currentSectionProvider);
 
     return _buildMainContent(

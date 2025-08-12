@@ -109,18 +109,17 @@ class _ConfigureChalrespDialogState
         await ref.read(withContextProvider)((context) async {
           final result = await showBlurDialog(
             context: context,
-            builder:
-                (context) => AccessCodeDialog(
-                  devicePath: widget.devicePath,
-                  otpSlot: widget.otpSlot,
-                  action: (accessCode) async {
-                    await otpNotifier.configureSlot(
-                      widget.otpSlot.slot,
-                      configuration: configuration,
-                      accessCode: accessCode,
-                    );
-                  },
-                ),
+            builder: (context) => AccessCodeDialog(
+              devicePath: widget.devicePath,
+              otpSlot: widget.otpSlot,
+              action: (accessCode) async {
+                await otpNotifier.configureSlot(
+                  widget.otpSlot.slot,
+                  configuration: configuration,
+                  accessCode: accessCode,
+                );
+              },
+            ),
           );
           configurationSucceeded = result ?? false;
         });
@@ -146,107 +145,102 @@ class _ConfigureChalrespDialogState
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        AppTextField(
-                          key: keys.secretField,
-                          autofocus: true,
-                          controller: _secretController,
-                          focusNode: _secretFocus,
-                          autofillHints:
-                              isAndroid ? [] : const [AutofillHints.password],
-                          maxLength: secretMaxLength,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_secret_key,
-                            errorText:
-                                _validateSecret && !secretFormatValid
-                                    ? l10n.l_invalid_format_allowed_chars(
-                                      Format.hex.allowedCharacters,
-                                    )
-                                    : _validateSecret && !secretLengthValid
-                                    ? l10n.s_invalid_length
-                                    : null,
-                            icon: const Icon(Symbols.key),
-                            suffixIcon: IconButton(
-                              key: keys.generateSecretKey,
-                              icon: const Icon(Symbols.refresh),
-                              onPressed: () {
-                                setState(() {
-                                  final random = Random.secure();
-                                  final key =
-                                      List.generate(
-                                        20,
-                                        (_) => random
-                                            .nextInt(256)
-                                            .toRadixString(16)
-                                            .padLeft(2, '0'),
-                                      ).join();
-                                  setState(() {
-                                    _secretController.text = key;
-                                    _validateSecret = false;
-                                  });
-                                });
-                              },
-                              tooltip: l10n.s_generate_random,
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    AppTextField(
+                      key: keys.secretField,
+                      autofocus: true,
+                      controller: _secretController,
+                      focusNode: _secretFocus,
+                      autofillHints: isAndroid
+                          ? []
+                          : const [AutofillHints.password],
+                      maxLength: secretMaxLength,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_secret_key,
+                        errorText: _validateSecret && !secretFormatValid
+                            ? l10n.l_invalid_format_allowed_chars(
+                                Format.hex.allowedCharacters,
+                              )
+                            : _validateSecret && !secretLengthValid
+                            ? l10n.s_invalid_length
+                            : null,
+                        icon: const Icon(Symbols.key),
+                        suffixIcon: IconButton(
+                          key: keys.generateSecretKey,
+                          icon: const Icon(Symbols.refresh),
+                          onPressed: () {
                             setState(() {
-                              _validateSecret = false;
+                              final random = Random.secure();
+                              final key = List.generate(
+                                20,
+                                (_) => random
+                                    .nextInt(256)
+                                    .toRadixString(16)
+                                    .padLeft(2, '0'),
+                              ).join();
+                              setState(() {
+                                _secretController.text = key;
+                                _validateSecret = false;
+                              });
                             });
                           },
-                          onSubmitted: (_) {
-                            if (!_validateSecret) {
-                              submit();
-                            } else {
-                              _secretFocus.requestFocus();
-                            }
+                          tooltip: l10n.s_generate_random,
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _validateSecret = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (!_validateSecret) {
+                          submit();
+                        } else {
+                          _secretFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Icon(
+                            Symbols.tune,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        FilterChip(
+                          label: Text(l10n.s_require_touch),
+                          selected: _requireTouch,
+                          onSelected: (value) {
+                            setState(() {
+                              _requireTouch = value;
+                            });
                           },
-                        ).init(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
-                              ),
-                              child: Icon(
-                                Symbols.tune,
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            FilterChip(
-                              label: Text(l10n.s_require_touch),
-                              selected: _requireTouch,
-                              onSelected: (value) {
-                                setState(() {
-                                  _requireTouch = value;
-                                });
-                              },
-                            ),
-                          ],
                         ),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+                      ],
+                    ),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

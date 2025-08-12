@@ -98,52 +98,47 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
               Text(l10n.l_enter_oath_pw),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
-                child:
-                    AppTextField(
-                      key: keys.passwordField,
-                      controller: _passwordController,
-                      focusNode: _passwordFocus,
-                      autofocus: true,
-                      obscureText: _isObscure,
-                      autofillHints: const [AutofillHints.password],
-                      decoration: AppInputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: l10n.s_password,
-                        errorText:
-                            _passwordIsWrong ? l10n.s_wrong_password : null,
-                        helperText:
-                            '', // Prevents resizing when errorText shown
-                        icon: const Icon(Symbols.password),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isObscure = !_isObscure;
-                            });
-                          },
-                          tooltip:
-                              _isObscure
-                                  ? l10n.s_show_password
-                                  : l10n.s_hide_password,
-                        ),
+                child: AppTextField(
+                  key: keys.passwordField,
+                  controller: _passwordController,
+                  focusNode: _passwordFocus,
+                  autofocus: true,
+                  obscureText: _isObscure,
+                  autofillHints: const [AutofillHints.password],
+                  decoration: AppInputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: l10n.s_password,
+                    errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
+                    helperText: '', // Prevents resizing when errorText shown
+                    icon: const Icon(Symbols.password),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure
+                            ? Symbols.visibility
+                            : Symbols.visibility_off,
                       ),
-                      onChanged:
-                          (_) => setState(() {
-                            _passwordIsWrong = false;
-                          }), // Update state on change
-                      onSubmitted: (_) {
-                        if (_passwordController.text.isNotEmpty &&
-                            !_passwordIsWrong) {
-                          _submit();
-                        } else {
-                          _passwordFocus.requestFocus();
-                        }
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
                       },
-                    ).init(),
+                      tooltip: _isObscure
+                          ? l10n.s_show_password
+                          : l10n.s_hide_password,
+                    ),
+                  ),
+                  onChanged: (_) => setState(() {
+                    _passwordIsWrong = false;
+                  }), // Update state on change
+                  onSubmitted: (_) {
+                    if (_passwordController.text.isNotEmpty &&
+                        !_passwordIsWrong) {
+                      _submit();
+                    } else {
+                      _passwordFocus.requestFocus();
+                    }
+                  },
+                ).init(),
               ),
               const SizedBox(height: 3.0),
               Padding(
@@ -159,35 +154,37 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                       children: [
                         keystoreFailed
                             ? Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: 4.0,
-                              runSpacing: 8.0,
-                              children: [
-                                Icon(
-                                  Symbols.warning_amber,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                                Text(l10n.l_keystore_unavailable),
-                              ],
-                            )
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 4.0,
+                                runSpacing: 8.0,
+                                children: [
+                                  Icon(
+                                    Symbols.warning_amber,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.tertiary,
+                                  ),
+                                  Text(l10n.l_keystore_unavailable),
+                                ],
+                              )
                             : FilterChip(
-                              label: Text(l10n.s_remember_password),
-                              selected: _remember,
-                              onSelected: (value) {
-                                setState(() {
-                                  _remember = value;
-                                });
-                              },
-                            ),
+                                label: Text(l10n.s_remember_password),
+                                selected: _remember,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _remember = value;
+                                  });
+                                },
+                              ),
                         FilledButton.icon(
                           key: keys.unlockButton,
                           label: Text(l10n.s_unlock),
                           icon: const Icon(Symbols.lock_open),
                           onPressed:
                               _passwordController.text.isNotEmpty &&
-                                      !_passwordIsWrong
-                                  ? _submit
-                                  : null,
+                                  !_passwordIsWrong
+                              ? _submit
+                              : null,
                         ),
                       ],
                     ),

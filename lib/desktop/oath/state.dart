@@ -402,13 +402,12 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     final pairs = [];
     for (var e in result['entries']) {
       final credential = OathCredential.fromJson(e['credential']);
-      final code =
-          e['code'] == null
-              ? null
-              : credential
-                  .isSteam // Steam codes require a re-calculate
-              ? await calculate(credential, update: false)
-              : OathCode.fromJson(e['code']);
+      final code = e['code'] == null
+          ? null
+          : credential
+                .isSteam // Steam codes require a re-calculate
+          ? await calculate(credential, update: false)
+          : OathCode.fromJson(e['code']);
       pairs.add(OathPair(credential, code));
     }
 

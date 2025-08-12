@@ -159,18 +159,17 @@ class _ConfigureYubiOtpDialogState
         await ref.read(withContextProvider)((context) async {
           final result = await showBlurDialog(
             context: context,
-            builder:
-                (context) => AccessCodeDialog(
-                  devicePath: widget.devicePath,
-                  otpSlot: widget.otpSlot,
-                  action: (accessCode) async {
-                    await otpNotifier.configureSlot(
-                      widget.otpSlot.slot,
-                      configuration: configuration,
-                      accessCode: accessCode,
-                    );
-                  },
-                ),
+            builder: (context) => AccessCodeDialog(
+              devicePath: widget.devicePath,
+              otpSlot: widget.otpSlot,
+              action: (accessCode) async {
+                await otpNotifier.configureSlot(
+                  widget.otpSlot.slot,
+                  configuration: configuration,
+                  accessCode: accessCode,
+                );
+              },
+            ),
           );
           configurationSucceeded = result ?? false;
         });
@@ -198,9 +197,9 @@ class _ConfigureYubiOtpDialogState
             context,
             outputFile != null
                 ? l10n.l_slot_credential_configured_and_exported(
-                  l10n.s_capability_otp,
-                  outputFile.uri.pathSegments.last,
-                )
+                    l10n.s_capability_otp,
+                    outputFile.uri.pathSegments.last,
+                  )
                 : l10n.l_slot_credential_configured(l10n.s_capability_otp),
           );
         }
@@ -238,271 +237,259 @@ class _ConfigureYubiOtpDialogState
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        AppTextField(
-                          key: keys.publicIdField,
-                          autofocus: true,
-                          controller: _publicIdController,
-                          autofillHints:
-                              isAndroid ? [] : const [AutofillHints.password],
-                          focusNode: _publicIdFocus,
-                          maxLength: publicIdLength,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_public_id,
-                            errorText:
-                                _validatePublicIdFormat && !publicIdFormatValid
-                                    ? l10n.l_invalid_format_allowed_chars(
-                                      Format.modhex.allowedCharacters,
-                                    )
-                                    : null,
-                            icon: const Icon(Symbols.public),
-                            suffixIcon: IconButton(
-                              key: keys.useSerial,
-                              tooltip: l10n.s_use_serial,
-                              icon: const Icon(Symbols.auto_awesome),
-                              onPressed:
-                                  (info?.serial != null)
-                                      ? () async {
-                                        final publicId = await ref
-                                            .read(
-                                              otpStateProvider(
-                                                widget.devicePath,
-                                              ).notifier,
-                                            )
-                                            .modhexEncodeSerial(info!.serial!);
-                                        setState(() {
-                                          _publicIdController.text = publicId;
-                                        });
-                                      }
-                                      : null,
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    AppTextField(
+                      key: keys.publicIdField,
+                      autofocus: true,
+                      controller: _publicIdController,
+                      autofillHints: isAndroid
+                          ? []
+                          : const [AutofillHints.password],
+                      focusNode: _publicIdFocus,
+                      maxLength: publicIdLength,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_public_id,
+                        errorText:
+                            _validatePublicIdFormat && !publicIdFormatValid
+                            ? l10n.l_invalid_format_allowed_chars(
+                                Format.modhex.allowedCharacters,
+                              )
+                            : null,
+                        icon: const Icon(Symbols.public),
+                        suffixIcon: IconButton(
+                          key: keys.useSerial,
+                          tooltip: l10n.s_use_serial,
+                          icon: const Icon(Symbols.auto_awesome),
+                          onPressed: (info?.serial != null)
+                              ? () async {
+                                  final publicId = await ref
+                                      .read(
+                                        otpStateProvider(
+                                          widget.devicePath,
+                                        ).notifier,
+                                      )
+                                      .modhexEncodeSerial(info!.serial!);
+                                  setState(() {
+                                    _publicIdController.text = publicId;
+                                  });
+                                }
+                              : null,
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _validatePublicIdFormat = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (publicIdLengthValid) {
+                          _privateIdFocus.requestFocus();
+                        } else {
+                          _publicIdFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    AppTextField(
+                      key: keys.privateIdField,
+                      controller: _privateIdController,
+                      autofillHints: isAndroid
+                          ? []
+                          : const [AutofillHints.password],
+                      maxLength: privateIdLength,
+                      focusNode: _privateIdFocus,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_private_id,
+                        errorText:
+                            _validatePrivateIdFormat && !privateIdFormatValid
+                            ? l10n.l_invalid_format_allowed_chars(
+                                Format.hex.allowedCharacters,
+                              )
+                            : null,
+                        icon: const Icon(Symbols.key),
+                        suffixIcon: IconButton(
+                          key: keys.generatePrivateId,
+                          tooltip: l10n.s_generate_random,
+                          icon: const Icon(Symbols.refresh),
+                          onPressed: () {
+                            final random = Random.secure();
+                            final key = List.generate(
+                              6,
+                              (_) => random
+                                  .nextInt(256)
+                                  .toRadixString(16)
+                                  .padLeft(2, '0'),
+                            ).join();
                             setState(() {
-                              _validatePublicIdFormat = false;
+                              _privateIdController.text = key;
                             });
                           },
-                          onSubmitted: (_) {
-                            if (publicIdLengthValid) {
-                              _privateIdFocus.requestFocus();
-                            } else {
-                              _publicIdFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        AppTextField(
-                          key: keys.privateIdField,
-                          controller: _privateIdController,
-                          autofillHints:
-                              isAndroid ? [] : const [AutofillHints.password],
-                          maxLength: privateIdLength,
-                          focusNode: _privateIdFocus,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_private_id,
-                            errorText:
-                                _validatePrivateIdFormat &&
-                                        !privateIdFormatValid
-                                    ? l10n.l_invalid_format_allowed_chars(
-                                      Format.hex.allowedCharacters,
-                                    )
-                                    : null,
-                            icon: const Icon(Symbols.key),
-                            suffixIcon: IconButton(
-                              key: keys.generatePrivateId,
-                              tooltip: l10n.s_generate_random,
-                              icon: const Icon(Symbols.refresh),
-                              onPressed: () {
-                                final random = Random.secure();
-                                final key =
-                                    List.generate(
-                                      6,
-                                      (_) => random
-                                          .nextInt(256)
-                                          .toRadixString(16)
-                                          .padLeft(2, '0'),
-                                    ).join();
-                                setState(() {
-                                  _privateIdController.text = key;
-                                });
-                              },
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _validatePrivateIdFormat = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (privateIdLengthValid) {
+                          _secretFocus.requestFocus();
+                        } else {
+                          _privateIdFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    AppTextField(
+                      key: keys.secretField,
+                      controller: _secretController,
+                      autofillHints: isAndroid
+                          ? []
+                          : const [AutofillHints.password],
+                      maxLength: secretLength,
+                      focusNode: _secretFocus,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_secret_key,
+                        errorText: _validateSecretFormat && !secretFormatValid
+                            ? l10n.l_invalid_format_allowed_chars(
+                                Format.hex.allowedCharacters,
+                              )
+                            : null,
+                        icon: const Icon(Symbols.key),
+                        suffixIcon: IconButton(
+                          key: keys.generateSecretKey,
+                          tooltip: l10n.s_generate_random,
+                          icon: const Icon(Symbols.refresh),
+                          onPressed: () {
+                            final random = Random.secure();
+                            final key = List.generate(
+                              16,
+                              (_) => random
+                                  .nextInt(256)
+                                  .toRadixString(16)
+                                  .padLeft(2, '0'),
+                            ).join();
                             setState(() {
-                              _validatePrivateIdFormat = false;
+                              _secretController.text = key;
                             });
                           },
-                          onSubmitted: (_) {
-                            if (privateIdLengthValid) {
-                              _secretFocus.requestFocus();
-                            } else {
-                              _privateIdFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        AppTextField(
-                          key: keys.secretField,
-                          controller: _secretController,
-                          autofillHints:
-                              isAndroid ? [] : const [AutofillHints.password],
-                          maxLength: secretLength,
-                          focusNode: _secretFocus,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_secret_key,
-                            errorText:
-                                _validateSecretFormat && !secretFormatValid
-                                    ? l10n.l_invalid_format_allowed_chars(
-                                      Format.hex.allowedCharacters,
-                                    )
-                                    : null,
-                            icon: const Icon(Symbols.key),
-                            suffixIcon: IconButton(
-                              key: keys.generateSecretKey,
-                              tooltip: l10n.s_generate_random,
-                              icon: const Icon(Symbols.refresh),
-                              onPressed: () {
-                                final random = Random.secure();
-                                final key =
-                                    List.generate(
-                                      16,
-                                      (_) => random
-                                          .nextInt(256)
-                                          .toRadixString(16)
-                                          .padLeft(2, '0'),
-                                    ).join();
-                                setState(() {
-                                  _secretController.text = key;
-                                });
-                              },
-                            ),
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _validateSecretFormat = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (lengthsValid) {
+                          submit();
+                        } else {
+                          _secretFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Icon(
+                            Symbols.tune,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
-                            setState(() {
-                              _validateSecretFormat = false;
-                            });
-                          },
-                          onSubmitted: (_) {
-                            if (lengthsValid) {
-                              submit();
-                            } else {
-                              _secretFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
+                        ),
+                        const SizedBox(width: 16.0),
+                        Flexible(
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.start,
+                            spacing: 4.0,
+                            runSpacing: 8.0,
+                            children: [
+                              FilterChip(
+                                label: Text(l10n.s_append_enter),
+                                tooltip: l10n.l_append_enter_desc,
+                                selected: _appendEnter,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _appendEnter = value;
+                                  });
+                                },
                               ),
-                              child: Icon(
-                                Symbols.tune,
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            Flexible(
-                              child: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.start,
-                                spacing: 4.0,
-                                runSpacing: 8.0,
-                                children: [
-                                  FilterChip(
-                                    label: Text(l10n.s_append_enter),
-                                    tooltip: l10n.l_append_enter_desc,
-                                    selected: _appendEnter,
-                                    onSelected: (value) {
+                              ChoiceFilterChip<OutputActions>(
+                                tooltip: outputFile?.path ?? l10n.s_no_export,
+                                selected: outputFile != null,
+                                avatar: outputFile != null
+                                    ? Icon(
+                                        Symbols.check,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.secondary,
+                                      )
+                                    : null,
+                                value: _action,
+                                items: OutputActions.values,
+                                itemBuilder: (value) =>
+                                    Text(value.getDisplayName(l10n)),
+                                labelBuilder: (_) {
+                                  String? fileName =
+                                      outputFile?.uri.pathSegments.last;
+                                  return Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 140,
+                                    ),
+                                    child: Text(
+                                      fileName != null
+                                          ? '${l10n.s_export} $fileName'
+                                          : _action.getDisplayName(l10n),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  );
+                                },
+                                onChanged: (value) async {
+                                  if (value == OutputActions.noOutput) {
+                                    ref
+                                        .read(yubiOtpOutputProvider.notifier)
+                                        .setOutput(null);
+                                    setState(() {
+                                      _action = value;
+                                    });
+                                  } else if (value ==
+                                      OutputActions.selectFile) {
+                                    if (await selectFile()) {
                                       setState(() {
-                                        _appendEnter = value;
+                                        _action = value;
                                       });
-                                    },
-                                  ),
-                                  ChoiceFilterChip<OutputActions>(
-                                    tooltip:
-                                        outputFile?.path ?? l10n.s_no_export,
-                                    selected: outputFile != null,
-                                    avatar:
-                                        outputFile != null
-                                            ? Icon(
-                                              Symbols.check,
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.secondary,
-                                            )
-                                            : null,
-                                    value: _action,
-                                    items: OutputActions.values,
-                                    itemBuilder:
-                                        (value) =>
-                                            Text(value.getDisplayName(l10n)),
-                                    labelBuilder: (_) {
-                                      String? fileName =
-                                          outputFile?.uri.pathSegments.last;
-                                      return Container(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 140,
-                                        ),
-                                        child: Text(
-                                          fileName != null
-                                              ? '${l10n.s_export} $fileName'
-                                              : _action.getDisplayName(l10n),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      );
-                                    },
-                                    onChanged: (value) async {
-                                      if (value == OutputActions.noOutput) {
-                                        ref
-                                            .read(
-                                              yubiOtpOutputProvider.notifier,
-                                            )
-                                            .setOutput(null);
-                                        setState(() {
-                                          _action = value;
-                                        });
-                                      } else if (value ==
-                                          OutputActions.selectFile) {
-                                        if (await selectFile()) {
-                                          setState(() {
-                                            _action = value;
-                                          });
-                                        }
-                                      }
-                                    },
-                                  ),
-                                ],
+                                    }
+                                  }
+                                },
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        _createUploadText(context, l10n),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+                      ],
+                    ),
+                    _createUploadText(context, l10n),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 
@@ -519,10 +506,9 @@ class _ConfigureYubiOtpDialogState
         ),
         children: [
           ...parts.map(
-            (e) =>
-                e == uploadOtpUri.host
-                    ? _createUploadOtpLink(context)
-                    : TextSpan(text: e),
+            (e) => e == uploadOtpUri.host
+                ? _createUploadOtpLink(context)
+                : TextSpan(text: e),
           ),
         ],
       ),
@@ -536,14 +522,10 @@ class _ConfigureYubiOtpDialogState
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.primary,
       ),
-      recognizer:
-          TapGestureRecognizer()
-            ..onTap = () async {
-              await launchUrl(
-                uploadOtpUri,
-                mode: LaunchMode.externalApplication,
-              );
-            },
+      recognizer: TapGestureRecognizer()
+        ..onTap = () async {
+          await launchUrl(uploadOtpUri, mode: LaunchMode.externalApplication);
+        },
     );
   }
 }

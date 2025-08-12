@@ -18,7 +18,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -65,6 +64,7 @@ List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
   final Capability? application;
+
   const ResetDialog(this.data, {super.key, this.application});
 
   @override
@@ -75,6 +75,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   late Capability? _application;
   late bool _globalReset;
   late bool _longTouch;
+
   // If empty, FIDO reset is enabled for the current transport.
   // Otherwise, the reset is disabled for the current transport and requires
   // one of the listed transports to be used instead.
@@ -181,29 +182,28 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         Capability.fido2 =>
           _currentStep < _totalSteps
               ? () {
-                _currentStep = -1;
-                _subscription?.cancel();
-                if (isAndroid) {
-                  _resetSection();
+                  _currentStep = -1;
+                  _subscription?.cancel();
+                  if (isAndroid) {
+                    _resetSection();
+                  }
                 }
-              }
               : null,
         _ =>
           isAndroid && _application != null
               ? () {
-                _resetSection();
-              }
+                  _resetSection();
+                }
               : null,
       },
       actions: [
         if (_currentStep < _totalSteps)
           TextButton(
-            onPressed:
-                !_resetting
-                    ? switch (_application) {
-                      Capability.fido2 =>
-                        _fidoDisabledRequiredTransports.isEmpty
-                            ? () async {
+            onPressed: !_resetting
+                ? switch (_application) {
+                    Capability.fido2 =>
+                      _fidoDisabledRequiredTransports.isEmpty
+                          ? () async {
                               _subscription = ref
                                   .read(
                                     fidoStateProvider(
@@ -281,61 +281,59 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                     },
                                   );
                             }
-                            : null,
-                      Capability.oath => () async {
-                        setState(() {
-                          _resetting = true;
-                        });
-                        try {
-                          await ref
-                              .read(
-                                oathStateProvider(
-                                  widget.data.node.path,
-                                ).notifier,
-                              )
-                              .reset();
-                          await ref.read(withContextProvider)((context) async {
-                            Navigator.of(context).pop();
-                            showMessage(context, l10n.l_oath_application_reset);
-                          });
-                        } catch (e) {
-                          if (e is CancellationException) {
-                            setState(() {
-                              _resetting = false;
-                              _currentStep = -1;
-                              _application = null;
-                            });
-                            return;
-                          }
-                        }
-                      },
-                      Capability.piv => () async {
-                        setState(() {
-                          _resetting = true;
-                        });
+                          : null,
+                    Capability.oath => () async {
+                      setState(() {
+                        _resetting = true;
+                      });
+                      try {
                         await ref
                             .read(
-                              pivStateProvider(widget.data.node.path).notifier,
+                              oathStateProvider(widget.data.node.path).notifier,
                             )
                             .reset();
-
-                        // Show dismissed banner upon reset
-                        ref
-                            .read(
-                              dismissedBannersProvider(
-                                widget.data.info.serial,
-                              ).notifier,
-                            )
-                            .showBanner(pivPinDefaultBannerKey);
-
                         await ref.read(withContextProvider)((context) async {
                           Navigator.of(context).pop();
-                          showMessage(context, l10n.l_piv_app_reset);
+                          showMessage(context, l10n.l_oath_application_reset);
                         });
-                      },
-                      null =>
-                        _globalReset
-                            ? () async {
+                      } catch (e) {
+                        if (e is CancellationException) {
+                          setState(() {
+                            _resetting = false;
+                            _currentStep = -1;
+                            _application = null;
+                          });
+                          return;
+                        }
+                      }
+                    },
+                    Capability.piv => () async {
+                      setState(() {
+                        _resetting = true;
+                      });
+                      await ref
+                          .read(
+                            pivStateProvider(widget.data.node.path).notifier,
+                          )
+                          .reset();
+
+                      // Show dismissed banner upon reset
+                      ref
+                          .read(
+                            dismissedBannersProvider(
+                              widget.data.info.serial,
+                            ).notifier,
+                          )
+                          .showBanner(pivPinDefaultBannerKey);
+
+                      await ref.read(withContextProvider)((context) async {
+                        Navigator.of(context).pop();
+                        showMessage(context, l10n.l_piv_app_reset);
+                      });
+                    },
+                    null =>
+                      _globalReset
+                          ? () async {
                               setState(() {
                                 _resetting = true;
                               });
@@ -353,137 +351,125 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                 showMessage(context, l10n.s_factory_reset);
                               });
                             }
-                            : null,
-                      _ =>
-                        throw UnsupportedError('Application cannot be reset'),
-                    }
-                    : null,
+                          : null,
+                    _ => throw UnsupportedError('Application cannot be reset'),
+                  }
+                : null,
             key: factoryResetReset,
             child: Text(l10n.s_reset),
           ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        if (!_globalReset)
-                          Builder(
-                            builder: (context) {
-                              final width = MediaQuery.of(context).size.width;
-                              final showLabels = width > 320;
-                              final enabled =
-                                  widget
-                                      .data
-                                      .info
-                                      .config
-                                      .enabledCapabilities[widget
-                                      .data
-                                      .node
-                                      .transport] ??
-                                  0;
-                              return SegmentedButton<Capability>(
-                                emptySelectionAllowed: true,
-                                segments:
-                                    getResetCapabilities(hasFeature)
-                                        .where((c) => supported & c.value != 0)
-                                        .map(
-                                          (c) => ButtonSegment(
-                                            value: c,
-                                            icon: Icon(
-                                              c._icon,
-                                              key: switch (c) {
-                                                Capability.oath =>
-                                                  factoryResetPickResetOath,
-                                                Capability.fido2 =>
-                                                  factoryResetPickResetFido2,
-                                                Capability.piv =>
-                                                  factoryResetPickResetPiv,
-                                                _ => const Key(
-                                                  '_invalid',
-                                                ), // no reset
-                                              },
-                                            ),
-                                            label:
-                                                showLabels
-                                                    ? Text(
-                                                      c.getDisplayName(l10n),
-                                                    )
-                                                    : null,
-                                            tooltip:
-                                                !showLabels
-                                                    ? c.getDisplayName(l10n)
-                                                    : null,
-                                            enabled:
-                                                enabled & c.value != 0 &&
-                                                (_currentStep == -1),
-                                          ),
-                                        )
-                                        .toList(),
-                                selected:
-                                    _application != null ? {_application!} : {},
-                                onSelectionChanged: (selected) {
-                                  setState(() {
-                                    _application = selected.first;
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                        Text(
-                          switch (_application) {
-                            Capability.oath => l10n.p_warning_factory_reset,
-                            Capability.piv => l10n.p_warning_piv_reset,
-                            Capability.fido2 => l10n.p_warning_deletes_accounts,
-                            _ =>
-                              _globalReset
-                                  ? l10n.p_warning_global_reset
-                                  : l10n.p_factory_reset_an_app,
-                          },
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
-                        ),
-                        if (needsElevation) ...[
-                          Text(l10n.p_elevated_permissions_required),
-                          const ElevateFidoButtons(),
-                        ] else ...[
-                          Text(switch (_application) {
-                            Capability.oath =>
-                              l10n.p_warning_disable_credentials,
-                            Capability.piv => l10n.p_warning_piv_reset_desc,
-                            Capability.fido2 =>
-                              _fidoDisabledRequiredTransports.isEmpty
-                                  ? l10n.p_warning_disable_accounts
-                                  : l10n.p_transports_required_for_reset(
-                                    _fidoDisabledRequiredTransports
-                                        .map((t) => t.getDisplayName(l10n))
-                                        .join(', '),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    if (!_globalReset)
+                      Builder(
+                        builder: (context) {
+                          final width = MediaQuery.of(context).size.width;
+                          final showLabels = width > 320;
+                          final enabled =
+                              widget.data.info.config.enabledCapabilities[widget
+                                  .data
+                                  .node
+                                  .transport] ??
+                              0;
+                          return SegmentedButton<Capability>(
+                            emptySelectionAllowed: true,
+                            segments: getResetCapabilities(hasFeature)
+                                .where((c) => supported & c.value != 0)
+                                .map(
+                                  (c) => ButtonSegment(
+                                    value: c,
+                                    icon: Icon(
+                                      c._icon,
+                                      key: switch (c) {
+                                        Capability.oath =>
+                                          factoryResetPickResetOath,
+                                        Capability.fido2 =>
+                                          factoryResetPickResetFido2,
+                                        Capability.piv =>
+                                          factoryResetPickResetPiv,
+                                        _ => const Key('_invalid'), // no reset
+                                      },
+                                    ),
+                                    label: showLabels
+                                        ? Text(c.getDisplayName(l10n))
+                                        : null,
+                                    tooltip: !showLabels
+                                        ? c.getDisplayName(l10n)
+                                        : null,
+                                    enabled:
+                                        enabled & c.value != 0 &&
+                                        (_currentStep == -1),
                                   ),
-                            _ =>
-                              _globalReset
-                                  ? l10n.p_warning_global_reset_desc
-                                  : l10n.p_factory_reset_desc,
-                          }),
-                        ],
-                        if (showResetProgress)
-                          if (_application == Capability.fido2 &&
-                              _currentStep >= 0) ...[
-                            Text('${l10n.s_status}: ${_getMessage()}'),
-                            LinearProgressIndicator(value: progress),
-                          ] else
-                            const LinearProgressIndicator(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+                                )
+                                .toList(),
+                            selected: _application != null
+                                ? {_application!}
+                                : {},
+                            onSelectionChanged: (selected) {
+                              setState(() {
+                                _application = selected.first;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    Text(
+                      switch (_application) {
+                        Capability.oath => l10n.p_warning_factory_reset,
+                        Capability.piv => l10n.p_warning_piv_reset,
+                        Capability.fido2 => l10n.p_warning_deletes_accounts,
+                        _ =>
+                          _globalReset
+                              ? l10n.p_warning_global_reset
+                              : l10n.p_factory_reset_an_app,
+                      },
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (needsElevation) ...[
+                      Text(l10n.p_elevated_permissions_required),
+                      const ElevateFidoButtons(),
+                    ] else ...[
+                      Text(switch (_application) {
+                        Capability.oath => l10n.p_warning_disable_credentials,
+                        Capability.piv => l10n.p_warning_piv_reset_desc,
+                        Capability.fido2 =>
+                          _fidoDisabledRequiredTransports.isEmpty
+                              ? l10n.p_warning_disable_accounts
+                              : l10n.p_transports_required_for_reset(
+                                  _fidoDisabledRequiredTransports
+                                      .map((t) => t.getDisplayName(l10n))
+                                      .join(', '),
+                                ),
+                        _ =>
+                          _globalReset
+                              ? l10n.p_warning_global_reset_desc
+                              : l10n.p_factory_reset_desc,
+                      }),
+                    ],
+                    if (showResetProgress)
+                      if (_application == Capability.fido2 &&
+                          _currentStep >= 0) ...[
+                        Text('${l10n.s_status}: ${_getMessage()}'),
+                        LinearProgressIndicator(value: progress),
+                      ] else
+                        const LinearProgressIndicator(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 

@@ -94,8 +94,9 @@ class FlexBox<T> extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final itemsPerRow =
-            layout == FlexLayout.grid ? _getItemsPerRow(width) : 1;
+        final itemsPerRow = layout == FlexLayout.grid
+            ? _getItemsPerRow(width)
+            : 1;
         final chunks = getChunks(itemsPerRow);
 
         return Column(

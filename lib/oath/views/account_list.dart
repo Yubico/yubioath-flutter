@@ -61,10 +61,11 @@ class AccountList extends ConsumerWidget {
     final oathLayout = ref.watch(oathLayoutProvider);
     final pinnedLayout =
         (oathLayout == OathLayout.grid || oathLayout == OathLayout.mixed)
-            ? FlexLayout.grid
-            : FlexLayout.list;
-    final normalLayout =
-        oathLayout == OathLayout.grid ? FlexLayout.grid : FlexLayout.list;
+        ? FlexLayout.grid
+        : FlexLayout.list;
+    final normalLayout = oathLayout == OathLayout.grid
+        ? FlexLayout.grid
+        : FlexLayout.list;
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
@@ -80,13 +81,12 @@ class AccountList extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: FlexBox<OathPair>(
                 items: pinnedCreds.toList(),
-                itemBuilder:
-                    (value) => AccountView(
-                      value.credential,
-                      expanded: expanded,
-                      selected: value.credential == selected,
-                      large: pinnedLayout == FlexLayout.grid,
-                    ),
+                itemBuilder: (value) => AccountView(
+                  value.credential,
+                  expanded: expanded,
+                  selected: value.credential == selected,
+                  large: pinnedLayout == FlexLayout.grid,
+                ),
                 cellMinWidth: 250,
                 spacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
                 runSpacing: pinnedLayout == FlexLayout.grid ? 4.0 : 0.0,
@@ -105,13 +105,12 @@ class AccountList extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: FlexBox<OathPair>(
               items: creds.toList(),
-              itemBuilder:
-                  (value) => AccountView(
-                    value.credential,
-                    expanded: expanded,
-                    selected: value.credential == selected,
-                    large: normalLayout == FlexLayout.grid,
-                  ),
+              itemBuilder: (value) => AccountView(
+                value.credential,
+                expanded: expanded,
+                selected: value.credential == selected,
+                large: normalLayout == FlexLayout.grid,
+              ),
               cellMinWidth: 250,
               spacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,
               runSpacing: normalLayout == FlexLayout.grid ? 4.0 : 0.0,

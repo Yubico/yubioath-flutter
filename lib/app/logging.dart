@@ -106,8 +106,9 @@ class LogWarningOverlay extends StatelessWidget {
                 (level) => level.value <= Level.CONFIG.value,
               ),
             );
-            final allowScreenshots =
-                isAndroid ? ref.watch(androidAllowScreenshotsProvider) : false;
+            final allowScreenshots = isAndroid
+                ? ref.watch(androidAllowScreenshotsProvider)
+                : false;
 
             if (!(sensitiveLogs || allowScreenshots)) {
               return const SizedBox();

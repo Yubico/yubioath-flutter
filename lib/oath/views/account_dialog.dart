@@ -56,48 +56,47 @@ class AccountDialog extends ConsumerWidget {
 
     return OathActions(
       devicePath: node.path,
-      actions:
-          (context) => {
-            if (hasFeature(features.accountsRename))
-              EditIntent<OathCredential>:
-                  CallbackAction<EditIntent<OathCredential>>(
-                    onInvoke: (intent) async {
-                      final renamed =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      if (renamed is OathCredential) {
-                        // Replace the dialog with the renamed credential
-                        final withContext = ref.read(withContextProvider);
-                        await withContext((context) async {
-                          Navigator.of(context).pop();
-                          await showBlurDialog(
-                            context: context,
-                            builder: (context) {
-                              return AccountDialog(renamed);
-                            },
-                          );
-                        });
-                      }
-                      return renamed;
-                    },
-                  ),
-            if (hasFeature(features.accountsDelete))
-              DeleteIntent<OathCredential>:
-                  CallbackAction<DeleteIntent<OathCredential>>(
-                    onInvoke: (intent) async {
-                      final deleted =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      // Pop the account dialog if deleted
-                      if (deleted == true) {
-                        await ref.read(withContextProvider)((context) async {
-                          Navigator.of(context).pop();
-                        });
-                      }
-                      return deleted;
-                    },
-                  ),
-          },
+      actions: (context) => {
+        if (hasFeature(features.accountsRename))
+          EditIntent<OathCredential>:
+              CallbackAction<EditIntent<OathCredential>>(
+                onInvoke: (intent) async {
+                  final renamed =
+                      await (Actions.invoke(context, intent)
+                          as Future<dynamic>?);
+                  if (renamed is OathCredential) {
+                    // Replace the dialog with the renamed credential
+                    final withContext = ref.read(withContextProvider);
+                    await withContext((context) async {
+                      Navigator.of(context).pop();
+                      await showBlurDialog(
+                        context: context,
+                        builder: (context) {
+                          return AccountDialog(renamed);
+                        },
+                      );
+                    });
+                  }
+                  return renamed;
+                },
+              ),
+        if (hasFeature(features.accountsDelete))
+          DeleteIntent<OathCredential>:
+              CallbackAction<DeleteIntent<OathCredential>>(
+                onInvoke: (intent) async {
+                  final deleted =
+                      await (Actions.invoke(context, intent)
+                          as Future<dynamic>?);
+                  // Pop the account dialog if deleted
+                  if (deleted == true) {
+                    await ref.read(withContextProvider)((context) async {
+                      Navigator.of(context).pop();
+                    });
+                  }
+                  return deleted;
+                },
+              ),
+      },
       builder: (context) {
         if (helper.code == null &&
             (isDesktop || node.transport == Transport.usb)) {
@@ -146,24 +145,21 @@ class AccountDialog extends ConsumerWidget {
                         TooltipIfTruncated(
                           text: helper.title,
                           style: TextStyle(
-                            fontSize:
-                                Theme.of(
-                                  context,
-                                ).textTheme.headlineSmall?.fontSize,
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.headlineSmall?.fontSize,
                           ),
                         ),
                         if (subtitle != null)
                           TooltipIfTruncated(
                             text: subtitle,
                             // This is what ListTile uses for subtitle
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium!.copyWith(
-                              color:
-                                  Theme.of(
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(
                                     context,
                                   ).colorScheme.onSurfaceVariant,
-                            ),
+                                ),
                           ),
                       ],
                     ),

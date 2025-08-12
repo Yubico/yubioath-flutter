@@ -62,11 +62,8 @@ class IconPackDialog extends ConsumerWidget {
       },
       overlay: FileDropOverlay(
         title: iconPack.when(
-          data:
-              (IconPack? data) =>
-                  data != null
-                      ? l10n.s_replace_icon_pack
-                      : l10n.s_load_icon_pack,
+          data: (IconPack? data) =>
+              data != null ? l10n.s_replace_icon_pack : l10n.s_load_icon_pack,
           error: (Object error, StackTrace stackTrace) => l10n.s_load_icon_pack,
           loading: () => null,
         ),
@@ -74,81 +71,76 @@ class IconPackDialog extends ConsumerWidget {
       child: ResponsiveDialog(
         dialogMaxWidth: 400,
         title: Text(l10n.s_custom_icons),
-        builder:
-            (context, fullScreen) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    [
-                          Text(
-                            l10n.p_custom_icons_description,
-                            textScaler: MediaQuery.textScalerOf(context),
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              _action(iconPack, l10n),
-                              const SizedBox(width: 4.0),
-                              InfoPopupButton(
-                                size: 30,
-                                iconSize: 20,
-                                displayDialog: fullScreen,
-                                infoText: injectLinksInText(
-                                  // We don't want to translate 'Aegis Icon Pack'
-                                  l10n.p_custom_icons_format_desc(
-                                    'Aegis Icon Pack',
-                                  ),
-                                  {'Aegis Icon Pack': _learnMoreAegisUri},
-                                  linkStyle: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
+        builder: (context, fullScreen) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:
+                [
+                      Text(
+                        l10n.p_custom_icons_description,
+                        textScaler: MediaQuery.textScalerOf(context),
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          _action(iconPack, l10n),
+                          const SizedBox(width: 4.0),
+                          InfoPopupButton(
+                            size: 30,
+                            iconSize: 20,
+                            displayDialog: fullScreen,
+                            infoText: injectLinksInText(
+                              // We don't want to translate 'Aegis Icon Pack'
+                              l10n.p_custom_icons_format_desc(
+                                'Aegis Icon Pack',
                               ),
-                            ],
+                              {'Aegis Icon Pack': _learnMoreAegisUri},
+                              linkStyle: TextStyle(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
                           ),
-                          _loadedIconPackRow(iconPack),
-                        ]
-                        .map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: e,
-                          ),
-                        )
-                        .toList(),
-              ),
-            ),
+                        ],
+                      ),
+                      _loadedIconPackRow(iconPack),
+                    ]
+                    .map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: e,
+                      ),
+                    )
+                    .toList(),
+          ),
+        ),
       ),
     );
   }
 
   Widget? _loadedIconPackRow(AsyncValue<IconPack?> iconPack) {
     return iconPack.when(
-      data:
-          (IconPack? data) =>
-              (data != null) ? _IconPackDescription(data) : null,
+      data: (IconPack? data) =>
+          (data != null) ? _IconPackDescription(data) : null,
       error: (Object error, StackTrace stackTrace) => null,
-      loading:
-          () => const Padding(
-            // Add extra padding to have same size as _IconPackDescription
-            padding: EdgeInsets.symmetric(vertical: 18.0),
-            child: LinearProgressIndicator(),
-          ),
+      loading: () => const Padding(
+        // Add extra padding to have same size as _IconPackDescription
+        padding: EdgeInsets.symmetric(vertical: 18.0),
+        child: LinearProgressIndicator(),
+      ),
     );
   }
 
   Widget _action(AsyncValue<IconPack?> iconPack, AppLocalizations l10n) =>
       iconPack.when(
-        data:
-            (IconPack? data) => _ImportActionChip(
-              data != null ? l10n.s_replace_icon_pack : l10n.s_load_icon_pack,
-            ),
-        error:
-            (Object error, StackTrace stackTrace) =>
-                _ImportActionChip(l10n.s_load_icon_pack),
-        loading:
-            () => _ImportActionChip(l10n.l_loading_icon_pack, disabled: true),
+        data: (IconPack? data) => _ImportActionChip(
+          data != null ? l10n.s_replace_icon_pack : l10n.s_load_icon_pack,
+        ),
+        error: (Object error, StackTrace stackTrace) =>
+            _ImportActionChip(l10n.s_load_icon_pack),
+        loading: () =>
+            _ImportActionChip(l10n.l_loading_icon_pack, disabled: true),
       );
 }
 
@@ -182,8 +174,9 @@ class _IconPackDescription extends ConsumerWidget {
             IconButton(
               tooltip: l10n.s_remove_icon_pack,
               onPressed: () async {
-                final removePackStatus =
-                    await ref.read(iconPackProvider.notifier).removePack();
+                final removePackStatus = await ref
+                    .read(iconPackProvider.notifier)
+                    .removePack();
                 await ref.read(withContextProvider)((context) async {
                   if (removePackStatus) {
                     showMessage(context, l10n.l_icon_pack_removed);
@@ -210,12 +203,11 @@ class _ImportActionChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionChip(
-      onPressed:
-          !disabled
-              ? () async {
-                _importAction(context, ref);
-              }
-              : null,
+      onPressed: !disabled
+          ? () async {
+              _importAction(context, ref);
+            }
+          : null,
       avatar: const Icon(Symbols.download),
       label: Text(_label),
     );

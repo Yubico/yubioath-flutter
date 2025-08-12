@@ -44,10 +44,10 @@ final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
   (ref, _) => null,
 );
 
-final _sessionProvider = Provider.autoDispose.family<
-  RpcNodeSession,
-  DevicePath
->((ref, devicePath) {
+final _sessionProvider = Provider.autoDispose.family<RpcNodeSession, DevicePath>((
+  ref,
+  devicePath,
+) {
   // Make sure the managementKey and PIN are held for the duration of the session.
   ref.watch(_managementKeyProvider(devicePath));
   ref.watch(_pinProvider(devicePath));

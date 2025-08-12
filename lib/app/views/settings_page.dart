@@ -107,13 +107,12 @@ class _SettingsSectionItem extends StatelessWidget {
         backgroundColor: theme.colorScheme.secondary,
         child: Icon(icon),
       ),
-      trailing:
-          expanded
-              ? null
-              : OutlinedButton(
-                onPressed: Actions.handler(context, openIntent),
-                child: const Icon(Symbols.more_horiz),
-              ),
+      trailing: expanded
+          ? null
+          : OutlinedButton(
+              onPressed: Actions.handler(context, openIntent),
+              child: const Icon(Symbols.more_horiz),
+            ),
       tapIntent: isDesktop && !expanded ? null : openIntent,
       doubleTapIntent: isDesktop && !expanded ? openIntent : null,
     );
@@ -239,9 +238,8 @@ class _HelpView extends ConsumerWidget {
               onTap: (context) {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder:
-                        (BuildContext context) =>
-                            const LicensePage(applicationVersion: version),
+                    builder: (BuildContext context) =>
+                        const LicensePage(applicationVersion: version),
                     settings: const RouteSettings(name: 'licenses'),
                   ),
                 );
@@ -282,14 +280,13 @@ class _HelpView extends ConsumerWidget {
 
     return isDialog
         ? ResponsiveDialog(
-          title: Text(l10n.s_help_and_about),
-          builder:
-              (context, fullScreen) => Padding(
-                padding: const EdgeInsets.only(top: 32),
-                child: content,
-              ),
-          dialogMaxWidth: 400,
-        )
+            title: Text(l10n.s_help_and_about),
+            builder: (context, fullScreen) => Padding(
+              padding: const EdgeInsets.only(top: 32),
+              child: content,
+            ),
+            dialogMaxWidth: 400,
+          )
         : content;
   }
 }
@@ -384,17 +381,16 @@ class _IconsViewState extends ConsumerState<_IconsView> {
           children: [
             ActionListItem(
               borderRadius: widget.isDialog ? 0 : null,
-              icon:
-                  isLoading
-                      ? SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                          strokeAlign: 2.0,
-                        ),
-                      )
-                      : const Icon(Symbols.download),
+              icon: isLoading
+                  ? SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        strokeAlign: 2.0,
+                      ),
+                    )
+                  : const Icon(Symbols.download),
               trailing: InfoPopupButton(
                 size: 30,
                 iconSize: 20,
@@ -407,12 +403,11 @@ class _IconsViewState extends ConsumerState<_IconsView> {
                 ),
               ),
               title: _getIconPackTitle(iconPack, l10n),
-              subtitle:
-                  isLoading
-                      ? 'Loading...'
-                      : iconPack != null
-                      ? '${iconPack.name} (${iconPack.version})'
-                      : 'Load Aegis Icon packs',
+              subtitle: isLoading
+                  ? 'Loading...'
+                  : iconPack != null
+                  ? '${iconPack.name} (${iconPack.version})'
+                  : 'Load Aegis Icon packs',
               onTap: (context) => _importIconPack(context, ref, iconPack),
             ),
             ActionListItem(
@@ -420,25 +415,20 @@ class _IconsViewState extends ConsumerState<_IconsView> {
               icon: const Icon(Symbols.delete),
               title: 'Remove icon pack', // replace if non-empty
               subtitle: 'Delete the active icon pack',
-              onTap:
-                  iconPack != null && !isLoading
-                      ? (context) async {
-                        final removePackStatus =
-                            await ref
-                                .read(iconPackProvider.notifier)
-                                .removePack();
-                        await ref.read(withContextProvider)((context) async {
-                          if (removePackStatus) {
-                            showMessage(context, l10n.l_icon_pack_removed);
-                          } else {
-                            showMessage(
-                              context,
-                              l10n.l_remove_icon_pack_failed,
-                            );
-                          }
-                        });
-                      }
-                      : null,
+              onTap: iconPack != null && !isLoading
+                  ? (context) async {
+                      final removePackStatus = await ref
+                          .read(iconPackProvider.notifier)
+                          .removePack();
+                      await ref.read(withContextProvider)((context) async {
+                        if (removePackStatus) {
+                          showMessage(context, l10n.l_icon_pack_removed);
+                        } else {
+                          showMessage(context, l10n.l_remove_icon_pack_failed);
+                        }
+                      });
+                    }
+                  : null,
             ),
           ],
         ),
@@ -455,12 +445,11 @@ class _IconsViewState extends ConsumerState<_IconsView> {
     final isLoading = ref.watch(iconPackProvider).isLoading;
     return widget.isDialog
         ? ResponsiveDialog(
-          title: Text(l10n.s_custom_icons),
-          dialogMaxWidth: 400,
-          builder:
-              (context, fullScreen) =>
-                  _buildContent(iconPack, isLoading, fullScreen),
-        )
+            title: Text(l10n.s_custom_icons),
+            dialogMaxWidth: 400,
+            builder: (context, fullScreen) =>
+                _buildContent(iconPack, isLoading, fullScreen),
+          )
         : _buildContent(iconPack, isLoading, false);
   }
 }
@@ -511,10 +500,9 @@ class _LanguageView extends ConsumerWidget {
           InfoPopupButton(
             size: 30,
             iconSize: 20,
-            iconColor:
-                (translated == 100 && proofread != 100)
-                    ? theme.disabledColor
-                    : theme.colorScheme.tertiary,
+            iconColor: (translated == 100 && proofread != 100)
+                ? theme.disabledColor
+                : theme.colorScheme.tertiary,
             icon: Symbols.info,
             infoText: Text.rich(
               WidgetSpan(
@@ -773,8 +761,9 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               subtitle: l10n.l_copy_log_clipboard,
               onTap: (context) async {
                 _log.info('Copying log to clipboard ($version)...');
-                final logs =
-                    await ref.read(logLevelProvider.notifier).getLogs();
+                final logs = await ref
+                    .read(logLevelProvider.notifier)
+                    .getLogs();
                 var clipboard = ref.read(clipboardProvider);
                 await clipboard.setText(logs.join('\n'));
                 if (!clipboard.platformGivesFeedback()) {
@@ -787,17 +776,16 @@ class _LogsViewState extends ConsumerState<_LogsView> {
             if (isDesktop)
               ActionListItem(
                 borderRadius: widget.isDialog ? 0 : null,
-                icon:
-                    _diagnosing
-                        ? SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.0,
-                            strokeAlign: 2.0,
-                          ),
-                        )
-                        : const Icon(Symbols.bug_report),
+                icon: _diagnosing
+                    ? SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          strokeAlign: 2.0,
+                        ),
+                      )
+                    : const Icon(Symbols.bug_report),
                 title: l10n.s_run_diagnostics,
                 subtitle: l10n.l_run_diagnostics_desc,
                 onTap: (context) async {
@@ -855,10 +843,10 @@ class _LogsViewState extends ConsumerState<_LogsView> {
 
     return widget.isDialog
         ? ResponsiveDialog(
-          title: Text(l10n.s_debugging_tools),
-          dialogMaxWidth: 400,
-          builder: (context, fullScreen) => content,
-        )
+            title: Text(l10n.s_debugging_tools),
+            dialogMaxWidth: 400,
+            builder: (context, fullScreen) => content,
+          )
         : content;
   }
 }
@@ -937,20 +925,19 @@ class _NfcKbdLayoutView extends ConsumerWidget {
       final l10n = AppLocalizations.of(context);
       return SimpleDialog(
         title: Text(l10n.s_choose_kbd_layout),
-        children:
-            available
-                .map(
-                  (e) => RadioListTile<String>(
-                    title: Text(e),
-                    value: e,
-                    toggleable: true,
-                    groupValue: currentKbdLayout,
-                    onChanged: (mode) {
-                      Navigator.pop(context, e);
-                    },
-                  ),
-                )
-                .toList(),
+        children: available
+            .map(
+              (e) => RadioListTile<String>(
+                title: Text(e),
+                value: e,
+                toggleable: true,
+                groupValue: currentKbdLayout,
+                onChanged: (mode) {
+                  Navigator.pop(context, e);
+                },
+              ),
+            )
+            .toList(),
       );
     },
   );
@@ -1101,11 +1088,10 @@ class _NfcAndUsbView extends ConsumerWidget {
       return ResponsiveDialog(
         title: Text(l10n.s_nfc_and_usb_options),
         dialogMaxWidth: 400,
-        builder:
-            (context, fullScreen) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [content],
-            ),
+        builder: (context, fullScreen) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [content],
+        ),
       );
     } else {
       return content;
@@ -1218,41 +1204,39 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       },
       child: AppPage(
         title: l10n.s_settings,
-        keyActionsBuilder:
-            _selected == null
-                ? (context) {
-                  return Column(
-                    children: [
-                      ActionListSection(
-                        l10n.s_manage,
-                        children: [
-                          ActionListItem(
-                            icon: Icon(Symbols.delete_forever),
-                            title: l10n.s_reset_settings,
-                            subtitle: l10n.l_reset_settings_desc,
-                            onTap: (context) async {
-                              if (!await confirmReset(context)) {
-                                return;
-                              }
-                              // TODO: maybe this should be handled in a notifier
-                              await ref.read(prefProvider).clear();
-                              // Need to restore current section
-                              ref
-                                  .read(currentSectionProvider.notifier)
-                                  .setCurrentSection(Section.settings);
-                              ref.invalidate(prefProvider);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                }
-                : null,
-        detailViewBuilder:
-            _selected != null
-                ? (context) => _buildSectionView(_selected!, false)
-                : null,
+        keyActionsBuilder: _selected == null
+            ? (context) {
+                return Column(
+                  children: [
+                    ActionListSection(
+                      l10n.s_manage,
+                      children: [
+                        ActionListItem(
+                          icon: Icon(Symbols.delete_forever),
+                          title: l10n.s_reset_settings,
+                          subtitle: l10n.l_reset_settings_desc,
+                          onTap: (context) async {
+                            if (!await confirmReset(context)) {
+                              return;
+                            }
+                            // TODO: maybe this should be handled in a notifier
+                            await ref.read(prefProvider).clear();
+                            // Need to restore current section
+                            ref
+                                .read(currentSectionProvider.notifier)
+                                .setCurrentSection(Section.settings);
+                            ref.invalidate(prefProvider);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
+            : null,
+        detailViewBuilder: _selected != null
+            ? (context) => _buildSectionView(_selected!, false)
+            : null,
         builder: (context, expanded) {
           final nfcDevices = ref
               .watch(attachedDevicesProvider)
@@ -1269,9 +1253,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       } else {
                         await showBlurDialog(
                           context: context,
-                          builder:
-                              (context) =>
-                                  _buildSectionView(intent.target, true),
+                          builder: (context) =>
+                              _buildSectionView(intent.target, true),
                         );
                       }
                       return null;

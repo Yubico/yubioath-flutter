@@ -34,10 +34,9 @@ class DeviceAvatar extends StatelessWidget {
 
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
-        badge:
-            isDesktop && data.node is NfcReaderNode
-                ? const Icon(Symbols.contactless)
-                : null,
+        badge: isDesktop && data.node is NfcReaderNode
+            ? const Icon(Symbols.contactless)
+            : null,
         radius: radius,
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
@@ -54,20 +53,20 @@ class DeviceAvatar extends StatelessWidget {
         UsbYubiKeyNode() =>
           node.info != null
               ? DeviceAvatar.yubiKeyData(
-                YubiKeyData(node, node.name, node.info!),
-                radius: radius,
-              )
+                  YubiKeyData(node, node.name, node.info!),
+                  radius: radius,
+                )
               : DeviceAvatar(
-                radius: radius,
-                child: const CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  child: ProductImage(
-                    name: '',
-                    formFactor: FormFactor.unknown,
-                    isNfc: false,
+                  radius: radius,
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    child: ProductImage(
+                      name: '',
+                      formFactor: FormFactor.unknown,
+                      isNfc: false,
+                    ),
                   ),
                 ),
-              ),
 
         NfcReaderNode() => DeviceAvatar(
           radius: radius,

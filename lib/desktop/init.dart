@@ -193,10 +193,9 @@ Future<Widget> initialize(List<String> argv) async {
     } else if (Platform.isWindows) {
       relativePath += '.exe';
     }
-    exe =
-        Uri.file(
-          Platform.resolvedExecutable,
-        ).resolve(relativePath).toFilePath();
+    exe = Uri.file(
+      Platform.resolvedExecutable,
+    ).resolve(relativePath).toFilePath();
   }
 
   // Locate feature flags file
@@ -287,15 +286,13 @@ Future<Widget> initialize(List<String> argv) async {
 
           // Show a loading or error page while the Helper isn't ready
           return Consumer(
-            builder:
-                (context, ref, child) => ref
-                    .watch(rpcProvider)
-                    .when(
-                      data: (data) => const MainPage(),
-                      error:
-                          (error, stackTrace) => AppFailurePage(cause: error),
-                      loading: () => _HelperWaiter(),
-                    ),
+            builder: (context, ref, child) => ref
+                .watch(rpcProvider)
+                .when(
+                  data: (data) => const MainPage(),
+                  error: (error, stackTrace) => AppFailurePage(cause: error),
+                  loading: () => _HelperWaiter(),
+                ),
           );
         }),
       ),
@@ -423,25 +420,23 @@ class _HelperWaiterState extends ConsumerState<_HelperWaiter> {
         centered: true,
         graphic: const CircularProgressIndicator(),
         message: l10n.l_helper_not_responding,
-        actionsBuilder:
-            (context, expanded) => [
-              ActionChip(
-                avatar: const Icon(Symbols.content_copy),
-                label: Text(l10n.s_copy_log),
-                onPressed: () async {
-                  _log.info('Copying log to clipboard ($version)...');
-                  final logs =
-                      await ref.read(logLevelProvider.notifier).getLogs();
-                  var clipboard = ref.read(clipboardProvider);
-                  await clipboard.setText(logs.join('\n'));
-                  if (!clipboard.platformGivesFeedback()) {
-                    await ref.read(withContextProvider)((context) async {
-                      showMessage(context, l10n.l_log_copied);
-                    });
-                  }
-                },
-              ),
-            ],
+        actionsBuilder: (context, expanded) => [
+          ActionChip(
+            avatar: const Icon(Symbols.content_copy),
+            label: Text(l10n.s_copy_log),
+            onPressed: () async {
+              _log.info('Copying log to clipboard ($version)...');
+              final logs = await ref.read(logLevelProvider.notifier).getLogs();
+              var clipboard = ref.read(clipboardProvider);
+              await clipboard.setText(logs.join('\n'));
+              if (!clipboard.platformGivesFeedback()) {
+                await ref.read(withContextProvider)((context) async {
+                  showMessage(context, l10n.l_log_copied);
+                });
+              }
+            },
+          ),
+        ],
       );
     } else {
       return const MessagePage(

@@ -195,17 +195,16 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
       if (mounted && newState != _nfcState) {
         _log.info('NFC state change', jsonEncode(children));
         _nfcState = newState;
-        state =
-            children.entries
-                .map(
-                  (e) =>
-                      DeviceNode.nfcReader(
-                            DevicePath(['nfc', e.key]),
-                            e.value['name'] as String,
-                          )
-                          as NfcReaderNode,
-                )
-                .toList();
+        state = children.entries
+            .map(
+              (e) =>
+                  DeviceNode.nfcReader(
+                        DevicePath(['nfc', e.key]),
+                        e.value['name'] as String,
+                      )
+                      as NfcReaderNode,
+            )
+            .toList();
       }
     } on RpcError catch (e) {
       _log.error('Error polling NFC', jsonEncode(e));

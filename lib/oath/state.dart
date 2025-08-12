@@ -42,14 +42,13 @@ class AccountsSearchNotifier extends StateNotifier<String> {
 final oathLayoutProvider =
     StateNotifierProvider.autoDispose<OathLayoutNotfier, OathLayout>((ref) {
       final device = ref.watch(currentDeviceProvider);
-      List<OathPair> credentials =
-          device != null
-              ? ref.read(
-                filteredCredentialsProvider(
-                  ref.read(credentialListProvider(device.path)) ?? [],
-                ),
-              )
-              : [];
+      List<OathPair> credentials = device != null
+          ? ref.read(
+              filteredCredentialsProvider(
+                ref.read(credentialListProvider(device.path)) ?? [],
+              ),
+            )
+          : [];
       final favorites = ref.watch(favoritesProvider);
       final pinnedCreds = credentials.where(
         (entry) => favorites.contains(entry.credential.id),
@@ -128,18 +127,15 @@ abstract class OathCredentialListNotifier
   @override
   @protected
   set state(List<OathPair>? value) {
-    super.state =
-        value != null
-            ? List.unmodifiable(
-              value..sort((a, b) {
-                String searchKey(OathCredential c) =>
-                    ((c.issuer ?? '') + c.name).toLowerCase();
-                return searchKey(
-                  a.credential,
-                ).compareTo(searchKey(b.credential));
-              }),
-            )
-            : null;
+    super.state = value != null
+        ? List.unmodifiable(
+            value..sort((a, b) {
+              String searchKey(OathCredential c) =>
+                  ((c.issuer ?? '') + c.name).toLowerCase();
+              return searchKey(a.credential).compareTo(searchKey(b.credential));
+            }),
+          )
+        : null;
   }
 
   Future<OathCode> calculate(OathCredential credential);
@@ -152,22 +148,23 @@ abstract class OathCredentialListNotifier
   Future<void> deleteAccount(OathCredential credential);
 }
 
-final credentialsProvider = StateNotifierProvider.autoDispose<
-  _CredentialsProviderNotifier,
-  List<OathCredential>?
->((ref) {
-  final provider = _CredentialsProviderNotifier();
-  final node = ref.watch(currentDeviceProvider);
-  if (node != null) {
-    ref.listen<List<OathPair>?>(credentialListProvider(node.path), (
-      previous,
-      next,
-    ) {
-      provider._updatePairs(next);
-    }, fireImmediately: true);
-  }
-  return provider;
-});
+final credentialsProvider =
+    StateNotifierProvider.autoDispose<
+      _CredentialsProviderNotifier,
+      List<OathCredential>?
+    >((ref) {
+      final provider = _CredentialsProviderNotifier();
+      final node = ref.watch(currentDeviceProvider);
+      if (node != null) {
+        ref.listen<List<OathPair>?>(credentialListProvider(node.path), (
+          previous,
+          next,
+        ) {
+          provider._updatePairs(next);
+        }, fireImmediately: true);
+      }
+      return provider;
+    });
 
 class _CredentialsProviderNotifier
     extends StateNotifier<List<OathCredential>?> {
@@ -261,13 +258,16 @@ class FavoritesNotifier extends StateNotifier<List<String>> {
   }
 }
 
-final filteredCredentialsProvider = StateNotifierProvider.autoDispose.family<
-  FilteredCredentialsNotifier,
-  List<OathPair>,
-  List<OathPair>
->((ref, full) {
-  return FilteredCredentialsNotifier(full, ref.watch(accountsSearchProvider));
-});
+final filteredCredentialsProvider = StateNotifierProvider.autoDispose
+    .family<FilteredCredentialsNotifier, List<OathPair>, List<OathPair>>((
+      ref,
+      full,
+    ) {
+      return FilteredCredentialsNotifier(
+        full,
+        ref.watch(accountsSearchProvider),
+      );
+    });
 
 class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
   final String query;

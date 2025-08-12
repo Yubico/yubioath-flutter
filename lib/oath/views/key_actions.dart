@@ -88,13 +88,12 @@ Widget oathBuildActions(
             subtitle: subtitle,
             actionStyle: ActionStyle.primary,
             icon: const Icon(Symbols.person_add_alt),
-            onTap:
-                enabled
-                    ? (context) async {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      await addOathAccount(context, ref, devicePath, oathState);
-                    }
-                    : null,
+            onTap: enabled
+                ? (context) async {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    await addOathAccount(context, ref, devicePath, oathState);
+                  }
+                : null,
           ),
         ],
       ),
@@ -104,8 +103,9 @@ Widget oathBuildActions(
           ActionListItem(
             key: keys.setOrManagePasswordAction,
             feature: features.actionsPassword,
-            title:
-                oathState.hasKey ? l10n.s_manage_password : l10n.s_set_password,
+            title: oathState.hasKey
+                ? l10n.s_manage_password
+                : l10n.s_set_password,
             subtitle: l10n.l_password_protection,
             icon: const Icon(Symbols.password),
             trailing: fipsCapable && !fipsApproved ? alertIcon : null,

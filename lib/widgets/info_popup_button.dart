@@ -41,8 +41,9 @@ class InfoPopupButton extends StatelessWidget {
   Widget _buildInfoContent(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final defaultTextStyle =
-        displayDialog ? textTheme.bodyMedium : textTheme.bodySmall;
+    final defaultTextStyle = displayDialog
+        ? textTheme.bodyMedium
+        : textTheme.bodySmall;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(4.0),
@@ -96,11 +97,10 @@ class InfoPopupButton extends StatelessWidget {
           if (displayDialog) {
             showDialog(
               context: context,
-              builder:
-                  (context) => BasicDialog(
-                    icon: Icon(icon),
-                    content: _buildInfoContent(context),
-                  ),
+              builder: (context) => BasicDialog(
+                icon: Icon(icon),
+                content: _buildInfoContent(context),
+              ),
             );
           } else {
             _showPopupMenu(context);

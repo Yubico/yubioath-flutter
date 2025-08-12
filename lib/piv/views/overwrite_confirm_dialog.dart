@@ -77,12 +77,11 @@ Future<bool> confirmOverwrite(
   if (overwritesCert || overwritesKey != false) {
     return await showDialog(
           context: context,
-          builder:
-              (context) => _OverwriteConfirmDialog(
-                slot: pivSlot.slot,
-                certificate: overwritesCert,
-                privateKey: overwritesKey,
-              ),
+          builder: (context) => _OverwriteConfirmDialog(
+            slot: pivSlot.slot,
+            certificate: overwritesCert,
+            privateKey: overwritesKey,
+          ),
         ) ??
         false;
   }

@@ -240,11 +240,10 @@ class GlobalShortcuts extends ConsumerWidget {
       // with the exception of the drawer.
       if (!Navigator.of(context).canPop() ||
           scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
-        final attached =
-            ref
-                .read(attachedDevicesProvider)
-                .whereType<UsbYubiKeyNode>()
-                .toList();
+        final attached = ref
+            .read(attachedDevicesProvider)
+            .whereType<UsbYubiKeyNode>()
+            .toList();
         if (attached.length > 1) {
           final current = ref.read(currentDeviceProvider);
           if (current != null && current is UsbYubiKeyNode) {

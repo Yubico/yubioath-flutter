@@ -56,17 +56,16 @@ class DeleteSlotDialog extends ConsumerWidget {
               await ref.read(withContextProvider)((context) async {
                 final result = await showBlurDialog(
                   context: context,
-                  builder:
-                      (context) => AccessCodeDialog(
-                        devicePath: devicePath,
-                        otpSlot: otpSlot,
-                        action: (accessCode) async {
-                          await otpStateNotifier.deleteSlot(
-                            otpSlot.slot,
-                            accessCode: accessCode,
-                          );
-                        },
-                      ),
+                  builder: (context) => AccessCodeDialog(
+                    devicePath: devicePath,
+                    otpSlot: otpSlot,
+                    action: (accessCode) async {
+                      await otpStateNotifier.deleteSlot(
+                        otpSlot.slot,
+                        accessCode: accessCode,
+                      );
+                    },
+                  ),
                 );
                 deleteSucceeded = result ?? false;
               });

@@ -269,12 +269,9 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   _AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
-      List<OathPair>? newState =
-          json != null
-              ? List.from(
-                (json as List).map((e) => OathPair.fromJson(e)).toList(),
-              )
-              : null;
+      List<OathPair>? newState = json != null
+          ? List.from((json as List).map((e) => OathPair.fromJson(e)).toList())
+          : null;
       state = newState;
     });
   }

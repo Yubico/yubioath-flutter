@@ -66,14 +66,13 @@ class FingerprintsScreen extends ConsumerWidget {
     return ref
         .watch(fidoStateProvider(deviceData.node.path))
         .when(
-          loading:
-              () => AppPage(
-                title: l10n.s_fingerprints,
-                capabilities: capabilities,
-                centered: true,
-                delayedContent: true,
-                builder: (context, _) => const CircularProgressIndicator(),
-              ),
+          loading: () => AppPage(
+            title: l10n.s_fingerprints,
+            capabilities: capabilities,
+            centered: true,
+            delayedContent: true,
+            builder: (context, _) => const CircularProgressIndicator(),
+          ),
           error: (error, _) {
             if (error is NoDataException) {
               return MessagePageNotInitialized(
@@ -128,22 +127,20 @@ class _FidoLockedPage extends ConsumerWidget {
 
     if (!state.hasPin) {
       return MessagePage(
-        actionsBuilder:
-            (context, expanded) => [
-              if (!expanded)
-                ActionChip(
-                  label: Text(l10n.s_set_pin),
-                  onPressed: () async {
-                    await showBlurDialog(
-                      context: context,
-                      builder:
-                          (context) =>
-                              FidoPinDialog(deviceData.node.path, state),
-                    );
-                  },
-                  avatar: const Icon(Symbols.pin),
-                ),
-            ],
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_set_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      FidoPinDialog(deviceData.node.path, state),
+                );
+              },
+              avatar: const Icon(Symbols.pin),
+            ),
+        ],
         title: l10n.s_fingerprints,
         capabilities: capabilities,
         header: l10n.s_fingerprints_get_started,
@@ -161,22 +158,20 @@ class _FidoLockedPage extends ConsumerWidget {
         message: l10n.l_pin_change_required_desc,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: fingerprintsShowActionsNotifier(state),
-        actionsBuilder:
-            (context, expanded) => [
-              if (!expanded)
-                ActionChip(
-                  label: Text(l10n.s_change_pin),
-                  onPressed: () async {
-                    await showBlurDialog(
-                      context: context,
-                      builder:
-                          (context) =>
-                              FidoPinDialog(deviceData.node.path, state),
-                    );
-                  },
-                  avatar: const Icon(Symbols.pin),
-                ),
-            ],
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_change_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      FidoPinDialog(deviceData.node.path, state),
+                );
+              },
+              avatar: const Icon(Symbols.pin),
+            ),
+        ],
       );
     }
 
@@ -184,8 +179,8 @@ class _FidoLockedPage extends ConsumerWidget {
       title: l10n.s_fingerprints,
       capabilities: capabilities,
       keyActionsBuilder: hasActions ? _buildActions : null,
-      builder:
-          (context, _) => Column(children: [PinEntryForm(state, deviceData)]),
+      builder: (context, _) =>
+          Column(children: [PinEntryForm(state, deviceData)]),
     );
   }
 
@@ -215,43 +210,41 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final hasActions = hasFeature(features.actions);
     final capabilities = _getCapabilities(widget.deviceData);
 
-    final data =
-        ref.watch(fingerprintProvider(widget.deviceData.node.path)).asData;
+    final data = ref
+        .watch(fingerprintProvider(widget.deviceData.node.path))
+        .asData;
     if (data == null) {
       return _buildLoadingPage(context, capabilities);
     }
     final fingerprints = data.value;
     if (fingerprints.isEmpty) {
       return MessagePage(
-        actionsBuilder:
-            (context, expanded) => [
-              if (!expanded)
-                ActionChip(
-                  label: Text(l10n.s_add_fingerprint),
-                  onPressed: () async {
-                    await showBlurDialog(
-                      context: context,
-                      builder:
-                          (context) =>
-                              AddFingerprintDialog(widget.deviceData.node.path),
-                    );
-                  },
-                  avatar: const Icon(Symbols.fingerprint),
-                ),
-            ],
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_add_fingerprint),
+              onPressed: () async {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      AddFingerprintDialog(widget.deviceData.node.path),
+                );
+              },
+              avatar: const Icon(Symbols.fingerprint),
+            ),
+        ],
         title: l10n.s_fingerprints,
         capabilities: capabilities,
         header: l10n.s_fingerprints_get_started,
         message: l10n.l_add_one_or_more_fps,
-        keyActionsBuilder:
-            hasActions
-                ? (context) => fingerprintsBuildActions(
-                  context,
-                  widget.deviceData.node,
-                  widget.state,
-                  0,
-                )
-                : null,
+        keyActionsBuilder: hasActions
+            ? (context) => fingerprintsBuildActions(
+                context,
+                widget.deviceData.node,
+                widget.state,
+                0,
+              )
+            : null,
         keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
       );
     }
@@ -259,158 +252,147 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final fingerprint = _selected;
     return FidoActions(
       devicePath: widget.deviceData.node.path,
-      actions:
-          (context) => {
-            EscapeIntent: CallbackAction<EscapeIntent>(
-              onInvoke: (intent) {
-                if (_selected != null) {
-                  setState(() {
-                    _selected = null;
-                  });
-                } else {
-                  Actions.invoke(context, intent);
-                }
-                return false;
-              },
-            ),
-            OpenIntent<Fingerprint>: CallbackAction<OpenIntent<Fingerprint>>(
-              onInvoke: (intent) {
-                return showBlurDialog(
-                  context: context,
-                  barrierColor: Colors.transparent,
-                  builder: (context) => FingerprintDialog(intent.target),
-                );
-              },
-            ),
-            if (hasFeature(features.fingerprintsEdit))
-              EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
-                onInvoke: (intent) async {
-                  final renamed =
-                      await (Actions.invoke(context, intent)
-                          as Future<dynamic>?);
-                  if (_selected == intent.target && renamed is Fingerprint) {
-                    setState(() {
-                      _selected = renamed;
-                    });
-                  }
-                  return renamed;
-                },
-              ),
-            if (hasFeature(features.fingerprintsDelete))
-              DeleteIntent<Fingerprint>:
-                  CallbackAction<DeleteIntent<Fingerprint>>(
-                    onInvoke: (intent) async {
-                      final deleted =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      if (deleted == true && _selected == intent.target) {
-                        setState(() {
-                          _selected = null;
-                        });
-                      }
-                      return deleted;
-                    },
-                  ),
+      actions: (context) => {
+        EscapeIntent: CallbackAction<EscapeIntent>(
+          onInvoke: (intent) {
+            if (_selected != null) {
+              setState(() {
+                _selected = null;
+              });
+            } else {
+              Actions.invoke(context, intent);
+            }
+            return false;
           },
-      builder:
-          (context) => AppPage(
-            title: l10n.s_fingerprints,
-            capabilities: capabilities,
-            detailViewBuilder:
-                fingerprint != null
-                    ? (context) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ListTitle(l10n.s_details),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Card(
-                            elevation: 0.0,
-                            color: Theme.of(context).hoverColor,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 24,
-                                horizontal: 16,
-                              ),
-                              // TODO: Reuse from fingerprint_dialog
-                              child: Column(
-                                children: [
-                                  Text(
-                                    fingerprint.label,
-                                    style:
-                                        Theme.of(
-                                          context,
-                                        ).textTheme.headlineSmall,
-                                    softWrap: true,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Icon(Symbols.fingerprint, size: 72),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        ActionListSection.fromMenuActions(
-                          context,
-                          l10n.s_actions,
-                          actions: buildFingerprintActions(fingerprint, l10n),
-                        ),
-                      ],
-                    )
-                    : null,
-            keyActionsBuilder:
-                hasActions
-                    ? (context) => fingerprintsBuildActions(
-                      context,
-                      widget.deviceData.node,
-                      widget.state,
-                      fingerprints.length,
-                    )
-                    : null,
-            keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
-            builder: (context, expanded) {
-              // De-select if window is resized to be non-expanded.
-              if (!expanded && _selected != null) {
-                Timer.run(() {
-                  setState(() {
-                    _selected = null;
-                  });
+        ),
+        OpenIntent<Fingerprint>: CallbackAction<OpenIntent<Fingerprint>>(
+          onInvoke: (intent) {
+            return showBlurDialog(
+              context: context,
+              barrierColor: Colors.transparent,
+              builder: (context) => FingerprintDialog(intent.target),
+            );
+          },
+        ),
+        if (hasFeature(features.fingerprintsEdit))
+          EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
+            onInvoke: (intent) async {
+              final renamed =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              if (_selected == intent.target && renamed is Fingerprint) {
+                setState(() {
+                  _selected = renamed;
                 });
               }
-              return Actions(
-                actions: {
-                  if (expanded) ...{
-                    OpenIntent<Fingerprint>:
-                        CallbackAction<OpenIntent<Fingerprint>>(
-                          onInvoke: (intent) {
-                            setState(() {
-                              _selected = intent.target;
-                            });
-                            return null;
-                          },
-                        ),
-                  },
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:
-                        fingerprints
-                            .map(
-                              (fp) => _FingerprintListItem(
-                                fp,
-                                expanded: expanded,
-                                selected: fp == _selected,
-                              ),
-                            )
-                            .toList(),
-                  ),
-                ),
-              );
+              return renamed;
             },
           ),
+        if (hasFeature(features.fingerprintsDelete))
+          DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
+            onInvoke: (intent) async {
+              final deleted =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              if (deleted == true && _selected == intent.target) {
+                setState(() {
+                  _selected = null;
+                });
+              }
+              return deleted;
+            },
+          ),
+      },
+      builder: (context) => AppPage(
+        title: l10n.s_fingerprints,
+        capabilities: capabilities,
+        detailViewBuilder: fingerprint != null
+            ? (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ListTitle(l10n.s_details),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Card(
+                      elevation: 0.0,
+                      color: Theme.of(context).hoverColor,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 16,
+                        ),
+                        // TODO: Reuse from fingerprint_dialog
+                        child: Column(
+                          children: [
+                            Text(
+                              fingerprint.label,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            const Icon(Symbols.fingerprint, size: 72),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  ActionListSection.fromMenuActions(
+                    context,
+                    l10n.s_actions,
+                    actions: buildFingerprintActions(fingerprint, l10n),
+                  ),
+                ],
+              )
+            : null,
+        keyActionsBuilder: hasActions
+            ? (context) => fingerprintsBuildActions(
+                context,
+                widget.deviceData.node,
+                widget.state,
+                fingerprints.length,
+              )
+            : null,
+        keyActionsBadge: fingerprintsShowActionsNotifier(widget.state),
+        builder: (context, expanded) {
+          // De-select if window is resized to be non-expanded.
+          if (!expanded && _selected != null) {
+            Timer.run(() {
+              setState(() {
+                _selected = null;
+              });
+            });
+          }
+          return Actions(
+            actions: {
+              if (expanded) ...{
+                OpenIntent<Fingerprint>:
+                    CallbackAction<OpenIntent<Fingerprint>>(
+                      onInvoke: (intent) {
+                        setState(() {
+                          _selected = intent.target;
+                        });
+                        return null;
+                      },
+                    ),
+              },
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: fingerprints
+                    .map(
+                      (fp) => _FingerprintListItem(
+                        fp,
+                        expanded: expanded,
+                        selected: fp == _selected,
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -448,20 +430,16 @@ class _FingerprintListItem extends StatelessWidget {
         child: const Icon(Symbols.fingerprint),
       ),
       title: fingerprint.label,
-      trailing:
-          expanded
-              ? null
-              : OutlinedButton(
-                onPressed: Actions.handler(context, OpenIntent(fingerprint)),
-                child: const Icon(Symbols.more_horiz),
-              ),
+      trailing: expanded
+          ? null
+          : OutlinedButton(
+              onPressed: Actions.handler(context, OpenIntent(fingerprint)),
+              child: const Icon(Symbols.more_horiz),
+            ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(fingerprint),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(fingerprint) : null,
-      buildPopupActions:
-          (context) => buildFingerprintActions(
-            fingerprint,
-            AppLocalizations.of(context),
-          ),
+      buildPopupActions: (context) =>
+          buildFingerprintActions(fingerprint, AppLocalizations.of(context)),
     );
   }
 }

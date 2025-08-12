@@ -152,10 +152,9 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
     await _session.command(
       'put',
       target: [..._subpath, slot.id],
-      params:
-          accessCode != null
-              ? {...configuration.toJson(), 'curr_acc_code': accessCode}
-              : configuration.toJson(),
+      params: accessCode != null
+          ? {...configuration.toJson(), 'curr_acc_code': accessCode}
+          : configuration.toJson(),
     );
     ref.invalidateSelf();
   }

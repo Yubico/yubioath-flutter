@@ -96,46 +96,45 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        AppTextField(
-                          autofocus: true,
-                          controller: _labelController,
-                          focusNode: _labelFocus,
-                          maxLength: 15,
-                          inputFormatters: [limitBytesLength(15)],
-                          buildCounter: buildByteCounterFor(label),
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_name,
-                            icon: const Icon(Symbols.fingerprint),
-                          ),
-                          onChanged: (_) {
-                            setState(() {});
-                          },
-                          onSubmitted: (_) {
-                            if (label.isNotEmpty) {
-                              _submit();
-                            } else {
-                              _labelFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    AppTextField(
+                      autofocus: true,
+                      controller: _labelController,
+                      focusNode: _labelFocus,
+                      maxLength: 15,
+                      inputFormatters: [limitBytesLength(15)],
+                      buildCounter: buildByteCounterFor(label),
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_name,
+                        icon: const Icon(Symbols.fingerprint),
+                      ),
+                      onChanged: (_) {
+                        setState(() {});
+                      },
+                      onSubmitted: (_) {
+                        if (label.isNotEmpty) {
+                          _submit();
+                        } else {
+                          _labelFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

@@ -180,8 +180,9 @@ class _AppPageState extends ConsumerState<AppPage> {
   }
 
   Widget _buildLogo(BuildContext context) {
-    final color =
-        Theme.of(context).brightness == Brightness.dark ? 'white' : 'green';
+    final color = Theme.of(context).brightness == Brightness.dark
+        ? 'white'
+        : 'green';
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 12),
       child: Image.asset(
@@ -241,21 +242,18 @@ class _AppPageState extends ConsumerState<AppPage> {
 
       final RenderBox renderBox =
           currentContext.findRenderObject() as RenderBox;
-      final RenderBox? anchorRenderBox =
-          anchorKey != null
-              ? anchorKey.currentContext?.findRenderObject() as RenderBox?
-              : null;
+      final RenderBox? anchorRenderBox = anchorKey != null
+          ? anchorKey.currentContext?.findRenderObject() as RenderBox?
+          : null;
 
-      final anchorHeight =
-          anchorRenderBox != null
-              ? anchorRenderBox.size.height
-              : Scaffold.of(context).appBarMaxHeight!;
+      final anchorHeight = anchorRenderBox != null
+          ? anchorRenderBox.size.height
+          : Scaffold.of(context).appBarMaxHeight!;
 
       final targetHeight = renderBox.size.height;
-      final positionOffset =
-          anchorRenderBox != null
-              ? Offset(0, -anchorRenderBox.localToGlobal(Offset.zero).dy)
-              : Offset.zero;
+      final positionOffset = anchorRenderBox != null
+          ? Offset(0, -anchorRenderBox.localToGlobal(Offset.zero).dy)
+          : Offset.zero;
 
       final position = renderBox.localToGlobal(positionOffset);
 
@@ -314,14 +312,13 @@ class _AppPageState extends ConsumerState<AppPage> {
                 key: _sliverTitleGlobalKey,
                 widget.alternativeTitle ?? widget.title!,
                 style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color:
-                      widget.alternativeTitle != null
-                          ? Theme.of(
-                            context,
-                          ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4)
-                          : Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.9),
+                  color: widget.alternativeTitle != null
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4)
+                      : Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.9),
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -341,16 +338,15 @@ class _AppPageState extends ConsumerState<AppPage> {
   }
 
   double _getTitleHeight(BuildContext context) {
-    final Size size =
-        (TextPainter(
-          text: TextSpan(
-            text: widget.title,
-            style: Theme.of(context).textTheme.displaySmall,
-          ), // Same style as title
-          maxLines: 1,
-          textScaler: MediaQuery.textScalerOf(context),
-          textDirection: TextDirection.ltr,
-        )..layout()).size;
+    final Size size = (TextPainter(
+      text: TextSpan(
+        text: widget.title,
+        style: Theme.of(context).textTheme.displaySmall,
+      ), // Same style as title
+      maxLines: 1,
+      textScaler: MediaQuery.textScalerOf(context),
+      textDirection: TextDirection.ltr,
+    )..layout()).size;
     return size.height;
   }
 
@@ -415,16 +411,16 @@ class _AppPageState extends ConsumerState<AppPage> {
         [];
     final content = Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment:
-          widget.centered
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.start,
+      crossAxisAlignment: widget.centered
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         widget.builder(context, expanded && showExpandedSideMenuBar),
         if (actions.isNotEmpty)
           Align(
-            alignment:
-                widget.centered ? Alignment.center : Alignment.centerLeft,
+            alignment: widget.centered
+                ? Alignment.center
+                : Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(
                 top: 16,
@@ -455,14 +451,13 @@ class _AppPageState extends ConsumerState<AppPage> {
     );
 
     final safeArea = SafeArea(
-      child:
-          widget.delayedContent
-              ? DelayedVisibility(
-                key: GlobalKey(), // Ensure we reset the delay on rebuild
-                delay: const Duration(milliseconds: 400),
-                child: content,
-              )
-              : content,
+      child: widget.delayedContent
+          ? DelayedVisibility(
+              key: GlobalKey(), // Ensure we reset the delay on rebuild
+              delay: const Duration(milliseconds: 400),
+              child: content,
+            )
+          : content,
     );
 
     if (widget.centered) {
@@ -493,12 +488,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                   context,
                 ).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
-                  physics:
-                      isAndroid
-                          ? const ClampingScrollPhysics(
-                            parent: AlwaysScrollableScrollPhysics(),
-                          )
-                          : null,
+                  physics: isAndroid
+                      ? const ClampingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
+                        )
+                      : null,
                   child: safeArea,
                 ),
               ),
@@ -511,21 +505,23 @@ class _AppPageState extends ConsumerState<AppPage> {
       return _VisibilityListener(
         targetKey: _sliverTitleGlobalKey,
         controller: _sliverTitleController,
-        subTargetKey:
-            widget.headerSliver != null ? headerSliverGlobalKey : null,
-        subController:
-            widget.headerSliver != null ? _headerSliverController : null,
-        subAnchorKey:
-            widget.headerSliver != null ? _sliverTitleWrapperGlobalKey : null,
+        subTargetKey: widget.headerSliver != null
+            ? headerSliverGlobalKey
+            : null,
+        subController: widget.headerSliver != null
+            ? _headerSliverController
+            : null,
+        subAnchorKey: widget.headerSliver != null
+            ? _sliverTitleWrapperGlobalKey
+            : null,
         child: CustomScrollView(
-          physics:
-              isAndroid
-                  ? const _NoImplicitScrollPhysics(
-                    parent: ClampingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
-                    ),
-                  )
-                  : const _NoImplicitScrollPhysics(),
+          physics: isAndroid
+              ? const _NoImplicitScrollPhysics(
+                  parent: ClampingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                )
+              : const _NoImplicitScrollPhysics(),
           controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
@@ -581,12 +577,9 @@ class _AppPageState extends ConsumerState<AppPage> {
     }
 
     return SingleChildScrollView(
-      physics:
-          isAndroid
-              ? const ClampingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              )
-              : null,
+      physics: isAndroid
+          ? const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+          : null,
       primary: false,
       child: safeArea,
     );
@@ -619,13 +612,12 @@ class _AppPageState extends ConsumerState<AppPage> {
         await showBlurDialog(
           context: context,
           barrierColor: Colors.transparent,
-          builder:
-              (context) => FsDialog(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 32),
-                  child: widget.keyActionsBuilder!(context),
-                ),
-              ),
+          builder: (context) => FsDialog(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 32),
+              child: widget.keyActionsBuilder!(context),
+            ),
+          ),
         );
         _isKeyActionsDialogOpen = false;
       } else {
@@ -653,12 +645,11 @@ class _AppPageState extends ConsumerState<AppPage> {
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
-    var navigationText =
-        fullyExpanded
-            ? (showExpandedNavigationBar
-                ? l10n.s_collapse_navigation
-                : l10n.s_expand_navigation)
-            : l10n.s_show_navigation;
+    var navigationText = fullyExpanded
+        ? (showExpandedNavigationBar
+              ? l10n.s_collapse_navigation
+              : l10n.s_expand_navigation)
+        : l10n.s_show_navigation;
 
     if (widget.onFileDropped != null) {
       body = FileDropTarget(
@@ -800,45 +791,43 @@ class _AppPageState extends ConsumerState<AppPage> {
               fullyExpanded,
             ),
             centerTitle: true,
-            leading:
-                hasRail
-                    ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: IconButton(
-                              icon: Icon(
-                                Symbols.menu,
-                                semanticLabel: navigationText,
-                              ),
-                              tooltip: navigationText,
-                              onPressed:
-                                  () => _handleNavigationVisibility(
-                                    context,
-                                    fullyExpanded,
-                                  ),
+            leading: hasRail
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: IconButton(
+                            icon: Icon(
+                              Symbols.menu,
+                              semanticLabel: navigationText,
+                            ),
+                            tooltip: navigationText,
+                            onPressed: () => _handleNavigationVisibility(
+                              context,
+                              fullyExpanded,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                      ],
-                    )
-                    : Builder(
-                      builder: (context) {
-                        // Need to wrap with builder to get Scaffold context
-                        return IconButton(
-                          key: drawerIconButtonKey,
-                          tooltip: l10n.s_show_navigation,
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                          icon: Icon(
-                            Symbols.menu,
-                            semanticLabel: l10n.s_show_navigation,
-                          ),
-                        );
-                      },
-                    ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                  )
+                : Builder(
+                    builder: (context) {
+                      // Need to wrap with builder to get Scaffold context
+                      return IconButton(
+                        key: drawerIconButtonKey,
+                        tooltip: l10n.s_show_navigation,
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        icon: Icon(
+                          Symbols.menu,
+                          semanticLabel: l10n.s_show_navigation,
+                        ),
+                      );
+                    },
+                  ),
             actions: [
               if (widget.actionButtonBuilder == null &&
                   (widget.keyActionsBuilder != null && !hasManage))
@@ -846,20 +835,19 @@ class _AppPageState extends ConsumerState<AppPage> {
                   padding: const EdgeInsets.only(left: 4),
                   child: IconButton(
                     key: actionsIconButtonKey,
-                    onPressed:
-                        () => _handleDetailViewVisibility(context, hasManage),
-                    icon:
-                        widget.keyActionsBadge
-                            ? Badge(
-                              child: Icon(
-                                Symbols.more_vert,
-                                semanticLabel: l10n.s_show_menu,
-                              ),
-                            )
-                            : Icon(
+                    onPressed: () =>
+                        _handleDetailViewVisibility(context, hasManage),
+                    icon: widget.keyActionsBadge
+                        ? Badge(
+                            child: Icon(
                               Symbols.more_vert,
                               semanticLabel: l10n.s_show_menu,
                             ),
+                          )
+                        : Icon(
+                            Symbols.more_vert,
+                            semanticLabel: l10n.s_show_menu,
+                          ),
                     iconSize: 24,
                     tooltip: l10n.s_show_menu,
                     padding: const EdgeInsets.all(12),
@@ -872,8 +860,8 @@ class _AppPageState extends ConsumerState<AppPage> {
                   padding: const EdgeInsets.only(left: 4),
                   child: IconButton(
                     key: toggleDetailViewIconButtonKey,
-                    onPressed:
-                        () => _handleDetailViewVisibility(context, hasManage),
+                    onPressed: () =>
+                        _handleDetailViewVisibility(context, hasManage),
                     icon: Icon(
                       Symbols.dock_to_left,
                       fill: showExpandedSideMenuBar ? 1 : 0,
@@ -917,34 +905,33 @@ class CapabilityBadge extends ConsumerWidget {
             ?.info
             .getFipsStatus(capability) ??
         (false, false);
-    final label =
-        fipsCapable
-            ? Row(
-              children: [
-                Icon(
-                  Symbols.shield,
-                  color: colorScheme.onSecondaryContainer,
-                  size: 12,
-                  fill: fipsApproved ? 1 : 0,
-                ),
-                const SizedBox(width: 4),
-                text,
-              ],
-            )
-            : text;
+    final label = fipsCapable
+        ? Row(
+            children: [
+              Icon(
+                Symbols.shield,
+                color: colorScheme.onSecondaryContainer,
+                size: 12,
+                fill: fipsApproved ? 1 : 0,
+              ),
+              const SizedBox(width: 4),
+              text,
+            ],
+          )
+        : text;
     return Badge(
       backgroundColor: colorScheme.secondaryContainer,
       textColor: colorScheme.onSecondaryContainer,
       padding: const EdgeInsets.symmetric(horizontal: 6),
       largeSize: MediaQuery.of(context).textScaler.scale(20),
-      label:
-          fipsCapable && !noTooltip
-              ? Tooltip(
-                message:
-                    fipsApproved ? l10n.l_fips_approved : l10n.l_fips_capable,
-                child: label,
-              )
-              : label,
+      label: fipsCapable && !noTooltip
+          ? Tooltip(
+              message: fipsApproved
+                  ? l10n.l_fips_approved
+                  : l10n.l_fips_capable,
+              child: label,
+            )
+          : label,
     );
   }
 }
@@ -1130,21 +1117,18 @@ class _VisibilityListenerState extends State<_VisibilityListener> {
     if (currentContext == null) return _Visibility.visible;
 
     final RenderBox renderBox = currentContext.findRenderObject() as RenderBox;
-    final RenderBox? anchorRenderBox =
-        anchorKey != null
-            ? anchorKey.currentContext?.findRenderObject() as RenderBox?
-            : null;
+    final RenderBox? anchorRenderBox = anchorKey != null
+        ? anchorKey.currentContext?.findRenderObject() as RenderBox?
+        : null;
 
-    final anchorHeight =
-        anchorRenderBox != null
-            ? anchorRenderBox.size.height
-            : Scaffold.of(context).appBarMaxHeight!;
+    final anchorHeight = anchorRenderBox != null
+        ? anchorRenderBox.size.height
+        : Scaffold.of(context).appBarMaxHeight!;
 
     final targetHeight = renderBox.size.height;
-    final positionOffset =
-        anchorRenderBox != null
-            ? Offset(0, -anchorRenderBox.localToGlobal(Offset.zero).dy)
-            : Offset.zero;
+    final positionOffset = anchorRenderBox != null
+        ? Offset(0, -anchorRenderBox.localToGlobal(Offset.zero).dy)
+        : Offset.zero;
 
     final position = renderBox.localToGlobal(positionOffset);
 

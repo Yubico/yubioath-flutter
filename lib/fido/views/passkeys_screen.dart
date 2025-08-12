@@ -63,14 +63,13 @@ class PasskeysScreen extends ConsumerWidget {
     return ref
         .watch(fidoStateProvider(deviceData.node.path))
         .when(
-          loading:
-              () => AppPage(
-                title: l10n.s_passkeys,
-                capabilities: const [Capability.fido2],
-                centered: true,
-                delayedContent: true,
-                builder: (context, _) => const CircularProgressIndicator(),
-              ),
+          loading: () => AppPage(
+            title: l10n.s_passkeys,
+            capabilities: const [Capability.fido2],
+            centered: true,
+            delayedContent: true,
+            builder: (context, _) => const CircularProgressIndicator(),
+          ),
           error: (error, _) {
             if (error is NoDataException) {
               return MessagePageNotInitialized(
@@ -140,24 +139,22 @@ class _FidoLockedPage extends ConsumerWidget {
                 onPressed: () async {
                   await showBlurDialog(
                     context: context,
-                    builder:
-                        (context) => FidoPinDialog(deviceData.node.path, state),
+                    builder: (context) =>
+                        FidoPinDialog(deviceData.node.path, state),
                   );
                 },
                 avatar: const Icon(Symbols.pin),
               ),
           ];
         },
-        header:
-            state.credMgmt
-                ? l10n.l_no_discoverable_accounts
-                : l10n.l_ready_to_use,
-        message:
-            isBio
-                ? l10n.p_setup_fingerprints_desc
-                : alwaysUv
-                ? l10n.l_pin_change_required_desc
-                : l10n.l_register_sk_on_websites,
+        header: state.credMgmt
+            ? l10n.l_no_discoverable_accounts
+            : l10n.l_ready_to_use,
+        message: isBio
+            ? l10n.p_setup_fingerprints_desc
+            : alwaysUv
+            ? l10n.l_pin_change_required_desc
+            : l10n.l_register_sk_on_websites,
         footnote: isBio ? null : l10n.p_non_passkeys_note,
         keyActionsBuilder: hasActions ? _buildActions : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
@@ -178,22 +175,20 @@ class _FidoLockedPage extends ConsumerWidget {
 
     if (state.forcePinChange) {
       return MessagePage(
-        actionsBuilder:
-            (context, expanded) => [
-              if (!expanded)
-                ActionChip(
-                  label: Text(l10n.s_change_pin),
-                  onPressed: () async {
-                    await showBlurDialog(
-                      context: context,
-                      builder:
-                          (context) =>
-                              FidoPinDialog(deviceData.node.path, state),
-                    );
-                  },
-                  avatar: const Icon(Symbols.pin),
-                ),
-            ],
+        actionsBuilder: (context, expanded) => [
+          if (!expanded)
+            ActionChip(
+              label: Text(l10n.s_change_pin),
+              onPressed: () async {
+                await showBlurDialog(
+                  context: context,
+                  builder: (context) =>
+                      FidoPinDialog(deviceData.node.path, state),
+                );
+              },
+              avatar: const Icon(Symbols.pin),
+            ),
+        ],
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
         header: l10n.s_pin_change_required,
@@ -207,8 +202,8 @@ class _FidoLockedPage extends ConsumerWidget {
       title: l10n.s_passkeys,
       capabilities: const [Capability.fido2],
       keyActionsBuilder: hasActions ? _buildActions : null,
-      builder:
-          (context, _) => Column(children: [PinEntryForm(state, deviceData)]),
+      builder: (context, _) =>
+          Column(children: [PinEntryForm(state, deviceData)]),
     );
   }
 
@@ -286,20 +281,20 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         header: l10n.l_no_discoverable_accounts,
         message: l10n.l_register_sk_on_websites,
         footnote: l10n.p_non_passkeys_note,
-        keyActionsBuilder:
-            hasActions
-                ? (context) => passkeysBuildActions(
-                  context,
-                  widget.deviceData.node,
-                  widget.state,
-                )
-                : null,
+        keyActionsBuilder: hasActions
+            ? (context) => passkeysBuildActions(
+                context,
+                widget.deviceData.node,
+                widget.state,
+              )
+            : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
       );
     }
 
-    final data =
-        ref.watch(credentialProvider(widget.deviceData.node.path)).asData;
+    final data = ref
+        .watch(credentialProvider(widget.deviceData.node.path))
+        .asData;
     if (data == null) {
       return _buildLoadingPage(context);
     }
@@ -309,42 +304,40 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     );
 
     final remainingCreds = widget.state.remainingCreds;
-    final maxCreds =
-        remainingCreds != null ? remainingCreds + credentials.length : 25;
+    final maxCreds = remainingCreds != null
+        ? remainingCreds + credentials.length
+        : 25;
 
     if (credentials.isEmpty) {
       return MessagePage(
         title: l10n.s_passkeys,
         capabilities: const [Capability.fido2],
-        actionsBuilder:
-            noFingerprints
-                ? (context, expanded) {
-                  return [
-                    ActionChip(
-                      label: Text(l10n.s_setup_fingerprints),
-                      onPressed: () async {
-                        ref
-                            .read(currentSectionProvider.notifier)
-                            .setCurrentSection(Section.fingerprints);
-                      },
-                      avatar: const Icon(Symbols.fingerprint),
-                    ),
-                  ];
-                }
-                : null,
+        actionsBuilder: noFingerprints
+            ? (context, expanded) {
+                return [
+                  ActionChip(
+                    label: Text(l10n.s_setup_fingerprints),
+                    onPressed: () async {
+                      ref
+                          .read(currentSectionProvider.notifier)
+                          .setCurrentSection(Section.fingerprints);
+                    },
+                    avatar: const Icon(Symbols.fingerprint),
+                  ),
+                ];
+              }
+            : null,
         header: l10n.l_no_discoverable_accounts,
-        message:
-            noFingerprints
-                ? l10n.p_setup_fingerprints_desc
-                : l10n.l_register_sk_on_websites,
-        keyActionsBuilder:
-            hasActions
-                ? (context) => passkeysBuildActions(
-                  context,
-                  widget.deviceData.node,
-                  widget.state,
-                )
-                : null,
+        message: noFingerprints
+            ? l10n.p_setup_fingerprints_desc
+            : l10n.l_register_sk_on_websites,
+        keyActionsBuilder: hasActions
+            ? (context) => passkeysBuildActions(
+                context,
+                widget.deviceData.node,
+                widget.state,
+              )
+            : null,
         keyActionsBadge: passkeysShowActionsNotifier(widget.state),
         footnote: l10n.p_non_passkeys_note,
       );
@@ -354,377 +347,356 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final searchText = searchController.text;
     return FidoActions(
       devicePath: widget.deviceData.node.path,
-      actions:
-          (context) => {
-            SearchIntent: CallbackAction<SearchIntent>(
-              onInvoke: (_) {
-                searchController.selection = TextSelection(
-                  baseOffset: 0,
-                  extentOffset: searchController.text.length,
-                );
-                searchFocus.unfocus();
-                Timer.run(() => searchFocus.requestFocus());
+      actions: (context) => {
+        SearchIntent: CallbackAction<SearchIntent>(
+          onInvoke: (_) {
+            searchController.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: searchController.text.length,
+            );
+            searchFocus.unfocus();
+            Timer.run(() => searchFocus.requestFocus());
+            return null;
+          },
+        ),
+        EscapeIntent: CallbackAction<EscapeIntent>(
+          onInvoke: (intent) {
+            if (_selected != null) {
+              setState(() {
+                _selected = null;
+              });
+            } else {
+              Actions.invoke(context, intent);
+            }
+            return false;
+          },
+        ),
+        OpenIntent<FidoCredential>: CallbackAction<OpenIntent<FidoCredential>>(
+          onInvoke: (intent) {
+            return showBlurDialog(
+              context: context,
+              barrierColor: Colors.transparent,
+              builder: (context) => CredentialDialog(intent.target),
+            );
+          },
+        ),
+        if (hasFeature(features.credentialsDelete))
+          DeleteIntent<FidoCredential>:
+              CallbackAction<DeleteIntent<FidoCredential>>(
+                onInvoke: (intent) async {
+                  final deleted =
+                      await (Actions.invoke(context, intent)
+                          as Future<dynamic>?);
+                  if (deleted == true && _selected == intent.target) {
+                    setState(() {
+                      _selected = null;
+                    });
+                  }
+                  return deleted;
+                },
+              ),
+      },
+      builder: (context) => AppPage(
+        title: l10n.s_passkeys,
+        alternativeTitle: searchText != ''
+            ? l10n.l_results_for(searchText)
+            : null,
+        capabilities: const [Capability.fido2],
+        footnote:
+            '${l10n.p_passkeys_used(credentials.length, maxCreds)} ${l10n.p_non_passkeys_note}',
+        headerSliver: Actions(
+          actions: {
+            EscapeIntent: CallbackAction<EscapeIntent>(
+              onInvoke: (intent) {
+                if (searchController.text.isNotEmpty) {
+                  searchController.clear();
+                  ref.read(passkeysSearchProvider.notifier).setFilter('');
+                  setState(() {});
+                } else {
+                  searchFocus.unfocus();
+                }
                 return null;
               },
             ),
-            EscapeIntent: CallbackAction<EscapeIntent>(
-              onInvoke: (intent) {
-                if (_selected != null) {
-                  setState(() {
-                    _selected = null;
-                  });
-                } else {
-                  Actions.invoke(context, intent);
-                }
-                return false;
-              },
-            ),
-            OpenIntent<FidoCredential>:
-                CallbackAction<OpenIntent<FidoCredential>>(
-                  onInvoke: (intent) {
-                    return showBlurDialog(
-                      context: context,
-                      barrierColor: Colors.transparent,
-                      builder: (context) => CredentialDialog(intent.target),
-                    );
-                  },
-                ),
-            if (hasFeature(features.credentialsDelete))
-              DeleteIntent<FidoCredential>:
-                  CallbackAction<DeleteIntent<FidoCredential>>(
-                    onInvoke: (intent) async {
-                      final deleted =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      if (deleted == true && _selected == intent.target) {
-                        setState(() {
-                          _selected = null;
-                        });
-                      }
-                      return deleted;
-                    },
-                  ),
           },
-      builder:
-          (context) => AppPage(
-            title: l10n.s_passkeys,
-            alternativeTitle:
-                searchText != '' ? l10n.l_results_for(searchText) : null,
-            capabilities: const [Capability.fido2],
-            footnote:
-                '${l10n.p_passkeys_used(credentials.length, maxCreds)} ${l10n.p_non_passkeys_note}',
-            headerSliver: Actions(
-              actions: {
-                EscapeIntent: CallbackAction<EscapeIntent>(
-                  onInvoke: (intent) {
-                    if (searchController.text.isNotEmpty) {
-                      searchController.clear();
-                      ref.read(passkeysSearchProvider.notifier).setFilter('');
-                      setState(() {});
-                    } else {
-                      searchFocus.unfocus();
-                    }
-                    return null;
-                  },
-                ),
-              },
-              child: Shortcuts(
-                shortcuts: {
-                  // Allow directional focus down
-                  SingleActivator(
-                    LogicalKeyboardKey.arrowDown,
-                  ): DirectionalFocusIntent(
-                    TraversalDirection.down,
-                    ignoreTextFields: false,
-                  ),
-                },
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final textTheme = Theme.of(context).textTheme;
-                    final width = constraints.maxWidth;
-                    return Consumer(
-                      builder: (context, ref, child) {
-                        final layout = ref.watch(passkeysLayoutProvider);
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 8.0,
-                          ),
-                          child:
-                              AppTextField(
-                                key: searchField,
-                                controller: searchController,
-                                canRequestFocus: _canRequestFocus,
-                                focusNode: searchFocus,
-                                // Use the default style, but with a smaller font size:
-                                style: textTheme.titleMedium?.copyWith(
-                                  fontSize: textTheme.titleSmall?.fontSize,
-                                ),
-                                decoration: AppInputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(48),
-                                    borderSide: BorderSide(
-                                      width: 0,
-                                      style:
-                                          searchFocus.hasFocus
-                                              ? BorderStyle.solid
-                                              : BorderStyle.none,
-                                    ),
-                                  ),
-                                  contentPadding: const EdgeInsets.all(16),
-                                  fillColor: Theme.of(context).hoverColor,
-                                  filled: true,
-                                  hintText: l10n.s_search_passkeys,
-                                  isDense: true,
-                                  prefixIcon: const Padding(
-                                    padding: EdgeInsetsDirectional.only(
-                                      start: 8.0,
-                                    ),
-                                    child: Icon(Icons.search_outlined),
-                                  ),
-                                  suffixIcons: [
-                                    if (searchController.text.isNotEmpty)
-                                      IconButton(
-                                        icon: const Icon(Icons.clear),
-                                        iconSize: 16,
-                                        onPressed: () {
-                                          searchController.clear();
-                                          ref
-                                              .read(
-                                                passkeysSearchProvider.notifier,
-                                              )
-                                              .setFilter('');
-                                          setState(() {});
-                                        },
-                                      ),
-                                    if (searchController.text.isEmpty) ...[
-                                      if (width >= 450)
-                                        ...FlexLayout.values.map(
-                                          (e) => MouseRegion(
-                                            onEnter: (event) {
-                                              if (!searchFocus.hasFocus) {
-                                                setState(() {
-                                                  _canRequestFocus = false;
-                                                });
-                                              }
-                                            },
-                                            onExit: (event) {
-                                              setState(() {
-                                                _canRequestFocus = true;
-                                              });
-                                            },
-                                            child: IconButton(
-                                              tooltip: e.getDisplayName(l10n),
-                                              onPressed: () {
-                                                ref
-                                                    .read(
-                                                      passkeysLayoutProvider
-                                                          .notifier,
-                                                    )
-                                                    .setLayout(e);
-                                              },
-                                              icon: Icon(
-                                                e.icon,
-                                                color:
-                                                    e == layout
-                                                        ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
-                                                        : null,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      if (width < 450)
-                                        MouseRegion(
-                                          onEnter: (event) {
-                                            if (!searchFocus.hasFocus) {
-                                              setState(() {
-                                                _canRequestFocus = false;
-                                              });
-                                            }
-                                          },
-                                          onExit: (event) {
-                                            setState(() {
-                                              _canRequestFocus = true;
-                                            });
-                                          },
-                                          child: PopupMenuButton(
-                                            constraints:
-                                                const BoxConstraints.tightFor(),
-                                            tooltip: l10n.s_select_layout,
-                                            popUpAnimationStyle: AnimationStyle(
-                                              duration: Duration.zero,
-                                            ),
-                                            icon: Icon(
-                                              layout.icon,
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.primary,
-                                            ),
-                                            itemBuilder:
-                                                (context) => [
-                                                  ...FlexLayout.values.map(
-                                                    (e) => PopupMenuItem(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Tooltip(
-                                                            message: e
-                                                                .getDisplayName(
-                                                                  l10n,
-                                                                ),
-                                                            child: Icon(
-                                                              e.icon,
-                                                              color:
-                                                                  e == layout
-                                                                      ? Theme.of(
-                                                                        context,
-                                                                      ).colorScheme.primary
-                                                                      : null,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      onTap: () {
-                                                        ref
-                                                            .read(
-                                                              passkeysLayoutProvider
-                                                                  .notifier,
-                                                            )
-                                                            .setLayout(e);
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                          ),
-                                        ),
-                                    ],
-                                  ],
-                                ),
-                                onChanged: (value) {
-                                  ref
-                                      .read(passkeysSearchProvider.notifier)
-                                      .setFilter(value);
-                                  _scrollSearchField();
-                                  setState(() {});
-                                },
-                                textInputAction: TextInputAction.next,
-                                onSubmitted: (value) {
-                                  Focus.of(
-                                    context,
-                                  ).focusInDirection(TraversalDirection.down);
-                                },
-                              ).init(),
-                        );
-                      },
-                    );
-                  },
-                ),
+          child: Shortcuts(
+            shortcuts: {
+              // Allow directional focus down
+              SingleActivator(
+                LogicalKeyboardKey.arrowDown,
+              ): DirectionalFocusIntent(
+                TraversalDirection.down,
+                ignoreTextFields: false,
               ),
-            ),
-            detailViewBuilder:
-                credential != null
-                    ? (context) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ListTitle(l10n.s_details),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Card(
-                            elevation: 0.0,
-                            color: Theme.of(context).hoverColor,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 24,
-                                horizontal: 16,
-                              ),
-                              child: CredentialInfoTable(credential),
-                            ),
-                          ),
-                        ),
-                        ActionListSection.fromMenuActions(
-                          context,
-                          l10n.s_actions,
-                          actions: buildCredentialActions(credential, l10n),
-                        ),
-                      ],
-                    )
-                    : null,
-            keyActionsBuilder:
-                hasActions
-                    ? (context) => passkeysBuildActions(
-                      context,
-                      widget.deviceData.node,
-                      widget.state,
-                    )
-                    : null,
-            keyActionsBadge: passkeysShowActionsNotifier(widget.state),
-            builder: (context, expanded) {
-              // De-select if window is resized to be non-expanded.
-              if (!expanded && _selected != null) {
-                Timer.run(() {
-                  setState(() {
-                    _selected = null;
-                  });
-                });
-              }
-              return Actions(
-                actions: {
-                  if (expanded) ...{
-                    OpenIntent<FidoCredential>:
-                        CallbackAction<OpenIntent<FidoCredential>>(
-                          onInvoke: (intent) {
-                            setState(() {
-                              _selected = intent.target;
-                            });
-                            return null;
-                          },
-                        ),
-                  },
-                },
-                child: Consumer(
+            },
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final textTheme = Theme.of(context).textTheme;
+                final width = constraints.maxWidth;
+                return Consumer(
                   builder: (context, ref, child) {
                     final layout = ref.watch(passkeysLayoutProvider);
                     return Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10.0,
-                        right: 10.0,
-                        top: 8.0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0,
+                        vertical: 8.0,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (filteredCredentials.isEmpty)
-                            Center(child: Text(l10n.s_no_passkeys)),
-                          FlexBox<FidoCredential>(
-                            items: filteredCredentials,
-                            itemBuilder:
-                                (cred) => _CredentialListItem(
-                                  cred,
-                                  expanded: expanded,
-                                  selected: _selected == cred,
-                                  tileColor:
-                                      layout == FlexLayout.grid
-                                          ? Theme.of(context).hoverColor
-                                          : null,
-                                ),
-                            layout: layout,
-                            cellMinWidth: 265,
-                            spacing: layout == FlexLayout.grid ? 4.0 : 0.0,
-                            runSpacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                      child: AppTextField(
+                        key: searchField,
+                        controller: searchController,
+                        canRequestFocus: _canRequestFocus,
+                        focusNode: searchFocus,
+                        // Use the default style, but with a smaller font size:
+                        style: textTheme.titleMedium?.copyWith(
+                          fontSize: textTheme.titleSmall?.fontSize,
+                        ),
+                        decoration: AppInputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(48),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: searchFocus.hasFocus
+                                  ? BorderStyle.solid
+                                  : BorderStyle.none,
+                            ),
                           ),
-                        ],
-                      ),
+                          contentPadding: const EdgeInsets.all(16),
+                          fillColor: Theme.of(context).hoverColor,
+                          filled: true,
+                          hintText: l10n.s_search_passkeys,
+                          isDense: true,
+                          prefixIcon: const Padding(
+                            padding: EdgeInsetsDirectional.only(start: 8.0),
+                            child: Icon(Icons.search_outlined),
+                          ),
+                          suffixIcons: [
+                            if (searchController.text.isNotEmpty)
+                              IconButton(
+                                icon: const Icon(Icons.clear),
+                                iconSize: 16,
+                                onPressed: () {
+                                  searchController.clear();
+                                  ref
+                                      .read(passkeysSearchProvider.notifier)
+                                      .setFilter('');
+                                  setState(() {});
+                                },
+                              ),
+                            if (searchController.text.isEmpty) ...[
+                              if (width >= 450)
+                                ...FlexLayout.values.map(
+                                  (e) => MouseRegion(
+                                    onEnter: (event) {
+                                      if (!searchFocus.hasFocus) {
+                                        setState(() {
+                                          _canRequestFocus = false;
+                                        });
+                                      }
+                                    },
+                                    onExit: (event) {
+                                      setState(() {
+                                        _canRequestFocus = true;
+                                      });
+                                    },
+                                    child: IconButton(
+                                      tooltip: e.getDisplayName(l10n),
+                                      onPressed: () {
+                                        ref
+                                            .read(
+                                              passkeysLayoutProvider.notifier,
+                                            )
+                                            .setLayout(e);
+                                      },
+                                      icon: Icon(
+                                        e.icon,
+                                        color: e == layout
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.primary
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (width < 450)
+                                MouseRegion(
+                                  onEnter: (event) {
+                                    if (!searchFocus.hasFocus) {
+                                      setState(() {
+                                        _canRequestFocus = false;
+                                      });
+                                    }
+                                  },
+                                  onExit: (event) {
+                                    setState(() {
+                                      _canRequestFocus = true;
+                                    });
+                                  },
+                                  child: PopupMenuButton(
+                                    constraints:
+                                        const BoxConstraints.tightFor(),
+                                    tooltip: l10n.s_select_layout,
+                                    popUpAnimationStyle: AnimationStyle(
+                                      duration: Duration.zero,
+                                    ),
+                                    icon: Icon(
+                                      layout.icon,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                    itemBuilder: (context) => [
+                                      ...FlexLayout.values.map(
+                                        (e) => PopupMenuItem(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Tooltip(
+                                                message: e.getDisplayName(l10n),
+                                                child: Icon(
+                                                  e.icon,
+                                                  color: e == layout
+                                                      ? Theme.of(
+                                                          context,
+                                                        ).colorScheme.primary
+                                                      : null,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onTap: () {
+                                            ref
+                                                .read(
+                                                  passkeysLayoutProvider
+                                                      .notifier,
+                                                )
+                                                .setLayout(e);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ],
+                        ),
+                        onChanged: (value) {
+                          ref
+                              .read(passkeysSearchProvider.notifier)
+                              .setFilter(value);
+                          _scrollSearchField();
+                          setState(() {});
+                        },
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (value) {
+                          Focus.of(
+                            context,
+                          ).focusInDirection(TraversalDirection.down);
+                        },
+                      ).init(),
                     );
                   },
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
+        ),
+        detailViewBuilder: credential != null
+            ? (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ListTitle(l10n.s_details),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Card(
+                      elevation: 0.0,
+                      color: Theme.of(context).hoverColor,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 16,
+                        ),
+                        child: CredentialInfoTable(credential),
+                      ),
+                    ),
+                  ),
+                  ActionListSection.fromMenuActions(
+                    context,
+                    l10n.s_actions,
+                    actions: buildCredentialActions(credential, l10n),
+                  ),
+                ],
+              )
+            : null,
+        keyActionsBuilder: hasActions
+            ? (context) => passkeysBuildActions(
+                context,
+                widget.deviceData.node,
+                widget.state,
+              )
+            : null,
+        keyActionsBadge: passkeysShowActionsNotifier(widget.state),
+        builder: (context, expanded) {
+          // De-select if window is resized to be non-expanded.
+          if (!expanded && _selected != null) {
+            Timer.run(() {
+              setState(() {
+                _selected = null;
+              });
+            });
+          }
+          return Actions(
+            actions: {
+              if (expanded) ...{
+                OpenIntent<FidoCredential>:
+                    CallbackAction<OpenIntent<FidoCredential>>(
+                      onInvoke: (intent) {
+                        setState(() {
+                          _selected = intent.target;
+                        });
+                        return null;
+                      },
+                    ),
+              },
+            },
+            child: Consumer(
+              builder: (context, ref, child) {
+                final layout = ref.watch(passkeysLayoutProvider);
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10.0,
+                    right: 10.0,
+                    top: 8.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (filteredCredentials.isEmpty)
+                        Center(child: Text(l10n.s_no_passkeys)),
+                      FlexBox<FidoCredential>(
+                        items: filteredCredentials,
+                        itemBuilder: (cred) => _CredentialListItem(
+                          cred,
+                          expanded: expanded,
+                          selected: _selected == cred,
+                          tileColor: layout == FlexLayout.grid
+                              ? Theme.of(context).hoverColor
+                              : null,
+                        ),
+                        layout: layout,
+                        cellMinWidth: 265,
+                        spacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                        runSpacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -765,18 +737,16 @@ class _CredentialListItem extends StatelessWidget {
       tileColor: tileColor,
       title: credential.rpId,
       subtitle: credential.userName,
-      trailing:
-          expanded
-              ? null
-              : OutlinedButton(
-                onPressed: Actions.handler(context, OpenIntent(credential)),
-                child: const Icon(Symbols.more_horiz),
-              ),
+      trailing: expanded
+          ? null
+          : OutlinedButton(
+              onPressed: Actions.handler(context, OpenIntent(credential)),
+              child: const Icon(Symbols.more_horiz),
+            ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(credential),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(credential) : null,
-      buildPopupActions:
-          (context) =>
-              buildCredentialActions(credential, AppLocalizations.of(context)),
+      buildPopupActions: (context) =>
+          buildCredentialActions(credential, AppLocalizations.of(context)),
     );
   }
 }

@@ -69,48 +69,43 @@ class MessagePage extends StatelessWidget {
     actionButtonBuilder: actionButtonBuilder,
     actionsBuilder: actionsBuilder,
     delayedContent: delayedContent,
-    builder:
-        (context, _) => Padding(
-          padding: EdgeInsets.only(
-            left: 18.0,
-            top: 0.0,
-            right: 18.0,
-            bottom: centered && actionsBuilder == null ? 96 : 0,
-          ),
-          child: SizedBox(
-            width: 350,
-            child: Column(
-              crossAxisAlignment:
-                  centered
-                      ? CrossAxisAlignment.center
-                      : CrossAxisAlignment.start,
-              children: [
-                if (graphic != null) ...[
-                  graphic!,
-                  const SizedBox(height: 16.0),
-                ],
-                if (header != null)
-                  Text(
-                    header!,
-                    textAlign: centered ? TextAlign.center : TextAlign.left,
-                    style: Theme.of(context).textTheme.titleLarge,
+    builder: (context, _) => Padding(
+      padding: EdgeInsets.only(
+        left: 18.0,
+        top: 0.0,
+        right: 18.0,
+        bottom: centered && actionsBuilder == null ? 96 : 0,
+      ),
+      child: SizedBox(
+        width: 350,
+        child: Column(
+          crossAxisAlignment: centered
+              ? CrossAxisAlignment.center
+              : CrossAxisAlignment.start,
+          children: [
+            if (graphic != null) ...[graphic!, const SizedBox(height: 16.0)],
+            if (header != null)
+              Text(
+                header!,
+                textAlign: centered ? TextAlign.center : TextAlign.left,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            if (message != null) ...[
+              const SizedBox(height: 12.0),
+              Container(
+                constraints: const BoxConstraints(maxWidth: 350),
+                child: Text(
+                  message!,
+                  textAlign: centered ? TextAlign.center : TextAlign.left,
+                  style: Theme.of(context).textTheme.titleSmall?.apply(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                if (message != null) ...[
-                  const SizedBox(height: 12.0),
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 350),
-                    child: Text(
-                      message!,
-                      textAlign: centered ? TextAlign.center : TextAlign.left,
-                      style: Theme.of(context).textTheme.titleSmall?.apply(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+                ),
+              ),
+            ],
+          ],
         ),
+      ),
+    ),
   );
 }

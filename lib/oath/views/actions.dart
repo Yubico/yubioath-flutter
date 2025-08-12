@@ -117,27 +117,24 @@ class OathActions extends ConsumerWidget {
             },
           ),
         if (hasFeature(features.accountsRename))
-          EditIntent<OathCredential>:
-              CallbackAction<EditIntent<OathCredential>>(
-                onInvoke: (intent) {
-                  final credentials = ref.read(credentialsProvider);
-                  return withContext(
-                    (context) => showBlurDialog(
-                      context: context,
-                      builder:
-                          (context) => RenameAccountDialog.forOathCredential(
-                            ref,
-                            devicePath,
-                            intent.target,
-                            credentials
-                                    ?.map((e) => (e.issuer, e.name))
-                                    .toList() ??
-                                [],
-                          ),
-                    ),
-                  );
-                },
-              ),
+          EditIntent<
+            OathCredential
+          >: CallbackAction<EditIntent<OathCredential>>(
+            onInvoke: (intent) {
+              final credentials = ref.read(credentialsProvider);
+              return withContext(
+                (context) => showBlurDialog(
+                  context: context,
+                  builder: (context) => RenameAccountDialog.forOathCredential(
+                    ref,
+                    devicePath,
+                    intent.target,
+                    credentials?.map((e) => (e.issuer, e.name)).toList() ?? [],
+                  ),
+                ),
+              );
+            },
+          ),
         if (hasFeature(features.accountsDelete))
           DeleteIntent<OathCredential>:
               CallbackAction<DeleteIntent<OathCredential>>(
@@ -146,11 +143,8 @@ class OathActions extends ConsumerWidget {
                     (context) async =>
                         await showDialog(
                           context: context,
-                          builder:
-                              (context) => DeleteAccountDialog(
-                                devicePath,
-                                intent.target,
-                              ),
+                          builder: (context) =>
+                              DeleteAccountDialog(devicePath, intent.target),
                         ) ??
                         false,
                   );

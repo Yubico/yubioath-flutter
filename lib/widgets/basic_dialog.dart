@@ -91,12 +91,11 @@ class _BasicDialogState extends State<BasicDialog> {
           ),
           actions: [
             TextButton(
-              onPressed:
-                  widget.allowCancel
-                      ? () {
-                        Navigator.of(context).pop();
-                      }
-                      : null,
+              onPressed: widget.allowCancel
+                  ? () {
+                      Navigator.of(context).pop();
+                    }
+                  : null,
               child: Text(_getCancelText(context)),
             ),
             ...widget.actions,
