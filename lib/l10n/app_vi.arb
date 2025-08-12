@@ -199,6 +199,7 @@
     "p_try_reinsert_yk": "Hãy thử rút và cắm lại YubiKey của bạn.",
     "s_touch_required": "Yêu cầu chạm",
     "l_touch_button_now": "Chạm vào nút trên YubiKey của bạn ngay bây giờ",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Giữ chạm vào YubiKey của bạn liên tục\u2026",
     "@_capabilities": {},
 
@@ -979,6 +980,14 @@
     "p_warning_disable_credentials": "Các thông tin xác thực OATH của bạn, cũng như bất kỳ mật khẩu nào đã đặt, sẽ bị xóa khỏi YubiKey này. Hãy đảm bảo vô hiệu hóa chúng từ các trang web tương ứng để tránh bị khóa tài khoản của bạn.",
     "p_warning_deletes_accounts": "Cảnh báo! Điều này sẽ xóa vĩnh viễn tất cả các tài khoản U2F và FIDO2, bao gồm cả passkeys, khỏi YubiKey của bạn.",
     "p_warning_disable_accounts": "Các thông tin xác thực của bạn, cũng như bất kỳ PIN nào đã đặt, sẽ bị xóa khỏi YubiKey này. Hãy đảm bảo vô hiệu hóa chúng từ các trang web tương ứng để tránh bị khóa tài khoản của bạn.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Cảnh báo! Tất cả dữ liệu được lưu trữ cho PIV sẽ bị xóa vĩnh viễn khỏi YubiKey của bạn.",
     "p_warning_piv_reset_desc": "Điều này bao gồm các khóa riêng và chứng chỉ. PIN, PUK và khóa quản lý của bạn sẽ được đặt lại về giá trị mặc định của nhà máy.",
     "p_warning_global_reset": "Cảnh báo! Điều này sẽ xóa vĩnh viễn tất cả dữ liệu đã lưu, bao gồm các thông tin xác thực, khỏi YubiKey của bạn.",

@@ -5,12 +5,12 @@ description = "Yubico Authenticator Helper"
 authors = [{ name = "Dain Nilsson", email = "dain@yubico.com" }]
 requires-python = ">=3.10, <4"
 dependencies = [
-  "yubikey-manager (>=5.7.0, <6)",
+  "yubikey-manager>=5.7.0,<6",
   "fido2 (>=2.0.0, <3)",
   "mss (>=9.0.1, <10)",
   "Pillow (>=10.2.0, <11)",
   "zxing-cpp (>=2.2.0, <3)",
-  "pyscard (==2.2.1)",  # 2.2.2 has issues with CardMonitor
+  "pyscard (>=2.0, <3)",
 ]
 
 [dependency-groups]
@@ -46,3 +46,6 @@ exclude = ["tests/*"]
 [tool.pyright]
 venvPath = "./helper/"
 venv = ".venv"
+
+[tool.uv.sources]
+yubikey-manager = { git = "https://github.com/Yubico/yubikey-manager.git" }

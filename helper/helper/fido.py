@@ -16,13 +16,11 @@ import logging
 from dataclasses import asdict
 from time import sleep
 
-from fido2.ctap import CtapError
+from fido2.ctap import STATUS, CtapError
 from fido2.ctap2 import ClientPin, Config, Ctap2
 from fido2.ctap2.bio import BioEnrollment, CaptureError, FPBioEnrollment
 from fido2.ctap2.credman import CredentialManagement
-from smartcard.Exceptions import CardConnectionException, NoCardException
-from ykman.hid import list_ctap_devices as list_ctap
-from ykman.pcsc import list_devices as list_ccid
+from ykman.base import REINSERT_STATUS
 from yubikit.core.fido import FidoConnection
 
 from .base import (
@@ -50,21 +48,7 @@ class PinValidationException(RpcException):
 
 class InactivityException(RpcException):
     def __init__(self):
-        super().__init__(
-            "user-action-timeout",
-            "Failed to add fingerprint due to user inactivity.",
-        )
-
-
-class KeyMismatchException(RpcException):
-    def __init__(self):
-        super().__init__(
-            "key-mismatch", "Re-inserted YubiKey does not match initial device"
-        )
-
-
-def _ctap_id(ctap):
-    return (ctap.info.aaguid, ctap.info.firmware_version)
+        super().__init__("user-action-timeout", "Failed action due to user inactivity.")
 
 
 def _handle_pin_error(e, client_pin):
@@ -83,12 +67,14 @@ def _handle_pin_error(e, client_pin):
 
 
 class Ctap2Node(RpcNode):
-    def __init__(self, connection, reader_name):
+    def __init__(self, connection, device, reader_name):
         super().__init__()
+        self._connection = connection
         self.ctap = Ctap2(connection)
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
         self._token = None
+        self._device = device
         self._reader_name = reader_name
 
     def __call__(self, *args, **kwargs):
@@ -120,76 +106,27 @@ class Ctap2Node(RpcNode):
                 data.update(uv_retries=uv_retries)
         return data
 
-    @staticmethod
-    def _prepare_reset_nfc(reader_name, event, signal):
-        # TODO: Don't use private member _name.
-        devices = list_ccid(reader_name)
-        if not devices or devices[0].reader.name != reader_name:
-            raise ValueError("Unable to isolate NFC reader")
-        dev = devices[0]
-        logger.debug(f"Reset over NFC using reader: {dev.reader.name}")
-
-        signal("reset", dict(state="remove"))
-        removed = False
-        while not event.wait(0.5):
-            try:
-                conn = dev.open_connection(FidoConnection)
-                if removed:
-                    conn.close()
-                    sleep(1.0)  # Wait for the device to settle
-                    return dev.open_connection(FidoConnection)
-                conn.close()
-            except CardConnectionException:
-                pass  # Expected, ignore
-            except NoCardException:
-                if not removed:
-                    signal("reset", dict(state="insert"))
-                    removed = True
-
-        raise TimeoutException()
-
-    @staticmethod
-    def _prepare_reset_usb(device, event, signal):
-        dev_path = device.descriptor.path
-        logger.debug(f"Reset over USB: {dev_path}")
-
-        signal("reset", dict(state="remove"))
-        removed_state = None
-        while not event.wait(0.5):
-            keys = list_ctap()
-            present = {k.descriptor.path for k in keys}
-            if removed_state is None:
-                if dev_path not in present:
-                    signal("reset", dict(state="insert"))
-                    removed_state = present
-            else:
-                added = present - removed_state
-                if len(added) == 1:
-                    dev_path = next(iter(added))  # Path may have changed
-                    key = next(k for k in keys if k.descriptor.path == dev_path)
-                    connection = key.open_connection(FidoConnection)
-                    signal("reset", dict(state="touch"))
-                    return connection
-                elif len(added) > 1:
-                    raise ValueError("Multiple YubiKeys inserted")
-
-        raise TimeoutException()
-
     @action
     def reset(self, event, signal):
-        target = _ctap_id(self.ctap)
-        device = self.ctap.device
-        if self._reader_name:
-            connection = self._prepare_reset_nfc(self._reader_name, event, signal)
-        else:
-            connection = self._prepare_reset_usb(device, event, signal)
+        _signals = {
+            REINSERT_STATUS.REMOVE: "remove",
+            REINSERT_STATUS.REINSERT: "insert",
+            STATUS.UPNEEDED: "touch",
+            STATUS.PROCESSING: "wait",
+        }
+
+        def signal_status(status):
+            signal("reset", dict(state=_signals[status]))
+
+        self._connection.close()
+        self._device.reinsert(reinsert_cb=signal_status, event=event)
+
+        self._connection = self._device.open_connection(FidoConnection)
+        self.ctap = Ctap2(self._connection)
 
         logger.debug("Performing reset...")
-        self.ctap = Ctap2(connection)
-        if target != _ctap_id(self.ctap):
-            raise KeyMismatchException()
         try:
-            self.ctap.reset(event=event)
+            self.ctap.reset(event=event, on_keepalive=signal_status)
         except CtapError as e:
             if e.code in (
                 # Different keys respond with different errors here

@@ -26,13 +26,12 @@ from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.Exceptions import NoCardException, SmartcardException
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
 from ykman import __version__ as ykman_version
-from ykman.base import PID
 from ykman.device import list_all_devices, scan_devices
 from ykman.diagnostics import get_diagnostics
 from ykman.logging import set_log_level
 from ykman.pcsc import YK_READER_NAME, list_devices
-from yubikit.core import TRANSPORT, NotSupportedError, _override_version
-from yubikit.core.fido import FidoConnection
+from yubikit.core import PID, TRANSPORT, NotSupportedError, _override_version
+from yubikit.core.fido import FidoConnection, SmartCardCtapDevice
 from yubikit.core.otp import OtpConnection
 from yubikit.core.smartcard import (
     SW,
@@ -555,11 +554,25 @@ class ConnectionNode(RpcNode):
         return self._init_child_node(PivNode, CAPABILITY.PIV)
 
     @child(
-        condition=lambda self: isinstance(self._connection, FidoConnection)
-        and CAPABILITY.FIDO2 in self.capabilities
+        condition=lambda self: CAPABILITY.FIDO2 in self.capabilities
+        and (
+            isinstance(self._connection, FidoConnection)
+            or (  # SmartCardConnection can be used over USB if enabled
+                isinstance(self._connection, SmartCardConnection)
+                and self._info.config.enabled_capabilities[self._transport] & 0x1000
+            )
+        )
     )
     def ctap2(self):
-        return self._init_child_node(Ctap2Node, reader_name=self._reader_name)
+        if isinstance(self._connection, SmartCardConnection):
+            return Ctap2Node(
+                SmartCardCtapDevice(self._connection),
+                device=self._device,
+                reader_name=self._reader_name,
+            )
+        return self._init_child_node(
+            Ctap2Node, device=self._device, reader_name=self._reader_name
+        )
 
     @child(
         condition=lambda self: CAPABILITY.OTP in self.capabilities
