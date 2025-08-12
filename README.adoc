@@ -46,7 +46,7 @@ Visit https://yubico.com to learn more.
 |Ubuntu 20.04 (or equivalent)
 
 |Android
-|Android 11 & above
+|Android 13 & above
 |Android 5 (Lollipop)
 |===
 
