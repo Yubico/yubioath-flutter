@@ -145,7 +145,9 @@ class _FidoLockedPage extends ConsumerWidget {
         capabilities: capabilities,
         header: l10n.s_fingerprints_get_started,
         message: l10n.p_set_fingerprints_desc,
-        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBuilder: hasActions
+            ? (context) => _buildActions(context, ref)
+            : null,
         keyActionsBadge: fingerprintsShowActionsNotifier(state),
       );
     }
@@ -156,7 +158,9 @@ class _FidoLockedPage extends ConsumerWidget {
         capabilities: capabilities,
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
-        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBuilder: hasActions
+            ? (context) => _buildActions(context, ref)
+            : null,
         keyActionsBadge: fingerprintsShowActionsNotifier(state),
         actionsBuilder: (context, expanded) => [
           if (!expanded)
@@ -178,14 +182,16 @@ class _FidoLockedPage extends ConsumerWidget {
     return AppPage(
       title: l10n.s_fingerprints,
       capabilities: capabilities,
-      keyActionsBuilder: hasActions ? _buildActions : null,
+      keyActionsBuilder: hasActions
+          ? (context) => _buildActions(context, ref)
+          : null,
       builder: (context, _) =>
           Column(children: [PinEntryForm(state, deviceData)]),
     );
   }
 
-  Widget _buildActions(BuildContext context) =>
-      fingerprintsBuildActions(context, deviceData.node, state, -1);
+  Widget _buildActions(BuildContext context, WidgetRef ref) =>
+      fingerprintsBuildActions(context, ref, deviceData.node, state, -1);
 }
 
 class _FidoUnlockedPage extends ConsumerStatefulWidget {
@@ -240,6 +246,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         keyActionsBuilder: hasActions
             ? (context) => fingerprintsBuildActions(
                 context,
+                ref,
                 widget.deviceData.node,
                 widget.state,
                 0,
@@ -346,6 +353,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         keyActionsBuilder: hasActions
             ? (context) => fingerprintsBuildActions(
                 context,
+                ref,
                 widget.deviceData.node,
                 widget.state,
                 fingerprints.length,

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FidoState {
 
- Map<String, dynamic> get info; bool get unlocked; int? get pinRetries;
+ Map<String, dynamic> get info; bool get unlocked; bool get unlockedRead; int? get pinRetries;
 /// Create a copy of FidoState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FidoStateCopyWith<FidoState> get copyWith => _$FidoStateCopyWithImpl<FidoState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoState&&const DeepCollectionEquality().equals(other.info, info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoState&&const DeepCollectionEquality().equals(other.info, info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.unlockedRead, unlockedRead) || other.unlockedRead == unlockedRead)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(info),unlocked,pinRetries);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(info),unlocked,unlockedRead,pinRetries);
 
 @override
 String toString() {
-  return 'FidoState(info: $info, unlocked: $unlocked, pinRetries: $pinRetries)';
+  return 'FidoState(info: $info, unlocked: $unlocked, unlockedRead: $unlockedRead, pinRetries: $pinRetries)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FidoStateCopyWith<$Res>  {
   factory $FidoStateCopyWith(FidoState value, $Res Function(FidoState) _then) = _$FidoStateCopyWithImpl;
 @useResult
 $Res call({
- Map<String, dynamic> info, bool unlocked, int? pinRetries
+ Map<String, dynamic> info, bool unlocked, bool unlockedRead, int? pinRetries
 });
 
 
@@ -65,10 +65,11 @@ class _$FidoStateCopyWithImpl<$Res>
 
 /// Create a copy of FidoState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? info = null,Object? unlocked = null,Object? pinRetries = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? info = null,Object? unlocked = null,Object? unlockedRead = null,Object? pinRetries = freezed,}) {
   return _then(_self.copyWith(
 info: null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,unlocked: null == unlocked ? _self.unlocked : unlocked // ignore: cast_nullable_to_non_nullable
+as bool,unlockedRead: null == unlockedRead ? _self.unlockedRead : unlockedRead // ignore: cast_nullable_to_non_nullable
 as bool,pinRetries: freezed == pinRetries ? _self.pinRetries : pinRetries // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Map<String, dynamic> info,  bool unlocked,  int? pinRetries)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Map<String, dynamic> info,  bool unlocked,  bool unlockedRead,  int? pinRetries)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FidoState() when $default != null:
-return $default(_that.info,_that.unlocked,_that.pinRetries);case _:
+return $default(_that.info,_that.unlocked,_that.unlockedRead,_that.pinRetries);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.info,_that.unlocked,_that.pinRetries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Map<String, dynamic> info,  bool unlocked,  int? pinRetries)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Map<String, dynamic> info,  bool unlocked,  bool unlockedRead,  int? pinRetries)  $default,) {final _that = this;
 switch (_that) {
 case _FidoState():
-return $default(_that.info,_that.unlocked,_that.pinRetries);case _:
+return $default(_that.info,_that.unlocked,_that.unlockedRead,_that.pinRetries);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.info,_that.unlocked,_that.pinRetries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Map<String, dynamic> info,  bool unlocked,  int? pinRetries)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Map<String, dynamic> info,  bool unlocked,  bool unlockedRead,  int? pinRetries)?  $default,) {final _that = this;
 switch (_that) {
 case _FidoState() when $default != null:
-return $default(_that.info,_that.unlocked,_that.pinRetries);case _:
+return $default(_that.info,_that.unlocked,_that.unlockedRead,_that.pinRetries);case _:
   return null;
 
 }
@@ -211,7 +212,7 @@ return $default(_that.info,_that.unlocked,_that.pinRetries);case _:
 @JsonSerializable()
 
 class _FidoState extends FidoState {
-   _FidoState({required final  Map<String, dynamic> info, required this.unlocked, this.pinRetries}): _info = info,super._();
+   _FidoState({required final  Map<String, dynamic> info, required this.unlocked, required this.unlockedRead, this.pinRetries}): _info = info,super._();
   factory _FidoState.fromJson(Map<String, dynamic> json) => _$FidoStateFromJson(json);
 
  final  Map<String, dynamic> _info;
@@ -222,6 +223,7 @@ class _FidoState extends FidoState {
 }
 
 @override final  bool unlocked;
+@override final  bool unlockedRead;
 @override final  int? pinRetries;
 
 /// Create a copy of FidoState
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FidoState&&const DeepCollectionEquality().equals(other._info, _info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FidoState&&const DeepCollectionEquality().equals(other._info, _info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.unlockedRead, unlockedRead) || other.unlockedRead == unlockedRead)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_info),unlocked,pinRetries);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_info),unlocked,unlockedRead,pinRetries);
 
 @override
 String toString() {
-  return 'FidoState(info: $info, unlocked: $unlocked, pinRetries: $pinRetries)';
+  return 'FidoState(info: $info, unlocked: $unlocked, unlockedRead: $unlockedRead, pinRetries: $pinRetries)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$FidoStateCopyWith<$Res> implements $FidoStateCopyWith<$Re
   factory _$FidoStateCopyWith(_FidoState value, $Res Function(_FidoState) _then) = __$FidoStateCopyWithImpl;
 @override @useResult
 $Res call({
- Map<String, dynamic> info, bool unlocked, int? pinRetries
+ Map<String, dynamic> info, bool unlocked, bool unlockedRead, int? pinRetries
 });
 
 
@@ -274,10 +276,11 @@ class __$FidoStateCopyWithImpl<$Res>
 
 /// Create a copy of FidoState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? info = null,Object? unlocked = null,Object? pinRetries = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? info = null,Object? unlocked = null,Object? unlockedRead = null,Object? pinRetries = freezed,}) {
   return _then(_FidoState(
 info: null == info ? _self._info : info // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,unlocked: null == unlocked ? _self.unlocked : unlocked // ignore: cast_nullable_to_non_nullable
+as bool,unlockedRead: null == unlockedRead ? _self.unlockedRead : unlockedRead // ignore: cast_nullable_to_non_nullable
 as bool,pinRetries: freezed == pinRetries ? _self.pinRetries : pinRetries // ignore: cast_nullable_to_non_nullable
 as int?,
   ));

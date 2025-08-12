@@ -313,6 +313,7 @@
     "s_fido_pin_protection": "PIN de protección FIDO",
     "s_pin_change_required": "Cambio de PIN requerido",
     "l_enter_fido2_pin": "Ingresa el PIN FIDO2 para tu YubiKey",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN bloqueado; restablecer los valores de fábrica de la aplicación FIDO",
     "l_pin_blocked": "PIN bloqueado",
     "l_set_pin_first": "Se requiere un PIN",

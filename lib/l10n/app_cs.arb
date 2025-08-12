@@ -313,6 +313,7 @@
     "s_fido_pin_protection": "Ochrana kódem FIDO PIN",
     "s_pin_change_required": "Je vyžadována změna kódu PIN",
     "l_enter_fido2_pin": "Zadejte FIDO2 PIN pro váš YubiKey",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN je zablokován; uveďte aplikaci FIDO do továrního nastavení",
     "l_pin_blocked": "PIN je zablokován",
     "l_set_pin_first": "Je vyžadován PIN",

@@ -313,6 +313,7 @@
     "s_fido_pin_protection": "FIDO PIN koruması",
     "s_pin_change_required": "PIN değişikliği gerekli",
     "l_enter_fido2_pin": "YubiKey'iniz için FIDO2 PIN kodunu girin",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN bloke edildi; FIDO uygulamasını fabrika ayarlarına sıfırlayın",
     "l_pin_blocked": "PIN bloke edildi",
     "l_set_pin_first": "PIN kodu gereklidir",
