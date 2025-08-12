@@ -340,15 +340,14 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
           state = const AsyncValue.loading();
         } else {
           final json = jsonDecode(event);
-          List<PivSlot>? slots =
-              json != null
-                  ? List.from(
-                    (json as List)
-                        .where((e) => _shownSlots.contains(e['slot']))
-                        .map((e) => PivSlot.fromJson(e))
-                        .toList(growable: false),
-                  )
-                  : [];
+          List<PivSlot>? slots = json != null
+              ? List.from(
+                  (json as List)
+                      .where((e) => _shownSlots.contains(e['slot']))
+                      .map((e) => PivSlot.fromJson(e))
+                      .toList(growable: false),
+                )
+              : [];
 
           state = AsyncValue.data(slots);
         }
