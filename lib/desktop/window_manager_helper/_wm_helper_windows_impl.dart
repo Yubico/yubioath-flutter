@@ -63,22 +63,20 @@ class WindowManagerHelperWindows {
     final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor);
     final hasSavedScaleFactor = savedScaleFactor != null;
 
-    var height =
-        hasSavedScaleFactor
-            ? bounds.height / savedScaleFactor * primaryScaleFactor
-            : bounds.height;
-    var width =
-        hasSavedScaleFactor
-            ? bounds.width / savedScaleFactor * primaryScaleFactor
-            : bounds.width;
+    var height = hasSavedScaleFactor
+        ? bounds.height / savedScaleFactor * primaryScaleFactor
+        : bounds.height;
+    var width = hasSavedScaleFactor
+        ? bounds.width / savedScaleFactor * primaryScaleFactor
+        : bounds.width;
 
     final savedBounds = Rect.fromLTWH(bounds.left, bounds.top, width, height);
 
     final configChanged = await _displayConfigurationChanged(prefs);
     final windowRect =
         !configChanged || _displayContainsBounds(primaryDisplay, savedBounds)
-            ? savedBounds
-            : WindowDefaults.bounds;
+        ? savedBounds
+        : WindowDefaults.bounds;
 
     await windowManager.setBounds(windowRect);
   }

@@ -74,29 +74,26 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     return ref
         .watch(pivStateProvider(widget.data.node.path))
         .when(
-          loading:
-              () => MessagePage(
-                title: l10n.s_certificates,
-                capabilities: const [Capability.piv],
-                centered: true,
-                graphic: const CircularProgressIndicator(),
-                delayedContent: true,
-              ),
-          error:
-              (error, _) =>
-                  error is NoDataException
-                      ? MessagePageNotInitialized(
-                        title: l10n.s_certificates,
-                        capabilities: const [Capability.piv],
-                      )
-                      : AppFailurePage(cause: error),
+          loading: () => MessagePage(
+            title: l10n.s_certificates,
+            capabilities: const [Capability.piv],
+            centered: true,
+            graphic: const CircularProgressIndicator(),
+            delayedContent: true,
+          ),
+          error: (error, _) => error is NoDataException
+              ? MessagePageNotInitialized(
+                  title: l10n.s_certificates,
+                  capabilities: const [Capability.piv],
+                )
+              : AppFailurePage(cause: error),
           data: (pivState) {
-            final pivSlots =
-                ref.watch(pivSlotsProvider(widget.data.node.path)).asData;
-            final selected =
-                _selected != null
-                    ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
-                    : null;
+            final pivSlots = ref
+                .watch(pivSlotsProvider(widget.data.node.path))
+                .asData;
+            final selected = _selected != null
+                ? pivSlots?.value.firstWhere((e) => e.slot == _selected)
+                : null;
             final normalSlots =
                 pivSlots?.value
                     .where((element) => !element.slot.isRetired)
@@ -122,314 +119,289 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             return PivActions(
               devicePath: widget.data.node.path,
               pivState: pivState,
-              builder:
-                  (context) => Actions(
-                    actions: {
-                      EscapeIntent: CallbackAction<EscapeIntent>(
-                        onInvoke: (intent) {
-                          if (selected != null) {
-                            setState(() {
-                              _selected = null;
-                            });
-                          } else {
-                            Actions.invoke(context, intent);
-                          }
-                          return false;
-                        },
-                      ),
-                      OpenIntent<PivSlot>: CallbackAction<OpenIntent<PivSlot>>(
-                        onInvoke: (intent) async {
-                          await showBlurDialog(
-                            context: context,
-                            barrierColor: Colors.transparent,
-                            builder:
-                                (context) => SlotDialog(intent.target.slot),
-                          );
-                          return null;
-                        },
-                      ),
+              builder: (context) => Actions(
+                actions: {
+                  EscapeIntent: CallbackAction<EscapeIntent>(
+                    onInvoke: (intent) {
+                      if (selected != null) {
+                        setState(() {
+                          _selected = null;
+                        });
+                      } else {
+                        Actions.invoke(context, intent);
+                      }
+                      return false;
                     },
-                    child: AppPage(
-                      title: l10n.s_certificates,
-                      capabilities: const [Capability.piv],
-                      detailViewBuilder:
-                          selected != null
-                              ? (context) => Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  ListTitle(l10n.s_details),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Card(
-                                      elevation: 0.0,
-                                      color: Theme.of(context).hoverColor,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 24,
+                  ),
+                  OpenIntent<PivSlot>: CallbackAction<OpenIntent<PivSlot>>(
+                    onInvoke: (intent) async {
+                      await showBlurDialog(
+                        context: context,
+                        barrierColor: Colors.transparent,
+                        builder: (context) => SlotDialog(intent.target.slot),
+                      );
+                      return null;
+                    },
+                  ),
+                },
+                child: AppPage(
+                  title: l10n.s_certificates,
+                  capabilities: const [Capability.piv],
+                  detailViewBuilder: selected != null
+                      ? (context) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ListTitle(l10n.s_details),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Card(
+                                elevation: 0.0,
+                                color: Theme.of(context).hoverColor,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 24,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        selected.slot.getDisplayName(l10n),
+                                        style: textTheme.headlineSmall,
+                                        softWrap: true,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      if (selected.certInfo != null ||
+                                          selected.metadata != null) ...[
+                                        CertInfoTable(
+                                          selected.certInfo,
+                                          selected.metadata,
+                                          alwaysIncludePrivate:
+                                              pivState.supportsMetadata,
+                                          supportsBio: pivState.supportsBio,
                                         ),
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              selected.slot.getDisplayName(
-                                                l10n,
+                                        if (selected.publicKeyMatch ==
+                                            false) ...[
+                                          const SizedBox(height: 16.0),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Symbols.info,
+                                                size: 16,
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
                                               ),
-                                              style: textTheme.headlineSmall,
-                                              softWrap: true,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            const SizedBox(height: 16),
-                                            if (selected.certInfo != null ||
-                                                selected.metadata != null) ...[
-                                              CertInfoTable(
-                                                selected.certInfo,
-                                                selected.metadata,
-                                                alwaysIncludePrivate:
-                                                    pivState.supportsMetadata,
-                                                supportsBio:
-                                                    pivState.supportsBio,
-                                              ),
-                                              if (selected.publicKeyMatch ==
-                                                  false) ...[
-                                                const SizedBox(height: 16.0),
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Symbols.info,
-                                                      size: 16,
-                                                      color:
-                                                          theme
-                                                              .colorScheme
-                                                              .onSurfaceVariant,
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    Flexible(
-                                                      child: Text(
-                                                        l10n.l_warning_public_key_mismatch,
-                                                        style: textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                              color:
-                                                                  theme
-                                                                      .colorScheme
-                                                                      .onSurfaceVariant,
-                                                            ),
+                                              const SizedBox(width: 8),
+                                              Flexible(
+                                                child: Text(
+                                                  l10n.l_warning_public_key_mismatch,
+                                                  style: textTheme.bodySmall
+                                                      ?.copyWith(
+                                                        color: theme
+                                                            .colorScheme
+                                                            .onSurfaceVariant,
                                                       ),
-                                                    ),
-                                                  ],
                                                 ),
-                                              ],
-                                              if (selected.certInfo == null)
-                                                const SizedBox(height: 16),
+                                              ),
                                             ],
-                                            if (selected.certInfo == null)
-                                              Text(
-                                                l10n.l_no_certificate,
-                                                softWrap: true,
-                                                textAlign: TextAlign.center,
-                                                style: subtitleStyle,
-                                              ),
-                                          ],
+                                          ),
+                                        ],
+                                        if (selected.certInfo == null)
+                                          const SizedBox(height: 16),
+                                      ],
+                                      if (selected.certInfo == null)
+                                        Text(
+                                          l10n.l_no_certificate,
+                                          softWrap: true,
+                                          textAlign: TextAlign.center,
+                                          style: subtitleStyle,
                                         ),
-                                      ),
-                                    ),
+                                    ],
                                   ),
-                                  ActionListSection.fromMenuActions(
-                                    context,
-                                    l10n.s_actions,
-                                    actions: buildSlotActions(
-                                      pivState,
-                                      selected,
-                                      fipsUnready,
-                                      l10n,
-                                    ),
-                                  ),
-                                ],
-                              )
-                              : null,
-                      keyActionsBuilder:
-                          hasFeature(features.actions)
-                              ? (context) => pivBuildActions(
-                                context,
-                                widget.data,
-                                pivState,
-                              )
-                              : null,
-                      keyActionsBadge: pivShowActionsNotifier(pivState),
-                      builder: (context, expanded) {
-                        // De-select if window is resized to be non-expanded.
-                        if (!expanded && _selected != null) {
-                          Timer.run(() {
-                            setState(() {
-                              _selected = null;
-                            });
-                          });
-                        }
-
-                        final isBio = [
-                          FormFactor.usbABio,
-                          FormFactor.usbCBio,
-                        ].contains(widget.data.info.formFactor);
-
-                        final usingDefaultPin =
-                            pivState.metadata?.pinMetadata.defaultValue == true;
-                        final pinBlocked = pivState.pinAttempts == 0;
-                        final pukAttempts =
-                            pivState.metadata?.pukMetadata.attemptsRemaining;
-
-                        final dismissedBanners = ref.watch(
-                          dismissedBannersProvider(widget.data.info.serial),
-                        );
-
-                        final showPinDefaultBanner =
-                            !dismissedBanners.contains(
-                              pivPinDefaultBannerKey,
-                            ) &&
-                            (usingDefaultPin && !pinBlocked);
-
-                        return Actions(
-                          actions: {
-                            if (expanded)
-                              OpenIntent<PivSlot>:
-                                  CallbackAction<OpenIntent<PivSlot>>(
-                                    onInvoke: (intent) async {
-                                      setState(() {
-                                        _selected = intent.target.slot;
-                                      });
-                                      return null;
-                                    },
-                                  ),
-                          },
-                          child: Column(
-                            children: [
-                              if (pinBlocked)
-                                MaterialBanner(
-                                  padding: EdgeInsets.all(18),
-                                  content: Text(
-                                    isBio
-                                        ? l10n.p_piv_pin_blocked_bio_desc
-                                        : pukAttempts == 0
-                                        ? l10n.p_piv_pin_puk_blocked_desc
-                                        : l10n.p_piv_pin_blocked_desc,
-                                  ),
-                                  leading: Icon(
-                                    Icons.warning_amber,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                  backgroundColor: theme.hoverColor,
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(
-                                          context,
-                                        ).popUntil((route) => route.isFirst);
-                                        showBlurDialog(
-                                          context: context,
-                                          builder:
-                                              (context) =>
-                                                  pukAttempts == 0
-                                                      ? ResetDialog(
-                                                        widget.data,
-                                                        application:
-                                                            Capability.piv,
-                                                      )
-                                                      : ManagePinPukDialog(
-                                                        widget.data.node.path,
-                                                        pivState,
-                                                        target:
-                                                            ManageTarget
-                                                                .unblock,
-                                                      ),
-                                        );
-                                      },
-                                      child: Text(
-                                        pukAttempts == 0
-                                            ? l10n.s_reset
-                                            : l10n.s_unblock_pin,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              if (showPinDefaultBanner)
-                                MaterialBanner(
-                                  padding: EdgeInsets.all(18),
-                                  content: Text(
-                                    l10n.p_default_pin_puk_key_desc,
-                                  ),
-                                  leading: Icon(
-                                    Icons.warning_amber,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                  backgroundColor: theme.hoverColor,
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        ref
-                                            .read(
-                                              dismissedBannersProvider(
-                                                widget.data.info.serial,
-                                              ).notifier,
-                                            )
-                                            .dismissBanner(
-                                              pivPinDefaultBannerKey,
-                                            );
-                                      },
-                                      child: Text(l10n.s_dismiss),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(
-                                          context,
-                                        ).popUntil((route) => route.isFirst);
-                                        showBlurDialog(
-                                          context: context,
-                                          builder:
-                                              (context) => ManagePinPukDialog(
-                                                widget.data.node.path,
-                                                pivState,
-                                                target: ManageTarget.pin,
-                                              ),
-                                        );
-                                      },
-                                      child: Text(l10n.s_change_pin),
-                                    ),
-                                  ],
-                                ),
-                              if (pinBlocked || showPinDefaultBanner)
-                                const SizedBox(height: 16.0),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
-                                child: Column(
-                                  children: [
-                                    ...normalSlots.map(
-                                      (e) => _CertificateListItem(
-                                        pivState,
-                                        e,
-                                        expanded: expanded,
-                                        selected: e == selected,
-                                        fipsUnready: fipsUnready,
-                                      ),
-                                    ),
-                                    ...shownRetiredSlots.map(
-                                      (e) => _CertificateListItem(
-                                        pivState,
-                                        e,
-                                        expanded: expanded,
-                                        selected: e == selected,
-                                        fipsUnready: fipsUnready,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        );
+                            ),
+                            ActionListSection.fromMenuActions(
+                              context,
+                              l10n.s_actions,
+                              actions: buildSlotActions(
+                                pivState,
+                                selected,
+                                fipsUnready,
+                                l10n,
+                              ),
+                            ),
+                          ],
+                        )
+                      : null,
+                  keyActionsBuilder: hasFeature(features.actions)
+                      ? (context) =>
+                            pivBuildActions(context, widget.data, pivState)
+                      : null,
+                  keyActionsBadge: pivShowActionsNotifier(pivState),
+                  builder: (context, expanded) {
+                    // De-select if window is resized to be non-expanded.
+                    if (!expanded && _selected != null) {
+                      Timer.run(() {
+                        setState(() {
+                          _selected = null;
+                        });
+                      });
+                    }
+
+                    final isBio = [
+                      FormFactor.usbABio,
+                      FormFactor.usbCBio,
+                    ].contains(widget.data.info.formFactor);
+
+                    final usingDefaultPin =
+                        pivState.metadata?.pinMetadata.defaultValue == true;
+                    final pinBlocked = pivState.pinAttempts == 0;
+                    final pukAttempts =
+                        pivState.metadata?.pukMetadata.attemptsRemaining;
+
+                    final dismissedBanners = ref.watch(
+                      dismissedBannersProvider(widget.data.info.serial),
+                    );
+
+                    final showPinDefaultBanner =
+                        !dismissedBanners.contains(pivPinDefaultBannerKey) &&
+                        (usingDefaultPin && !pinBlocked);
+
+                    return Actions(
+                      actions: {
+                        if (expanded)
+                          OpenIntent<PivSlot>:
+                              CallbackAction<OpenIntent<PivSlot>>(
+                                onInvoke: (intent) async {
+                                  setState(() {
+                                    _selected = intent.target.slot;
+                                  });
+                                  return null;
+                                },
+                              ),
                       },
-                    ),
-                  ),
+                      child: Column(
+                        children: [
+                          if (pinBlocked)
+                            MaterialBanner(
+                              padding: EdgeInsets.all(18),
+                              content: Text(
+                                isBio
+                                    ? l10n.p_piv_pin_blocked_bio_desc
+                                    : pukAttempts == 0
+                                    ? l10n.p_piv_pin_puk_blocked_desc
+                                    : l10n.p_piv_pin_blocked_desc,
+                              ),
+                              leading: Icon(
+                                Icons.warning_amber,
+                                color: theme.colorScheme.primary,
+                              ),
+                              backgroundColor: theme.hoverColor,
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).popUntil((route) => route.isFirst);
+                                    showBlurDialog(
+                                      context: context,
+                                      builder: (context) => pukAttempts == 0
+                                          ? ResetDialog(
+                                              widget.data,
+                                              application: Capability.piv,
+                                            )
+                                          : ManagePinPukDialog(
+                                              widget.data.node.path,
+                                              pivState,
+                                              target: ManageTarget.unblock,
+                                            ),
+                                    );
+                                  },
+                                  child: Text(
+                                    pukAttempts == 0
+                                        ? l10n.s_reset
+                                        : l10n.s_unblock_pin,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (showPinDefaultBanner)
+                            MaterialBanner(
+                              padding: EdgeInsets.all(18),
+                              content: Text(l10n.p_default_pin_puk_key_desc),
+                              leading: Icon(
+                                Icons.warning_amber,
+                                color: theme.colorScheme.primary,
+                              ),
+                              backgroundColor: theme.hoverColor,
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    ref
+                                        .read(
+                                          dismissedBannersProvider(
+                                            widget.data.info.serial,
+                                          ).notifier,
+                                        )
+                                        .dismissBanner(pivPinDefaultBannerKey);
+                                  },
+                                  child: Text(l10n.s_dismiss),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).popUntil((route) => route.isFirst);
+                                    showBlurDialog(
+                                      context: context,
+                                      builder: (context) => ManagePinPukDialog(
+                                        widget.data.node.path,
+                                        pivState,
+                                        target: ManageTarget.pin,
+                                      ),
+                                    );
+                                  },
+                                  child: Text(l10n.s_change_pin),
+                                ),
+                              ],
+                            ),
+                          if (pinBlocked || showPinDefaultBanner)
+                            const SizedBox(height: 16.0),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
+                            child: Column(
+                              children: [
+                                ...normalSlots.map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                    fipsUnready: fipsUnready,
+                                  ),
+                                ),
+                                ...shownRetiredSlots.map(
+                                  (e) => _CertificateListItem(
+                                    pivState,
+                                    e,
+                                    expanded: expanded,
+                                    selected: e == selected,
+                                    fipsUnready: fipsUnready,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             );
           },
         );
@@ -469,28 +441,24 @@ class _CertificateListItem extends ConsumerWidget {
         child: Text(pivSlot.slot.hexId),
       ),
       title: slot.getSlotName(l10n),
-      subtitle:
-          certInfo != null
-              // Simplify subtitle by stripping "CN=", etc.
-              ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
-              : pivSlot.metadata != null
-              ? l10n.l_key_no_certificate
-              : l10n.l_no_certificate,
-      trailing:
-          expanded
-              ? null
-              : OutlinedButton(
-                key: _getMeatballKey(slot),
-                onPressed: Actions.handler(context, OpenIntent(pivSlot)),
-                child: const Icon(Symbols.more_horiz),
-              ),
+      subtitle: certInfo != null
+          // Simplify subtitle by stripping "CN=", etc.
+          ? certInfo.subject.replaceAll(RegExp(r'[A-Z]+='), ' ').trimLeft()
+          : pivSlot.metadata != null
+          ? l10n.l_key_no_certificate
+          : l10n.l_no_certificate,
+      trailing: expanded
+          ? null
+          : OutlinedButton(
+              key: _getMeatballKey(slot),
+              onPressed: Actions.handler(context, OpenIntent(pivSlot)),
+              child: const Icon(Symbols.more_horiz),
+            ),
       tapIntent: isDesktop && !expanded ? null : OpenIntent(pivSlot),
       doubleTapIntent: isDesktop && !expanded ? OpenIntent(pivSlot) : null,
-      buildPopupActions:
-          hasFeature(features.slots) && !fipsUnready
-              ? (context) =>
-                  buildSlotActions(pivState, pivSlot, fipsUnready, l10n)
-              : null,
+      buildPopupActions: hasFeature(features.slots) && !fipsUnready
+          ? (context) => buildSlotActions(pivState, pivSlot, fipsUnready, l10n)
+          : null,
     );
   }
 

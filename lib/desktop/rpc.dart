@@ -258,11 +258,10 @@ class RpcSession {
   }
 
   Future<void> setLogLevel(Level level) async {
-    final name =
-        Levels.LEVELS
-            .firstWhere((e) => level.value <= e.value, orElse: () => Level.OFF)
-            .name
-            .toLowerCase();
+    final name = Levels.LEVELS
+        .firstWhere((e) => level.value <= e.value, orElse: () => Level.OFF)
+        .name
+        .toLowerCase();
 
     await command('logging', [], params: {'level': name});
   }

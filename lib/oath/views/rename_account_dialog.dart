@@ -190,78 +190,75 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        Text(l10n.p_rename_will_change_account_displayed),
-                        AppTextField(
-                          controller: _issuerController,
-                          enabled: issuerRemaining > 0,
-                          maxLength:
-                              issuerRemaining > 0 ? issuerRemaining : null,
-                          buildCounter: buildByteCounterFor(issuer),
-                          inputFormatters: [limitBytesLength(issuerRemaining)],
-                          key: keys.issuerField,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_issuer_optional,
-                            helperText:
-                                '', // Prevents dialog resizing when disabled
-                            icon: const Icon(Symbols.business),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          focusNode: _issuerFocus,
-                          autofocus: true,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                        ).init(),
-                        AppTextField(
-                          controller: _nameController,
-                          maxLength: nameRemaining,
-                          inputFormatters: [limitBytesLength(nameRemaining)],
-                          buildCounter: buildByteCounterFor(name),
-                          key: keys.nameField,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_account_name,
-                            helperText:
-                                '', // Prevents dialog resizing when disabled
-                            errorText:
-                                !nameNotEmpty
-                                    ? l10n.l_account_name_required
-                                    : !isUnique
-                                    ? l10n.l_name_already_exists
-                                    : null,
-                            icon: const Icon(Symbols.people_alt),
-                          ),
-                          textInputAction: TextInputAction.done,
-                          focusNode: _nameFocus,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                          onSubmitted: (_) {
-                            if (didChange && isValid) {
-                              _submit();
-                            } else {
-                              _nameFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    Text(l10n.p_rename_will_change_account_displayed),
+                    AppTextField(
+                      controller: _issuerController,
+                      enabled: issuerRemaining > 0,
+                      maxLength: issuerRemaining > 0 ? issuerRemaining : null,
+                      buildCounter: buildByteCounterFor(issuer),
+                      inputFormatters: [limitBytesLength(issuerRemaining)],
+                      key: keys.issuerField,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_issuer_optional,
+                        helperText:
+                            '', // Prevents dialog resizing when disabled
+                        icon: const Icon(Symbols.business),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      focusNode: _issuerFocus,
+                      autofocus: true,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                    ).init(),
+                    AppTextField(
+                      controller: _nameController,
+                      maxLength: nameRemaining,
+                      inputFormatters: [limitBytesLength(nameRemaining)],
+                      buildCounter: buildByteCounterFor(name),
+                      key: keys.nameField,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_account_name,
+                        helperText:
+                            '', // Prevents dialog resizing when disabled
+                        errorText: !nameNotEmpty
+                            ? l10n.l_account_name_required
+                            : !isUnique
+                            ? l10n.l_name_already_exists
+                            : null,
+                        icon: const Icon(Symbols.people_alt),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      focusNode: _nameFocus,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      onSubmitted: (_) {
+                        if (didChange && isValid) {
+                          _submit();
+                        } else {
+                          _nameFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

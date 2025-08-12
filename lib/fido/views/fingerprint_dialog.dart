@@ -48,81 +48,76 @@ class FingerprintDialog extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
     return FidoActions(
       devicePath: node.path,
-      actions:
-          (context) => {
-            if (hasFeature(features.fingerprintsEdit))
-              EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
-                onInvoke: (intent) async {
-                  final renamed =
-                      await (Actions.invoke(context, intent)
-                          as Future<dynamic>?);
-                  if (renamed is Fingerprint) {
-                    // Replace the dialog with the renamed credential
-                    await ref.read(withContextProvider)((context) async {
-                      Navigator.of(context).pop();
-                      await showBlurDialog(
-                        context: context,
-                        builder: (context) => FingerprintDialog(renamed),
-                      );
-                    });
-                  }
-                  return renamed;
-                },
-              ),
-            if (hasFeature(features.fingerprintsDelete))
-              DeleteIntent<Fingerprint>:
-                  CallbackAction<DeleteIntent<Fingerprint>>(
-                    onInvoke: (intent) async {
-                      final deleted =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      // Pop the fingerprint dialog if deleted
-                      if (deleted == true) {
-                        await ref.read(withContextProvider)((context) async {
-                          Navigator.of(context).pop();
-                        });
-                      }
-                      return deleted;
-                    },
-                  ),
-          },
-      builder:
-          (context) => ItemShortcuts(
-            item: fingerprint,
-            child: FocusScope(
-              autofocus: true,
-              child: FsDialog(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 48, bottom: 32),
-                      child: Column(
-                        children: [
-                          Text(
-                            fingerprint.label,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          Icon(
-                            Symbols.fingerprint,
-                            size: 100,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ],
+      actions: (context) => {
+        if (hasFeature(features.fingerprintsEdit))
+          EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
+            onInvoke: (intent) async {
+              final renamed =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              if (renamed is Fingerprint) {
+                // Replace the dialog with the renamed credential
+                await ref.read(withContextProvider)((context) async {
+                  Navigator.of(context).pop();
+                  await showBlurDialog(
+                    context: context,
+                    builder: (context) => FingerprintDialog(renamed),
+                  );
+                });
+              }
+              return renamed;
+            },
+          ),
+        if (hasFeature(features.fingerprintsDelete))
+          DeleteIntent<Fingerprint>: CallbackAction<DeleteIntent<Fingerprint>>(
+            onInvoke: (intent) async {
+              final deleted =
+                  await (Actions.invoke(context, intent) as Future<dynamic>?);
+              // Pop the fingerprint dialog if deleted
+              if (deleted == true) {
+                await ref.read(withContextProvider)((context) async {
+                  Navigator.of(context).pop();
+                });
+              }
+              return deleted;
+            },
+          ),
+      },
+      builder: (context) => ItemShortcuts(
+        item: fingerprint,
+        child: FocusScope(
+          autofocus: true,
+          child: FsDialog(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 48, bottom: 32),
+                  child: Column(
+                    children: [
+                      Text(
+                        fingerprint.label,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    ActionListSection.fromMenuActions(
-                      context,
-                      l10n.s_actions,
-                      actions: buildFingerprintActions(fingerprint, l10n),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      Icon(
+                        Symbols.fingerprint,
+                        size: 100,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                ActionListSection.fromMenuActions(
+                  context,
+                  l10n.s_actions,
+                  actions: buildFingerprintActions(fingerprint, l10n),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
     );
   }
 }

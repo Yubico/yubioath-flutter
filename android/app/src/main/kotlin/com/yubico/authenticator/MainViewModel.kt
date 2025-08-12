@@ -36,9 +36,10 @@ enum class OperationContext(val value: Int) {
     FidoPasskeys(4),
     Piv(5),
     YubiOtp(6),
-    OpenPgp(7),
-    HsmAuth(8),
-    Management(9);
+    Settings(7),
+    OpenPgp(8),
+    HsmAuth(9),
+    Management(10);
 
     companion object {
         fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Default

@@ -78,27 +78,22 @@ class OathScreen extends ConsumerWidget {
     return ref
         .watch(oathStateProvider(devicePath))
         .when(
-          loading:
-              () => MessagePage(
-                title: AppLocalizations.of(context).s_accounts,
-                capabilities: const [Capability.oath],
-                centered: true,
-                graphic: const CircularProgressIndicator(),
-                delayedContent: true,
-              ),
-          error:
-              (error, _) =>
-                  error is NoDataException
-                      ? MessagePageNotInitialized(
-                        title: l10n.s_accounts,
-                        capabilities: const [Capability.oath],
-                      )
-                      : AppFailurePage(cause: error),
-          data:
-              (oathState) =>
-                  oathState.locked
-                      ? _LockedView(devicePath, oathState)
-                      : _UnlockedView(devicePath, oathState),
+          loading: () => MessagePage(
+            title: AppLocalizations.of(context).s_accounts,
+            capabilities: const [Capability.oath],
+            centered: true,
+            graphic: const CircularProgressIndicator(),
+            delayedContent: true,
+          ),
+          error: (error, _) => error is NoDataException
+              ? MessagePageNotInitialized(
+                  title: l10n.s_accounts,
+                  capabilities: const [Capability.oath],
+                )
+              : AppFailurePage(cause: error),
+          data: (oathState) => oathState.locked
+              ? _LockedView(devicePath, oathState)
+              : _UnlockedView(devicePath, oathState),
         );
   }
 }
@@ -115,16 +110,13 @@ class _LockedView extends ConsumerWidget {
     return AppPage(
       title: AppLocalizations.of(context).s_accounts,
       capabilities: const [Capability.oath],
-      keyActionsBuilder:
-          hasActions
-              ? (context) =>
-                  oathBuildActions(context, devicePath, oathState, ref)
-              : null,
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: UnlockForm(devicePath, keystore: oathState.keystore),
-          ),
+      keyActionsBuilder: hasActions
+          ? (context) => oathBuildActions(context, devicePath, oathState, ref)
+          : null,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: UnlockForm(devicePath, keystore: oathState.keystore),
+      ),
     );
   }
 }
@@ -264,16 +256,15 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
         key: keys.noAccountsView,
         header: l10n.l_authenticator_get_started,
         message: l10n.l_no_accounts_desc,
-        keyActionsBuilder:
-            hasActions
-                ? (context) => oathBuildActions(
-                  context,
-                  widget.devicePath,
-                  widget.oathState,
-                  ref,
-                  used: 0,
-                )
-                : null,
+        keyActionsBuilder: hasActions
+            ? (context) => oathBuildActions(
+                context,
+                widget.devicePath,
+                widget.oathState,
+                ref,
+                used: 0,
+              )
+            : null,
         onFileDropped: onFileDropped,
         fileDropOverlay: FileDropOverlay(
           title: l10n.s_add_account,
@@ -295,448 +286,417 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     return OathActions(
       devicePath: widget.devicePath,
-      actions:
-          (context) => {
-            SearchIntent: CallbackAction<SearchIntent>(
-              onInvoke: (_) {
-                searchController.selection = TextSelection(
-                  baseOffset: 0,
-                  extentOffset: searchController.text.length,
+      actions: (context) => {
+        SearchIntent: CallbackAction<SearchIntent>(
+          onInvoke: (_) {
+            searchController.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: searchController.text.length,
+            );
+            searchFocus.unfocus();
+            Timer.run(() => searchFocus.requestFocus());
+            return null;
+          },
+        ),
+        EscapeIntent: CallbackAction<EscapeIntent>(
+          onInvoke: (intent) {
+            if (_selected != null) {
+              setState(() {
+                _selected = null;
+              });
+            } else {
+              Actions.invoke(context, intent);
+            }
+            return false;
+          },
+        ),
+        OpenIntent<OathCredential>: CallbackAction<OpenIntent<OathCredential>>(
+          onInvoke: (intent) async {
+            await showBlurDialog(
+              context: context,
+              barrierColor: Colors.transparent,
+              builder: (context) => AccountDialog(intent.target),
+            );
+            return null;
+          },
+        ),
+        if (hasFeature(features.accountsRename))
+          EditIntent<OathCredential>:
+              CallbackAction<EditIntent<OathCredential>>(
+                onInvoke: (intent) async {
+                  final renamed =
+                      await (Actions.invoke(context, intent)
+                          as Future<dynamic>?);
+                  if (renamed is OathCredential && _selected == intent.target) {
+                    setState(() {
+                      _selected = renamed;
+                    });
+                  }
+                  return renamed;
+                },
+              ),
+        if (hasFeature(features.accountsDelete))
+          DeleteIntent<OathCredential>:
+              CallbackAction<DeleteIntent<OathCredential>>(
+                onInvoke: (intent) async {
+                  final deleted =
+                      await (Actions.invoke(context, intent)
+                          as Future<dynamic>?);
+                  if (deleted == true && _selected == intent.target) {
+                    setState(() {
+                      _selected = null;
+                    });
+                  }
+                  return deleted;
+                },
+              ),
+      },
+      builder: (context) => AppPage(
+        title: l10n.s_accounts,
+        alternativeTitle: searchText != ''
+            ? l10n.l_results_for(searchText)
+            : null,
+        capabilities: const [Capability.oath],
+        keyActionsBadge: oathShowActionNotifier(deviceInfo),
+        keyActionsBuilder: hasActions
+            ? (context) => oathBuildActions(
+                context,
+                widget.devicePath,
+                widget.oathState,
+                ref,
+                used: numCreds,
+              )
+            : null,
+        onFileDropped: onFileDropped,
+        fileDropOverlay: FileDropOverlay(
+          title: l10n.s_add_account,
+          subtitle: l10n.l_drop_qr_description,
+        ),
+        detailViewBuilder: _selected != null
+            ? (context) {
+                final helper = AccountHelper(context, ref, _selected!);
+                final subtitle = helper.subtitle;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTitle(l10n.s_details),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Card(
+                        elevation: 0.0,
+                        color: Theme.of(context).hoverColor,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 24,
+                            horizontal: 16,
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconTheme(
+                                    data: IconTheme.of(
+                                      context,
+                                    ).copyWith(size: 24),
+                                    child: helper.buildCodeIcon(),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  DefaultTextStyle.merge(
+                                    style: const TextStyle(fontSize: 28),
+                                    child: helper.buildCodeLabel(),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              TooltipIfTruncated(
+                                text: helper.title,
+                                style: TextStyle(
+                                  fontSize: Theme.of(
+                                    context,
+                                  ).textTheme.headlineSmall?.fontSize,
+                                ),
+                              ),
+                              if (subtitle != null)
+                                TooltipIfTruncated(
+                                  text: subtitle,
+                                  // This is what ListTile uses for subtitle
+                                  style: Theme.of(context).textTheme.bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    ActionListSection.fromMenuActions(
+                      context,
+                      AppLocalizations.of(context).s_actions,
+                      actions: helper.buildActions(),
+                    ),
+                  ],
                 );
-                searchFocus.unfocus();
-                Timer.run(() => searchFocus.requestFocus());
+              }
+            : null,
+        headerSliver: Actions(
+          actions: {
+            EscapeIntent: CallbackAction<EscapeIntent>(
+              onInvoke: (intent) {
+                if (searchController.text.isNotEmpty) {
+                  searchController.clear();
+                  ref.read(accountsSearchProvider.notifier).setFilter('');
+                  setState(() {});
+                } else {
+                  searchFocus.unfocus();
+                }
                 return null;
               },
             ),
-            EscapeIntent: CallbackAction<EscapeIntent>(
-              onInvoke: (intent) {
-                if (_selected != null) {
-                  setState(() {
-                    _selected = null;
-                  });
-                } else {
-                  Actions.invoke(context, intent);
-                }
-                return false;
-              },
-            ),
-            OpenIntent<OathCredential>:
-                CallbackAction<OpenIntent<OathCredential>>(
-                  onInvoke: (intent) async {
-                    await showBlurDialog(
-                      context: context,
-                      barrierColor: Colors.transparent,
-                      builder: (context) => AccountDialog(intent.target),
-                    );
-                    return null;
-                  },
-                ),
-            if (hasFeature(features.accountsRename))
-              EditIntent<OathCredential>:
-                  CallbackAction<EditIntent<OathCredential>>(
-                    onInvoke: (intent) async {
-                      final renamed =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      if (renamed is OathCredential &&
-                          _selected == intent.target) {
-                        setState(() {
-                          _selected = renamed;
-                        });
-                      }
-                      return renamed;
-                    },
-                  ),
-            if (hasFeature(features.accountsDelete))
-              DeleteIntent<OathCredential>:
-                  CallbackAction<DeleteIntent<OathCredential>>(
-                    onInvoke: (intent) async {
-                      final deleted =
-                          await (Actions.invoke(context, intent)
-                              as Future<dynamic>?);
-                      if (deleted == true && _selected == intent.target) {
-                        setState(() {
-                          _selected = null;
-                        });
-                      }
-                      return deleted;
-                    },
-                  ),
           },
-      builder:
-          (context) => AppPage(
-            title: l10n.s_accounts,
-            alternativeTitle:
-                searchText != '' ? l10n.l_results_for(searchText) : null,
-            capabilities: const [Capability.oath],
-            keyActionsBadge: oathShowActionNotifier(deviceInfo),
-            keyActionsBuilder:
-                hasActions
-                    ? (context) => oathBuildActions(
-                      context,
-                      widget.devicePath,
-                      widget.oathState,
-                      ref,
-                      used: numCreds,
-                    )
-                    : null,
-            onFileDropped: onFileDropped,
-            fileDropOverlay: FileDropOverlay(
-              title: l10n.s_add_account,
-              subtitle: l10n.l_drop_qr_description,
-            ),
-            detailViewBuilder:
-                _selected != null
-                    ? (context) {
-                      final helper = AccountHelper(context, ref, _selected!);
-                      final subtitle = helper.subtitle;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ListTitle(l10n.s_details),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Card(
-                              elevation: 0.0,
-                              color: Theme.of(context).hoverColor,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 24,
-                                  horizontal: 16,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        IconTheme(
-                                          data: IconTheme.of(
-                                            context,
-                                          ).copyWith(size: 24),
-                                          child: helper.buildCodeIcon(),
-                                        ),
-                                        const SizedBox(width: 8.0),
-                                        DefaultTextStyle.merge(
-                                          style: const TextStyle(fontSize: 28),
-                                          child: helper.buildCodeLabel(),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    TooltipIfTruncated(
-                                      text: helper.title,
-                                      style: TextStyle(
-                                        fontSize:
-                                            Theme.of(
-                                              context,
-                                            ).textTheme.headlineSmall?.fontSize,
-                                      ),
-                                    ),
-                                    if (subtitle != null)
-                                      TooltipIfTruncated(
-                                        text: subtitle,
-                                        // This is what ListTile uses for subtitle
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium!.copyWith(
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
+          child: Shortcuts(
+            shortcuts: {
+              // Allow directional focus down
+              SingleActivator(
+                LogicalKeyboardKey.arrowDown,
+              ): DirectionalFocusIntent(
+                TraversalDirection.down,
+                ignoreTextFields: false,
+              ),
+            },
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final textTheme = Theme.of(context).textTheme;
+                return Consumer(
+                  builder: (context, ref, child) {
+                    final credentials = ref.watch(
+                      filteredCredentialsProvider(
+                        ref.watch(credentialListProvider(widget.devicePath)) ??
+                            [],
+                      ),
+                    );
+                    final favorites = ref.watch(favoritesProvider);
+                    final pinnedCreds = credentials.where(
+                      (entry) => favorites.contains(entry.credential.id),
+                    );
+
+                    final availableLayouts =
+                        pinnedCreds.isEmpty ||
+                            pinnedCreds.length == credentials.length
+                        ? OathLayout.values.where(
+                            (element) => element != OathLayout.mixed,
+                          )
+                        : OathLayout.values;
+                    final oathLayout = ref.watch(oathLayoutProvider);
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0,
+                        vertical: 8.0,
+                      ),
+                      child: AppTextField(
+                        key: searchField,
+                        controller: searchController,
+                        canRequestFocus: _canRequestFocus,
+                        focusNode: searchFocus,
+                        // Use the default style, but with a smaller font size:
+                        style: textTheme.titleMedium?.copyWith(
+                          fontSize: textTheme.titleSmall?.fontSize,
+                        ),
+                        decoration: AppInputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(48),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: searchFocus.hasFocus
+                                  ? BorderStyle.solid
+                                  : BorderStyle.none,
                             ),
                           ),
-                          ActionListSection.fromMenuActions(
-                            context,
-                            AppLocalizations.of(context).s_actions,
-                            actions: helper.buildActions(),
+                          contentPadding: const EdgeInsets.all(16),
+                          fillColor: Theme.of(context).hoverColor,
+                          filled: true,
+                          hintText: l10n.s_search_accounts,
+                          isDense: true,
+                          prefixIcon: const Padding(
+                            padding: EdgeInsetsDirectional.only(start: 8.0),
+                            child: Icon(Icons.search_outlined),
                           ),
-                        ],
-                      );
-                    }
-                    : null,
-            headerSliver: Actions(
-              actions: {
-                EscapeIntent: CallbackAction<EscapeIntent>(
-                  onInvoke: (intent) {
-                    if (searchController.text.isNotEmpty) {
-                      searchController.clear();
-                      ref.read(accountsSearchProvider.notifier).setFilter('');
-                      setState(() {});
-                    } else {
-                      searchFocus.unfocus();
-                    }
-                    return null;
-                  },
-                ),
-              },
-              child: Shortcuts(
-                shortcuts: {
-                  // Allow directional focus down
-                  SingleActivator(
-                    LogicalKeyboardKey.arrowDown,
-                  ): DirectionalFocusIntent(
-                    TraversalDirection.down,
-                    ignoreTextFields: false,
-                  ),
-                },
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final width = constraints.maxWidth;
-                    final textTheme = Theme.of(context).textTheme;
-                    return Consumer(
-                      builder: (context, ref, child) {
-                        final credentials = ref.watch(
-                          filteredCredentialsProvider(
-                            ref.watch(
-                                  credentialListProvider(widget.devicePath),
-                                ) ??
-                                [],
-                          ),
-                        );
-                        final favorites = ref.watch(favoritesProvider);
-                        final pinnedCreds = credentials.where(
-                          (entry) => favorites.contains(entry.credential.id),
-                        );
-
-                        final availableLayouts =
-                            pinnedCreds.isEmpty ||
-                                    pinnedCreds.length == credentials.length
-                                ? OathLayout.values.where(
-                                  (element) => element != OathLayout.mixed,
-                                )
-                                : OathLayout.values;
-                        final oathLayout = ref.watch(oathLayoutProvider);
-
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 8.0,
-                          ),
-                          child:
-                              AppTextField(
-                                key: searchField,
-                                controller: searchController,
-                                canRequestFocus: _canRequestFocus,
-                                focusNode: searchFocus,
-                                // Use the default style, but with a smaller font size:
-                                style: textTheme.titleMedium?.copyWith(
-                                  fontSize: textTheme.titleSmall?.fontSize,
-                                ),
-                                decoration: AppInputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(48),
-                                    borderSide: BorderSide(
-                                      width: 0,
-                                      style:
-                                          searchFocus.hasFocus
-                                              ? BorderStyle.solid
-                                              : BorderStyle.none,
-                                    ),
-                                  ),
-                                  contentPadding: const EdgeInsets.all(16),
-                                  fillColor: Theme.of(context).hoverColor,
-                                  filled: true,
-                                  hintText: l10n.s_search_accounts,
-                                  isDense: true,
-                                  prefixIcon: const Padding(
-                                    padding: EdgeInsetsDirectional.only(
-                                      start: 8.0,
-                                    ),
-                                    child: Icon(Icons.search_outlined),
-                                  ),
-                                  suffixIcons: [
-                                    if (searchController.text.isNotEmpty)
-                                      IconButton(
-                                        icon: const Icon(Icons.clear),
-                                        iconSize: 16,
-                                        onPressed: () {
-                                          searchController.clear();
-                                          ref
-                                              .read(
-                                                accountsSearchProvider.notifier,
-                                              )
-                                              .setFilter('');
-                                          setState(() {});
-                                        },
-                                      ),
-                                    if (searchController.text.isEmpty) ...[
-                                      if (width >= 450)
-                                        ...availableLayouts.map(
-                                          (e) => MouseRegion(
-                                            onEnter: (event) {
-                                              if (!searchFocus.hasFocus) {
-                                                setState(() {
-                                                  _canRequestFocus = false;
-                                                });
-                                              }
-                                            },
-                                            onExit: (event) {
-                                              setState(() {
-                                                _canRequestFocus = true;
-                                              });
-                                            },
-                                            child: IconButton(
-                                              tooltip: e.getDisplayName(l10n),
-                                              onPressed: () {
-                                                ref
-                                                    .read(
-                                                      oathLayoutProvider
-                                                          .notifier,
-                                                    )
-                                                    .setLayout(e);
-                                              },
-                                              icon: Icon(
-                                                e._icon,
-                                                color:
-                                                    e == oathLayout
-                                                        ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
-                                                        : null,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      if (width < 450)
-                                        MouseRegion(
-                                          onEnter: (event) {
-                                            if (!searchFocus.hasFocus) {
-                                              setState(() {
-                                                _canRequestFocus = false;
-                                              });
-                                            }
-                                          },
-                                          onExit: (event) {
-                                            setState(() {
-                                              _canRequestFocus = true;
-                                            });
-                                          },
-                                          child: PopupMenuButton(
-                                            constraints:
-                                                const BoxConstraints.tightFor(),
-                                            tooltip: l10n.s_select_layout,
-                                            popUpAnimationStyle: AnimationStyle(
-                                              duration: Duration.zero,
-                                            ),
-                                            icon: Icon(
-                                              oathLayout._icon,
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.primary,
-                                            ),
-                                            itemBuilder:
-                                                (context) => [
-                                                  ...availableLayouts.map(
-                                                    (e) => PopupMenuItem(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Tooltip(
-                                                            message: e
-                                                                .getDisplayName(
-                                                                  l10n,
-                                                                ),
-                                                            child: Icon(
-                                                              e._icon,
-                                                              color:
-                                                                  e == oathLayout
-                                                                      ? Theme.of(
-                                                                        context,
-                                                                      ).colorScheme.primary
-                                                                      : null,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      onTap: () {
-                                                        ref
-                                                            .read(
-                                                              oathLayoutProvider
-                                                                  .notifier,
-                                                            )
-                                                            .setLayout(e);
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                          ),
-                                        ),
-                                    ],
-                                  ],
-                                ),
-
-                                onChanged: (value) {
+                          suffixIcons: [
+                            if (searchController.text.isNotEmpty)
+                              IconButton(
+                                icon: const Icon(Icons.clear),
+                                iconSize: 16,
+                                onPressed: () {
+                                  searchController.clear();
                                   ref
                                       .read(accountsSearchProvider.notifier)
-                                      .setFilter(value);
-                                  _scrollSearchField();
+                                      .setFilter('');
                                   setState(() {});
                                 },
-                                textInputAction: TextInputAction.next,
-                                onSubmitted: (value) {
-                                  Focus.of(
-                                    context,
-                                  ).focusInDirection(TraversalDirection.down);
-                                },
-                              ).init(),
-                        );
+                              ),
+                            if (searchController.text.isEmpty) ...[
+                              if (width >= 450)
+                                ...availableLayouts.map(
+                                  (e) => MouseRegion(
+                                    onEnter: (event) {
+                                      if (!searchFocus.hasFocus) {
+                                        setState(() {
+                                          _canRequestFocus = false;
+                                        });
+                                      }
+                                    },
+                                    onExit: (event) {
+                                      setState(() {
+                                        _canRequestFocus = true;
+                                      });
+                                    },
+                                    child: IconButton(
+                                      tooltip: e.getDisplayName(l10n),
+                                      onPressed: () {
+                                        ref
+                                            .read(oathLayoutProvider.notifier)
+                                            .setLayout(e);
+                                      },
+                                      icon: Icon(
+                                        e._icon,
+                                        color: e == oathLayout
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.primary
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (width < 450)
+                                MouseRegion(
+                                  onEnter: (event) {
+                                    if (!searchFocus.hasFocus) {
+                                      setState(() {
+                                        _canRequestFocus = false;
+                                      });
+                                    }
+                                  },
+                                  onExit: (event) {
+                                    setState(() {
+                                      _canRequestFocus = true;
+                                    });
+                                  },
+                                  child: PopupMenuButton(
+                                    constraints:
+                                        const BoxConstraints.tightFor(),
+                                    tooltip: l10n.s_select_layout,
+                                    popUpAnimationStyle: AnimationStyle(
+                                      duration: Duration.zero,
+                                    ),
+                                    icon: Icon(
+                                      oathLayout._icon,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                    itemBuilder: (context) => [
+                                      ...availableLayouts.map(
+                                        (e) => PopupMenuItem(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Tooltip(
+                                                message: e.getDisplayName(l10n),
+                                                child: Icon(
+                                                  e._icon,
+                                                  color: e == oathLayout
+                                                      ? Theme.of(
+                                                          context,
+                                                        ).colorScheme.primary
+                                                      : null,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onTap: () {
+                                            ref
+                                                .read(
+                                                  oathLayoutProvider.notifier,
+                                                )
+                                                .setLayout(e);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ],
+                        ),
+
+                        onChanged: (value) {
+                          ref
+                              .read(accountsSearchProvider.notifier)
+                              .setFilter(value);
+                          _scrollSearchField();
+                          setState(() {});
+                        },
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (value) {
+                          Focus.of(
+                            context,
+                          ).focusInDirection(TraversalDirection.down);
+                        },
+                      ).init(),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+        builder: (context, expanded) {
+          // De-select if window is resized to be non-expanded.
+          if (!expanded && _selected != null) {
+            Timer.run(() {
+              setState(() {
+                _selected = null;
+              });
+            });
+          }
+          return Actions(
+            actions: {
+              if (expanded)
+                OpenIntent<OathCredential>:
+                    CallbackAction<OpenIntent<OathCredential>>(
+                      onInvoke: (OpenIntent<OathCredential> intent) {
+                        setState(() {
+                          _selected = intent.target;
+                        });
+                        return null;
                       },
+                    ),
+            },
+            child: Column(
+              children: [
+                Consumer(
+                  builder: (context, ref, _) {
+                    return AccountList(
+                      ref.watch(credentialListProvider(widget.devicePath)) ??
+                          [],
+                      expanded: expanded,
+                      selected: _selected,
                     );
                   },
                 ),
-              ),
+              ],
             ),
-            builder: (context, expanded) {
-              // De-select if window is resized to be non-expanded.
-              if (!expanded && _selected != null) {
-                Timer.run(() {
-                  setState(() {
-                    _selected = null;
-                  });
-                });
-              }
-              return Actions(
-                actions: {
-                  if (expanded)
-                    OpenIntent<OathCredential>:
-                        CallbackAction<OpenIntent<OathCredential>>(
-                          onInvoke: (OpenIntent<OathCredential> intent) {
-                            setState(() {
-                              _selected = intent.target;
-                            });
-                            return null;
-                          },
-                        ),
-                },
-                child: Column(
-                  children: [
-                    Consumer(
-                      builder: (context, ref, _) {
-                        return AccountList(
-                          ref.watch(
-                                credentialListProvider(widget.devicePath),
-                              ) ??
-                              [],
-                          expanded: expanded,
-                          selected: _selected,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          );
+        },
+      ),
     );
   }
 }

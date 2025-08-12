@@ -43,6 +43,7 @@ extension on Section {
     Section.fingerprints => features.fingerprints,
     Section.slots => features.otp,
     Section.certificates => features.piv,
+    Section.settings => features.settings,
   };
 }
 

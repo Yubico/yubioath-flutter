@@ -32,32 +32,42 @@ import 'keys.dart';
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
+  final bool isDrawer;
 
-  const DevicePickerContent({super.key, this.extended = true});
+  const DevicePickerContent({
+    super.key,
+    this.extended = true,
+    this.isDrawer = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final hidden = ref.watch(hiddenDevicesProvider);
-    final devices =
-        ref
-            .watch(attachedDevicesProvider)
-            .where((e) => !hidden.contains(e.path.key))
-            .toList();
+    final devices = ref
+        .watch(attachedDevicesProvider)
+        .where((e) => !hidden.contains(e.path.key))
+        .toList();
     final currentNode = ref.watch(currentDeviceProvider);
 
     final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
+    final borderRadius = isDrawer
+        ? BorderRadius.only(
+            topRight: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          )
+        : null;
 
     Widget? androidNoKeyWidget;
     if (isAndroid && devices.isEmpty) {
       var hasNfcSupport = ref.watch(androidNfcSupportProvider);
       var isNfcEnabled = ref.watch(androidNfcAdapterState);
-      final subtitle =
-          hasNfcSupport && isNfcEnabled
-              ? l10n.l_insert_or_tap_yk
-              : l10n.l_insert_yk;
+      final subtitle = hasNfcSupport && isNfcEnabled
+          ? l10n.l_insert_or_tap_yk
+          : l10n.l_insert_yk;
 
       androidNoKeyWidget = DeviceRow(
+        borderRadius: borderRadius,
         leading: const DeviceAvatar(
           child: Padding(
             padding: EdgeInsets.all(8.0),
@@ -77,6 +87,7 @@ class DevicePickerContent extends ConsumerWidget {
     List<Widget> children = [
       if (showUsb)
         DeviceRow(
+          borderRadius: borderRadius,
           leading: const DeviceAvatar(
             child: Padding(
               padding: EdgeInsets.all(8.0),
@@ -93,25 +104,30 @@ class DevicePickerContent extends ConsumerWidget {
         ),
       if (androidNoKeyWidget != null) androidNoKeyWidget,
       ...devices.map(
-        (e) =>
-            e.path == currentNode?.path
-                ? _buildCurrentDeviceRow(
+        (e) => e.path == currentNode?.path
+            ? _buildCurrentDeviceRow(
+                context,
+                ref,
+                e,
+                ref.watch(currentDeviceDataProvider),
+                extended,
+                borderRadius,
+              )
+            : switch (e) {
+                UsbYubiKeyNode() => _buildDeviceRow(
                   context,
                   ref,
                   e,
-                  ref.watch(currentDeviceDataProvider),
+                  e.info,
                   extended,
-                )
-                : switch (e) {
-                  UsbYubiKeyNode() => _buildDeviceRow(
-                    context,
-                    ref,
-                    e,
-                    e.info,
-                    extended,
-                  ),
-                  NfcReaderNode() => NfcDeviceRow(e, extended: extended),
-                },
+                  borderRadius,
+                ),
+                NfcReaderNode() => NfcDeviceRow(
+                  e,
+                  extended: extended,
+                  borderRadius: borderRadius,
+                ),
+              },
       ),
     ];
 
@@ -140,13 +156,12 @@ List<String> _getDeviceStrings(
   final messages =
       data.whenOrNull(
         data: (data) => [data.name, _getDeviceInfoString(context, data.info)],
-        error:
-            (error, _) => switch (error) {
-              'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
-              'unknown-device' => [l10n.s_unknown_device],
-              'restricted-nfc' => [l10n.s_restricted_nfc],
-              _ => null,
-            },
+        error: (error, _) => switch (error) {
+          'device-inaccessible' => [node.name, l10n.s_yk_inaccessible],
+          'unknown-device' => [l10n.s_unknown_device],
+          'restricted-nfc' => [l10n.s_restricted_nfc],
+          _ => null,
+        },
       ) ??
       [l10n.l_no_yk_present];
 
@@ -195,6 +210,7 @@ class DeviceRow extends ConsumerStatefulWidget {
   final Color? background;
   final DeviceNode? node;
   final void Function() onTap;
+  final BorderRadiusGeometry? borderRadius;
 
   const DeviceRow({
     super.key,
@@ -206,6 +222,7 @@ class DeviceRow extends ConsumerStatefulWidget {
     this.background,
     this.node,
     required this.onTap,
+    this.borderRadius,
   });
 
   @override
@@ -220,28 +237,25 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
     final menuItems = _getMenuItems(context, ref, widget.node);
     final tooltip = '${widget.title}\n${widget.subtitle}';
     final themeData = Theme.of(context);
-    final seedColor =
-        !widget.selected || widget.background == null
-            ? themeData.colorScheme.primary
-            : widget.background!;
+    final seedColor = !widget.selected || widget.background == null
+        ? themeData.colorScheme.primary
+        : widget.background!;
     final colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
       brightness: themeData.brightness,
     );
-    final localThemeData =
-        widget.selected
-            ? themeData.copyWith(
-              colorScheme: colorScheme,
-              listTileTheme: themeData.listTileTheme.copyWith(
-                tileColor:
-                    widget.background != null
-                        ? colorScheme.primary
-                        : themeData.colorScheme.primary,
-                textColor: widget.selected ? colorScheme.onPrimary : null,
-                iconColor: widget.selected ? colorScheme.onPrimary : null,
-              ),
-            )
-            : themeData;
+    final localThemeData = widget.selected
+        ? themeData.copyWith(
+            colorScheme: colorScheme,
+            listTileTheme: themeData.listTileTheme.copyWith(
+              tileColor: widget.background != null
+                  ? colorScheme.primary
+                  : themeData.colorScheme.primary,
+              textColor: widget.selected ? colorScheme.onPrimary : null,
+              iconColor: widget.selected ? colorScheme.onPrimary : null,
+            ),
+          )
+        : themeData;
     if (widget.extended) {
       return Tooltip(
         message: '', // no tooltip for drawer
@@ -260,7 +274,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
             },
             child: ListTile(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(48),
+                borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 8,
@@ -268,18 +282,16 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
               ),
               horizontalTitleGap: 8,
               leading: widget.leading,
-              trailing:
-                  menuItems.isNotEmpty
-                      ? _DeviceMenuButton(
-                        menuItems: menuItems,
-                        opacity:
-                            widget.selected
-                                ? 1.0
-                                : _showContextMenu
-                                ? 0.3
-                                : 0.0,
-                      )
-                      : null,
+              trailing: menuItems.isNotEmpty
+                  ? _DeviceMenuButton(
+                      menuItems: menuItems,
+                      opacity: widget.selected
+                          ? 1.0
+                          : _showContextMenu
+                          ? 0.3
+                          : 0.0,
+                    )
+                  : null,
               title: Text(
                 widget.title,
                 overflow: TextOverflow.fade,
@@ -311,32 +323,32 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
       }
 
       return GestureDetector(
-        onSecondaryTapDown:
-            isDesktop && menuItems.isNotEmpty ? showMenuFn : null,
+        onSecondaryTapDown: isDesktop && menuItems.isNotEmpty
+            ? showMenuFn
+            : null,
         onLongPressStart: isAndroid ? showMenuFn : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
-          child:
-              widget.selected
-                  ? Semantics(
-                    label: tooltip,
-                    child: IconButton.filled(
-                      tooltip: isDesktop ? tooltip : null,
-                      icon: widget.leading,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      onPressed: widget.onTap,
-                    ),
-                  )
-                  : Semantics(
-                    label: tooltip,
-                    child: IconButton(
-                      tooltip: isDesktop ? tooltip : null,
-                      icon: widget.leading,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      onPressed: widget.onTap,
-                      color: colorScheme.secondary,
-                    ),
+          child: widget.selected
+              ? Semantics(
+                  label: tooltip,
+                  child: IconButton.filled(
+                    tooltip: isDesktop ? tooltip : null,
+                    icon: widget.leading,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    onPressed: widget.onTap,
                   ),
+                )
+              : Semantics(
+                  label: tooltip,
+                  child: IconButton(
+                    tooltip: isDesktop ? tooltip : null,
+                    icon: widget.leading,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    onPressed: widget.onTap,
+                    color: colorScheme.secondary,
+                  ),
+                ),
         ),
       );
     }
@@ -387,6 +399,7 @@ DeviceRow _buildDeviceRow(
   DeviceNode node,
   DeviceInfo? info,
   bool extended,
+  BorderRadiusGeometry? borderRadius,
 ) {
   final l10n = AppLocalizations.of(context);
   final subtitle = switch (node) {
@@ -397,12 +410,14 @@ DeviceRow _buildDeviceRow(
     NfcReaderNode() => l10n.s_select_to_scan,
   };
 
-  final keyCustomization =
-      ref.watch(keyCustomizationManagerProvider)[info?.serial];
+  final keyCustomization = ref.watch(
+    keyCustomizationManagerProvider,
+  )[info?.serial];
   String displayName = keyCustomization?.name ?? node.name;
 
   return DeviceRow(
     key: ValueKey(node.path.key),
+    borderRadius: borderRadius,
     leading: DeviceAvatar.deviceNode(node),
     title: displayName,
     subtitle: subtitle,
@@ -421,6 +436,7 @@ DeviceRow _buildCurrentDeviceRow(
   DeviceNode node,
   AsyncValue<YubiKeyData> data,
   bool extended,
+  BorderRadiusGeometry? borderRadius,
 ) {
   final messages = _getDeviceStrings(context, node, data);
   if (messages.length > 2) {
@@ -430,17 +446,18 @@ DeviceRow _buildCurrentDeviceRow(
   final title = messages.removeAt(0);
   final subtitle = messages.join('\n');
 
-  final keyCustomization =
-      ref.watch(keyCustomizationManagerProvider)[data.valueOrNull?.info.serial];
+  final keyCustomization = ref.watch(
+    keyCustomizationManagerProvider,
+  )[data.valueOrNull?.info.serial];
   String displayName = keyCustomization?.name ?? title;
   Color? displayColor = keyCustomization?.color;
 
   return DeviceRow(
     key: keys.deviceInfoListTile,
+    borderRadius: borderRadius,
     leading: data.maybeWhen(
-      data:
-          (data) =>
-              DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),
+      data: (data) =>
+          DeviceAvatar.yubiKeyData(data, radius: extended ? null : 16),
       orElse: () => DeviceAvatar.deviceNode(node, radius: extended ? null : 16),
     ),
     title: displayName,
@@ -456,10 +473,16 @@ DeviceRow _buildCurrentDeviceRow(
 class NfcDeviceRow extends ConsumerWidget {
   final DeviceNode node;
   final bool extended;
+  final BorderRadiusGeometry? borderRadius;
 
-  const NfcDeviceRow(this.node, {super.key, required this.extended});
+  const NfcDeviceRow(
+    this.node, {
+    super.key,
+    required this.extended,
+    this.borderRadius,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
-      _buildDeviceRow(context, ref, node, null, extended);
+      _buildDeviceRow(context, ref, node, null, extended, borderRadius);
 }

@@ -77,21 +77,19 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       ),
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-      items:
-          widget.items
-              .map(
-                (e) => PopupMenuItem<T>(
-                  enabled:
-                      widget.disableHover != null
-                          ? !widget.disableHover!
-                          : true,
-                  value: e,
-                  height: chipBox.size.height,
-                  textStyle: ChipTheme.of(context).labelStyle,
-                  child: widget.itemBuilder(e),
-                ),
-              )
-              .toList(),
+      items: widget.items
+          .map(
+            (e) => PopupMenuItem<T>(
+              enabled: widget.disableHover != null
+                  ? !widget.disableHover!
+                  : true,
+              value: e,
+              height: chipBox.size.height,
+              textStyle: ChipTheme.of(context).labelStyle,
+              child: widget.itemBuilder(e),
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -117,29 +115,28 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       ),
       selected: widget.selected,
       showCheckmark: false,
-      onSelected:
-          widget.onChanged != null
-              ? (_) async {
-                setState(() {
-                  _showing = true;
-                });
-                try {
-                  final selected = await _showPickerMenu();
-                  if (selected != null) {
-                    widget.onChanged?.call(selected);
-                  }
-                } finally {
-                  // Give the menu some time to rollup before switching state.
-                  Timer(const Duration(milliseconds: 300), () {
-                    if (mounted) {
-                      setState(() {
-                        _showing = false;
-                      });
-                    }
-                  });
+      onSelected: widget.onChanged != null
+          ? (_) async {
+              setState(() {
+                _showing = true;
+              });
+              try {
+                final selected = await _showPickerMenu();
+                if (selected != null) {
+                  widget.onChanged?.call(selected);
                 }
+              } finally {
+                // Give the menu some time to rollup before switching state.
+                Timer(const Duration(milliseconds: 300), () {
+                  if (mounted) {
+                    setState(() {
+                      _showing = false;
+                    });
+                  }
+                });
               }
-              : null,
+            }
+          : null,
     );
   }
 }

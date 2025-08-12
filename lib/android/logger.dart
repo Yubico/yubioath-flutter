@@ -46,14 +46,13 @@ class AndroidLogger extends LogLevelNotifier {
   }
 
   void log(LogRecord record) {
-    final error =
-        record.error == null
-            ? null
-            : record.error is Exception
-            ? record.error.toString()
-            : record.error is String
-            ? record.error
-            : 'Invalid error type: ${record.error.runtimeType.toString()}';
+    final error = record.error == null
+        ? null
+        : record.error is Exception
+        ? record.error.toString()
+        : record.error is String
+        ? record.error
+        : 'Invalid error type: ${record.error.runtimeType.toString()}';
     _channel.invokeMethod('log', {
       'loggerName': record.loggerName,
       'level': record.level.name,

@@ -76,8 +76,9 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final theme = Theme.of(context);
     final darkMode = theme.brightness == Brightness.dark;
     final beginColor = darkMode ? Colors.white : Colors.black;
-    final endColor =
-        success ? theme.colorScheme.primary : theme.colorScheme.error;
+    final endColor = success
+        ? theme.colorScheme.primary
+        : theme.colorScheme.error;
     final animation = ColorTween(
       begin: beginColor,
       end: endColor,
@@ -216,116 +217,99 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     final progress = _samples == 0 ? 0.0 : _samples / (_samples + _remaining);
     return ResponsiveDialog(
       title: Text(l10n.s_add_fingerprint),
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.only(
-              top: 38,
-              bottom: 4,
-              right: 18,
-              left: 18,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children:
-                  [
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                _getMessage(),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children:
+              [
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            _getMessage(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
                             ),
-                            Padding(
-                              padding:
-                                  _fingerprint == null
-                                      ? const EdgeInsets.all(34)
-                                      : const EdgeInsets.only(
-                                        top: 4,
-                                        bottom: 12,
-                                      ),
-                              child: AnimatedBuilder(
-                                animation: _color,
-                                builder: (context, _) {
-                                  return Icon(
-                                    _fingerprint == null
-                                        ? Symbols.fingerprint
-                                        : Symbols.check,
-                                    size: 128.0,
-                                    color: _color.value,
-                                  );
+                          ),
+                        ),
+                        Padding(
+                          padding: _fingerprint == null
+                              ? const EdgeInsets.all(34)
+                              : const EdgeInsets.only(top: 4, bottom: 12),
+                          child: AnimatedBuilder(
+                            animation: _color,
+                            builder: (context, _) {
+                              return Icon(
+                                _fingerprint == null
+                                    ? Symbols.fingerprint
+                                    : Symbols.check,
+                                size: 128.0,
+                                color: _color.value,
+                              );
+                            },
+                          ),
+                        ),
+                        if (_fingerprint == null)
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 360),
+                            child: LinearProgressIndicator(value: progress),
+                          ),
+                        if (_fingerprint != null) ...[
+                          Text(
+                            l10n.l_name_fingerprint,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 460),
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 40),
+                              child: AppTextField(
+                                focusNode: _nameFocus,
+                                maxLength: 15,
+                                inputFormatters: [limitBytesLength(15)],
+                                buildCounter: buildByteCounterFor(_label),
+                                autofocus: true,
+                                decoration: AppInputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: l10n.s_name,
+                                  icon: const Icon(Symbols.fingerprint),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _label = value.trim();
+                                  });
                                 },
-                              ),
+                                onSubmitted: (_) {
+                                  if (_label.isNotEmpty) {
+                                    _submit();
+                                  } else {
+                                    _nameFocus.requestFocus();
+                                  }
+                                },
+                              ).init(),
                             ),
-                            if (_fingerprint == null)
-                              Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 360,
-                                ),
-                                child: LinearProgressIndicator(value: progress),
-                              ),
-                            if (_fingerprint != null) ...[
-                              Text(
-                                l10n.l_name_fingerprint,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 460,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 40),
-                                  child:
-                                      AppTextField(
-                                        focusNode: _nameFocus,
-                                        maxLength: 15,
-                                        inputFormatters: [limitBytesLength(15)],
-                                        buildCounter: buildByteCounterFor(
-                                          _label,
-                                        ),
-                                        autofocus: true,
-                                        decoration: AppInputDecoration(
-                                          border: const OutlineInputBorder(),
-                                          labelText: l10n.s_name,
-                                          icon: const Icon(Symbols.fingerprint),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _label = value.trim();
-                                          });
-                                        },
-                                        onSubmitted: (_) {
-                                          if (_label.isNotEmpty) {
-                                            _submit();
-                                          } else {
-                                            _nameFocus.requestFocus();
-                                          }
-                                        },
-                                      ).init(),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          child: e,
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      child: e,
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
       onCancel: () {
         _subscription.cancel();
       },

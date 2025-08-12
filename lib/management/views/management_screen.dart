@@ -54,27 +54,25 @@ class _CapabilityForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final keyPrefix =
-        (type == _CapabilityType.usb)
-            ? management_keys.usbCapabilityKeyPrefix
-            : management_keys.nfcCapabilityKeyPrefix;
+    final keyPrefix = (type == _CapabilityType.usb)
+        ? management_keys.usbCapabilityKeyPrefix
+        : management_keys.nfcCapabilityKeyPrefix;
     return Wrap(
       spacing: 4.0,
       runSpacing: 8.0,
-      children:
-          Capability.values
-              .where((c) => capabilities & c.value != 0)
-              .map(
-                (c) => FilterChip(
-                  label: Text(c.getDisplayName(l10n)),
-                  key: Key('$keyPrefix.${c.name}'),
-                  selected: enabled & c.value != 0,
-                  onSelected: (_) {
-                    onChanged(enabled ^ c.value);
-                  },
-                ),
-              )
-              .toList(),
+      children: Capability.values
+          .where((c) => capabilities & c.value != 0)
+          .map(
+            (c) => FilterChip(
+              label: Text(c.getDisplayName(l10n)),
+              key: Key('$keyPrefix.${c.name}'),
+              selected: enabled & c.value != 0,
+              onSelected: (_) {
+                onChanged(enabled ^ c.value);
+              },
+            ),
+          )
+          .toList(),
     );
   }
 }
@@ -101,18 +99,17 @@ class _ModeForm extends StatelessWidget {
           child: Wrap(
             spacing: 4.0,
             runSpacing: 8.0,
-            children:
-                UsbInterface.values
-                    .map(
-                      (iface) => FilterChip(
-                        label: Text(iface.name.toUpperCase()),
-                        selected: iface.value & interfaces != 0,
-                        onSelected: (_) {
-                          onChanged(interfaces ^ iface.value);
-                        },
-                      ),
-                    )
-                    .toList(),
+            children: UsbInterface.values
+                .map(
+                  (iface) => FilterChip(
+                    label: Text(iface.name.toUpperCase()),
+                    selected: iface.value & interfaces != 0,
+                    onSelected: (_) {
+                      onChanged(interfaces ^ iface.value);
+                    },
+                  ),
+                )
+                .toList(),
           ),
         ),
       ],
@@ -245,10 +242,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                           _isObscure = !_isObscure;
                         });
                       },
-                      tooltip:
-                          _isObscure
-                              ? l10n.s_show_lock_code
-                              : l10n.s_hide_lock_code,
+                      tooltip: _isObscure
+                          ? l10n.s_show_lock_code
+                          : l10n.s_hide_lock_code,
                     ),
                   ),
                   textInputAction: TextInputAction.next,
@@ -410,23 +406,19 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final child = ref
         .watch(managementStateProvider(widget.deviceData.node.path))
         .when(
-          loading:
-              () => const Center(
-                child: DelayedVisibility(
-                  delay: Duration(milliseconds: 200),
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-          error:
-              (error, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(error.toString(), textAlign: TextAlign.center),
-                  ],
-                ),
-              ),
+          loading: () => const Center(
+            child: DelayedVisibility(
+              delay: Duration(milliseconds: 200),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (error, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [Text(error.toString(), textAlign: TextAlign.center)],
+            ),
+          ),
           data: (info) {
             hasConfig = info.version.major > 4;
             int usbEnabled = _enabled[Transport.usb] ?? 0;
@@ -480,13 +472,13 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 ),
                 hasConfig
                     ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                      child: _buildCapabilitiesForm(context, ref, info),
-                    )
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: _buildCapabilitiesForm(context, ref, info),
+                      )
                     : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                      child: _buildModeForm(context, ref, info),
-                    ),
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: _buildModeForm(context, ref, info),
+                      ),
                 if (info.isLocked)
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -506,10 +498,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     maintainSize: true,
                     maintainAnimation: true,
                     maintainState: true,
-                    child:
-                        !isAndroid
-                            ? const LinearProgressIndicator()
-                            : const SizedBox(),
+                    child: !isAndroid
+                        ? const LinearProgressIndicator()
+                        : const SizedBox(),
                   ),
                 ),
               ],
@@ -518,10 +509,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         );
 
     return ResponsiveDialog(
-      title:
-          hasConfig
-              ? Text(l10n.s_toggle_applications)
-              : Text(l10n.s_toggle_interfaces),
+      title: hasConfig
+          ? Text(l10n.s_toggle_applications)
+          : Text(l10n.s_toggle_interfaces),
       actions: [
         TextButton(
           onPressed: canSave ? _submitForm : null,

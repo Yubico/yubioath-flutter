@@ -27,8 +27,8 @@ class AppTheme {
       };
 
   static ProgressIndicatorThemeData _progressIndicatorThemeData() =>
-  // ignore: deprecated_member_use
-  ProgressIndicatorThemeData(year2023: false);
+      // ignore: deprecated_member_use
+      ProgressIndicatorThemeData(year2023: false);
 
   static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) {
     const darkSurface = Color(0xff282828);

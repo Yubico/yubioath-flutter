@@ -53,15 +53,11 @@ class IconPack {
   });
 
   File? getFileFromMatching(Iterable<IconPackIconData> matching) {
-    final issuerImageFile =
-        matching.isNotEmpty
-            ? File(
-              join(
-                directory.path,
-                getLocalIconFileName(matching.first.filename),
-              ),
-            )
-            : null;
+    final issuerImageFile = matching.isNotEmpty
+        ? File(
+            join(directory.path, getLocalIconFileName(matching.first.filename)),
+          )
+        : null;
 
     if (issuerImageFile != null && !issuerImageFile.existsSync()) {
       return null;

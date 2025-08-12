@@ -104,94 +104,91 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final minPinLen =
-        widget.pivState.version.isAtLeast(4, 3, 1) == true ? 6 : 4;
+    final minPinLen = widget.pivState.version.isAtLeast(4, 3, 1) == true
+        ? 6
+        : 4;
     final currentPinLen = byteLength(_pinController.text);
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed:
-              currentPinLen >= minPinLen && !_pinIsBlocked ? _submit : null,
+          onPressed: currentPinLen >= minPinLen && !_pinIsBlocked
+              ? _submit
+              : null,
           child: Text(l10n.s_unlock),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        Text(l10n.p_pin_required_desc),
-                        AppTextField(
-                          autofocus: true,
-                          obscureText: _isObscure,
-                          maxLength: 8,
-                          inputFormatters: [limitBytesLength(8)],
-                          buildCounter: buildByteCounterFor(
-                            _pinController.text,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    Text(l10n.p_pin_required_desc),
+                    AppTextField(
+                      autofocus: true,
+                      obscureText: _isObscure,
+                      maxLength: 8,
+                      inputFormatters: [limitBytesLength(8)],
+                      buildCounter: buildByteCounterFor(_pinController.text),
+                      autofillHints: const [AutofillHints.password],
+                      key: keys.pinPukField,
+                      controller: _pinController,
+                      focusNode: _pinFocus,
+                      enabled: !_pinIsBlocked,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_pin,
+                        errorText: _pinIsBlocked
+                            ? l10n.l_piv_pin_blocked
+                            : _pinIsWrong
+                            ? l10n.l_wrong_pin_attempts_remaining(
+                                _attemptsRemaining,
+                              )
+                            : null,
+                        errorMaxLines: 3,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscure
+                                ? Symbols.visibility
+                                : Symbols.visibility_off,
                           ),
-                          autofillHints: const [AutofillHints.password],
-                          key: keys.pinPukField,
-                          controller: _pinController,
-                          focusNode: _pinFocus,
-                          enabled: !_pinIsBlocked,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_pin,
-                            errorText:
-                                _pinIsBlocked
-                                    ? l10n.l_piv_pin_blocked
-                                    : _pinIsWrong
-                                    ? l10n.l_wrong_pin_attempts_remaining(
-                                      _attemptsRemaining,
-                                    )
-                                    : null,
-                            errorMaxLines: 3,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isObscure
-                                    ? Symbols.visibility
-                                    : Symbols.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              tooltip:
-                                  _isObscure
-                                      ? l10n.s_show_pin
-                                      : l10n.s_hide_pin,
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+                          onPressed: () {
                             setState(() {
-                              _pinIsWrong = false;
+                              _isObscure = !_isObscure;
                             });
                           },
-                          onSubmitted: (_) {
-                            if (currentPinLen >= minPinLen) {
-                              _submit();
-                            } else {
-                              _pinFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
+                          tooltip: _isObscure
+                              ? l10n.s_show_pin
+                              : l10n.s_hide_pin,
                         ),
-                      )
-                      .toList(),
-            ),
-          ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _pinIsWrong = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (currentPinLen >= minPinLen) {
+                          _submit();
+                        } else {
+                          _pinFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

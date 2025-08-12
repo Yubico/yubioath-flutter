@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Nedokončený překlad",
     "p_translation_progress_desc": "Ukazatele průběhu odrážejí zralost překladu.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Uložit",
     "s_cancel": "Zrušit",
@@ -40,6 +42,7 @@
     "s_import": "Importovat",
     "s_overwrite": "Přepsat",
     "s_done": "Hotovo",
+    "s_more": null,
     "s_label": "Jmenovka",
     "s_name": "Název",
     "s_usb": "USB",
@@ -74,6 +77,10 @@
     "s_device": "Zařízení",
     "s_application": "Aplikace",
     "s_settings": "Nastavení",
+    "s_reset_settings": null,
+    "l_reset_settings_desc": null,
+    "s_general": null,
+    "s_support": null,
     "l_settings_desc": "Změnit předvolby aplikace",
     "s_certificates": "Certifikáty",
     "s_security_key": "Bezpečnostní klíč",
@@ -81,6 +88,8 @@
     "s_help_and_about": "Nápověda a informace",
     "l_help_and_about_desc": "Řešení problémů a podpora",
     "s_help_and_feedback": "Nápověda a zpětná vazba",
+    "s_help": null,
+    "s_app_information": null,
     "s_home": "Domov",
     "s_user_guide": "Uživatelská příručka",
     "s_i_need_help": "Potřebuji pomoc",
@@ -106,9 +115,13 @@
     "l_invalid_keyboard_character": "Neplatné znaky pro vybranou klávesnici",
     "s_require_touch": "Vyžadovat dotyk",
     "q_have_account_info": "Máte informace o účtu?",
+    "s_log_and_diagnostics": null,
+    "s_debugging_tools": null,
     "s_run_diagnostics": "Spustit diagnostiku",
-    "s_log_level": "Úroveň logu: {level}",
-    "@s_log_level": {
+    "l_run_diagnostics_desc": null,
+    "s_logging_level": null,
+    "s_current_log_level": null,
+    "@s_current_log_level": {
         "placeholders": {
             "level": {
                 "type": "String"
@@ -116,33 +129,25 @@
         }
     },
     "s_character_count": "Počet znaků",
-
     "@_language": {},
-    "s_language": "Jazyk",
-    "p_community_translations_desc": "Překlady jsou spravovány komunitou na {crowdin}.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
-    "s_choose_language": "Vyberte jazyk",
 
+    "s_language": "Jazyk",
+    "s_choose_language": "Vyberte jazyk",
     "@_theme": {},
+
     "s_app_theme": "Motiv aplikace",
     "s_choose_app_theme": "Vybrat motiv",
     "s_system_default": "Podle systému",
     "s_light_mode": "Světlý režim",
     "s_dark_mode": "Tmavý režim",
-
     "@_layout": {},
+
     "s_list_layout": "Zobrazit jako seznam",
     "s_grid_layout": "Zobrazit jako mřížku",
     "s_mixed_layout": "Smíšené zobrazení",
     "s_select_layout": "Vybrat zobrazení",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "Vyberte pro skenování",
     "s_hide_reader": "Skrýt čtečku",
     "s_show_hidden_readers": "Zobrazit skryté čtečky",
@@ -182,8 +187,8 @@
     },
     "l_fips_capable": "FIPS způsobilé",
     "l_fips_approved": "FIPS schváleno",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "Připojte svůj klíč YubiKey",
     "l_insert_or_tap_yk": "Připojte nebo přiložte klíč YubiKey",
     "l_unplug_yk": "Odpojte YubiKey",
@@ -194,9 +199,10 @@
     "p_try_reinsert_yk": "Zkuste odpojit a znovu připojit YubiKey.",
     "s_touch_required": "Vyžaduje se dotyk",
     "l_touch_button_now": "Dotkněte se tlačítka na vašem YubiKey",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "Opakovaně se dotkněte vašeho YubiKey\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -204,8 +210,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Auth",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "Nastavení aplikací",
     "s_toggle_interfaces": "Nastavení rozhraní",
     "p_toggle_applications_desc": "Povolit nebo zakázat aplikace.",
@@ -222,8 +228,8 @@
     "s_show_lock_code": "Zobrazit kód zámku",
     "s_hide_lock_code": "Skrýt kód zámku",
     "p_lock_code_required_desc": "Akce, kterou se chystáte provést, vyžaduje zadání kódu pro nastavení zámku.",
-
     "@_connectivity_issues": {},
+
     "l_helper_not_responding": "Pomocný proces nereaguje",
     "l_yk_no_access": "K tomuto klíči YubiKey není možné získat přístup",
     "s_yk_inaccessible": "Nedostupné zařízení",
@@ -242,16 +248,16 @@
     "p_operation_failed_try_again": "Operace se nezdařila, zkuste to prosím znovu.",
     "l_configuration_unsupported": "Konfigurace není podporována",
     "p_scp_unsupported": "Pro komunikaci přes NFC vyžaduje YubiKey technologii, která není tímto telefonem podporována. Připojte YubiKey k USB portu telefonu.",
-
     "@_general_errors": {},
+
     "l_error_occurred": "Došlo k chybě",
     "s_application_error": "Chyba aplikace",
     "l_import_error": "Chyba importu",
     "l_file_not_found": "Soubor nebyl nalezen",
     "l_file_too_big": "Soubor je příliš velký",
     "l_filesystem_error": "Chyba při operaci souborového systému",
-
     "@_pins": {},
+
     "s_pin": "PIN",
     "s_puk": "PUK",
     "s_set_pin": "Nastavit PIN",
@@ -393,8 +399,8 @@
     "l_default_pin_used": "Byl použit výchozí PIN",
     "l_default_puk_used": "Byl použit výchozí PUK",
     "l_pin_complexity": "Složitost PIN je vynucena",
-
     "@_passwords": {},
+
     "s_password": "Heslo",
     "s_manage_password": "Spravovat heslo",
     "s_set_password": "Nastavit heslo",
@@ -419,8 +425,8 @@
     "l_set_password_first": "Nastavit heslo",
     "l_enter_oath_pw": "Zadejte OATH heslo pro váš YubiKey",
     "p_new_password_requirements": "Heslo může obsahovat písmena, čísla a speciální znaky.",
-
     "@_management_key": {},
+
     "s_management_key": "Klíč správy",
     "s_current_management_key": "Aktuální klíč správy",
     "s_new_management_key": "Nový klíč správy",
@@ -438,8 +444,8 @@
     "l_wrong_key": "Špatný klíč",
     "l_unlock_piv_management": "Odemknout správu PIV",
     "p_unlock_piv_management_desc": "Akce, kterou se chystáte provést, vyžaduje klíč správy pro PIV.",
-
     "@_oath_accounts": {},
+
     "l_account": "Účet: {label}",
     "@l_account": {
         "placeholders": {
@@ -546,8 +552,8 @@
     "s_time_based": "Založeno na čase",
     "l_copy_code_desc": "Vložte kód do jiné aplikace",
     "l_calculate_code_desc": "Získejte nový kód z vašeho YubiKey",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP ID",
     "s_user_id": "ID uživatele",
     "s_credential_id": "ID pověření",
@@ -639,13 +645,13 @@
     },
     "p_press_fingerprint_begin": "Pro začátek přiložte prst k YubiKey.",
     "l_name_fingerprint": "Pojmenujte tento otisk prstu",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "Selhalo z důvodu nečinnosti uživatele",
     "l_wrong_inserted_yk_error": "Znovu vložený YubiKey neodpovídá počátečnímu zařízení",
     "l_failed_connecting_to_fido": "Připojení k FIDO rozhraní se nezdařilo",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": "Certifikát s vlastním podpisem",
     "l_certificate_signing_request": "Žádost o podpis certifikátu (CSR)",
     "s_certificate": "Certifikát",
@@ -793,8 +799,8 @@
     "l_overwrite_cert": "Certifikát bude přepsán",
     "l_overwrite_key": "Soukromý klíč bude přepsán",
     "l_overwrite_key_maybe": "Jakýkoliv existující soukromý klíč v slotu bude přepsán",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
@@ -811,14 +817,14 @@
     "s_slot_9d": "Správa klíčů",
     "s_slot_9e": "Ověření karty",
     "s_retired_slot": "Zrušená správa klíčů",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "Krátký dotyk",
     "s_otp_slot_two": "Dlouhý dotyk",
     "l_otp_slot_empty": "Slot je prázdný",
     "l_otp_slot_configured": "Slot je konfigurován",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "Program OTP pověření Yubico",
     "s_challenge_response": "Odpověď na výzvu",
     "l_challenge_response_desc": "Naprogramujte pověření odpovědi na výzvu",
@@ -850,8 +856,8 @@
             }
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "Odstranit pověření",
     "q_delete_slot": "Smazat pověření?",
     "l_delete_slot_desc": "Odstranit pověření ve slotu",
@@ -891,12 +897,12 @@
     },
     "s_append_enter": "Připojit ⏎",
     "l_append_enter_desc": "Připojit Enter po emitování OTP",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "Nepodařilo se vyměnit sloty! Ujistěte se, že YubiKey nemá omezující přístup.",
     "l_wrong_access_code": "Špatný přístupový kód",
-
     "@_otp_access_code": {},
+
     "s_access_code": "Přístupový kód",
     "s_show_access_code": "Zobrazit přístupový kód",
     "s_hide_access_code": "Skrýt přístupový kód",
@@ -908,9 +914,9 @@
             }
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "Povolit NFC",
     "s_request_access": "Žádost o přístup",
     "s_permission_denied": "Oprávnění odepřeno",
@@ -922,8 +928,8 @@
     "p_webauthn_elevated_permissions_required": "Správa WebAuthn vyžaduje zvýšená oprávnění, případně můžete použít nastavení Windows pro správu konfigurace FIDO.",
     "l_ms_store_permission_note": "Verze aplikace z Microsoft Store nemusí být schopna povýšit oprávnění",
     "p_need_camera_permission": "Yubico Authenticator potřebuje oprávnění kamery pro skenování QR kódů.",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "Skenování kódu QR",
     "l_invalid_qr": "Neplatný QR kód",
     "l_qr_not_found": "Nenalezen žádný QR kód",
@@ -951,8 +957,8 @@
     "q_no_qr": "Nemáte QR kód?",
     "s_enter_manually": "Zadejte ručně",
     "s_read_from_file": "Číst ze souboru",
-
     "@_factory_reset": {},
+
     "s_reset": "Reset",
     "s_factory_reset": "Obnovení továrního nastavení",
     "l_factory_reset_desc": "Obnovit výchozí nastavení YubiKey",
@@ -974,16 +980,25 @@
     "p_warning_disable_credentials": "Vaše OATH přihlašovací údaje, stejně jako veškerá nastavení hesel, budou odstraněny z tohoto YubiKey. Ujistěte se, že jste je odstranili z příslušných webových stránek, abyste se vyhnuli zablokování vašich účtů.",
     "p_warning_deletes_accounts": "Varování! Neodvolatelně smažete z vašeho YubiKey všechny účty U2F a FIDO2 včetně přístupových klíčů.",
     "p_warning_disable_accounts": "Vaše přihlašovací údaje  včetně kódu PIN, budou odstraněny z tohoto YubiKey. Ujistěte se, že jste je odstranili z příslušných webových stránek, abyste se vyhnuli zablokování vašich účtů.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Varování! Všechna data uložená pro PIV budou neodvolatelně smazána z vašeho YubiKey.",
     "p_warning_piv_reset_desc": "To zahrnuje soukromé klíče a certifikáty. Váš PIN, PUK, a klíč správy bude resetován na jejich výchozí tovární hodnoty.",
     "p_warning_global_reset": "Varování! Tímto se neodvolatelně smažou všechna uložená data, včetně přihlašovacích údajů, z vašeho YubiKey.",
     "p_warning_global_reset_desc": "Tovární resetování aplikací na vašem YubiKey. PIN bude resetován na tovární výchozí hodnotu a registrované otisky prstů budou odstraněny. Všechny klíče, certifikáty nebo jiné přihlašovací údaje budou trvale odstraněny.",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "Kopírovat do schránky",
     "s_code_copied": "Kód zkopírován",
     "l_code_copied_clipboard": "Kód zkopírován do schránky",
     "s_copy_log": "Kopírovat log",
+    "l_copy_log_clipboard": null,
     "l_log_copied": "Log zkopírován do schránky",
     "l_diagnostics_copied": "Diagnostická data zkopírována do schránky",
     "p_target_copied_clipboard": "{label} zkopírován do schránky.",
@@ -994,8 +1009,8 @@
             }
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "Ikony účtů",
     "l_set_icons_for_accounts": "Nastavit ikony účtů",
     "p_custom_icons_description": "Balíčky ikon pomohou snáze rozpoznat vaše účty s dobře známými logy a barvami.",
@@ -1025,10 +1040,13 @@
     },
     "l_invalid_icon_pack": "Neplatný balíček ikon",
     "l_icon_pack_copy_failed": "Nepodařilo se zkopírovat soubory balíčku ikon",
-
     "@_android_settings": {},
+
     "s_nfc_options": "Možnosti NFC",
+    "s_nfc_and_usb_options": null,
+    "l_nfc_and_usb_options_desc": null,
     "l_on_yk_nfc_tap": "Při přiložení YubiKey",
+    "l_on_yk_usb_insert": null,
     "l_do_nothing": "Nedělat nic",
     "l_launch_ya": "Spustit Yubico Authenticator",
     "l_copy_otp_clipboard": "Kopírovat OTP do schránky",
@@ -1046,32 +1064,33 @@
     "l_launch_app_on_usb_on": "Zabraňuje ostatním aplikacím používat YubiKey přes USB",
     "l_launch_app_on_usb_off": "Ostatní aplikace mohou používat YubiKey přes USB",
     "s_allow_screenshots": "Povolit snímky obrazovky",
-
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "Připraveno ke skenování",
     "s_nfc_hold_still": "Neodstraňujte YubiKey\u2026",
     "s_nfc_tap_your_yubikey": "Přiložte YubiKey",
     "l_nfc_failed_to_scan": "Nepodařilo se naskenovat, zkuste to znovu",
-
     "@_usb": {},
+
     "s_usb_processing": "Čtení dat z YubiKey",
     "s_usb_dont_remove": "Neodstraňovat klíč\u2026",
     "l_usb_read_error": "Nepodařilo se načíst data z YubiKey",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "OTP kód z YubiKey byl úspěšně zkopírován do schránky.",
     "p_ndef_set_password": "Heslo z YubiKey bylo úspěšně zkopírováno do schránky.",
     "p_ndef_parse_failure": "Nepodařilo se zpracovat OTP kód z YubiKey.",
     "p_ndef_set_clip_failure": "Přístup ke schránce se nezdařil při kopírování OTP kódu z YubiKey.",
-
     "@_key_customization": {},
+
     "s_set_label": "Nastavit jmenovku",
     "s_set_color": "Nastavit barvu",
     "s_change_label": "Změnit jmenovku",
     "p_set_will_add_custom_name": "Tímto nastavíte jmenovku vašeho YubiKey.",
     "p_rename_will_change_custom_name": "Tímto změníte jmenovku vašeho YubiKey.",
-
     "@_shortcuts": {},
+
     "s_shortcuts": "Zkratky",
     "s_keyboard_shortcuts": "Klávesové zkratky",
     "s_global_shortcuts": "Globální klávesové zkratky",
@@ -1102,6 +1121,6 @@
     "s_delete_item": "Smazat položku",
     "s_calculate_oath_code": "Vypočítat kód OATH",
     "s_open_keyboard_shortcuts": "Zobrazit klávesové zkratky",
-
     "@_eof": {}
+
 }

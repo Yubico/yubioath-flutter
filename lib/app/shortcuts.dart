@@ -21,7 +21,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../about_page.dart';
 import '../core/state.dart';
 import '../desktop/state.dart';
 import '../generated/l10n/app_localizations.dart';
@@ -30,7 +29,6 @@ import 'models.dart';
 import 'shortcuts_dialog.dart';
 import 'state.dart';
 import 'views/keys.dart';
-import 'views/settings_page.dart';
 
 abstract class AppIntent extends Intent {
   String getDescription(AppLocalizations l10n);
@@ -93,13 +91,6 @@ class SettingsIntent extends AppIntent {
 
   @override
   String getDescription(AppLocalizations l10n) => l10n.s_open_settings;
-}
-
-class AboutIntent extends AppIntent {
-  AboutIntent();
-
-  @override
-  String getDescription(AppLocalizations l10n) => l10n.s_open_help_and_about;
 }
 
 class NavigationIntent extends AppIntent {
@@ -212,7 +203,6 @@ Map<AppIntent, List<SingleActivator>> getGlobalIntents() {
       PreviousDeviceItent(): [
         SingleActivator(LogicalKeyboardKey.tab, control: true, shift: true),
       ],
-      AboutIntent(): [SingleActivator(LogicalKeyboardKey.f1)],
     },
     if (Platform.isMacOS) ...{
       HideIntent(): [SingleActivator(LogicalKeyboardKey.keyW, meta: true)],
@@ -250,11 +240,10 @@ class GlobalShortcuts extends ConsumerWidget {
       // with the exception of the drawer.
       if (!Navigator.of(context).canPop() ||
           scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
-        final attached =
-            ref
-                .read(attachedDevicesProvider)
-                .whereType<UsbYubiKeyNode>()
-                .toList();
+        final attached = ref
+            .read(attachedDevicesProvider)
+            .whereType<UsbYubiKeyNode>()
+            .toList();
         if (attached.length > 1) {
           final current = ref.read(currentDeviceProvider);
           if (current != null && current is UsbYubiKeyNode) {
@@ -315,11 +304,9 @@ class GlobalShortcuts extends ConsumerWidget {
         onInvoke: (_) {
           ref.read(withContextProvider)((context) async {
             if (!Navigator.of(context).canPop()) {
-              await showBlurDialog(
-                context: context,
-                builder: (context) => const SettingsPage(),
-                routeSettings: const RouteSettings(name: 'settings'),
-              );
+              ref
+                  .read(currentSectionProvider.notifier)
+                  .setCurrentSection(Section.settings);
             }
           });
           return null;
@@ -351,20 +338,6 @@ class GlobalShortcuts extends ConsumerWidget {
           // Notify to toggle visibility of detail view
           final controller = ref.read(sideMenuVisibilityProvider.notifier);
           controller.state = !controller.state;
-          return null;
-        },
-      ),
-      AboutIntent: CallbackAction<AboutIntent>(
-        onInvoke: (_) {
-          ref.read(withContextProvider)((context) async {
-            if (!Navigator.of(context).canPop()) {
-              await showBlurDialog(
-                context: context,
-                builder: (context) => const AboutPage(),
-                routeSettings: const RouteSettings(name: 'about'),
-              );
-            }
-          });
           return null;
         },
       ),

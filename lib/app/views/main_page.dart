@@ -34,6 +34,7 @@ import '../../piv/views/piv_screen.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_error_screen.dart';
+import 'settings_page.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -57,8 +58,9 @@ class MainPage extends ConsumerWidget {
       next,
     ) {
       final serial = next.hasValue == true ? next.value?.info.serial : null;
-      final prevSerial =
-          prev?.hasValue == true ? prev?.value?.info.serial : null;
+      final prevSerial = prev?.hasValue == true
+          ? prev?.value?.info.serial
+          : null;
 
       if (serial != null && serial == prevSerial) {
         return;
@@ -97,6 +99,12 @@ class MainPage extends ConsumerWidget {
       scale: 2,
       color: Theme.of(context).colorScheme.primary,
     );
+
+    final section = ref.watch(currentSectionProvider);
+    if (section == Section.settings) {
+      return const SettingsPage();
+    }
+
     if (deviceNode == null) {
       if (isAndroid) {
         var hasNfcSupport = ref.watch(androidNfcSupportProvider);
@@ -104,32 +112,30 @@ class MainPage extends ConsumerWidget {
         return HomeMessagePage(
           centered: true,
           graphic: noKeyImage,
-          header:
-              hasNfcSupport && isNfcEnabled
-                  ? l10n.l_insert_or_tap_yk
-                  : l10n.l_insert_yk,
-          actionsBuilder:
-              (context, expanded) => [
-                if (hasNfcSupport && !isNfcEnabled)
-                  ElevatedButton.icon(
-                    label: Text(l10n.s_enable_nfc),
-                    icon: const Icon(Symbols.contactless),
-                    onPressed: () async {
-                      await openNfcSettings();
-                    },
-                  ),
-                ElevatedButton.icon(
-                  label: Text(l10n.s_add_account),
-                  icon: const Icon(Symbols.person_add_alt),
-                  onPressed: () async {
-                    // make sure we execute the "Add account" in OATH section
-                    ref
-                        .read(currentSectionProvider.notifier)
-                        .setCurrentSection(Section.accounts);
-                    await addOathAccount(context, ref);
-                  },
-                ),
-              ],
+          header: hasNfcSupport && isNfcEnabled
+              ? l10n.l_insert_or_tap_yk
+              : l10n.l_insert_yk,
+          actionsBuilder: (context, expanded) => [
+            if (hasNfcSupport && !isNfcEnabled)
+              ElevatedButton.icon(
+                label: Text(l10n.s_enable_nfc),
+                icon: const Icon(Symbols.contactless),
+                onPressed: () async {
+                  await openNfcSettings();
+                },
+              ),
+            ElevatedButton.icon(
+              label: Text(l10n.s_add_account),
+              icon: const Icon(Symbols.person_add_alt),
+              onPressed: () async {
+                // make sure we execute the "Add account" in OATH section
+                ref
+                    .read(currentSectionProvider.notifier)
+                    .setCurrentSection(Section.accounts);
+                await addOathAccount(context, ref);
+              },
+            ),
+          ],
         );
       } else {
         return HomeMessagePage(
@@ -144,8 +150,6 @@ class MainPage extends ConsumerWidget {
           .watch(currentDeviceDataProvider)
           .when(
             data: (data) {
-              final section = ref.watch(currentSectionProvider);
-
               return switch (section) {
                 Section.home => HomeScreen(data),
                 Section.accounts => OathScreen(data.node.path),
@@ -154,6 +158,7 @@ class MainPage extends ConsumerWidget {
                 Section.fingerprints => FingerprintsScreen(data),
                 Section.certificates => PivScreen(data),
                 Section.slots => OtpScreen(data.node.path),
+                Section.settings => const SettingsPage(),
               };
             },
             loading: () => DeviceErrorScreen(deviceNode),

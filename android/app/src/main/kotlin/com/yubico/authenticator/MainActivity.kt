@@ -512,7 +512,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.appContext.observe(this) {
             switchContextManager(it.appContext)
-            if (it.appContext != OperationContext.Home) {
+            if (it.appContext != OperationContext.Home && it.appContext != OperationContext.Settings) {
                 logger.debug("A YubiKey is connected, using it with the context {}", it.appContext)
                 viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
             }
@@ -562,6 +562,7 @@ class MainActivity : FlutterFragmentActivity() {
             OperationContext.HsmAuth to homeContextManager,
             OperationContext.OpenPgp to homeContextManager,
             OperationContext.YubiOtp to homeContextManager,
+            OperationContext.Settings to homeContextManager,
         )
 
         contextManager = contextManagers[appPreferences.appContext]

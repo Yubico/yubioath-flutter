@@ -72,13 +72,12 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         key: closeButton,
         tooltip: _getCancelText(context),
         icon: const Icon(Symbols.close),
-        onPressed:
-            widget.allowCancel
-                ? () {
-                  widget.onCancel?.call();
-                  Navigator.of(context).pop();
-                }
-                : null,
+        onPressed: widget.allowCancel
+            ? () {
+                widget.onCancel?.call();
+                Navigator.of(context).pop();
+              }
+            : null,
       ),
     ),
     body: SingleChildScrollView(
@@ -94,25 +93,23 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       child: AlertDialog(
         title: widget.title,
         titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
-        scrollable: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         content: SizedBox(
           width: widget.dialogMaxWidth,
           child: Container(
             key: _childKey,
-            child: widget.builder(context, false),
+            child: SingleChildScrollView(child: widget.builder(context, false)),
           ),
         ),
         actions: [
           if (widget.showDialogCloseButton)
             TextButton(
               key: closeButton,
-              onPressed:
-                  widget.allowCancel
-                      ? () {
-                        Navigator.of(context).pop();
-                      }
-                      : null,
+              onPressed: widget.allowCancel
+                  ? () {
+                      Navigator.of(context).pop();
+                    }
+                  : null,
               child: Text(_getCancelText(context)),
             ),
           ...widget.actions,
@@ -140,10 +137,9 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
             _hasLostFocus = true;
           }
         },
-        child:
-            constraints.maxWidth < maxWidth
-                ? _buildFullscreen(context)
-                : _buildDialog(context),
+        child: constraints.maxWidth < maxWidth
+            ? _buildFullscreen(context)
+            : _buildDialog(context),
       );
     }),
   );

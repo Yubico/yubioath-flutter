@@ -55,7 +55,9 @@ Future<Widget> initialize({Level? level}) async {
     Logger.root.level = level ?? Levels.DEBUG;
   }
 
-  _initLicenses();
+  if (kReleaseMode) {
+    _initLicenses();
+  }
 
   return ProviderScope(
     overrides: [
@@ -94,6 +96,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.fingerprints,
         Section.passkeys,
         Section.certificates,
+        Section.settings,
       ]),
       // this specifies the priority of sections to show when
       // the connected YubiKey does not support current section
@@ -103,6 +106,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.passkeys,
         Section.certificates,
         Section.home,
+        Section.settings,
       ]),
       supportedThemesProvider.overrideWith(
         (ref) => ref.watch(androidSupportedThemesProvider),

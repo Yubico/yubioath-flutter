@@ -198,12 +198,11 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
         deviceData?.info.getFipsStatus(Capability.piv).$1 ?? false;
 
     // Old YubiKeys allowed a 4 digit PIN
-    final currentMinPinLen =
-        isFipsCapable
-            ? 8
-            : widget.pivState.version.isAtLeast(4, 3, 1)
-            ? 6
-            : 4;
+    final currentMinPinLen = isFipsCapable
+        ? 8
+        : widget.pivState.version.isAtLeast(4, 3, 1)
+        ? 6
+        : 4;
     final newMinPinLen = currentMinPinLen > 4 ? currentMinPinLen : 6;
 
     return ResponsiveDialog(
@@ -215,240 +214,224 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
           child: Text(l10n.s_save),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        AppTextField(
-                          autofocus:
-                              !(showDefaultPinUsed || showDefaultPukUsed),
-                          obscureText: _isObscureCurrent,
-                          maxLength: 8,
-                          inputFormatters: [limitBytesLength(8)],
-                          buildCounter: buildByteCounterFor(currentPin),
-                          autofillHints: const [AutofillHints.password],
-                          key: keys.pinPukField,
-                          readOnly: showDefaultPinUsed || showDefaultPukUsed,
-                          controller: _currentPinController,
-                          focusNode: _currentPinFocus,
-                          enabled: !_pinIsBlocked,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            helperText:
-                                showDefaultPinUsed
-                                    ? l10n.l_default_pin_used
-                                    : showDefaultPukUsed
-                                    ? l10n.l_default_puk_used
-                                    : null,
-                            labelText:
-                                widget.target == ManageTarget.pin
-                                    ? l10n.s_current_pin
-                                    : l10n.s_current_puk,
-                            errorText:
-                                _pinIsBlocked
-                                    ? (widget.target == ManageTarget.pin &&
-                                            !isBio
-                                        ? l10n.l_piv_pin_blocked
-                                        : l10n.l_piv_pin_puk_blocked)
-                                    : (_currentIsWrong
-                                        ? (widget.target == ManageTarget.pin
-                                            ? l10n
-                                                .l_wrong_pin_attempts_remaining(
-                                                  _attemptsRemaining,
-                                                )
-                                            : l10n
-                                                .l_wrong_puk_attempts_remaining(
-                                                  _attemptsRemaining,
-                                                ))
-                                        : null),
-                            errorMaxLines: 3,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isObscureCurrent
-                                    ? Symbols.visibility
-                                    : Symbols.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isObscureCurrent = !_isObscureCurrent;
-                                });
-                              },
-                              tooltip:
-                                  widget.target == ManageTarget.pin
-                                      ? (_isObscureCurrent
-                                          ? l10n.s_show_pin
-                                          : l10n.s_hide_pin)
-                                      : (_isObscureCurrent
-                                          ? l10n.s_show_puk
-                                          : l10n.s_hide_puk),
-                            ),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    AppTextField(
+                      autofocus: !(showDefaultPinUsed || showDefaultPukUsed),
+                      obscureText: _isObscureCurrent,
+                      maxLength: 8,
+                      inputFormatters: [limitBytesLength(8)],
+                      buildCounter: buildByteCounterFor(currentPin),
+                      autofillHints: const [AutofillHints.password],
+                      key: keys.pinPukField,
+                      readOnly: showDefaultPinUsed || showDefaultPukUsed,
+                      controller: _currentPinController,
+                      focusNode: _currentPinFocus,
+                      enabled: !_pinIsBlocked,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        helperText: showDefaultPinUsed
+                            ? l10n.l_default_pin_used
+                            : showDefaultPukUsed
+                            ? l10n.l_default_puk_used
+                            : null,
+                        labelText: widget.target == ManageTarget.pin
+                            ? l10n.s_current_pin
+                            : l10n.s_current_puk,
+                        errorText: _pinIsBlocked
+                            ? (widget.target == ManageTarget.pin && !isBio
+                                  ? l10n.l_piv_pin_blocked
+                                  : l10n.l_piv_pin_puk_blocked)
+                            : (_currentIsWrong
+                                  ? (widget.target == ManageTarget.pin
+                                        ? l10n.l_wrong_pin_attempts_remaining(
+                                            _attemptsRemaining,
+                                          )
+                                        : l10n.l_wrong_puk_attempts_remaining(
+                                            _attemptsRemaining,
+                                          ))
+                                  : null),
+                        errorMaxLines: 3,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscureCurrent
+                                ? Symbols.visibility
+                                : Symbols.visibility_off,
                           ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+                          onPressed: () {
                             setState(() {
-                              _currentIsWrong = false;
+                              _isObscureCurrent = !_isObscureCurrent;
                             });
                           },
-                          onSubmitted: (_) {
-                            if (currentPinLen >= currentMinPinLen ||
-                                (isFipsCapable && showDefaultPinUsed)) {
-                              _newPinFocus.requestFocus();
-                            } else {
-                              _currentPinFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        // Used to add more spacing
-                        const SizedBox(height: 0),
-                        AppTextField(
-                          key: keys.newPinPukField,
-                          autofocus: showDefaultPinUsed || showDefaultPukUsed,
-                          obscureText: _isObscureNew,
-                          controller: _newPinController,
-                          focusNode: _newPinFocus,
-                          maxLength: 8,
-                          inputFormatters: [limitBytesLength(8)],
-                          buildCounter: buildByteCounterFor(newPin),
-                          autofillHints: const [AutofillHints.newPassword],
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            helperText:
-                                hasPinComplexity
-                                    ? l10n
-                                        .p_new_piv_pin_puk_complexity_active_requirements(
-                                          widget.target == ManageTarget.puk
-                                              ? l10n.s_puk
-                                              : l10n.s_pin,
-                                          newMinPinLen,
-                                          '123456',
-                                        )
-                                    : l10n.p_new_piv_pin_puk_requirements(
-                                      widget.target == ManageTarget.puk
-                                          ? l10n.s_puk
-                                          : l10n.s_pin,
-                                      newMinPinLen,
-                                    ),
-                            helperMaxLines: 5,
-                            labelText:
-                                widget.target == ManageTarget.puk
-                                    ? l10n.s_new_puk
-                                    : l10n.s_new_pin,
-                            errorText: _newIsWrong ? _newPinError : null,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isObscureNew
-                                    ? Symbols.visibility
-                                    : Symbols.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isObscureNew = !_isObscureNew;
-                                });
-                              },
-                              tooltip:
-                                  widget.target == ManageTarget.pin
-                                      ? (_isObscureNew
-                                          ? l10n.s_show_pin
-                                          : l10n.s_hide_pin)
-                                      : (_isObscureNew
-                                          ? l10n.s_show_puk
-                                          : l10n.s_hide_puk),
-                            ),
-                            enabled:
-                                currentPinLen >= currentMinPinLen ||
-                                (isFipsCapable && showDefaultPinUsed),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
-                            setState(() {
-                              _newIsWrong = false;
-                            });
-                          },
-                          onSubmitted: (_) {
-                            if (newPinLen >= newMinPinLen) {
-                              _confirmPinFocus.requestFocus();
-                            } else {
-                              _newPinFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                        AppTextField(
-                          key: keys.confirmPinPukField,
-                          obscureText: _isObscureConfirm,
-                          maxLength: 8,
-                          inputFormatters: [limitBytesLength(8)],
-                          buildCounter: buildByteCounterFor(_confirmPin),
-                          focusNode: _confirmPinFocus,
-                          autofillHints: const [AutofillHints.newPassword],
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText:
-                                widget.target == ManageTarget.puk
-                                    ? l10n.s_confirm_puk
-                                    : l10n.s_confirm_pin,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isObscureConfirm
-                                    ? Symbols.visibility
-                                    : Symbols.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isObscureConfirm = !_isObscureConfirm;
-                                });
-                              },
-                              tooltip:
-                                  widget.target == ManageTarget.pin
-                                      ? (_isObscureConfirm
-                                          ? l10n.s_show_pin
-                                          : l10n.s_hide_pin)
-                                      : (_isObscureConfirm
-                                          ? l10n.s_show_puk
-                                          : l10n.s_hide_puk),
-                            ),
-                            enabled: newPinLen >= newMinPinLen,
-                            errorText:
-                                newPinLen == _confirmPin.length &&
-                                        newPin != _confirmPin
-                                    ? (widget.target == ManageTarget.pin ||
-                                            widget.target ==
-                                                ManageTarget.unblock
-                                        ? l10n.l_pin_mismatch
-                                        : l10n.l_puk_mismatch)
-                                    : null,
-                            helperText:
-                                '', // Prevents resizing when errorText shown
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onChanged: (value) {
-                            setState(() {
-                              _confirmPin = value;
-                            });
-                          },
-                          onSubmitted: (_) {
-                            if (isValid) {
-                              _submit();
-                            } else {
-                              _confirmPinFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
+                          tooltip: widget.target == ManageTarget.pin
+                              ? (_isObscureCurrent
+                                    ? l10n.s_show_pin
+                                    : l10n.s_hide_pin)
+                              : (_isObscureCurrent
+                                    ? l10n.s_show_puk
+                                    : l10n.s_hide_puk),
                         ),
-                      )
-                      .toList(),
-            ),
-          ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _currentIsWrong = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (currentPinLen >= currentMinPinLen ||
+                            (isFipsCapable && showDefaultPinUsed)) {
+                          _newPinFocus.requestFocus();
+                        } else {
+                          _currentPinFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    // Used to add more spacing
+                    const SizedBox(height: 0),
+                    AppTextField(
+                      key: keys.newPinPukField,
+                      autofocus: showDefaultPinUsed || showDefaultPukUsed,
+                      obscureText: _isObscureNew,
+                      controller: _newPinController,
+                      focusNode: _newPinFocus,
+                      maxLength: 8,
+                      inputFormatters: [limitBytesLength(8)],
+                      buildCounter: buildByteCounterFor(newPin),
+                      autofillHints: const [AutofillHints.newPassword],
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        helperText: hasPinComplexity
+                            ? l10n.p_new_piv_pin_puk_complexity_active_requirements(
+                                widget.target == ManageTarget.puk
+                                    ? l10n.s_puk
+                                    : l10n.s_pin,
+                                newMinPinLen,
+                                '123456',
+                              )
+                            : l10n.p_new_piv_pin_puk_requirements(
+                                widget.target == ManageTarget.puk
+                                    ? l10n.s_puk
+                                    : l10n.s_pin,
+                                newMinPinLen,
+                              ),
+                        helperMaxLines: 5,
+                        labelText: widget.target == ManageTarget.puk
+                            ? l10n.s_new_puk
+                            : l10n.s_new_pin,
+                        errorText: _newIsWrong ? _newPinError : null,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscureNew
+                                ? Symbols.visibility
+                                : Symbols.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isObscureNew = !_isObscureNew;
+                            });
+                          },
+                          tooltip: widget.target == ManageTarget.pin
+                              ? (_isObscureNew
+                                    ? l10n.s_show_pin
+                                    : l10n.s_hide_pin)
+                              : (_isObscureNew
+                                    ? l10n.s_show_puk
+                                    : l10n.s_hide_puk),
+                        ),
+                        enabled:
+                            currentPinLen >= currentMinPinLen ||
+                            (isFipsCapable && showDefaultPinUsed),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _newIsWrong = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (newPinLen >= newMinPinLen) {
+                          _confirmPinFocus.requestFocus();
+                        } else {
+                          _newPinFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                    AppTextField(
+                      key: keys.confirmPinPukField,
+                      obscureText: _isObscureConfirm,
+                      maxLength: 8,
+                      inputFormatters: [limitBytesLength(8)],
+                      buildCounter: buildByteCounterFor(_confirmPin),
+                      focusNode: _confirmPinFocus,
+                      autofillHints: const [AutofillHints.newPassword],
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: widget.target == ManageTarget.puk
+                            ? l10n.s_confirm_puk
+                            : l10n.s_confirm_pin,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscureConfirm
+                                ? Symbols.visibility
+                                : Symbols.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isObscureConfirm = !_isObscureConfirm;
+                            });
+                          },
+                          tooltip: widget.target == ManageTarget.pin
+                              ? (_isObscureConfirm
+                                    ? l10n.s_show_pin
+                                    : l10n.s_hide_pin)
+                              : (_isObscureConfirm
+                                    ? l10n.s_show_puk
+                                    : l10n.s_hide_puk),
+                        ),
+                        enabled: newPinLen >= newMinPinLen,
+                        errorText:
+                            newPinLen == _confirmPin.length &&
+                                newPin != _confirmPin
+                            ? (widget.target == ManageTarget.pin ||
+                                      widget.target == ManageTarget.unblock
+                                  ? l10n.l_pin_mismatch
+                                  : l10n.l_puk_mismatch)
+                            : null,
+                        helperText:
+                            '', // Prevents resizing when errorText shown
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: (value) {
+                        setState(() {
+                          _confirmPin = value;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (isValid) {
+                          _submit();
+                        } else {
+                          _confirmPinFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

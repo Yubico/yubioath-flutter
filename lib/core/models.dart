@@ -18,12 +18,21 @@ import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
+import '../generated/l10n/app_localizations.dart';
 import '../management/models.dart';
 
 part 'models.freezed.dart';
 part 'models.g.dart';
 
-enum Transport { usb, nfc }
+enum Transport {
+  usb,
+  nfc;
+
+  String getDisplayName(AppLocalizations l10n) => switch (this) {
+    Transport.usb => l10n.s_usb,
+    Transport.nfc => l10n.s_nfc,
+  };
+}
 
 enum UsbInterface {
   otp(0x01),
@@ -110,13 +119,12 @@ enum UsbPid {
     };
   }
 
-  int get usbInterfaces =>
-      UsbInterface.values
-          .where(
-            (e) => name.contains(e.name[0].toUpperCase() + e.name.substring(1)),
-          )
-          .map((e) => e.value)
-          .sum;
+  int get usbInterfaces => UsbInterface.values
+      .where(
+        (e) => name.contains(e.name[0].toUpperCase() + e.name.substring(1)),
+      )
+      .map((e) => e.value)
+      .sum;
 
   static UsbPid fromValue(int value) {
     return UsbPid.values.firstWhere((pid) => pid.value == value);

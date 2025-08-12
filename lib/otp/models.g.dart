@@ -27,21 +27,20 @@ _SlotConfigurationOptions _$SlotConfigurationOptionsFromJson(
 Map<String, dynamic> _$SlotConfigurationOptionsToJson(
   _SlotConfigurationOptions instance,
 ) => <String, dynamic>{
-  if (instance.digits8 case final value?) 'digits8': value,
-  if (instance.requireTouch case final value?) 'require_touch': value,
-  if (instance.appendCr case final value?) 'append_cr': value,
+  'digits8': ?instance.digits8,
+  'require_touch': ?instance.requireTouch,
+  'append_cr': ?instance.appendCr,
 };
 
 _SlotConfigurationHotp _$SlotConfigurationHotpFromJson(
   Map<String, dynamic> json,
 ) => _SlotConfigurationHotp(
   key: json['key'] as String,
-  options:
-      json['options'] == null
-          ? null
-          : SlotConfigurationOptions.fromJson(
-            json['options'] as Map<String, dynamic>,
-          ),
+  options: json['options'] == null
+      ? null
+      : SlotConfigurationOptions.fromJson(
+          json['options'] as Map<String, dynamic>,
+        ),
   $type: json['type'] as String?,
 );
 
@@ -49,7 +48,7 @@ Map<String, dynamic> _$SlotConfigurationHotpToJson(
   _SlotConfigurationHotp instance,
 ) => <String, dynamic>{
   'key': instance.key,
-  if (instance.options?.toJson() case final value?) 'options': value,
+  'options': ?instance.options?.toJson(),
   'type': instance.$type,
 };
 
@@ -57,12 +56,11 @@ _SlotConfigurationHmacSha1 _$SlotConfigurationHmacSha1FromJson(
   Map<String, dynamic> json,
 ) => _SlotConfigurationHmacSha1(
   key: json['key'] as String,
-  options:
-      json['options'] == null
-          ? null
-          : SlotConfigurationOptions.fromJson(
-            json['options'] as Map<String, dynamic>,
-          ),
+  options: json['options'] == null
+      ? null
+      : SlotConfigurationOptions.fromJson(
+          json['options'] as Map<String, dynamic>,
+        ),
   $type: json['type'] as String?,
 );
 
@@ -70,7 +68,7 @@ Map<String, dynamic> _$SlotConfigurationHmacSha1ToJson(
   _SlotConfigurationHmacSha1 instance,
 ) => <String, dynamic>{
   'key': instance.key,
-  if (instance.options?.toJson() case final value?) 'options': value,
+  'options': ?instance.options?.toJson(),
   'type': instance.$type,
 };
 
@@ -79,12 +77,11 @@ _SlotConfigurationStaticPassword _$SlotConfigurationStaticPasswordFromJson(
 ) => _SlotConfigurationStaticPassword(
   password: json['password'] as String,
   keyboardLayout: json['keyboard_layout'] as String,
-  options:
-      json['options'] == null
-          ? null
-          : SlotConfigurationOptions.fromJson(
-            json['options'] as Map<String, dynamic>,
-          ),
+  options: json['options'] == null
+      ? null
+      : SlotConfigurationOptions.fromJson(
+          json['options'] as Map<String, dynamic>,
+        ),
   $type: json['type'] as String?,
 );
 
@@ -93,7 +90,7 @@ Map<String, dynamic> _$SlotConfigurationStaticPasswordToJson(
 ) => <String, dynamic>{
   'password': instance.password,
   'keyboard_layout': instance.keyboardLayout,
-  if (instance.options?.toJson() case final value?) 'options': value,
+  'options': ?instance.options?.toJson(),
   'type': instance.$type,
 };
 
@@ -103,12 +100,11 @@ _SlotConfigurationYubiOtp _$SlotConfigurationYubiOtpFromJson(
   publicId: json['public_id'] as String,
   privateId: json['private_id'] as String,
   key: json['key'] as String,
-  options:
-      json['options'] == null
-          ? null
-          : SlotConfigurationOptions.fromJson(
-            json['options'] as Map<String, dynamic>,
-          ),
+  options: json['options'] == null
+      ? null
+      : SlotConfigurationOptions.fromJson(
+          json['options'] as Map<String, dynamic>,
+        ),
   $type: json['type'] as String?,
 );
 
@@ -118,6 +114,6 @@ Map<String, dynamic> _$SlotConfigurationYubiOtpToJson(
   'public_id': instance.publicId,
   'private_id': instance.privateId,
   'key': instance.key,
-  if (instance.options?.toJson() case final value?) 'options': value,
+  'options': ?instance.options?.toJson(),
   'type': instance.$type,
 };

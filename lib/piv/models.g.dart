@@ -116,10 +116,9 @@ _PivState _$PivStateFromJson(Map<String, dynamic> json) => _PivState(
   supportsBio: json['supports_bio'] as bool,
   chuid: json['chuid'] as String?,
   ccc: json['ccc'] as String?,
-  metadata:
-      json['metadata'] == null
-          ? null
-          : PivStateMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
+  metadata: json['metadata'] == null
+      ? null
+      : PivStateMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$PivStateToJson(_PivState instance) => <String, dynamic>{
@@ -156,14 +155,12 @@ Map<String, dynamic> _$CertInfoToJson(_CertInfo instance) => <String, dynamic>{
 
 _PivSlot _$PivSlotFromJson(Map<String, dynamic> json) => _PivSlot(
   slot: SlotId.fromJson((json['slot'] as num).toInt()),
-  metadata:
-      json['metadata'] == null
-          ? null
-          : SlotMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
-  certInfo:
-      json['cert_info'] == null
-          ? null
-          : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
+  metadata: json['metadata'] == null
+      ? null
+      : SlotMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
+  certInfo: json['cert_info'] == null
+      ? null
+      : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
   publicKeyMatch: json['public_key_match'] as bool?,
 );
 
@@ -206,10 +203,9 @@ PivExamineResultResult _$PivExamineResultResultFromJson(
 ) => PivExamineResultResult(
   password: json['password'] as bool,
   keyType: $enumDecodeNullable(_$KeyTypeEnumMap, json['key_type']),
-  certInfo:
-      json['cert_info'] == null
-          ? null
-          : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
+  certInfo: json['cert_info'] == null
+      ? null
+      : CertInfo.fromJson(json['cert_info'] as Map<String, dynamic>),
   publicKeyMatch: json['public_key_match'] as bool?,
   $type: json['runtimeType'] as String?,
 );
@@ -254,10 +250,9 @@ const _$GenerateTypeEnumMap = {
 
 _PivImportResult _$PivImportResultFromJson(Map<String, dynamic> json) =>
     _PivImportResult(
-      metadata:
-          json['metadata'] == null
-              ? null
-              : SlotMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
+      metadata: json['metadata'] == null
+          ? null
+          : SlotMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
       publicKey: json['public_key'] as String?,
       certificate: json['certificate'] as String?,
     );

@@ -2,14 +2,14 @@ group 'com.yubico.authenticator.flutter_plugins.qrscanner_zxing'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '2.1.21'
+    ext.kotlin_version = '2.2.0'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.10.1'
+        classpath 'com.android.tools.build:gradle:8.12.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -28,7 +28,7 @@ android {
 
     namespace 'com.yubico.authenticator.flutter_plugins.qrscanner_zxing'
 
-    compileSdk 35
+    compileSdkVersion 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -45,7 +45,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdk 35
+        targetSdkVersion 35
     }
 }
 

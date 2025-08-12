@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "翻譯不完整",
     "p_translation_progress_desc": "進度指標反映翻譯的成熟度。",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "儲存",
     "s_cancel": "取消",
@@ -40,6 +42,7 @@
     "s_import": "導入",
     "s_overwrite": "覆寫",
     "s_done": "完成",
+    "s_more": null,
     "s_label": "標籤",
     "s_name": "名稱",
     "s_usb": "USB",
@@ -74,6 +77,10 @@
     "s_device": "裝置",
     "s_application": "應用程式",
     "s_settings": "設定",
+    "s_reset_settings": null,
+    "l_reset_settings_desc": null,
+    "s_general": null,
+    "s_support": null,
     "l_settings_desc": "變更應用程式偏好設定",
     "s_certificates": "憑證",
     "s_security_key": "安全密鑰",
@@ -81,6 +88,8 @@
     "s_help_and_about": "幫助和關於",
     "l_help_and_about_desc": "故障排除與支援",
     "s_help_and_feedback": "幫助與意見回饋",
+    "s_help": null,
+    "s_app_information": null,
     "s_home": "主頁",
     "s_user_guide": "使用手冊",
     "s_i_need_help": "需要協助",
@@ -106,9 +115,13 @@
     "l_invalid_keyboard_character": "所選鍵盤的字元無效",
     "s_require_touch": "要求觸摸",
     "q_have_account_info": "有帳戶資訊嗎？",
+    "s_log_and_diagnostics": null,
+    "s_debugging_tools": null,
     "s_run_diagnostics": "執行診斷",
-    "s_log_level": "日誌等級： {level}",
-    "@s_log_level": {
+    "l_run_diagnostics_desc": null,
+    "s_logging_level": null,
+    "s_current_log_level": null,
+    "@s_current_log_level": {
         "placeholders": {
             "level": {
                 "type": "String"
@@ -116,33 +129,25 @@
         }
     },
     "s_character_count": "字元計數",
-
     "@_language": {},
-    "s_language": "語言",
-    "p_community_translations_desc": "翻譯由 {crowdin}上的社群維護。",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
-    "s_choose_language": "選擇語言",
 
+    "s_language": "語言",
+    "s_choose_language": "選擇語言",
     "@_theme": {},
+
     "s_app_theme": "應用程式佈景主題",
     "s_choose_app_theme": "選擇主題",
     "s_system_default": "系統預設值",
     "s_light_mode": "淺色模式",
     "s_dark_mode": "暗色模式",
-
     "@_layout": {},
+
     "s_list_layout": "列表佈局",
     "s_grid_layout": "網格布局",
     "s_mixed_layout": "混合佈局",
     "s_select_layout": "選擇佈局",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "選擇掃描",
     "s_hide_reader": "隱藏閱讀器",
     "s_show_hidden_readers": "顯示隱藏閱讀器",
@@ -182,8 +187,8 @@
     },
     "l_fips_capable": "FIPS 使能",
     "l_fips_approved": "通過 FIPS 認證",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "插入您的 YubiKey",
     "l_insert_or_tap_yk": "插入或輕按 YubiKey",
     "l_unplug_yk": "拔出您的 YubiKey",
@@ -194,9 +199,10 @@
     "p_try_reinsert_yk": "嘗試移除並重新插入您的 YubiKey。",
     "s_touch_required": "需要觸摸",
     "l_touch_button_now": "立即輕觸 YubiKey 上的按鈕",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "持續重複觸碰您的 YubiKey\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -204,8 +210,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Auth",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "切換應用程式",
     "s_toggle_interfaces": "切換介面",
     "p_toggle_applications_desc": "透過可用的傳輸啟用或停用應用程式。",
@@ -222,8 +228,8 @@
     "s_show_lock_code": "顯示鎖定密碼",
     "s_hide_lock_code": "隱藏鎖定密碼",
     "p_lock_code_required_desc": "您要執行的動作需要輸入設定鎖定密碼。",
-
     "@_connectivity_issues": {},
+
     "l_helper_not_responding": "Helper 程序沒有回應",
     "l_yk_no_access": "無法存取此 YubiKey",
     "s_yk_inaccessible": "裝置無法存取",
@@ -242,16 +248,16 @@
     "p_operation_failed_try_again": "操作失敗，請重試。",
     "l_configuration_unsupported": "不支援的配置",
     "p_scp_unsupported": "要透過 NFC 進行通訊，YubiKey 需要本手機不支援的技術。請將 YubiKey 插入手機的 USB 連接埠。",
-
     "@_general_errors": {},
+
     "l_error_occurred": "發生錯誤",
     "s_application_error": "程式出錯",
     "l_import_error": "匯入錯誤",
     "l_file_not_found": "找不到檔案",
     "l_file_too_big": "檔案太大",
     "l_filesystem_error": "檔案系統作業錯誤",
-
     "@_pins": {},
+
     "s_pin": "PIN 碼",
     "s_puk": "PUK 碼",
     "s_set_pin": "設定 PIN 碼",
@@ -393,8 +399,8 @@
     "l_default_pin_used": "使用的預設 PIN 碼",
     "l_default_puk_used": "使用的預設 PUK 碼",
     "l_pin_complexity": "已執行 PIN 碼複雜性",
-
     "@_passwords": {},
+
     "s_password": "密碼",
     "s_manage_password": "管理密碼",
     "s_set_password": "設定密碼",
@@ -419,8 +425,8 @@
     "l_set_password_first": "設定密碼",
     "l_enter_oath_pw": "輸入 YubiKey 的 OATH 密碼",
     "p_new_password_requirements": "密碼可包含字母、數字和特殊字符。",
-
     "@_management_key": {},
+
     "s_management_key": "管理密鑰",
     "s_current_management_key": "目前的管理密鑰",
     "s_new_management_key": "新的管理密鑰",
@@ -438,8 +444,8 @@
     "l_wrong_key": "錯誤的密鑰",
     "l_unlock_piv_management": "解鎖 PIV 管理",
     "p_unlock_piv_management_desc": "您將要執行的動作需要 PIV 管理密鑰。",
-
     "@_oath_accounts": {},
+
     "l_account": "帳戶： {label}",
     "@l_account": {
         "placeholders": {
@@ -546,8 +552,8 @@
     "s_time_based": "基於時間",
     "l_copy_code_desc": "將程式碼貼到另一個應用程式中",
     "l_calculate_code_desc": "從您的 YubiKey 取得新密碼",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP ID",
     "s_user_id": "用户 ID",
     "s_credential_id": "憑證 ID",
@@ -639,13 +645,13 @@
     },
     "p_press_fingerprint_begin": "用手指按住 YubiKey 開始操作。",
     "l_name_fingerprint": "命名此指紋",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "由於使用者未活動而失敗",
     "l_wrong_inserted_yk_error": "重新插入的 YubiKey 與初始裝置不匹配",
     "l_failed_connecting_to_fido": "連線至 FIDO 介面失敗",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": "自簽憑證",
     "l_certificate_signing_request": "憑證簽章請求 (CSR)",
     "s_certificate": "憑證",
@@ -793,8 +799,8 @@
     "l_overwrite_cert": "憑證將被覆寫",
     "l_overwrite_key": "私人密鑰將被覆寫",
     "l_overwrite_key_maybe": "插槽中任何現有的私人密鑰都會被覆蓋",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
@@ -811,14 +817,14 @@
     "s_slot_9d": "密鑰管理",
     "s_slot_9e": "卡片驗證",
     "s_retired_slot": "退役密鑰管理",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "短觸",
     "s_otp_slot_two": "長按",
     "l_otp_slot_empty": "插槽為空",
     "l_otp_slot_configured": "插槽已設定",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "配置 Yubico OTP 憑證",
     "s_challenge_response": "挑戰-回應",
     "l_challenge_response_desc": "配置一個 挑戰-回應 憑證",
@@ -850,8 +856,8 @@
             }
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "刪除憑證",
     "q_delete_slot": "刪除憑證嗎？",
     "l_delete_slot_desc": "移除插槽中的憑證",
@@ -891,12 +897,12 @@
     },
     "s_append_enter": "附加 ⏎",
     "l_append_enter_desc": "在發出 OTP 後追加 Enter 鍵",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "交換插槽失敗！請確定 YubiKey 沒有限制存取權限。",
     "l_wrong_access_code": "存取碼錯誤",
-
     "@_otp_access_code": {},
+
     "s_access_code": "存取碼",
     "s_show_access_code": "顯示存取碼",
     "s_hide_access_code": "隱藏存取碼",
@@ -908,9 +914,9 @@
             }
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "啟用 NFC",
     "s_request_access": "請求存取",
     "s_permission_denied": "權限不足",
@@ -922,8 +928,8 @@
     "p_webauthn_elevated_permissions_required": "管理此裝置需要提升權限。或者，您可以使用 Windows 設定來管理 FIDO 組態。",
     "l_ms_store_permission_note": "Microsoft Store 版本的應用程式可能無法提升權限",
     "p_need_camera_permission": "Yubico Authenticator 需要相機權限才能掃描 QR 碼。",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "掃描 QR 碼",
     "l_invalid_qr": "QR 碼無效",
     "l_qr_not_found": "找不到 QR 碼",
@@ -951,8 +957,8 @@
     "q_no_qr": "沒有 QR 碼嗎？",
     "s_enter_manually": "手動輸入",
     "s_read_from_file": "從檔案讀取",
-
     "@_factory_reset": {},
+
     "s_reset": "重置",
     "s_factory_reset": "恢復原廠設定",
     "l_factory_reset_desc": "還原 YubiKey 預設值",
@@ -974,16 +980,25 @@
     "p_warning_disable_credentials": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
     "p_warning_deletes_accounts": "警告！這將不可撤銷地從您的 YubiKey 刪除所有 U2F 和 FIDO2 帳戶，包括密碼。",
     "p_warning_disable_accounts": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "警告！為 PIV 儲存的所有資料將不可撤銷地從您的 YubiKey 中刪除。",
     "p_warning_piv_reset_desc": "這包括私人密鑰和憑證。您的 PIN 碼、PUK 碼和管理密鑰會重設為出廠預設值。",
     "p_warning_global_reset": "警告！這將不可撤銷地從您的 YubiKey 刪除所有儲存的資料，包括憑證。",
     "p_warning_global_reset_desc": "出廠重設 YubiKey 上的應用程式。PIN 碼將被重設為出廠預設值，已註冊的指紋將被移除。任何密鑰、證書或其他憑證都會被永久移除。",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "複製到剪貼簿",
     "s_code_copied": "代碼已複製",
     "l_code_copied_clipboard": "驗證碼已複製至剪貼簿",
     "s_copy_log": "複製記錄檔",
+    "l_copy_log_clipboard": null,
     "l_log_copied": "日誌已複製到剪貼簿",
     "l_diagnostics_copied": "診斷資料複製到剪貼簿",
     "p_target_copied_clipboard": "{label} 複製到剪貼簿。",
@@ -994,8 +1009,8 @@
             }
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "自訂圖示",
     "l_set_icons_for_accounts": "為帳戶設定圖示",
     "p_custom_icons_description": "圖示包可以讓您的帳戶更容易以熟悉的標誌和顏色區分。",
@@ -1025,10 +1040,13 @@
     },
     "l_invalid_icon_pack": "無效圖示套件",
     "l_icon_pack_copy_failed": "複製圖示套件檔案失敗",
-
     "@_android_settings": {},
+
     "s_nfc_options": "NFC 選項",
+    "s_nfc_and_usb_options": null,
+    "l_nfc_and_usb_options_desc": null,
     "l_on_yk_nfc_tap": "在 YubiKey NFC 點選",
+    "l_on_yk_usb_insert": null,
     "l_do_nothing": "不執行任何動作",
     "l_launch_ya": "啟動 Yubico Authenticator",
     "l_copy_otp_clipboard": "複製 OTP 到剪貼簿",
@@ -1046,32 +1064,33 @@
     "l_launch_app_on_usb_on": "這可防止其他應用程式透過 USB 使用 YubiKey",
     "l_launch_app_on_usb_off": "其他應用程式可透過 USB 使用 YubiKey",
     "s_allow_screenshots": "允許截圖",
-
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "準備掃描",
     "s_nfc_hold_still": "保持不動\u2026",
     "s_nfc_tap_your_yubikey": "點選您的 YubiKey",
     "l_nfc_failed_to_scan": "掃描失敗，請重試",
-
     "@_usb": {},
+
     "s_usb_processing": "從 YubiKey 讀取資料",
     "s_usb_dont_remove": "不要移除密鑰\u2026",
     "l_usb_read_error": "從 YubiKey 讀取資料失敗",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "成功將 OTP 代碼從 YubiKey 複製到剪貼簿。",
     "p_ndef_set_password": "成功將密碼從 YubiKey 複製到剪貼簿。",
     "p_ndef_parse_failure": "解析 YubiKey 的 OTP 代碼失敗。",
     "p_ndef_set_clip_failure": "當嘗試從 YubiKey 複製 OTP 代碼時，存取剪貼簿失敗。",
-
     "@_key_customization": {},
+
     "s_set_label": "設定標籤",
     "s_set_color": "設定顏色",
     "s_change_label": "變更標籤",
     "p_set_will_add_custom_name": "這將為您的 YubiKey 自訂一個名稱。",
     "p_rename_will_change_custom_name": "這將會變更 YubiKey 的標籤。",
-
     "@_shortcuts": {},
+
     "s_shortcuts": "快捷方式",
     "s_keyboard_shortcuts": "鍵盤快捷鍵",
     "s_global_shortcuts": "全域快捷鍵",
@@ -1102,6 +1121,6 @@
     "s_delete_item": "刪除項目",
     "s_calculate_oath_code": "計算 OATH 代碼",
     "s_open_keyboard_shortcuts": "開啟快捷鍵",
-
     "@_eof": {}
+
 }

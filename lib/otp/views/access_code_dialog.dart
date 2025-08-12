@@ -103,73 +103,70 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
           child: Text(l10n.s_unlock),
         ),
       ],
-      builder:
-          (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  [
-                        Text(
-                          l10n.p_enter_access_code(
-                            widget.otpSlot.slot.numberId.toString(),
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+              [
+                    Text(
+                      l10n.p_enter_access_code(
+                        widget.otpSlot.slot.numberId.toString(),
+                      ),
+                    ),
+                    AppTextField(
+                      autofocus: true,
+                      obscureText: _isObscure,
+                      maxLength: accessCodeLength,
+                      autofillHints: const [AutofillHints.password],
+                      controller: _accessCodeController,
+                      focusNode: _accessCodeFocus,
+                      decoration: AppInputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.s_access_code,
+                        errorText: _accessCodeIsWrong ? _accessCodeError : null,
+                        errorMaxLines: 3,
+                        icon: const Icon(Symbols.pin),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscure
+                                ? Symbols.visibility
+                                : Symbols.visibility_off,
                           ),
-                        ),
-                        AppTextField(
-                          autofocus: true,
-                          obscureText: _isObscure,
-                          maxLength: accessCodeLength,
-                          autofillHints: const [AutofillHints.password],
-                          controller: _accessCodeController,
-                          focusNode: _accessCodeFocus,
-                          decoration: AppInputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: l10n.s_access_code,
-                            errorText:
-                                _accessCodeIsWrong ? _accessCodeError : null,
-                            errorMaxLines: 3,
-                            icon: const Icon(Symbols.pin),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isObscure
-                                    ? Symbols.visibility
-                                    : Symbols.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              tooltip:
-                                  _isObscure
-                                      ? l10n.s_show_access_code
-                                      : l10n.s_hide_access_code,
-                            ),
-                          ),
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) {
+                          onPressed: () {
                             setState(() {
-                              _accessCodeIsWrong = false;
+                              _isObscure = !_isObscure;
                             });
                           },
-                          onSubmitted: (_) {
-                            if (accessCodeLengthValid) {
-                              _submit();
-                            } else {
-                              _accessCodeFocus.requestFocus();
-                            }
-                          },
-                        ).init(),
-                      ]
-                      .map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: e,
+                          tooltip: _isObscure
+                              ? l10n.s_show_access_code
+                              : l10n.s_hide_access_code,
                         ),
-                      )
-                      .toList(),
-            ),
-          ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) {
+                        setState(() {
+                          _accessCodeIsWrong = false;
+                        });
+                      },
+                      onSubmitted: (_) {
+                        if (accessCodeLengthValid) {
+                          _submit();
+                        } else {
+                          _accessCodeFocus.requestFocus();
+                        }
+                      },
+                    ).init(),
+                  ]
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: e,
+                    ),
+                  )
+                  .toList(),
+        ),
+      ),
     );
   }
 }

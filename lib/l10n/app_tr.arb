@@ -24,6 +24,8 @@
     },
     "l_incomplete_translation": "Tamamlanmamış çeviri",
     "p_translation_progress_desc": "İlerleme göstergeleri, çevirinin durumunu yansıtır.",
+    "s_community": null,
+    "l_localization_project": null,
 
     "s_save": "Kaydet",
     "s_cancel": "İptal et",
@@ -40,6 +42,7 @@
     "s_import": "İçe Aktar",
     "s_overwrite": "Geçerli Olanın Üzerine Yaz",
     "s_done": "Tamamlandı",
+    "s_more": null,
     "s_label": "Etiket",
     "s_name": "İsim",
     "s_usb": "Taşınabilir Bellek",
@@ -74,6 +77,10 @@
     "s_device": "Cihaz",
     "s_application": "Uygulama",
     "s_settings": "Ayarlar",
+    "s_reset_settings": null,
+    "l_reset_settings_desc": null,
+    "s_general": null,
+    "s_support": null,
     "l_settings_desc": "Uygulama tercihlerini değiştir",
     "s_certificates": "Sertifikalar",
     "s_security_key": "Güvenlik Anahtarı",
@@ -81,6 +88,8 @@
     "s_help_and_about": "Yardım ve hakkında",
     "l_help_and_about_desc": "Sorun giderme ve destek",
     "s_help_and_feedback": "Yardım ve geri bildirim",
+    "s_help": null,
+    "s_app_information": null,
     "s_home": "Ana sayfa",
     "s_user_guide": "Kullanıcı Rehberi",
     "s_i_need_help": "Yardıma ihtiyacım var",
@@ -106,9 +115,13 @@
     "l_invalid_keyboard_character": "Seçili klavye için geçersiz karakterler",
     "s_require_touch": "Dokunma gerektirir",
     "q_have_account_info": "Hesap bilgileriniz var mı?",
+    "s_log_and_diagnostics": null,
+    "s_debugging_tools": null,
     "s_run_diagnostics": "Tanılamayı çalıştırın",
-    "s_log_level": "Günlük seviyesi: {level}",
-    "@s_log_level": {
+    "l_run_diagnostics_desc": null,
+    "s_logging_level": null,
+    "s_current_log_level": null,
+    "@s_current_log_level": {
         "placeholders": {
             "level": {
                 "type": "String"
@@ -116,33 +129,25 @@
         }
     },
     "s_character_count": "Karakter sayısı",
-
     "@_language": {},
-    "s_language": "Dil",
-    "p_community_translations_desc": "Çeviriler, {crowdin} platformundaki topluluk tarafından yapılmaktadır.",
-    "@p_community_translations_desc": {
-        "placeholders": {
-            "crowdin": {
-                "type": "String"
-            }
-        }
-    },
-    "s_choose_language": "Dil seçin",
 
+    "s_language": "Dil",
+    "s_choose_language": "Dil seçin",
     "@_theme": {},
+
     "s_app_theme": "Uygulama teması",
     "s_choose_app_theme": "Tema seçin",
     "s_system_default": "Sistem varsayılanı",
     "s_light_mode": "Aydınlık mod",
     "s_dark_mode": "Karanlık mod",
-
     "@_layout": {},
+
     "s_list_layout": "Liste düzeni",
     "s_grid_layout": "Izgara düzeni",
     "s_mixed_layout": "Karma düzen",
     "s_select_layout": "Düzen seçin",
-
     "@_yubikey_selection": {},
+
     "s_select_to_scan": "Taramak için seçin",
     "s_hide_reader": "Okuyucuyu gizle",
     "s_show_hidden_readers": "Gizli okuyucuları göster",
@@ -182,8 +187,8 @@
     },
     "l_fips_capable": "FIPS özellikli",
     "l_fips_approved": "FIPS onaylı",
-
     "@_yubikey_interactions": {},
+
     "l_insert_yk": "YubiKey'inizi yerleştirin",
     "l_insert_or_tap_yk": "Bir YubiKey yerleştirin veya dokundurun",
     "l_unplug_yk": "YubiKey'inizi çıkartın",
@@ -194,9 +199,10 @@
     "p_try_reinsert_yk": "YubiKey'inizi çıkarıp ardından yeniden takmayı deneyin.",
     "s_touch_required": "Dokunma gerekli",
     "l_touch_button_now": "Şimdi YubiKey'inizdeki düğmeye dokunun",
+    "l_long_touch_button_now": null,
     "l_keep_touching_yk": "YubiKey'inize art arda dokunmaya devam edin\u2026",
-
     "@_capabilities": {},
+
     "s_capability_otp": "Yubico OTP",
     "s_capability_u2f": "FIDO U2F",
     "s_capability_fido2": "FIDO2",
@@ -204,8 +210,8 @@
     "s_capability_piv": "PIV",
     "s_capability_openpgp": "OpenPGP",
     "s_capability_hsmauth": "YubiHSM Kimlik Doğrulama",
-
     "@_app_configuration": {},
+
     "s_toggle_applications": "Uygulamaları değiştir",
     "s_toggle_interfaces": "Arayüzü değiştir",
     "p_toggle_applications_desc": "Kullanılabilir taşıyıcılar üzerinden uygulamaları etkinleştir veya devre dışı bırak.",
@@ -222,8 +228,8 @@
     "s_show_lock_code": "Kilit kodunu göster",
     "s_hide_lock_code": "Kilit kodunu gizle",
     "p_lock_code_required_desc": "Gerçekleştirmek üzere olduğunuz eylem, yapılandırma kilit kodunun girilmesini gerektirir.",
-
     "@_connectivity_issues": {},
+
     "l_helper_not_responding": "Yardımcı işlemi yanıt vermiyor",
     "l_yk_no_access": "Bu YubiKey'e erişilemez",
     "s_yk_inaccessible": "Cihaza erişilemiyor",
@@ -242,16 +248,16 @@
     "p_operation_failed_try_again": "İşlem başarısız oldu, lütfen tekrar deneyin.",
     "l_configuration_unsupported": "Yapılandırma desteklenmiyor",
     "p_scp_unsupported": "NFC üzerinden iletişim kurmak için YubiKey'in bu telefon tarafından desteklenmeyen bir teknolojiye ihtiyacı vardır. Lütfen YubiKey'i telefonun USB girişine takın.",
-
     "@_general_errors": {},
+
     "l_error_occurred": "Bir hata meydana geldi",
     "s_application_error": "Uygulama hatası",
     "l_import_error": "İçe aktarma hatası",
     "l_file_not_found": "Dosya bulunamadı",
     "l_file_too_big": "Dosya boyutu çok büyük",
     "l_filesystem_error": "Dosya sistemi işlem hatası",
-
     "@_pins": {},
+
     "s_pin": "PIN",
     "s_puk": "PUK",
     "s_set_pin": "PIN ayarla",
@@ -393,8 +399,8 @@
     "l_default_pin_used": "Varsayılan PIN kullanıldı",
     "l_default_puk_used": "Varsayılan PUK kullanıldı",
     "l_pin_complexity": "PIN karmaşıklığı zorunlu kılındı",
-
     "@_passwords": {},
+
     "s_password": "Şifre",
     "s_manage_password": "Şifreyi yönet",
     "s_set_password": "Şifre belirle",
@@ -419,8 +425,8 @@
     "l_set_password_first": "Şifre ayarla",
     "l_enter_oath_pw": "YubiKey'iniz için OATH şifresini girin",
     "p_new_password_requirements": "Bir şifre harfler, sayılar ve özel karakterler içerebilir.",
-
     "@_management_key": {},
+
     "s_management_key": "Yönetim anahtarı",
     "s_current_management_key": "Mevcut yönetim anahtarı",
     "s_new_management_key": "Yeni yönetim anahtarı",
@@ -438,8 +444,8 @@
     "l_wrong_key": "Yanlış anahtar",
     "l_unlock_piv_management": "PIV yönetiminin kilidini açın",
     "p_unlock_piv_management_desc": "Gerçekleştirmek üzere olduğunuz eylem PIV yönetim anahtarını gerektirir.",
-
     "@_oath_accounts": {},
+
     "l_account": "Hesap: {label}",
     "@l_account": {
         "placeholders": {
@@ -546,8 +552,8 @@
     "s_time_based": "Zamana dayalı",
     "l_copy_code_desc": "Kodu başka bir uygulamaya yapıştırın",
     "l_calculate_code_desc": "YubiKey'inizden yeni bir kod alın",
-
     "@_fido_credentials": {},
+
     "s_rp_id": "RP kimliği",
     "s_user_id": "Kullanıcı kimliği",
     "s_credential_id": "Kimlik Bilgisi Kimliği",
@@ -639,13 +645,13 @@
     },
     "p_press_fingerprint_begin": "Başlamak için parmağınızı YubiKey'e bastırın.",
     "l_name_fingerprint": "Bu parmak izini adlandırın",
-
     "@_fido_errors": {},
+
     "l_user_action_timeout_error": "Kullanıcı hareketsizliği nedeniyle başarısız olundu",
     "l_wrong_inserted_yk_error": "Yeniden takılan YubiKey ilk cihazla eşleşmiyor",
     "l_failed_connecting_to_fido": "FIDO arayüzüne bağlanılmasında başarısız olundu",
-
     "@_certificates": {},
+
     "l_self_signed_certificate": "Kendi imzasını taşıyan sertifika",
     "l_certificate_signing_request": "Sertifika İmzalama İsteği (CSR)",
     "s_certificate": "Sertifika",
@@ -793,8 +799,8 @@
     "l_overwrite_cert": "Sertifikanın üzerine yazılacaktır",
     "l_overwrite_key": "Özel anahtarın üzerine yazılacaktır",
     "l_overwrite_key_maybe": "Yuvadaki mevcut tüm özel anahtarların üzerine yazılacaktır",
-
     "@_piv_slots": {},
+
     "s_slot_display_name": "{name} ({hexid})",
     "@s_slot_display_name": {
         "placeholders": {
@@ -811,14 +817,14 @@
     "s_slot_9d": "Anahtar yönetimi",
     "s_slot_9e": "Kart kimlik doğrulama",
     "s_retired_slot": "Kullanımdan kaldırılmış Anahtar Yönetimi",
-
     "@_otp_slots": {},
+
     "s_otp_slot_one": "Kısa dokunuş",
     "s_otp_slot_two": "Uzun dokunuş",
     "l_otp_slot_empty": "Yuva boş",
     "l_otp_slot_configured": "Yuva yapılandırıldı",
-
     "@_otp_slot_configurations": {},
+
     "l_yubiotp_desc": "Bir Yubico OTP kimlik bilgisi programlayın",
     "s_challenge_response": "Meydan okuma-yanıt",
     "l_challenge_response_desc": "Bir meydan okuma-yanıt kimlik bilgisi programlayın",
@@ -850,8 +856,8 @@
             }
         }
     },
-
     "@_otp_slot_actions": {},
+
     "s_delete_slot": "Kimlik bilgisini sil",
     "q_delete_slot": "Kimlik bilgisi silinsin mi?",
     "l_delete_slot_desc": "Yuvadaki kimlik bilgisini kaldırın",
@@ -891,12 +897,12 @@
     },
     "s_append_enter": "Ekle ⏎",
     "l_append_enter_desc": "OTP gönderiminden sonra otomatik olarak Enter tuşuna bas",
-
     "@_otp_errors": {},
+
     "p_otp_swap_error": "Yuva değişimi başarısız oldu! YubiKey'de erişim kısıtlaması olmadığından emin olun.",
     "l_wrong_access_code": "Yanlış erişim kodu",
-
     "@_otp_access_code": {},
+
     "s_access_code": "Erişim kodu",
     "s_show_access_code": "Erişim kodunu göster",
     "s_hide_access_code": "Erişim kodunu gizle",
@@ -908,9 +914,9 @@
             }
         }
     },
-
-
     "@_permissions": {},
+
+
     "s_enable_nfc": "NFC'yi Etkinleştir",
     "s_request_access": "Erişim talep et",
     "s_permission_denied": "Erişim reddedildi",
@@ -922,8 +928,8 @@
     "p_webauthn_elevated_permissions_required": "WebAuthn yönetimi için yönetici iznine (yükseltilmiş yetkilere) ihtiyacınız var. Alternatif olarak, FIDO yapılandırmasını yönetmek için Windows Ayarlarını kullanabilirsiniz.",
     "l_ms_store_permission_note": "Uygulamanın Microsoft Store sürümü izinleri yükseltemeyebilir",
     "p_need_camera_permission": "Yubico Kimlik Doğrulayıcı, QR kodlarını tarayabilmek için kameraya erişme iznine ihtiyacı var.",
-
     "@_qr_codes": {},
+
     "s_qr_scan": "QR kodunu tara",
     "l_invalid_qr": "Geçersiz QR kodu",
     "l_qr_not_found": "QR kod bulunamadı",
@@ -951,8 +957,8 @@
     "q_no_qr": "QR kodu yok mu?",
     "s_enter_manually": "Manuel olarak girin",
     "s_read_from_file": "Dosyadan oku",
-
     "@_factory_reset": {},
+
     "s_reset": "Sıfırla",
     "s_factory_reset": "Fabrika ayarlarına sıfırla",
     "l_factory_reset_desc": "YubiKey varsayılan ayarlarını geri yükle",
@@ -974,16 +980,25 @@
     "p_warning_disable_credentials": "OATH kimlik bilgilerinizin yanı sıra ayarlanan tüm parolalar YubiKey'den kaldırılacaktır. Hesaplarınızın kilitlenmesini önlemek için bunları ilgili web sitelerinden devre dışı bıraktığınızdan emin olun.",
     "p_warning_deletes_accounts": "Uyarı! Bu işlem, geçiş anahtarları da dahil olmak üzere tüm U2F ve FIDO2 hesaplarını YubiKey'inizden geri alınamaz bir şekilde silecektir.",
     "p_warning_disable_accounts": "Kimlik bilgileriniz ve ayarladığınız herhangi bir PIN bu YubiKey'den kaldırılacaktır. Hesaplarınızın kilitlenmesini önlemek için bunları ilgili web sitelerinden devre dışı bıraktığınızdan emin olun.",
+    "p_transports_required_for_reset": null,
+    "@p_transports_required_for_reset": {
+        "placeholders": {
+            "transports": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Uyarı! PIV içinde saklanan tüm veriler YubiKey'inizden geri alınamaz şekilde silinecektir.",
     "p_warning_piv_reset_desc": "Buna özel anahtarlar ve sertifikalar da dahildir. PIN, PUK ve yönetim anahtarınız fabrika varsayılana sıfırlanacaktır.",
     "p_warning_global_reset": "Uyarı! Bu işlem, kimlik bilgileri de dahil olmak üzere kayıtlı tüm verileri YubiKey'inizden geri alınamaz bir şekilde silecektir.",
     "p_warning_global_reset_desc": "YubiKey'inizdeki uygulamaları fabrika ayarlarına sıfırlayın. PIN fabrika varsayılana sıfırlanacak ve kayıtlı parmak izleri kaldırılacaktır. Tüm anahtarlar, sertifikalar veya diğer kimlik bilgileri kalıcı olarak kaldırılacaktır.",
-
     "@_copy_to_clipboard": {},
+
     "l_copy_to_clipboard": "Panoya kopyala",
     "s_code_copied": "Kod kopyalandı",
     "l_code_copied_clipboard": "Kod panoya kopyalandı",
     "s_copy_log": "Günlüğü kopyala",
+    "l_copy_log_clipboard": null,
     "l_log_copied": "Günlük panoya kopyalandı",
     "l_diagnostics_copied": "Teşhis verileri panoya kopyalandı",
     "p_target_copied_clipboard": "{label} panoya kopyalandı.",
@@ -994,8 +1009,8 @@
             }
         }
     },
-
     "@_custom_icons": {},
+
     "s_custom_icons": "Özel simgeler",
     "l_set_icons_for_accounts": "Hesaplar için simge ayarla",
     "p_custom_icons_description": "Simge paketleri, hesaplarınızı tanıdık logolar ve renklerle daha kolay ayırt edilebilir hale getirebilir.",
@@ -1025,10 +1040,13 @@
     },
     "l_invalid_icon_pack": "Geçersiz simge paketi",
     "l_icon_pack_copy_failed": "Simge paketi dosyaları kopyalanırken başarısız olundu",
-
     "@_android_settings": {},
+
     "s_nfc_options": "NFC seçenekleri",
+    "s_nfc_and_usb_options": null,
+    "l_nfc_and_usb_options_desc": null,
     "l_on_yk_nfc_tap": "YubiKey NFC dokunuşunda",
+    "l_on_yk_usb_insert": null,
     "l_do_nothing": "Hiçbir şey yapma",
     "l_launch_ya": "Yubico Kimlik Doğrulayıcısını başlatın",
     "l_copy_otp_clipboard": "OTP'yi panoya kopyala",
@@ -1046,32 +1064,33 @@
     "l_launch_app_on_usb_on": "Bu, diğer uygulamaların USB üzerinden YubiKey'i kullanmasını engeller",
     "l_launch_app_on_usb_off": "Diğer uygulamalar USB üzerinden YubiKey'i kullanabilir",
     "s_allow_screenshots": "Ekran görüntülerine izin ver",
-
+    "l_allow_screenshots_desc": null,
     "@_nfc": {},
+
     "s_nfc_ready_to_scan": "Taramaya hazır",
     "s_nfc_hold_still": "Aynı yerde tutmaya devam edin\u2026",
     "s_nfc_tap_your_yubikey": "YubiKey'inize dokunun",
     "l_nfc_failed_to_scan": "Tarama başarısız, tekrar deneyin",
-
     "@_usb": {},
+
     "s_usb_processing": "YubiKey üzerinden veri okunuyor",
     "s_usb_dont_remove": "Anahtarı çıkarmayın\u2026",
     "l_usb_read_error": "YubiKey üzerinden veri okunurken başarısız olundu",
-
     "@_ndef": {},
+
     "p_ndef_set_otp": "OTP kodu, YubiKey'den panoya başarıyla kopyalandı.",
     "p_ndef_set_password": "Şifre, YubiKey'den panoya başarıyla kopyalandı.",
     "p_ndef_parse_failure": "YubiKey'den OTP kodunun ayrıştırılmasında başarısız olundu.",
     "p_ndef_set_clip_failure": "YubiKey'den OTP kodu kopyalamaya çalışırken panoya erişilemedi.",
-
     "@_key_customization": {},
+
     "s_set_label": "Etiket ayarla",
     "s_set_color": "Renk ayarla",
     "s_change_label": "Etiketi değiştir",
     "p_set_will_add_custom_name": "Bu, YubiKey'inize özel bir ad verecektir.",
     "p_rename_will_change_custom_name": "Bu, YubiKey'inizin etiketini değiştirecektir.",
-
     "@_shortcuts": {},
+
     "s_shortcuts": null,
     "s_keyboard_shortcuts": null,
     "s_global_shortcuts": null,
@@ -1102,6 +1121,6 @@
     "s_delete_item": null,
     "s_calculate_oath_code": null,
     "s_open_keyboard_shortcuts": null,
-
     "@_eof": {}
+
 }

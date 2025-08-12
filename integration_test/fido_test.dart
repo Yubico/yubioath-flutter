@@ -138,11 +138,10 @@ void main() {
         await $(unlockFido2WithPin).tap();
       }
 
-      final passkeys = $(
-        AppListItem<FidoCredential>,
-      ).which<AppListItem<FidoCredential>>(
-        (widget) => widget.item.rpId == 'delete.example.com',
-      );
+      final passkeys = $(AppListItem<FidoCredential>)
+          .which<AppListItem<FidoCredential>>(
+            (widget) => widget.item.rpId == 'delete.example.com',
+          );
       await $.condition(() => passkeys.exists);
 
       final passkey = passkeys.first;

@@ -28,7 +28,7 @@ android {
 
     namespace 'com.yubico.authenticator'
 
-    compileSdk project.compileSdkVersion
+    compileSdkVersion project.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -46,7 +46,7 @@ android {
     defaultConfig {
         applicationId "com.yubico.yubioath"
         minSdkVersion project.minSdkVersion
-        targetSdk project.targetSdkVersion
+        targetSdkVersion project.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -101,7 +101,7 @@ dependencies {
     api "com.yubico.yubikit:piv:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
 
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2'
