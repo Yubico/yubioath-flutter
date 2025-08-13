@@ -95,6 +95,7 @@ flutter {
 
 dependencies {
     api "com.yubico.yubikit:android:$project.yubiKitVersion"
+    api "com.yubico.yubikit:core:$project.yubiKitVersion"
     api "com.yubico.yubikit:management:$project.yubiKitVersion"
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
     api "com.yubico.yubikit:fido:$project.yubiKitVersion"

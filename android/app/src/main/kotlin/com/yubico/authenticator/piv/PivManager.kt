@@ -46,6 +46,8 @@ import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.core.util.Tlv
+import com.yubico.yubikit.core.util.Tlvs
 import com.yubico.yubikit.management.Capability
 import com.yubico.yubikit.piv.KeyType
 import com.yubico.yubikit.piv.ManagementKeyType
@@ -59,7 +61,10 @@ import io.flutter.plugin.common.MethodChannel
 import org.bouncycastle.asn1.x500.X500Name
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.text.SimpleDateFormat
 import java.util.Arrays
@@ -496,8 +501,23 @@ class PivManager(
         }
 
     private fun generateChuid(): ByteArray {
-        // TODO
-        return ByteArray(10)
+        // Non-Federal Issuer FASC-N
+        // [9999-9999-999999-0-1-0000000000300001]
+        val fascN = "D4E739DA739CED39CE739D836858210842108421C84210C3EB".hexStringToByteArray()
+
+        // Expires on: 2030-01-01 -> "20300101" ASCII
+        val expiry = "20300101".toByteArray(StandardCharsets.US_ASCII)
+
+        // Random 16-byte GUID
+        val guid = ByteArray(16).also { SecureRandom().nextBytes(it) }
+
+        return Tlvs.encodeList(listOf(
+            Tlv(0x30, fascN),
+            Tlv(0x34, guid),
+            Tlv(0x35, expiry),
+            Tlv(0x3E, ByteArray(0)),
+            Tlv(0xFE, ByteArray(0))
+        ))
     }
 
     private fun chooseCertificate(certificates: List<X509Certificate>?): X509Certificate? {
