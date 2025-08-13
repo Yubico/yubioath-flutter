@@ -78,6 +78,12 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+        exclude 'META-INF/versions/9/OSGI-INF/bcprov.provider.bc.Licenses'
+        exclude 'META-INF/versions/9/OSGI-INF/bcpkix.provider.bc.Licenses'
+    }
+
 }
 
 apply from: "signing.gradle"
@@ -89,9 +95,11 @@ flutter {
 
 dependencies {
     api "com.yubico.yubikit:android:$project.yubiKitVersion"
+    api "com.yubico.yubikit:core:$project.yubiKitVersion"
     api "com.yubico.yubikit:management:$project.yubiKitVersion"
     api "com.yubico.yubikit:oath:$project.yubiKitVersion"
     api "com.yubico.yubikit:fido:$project.yubiKitVersion"
+    api "com.yubico.yubikit:piv:$project.yubiKitVersion"
     api "com.yubico.yubikit:support:$project.yubiKitVersion"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
@@ -106,6 +114,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
 
     implementation 'com.github.tony19:logback-android:3.0.0'
+
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.80'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.79'
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"

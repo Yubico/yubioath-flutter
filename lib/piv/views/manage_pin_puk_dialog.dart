@@ -95,6 +95,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   }
 
   Future<void> _submit() async {
+    _currentPinFocus.unfocus();
+    _newPinFocus.unfocus();
+    _confirmPinFocus.unfocus();
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     final l10n = AppLocalizations.of(context);
 
