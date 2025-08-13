@@ -33,10 +33,9 @@ fun ByteArray.byteArrayToHexString(): String = toHexString()
 fun String.hexStringToByteArray(): ByteArray = hexToByteArray()
 
 fun Date.isoFormat(): String = if (Build.VERSION.SDK_INT >= 26) {
-    toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+    toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE)
 } else {
-    @Suppress("SpellCheckingInspection")
-    val isoFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    val isoFormat = "yyyy-MM-dd"
     val sdf = SimpleDateFormat(isoFormat, Locale.US)
     sdf.timeZone = TimeZone.getTimeZone("UTC")
     sdf.format(this)
