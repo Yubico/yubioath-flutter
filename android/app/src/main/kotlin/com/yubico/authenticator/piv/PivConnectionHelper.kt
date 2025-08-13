@@ -17,7 +17,6 @@
 package com.yubico.authenticator.piv
 
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
@@ -35,7 +34,7 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
         return pendingAction != null
     }
 
-    fun invokePending(piv: YubiKitPivSession): Boolean {
+    fun invokePending(piv: SmartCardConnection): Boolean {
         var requestHandled = true
         pendingAction?.let { action ->
             pendingAction = null
@@ -53,14 +52,12 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
         }
     }
 
-    suspend fun <T> useSession(
-        updateDeviceInfo: Boolean = false,
-        block: (YubiKitPivSession) -> T
+    suspend fun <T> useSmartCardConnection(
+        block: (SmartCardConnection) -> T
     ): T {
-        PivManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
-            onUsb = { useSessionUsb(it, updateDeviceInfo, block) },
-            onNfc = { useSessionNfc(block) },
+            onUsb = { useSmartCardConnectionUsb(it, block) },
+            onNfc = { useSmartCardConnectionNfc(block) },
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
@@ -68,20 +65,15 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
         )
     }
 
-    suspend fun <T> useSessionUsb(
+    suspend fun <T> useSmartCardConnectionUsb(
         device: UsbYubiKeyDevice,
-        updateDeviceInfo: Boolean = false,
-        block: (YubiKitPivSession) -> T
+        block: (SmartCardConnection) -> T
     ): T = device.withConnection<SmartCardConnection, T> {
-        block(YubiKitPivSession(it))
-    }.also {
-        if (updateDeviceInfo) {
-            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
-        }
+        block(it)
     }
 
-    suspend fun <T> useSessionNfc(
-        block: (YubiKitPivSession) -> T
+    suspend fun <T> useSmartCardConnectionNfc(
+        block: (SmartCardConnection) -> T
     ): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
