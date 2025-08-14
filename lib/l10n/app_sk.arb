@@ -926,7 +926,7 @@
     "l_admin_privileges_required": "Vyžadujú sa oprávnenia správcu",
     "p_elevated_permissions_required": "Spravovanie tohto zariadenia vyžaduje zvýšené oprávnenia. Alternatívne môžete na správu nastavenia FIDO použiť Nastavenia systému Windows.",
     "p_webauthn_elevated_permissions_required": "Spravovanie WebAuthn vyžaduje zvýšené oprávnenia. Alternatívne môžete na správu nastavenia FIDO použiť Nastavenia systému Windows.",
-    "l_ms_store_permission_note": "Verzia aplikácie v obchode Microsoft Store nemusí byť schopná zvýšiť oprávnenia",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Aplikácia Yubico Authenticator potrebuje na skenovanie QR kódov povolenia kamery.",
     "@_qr_codes": {},
 

@@ -926,7 +926,7 @@
     "l_admin_privileges_required": "需要管理員許可權",
     "p_elevated_permissions_required": "管理此裝置需要提升權限。或者，您可以使用 Windows 設定來管理 FIDO 組態。",
     "p_webauthn_elevated_permissions_required": "管理此裝置需要提升權限。或者，您可以使用 Windows 設定來管理 FIDO 組態。",
-    "l_ms_store_permission_note": "Microsoft Store 版本的應用程式可能無法提升權限",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator 需要相機權限才能掃描 QR 碼。",
     "@_qr_codes": {},
 

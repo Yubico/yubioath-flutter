@@ -926,7 +926,7 @@
     "l_admin_privileges_required": "Uprawnienia administratora są wymagane",
     "p_elevated_permissions_required": "Zarządzanie tym urządzeniem wymaga podwyższonych uprawnień. Opcjonalnie, możesz użyć ustawień systemu Windows do zarządzania konfiguracją FIDO.",
     "p_webauthn_elevated_permissions_required": "Zarządzanie WebAuthn wymaga podwyższonych uprawnień. Opcjonalnie, możesz użyć ustawień systemu Windows do zarządzania konfiguracją FIDO.",
-    "l_ms_store_permission_note": "Wersja aplikacji ze sklepu Microsoft Store może nie być w stanie podnieść uprawnień",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator wymaga dostępu do aparatu w celu skanowania kodów QR.",
     "@_qr_codes": {},
 

@@ -45,7 +45,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           header: l10n.l_admin_privileges_required,
           message: l10n.p_elevated_permissions_required,
           actionsBuilder: (context, expanded) => [const ElevateFidoButtons()],
-          footnote: isMicrosoftStore ? l10n.l_ms_store_permission_note : null,
+          footnote: isMicrosoftStore ? l10n.p_ms_store_permission_note : null,
         );
       }
     }

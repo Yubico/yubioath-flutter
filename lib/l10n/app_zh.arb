@@ -926,7 +926,7 @@
     "l_admin_privileges_required": "需要管理员权限",
     "p_elevated_permissions_required": "管理此设备需要管理员权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
     "p_webauthn_elevated_permissions_required": "WebAuthn 管理需要管理员权限。或者，您可以使用 Windows 设置来管理 FIDO 配置。",
-    "l_ms_store_permission_note": "Microsoft Store 版本的应用程序可能无法提升权限",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico 身份验证器需要相机权限以扫描二维码。",
     "@_qr_codes": {},
 
