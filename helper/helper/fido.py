@@ -21,7 +21,7 @@ from fido2.ctap2 import ClientPin, Config, Ctap2
 from fido2.ctap2.bio import BioEnrollment, CaptureError, FPBioEnrollment
 from fido2.ctap2.credman import CredentialManagement
 from ykman.base import REINSERT_STATUS
-from ykman.settings import Settings
+from ykman.settings import AppData
 from yubikit.core.fido import FidoConnection
 
 from .base import (
@@ -74,8 +74,9 @@ class Ctap2Node(RpcNode):
         self.ctap = Ctap2(connection)
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
-        self._ppuat_store = Settings("ppuats")
+        self._ppuat_store = AppData("ppuats")
         self._token = None
+        self._ident = None
         self._ppuat = self._get_ppuat()
         self._device = device
         self._reader_name = reader_name
@@ -91,9 +92,10 @@ class Ctap2Node(RpcNode):
 
     def _get_ppuat(self) -> bytes | None:
         if CredentialManagement.is_readonly_supported(self._info):
-            items = self._ppuat_store.items()
-            for ppuat, ident in items:
+            idents = self._ppuat_store.keys()
+            for ident in idents:
                 try:
+                    ppuat = self._ppuat_store.get_secret(ident)
                     curr_ident = self._info.get_identifier(bytes.fromhex(ppuat))
                     if curr_ident and bytes.fromhex(ident) == curr_ident:
                         logger.debug("Using stored PPUAT")
@@ -185,7 +187,7 @@ class Ctap2Node(RpcNode):
                 )
                 ident = self._info.get_identifier(self._ppuat)
                 if ident:
-                    self._ppuat_store[self._ppuat.hex()] = ident.hex()
+                    self._ppuat_store.put_secret(ident.hex(), self._ppuat.hex())
                     self._ppuat_store.write()
             if permissions:
                 self._token = self.client_pin.get_pin_token(pin, permissions)
