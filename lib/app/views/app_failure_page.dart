@@ -77,7 +77,7 @@ class AppFailurePage extends ConsumerWidget {
               graphic = null;
               actions = [const ElevateFidoButtons()];
               if (isMicrosoftStore) {
-                footnote = l10n.l_ms_store_permission_note;
+                footnote = l10n.p_ms_store_permission_note;
               }
             }
             break;

@@ -926,7 +926,7 @@
     "l_admin_privileges_required": "管理者権限が必要です",
     "p_elevated_permissions_required": "このデバイスを管理するには管理者権限が必要です。",
     "p_webauthn_elevated_permissions_required": "WebAuthn の管理には管理者権限が必要です。",
-    "l_ms_store_permission_note": "Microsoft Store 版では、権限を取得できない可能性があります",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "QR コードをスキャンするには、Yubico Authenticator にカメラへのアクセスを許可してください。",
     "@_qr_codes": {},
 
