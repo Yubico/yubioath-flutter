@@ -11,21 +11,23 @@ import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
 import '../state.dart';
 
-class FidoPinDialog2 extends ConsumerStatefulWidget {
+class FidoPinConfirmationDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final FidoState state;
 
-  const FidoPinDialog2({
+  const FidoPinConfirmationDialog({
     super.key,
     required this.devicePath,
     required this.state,
   });
 
   @override
-  ConsumerState<FidoPinDialog2> createState() => _FidoPinDialog2State();
+  ConsumerState<FidoPinConfirmationDialog> createState() =>
+      _FidoPinConfirmationDialog();
 }
 
-class _FidoPinDialog2State extends ConsumerState<FidoPinDialog2> {
+class _FidoPinConfirmationDialog
+    extends ConsumerState<FidoPinConfirmationDialog> {
   final _pinController = TextEditingController();
   final _pinFocus = FocusNode();
   bool _blocked = false;
@@ -91,6 +93,9 @@ class _FidoPinDialog2State extends ConsumerState<FidoPinDialog2> {
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context);
+    if (_retries == 0) {
+      return l10n.l_pin_blocked_reset;
+    }
     if (_blocked) {
       return l10n.l_pin_soft_locked;
     }

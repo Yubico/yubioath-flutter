@@ -87,6 +87,7 @@ class Ctap2Node(RpcNode):
         except CtapError as e:
             if e.code == CtapError.ERR.PIN_AUTH_INVALID:
                 self._delete_ppuat()
+                logger.debug("Throwing auth required from __call__")
                 raise AuthRequiredException()
             raise
 
@@ -94,14 +95,12 @@ class Ctap2Node(RpcNode):
         if CredentialManagement.is_readonly_supported(self._info):
             idents = self._ppuat_store.keys()
             for ident in idents:
-                try:
-                    ppuat = self._ppuat_store.get_secret(ident)
-                    curr_ident = self._info.get_identifier(bytes.fromhex(ppuat))
-                    if curr_ident and bytes.fromhex(ident) == curr_ident:
-                        logger.debug("Using stored PPUAT")
-                        return bytes.fromhex(ppuat)
-                except Exception as e:  # noqa: S110
-                    pass
+                ppuat = self._ppuat_store.get_secret(ident)
+                curr_ident = self._info.get_identifier(bytes.fromhex(ppuat))
+                if curr_ident and bytes.fromhex(ident) == curr_ident:
+                    logger.debug("Using stored PPUAT")
+                    self._ident = curr_ident
+                    return bytes.fromhex(ppuat)
         return None
 
     def _delete_ppuat(self):
@@ -109,9 +108,11 @@ class Ctap2Node(RpcNode):
             return
 
         logger.debug("Deleting stored PPUAT")
-        del self._ppuat_store[self._ppuat.hex()]
-        self._ppuat_store.write()
-        self._ppuat = None
+        if self._ident:
+            del self._ppuat_store[self._ident.hex()]
+            self._ppuat_store.write()
+            self._ppuat = None
+            self._ident = None
 
     def get_data(self):
         self._info = self.ctap.get_info()
@@ -185,9 +186,9 @@ class Ctap2Node(RpcNode):
                 self._ppuat = self.client_pin.get_pin_token(
                     pin, ClientPin.PERMISSION.PERSISTENT_CREDENTIAL_MGMT
                 )
-                ident = self._info.get_identifier(self._ppuat)
-                if ident:
-                    self._ppuat_store.put_secret(ident.hex(), self._ppuat.hex())
+                self._ident = self._info.get_identifier(self._ppuat)
+                if self._ident:
+                    self._ppuat_store.put_secret(self._ident.hex(), self._ppuat.hex())
                     self._ppuat_store.write()
             if permissions:
                 self._token = self.client_pin.get_pin_token(pin, permissions)
@@ -236,6 +237,7 @@ class Ctap2Node(RpcNode):
     def credentials(self):
         token = self._token or self._ppuat
         if not token:
+            logger.debug("Throwing auth required from credentials")
             raise AuthRequiredException()
         creds = CredentialManagement(self.ctap, self.client_pin.protocol, token)
         return CredentialsRpsNode(creds)
