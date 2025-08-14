@@ -30,7 +30,7 @@ import '../models.dart';
 import '../state.dart';
 import 'delete_credential_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
-import 'pin_dialog2.dart';
+import 'pin_confirmation_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
 
 Future<bool> unlockFido(
@@ -42,7 +42,7 @@ Future<bool> unlockFido(
   return await showBlurDialog(
         context: context,
         builder: (context) =>
-            FidoPinDialog2(devicePath: devicePath, state: state),
+            FidoPinConfirmationDialog(devicePath: devicePath, state: state),
       ) ??
       false;
 }
