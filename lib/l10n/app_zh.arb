@@ -313,6 +313,7 @@
     "s_fido_pin_protection": "FIDO PIN 保护",
     "s_pin_change_required": "需要更改 PIN",
     "l_enter_fido2_pin": "输入 YubiKey 的 FIDO2 PIN",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN 已被封禁，将 FIDO 应用程序恢复出厂设置",
     "l_pin_blocked": "PIN 已被封禁",
     "l_set_pin_first": "需要 PIN",
