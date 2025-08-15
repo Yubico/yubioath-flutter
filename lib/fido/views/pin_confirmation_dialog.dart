@@ -108,8 +108,8 @@ class _FidoPinConfirmationDialog
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final authBlocked = widget.state.pinBlocked;
-    final pinRetries = widget.state.pinRetries;
+    final authBlocked = widget.state.pinBlocked || _blocked;
+    final pinRetries = _retries ?? widget.state.pinRetries;
 
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
@@ -141,13 +141,14 @@ class _FidoPinConfirmationDialog
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_pin,
-                        helperText: pinRetries != null && pinRetries <= 3
+                        helperText:
+                            pinRetries != null &&
+                                pinRetries <= 3 &&
+                                pinRetries > 0
                             ? l10n.l_attempts_remaining(pinRetries)
                             : '',
                         // Prevents dialog resizing
-                        errorText:
-                            (_pinIsWrong || authBlocked) &&
-                                !(authBlocked || _retries == 0)
+                        errorText: (_pinIsWrong || authBlocked)
                             ? _getErrorText()
                             : null,
                         errorMaxLines: 3,
