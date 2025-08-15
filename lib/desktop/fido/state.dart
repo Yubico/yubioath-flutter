@@ -107,7 +107,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   FutureOr<FidoState> _build(DevicePath devicePath) async {
     var result = await _session.command('get');
     FidoState fidoState = FidoState.fromJson(result['data']);
-    if (fidoState.hasPin && !fidoState.unlockedRead) {
+    if (fidoState.hasPin && !fidoState.unlocked) {
       final pin = ref.read(_pinProvider(devicePath));
       if (pin != null) {
         await unlock(pin);

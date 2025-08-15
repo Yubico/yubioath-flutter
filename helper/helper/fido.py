@@ -14,23 +14,22 @@
 
 import logging
 from dataclasses import asdict
-from time import sleep
 
 from fido2.ctap import STATUS, CtapError
 from fido2.ctap2 import ClientPin, Config, Ctap2
 from fido2.ctap2.bio import BioEnrollment, CaptureError, FPBioEnrollment
 from fido2.ctap2.credman import CredentialManagement
 from ykman.base import REINSERT_STATUS
-from ykman.settings import AppData
+from ykman.settings import AppData, UnwrapValueError
 from yubikit.core.fido import FidoConnection
 
 from .base import (
+    SECRETSTORE,
     AuthRequiredException,
     PinComplexityException,
     RpcException,
     RpcNode,
     RpcResponse,
-    TimeoutException,
     action,
     child,
 )
@@ -68,15 +67,66 @@ def _handle_pin_error(e, client_pin):
 
 
 class Ctap2Node(RpcNode):
+    _ppuat_store_state = SECRETSTORE.UNKNOWN
+    _ppuats = None  # type:ignore
+
+    @classmethod
+    def _get_ppuats(cls):
+        if not cls._ppuats:
+            cls._ppuats = AppData("ppuats")
+        return cls._ppuats
+
+    @classmethod
+    def _unlock_ppuat_store(cls):
+        ppuats = cls._get_ppuats()
+        state = cls._ppuat_store_state
+        if state == SECRETSTORE.UNKNOWN:
+            try:
+                ppuats.ensure_unlocked()
+                cls._ppuat_store_state = SECRETSTORE.ALLOWED
+            except Exception:  # TODO: Use more specific exceptions
+                logger.warning("Couldn't read key from Keychain", exc_info=True)
+                cls._ppuat_store_state = SECRETSTORE.FAILED
+        return cls._ppuat_store_state == SECRETSTORE.ALLOWED
+
+    def _get_ppuat(self) -> bytes | None:
+        if (
+            CredentialManagement.is_readonly_supported(self._info)
+            and self._unlock_ppuat_store()
+        ):
+            ppuats = self._get_ppuats()
+            for ident in ppuats:
+                try:
+                    ppuat = ppuats.get_secret(ident)
+                    curr_ident = self._info.get_identifier(bytes.fromhex(ppuat))
+                    if curr_ident and bytes.fromhex(ident) == curr_ident:
+                        logger.debug("Using stored PPUAT")
+                        self._ident = curr_ident
+                        return bytes.fromhex(ppuat)
+                except UnwrapValueError:
+                    logger.warning("Failed to unwrap access key", exc_info=True)
+        return None
+
+    def _delete_ppuat(self):
+        if not self._ppuat:  # type:ignore
+            return
+
+        if self._ident:
+            logger.debug("Deleting stored PPUAT")
+            ppuats = self._get_ppuats()
+            del ppuats[self._ident.hex()]
+            ppuats.write()
+            self._ppuat = None
+            self._ident = None  # type:ignore
+
     def __init__(self, connection, device, reader_name):
         super().__init__()
         self._connection = connection
         self.ctap = Ctap2(connection)
         self._info = self.ctap.info
         self.client_pin = ClientPin(self.ctap)
-        self._ppuat_store = AppData("ppuats")
         self._token = None
-        self._ident = None
+        self._ident = None  # type:ignore
         self._ppuat = self._get_ppuat()
         self._device = device
         self._reader_name = reader_name
@@ -86,33 +136,11 @@ class Ctap2Node(RpcNode):
             return super().__call__(*args, **kwargs)
         except CtapError as e:
             if e.code == CtapError.ERR.PIN_AUTH_INVALID:
-                self._delete_ppuat()
-                logger.debug("Throwing auth required from __call__")
+                if not self._token:
+                    # Only delete PPUAT if it was used
+                    self._delete_ppuat()
                 raise AuthRequiredException()
             raise
-
-    def _get_ppuat(self) -> bytes | None:
-        if CredentialManagement.is_readonly_supported(self._info):
-            idents = self._ppuat_store.keys()
-            for ident in idents:
-                ppuat = self._ppuat_store.get_secret(ident)
-                curr_ident = self._info.get_identifier(bytes.fromhex(ppuat))
-                if curr_ident and bytes.fromhex(ident) == curr_ident:
-                    logger.debug("Using stored PPUAT")
-                    self._ident = curr_ident
-                    return bytes.fromhex(ppuat)
-        return None
-
-    def _delete_ppuat(self):
-        if not self._ppuat:
-            return
-
-        logger.debug("Deleting stored PPUAT")
-        if self._ident:
-            del self._ppuat_store[self._ident.hex()]
-            self._ppuat_store.write()
-            self._ppuat = None
-            self._ident = None
 
     def get_data(self):
         self._info = self.ctap.get_info()
@@ -186,10 +214,11 @@ class Ctap2Node(RpcNode):
                 self._ppuat = self.client_pin.get_pin_token(
                     pin, ClientPin.PERMISSION.PERSISTENT_CREDENTIAL_MGMT
                 )
-                self._ident = self._info.get_identifier(self._ppuat)
-                if self._ident:
-                    self._ppuat_store.put_secret(self._ident.hex(), self._ppuat.hex())
-                    self._ppuat_store.write()
+                self._ident = self._info.get_identifier(self._ppuat)  # type:ignore
+                ppuats = self._get_ppuats()
+                if self._ident and self._unlock_ppuat_store():
+                    ppuats.put_secret(self._ident.hex(), self._ppuat.hex())
+                    ppuats.write()
             if permissions:
                 self._token = self.client_pin.get_pin_token(pin, permissions)
             else:
@@ -235,9 +264,9 @@ class Ctap2Node(RpcNode):
 
     @child(condition=lambda self: CredentialManagement.is_supported(self._info))
     def credentials(self):
+        # Prioritize normal token over PPUAT
         token = self._token or self._ppuat
         if not token:
-            logger.debug("Throwing auth required from credentials")
             raise AuthRequiredException()
         creds = CredentialManagement(self.ctap, self.client_pin.protocol, token)
         return CredentialsRpsNode(creds)

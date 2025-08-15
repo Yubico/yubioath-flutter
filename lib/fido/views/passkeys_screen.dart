@@ -357,6 +357,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final searchText = searchController.text;
     return FidoActions(
       devicePath: widget.deviceData.node.path,
+      state: widget.state,
       actions: (context) => {
         SearchIntent: CallbackAction<SearchIntent>(
           onInvoke: (_) {
@@ -386,7 +387,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             return showBlurDialog(
               context: context,
               barrierColor: Colors.transparent,
-              builder: (context) => CredentialDialog(intent.target),
+              builder: (context) =>
+                  CredentialDialog(intent.target, state: widget.state),
             );
           },
         ),

@@ -27,7 +27,6 @@ import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
-import '../state.dart';
 import 'delete_credential_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
 import 'pin_confirmation_dialog.dart';
@@ -49,12 +48,14 @@ Future<bool> unlockFido(
 
 class FidoActions extends ConsumerWidget {
   final DevicePath devicePath;
+  final FidoState state;
   final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
   final Widget Function(BuildContext context) builder;
 
   const FidoActions({
     super.key,
     required this.devicePath,
+    required this.state,
     this.actions,
     required this.builder,
   });
@@ -64,8 +65,7 @@ class FidoActions extends ConsumerWidget {
     final withContext = ref.read(withContextProvider);
     final hasFeature = ref.read(featureProvider);
 
-    final fidoState = ref.watch(fidoStateProvider(devicePath)).value;
-    final unlocked = fidoState?.unlocked ?? false;
+    final unlocked = state.unlocked;
 
     return Actions(
       actions: {
@@ -78,7 +78,7 @@ class FidoActions extends ConsumerWidget {
                   if (!unlocked &&
                       !await withContext(
                         (context) =>
-                            unlockFido(context, ref, devicePath, fidoState!),
+                            unlockFido(context, ref, devicePath, state),
                       )) {
                     return false;
                   }
