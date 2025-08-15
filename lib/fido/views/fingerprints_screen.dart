@@ -259,6 +259,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final fingerprint = _selected;
     return FidoActions(
       devicePath: widget.deviceData.node.path,
+      state: widget.state,
       actions: (context) => {
         EscapeIntent: CallbackAction<EscapeIntent>(
           onInvoke: (intent) {
@@ -277,7 +278,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             return showBlurDialog(
               context: context,
               barrierColor: Colors.transparent,
-              builder: (context) => FingerprintDialog(intent.target),
+              builder: (context) =>
+                  FingerprintDialog(intent.target, state: widget.state),
             );
           },
         ),

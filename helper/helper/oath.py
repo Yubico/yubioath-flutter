@@ -26,6 +26,7 @@ from yubikit.core.smartcard import SW, ApduError
 from yubikit.oath import HASH_ALGORITHM, OATH_TYPE, CredentialData, OathSession
 
 from .base import (
+    SECRETSTORE,
     AuthRequiredException,
     ChildResetException,
     RpcNode,
@@ -40,16 +41,8 @@ from .base import (
 logger = logging.getLogger(__name__)
 
 
-@unique
-class KEYSTORE(str, Enum):
-    UNKNOWN = "unknown"
-    ALLOWED = "allowed"
-    FAILED = "failed"
-    # DENIED = "denied"  # Maybe failed is enough?
-
-
 class OathNode(RpcNode):
-    _keystore_state = KEYSTORE.UNKNOWN
+    _keystore_state = SECRETSTORE.UNKNOWN
     _oath_keys = None
 
     @classmethod
@@ -62,14 +55,14 @@ class OathNode(RpcNode):
     def _unlock_keystore(cls):
         keys = cls._get_keys()
         state = cls._keystore_state
-        if state == KEYSTORE.UNKNOWN:
+        if state == SECRETSTORE.UNKNOWN:
             try:
                 keys.ensure_unlocked()
-                cls._keystore_state = KEYSTORE.ALLOWED
+                cls._keystore_state = SECRETSTORE.ALLOWED
             except Exception:  # TODO: Use more specific exceptions
                 logger.warning("Couldn't read key from Keychain", exc_info=True)
-                cls._keystore_state = KEYSTORE.FAILED
-        return cls._keystore_state == KEYSTORE.ALLOWED
+                cls._keystore_state = SECRETSTORE.FAILED
+        return cls._keystore_state == SECRETSTORE.ALLOWED
 
     def _get_access_key(self, device_id):
         keys = self._get_keys()

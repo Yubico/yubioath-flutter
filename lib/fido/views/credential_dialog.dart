@@ -30,9 +30,10 @@ import 'actions.dart';
 import 'credential_info_view.dart';
 
 class CredentialDialog extends ConsumerWidget {
+  final FidoState state;
   final FidoCredential credential;
 
-  const CredentialDialog(this.credential, {super.key});
+  const CredentialDialog(this.credential, {required this.state, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,6 +50,7 @@ class CredentialDialog extends ConsumerWidget {
 
     return FidoActions(
       devicePath: node.path,
+      state: state,
       actions: (context) => {
         if (hasFeature(features.credentialsDelete))
           DeleteIntent<FidoCredential>:
