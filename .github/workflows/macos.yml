@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Read variables from repo
       run: |
@@ -32,7 +32,7 @@ jobs:
         podfile-path: macos/Podfile.lock
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v5
+      uses: astral-sh/setup-uv@v6
       with:
         enable-cache: true
 
