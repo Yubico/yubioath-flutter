@@ -91,7 +91,7 @@ dev_dependencies:
   json_serializable: ^6.9.5
   analyzer:
   analyzer_plugin:
-  custom_lint_builder:
+  custom_lint_builder: 0.8.0
   custom_lint:
   lint:
     path: lint
