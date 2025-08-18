@@ -95,7 +95,7 @@ dev_dependencies:
   custom_lint:
   lint:
     path: lint
-  patrol_finders: ^2.8.2
+  patrol_finders: ^2.9.0
   meta: ^1.16.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
