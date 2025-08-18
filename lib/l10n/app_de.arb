@@ -571,6 +571,7 @@
     "s_passkey_deleted": "Passkey gelöscht",
     "p_warning_delete_passkey": "Achtung! Diese Aktion löscht den Passkey von deinem YubiKey.",
     "p_warning_delete_passkey_desc": "Du wirst diesen Passkey nicht mehr für den Dienst, für den er registriert ist, verwenden können.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Passkeys durchsuchen",
     "p_passkeys_used": "{used} von {max} Passkeys verwendet.",
     "@p_passkeys_used": {

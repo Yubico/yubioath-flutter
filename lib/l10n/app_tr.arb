@@ -571,6 +571,7 @@
     "s_passkey_deleted": "Geçiş anahtarı silindi",
     "p_warning_delete_passkey": "Uyarı! Bu işlem YubiKey'inizden geçiş anahtarını silecektir.",
     "p_warning_delete_passkey_desc": "Artık bu geçiş anahtarını kayıtlı olduğu hizmet için kullanamazsınız.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Geçiş anahtarı ara",
     "p_passkeys_used": "Toplam {max} geçiş anahtarı kapasitesinin, {used} tanesi kullanılıyor.",
     "@p_passkeys_used": {

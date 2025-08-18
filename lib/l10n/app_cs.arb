@@ -571,6 +571,7 @@
     "s_passkey_deleted": "Přístupový klíč smazán",
     "p_warning_delete_passkey": "Varování! Tato akce odstraní přístupový klíč z YubiKey.",
     "p_warning_delete_passkey_desc": "Již nebudete moci používat tento přístupový klíč pro službu, kde je registrován.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Hledat přístupové klíče",
     "p_passkeys_used": "Použito {used} z {max} přístupových klíčů.",
     "@p_passkeys_used": {
