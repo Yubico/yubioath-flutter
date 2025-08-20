@@ -29,6 +29,7 @@ import '../../core/models.dart';
 import '../../exception/no_data_exception.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
+import '../app_methods.dart';
 import '../overlay/nfc/method_channel_notifier.dart' show MethodChannelNotifier;
 
 // TODO final _log = Logger('android.piv.state');
@@ -416,6 +417,7 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
       //     }
       //   });
       //
+      await preserveConnectedDeviceWhenPaused();
       final (type, subject, validFrom, validTo) = switch (parameters) {
         PivGeneratePublicKeyParameters() => (
           GenerateType.publicKey,
@@ -528,6 +530,7 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
+    await preserveConnectedDeviceWhenPaused();
     final result = jsonDecode(
       await piv.invoke('getSlot', {'slot': slot.hexId}),
     );

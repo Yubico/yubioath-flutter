@@ -53,10 +53,11 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
     }
 
     suspend fun <T> useSmartCardConnection(
+        onComplete: ((SmartCardConnection) -> Unit)? = null,
         block: (SmartCardConnection) -> T
     ): T {
         return deviceManager.withKey(
-            onUsb = { useSmartCardConnectionUsb(it, block) },
+            onUsb = { useSmartCardConnectionUsb(it, onComplete, block) },
             onNfc = { useSmartCardConnectionNfc(block) },
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
@@ -67,9 +68,10 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
 
     suspend fun <T> useSmartCardConnectionUsb(
         device: UsbYubiKeyDevice,
+        onComplete: ((SmartCardConnection) -> Unit)? = null,
         block: (SmartCardConnection) -> T
-    ): T = device.withConnection<SmartCardConnection, T> {
-        block(it)
+    ): T = device.withConnection<SmartCardConnection, T> { connection ->
+        block(connection).also { onComplete?.invoke(connection) }
     }
 
     suspend fun <T> useSmartCardConnectionNfc(

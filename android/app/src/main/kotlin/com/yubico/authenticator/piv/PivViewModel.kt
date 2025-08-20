@@ -71,4 +71,8 @@ class PivViewModel : ViewModel() {
             else slot
         })
     }
+
+    fun currentSerial(): String {
+        return currentSerial.value?.toString() ?: "NO DEVICE"
+    }
 }

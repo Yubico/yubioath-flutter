@@ -24,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../android/app_methods.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -208,6 +209,10 @@ class PivActions extends ConsumerWidget {
                 (context) => _authIfNeeded(context, ref, devicePath, pivState),
               )) {
                 return false;
+              }
+
+              if (Platform.isAndroid) {
+                await preserveConnectedDeviceWhenPaused();
               }
 
               final picked = await withContext((context) async {

@@ -45,7 +45,11 @@ data class PivState(
         authenticated: Boolean,
         derivedKey: Boolean,
         storedKey: Boolean,
-        supportsBio: Boolean
+        pinAttempts: Int,
+        supportsBio: Boolean,
+        chuid: String?,
+        ccc: String?,
+        metadata: PivStateMetadata?
     ) : this(
         Version(
             piv.version.major,
@@ -55,16 +59,11 @@ data class PivState(
         authenticated,
         derivedKey,
         storedKey,
-        piv.pinAttempts,
+        pinAttempts,
         supportsBio,
-        null,
-        null,
-        PivStateMetadata(
-            ManagementKeyMetadata(piv.managementKeyMetadata),
-            PinMetadata(piv.pinMetadata),
-            PinMetadata(piv.pukMetadata)
-        )
-
+        chuid,
+        ccc,
+        metadata
     )
 
     override fun toJson(): String {
