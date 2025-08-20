@@ -927,7 +927,7 @@
     "l_admin_privileges_required": "Yêu cầu quyền quản trị",
     "p_elevated_permissions_required": "Quản lý thiết bị này yêu cầu quyền quản trị. Bạn cũng có thể sử dụng Cài đặt Windows để quản lý cấu hình FIDO.",
     "p_webauthn_elevated_permissions_required": "Quản lý WebAuthn yêu cầu quyền quản trị. Bạn cũng có thể sử dụng Cài đặt Windows để quản lý cấu hình FIDO.",
-    "l_ms_store_permission_note": "Phiên bản ứng dụng từ Microsoft Store có thể không nâng cao quyền.",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator cần quyền truy cập Camera để quét mã QR.",
     "@_qr_codes": {},
 

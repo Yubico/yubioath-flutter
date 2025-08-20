@@ -927,7 +927,7 @@
     "l_admin_privileges_required": "Administratörsbehörighet krävs",
     "p_elevated_permissions_required": "För att hantera den här enheten krävs förhöjda behörigheter. Alternativt kan du använda Windows-inställningar för att hantera FIDO-konfigurationen.",
     "p_webauthn_elevated_permissions_required": "WebAuthn-hantering kräver förhöjda behörigheter. Alternativt kan du använda Windows-inställningar för att hantera FIDO-konfigurationen.",
-    "l_ms_store_permission_note": "Microsoft Store-versionen av appen kanske inte kan höja behörigheterna",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator behöver kamerabehörighet för att skanna QR-koder.",
     "@_qr_codes": {},
 
