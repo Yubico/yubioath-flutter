@@ -48,6 +48,9 @@ class _DeleteCredentialDialogState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return BasicDialog(
       icon: _isDeleting
@@ -65,12 +68,29 @@ class _DeleteCredentialDialogState
         children: [
           Text(
             l10n.p_warning_delete_passkey,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8.0),
           Text(l10n.p_warning_delete_passkey_desc),
+          const SizedBox(height: 16.0),
+          Row(
+            children: [
+              Icon(
+                Symbols.warning_amber,
+                size: 14.0,
+                color: colorScheme.tertiary,
+              ),
+              const SizedBox(width: 8.0),
+              Flexible(
+                child: Text(
+                  l10n.l_do_not_remove_yk_delete,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.tertiary,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       allowCancel: !_isDeleting,

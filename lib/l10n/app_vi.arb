@@ -571,6 +571,7 @@
     "s_passkey_deleted": "Mã bảo mật đã bị xóa",
     "p_warning_delete_passkey": null,
     "p_warning_delete_passkey_desc": null,
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Tìm kiếm mã bảo mật",
     "p_passkeys_used": "{used} trong {max} mã bảo mật đã sử dụng.",
     "@p_passkeys_used": {

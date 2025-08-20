@@ -571,6 +571,7 @@
     "s_passkey_deleted": "Passkey supprimé",
     "p_warning_delete_passkey": "Attention ! Cette action supprimera la clé d'accès de votre YubiKey.",
     "p_warning_delete_passkey_desc": "Vous ne pourrez plus utiliser cette clé d'accès pour le service où elle est enregistrée.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Rechercher des passkeys",
     "p_passkeys_used": "{used} des {max} passkeys utilisées.",
     "@p_passkeys_used": {

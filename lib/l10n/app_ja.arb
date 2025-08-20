@@ -571,6 +571,7 @@
     "s_passkey_deleted": "パスキーを削除しました",
     "p_warning_delete_passkey": "警告！この操作は Yubikey からパスキーを削除します。",
     "p_warning_delete_passkey_desc": "登録しているサービスで、このパスキーが使用できなくなります。",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "パスキーを検索",
     "p_passkeys_used": "パスキー {used} / {max} 個を使用中。",
     "@p_passkeys_used": {

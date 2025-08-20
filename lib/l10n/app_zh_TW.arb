@@ -571,6 +571,7 @@
     "s_passkey_deleted": "通行密鑰現已刪除",
     "p_warning_delete_passkey": "警告！此動作會刪除 YubiKey 中通行密鑰。",
     "p_warning_delete_passkey_desc": "您將無法再將此密鑰用於註冊服務。",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "搜尋通行密鑰",
     "p_passkeys_used": "{used} 使用的 {max} 通行密鑰。",
     "@p_passkeys_used": {

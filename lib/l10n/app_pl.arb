@@ -571,6 +571,7 @@
     "s_passkey_deleted": "Klucz dostępu został usunięty",
     "p_warning_delete_passkey": "Ostrzeżenie! Spowoduje to usunięcie klucza dostępu z YubiKey.",
     "p_warning_delete_passkey_desc": "Użycie tego klucza dostępu nie będzie już możliwe.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Szukaj kluczy dostępu",
     "p_passkeys_used": "Użyto {used} z {max} kluczy dostępu.",
     "@p_passkeys_used": {
