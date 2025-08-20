@@ -23,20 +23,20 @@ import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
-import com.yubico.authenticator.piv.data.PivSlot
-import com.yubico.authenticator.piv.data.PivState
-import com.yubico.authenticator.piv.data.SlotMetadata
-import com.yubico.authenticator.piv.data.byteArrayToHexString
-import com.yubico.authenticator.piv.data.fingerprint
-import com.yubico.authenticator.piv.data.hexStringToByteArray
-import com.yubico.authenticator.piv.data.isoFormat
 import com.yubico.authenticator.piv.KeyMaterialParser.getLeafCertificates
 import com.yubico.authenticator.piv.KeyMaterialParser.parse
 import com.yubico.authenticator.piv.KeyMaterialParser.toPem
 import com.yubico.authenticator.piv.data.ManagementKeyMetadata
 import com.yubico.authenticator.piv.data.PinMetadata
+import com.yubico.authenticator.piv.data.PivSlot
+import com.yubico.authenticator.piv.data.PivState
 import com.yubico.authenticator.piv.data.PivStateMetadata
 import com.yubico.authenticator.piv.data.PivmanData
+import com.yubico.authenticator.piv.data.SlotMetadata
+import com.yubico.authenticator.piv.data.byteArrayToHexString
+import com.yubico.authenticator.piv.data.fingerprint
+import com.yubico.authenticator.piv.data.hexStringToByteArray
+import com.yubico.authenticator.piv.data.isoFormat
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -58,6 +58,8 @@ import com.yubico.yubikit.piv.ManagementKeyType
 import com.yubico.yubikit.piv.ObjectId
 import com.yubico.yubikit.piv.PinPolicy
 import com.yubico.yubikit.piv.PivSession
+import com.yubico.yubikit.piv.PivSession.FEATURE_METADATA
+import com.yubico.yubikit.piv.PivSession.FEATURE_SERIAL
 import com.yubico.yubikit.piv.Slot
 import com.yubico.yubikit.piv.TouchPolicy
 import io.flutter.plugin.common.BinaryMessenger
@@ -262,7 +264,11 @@ class PivManager(
         val piv = getPivSession(connection)
 
         val previousSerial = pivViewModel.currentSerial
-        val currentSerial = piv.serialNumber
+        val currentSerial = if (piv.supports(FEATURE_SERIAL)) {
+            piv.serialNumber
+        } else {
+            null
+        }
         pivViewModel.setSerial(currentSerial)
         logger.debug(
             "Previous serial: {}, current serial: {}",
@@ -292,7 +298,7 @@ class PivManager(
         return requestHandled
     }
 
-    private var pivmanData: PivmanData?= null
+    private var pivmanData: PivmanData? = null
 
     /**
      * rereads the PIV state and slots
@@ -330,11 +336,16 @@ class PivManager(
                 supportsBio = supportsBio,
                 chuid = getObject(piv, ObjectId.CHUID)?.byteArrayToHexString(),
                 ccc = getObject(piv, ObjectId.CAPABILITY)?.byteArrayToHexString(),
-                metadata = PivStateMetadata(
-                    ManagementKeyMetadata(piv.managementKeyMetadata),
-                    PinMetadata(piv.pinMetadata),
-                    PinMetadata(piv.pukMetadata)
-                )
+                metadata = if (piv.supports(FEATURE_METADATA)) {
+                    PivStateMetadata(
+                        ManagementKeyMetadata(piv.managementKeyMetadata),
+                        PinMetadata(piv.pinMetadata),
+                        PinMetadata(piv.pukMetadata)
+                    )
+                } else {
+                    null
+                }
+
             )
         )
     }
@@ -405,7 +416,7 @@ class PivManager(
 
     private fun authenticateKeyBySerial(piv: PivSession, serial: String) =
         try {
-            val managementKey =  managementKeyStorage[serial] ?: defaultManagementKey
+            val managementKey = managementKeyStorage[serial] ?: defaultManagementKey
             piv.authenticate(managementKey)
         } catch (e: Exception) {
             managementKeyStorage.remove(serial)
@@ -425,15 +436,15 @@ class PivManager(
             }
         }
 
-    private fun doVerifyPin(piv: PivSession, serial: String) : String =
+    private fun doVerifyPin(piv: PivSession, serial: String): String =
         try {
             var authenticated = false
-            pinStorage[serial]?.let {pin ->
+            pinStorage[serial]?.let { pin ->
                 piv.verifyPin(pin)
 
-                val key = if (pivmanData?.hasDerivedKey ?: false)  {
+                val key = if (pivmanData?.hasDerivedKey ?: false) {
                     PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-                } else if (pivmanData?.hasStoredKey ?:false ) {
+                } else if (pivmanData?.hasStoredKey ?: false) {
                     val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
                     pivmanProtectedData.key
                 } else {
@@ -525,7 +536,7 @@ class PivManager(
             }
         }
 
-    private fun handlePinPukErrors(block: () -> Unit) : String {
+    private fun handlePinPukErrors(block: () -> Unit): String {
         try {
             block()
             return JSONObject(mapOf("status" to "success")).toString()
@@ -638,13 +649,15 @@ class PivManager(
         // Random 16-byte GUID
         val guid = ByteArray(16).also { SecureRandom().nextBytes(it) }
 
-        return Tlvs.encodeList(listOf(
-            Tlv(0x30, fascN),
-            Tlv(0x34, guid),
-            Tlv(0x35, expiry),
-            Tlv(0x3E, ByteArray(0)),
-            Tlv(0xFE, ByteArray(0))
-        ))
+        return Tlvs.encodeList(
+            listOf(
+                Tlv(0x30, fascN),
+                Tlv(0x34, guid),
+                Tlv(0x35, expiry),
+                Tlv(0x3E, ByteArray(0)),
+                Tlv(0xFE, ByteArray(0))
+            )
+        )
     }
 
     private fun chooseCertificate(certificates: List<X509Certificate>?): X509Certificate? {
@@ -671,7 +684,7 @@ class PivManager(
             )
         }
 
-    private fun publicKeyMatch(certificate: X509Certificate?, metadata: SlotMetadata?) : Boolean? {
+    private fun publicKeyMatch(certificate: X509Certificate?, metadata: SlotMetadata?): Boolean? {
         if (certificate == null || metadata == null) {
             return null
         }
@@ -788,6 +801,7 @@ class PivManager(
                         piv.putObject(ObjectId.CHUID, generateChuid())
                         result
                     }
+
                     else -> throw IllegalArgumentException("Invalid generate type: $generateType")
                 }
 
@@ -808,17 +822,17 @@ class PivManager(
         data: String,
         password: String?
     ): KeyMaterial = try {
-            parse(data.hexStringToByteArray(), password?.toCharArray())
-        } catch (e: Exception) {
-            when (e) {
-                is IllegalArgumentException, is IOException -> KeyMaterial(
-                    emptyList(),
-                    null
-                )
+        parse(data.hexStringToByteArray(), password?.toCharArray())
+    } catch (e: Exception) {
+        when (e) {
+            is IllegalArgumentException, is IOException -> KeyMaterial(
+                emptyList(),
+                null
+            )
 
-                else -> throw e
-            }
+            else -> throw e
         }
+    }
 
 
     private suspend fun importFile(
@@ -856,8 +870,7 @@ class PivManager(
                         SlotMetadata(piv.getSlotMetadata(slot))
                     } catch (e: Exception) {
                         when (e) {
-                            // TODO NotSupported
-                            is ApduException, is BadResponseException -> null
+                            is ApduException, is BadResponseException, is UnsupportedOperationException -> null
                             else -> throw e
                         }
                     }
