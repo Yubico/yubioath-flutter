@@ -37,7 +37,6 @@ import com.yubico.authenticator.piv.data.ManagementKeyMetadata
 import com.yubico.authenticator.piv.data.PinMetadata
 import com.yubico.authenticator.piv.data.PivStateMetadata
 import com.yubico.authenticator.piv.data.PivmanData
-import com.yubico.authenticator.piv.data.PivmanUtils
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
