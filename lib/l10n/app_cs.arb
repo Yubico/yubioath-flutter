@@ -42,6 +42,7 @@
     "s_import": "Importovat",
     "s_overwrite": "Přepsat",
     "s_done": "Hotovo",
+    "s_success": null,
     "s_more": null,
     "s_label": "Jmenovka",
     "s_name": "Název",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Připraveno ke skenování",
     "s_nfc_hold_still": "Neodstraňujte YubiKey\u2026",
     "s_nfc_tap_your_yubikey": "Přiložte YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Nepodařilo se naskenovat, zkuste to znovu",
     "@_usb": {},
 

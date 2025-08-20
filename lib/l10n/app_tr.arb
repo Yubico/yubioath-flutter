@@ -42,6 +42,7 @@
     "s_import": "İçe Aktar",
     "s_overwrite": "Geçerli Olanın Üzerine Yaz",
     "s_done": "Tamamlandı",
+    "s_success": null,
     "s_more": null,
     "s_label": "Etiket",
     "s_name": "İsim",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Taramaya hazır",
     "s_nfc_hold_still": "Aynı yerde tutmaya devam edin\u2026",
     "s_nfc_tap_your_yubikey": "YubiKey'inize dokunun",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Tarama başarısız, tekrar deneyin",
     "@_usb": {},
 

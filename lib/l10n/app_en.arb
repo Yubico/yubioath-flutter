@@ -42,6 +42,7 @@
     "s_import": "Import",
     "s_overwrite": "Overwrite",
     "s_done": "Done",
+    "s_success": "Success",
     "s_more": "More",
     "s_label": "Label",
     "s_name": "Name",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Ready to scan",
     "s_nfc_hold_still": "Hold still\u2026",
     "s_nfc_tap_your_yubikey": "Tap your YubiKey",
+    "s_nfc_remove_key": "Remove YubiKey",
     "l_nfc_failed_to_scan": "Failed to scan, try again",
     "@_usb": {},
 

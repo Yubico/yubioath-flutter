@@ -42,6 +42,7 @@
     "s_import": "インポート",
     "s_overwrite": "上書き",
     "s_done": "完了",
+    "s_success": null,
     "s_more": null,
     "s_label": "ラベル",
     "s_name": "名前",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "スキャンの準備完了",
     "s_nfc_hold_still": "そのまま保持してください\u2026",
     "s_nfc_tap_your_yubikey": "YubiKey をタップしてください",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "スキャンに失敗しました。もう一度お試しください",
     "@_usb": {},
 

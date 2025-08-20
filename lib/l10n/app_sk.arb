@@ -42,6 +42,7 @@
     "s_import": "Importovať",
     "s_overwrite": "Prepísať",
     "s_done": "Hotovo",
+    "s_success": null,
     "s_more": null,
     "s_label": "Menovka",
     "s_name": "Názov",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Pripravené na skenovanie",
     "s_nfc_hold_still": "Prosím držte pevne\u2026",
     "s_nfc_tap_your_yubikey": "Ťuknite na svoj YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Skenovanie sa nepodarilo, skúste to znova",
     "@_usb": {},
 

@@ -748,7 +748,7 @@ class PivManager(
         validFrom: String?,
         validTo: String?
     ): String =
-        connectionHelper.useSmartCardConnection(::update) {
+        connectionHelper.useSmartCardConnection(::update, true) {
             try {
                 val piv = getPivSession(it)
 
@@ -913,7 +913,7 @@ class PivManager(
     private suspend fun getSlot(
         slot: Slot
     ): String =
-        connectionHelper.useSmartCardConnection { piv ->
+        connectionHelper.useSmartCardConnection(waitForNfcKeyRemoval = true) { piv ->
             try {
                 JSONObject(
                     mapOf(

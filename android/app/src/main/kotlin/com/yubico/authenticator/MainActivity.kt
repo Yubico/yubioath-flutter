@@ -375,7 +375,7 @@ class MainActivity : FlutterFragmentActivity() {
                     logger.debug("Processing pending action in context {}", it)
                     if (it.processYubiKey(device)) {
                         if (device is NfcYubiKeyDevice) {
-                            appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                            appMethodChannel.nfcStateChanged(NfcState.getSuccessState())
                         }
                     }
                     if (device is NfcYubiKeyDevice) {
@@ -448,7 +448,7 @@ class MainActivity : FlutterFragmentActivity() {
                 val requestHandled = it.processYubiKey(device)
                 if (requestHandled) {
                     if (device is NfcYubiKeyDevice) {
-                        appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                        appMethodChannel.nfcStateChanged(NfcState.getSuccessState())
                     }
                 }
                 if (!switchedContextManager && device is NfcYubiKeyDevice) {
@@ -458,7 +458,7 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             } catch (e: Exception) {
                 logger.debug("Caught Exception during YubiKey processing: ", e)
-                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+                appMethodChannel.nfcStateChanged(NfcState.getFailureState())
             }
         }
 

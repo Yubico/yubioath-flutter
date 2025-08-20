@@ -17,6 +17,7 @@
 package com.yubico.authenticator.piv
 
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
@@ -54,8 +55,10 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
 
     suspend fun <T> useSmartCardConnection(
         onComplete: ((SmartCardConnection) -> Unit)? = null,
+        waitForNfcKeyRemoval: Boolean = false,
         block: (SmartCardConnection) -> T
     ): T {
+        NfcState.waitForNfcKeyRemoval = waitForNfcKeyRemoval
         return deviceManager.withKey(
             onUsb = { useSmartCardConnectionUsb(it, onComplete, block) },
             onNfc = { useSmartCardConnectionNfc(block) },

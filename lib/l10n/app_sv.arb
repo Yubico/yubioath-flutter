@@ -42,6 +42,7 @@
     "s_import": "Importera",
     "s_overwrite": "Skriv över",
     "s_done": "Klar",
+    "s_success": null,
     "s_more": null,
     "s_label": "Etikett",
     "s_name": "Namn",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Redo att skanna",
     "s_nfc_hold_still": "Håll stilla\u2026",
     "s_nfc_tap_your_yubikey": "Tryck på din YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Misslyckades med skanningen, försök igen",
     "@_usb": {},
 

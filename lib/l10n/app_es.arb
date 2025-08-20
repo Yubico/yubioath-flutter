@@ -42,6 +42,7 @@
     "s_import": "Importar",
     "s_overwrite": "Sobreescribir",
     "s_done": "Hecho",
+    "s_success": null,
     "s_more": null,
     "s_label": "Etiqueta",
     "s_name": "Nombre",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Listo para escanear",
     "s_nfc_hold_still": "Mantén presionado\u2026",
     "s_nfc_tap_your_yubikey": "Toca tu YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Error al escanear, inténtalo de nuevo",
     "@_usb": {},
 

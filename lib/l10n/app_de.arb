@@ -42,6 +42,7 @@
     "s_import": "Importieren",
     "s_overwrite": "Überschreiben",
     "s_done": "Erledigt",
+    "s_success": null,
     "s_more": null,
     "s_label": "Namen",
     "s_name": "Name",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "Bereit zum Scannen",
     "s_nfc_hold_still": "Deinen YubiKey nicht bewegen\u2026",
     "s_nfc_tap_your_yubikey": "Halte Deinen YubiKey an den Leser",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Scanvorgang fehlgeschlagen, versuche es nochmal",
     "@_usb": {},
 

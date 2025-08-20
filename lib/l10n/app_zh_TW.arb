@@ -42,6 +42,7 @@
     "s_import": "導入",
     "s_overwrite": "覆寫",
     "s_done": "完成",
+    "s_success": null,
     "s_more": null,
     "s_label": "標籤",
     "s_name": "名稱",
@@ -1070,6 +1071,7 @@
     "s_nfc_ready_to_scan": "準備掃描",
     "s_nfc_hold_still": "保持不動\u2026",
     "s_nfc_tap_your_yubikey": "點選您的 YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "掃描失敗，請重試",
     "@_usb": {},
 
