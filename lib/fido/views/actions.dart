@@ -29,16 +29,33 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import 'delete_credential_dialog.dart';
 import 'delete_fingerprint_dialog.dart';
+import 'pin_confirmation_dialog.dart';
 import 'rename_fingerprint_dialog.dart';
+
+Future<bool> unlockFido(
+  BuildContext context,
+  WidgetRef ref,
+  DevicePath devicePath,
+  FidoState state,
+) async {
+  return await showBlurDialog(
+        context: context,
+        builder: (context) =>
+            FidoPinConfirmationDialog(devicePath: devicePath, state: state),
+      ) ??
+      false;
+}
 
 class FidoActions extends ConsumerWidget {
   final DevicePath devicePath;
+  final FidoState state;
   final Map<Type, Action<Intent>> Function(BuildContext context)? actions;
   final Widget Function(BuildContext context) builder;
 
   const FidoActions({
     super.key,
     required this.devicePath,
+    required this.state,
     this.actions,
     required this.builder,
   });
@@ -48,6 +65,8 @@ class FidoActions extends ConsumerWidget {
     final withContext = ref.read(withContextProvider);
     final hasFeature = ref.read(featureProvider);
 
+    final unlocked = state.unlocked;
+
     return Actions(
       actions: {
         if (hasFeature(features.credentialsDelete))
@@ -55,6 +74,14 @@ class FidoActions extends ConsumerWidget {
               CallbackAction<DeleteIntent<FidoCredential>>(
                 onInvoke: (intent) async {
                   final credential = intent.target;
+
+                  if (!unlocked &&
+                      !await withContext(
+                        (context) =>
+                            unlockFido(context, ref, devicePath, state),
+                      )) {
+                    return false;
+                  }
                   final deleted = await withContext(
                     (context) => showDialog<bool?>(
                       context: context,
