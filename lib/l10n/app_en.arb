@@ -707,6 +707,7 @@
     "p_warning_delete_certificate": "Warning! This action will delete the certificate from your YubiKey.",
     "p_warning_delete_key": "Warning! This action will delete the private key from your YubiKey.",
     "p_warning_delete_certificate_and_key": "Warning! This action will delete the certificate and private key from your YubiKey.",
+    "p_warning_usb_preferred": "Prefer USB for RSA keys. NFC may result in errors.",
     "p_delete_certificate_desc": "This will delete the certificate in PIV slot {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {

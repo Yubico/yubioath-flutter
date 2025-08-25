@@ -707,6 +707,7 @@
     "p_warning_delete_certificate": "Varning för detta! Denna åtgärd kommer att radera certifikatet från YubiKey.",
     "p_warning_delete_key": "Varning för detta! Denna åtgärd raderar den privata nyckeln från din YubiKey.",
     "p_warning_delete_certificate_and_key": "Varning för detta! Denna åtgärd raderar certifikatet och den privata nyckeln från din YubiKey.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Detta kommer att radera certifikatet i PIV slot {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {

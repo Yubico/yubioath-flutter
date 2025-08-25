@@ -707,6 +707,7 @@
     "p_warning_delete_certificate": "警告！此動作將從您的 YubiKey 中刪除帳戶。",
     "p_warning_delete_key": "警告！此動作將從您的 YubiKey 中刪除私人密鑰。",
     "p_warning_delete_certificate_and_key": "警告！此動作將從您的 YubiKey 中刪除憑證和私人密鑰。",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "這將刪除 PIV 插槽 {slot}中的憑證。",
     "@p_delete_certificate_desc": {
         "placeholders": {

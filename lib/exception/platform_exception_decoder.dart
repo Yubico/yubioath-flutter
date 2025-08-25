@@ -18,11 +18,14 @@ import 'package:flutter/services.dart';
 
 import 'apdu_exception.dart';
 import 'cancellation_exception.dart';
+import 'tag_lost_exception.dart';
 
 extension Decoder on PlatformException {
   bool _isCancellation() => code == 'CancellationException';
 
   bool _isApduException() => code == 'ApduException';
+
+  bool _isTagLostException() => code == 'TagLostException';
 
   Exception decode() {
     if (_isCancellation()) {
@@ -41,6 +44,10 @@ extension Decoder on PlatformException {
           return ApduException(sw, 'SW: 0x$hexSw', details);
         }
       }
+    }
+
+    if (_isTagLostException()) {
+      return TagLostException('NFC communication issue', details);
     }
 
     // original exception

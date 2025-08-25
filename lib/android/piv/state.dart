@@ -19,20 +19,24 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
 // TODO import 'package:logging/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/models.dart';
 // TODO import '../../app/state.dart';
 // TODO import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../exception/no_data_exception.dart';
+import '../../exception/platform_exception_decoder.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
 import '../app_methods.dart';
 import '../overlay/nfc/method_channel_notifier.dart' show MethodChannelNotifier;
 
-// TODO final _log = Logger('android.piv.state');
+final _log = Logger('android.piv.state');
 
 // final _managementKeyProvider = StateProvider.autoDispose
 //     .family<String?, DevicePath>((ref, _) => null);
@@ -398,25 +402,7 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     TouchPolicy touchPolicy = TouchPolicy.dfault,
     String? pin,
   }) async {
-    // final withContext = ref.watch(withContextProvider);
-    //
-    // final signaler = Signaler();
-    // UserInteractionController? controller;
     try {
-      //   signaler.signals.listen((signal) async {
-      //     if (signal.status == 'touch') {
-      //       controller = await withContext((context) async {
-      //         final l10n = AppLocalizations.of(context);
-      //         return promptUserInteraction(
-      //           context,
-      //           icon: const Icon(Symbols.touch_app),
-      //           title: l10n.s_touch_required,
-      //           description: l10n.l_touch_button_now,
-      //         );
-      //       });
-      //     }
-      //   });
-      //
       await preserveConnectedDeviceWhenPaused();
       final (type, subject, validFrom, validTo) = switch (parameters) {
         PivGeneratePublicKeyParameters() => (
@@ -446,35 +432,35 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
         ),
       };
 
-      //final pin = ref.read(_pinProvider(_session.devicePath));
-
       final result = jsonDecode(
-        await piv.invoke(
-          'generate',
-          {
-            'slot': slot.hexId,
-            'keyType': keyType.value,
-            'pinPolicy': pinPolicy.value,
-            'touchPolicy': touchPolicy.value,
-            'subject': subject,
-            'generateType': type.name,
-            'validFrom': validFrom,
-            'validTo': validTo,
-          },
-          //signal: signaler,
-        ),
+        await piv.invoke('generate', {
+          'slot': slot.hexId,
+          'keyType': keyType.value,
+          'pinPolicy': pinPolicy.value,
+          'touchPolicy': touchPolicy.value,
+          'subject': subject,
+          'generateType': type.name,
+          'validFrom': validFrom,
+          'validTo': validTo,
+        }),
       );
 
-      ref.invalidateSelf();
+      //ref.invalidateSelf();
 
       return PivGenerateResult.fromJson({
         'generate_type': type.name,
         ...result,
       });
-    } finally {
-      //controller?.close();
+    } on PlatformException catch (pe) {
+      var decodedException = pe.decode();
+      if (decodedException is CancellationException) {
+        _log.debug('User cancelled generate key PIV operation');
+      } else {
+        _log.error('Generate key PIV operation failed.', pe);
+      }
+
+      throw decodedException;
     }
-    //return PivGenerateResult.fromJson({});
   }
 
   @override

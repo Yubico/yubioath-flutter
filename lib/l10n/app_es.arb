@@ -707,6 +707,7 @@
     "p_warning_delete_certificate": "¡Advertencia! Esta acción eliminará el certificado de tu YubiKey.",
     "p_warning_delete_key": "¡Advertencia! Esta acción borrará la clave privada de tu YubiKey.",
     "p_warning_delete_certificate_and_key": "¡Advertencia! Esta acción borrará el certificado y la clave privada de tu YubiKey.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Esto borrará el certificado en la ranura PIV {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
