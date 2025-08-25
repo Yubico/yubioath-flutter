@@ -74,8 +74,12 @@ class _NfcOverlayNotifier extends Notifier<int> {
         case NfcState.disabled:
           _log.debug('Received state: disabled');
           break;
+        case NfcState.waitForRemoval:
+          notifier.send(showRemoveKey());
+          break;
         case NfcState.idle:
           _log.debug('Received state: idle');
+          notifier.send(const NfcHideViewEvent());
           break;
         case NfcState.usbActivityOngoing:
           const timeout = 300;
@@ -153,6 +157,19 @@ class _NfcOverlayNotifier extends Notifier<int> {
       child: NfcContentWidget(
         title: l10n.s_nfc_ready_to_scan,
         subtitle: l10n.s_done,
+        icon: const NfcIconSuccess(),
+      ),
+      showIfHidden: false,
+    );
+  }
+
+  NfcEvent showRemoveKey() {
+    final l10n = ref.read(l10nProvider);
+    ref.read(nfcOverlayWidgetProperties.notifier).update(hasCloseButton: false);
+    return NfcSetViewEvent(
+      child: NfcContentWidget(
+        title: l10n.s_success,
+        subtitle: l10n.s_nfc_remove_key,
         icon: const NfcIconSuccess(),
       ),
       showIfHidden: false,

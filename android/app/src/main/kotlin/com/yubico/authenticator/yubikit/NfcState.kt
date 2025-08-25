@@ -22,7 +22,30 @@ enum class NfcState(val value: Int) {
     ONGOING(2),
     SUCCESS(3),
     FAILURE(4),
-    USB_ACTIVITY_ONGOING(5),
-    USB_ACTIVITY_SUCCESS(6),
-    USB_ACTIVITY_FAILURE(7)
+    WAIT_FOR_REMOVAL(5),
+    USB_ACTIVITY_ONGOING(6),
+    USB_ACTIVITY_SUCCESS(7),
+    USB_ACTIVITY_FAILURE(8);
+
+    companion object {
+
+        private var _waitForNfcKeyRemoval: Boolean = false
+        var waitForNfcKeyRemoval: Boolean
+            get() {
+                val value = _waitForNfcKeyRemoval
+                _waitForNfcKeyRemoval = false  // Reset after read
+                return value
+            }
+            set(value) {
+                _waitForNfcKeyRemoval = value
+            }
+
+        fun getSuccessState(): NfcState =
+            if (waitForNfcKeyRemoval)
+                WAIT_FOR_REMOVAL
+            else
+                SUCCESS
+
+        fun getFailureState(): NfcState = FAILURE.also { waitForNfcKeyRemoval = false }
+    }
 }

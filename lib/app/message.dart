@@ -19,7 +19,25 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../desktop/models.dart';
+import '../exception/apdu_exception.dart';
+import '../exception/tag_lost_exception.dart';
 import '../widgets/toast.dart';
+
+void Function() showExceptionMessage(
+  BuildContext context,
+  Exception e, {
+  Duration duration = const Duration(seconds: 2),
+}) {
+  final message = e is RpcError
+      ? (e as RpcError).message
+      : e is ApduException
+      ? e.message
+      : e is TagLostException
+      ? e.message
+      : e.toString();
+  return showToast(context, message, duration: duration);
+}
 
 void Function() showMessage(
   BuildContext context,

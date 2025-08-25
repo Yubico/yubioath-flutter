@@ -224,7 +224,7 @@ class FidoResetHelper(
                 FidoManager.updateDeviceInfo.set(true)
                 connectionHelper.useSessionNfc { fidoSession ->
                     doReset(fidoSession)
-                    appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                    appMethodChannel.nfcStateChanged(NfcState.getSuccessState())
                     continuation.resume(Unit)
                 }.value
             } catch (cancellationException: CancellationException) {
@@ -233,7 +233,7 @@ class FidoResetHelper(
             } catch (e: Throwable) {
                 // on NFC, clean device info in this situation
                 mainViewModel.setDeviceInfo(null)
-                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+                appMethodChannel.nfcStateChanged(NfcState.getFailureState())
                 logger.error("Failure during FIDO reset:", e)
                 continuation.resumeWithException(e)
             }

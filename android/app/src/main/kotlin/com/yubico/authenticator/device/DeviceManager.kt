@@ -181,10 +181,10 @@ class DeviceManager(
 
         try {
             return onNfc.invoke().value.also {
-                appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                appMethodChannel.nfcStateChanged(NfcState.getSuccessState())
             }
         } catch (e: Exception) {
-            appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+            appMethodChannel.nfcStateChanged(NfcState.getFailureState())
             throw e
         }
     }
