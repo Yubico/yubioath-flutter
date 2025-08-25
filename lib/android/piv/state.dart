@@ -369,12 +369,16 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey) async {
-    await piv.invoke('delete', {
-      'slot': slot.hexId,
-      'deleteCert': deleteCert,
-      'deleteKey': deleteKey,
-    });
-    ref.invalidateSelf();
+    try {
+      await piv.invoke('delete', {
+        'slot': slot.hexId,
+        'deleteCert': deleteCert,
+        'deleteKey': deleteKey,
+      });
+      ref.invalidateSelf();
+    } on PlatformException catch (pe) {
+      throw pe.decode();
+    }
   }
 
   @override
@@ -384,13 +388,17 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
     bool overwriteKey,
     bool includeCertificate,
   ) async {
-    await piv.invoke('moveKey', {
-      'slot': source.hexId,
-      'destination': destination.hexId,
-      'overwriteKey': overwriteKey,
-      'includeCertificate': includeCertificate,
-    });
-    ref.invalidateSelf();
+    try {
+      await piv.invoke('moveKey', {
+        'slot': source.hexId,
+        'destination': destination.hexId,
+        'overwriteKey': overwriteKey,
+        'includeCertificate': includeCertificate,
+      });
+      ref.invalidateSelf();
+    } on PlatformException catch (pe) {
+      throw pe.decode();
+    }
   }
 
   @override
@@ -516,15 +524,19 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
-    await preserveConnectedDeviceWhenPaused();
-    final result = jsonDecode(
-      await piv.invoke('getSlot', {'slot': slot.hexId}),
-    );
-    final metadata = result['metadata'];
-    return (
-      metadata != null ? SlotMetadata.fromJson(metadata) : null,
-      result['certificate'] as String?,
-    );
+    try {
+      await preserveConnectedDeviceWhenPaused();
+      final result = jsonDecode(
+        await piv.invoke('getSlot', {'slot': slot.hexId}),
+      );
+      final metadata = result['metadata'];
+      return (
+        metadata != null ? SlotMetadata.fromJson(metadata) : null,
+        result['certificate'] as String?,
+      );
+    } on PlatformException catch (pe) {
+      throw pe.decode();
+    }
   }
 }
 

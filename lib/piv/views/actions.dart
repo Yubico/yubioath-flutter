@@ -30,6 +30,7 @@ import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
@@ -248,9 +249,17 @@ class PivActions extends ConsumerWidget {
           ExportIntent: CallbackAction<ExportIntent>(
             onInvoke: (intent) async {
               final l10n = AppLocalizations.of(context);
-              final (metadata, cert) = await ref
-                  .read(pivSlotsProvider(devicePath).notifier)
-                  .read(intent.slot.slot);
+
+              SlotMetadata? metadata;
+              String? cert;
+
+              try {
+                (metadata, cert) = await ref
+                    .read(pivSlotsProvider(devicePath).notifier)
+                    .read(intent.slot.slot);
+              } on CancellationException catch (_) {
+                return false;
+              }
 
               String title;
               String message;
