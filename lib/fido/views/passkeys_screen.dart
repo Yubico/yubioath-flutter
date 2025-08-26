@@ -95,7 +95,7 @@ class PasskeysScreen extends ConsumerWidget {
             return AppFailurePage(cause: error);
           },
           data: (fidoState) {
-            return fidoState.unlocked
+            return fidoState.unlockedRead && !fidoState.pinBlocked
                 ? _FidoUnlockedPage(deviceData, fidoState)
                 : _FidoLockedPage(deviceData, fidoState);
           },
@@ -156,7 +156,9 @@ class _FidoLockedPage extends ConsumerWidget {
             ? l10n.l_pin_change_required_desc
             : l10n.l_register_sk_on_websites,
         footnote: isBio ? null : l10n.p_non_passkeys_note,
-        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBuilder: hasActions
+            ? (context) => _buildActions(context, ref)
+            : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
@@ -168,7 +170,9 @@ class _FidoLockedPage extends ConsumerWidget {
         header: l10n.l_ready_to_use,
         message: l10n.l_register_sk_on_websites,
         footnote: l10n.p_non_passkeys_note,
-        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBuilder: hasActions
+            ? (context) => _buildActions(context, ref)
+            : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
@@ -193,7 +197,9 @@ class _FidoLockedPage extends ConsumerWidget {
         capabilities: const [Capability.fido2],
         header: l10n.s_pin_change_required,
         message: l10n.l_pin_change_required_desc,
-        keyActionsBuilder: hasActions ? _buildActions : null,
+        keyActionsBuilder: hasActions
+            ? (context) => _buildActions(context, ref)
+            : null,
         keyActionsBadge: passkeysShowActionsNotifier(state),
       );
     }
@@ -201,14 +207,16 @@ class _FidoLockedPage extends ConsumerWidget {
     return AppPage(
       title: l10n.s_passkeys,
       capabilities: const [Capability.fido2],
-      keyActionsBuilder: hasActions ? _buildActions : null,
+      keyActionsBuilder: hasActions
+          ? (context) => _buildActions(context, ref)
+          : null,
       builder: (context, _) =>
           Column(children: [PinEntryForm(state, deviceData)]),
     );
   }
 
-  Widget _buildActions(BuildContext context) =>
-      passkeysBuildActions(context, deviceData.node, state);
+  Widget _buildActions(BuildContext context, WidgetRef ref) =>
+      passkeysBuildActions(context, ref, deviceData.node, state);
 }
 
 class _FidoUnlockedPage extends ConsumerStatefulWidget {
@@ -284,6 +292,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         keyActionsBuilder: hasActions
             ? (context) => passkeysBuildActions(
                 context,
+                ref,
                 widget.deviceData.node,
                 widget.state,
               )
@@ -334,6 +343,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         keyActionsBuilder: hasActions
             ? (context) => passkeysBuildActions(
                 context,
+                ref,
                 widget.deviceData.node,
                 widget.state,
               )
@@ -347,6 +357,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     final searchText = searchController.text;
     return FidoActions(
       devicePath: widget.deviceData.node.path,
+      state: widget.state,
       actions: (context) => {
         SearchIntent: CallbackAction<SearchIntent>(
           onInvoke: (_) {
@@ -376,7 +387,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             return showBlurDialog(
               context: context,
               barrierColor: Colors.transparent,
-              builder: (context) => CredentialDialog(intent.target),
+              builder: (context) =>
+                  CredentialDialog(intent.target, state: widget.state),
             );
           },
         ),
@@ -632,6 +644,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         keyActionsBuilder: hasActions
             ? (context) => passkeysBuildActions(
                 context,
+                ref,
                 widget.deviceData.node,
                 widget.state,
               )

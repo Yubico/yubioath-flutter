@@ -313,6 +313,7 @@
     "s_fido_pin_protection": "Bảo vệ Mã PIN FIDO",
     "s_pin_change_required": "Cần thay đổi Mã PIN",
     "l_enter_fido2_pin": "Nhập Mã PIN FIDO2 cho YubiKey của bạn",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "Mã PIN bị khóa; khôi phục cài đặt gốc ứng dụng FIDO",
     "l_pin_blocked": "Mã PIN bị khóa",
     "l_set_pin_first": "Cần có Mã PIN",

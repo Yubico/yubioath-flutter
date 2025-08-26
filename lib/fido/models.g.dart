@@ -9,6 +9,7 @@ part of 'models.dart';
 _FidoState _$FidoStateFromJson(Map<String, dynamic> json) => _FidoState(
   info: json['info'] as Map<String, dynamic>,
   unlocked: json['unlocked'] as bool,
+  unlockedRead: json['unlocked_read'] as bool? ?? false,
   pinRetries: (json['pin_retries'] as num?)?.toInt(),
 );
 
@@ -16,6 +17,7 @@ Map<String, dynamic> _$FidoStateToJson(_FidoState instance) =>
     <String, dynamic>{
       'info': instance.info,
       'unlocked': instance.unlocked,
+      'unlocked_read': instance.unlockedRead,
       'pin_retries': instance.pinRetries,
     };
 
