@@ -6,5 +6,6 @@ jobs:
     steps:
       - id: 1
         action: windows
+        description: Yubico Authenticator
         files:
           - installer/yubioath-desktop.msi
