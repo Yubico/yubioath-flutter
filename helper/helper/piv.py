@@ -40,6 +40,7 @@ from ykman.util import (
 )
 from yubikit.core import BadResponseError, InvalidPinError, NotSupportedError
 from yubikit.core.smartcard import SW, ApduError
+from yubikit.management import CAPABILITY
 from yubikit.piv import (
     KEY_TYPE,
     MANAGEMENT_KEY_TYPE,
@@ -94,11 +95,12 @@ def _handle_pin_puk_error(e):
 
 
 class PivNode(RpcNode):
-    def __init__(self, connection, scp_params=None):
+    def __init__(self, connection, capabilities, scp_params=None):
         super().__init__()
         self.session = PivSession(connection, scp_params)
         self._pivman_data = get_pivman_data(self.session)
         self._authenticated = False
+        self._capabilities = capabilities
 
     def __call__(self, *args, **kwargs):
         try:
@@ -142,6 +144,10 @@ class PivNode(RpcNode):
             supports_bio = True
         except NotSupportedError:
             supports_bio = False
+
+        if metadata and (supports_bio and CAPABILITY.FIDO2 not in self._capabilities):
+            # The default PIN flag may be set incorrectly on BIO MPE when FIDO2 is disabled
+            metadata["pin_metadata"]["default_value"] = False
 
         return dict(
             version=self.session.version,
