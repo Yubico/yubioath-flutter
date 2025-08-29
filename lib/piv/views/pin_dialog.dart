@@ -61,6 +61,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   }
 
   Future<void> _submit() async {
+    _pinFocus.unfocus();
     final navigator = Navigator.of(context);
     try {
       final status = await ref

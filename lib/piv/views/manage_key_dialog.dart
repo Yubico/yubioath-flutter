@@ -96,6 +96,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   }
 
   Future<void> _submit() async {
+    _currentFocus.unfocus();
+    _newFocus.unfocus();
     final currentValidFormat =
         _usesStoredKey || Format.hex.isValid(_currentController.text);
     final newValidFormat = Format.hex.isValid(_keyController.text);

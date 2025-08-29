@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,6 +24,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -40,6 +42,7 @@ class GenerateKeyDialog extends ConsumerStatefulWidget {
   final PivState pivState;
   final PivSlot pivSlot;
   final bool showMatch;
+
   GenerateKeyDialog(this.devicePath, this.pivState, this.pivSlot, {super.key})
     : showMatch = pivSlot.slot != SlotId.cardAuth && pivState.supportsBio;
 
@@ -59,6 +62,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   late DateTime _validToMax;
   late bool _allowMatch;
   bool _generating = false;
+  final _subjectFocus = FocusNode();
 
   @override
   void initState() {
@@ -71,6 +75,12 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     _validToMax = DateTime.utc(now.year + 10, now.month, now.day);
 
     _allowMatch = widget.showMatch;
+  }
+
+  @override
+  void dispose() {
+    _subjectFocus.dispose();
+    super.dispose();
   }
 
   @override
@@ -121,29 +131,40 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     return;
                   }
 
-                  final result = await pivNotifier.generate(
-                    widget.pivSlot.slot,
-                    _keyType,
-                    pinPolicy: getPinPolicy(widget.pivSlot.slot, _allowMatch),
-                    parameters: switch (_generateType) {
-                      GenerateType.publicKey =>
-                        PivGenerateParameters.publicKey(),
-                      GenerateType.certificate =>
-                        PivGenerateParameters.certificate(
+                  try {
+                    final result = await pivNotifier.generate(
+                      widget.pivSlot.slot,
+                      _keyType,
+                      pinPolicy: getPinPolicy(widget.pivSlot.slot, _allowMatch),
+                      parameters: switch (_generateType) {
+                        GenerateType.publicKey =>
+                          PivGenerateParameters.publicKey(),
+                        GenerateType.certificate =>
+                          PivGenerateParameters.certificate(
+                            subject: _subject,
+                            validFrom: _validFrom,
+                            validTo: _validTo,
+                          ),
+                        GenerateType.csr => PivGenerateParameters.csr(
                           subject: _subject,
-                          validFrom: _validFrom,
-                          validTo: _validTo,
                         ),
-                      GenerateType.csr => PivGenerateParameters.csr(
-                        subject: _subject,
-                      ),
-                    },
-                  );
+                      },
+                    );
 
-                  await ref.read(withContextProvider)((context) async {
-                    Navigator.of(context).pop(result);
-                    showMessage(context, l10n.s_private_key_generated);
-                  });
+                    await ref.read(withContextProvider)((context) async {
+                      Navigator.of(context).pop(result);
+                      showMessage(context, l10n.s_private_key_generated);
+                    });
+                  } on Exception catch (e) {
+                    setState(() {
+                      _generating = false;
+                    });
+                    if (e is! CancellationException) {
+                      await ref.read(withContextProvider)((context) async {
+                        showExceptionMessage(context, e);
+                      });
+                    }
+                  }
                 }
               : null,
           child: Text(l10n.s_save),
@@ -162,6 +183,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     ),
                     AppTextField(
                       autofocus: true,
+                      focusNode: _subjectFocus,
                       key: keys.subjectField,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
@@ -237,7 +259,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          padding: const EdgeInsets.fromLTRB(0, 12.0, 0.0, 4.0),
                           child: Icon(
                             Symbols.tune,
                             color: colorScheme.onSurfaceVariant,
@@ -248,7 +270,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.start,
                             spacing: 4.0,
-                            runSpacing: 8.0,
+                            runSpacing: 0.0,
                             children: [
                               ChoiceFilterChip<KeyType>(
                                 tooltip: l10n.s_algorithm,
@@ -264,6 +286,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                 onChanged: _generating
                                     ? null
                                     : (value) {
+                                        _subjectFocus.unfocus();
                                         setState(() {
                                           _keyType = value;
                                           if (value == KeyType.x25519) {
@@ -362,6 +385,58 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                   ),
                                 ),
                               ),
+                              SizedBox(width: double.infinity), // wrap!
+                              if (Platform.isAndroid &&
+                                  ref
+                                          .watch(attachedDevicesProvider)
+                                          .firstOrNull
+                                          ?.transport !=
+                                      Transport.usb &&
+                                  [
+                                    KeyType.rsa1024,
+                                    KeyType.rsa2048,
+                                    KeyType.rsa3072,
+                                    KeyType.rsa4096,
+                                  ].contains(_keyType))
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    4,
+                                    0,
+                                    0,
+                                    0,
+                                  ),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        WidgetSpan(
+                                          alignment:
+                                              PlaceholderAlignment.middle,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              0,
+                                              0,
+                                              4,
+                                              0,
+                                            ),
+                                            child: Icon(
+                                              Symbols.warning_amber_rounded,
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                              size: 14,
+                                            ),
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                          text: l10n.p_warning_usb_preferred,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),

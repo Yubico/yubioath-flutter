@@ -101,6 +101,7 @@ enum NfcState {
   ongoing,
   success,
   failure,
+  waitForRemoval,
   usbActivityOngoing,
   usbActivitySuccess,
   usbActivityFailure,
@@ -116,9 +117,10 @@ class NfcStateNotifier extends StateNotifier<NfcState> {
       2 => NfcState.ongoing,
       3 => NfcState.success,
       4 => NfcState.failure,
-      5 => NfcState.usbActivityOngoing,
-      6 => NfcState.usbActivitySuccess,
-      7 => NfcState.usbActivityFailure,
+      5 => NfcState.waitForRemoval,
+      6 => NfcState.usbActivityOngoing,
+      7 => NfcState.usbActivitySuccess,
+      8 => NfcState.usbActivityFailure,
       _ => NfcState.disabled,
     };
 
