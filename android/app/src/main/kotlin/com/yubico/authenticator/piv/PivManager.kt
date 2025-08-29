@@ -163,8 +163,8 @@ class PivManager(
                 "generate" -> generate(
                     Slot.fromStringAlias(args["slot"] as String),
                     (args["keyType"] as Int),
-                    (args["pinPolicy"] as Int),
-                    (args["touchPolicy"] as Int),
+                    PinPolicy.fromValue(args["pinPolicy"] as Int),
+                    TouchPolicy.fromValue(args["touchPolicy"] as Int),
                     (args["subject"] as String?),
                     (args["generateType"] as String),
                     (args["validFrom"] as String?),
@@ -175,8 +175,8 @@ class PivManager(
                     Slot.fromStringAlias(args["slot"] as String),
                     (args["data"] as String),
                     (args["password"] as String?),
-                    (args["pinPolicy"] as Int),
-                    (args["touchPolicy"] as Int),
+                    PinPolicy.fromValue(args["pinPolicy"] as Int),
+                    TouchPolicy.fromValue(args["touchPolicy"] as Int)
                 )
 
                 "getSlot" -> getSlot(
@@ -741,8 +741,8 @@ class PivManager(
     private suspend fun generate(
         slot: Slot,
         keyType: Int,
-        pinPolicy: Int,
-        touchPolicy: Int,
+        pinPolicy: PinPolicy,
+        touchPolicy: TouchPolicy,
         subject: String?,
         generateType: String,
         validFrom: String?,
@@ -757,15 +757,18 @@ class PivManager(
                     KeyType.entries.first { entry -> entry.value.toUByte().toInt() == keyType }
 
                 val serial = pivViewModel.currentSerial()
-                doVerifyPin(piv, serial)
                 doAuthenticate(piv, serial)
 
                 val keyValues = piv.generateKeyValues(
                     slot,
                     keyTypeValue,
-                    PinPolicy.fromValue(pinPolicy),
-                    TouchPolicy.fromValue(touchPolicy)
+                    pinPolicy,
+                    touchPolicy
                 )
+
+                if (pinPolicy != PinPolicy.NEVER) {
+                    doVerifyPin(piv, serial)
+                }
 
                 val publicKey = keyValues.toPublicKey()
                 val publicKeyPem = publicKey.toPem()
@@ -839,8 +842,8 @@ class PivManager(
         slot: Slot,
         data: String,
         password: String?,
-        pinPolicy: Int,
-        touchPolicy: Int
+        pinPolicy: PinPolicy,
+        touchPolicy: TouchPolicy
     ): String =
         connectionHelper.useSmartCardConnection(::update) {
             try {
@@ -851,8 +854,6 @@ class PivManager(
                 doAuthenticate(piv, serial)
 
                 val (certificates, privateKey) = parseFile(data, password)
-                // TODO catch invalid password exception
-
                 if (privateKey == null && certificates.isEmpty()) {
                     throw IllegalArgumentException("Failed to parse")
                 }
@@ -862,8 +863,8 @@ class PivManager(
                     piv.putKey(
                         slot,
                         PrivateKeyValues.fromPrivateKey(privateKey),
-                        PinPolicy.fromValue(pinPolicy),
-                        TouchPolicy.fromValue(touchPolicy)
+                        pinPolicy,
+                        touchPolicy
                     )
 
                     metadata = try {
