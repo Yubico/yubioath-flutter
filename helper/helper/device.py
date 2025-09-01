@@ -617,5 +617,5 @@ class ScpConnectionNode(ConnectionNode):
 
     def _init_child_node(self, child_cls, capability=CAPABILITY(0), **kwargs):
         if capability in self.fips_capable:
-            return child_cls(self._connection, self.scp_params, **kwargs)
+            return child_cls(self._connection, scp_params=self.scp_params, **kwargs)
         return child_cls(self._connection, **kwargs)
