@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Zamietnuť",
     "p_default_pin_puk_key_desc": "Odporúča sa zmeniť predvolený PIN kód, PUK kód a spravovací kľúč.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Varovanie: Používa sa predvolený PIN kód",
     "l_warning_default_puk": "Varovanie: Používa sa predvolený PUK kód",
     "l_default_pin_used": "Používa sa predvolený PIN",

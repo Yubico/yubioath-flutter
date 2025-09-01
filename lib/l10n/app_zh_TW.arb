@@ -394,6 +394,7 @@
     },
     "s_dismiss": "放棄",
     "p_default_pin_puk_key_desc": "建議變更預設 PIN 碼、PUK 碼和管理金鑰。",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "警告：已使用預設 PIN 碼",
     "l_warning_default_puk": "警告：使用預設 PUK 碼",
     "l_default_pin_used": "使用的預設 PIN 碼",

@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Zamítnout",
     "p_default_pin_puk_key_desc": "Doporučuje se změnit výchozí PIN, PUK a klíč správy.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Varování: používá se výchozí PIN",
     "l_warning_default_puk": "Varování: používá se výchozí PUK",
     "l_default_pin_used": "Byl použit výchozí PIN",

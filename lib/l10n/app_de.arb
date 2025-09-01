@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Schließen",
     "p_default_pin_puk_key_desc": "Wir empfehlen Dir die Standard-PIN, -PUK und den Management-Key zu ändern.\n",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Achtung: Die Standard-PIN ist konfiguriert",
     "l_warning_default_puk": "Achtung: Die Standard-PUK ist konfiguriert",
     "l_default_pin_used": "Standard-PIN konfiguriert",

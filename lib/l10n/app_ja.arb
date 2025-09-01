@@ -394,6 +394,7 @@
     },
     "s_dismiss": "閉じる",
     "p_default_pin_puk_key_desc": "デフォルトの PIN、PUK、管理キーの変更をお勧めします。",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "警告: デフォルトの PIN を使用されています",
     "l_warning_default_puk": "警告: デフォルトの PUK を使用しています",
     "l_default_pin_used": "デフォルトの PIN を使用しています",

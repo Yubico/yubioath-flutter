@@ -394,6 +394,7 @@
     },
     "s_dismiss": "取消",
     "p_default_pin_puk_key_desc": "建议更改默认 PIN 、PUK 和管理密钥。",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "警告：使用了默认 PIN",
     "l_warning_default_puk": "警告：使用了默认 PUK ",
     "l_default_pin_used": "默认 PIN 已使用",

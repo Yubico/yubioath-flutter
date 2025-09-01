@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Fermer",
     "p_default_pin_puk_key_desc": "Il est recommandé de changer le code PIN, le code PUK et la clé de gestion par défaut.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Avertissement : Code PIN par défaut utilisé",
     "l_warning_default_puk": "Attention : PUK par défaut utilisé",
     "l_default_pin_used": "Code PIN par défaut utilisé",

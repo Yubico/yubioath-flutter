@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Dismiss",
     "p_default_pin_puk_key_desc": "It is recommended to change the default PIN, PUK and management key.",
+    "p_default_pin_puk_key_fips_desc": "For FIPS compliance it is required to change the default PIN, PUK and management key.",
     "l_warning_default_pin": "Warning: Default PIN used",
     "l_warning_default_puk": "Warning: Default PUK used",
     "l_default_pin_used": "Default PIN used",
