@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Avfärda",
     "p_default_pin_puk_key_desc": "Det rekommenderas att ändra standard PIN, PUK och management nyckel.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Varning: Standard-PIN används",
     "l_warning_default_puk": "Varning: Standard PUK används",
     "l_default_pin_used": "Standard-PIN används",

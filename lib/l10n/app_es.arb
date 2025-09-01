@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Descartar",
     "p_default_pin_puk_key_desc": "Se recomienda cambiar el PIN, el PUK y la clave de administración predeterminados.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Advertencia: PIN predeterminado usado",
     "l_warning_default_puk": "Advertencia: PUK predeterminado usado",
     "l_default_pin_used": "PIN por defecto usado",

@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Odrzuć",
     "p_default_pin_puk_key_desc": "Zalecana jest zmiana domyślnego kodu PIN, PUK i kluczu zarządzania.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Ostrzeżenie: Używany jest domyślny kod PIN",
     "l_warning_default_puk": "Ostrzeżenie: Używany jest domyślny kod PUK",
     "l_default_pin_used": "Używany jest domyślny kod PIN",

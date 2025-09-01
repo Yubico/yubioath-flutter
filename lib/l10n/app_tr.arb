@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Yoksay",
     "p_default_pin_puk_key_desc": "Varsayılan PIN, PUK ve yönetim anahtarının değiştirilmesi önerilir.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Uyarı: Varsayılan PIN kullanıldı",
     "l_warning_default_puk": "Uyarı: Varsayılan PUK kullanıldı",
     "l_default_pin_used": "Varsayılan PIN kullanıldı",

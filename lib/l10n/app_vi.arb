@@ -394,6 +394,7 @@
     },
     "s_dismiss": "Bỏ qua",
     "p_default_pin_puk_key_desc": "Khuyến nghị nên đổi ngay mã PIN, PUK và khoá quản lý khác với cài đặt lúc xuất xưởng.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Cảnh báo: Đã sử dụng Mã PIN mặc định",
     "l_warning_default_puk": "Cảnh báo: Đã sử dụng Mã PUK mặc định",
     "l_default_pin_used": "Đã sử dụng Mã PIN mặc định",
