@@ -32,7 +32,8 @@ import 'actions.dart';
 
 class FingerprintDialog extends ConsumerWidget {
   final Fingerprint fingerprint;
-  const FingerprintDialog(this.fingerprint, {super.key});
+  final FidoState state;
+  const FingerprintDialog(this.fingerprint, {required this.state, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,6 +49,7 @@ class FingerprintDialog extends ConsumerWidget {
     final hasFeature = ref.watch(featureProvider);
     return FidoActions(
       devicePath: node.path,
+      state: state,
       actions: (context) => {
         if (hasFeature(features.fingerprintsEdit))
           EditIntent<Fingerprint>: CallbackAction<EditIntent<Fingerprint>>(
@@ -60,7 +62,8 @@ class FingerprintDialog extends ConsumerWidget {
                   Navigator.of(context).pop();
                   await showBlurDialog(
                     context: context,
-                    builder: (context) => FingerprintDialog(renamed),
+                    builder: (context) =>
+                        FingerprintDialog(renamed, state: state),
                   );
                 });
               }
