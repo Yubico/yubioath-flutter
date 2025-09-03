@@ -710,7 +710,7 @@ class PivManager(
                 "key_type" to privateKey?.let {
                     KeyType.fromKeyParams(
                         PrivateKeyValues.fromPrivateKey(it)
-                    ).value.toUByte()
+                    ).value.toUByte().toInt() // JSONObject does not know UByte
                 },
                 "cert_info" to getCertificateInfo(certificate)
             )
