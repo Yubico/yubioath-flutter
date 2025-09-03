@@ -253,5 +253,5 @@ object KeyMaterialParser {
     }
 
     private fun isPem(bytes: ByteArray): Boolean =
-        String(bytes.take(10).toByteArray(), Charsets.UTF_8).startsWith("-----BEGIN")
+        String(bytes, Charsets.UTF_8).contains("-----BEGIN")
 }
