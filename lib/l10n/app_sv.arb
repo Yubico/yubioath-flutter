@@ -572,6 +572,7 @@
     "s_passkey_deleted": "Passkey raderad",
     "p_warning_delete_passkey": "Varning! Denna åtgärd kommer att ta bort vald passkey från din YubiKey.",
     "p_warning_delete_passkey_desc": "Du kommer inte längre att kunna använda den här passkey för den tjänst där den är registrerad.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Sök passkeys",
     "p_passkeys_used": "{used} av {max} använda passkeys.",
     "@p_passkeys_used": {
@@ -928,7 +929,7 @@
     "l_admin_privileges_required": "Administratörsbehörighet krävs",
     "p_elevated_permissions_required": "För att hantera den här enheten krävs förhöjda behörigheter. Alternativt kan du använda Windows-inställningar för att hantera FIDO-konfigurationen.",
     "p_webauthn_elevated_permissions_required": "WebAuthn-hantering kräver förhöjda behörigheter. Alternativt kan du använda Windows-inställningar för att hantera FIDO-konfigurationen.",
-    "l_ms_store_permission_note": "Microsoft Store-versionen av appen kanske inte kan höja behörigheterna",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator behöver kamerabehörighet för att skanna QR-koder.",
     "@_qr_codes": {},
 

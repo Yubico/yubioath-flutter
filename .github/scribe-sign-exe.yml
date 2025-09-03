@@ -6,6 +6,7 @@ jobs:
     steps:
       - id: 1
         action: windows
+        description: Yubico Authenticator
         files:
           - yubioath-desktop-windows/*/authenticator.exe
           - yubioath-desktop-windows/*/helper/authenticator-helper.exe

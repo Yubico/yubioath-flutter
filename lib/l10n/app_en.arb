@@ -572,6 +572,7 @@
     "s_passkey_deleted": "Passkey deleted",
     "p_warning_delete_passkey": "Warning! This action will delete the passkey from your YubiKey.",
     "p_warning_delete_passkey_desc": "You will no longer be able to use this passkey for the service where it is registered.",
+    "l_do_not_remove_yk_delete": "Do not remove YubiKey during deletion",
     "s_search_passkeys": "Search passkeys",
     "p_passkeys_used": "{used} of {max} passkeys used.",
     "@p_passkeys_used": {
@@ -928,7 +929,7 @@
     "l_admin_privileges_required": "Administrator privileges required",
     "p_elevated_permissions_required": "Managing this device requires elevated privileges. Alternatively, you can use Windows Settings to manage FIDO configuration.",
     "p_webauthn_elevated_permissions_required": "WebAuthn management requires elevated privileges. Alternatively, you can use Windows Settings to manage FIDO configuration.",
-    "l_ms_store_permission_note": "The Microsoft Store version of the app may be unable to elevate permissions",
+    "p_ms_store_permission_note": "The Microsoft Store version of the app is generally unable to elevate permissions due to sandboxing limitations of Windows. We recommend installing Yubico Authenticator from our official .msi installer.",
     "p_need_camera_permission": "Yubico Authenticator needs Camera permissions for scanning QR codes.",
     "@_qr_codes": {},
 

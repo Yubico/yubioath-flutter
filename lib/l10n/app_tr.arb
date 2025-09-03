@@ -572,6 +572,7 @@
     "s_passkey_deleted": "Geçiş anahtarı silindi",
     "p_warning_delete_passkey": "Uyarı! Bu işlem YubiKey'inizden geçiş anahtarını silecektir.",
     "p_warning_delete_passkey_desc": "Artık bu geçiş anahtarını kayıtlı olduğu hizmet için kullanamazsınız.",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "Geçiş anahtarı ara",
     "p_passkeys_used": "Toplam {max} geçiş anahtarı kapasitesinin, {used} tanesi kullanılıyor.",
     "@p_passkeys_used": {
@@ -928,7 +929,7 @@
     "l_admin_privileges_required": "Yönetici ayrıcalıkları gerekli",
     "p_elevated_permissions_required": "Bu cihazı yönetebilmek için yönetici iznine (yükseltilmiş yetkilere) ihtiyacınız var. Alternatif olarak, FIDO yapılandırmasını yönetmek için Windows Ayarlarını kullanabilirsiniz.",
     "p_webauthn_elevated_permissions_required": "WebAuthn yönetimi için yönetici iznine (yükseltilmiş yetkilere) ihtiyacınız var. Alternatif olarak, FIDO yapılandırmasını yönetmek için Windows Ayarlarını kullanabilirsiniz.",
-    "l_ms_store_permission_note": "Uygulamanın Microsoft Store sürümü izinleri yükseltemeyebilir",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Kimlik Doğrulayıcı, QR kodlarını tarayabilmek için kameraya erişme iznine ihtiyacı var.",
     "@_qr_codes": {},
 

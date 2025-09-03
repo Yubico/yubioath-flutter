@@ -551,7 +551,9 @@ class ConnectionNode(RpcNode):
         and CAPABILITY.PIV in self.capabilities
     )
     def piv(self):
-        return self._init_child_node(PivNode, CAPABILITY.PIV)
+        return self._init_child_node(
+            PivNode, CAPABILITY.PIV, capabilities=self.capabilities
+        )
 
     @child(
         condition=lambda self: CAPABILITY.FIDO2 in self.capabilities
@@ -615,5 +617,5 @@ class ScpConnectionNode(ConnectionNode):
 
     def _init_child_node(self, child_cls, capability=CAPABILITY(0), **kwargs):
         if capability in self.fips_capable:
-            return child_cls(self._connection, self.scp_params, **kwargs)
+            return child_cls(self._connection, scp_params=self.scp_params, **kwargs)
         return child_cls(self._connection, **kwargs)

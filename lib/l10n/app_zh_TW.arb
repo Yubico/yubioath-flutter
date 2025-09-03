@@ -572,6 +572,7 @@
     "s_passkey_deleted": "通行密鑰現已刪除",
     "p_warning_delete_passkey": "警告！此動作會刪除 YubiKey 中通行密鑰。",
     "p_warning_delete_passkey_desc": "您將無法再將此密鑰用於註冊服務。",
+    "l_do_not_remove_yk_delete": null,
     "s_search_passkeys": "搜尋通行密鑰",
     "p_passkeys_used": "{used} 使用的 {max} 通行密鑰。",
     "@p_passkeys_used": {
@@ -928,7 +929,7 @@
     "l_admin_privileges_required": "需要管理員許可權",
     "p_elevated_permissions_required": "管理此裝置需要提升權限。或者，您可以使用 Windows 設定來管理 FIDO 組態。",
     "p_webauthn_elevated_permissions_required": "管理此裝置需要提升權限。或者，您可以使用 Windows 設定來管理 FIDO 組態。",
-    "l_ms_store_permission_note": "Microsoft Store 版本的應用程式可能無法提升權限",
+    "p_ms_store_permission_note": null,
     "p_need_camera_permission": "Yubico Authenticator 需要相機權限才能掃描 QR 碼。",
     "@_qr_codes": {},
 
