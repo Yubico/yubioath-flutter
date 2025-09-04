@@ -30,26 +30,26 @@ private const val TLV_TAG_TIMESTAMP = 0x83
 
 class PivmanData(rawData: ByteArray = Tlv(TLV_TAG_PIVMAN_DATA, null).bytes) {
 
-    private var _flags: Int? = null
+    private var flags: Int? = null
     var salt: ByteArray? = null
     var pinTimestamp: Int? = null
 
     init {
         val data = Tlvs.decodeMap(Tlv.parse(rawData).value)
-        _flags = data[TLV_TAG_FLAGS]?.let {
+        flags = data[TLV_TAG_FLAGS]?.let {
             ByteBuffer.wrap(it).get().toInt() and 0xFF
         }
         salt = data[TLV_TAG_SALT]
         pinTimestamp = data[TLV_TAG_TIMESTAMP]?.let { ByteBuffer.wrap(it).int }
     }
 
-    private fun getFlag(mask: Int): Boolean = ((_flags ?: 0) and mask) != 0
+    private fun getFlag(mask: Int): Boolean = ((flags ?: 0) and mask) != 0
 
     private fun setFlag(mask: Int, value: Boolean) {
         if (value) {
-            _flags = (_flags ?: 0) or mask
-        } else if (_flags != null) {
-            _flags = _flags!! and mask.inv()
+            flags = (flags ?: 0) or mask
+        } else if (flags != null) {
+            flags = flags!! and mask.inv()
         }
     }
 
@@ -72,8 +72,8 @@ class PivmanData(rawData: ByteArray = Tlv(TLV_TAG_PIVMAN_DATA, null).bytes) {
 
     fun getBytes(): ByteArray {
         var data = ByteArray(0)
-        if (_flags != null) {
-            val flagBytes = ByteBuffer.allocate(1).put(_flags!!.toByte()).array()
+        if (flags != null) {
+            val flagBytes = ByteBuffer.allocate(1).put(flags!!.toByte()).array()
             data += Tlv(TLV_TAG_FLAGS, flagBytes).bytes
         }
         if (salt != null) {
