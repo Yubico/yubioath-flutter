@@ -38,22 +38,12 @@ import '../overlay/nfc/method_channel_notifier.dart' show MethodChannelNotifier;
 
 final _log = Logger('android.piv.state');
 
-// final _managementKeyProvider = StateProvider.autoDispose
-//     .family<String?, DevicePath>((ref, _) => null);
-
-// TODO
-// final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
-//   (ref, _) => null,
-// );
-
 final androidPivState = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
       _AndroidPivStateNotifier.new,
     );
 
 class _AndroidPivStateNotifier extends PivStateNotifier {
-  //late DevicePath _devicePath;
-
   final _events = const EventChannel('android.piv.state');
   late StreamSubscription _sub;
   late _PivMethodChannelNotifier piv = ref.watch(_pivMethodsProvider.notifier);
@@ -80,144 +70,33 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
     ref.onDispose(_sub.cancel);
 
     return Completer<PivState>().future;
-
-    // _session = ref.watch(_sessionProvider(devicePath));
-    // _session
-    //   ..setErrorHandler('state-reset', (_) async {
-    //     ref.invalidate(_sessionProvider(devicePath));
-    //   })
-    //   ..setErrorHandler('auth-required', (e) async {
-    //     try {
-    //       if (state.valueOrNull?.protectedKey == true) {
-    //         final String? pin;
-    //         if (state.valueOrNull?.metadata?.pinMetadata.defaultValue == true) {
-    //           pin = defaultPin;
-    //         } else {
-    //           pin = ref.read(_pinProvider(devicePath));
-    //         }
-    //         if (pin != null) {
-    //           if (await verifyPin(pin) is PinSuccess) {
-    //             return;
-    //           } else {
-    //             ref.read(_pinProvider(devicePath).notifier).state = null;
-    //           }
-    //         }
-    //       } else {
-    //         final String? mgmtKey;
-    //         if (state
-    //                 .valueOrNull
-    //                 ?.metadata
-    //                 ?.managementKeyMetadata
-    //                 .defaultValue ==
-    //             true) {
-    //           mgmtKey = defaultManagementKey;
-    //         } else {
-    //           mgmtKey = ref.read(_managementKeyProvider(devicePath));
-    //         }
-    //         if (mgmtKey != null) {
-    //           if (await authenticate(mgmtKey)) {
-    //             return;
-    //           } else {
-    //             ref.read(_managementKeyProvider(devicePath).notifier).state =
-    //                 null;
-    //           }
-    //         }
-    //       }
-    //       throw e;
-    //     } finally {
-    //       ref.invalidateSelf();
-    //     }
-    //   });
-    // ref.onDispose(() {
-    //   _session
-    //     ..unsetErrorHandler('state-reset')
-    //     ..unsetErrorHandler('auth-required');
-    // });
-    // _devicePath = devicePath;
-    //
-    // final result = await _session.command('get');
-    // _log.debug('application status', jsonEncode(result));
-    //final pivState = PivState.fromJson({});
-
-    //return pivState;
   }
 
   @override
   Future<void> reset() async {
     await piv.invoke('reset');
-    //ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
-    //ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
   @override
   Future<bool> authenticate(String managementKey) async {
-    // TODO final withContext = ref.watch(withContextProvider);
+    final result = jsonDecode(
+      await piv.invoke('authenticate', {'key': managementKey}),
+    );
 
-    //    final signaler = Signaler();
-    // TODO UserInteractionController? controller;
-    try {
-      // signaler.signals.listen((signal) async {
-      //   if (signal.status == 'touch') {
-      //     controller = await withContext((context) async {
-      //       final l10n = AppLocalizations.of(context);
-      //       return promptUserInteraction(
-      //         context,
-      //         icon: const Icon(Symbols.touch_app),
-      //         title: l10n.s_touch_required,
-      //         description: l10n.l_touch_button_now,
-      //       );
-      //     });
-      //   }
-      //});
-
-      final result = jsonDecode(
-        await piv.invoke(
-          'authenticate',
-          {'key': managementKey},
-          //signal: signaler,
-        ),
-      );
-
-      if (result['status']) {
-        // ref.read(_managementKeyProvider(_devicePath).notifier).state =
-        //     managementKey;
-        final oldState = state.valueOrNull;
-        if (oldState != null) {
-          state = AsyncData(oldState.copyWith(authenticated: true));
-        }
-        return true;
-      } else {
-        return false;
+    if (result['status']) {
+      final oldState = state.valueOrNull;
+      if (oldState != null) {
+        state = AsyncData(oldState.copyWith(authenticated: true));
       }
-    } finally {
-      // TODO controller?.close();
+      return true;
+    } else {
+      return false;
     }
   }
 
   @override
   Future<PinVerificationStatus> verifyPin(String pin) async {
-    // TODO final pivState = state.valueOrNull;
-
-    // final signaler = Signaler();
-    // TODO UserInteractionController? controller;
     try {
-      //   if (pivState?.protectedKey == true) {
-      //     // Might require touch as this will also authenticate
-      //     final withContext = ref.watch(withContextProvider);
-      //     signaler.signals.listen((signal) async {
-      //       if (signal.status == 'touch') {
-      //         controller = await withContext((context) async {
-      //           final l10n = AppLocalizations.of(context);
-      //           return promptUserInteraction(
-      //             context,
-      //             icon: const Icon(Symbols.touch_app),
-      //             title: l10n.s_touch_required,
-      //             description: l10n.l_touch_button_now,
-      //           );
-      //         });
-      //       }
-      //     });
-      //   }
       var result = jsonDecode(await piv.invoke('verifyPin', {'pin': pin}));
 
       return switch (result['status']) {
@@ -230,7 +109,6 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
     } on PlatformException catch (_) {
       rethrow;
     } finally {
-      // TODO controller?.close();
       ref.invalidateSelf();
     }
   }
@@ -293,8 +171,6 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
       'keyType': managementKeyType.value,
       'storeKey': storeKey,
     });
-    // ref.read(_managementKeyProvider(_devicePath).notifier).state =
-    //     managementKey;
     ref.invalidateSelf();
   }
 
@@ -452,8 +328,6 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
           'validTo': validTo,
         }),
       );
-
-      //ref.invalidateSelf();
 
       return PivGenerateResult.fromJson({
         'generate_type': type.name,
