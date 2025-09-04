@@ -24,6 +24,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
@@ -259,7 +260,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 12.0, 0.0, 4.0),
+                          padding: isAndroid
+                              ? const EdgeInsets.fromLTRB(0, 12.0, 0.0, 4.0)
+                              : const EdgeInsets.symmetric(vertical: 4.0),
                           child: Icon(
                             Symbols.tune,
                             color: colorScheme.onSurfaceVariant,
