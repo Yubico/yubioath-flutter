@@ -305,7 +305,6 @@ class NavigationContent extends ConsumerWidget {
         left: isDrawer ? 0.0 : 8.0,
         right: 8.0,
         bottom: 8.0,
-        top: 12,
       ),
       child: Column(
         children: [

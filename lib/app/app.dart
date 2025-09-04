@@ -37,8 +37,8 @@ class YubicoAuthenticatorApp extends StatelessWidget {
           final primaryColor = ref.watch(primaryColorProvider);
           return MaterialApp(
             title: ref.watch(l10nProvider).app_name,
-            theme: AppTheme.getLightTheme(primaryColor),
-            darkTheme: AppTheme.getDarkTheme(primaryColor),
+            theme: AppTheme.getTheme(Brightness.light, primaryColor),
+            darkTheme: AppTheme.getTheme(Brightness.dark, primaryColor),
             themeMode: ref.watch(themeModeProvider),
             home: page,
             debugShowCheckedModeBanner: false,
