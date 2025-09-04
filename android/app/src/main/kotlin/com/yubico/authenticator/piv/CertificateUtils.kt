@@ -44,8 +44,6 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier
 import java.security.SecureRandom
 import java.security.Signature
 
-// TODO review file
-
 /**
  * Hash algorithms supported for RSA/ECDSA. Ignored for Ed25519.
  */

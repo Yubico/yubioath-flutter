@@ -388,7 +388,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: double.infinity), // wrap!
+                              const Spacer(),
                               if (Platform.isAndroid &&
                                   ref
                                           .watch(attachedDevicesProvider)
