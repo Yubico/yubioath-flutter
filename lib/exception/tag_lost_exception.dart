@@ -22,6 +22,6 @@ class TagLostException implements Exception {
 
   @override
   String toString() {
-    return 'ApduException[$message]';
+    return 'TagLostException[$message]';
   }
 }
