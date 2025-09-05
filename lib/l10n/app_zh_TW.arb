@@ -989,6 +989,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "警告！為 PIV 儲存的所有資料將不可撤銷地從您的 YubiKey 中刪除。",
     "p_warning_piv_reset_desc": "這包括私人密鑰和憑證。您的 PIN 碼、PUK 碼和管理密鑰會重設為出廠預設值。",
     "p_warning_global_reset": "警告！這將不可撤銷地從您的 YubiKey 刪除所有儲存的資料，包括憑證。",

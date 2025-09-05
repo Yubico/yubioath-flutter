@@ -989,6 +989,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Achtung! Alle gespeicherten PIV Daten werden dauerhaft von deinem YubiKey gelöscht.",
     "p_warning_piv_reset_desc": "Dies schließt private Schlüssel und Zertifikate mit ein. Deine PIN, PUK und der Management-Key werden auf Werkseinstellung zurückgesetzt.",
     "p_warning_global_reset": "Achtung! Dies löscht alle gespeicherten Daten inkl. Anmeldedaten dauerhaft von deinem YubiKey.",

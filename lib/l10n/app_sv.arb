@@ -989,6 +989,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Varning för detta! Alla data som lagras för PIV kommer oåterkalleligen att raderas från din YubiKey.",
     "p_warning_piv_reset_desc": "Detta inkluderar privata nycklar och certifikat. Din PIN-kod, PUK-kod och administrationsnyckel återställs till fabriksinställningarna.",
     "p_warning_global_reset": "Varning för detta! Detta kommer oåterkalleligen att radera alla sparade data, inklusive inloggningsuppgifter, från din YubiKey.",
