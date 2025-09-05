@@ -18,11 +18,14 @@ import 'package:flutter/services.dart';
 
 import 'apdu_exception.dart';
 import 'cancellation_exception.dart';
+import 'ctap_exception.dart';
 
 extension Decoder on PlatformException {
   bool _isCancellation() => code == 'CancellationException';
 
   bool _isApduException() => code == 'ApduException';
+
+  bool _isCtapException() => code == 'CtapException';
 
   Exception decode() {
     if (_isCancellation()) {
@@ -39,6 +42,20 @@ extension Decoder on PlatformException {
         final sw = int.tryParse(hexSw!, radix: 16);
         if (sw != null) {
           return ApduException(sw, 'SW: 0x$hexSw', details);
+        }
+      }
+    }
+
+    if (message != null && _isCtapException()) {
+      final regExp = RegExp(
+        r'^com.yubico.yubikit.core.fido.CtapException: CTAP error: 0x(.*)$',
+      );
+      final firstMatch = regExp.firstMatch(message!);
+      if (firstMatch != null) {
+        final hexSw = firstMatch.group(1);
+        final error = int.tryParse(hexSw!, radix: 16);
+        if (error != null) {
+          return CtapException(error, 'Error: 0x$hexSw', details);
         }
       }
     }

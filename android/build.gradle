@@ -2,6 +2,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 
     project.ext {
@@ -9,7 +10,7 @@ allprojects {
         targetSdkVersion = 35
         compileSdkVersion = 35
 
-        yubiKitVersion = "2.8.1"
+        yubiKitVersion = "2.9.0"
         junitVersion = "4.13.2"
         mockitoVersion = "5.18.0"
     }

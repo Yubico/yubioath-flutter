@@ -989,6 +989,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Uyarı! PIV içinde saklanan tüm veriler YubiKey'inizden geri alınamaz şekilde silinecektir.",
     "p_warning_piv_reset_desc": "Buna özel anahtarlar ve sertifikalar da dahildir. PIN, PUK ve yönetim anahtarınız fabrika varsayılana sıfırlanacaktır.",
     "p_warning_global_reset": "Uyarı! Bu işlem, kimlik bilgileri de dahil olmak üzere kayıtlı tüm verileri YubiKey'inizden geri alınamaz bir şekilde silecektir.",

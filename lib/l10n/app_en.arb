@@ -989,6 +989,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": "FIDO reset is disabled for this transport: {transport}.",
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Warning! All data stored for PIV will be irrevocably deleted from your YubiKey.",
     "p_warning_piv_reset_desc": "This includes private keys and certificates. Your PIN, PUK, and management key will be reset to their factory default values.",
     "p_warning_global_reset": "Warning! This will irrevocably delete all saved data, including credentials, from your YubiKey.",

@@ -989,6 +989,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Varování! Všechna data uložená pro PIV budou neodvolatelně smazána z vašeho YubiKey.",
     "p_warning_piv_reset_desc": "To zahrnuje soukromé klíče a certifikáty. Váš PIN, PUK, a klíč správy bude resetován na jejich výchozí tovární hodnoty.",
     "p_warning_global_reset": "Varování! Tímto se neodvolatelně smažou všechna uložená data, včetně přihlašovacích údajů, z vašeho YubiKey.",
