@@ -24,6 +24,7 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../models.dart';
@@ -38,14 +39,56 @@ final _pinProvider = StateProvider.family<String?, DevicePath>((ref, _) {
   return null;
 });
 
+class _FidoRpcNodeSession extends RpcNodeSession {
+  _FidoRpcNodeSession(super.rpc, super.devicePath, super.subpath);
+
+  List<String> _subpath = [];
+
+  Future<List<String>> subpath() async {
+    // Ensure that the subpath is initialized
+    if (_subpath.isNotEmpty) {
+      return _subpath;
+    }
+    await super.command('get');
+    for (final iface in [UsbInterface.fido, UsbInterface.ccid]) {
+      final path = [iface.name, 'ctap2'];
+      try {
+        await super.command('get', target: path);
+        _subpath = path;
+        _log.debug('Using transport $iface for CTAP');
+        return _subpath;
+      } catch (e) {
+        _log.debug('Failed connecting to CTAP via $iface');
+      }
+    }
+    throw 'Failed connection over all interfaces';
+  }
+
+  @override
+  Future<Map<String, dynamic>> command(
+    String action, {
+    List<String> target = const [],
+    Map? params,
+    Signaler? signal,
+  }) async {
+    return super.command(
+      action,
+      target: await subpath() + target,
+      params: params,
+      signal: signal,
+    );
+  }
+}
+
 final _sessionProvider = Provider.autoDispose
     .family<RpcNodeSession, DevicePath>((ref, devicePath) {
       // Refresh state when PIN is changed
       ref.watch(_pinProvider(devicePath));
-      return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
-        'fido',
-        'ctap2',
-      ]);
+      return _FidoRpcNodeSession(
+        ref.watch(rpcProvider).requireValue,
+        devicePath,
+        [],
+      );
     });
 
 final desktopFidoState = AsyncNotifierProvider.autoDispose
