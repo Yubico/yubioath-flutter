@@ -34,6 +34,7 @@ import '../core/state.dart';
 import '../fido/state.dart';
 import '../management/state.dart';
 import '../oath/state.dart';
+import '../piv/state.dart';
 import 'app_methods.dart';
 import 'fido/state.dart';
 import 'logger.dart';
@@ -42,6 +43,7 @@ import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
 import 'overlay/nfc/nfc_event_notifier.dart';
 import 'overlay/nfc/nfc_overlay.dart';
+import 'piv/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
 import 'window_state_provider.dart';
@@ -93,6 +95,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.accounts,
         Section.fingerprints,
         Section.passkeys,
+        Section.certificates,
         Section.settings,
       ]),
       // this specifies the priority of sections to show when
@@ -101,6 +104,7 @@ Future<Widget> initialize({Level? level}) async {
         Section.accounts,
         Section.fingerprints,
         Section.passkeys,
+        Section.certificates,
         Section.home,
         Section.settings,
       ]),
@@ -108,6 +112,10 @@ Future<Widget> initialize({Level? level}) async {
         (ref) => ref.watch(androidSupportedThemesProvider),
       ),
       defaultColorProvider.overrideWithValue(await getPrimaryColor()),
+
+      // PIV
+      pivStateProvider.overrideWithProvider(androidPivState.call),
+      pivSlotsProvider.overrideWithProvider(androidPivSlots.call),
 
       // FIDO
       fidoStateProvider.overrideWithProvider(androidFidoStateProvider.call),
@@ -121,13 +129,12 @@ Future<Widget> initialize({Level? level}) async {
             ref.read(nfcEventNotifierListener).startListener(context);
 
             Timer.run(() {
-              ref.read(featureFlagProvider.notifier)
-                // TODO: Load feature flags from file/config?
-                //..loadConfig(config)
-                // Disable unimplemented feature
-                ..setFeature(features.piv, false)
-                ..setFeature(features.otp, false)
-                ..setFeature(features.management, true);
+              ref
+                  .read(featureFlagProvider.notifier)
+                  // TODO: Load feature flags from file/config?
+                  //..loadConfig(config)
+                  // Disable unimplemented feature
+                  .setFeature(features.otp, false);
             });
 
             // activates window state provider

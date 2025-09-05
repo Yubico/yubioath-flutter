@@ -29,8 +29,10 @@ import '../../app/views/app_failure_page.dart';
 import '../../app/views/app_list_item.dart';
 import '../../app/views/app_page.dart';
 import '../../app/views/message_page.dart';
+import '../../app/views/message_page_not_initialized.dart';
 import '../../app/views/reset_dialog.dart';
 import '../../core/state.dart';
+import '../../exception/no_data_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/list_title.dart';
@@ -79,7 +81,12 @@ class _PivScreenState extends ConsumerState<PivScreen> {
             graphic: const CircularProgressIndicator(),
             delayedContent: true,
           ),
-          error: (error, _) => AppFailurePage(cause: error),
+          error: (error, _) => error is NoDataException
+              ? MessagePageNotInitialized(
+                  title: l10n.s_certificates,
+                  capabilities: const [Capability.piv],
+                )
+              : AppFailurePage(cause: error),
           data: (pivState) {
             final pivSlots = ref
                 .watch(pivSlotsProvider(widget.data.node.path))

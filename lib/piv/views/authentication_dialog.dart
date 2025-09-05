@@ -66,6 +66,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
     final keyFormatInvalid = !Format.hex.isValid(_keyController.text);
 
     void submit() async {
+      _keyFocus.unfocus();
       if (keyFormatInvalid) {
         _keyController.selection = TextSelection(
           baseOffset: 0,
