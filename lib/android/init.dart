@@ -129,13 +129,12 @@ Future<Widget> initialize({Level? level}) async {
             ref.read(nfcEventNotifierListener).startListener(context);
 
             Timer.run(() {
-              ref.read(featureFlagProvider.notifier)
-                // TODO: Load feature flags from file/config?
-                //..loadConfig(config)
-                // Disable unimplemented feature
-                ..setFeature(features.piv, true)
-                ..setFeature(features.otp, false)
-                ..setFeature(features.management, true);
+              ref
+                  .read(featureFlagProvider.notifier)
+                  // TODO: Load feature flags from file/config?
+                  //..loadConfig(config)
+                  // Disable unimplemented feature
+                  .setFeature(features.otp, false);
             });
 
             // activates window state provider
