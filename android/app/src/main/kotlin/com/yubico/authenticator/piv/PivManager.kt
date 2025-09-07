@@ -326,26 +326,39 @@ class PivManager(
             }
         }
 
+        val usbCapabilities = deviceManager.deviceInfo?.config?.enabledCapabilities?.usb ?: 0
+        val supportsFido = (usbCapabilities and Capability.FIDO2.bit) != 0
+        val (pivStateMetadata, pinAttempts) =
+            if (piv.supports(FEATURE_METADATA)) {
+                val managementKeyMetadata = ManagementKeyMetadata(piv.managementKeyMetadata)
+                val pinMetadata = PinMetadata(piv.pinMetadata)
+                val pukMetadata = PinMetadata(piv.pukMetadata)
+
+                PivStateMetadata(
+                    managementKeyMetadata,
+                    if (supportsBio and !supportsFido) {
+                        // The default PIN flag may be set incorrectly on BIO MPE when FIDO2 is disabled
+                        pinMetadata.copy(defaultValue = false)
+                    } else {
+                        pinMetadata
+                    },
+                    pukMetadata
+                ) to pinMetadata.attemptsRemaining
+            } else {
+                null to piv.pinAttempts
+            }
+
         pivViewModel.setState(
             PivState(
                 piv,
                 authenticated = false,
                 derivedKey = pivmanData?.hasDerivedKey ?: false,
                 storedKey = pivmanData?.hasStoredKey ?: false,
-                pinAttempts = piv.pinAttempts,
+                pinAttempts = pinAttempts,
                 supportsBio = supportsBio,
                 chuid = getObject(piv, ObjectId.CHUID)?.byteArrayToHexString(),
                 ccc = getObject(piv, ObjectId.CAPABILITY)?.byteArrayToHexString(),
-                metadata = if (piv.supports(FEATURE_METADATA)) {
-                    PivStateMetadata(
-                        ManagementKeyMetadata(piv.managementKeyMetadata),
-                        PinMetadata(piv.pinMetadata),
-                        PinMetadata(piv.pukMetadata)
-                    )
-                } else {
-                    null
-                }
-
+                metadata = pivStateMetadata
             )
         )
     }
