@@ -388,7 +388,6 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                   ),
                                 ),
                               ),
-                              const Spacer(),
                               if (Platform.isAndroid &&
                                   ref
                                           .watch(attachedDevicesProvider)
@@ -400,7 +399,10 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     KeyType.rsa2048,
                                     KeyType.rsa3072,
                                     KeyType.rsa4096,
-                                  ].contains(_keyType))
+                                  ].contains(_keyType)) ...[
+                                const SizedBox(
+                                  width: double.infinity,
+                                ), // continue on next line,
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(
                                     4,
@@ -440,6 +442,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     ),
                                   ),
                                 ),
+                              ],
                             ],
                           ),
                         ),
