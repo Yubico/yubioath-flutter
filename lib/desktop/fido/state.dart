@@ -50,6 +50,7 @@ class _FidoRpcNodeSession extends RpcNodeSession {
       return _subpath;
     }
     await super.command('get');
+
     for (final iface in [UsbInterface.fido, UsbInterface.ccid]) {
       final path = [iface.name, 'ctap2'];
       try {
@@ -57,11 +58,14 @@ class _FidoRpcNodeSession extends RpcNodeSession {
         _subpath = path;
         _log.debug('Using transport $iface for CTAP');
         return _subpath;
-      } catch (e) {
+      } on RpcError catch (e) {
         _log.debug('Failed connecting to CTAP via $iface');
+        if (e.status == 'fido-blocked-error') {
+          rethrow;
+        }
       }
     }
-    throw 'Failed connection over all interfaces';
+    throw 'Failed connecting to CTAP via all interfaces';
   }
 
   @override

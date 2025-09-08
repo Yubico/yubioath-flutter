@@ -23,7 +23,11 @@ from typing import Mapping
 from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
 from fido2.ctap import CtapError
 from smartcard.CardMonitoring import CardMonitor, CardObserver
-from smartcard.Exceptions import NoCardException, SmartcardException
+from smartcard.Exceptions import (
+    CardConnectionException,
+    NoCardException,
+    SmartcardException,
+)
 from smartcard.pcsc.PCSCExceptions import EstablishContextException
 from ykman import __version__ as ykman_version
 from ykman.device import list_all_devices, scan_devices
@@ -80,6 +84,15 @@ class ConnectionException(RpcException):
                 connection=connection,
                 exc_type=type(exc_type).__name__,
             ),
+        )
+
+
+class FidoBlockedException(RpcException):
+    def __init__(self, connection):
+        super().__init__(
+            "fido-blocked-error",
+            f"FIDO access required admin",
+            dict(connection=connection),
         )
 
 
@@ -391,6 +404,8 @@ class UsbDeviceNode(AbstractDeviceNode):
             return self._create_connection(FidoConnection)
         except (ValueError, OSError) as e:
             logger.warning("Error opening connection", exc_info=True)
+            if sys.platform == "win32" and not _is_admin():
+                raise FidoBlockedException("fido")
             raise ConnectionException(self._device.fingerprint, "fido", e)
         except Exception as e:  # TODO: Replace with ConnectionError once added
             if "Wrong" in str(e):
@@ -488,6 +503,8 @@ class ReaderDeviceNode(AbstractDeviceNode):
             )
         except (ValueError, SmartcardException, EstablishContextException) as e:
             logger.warning("Error opening connection", exc_info=True)
+            if sys.platform == "win32" and not _is_admin():
+                raise FidoBlockedException("fido")
             raise ConnectionException(self._device.fingerprint, "fido", e)
 
 
@@ -576,11 +593,16 @@ class ConnectionNode(RpcNode):
     )
     def ctap2(self):
         if isinstance(self._connection, SmartCardConnection):
-            return Ctap2Node(
-                SmartCardCtapDevice(self._connection),
-                device=self._device,
-                reader_name=self._reader_name,
-            )
+            try:
+                return Ctap2Node(
+                    SmartCardCtapDevice(self._connection),
+                    device=self._device,
+                    reader_name=self._reader_name,
+                )
+            except CardConnectionException as e:
+                if sys.platform == "win32" and not _is_admin():
+                    raise FidoBlockedException("ccid")
+                raise
         return self._init_child_node(
             Ctap2Node, device=self._device, reader_name=self._reader_name
         )

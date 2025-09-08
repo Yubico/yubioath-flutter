@@ -53,38 +53,40 @@ class AppFailurePage extends ConsumerWidget {
     String? footnote;
 
     if (reason is RpcError) {
-      if (reason.status == 'connection-error') {
-        switch (reason.body['connection']) {
-          case 'ccid':
-            header = l10n.l_ccid_connection_failed;
-            if (Platform.isMacOS) {
-              message = l10n.p_try_reinsert_yk;
-            } else if (Platform.isLinux) {
-              message = l10n.p_pcscd_unavailable;
-            } else {
-              message = l10n.p_ccid_service_unavailable;
-            }
-            break;
-          case 'fido':
-            if (Platform.isWindows &&
-                !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-              final currentSection = ref.read(currentSectionProvider);
-              title = currentSection.getDisplayName(l10n);
-              capabilities = currentSection.capabilities;
-              header = l10n.l_admin_privileges_required;
-              message = l10n.p_webauthn_elevated_permissions_required;
-              centered = false;
-              graphic = null;
-              actions = [const ElevateFidoButtons()];
-              if (isMicrosoftStore) {
-                footnote = l10n.p_ms_store_permission_note;
+      switch (reason.status) {
+        case 'connection-error':
+          switch (reason.body['connection']) {
+            case 'ccid':
+              header = l10n.l_ccid_connection_failed;
+              if (Platform.isMacOS) {
+                message = l10n.p_try_reinsert_yk;
+              } else if (Platform.isLinux) {
+                message = l10n.p_pcscd_unavailable;
+              } else {
+                message = l10n.p_ccid_service_unavailable;
               }
+              break;
+            default:
+              header = l10n.l_open_connection_failed;
+              message = l10n.p_try_reinsert_yk;
+          }
+          break;
+        case 'fido-blocked-error':
+          if (Platform.isWindows &&
+              !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
+            final currentSection = ref.read(currentSectionProvider);
+            title = currentSection.getDisplayName(l10n);
+            capabilities = currentSection.capabilities;
+            header = l10n.l_admin_privileges_required;
+            message = l10n.p_webauthn_elevated_permissions_required;
+            centered = false;
+            graphic = null;
+            actions = [const ElevateFidoButtons()];
+            if (isMicrosoftStore) {
+              footnote = l10n.p_ms_store_permission_note;
             }
-            break;
-          default:
-            header = l10n.l_open_connection_failed;
-            message = l10n.p_try_reinsert_yk;
-        }
+          }
+          break;
       }
     }
 
