@@ -362,6 +362,9 @@ class UsbDeviceNode(AbstractDeviceNode):
 
     @child(condition=lambda self: self._supports_connection(SmartCardConnection))
     def ccid(self):
+        if "_YK_NO_CCID" in os.environ:
+            logger.info("Connection type blocked for testing")
+            raise ConnectionException(self._device.fingerprint, "ccid", Exception())
         try:
             return self._create_connection(SmartCardConnection)
         except (ValueError, SmartcardException, EstablishContextException) as e:
@@ -370,6 +373,9 @@ class UsbDeviceNode(AbstractDeviceNode):
 
     @child(condition=lambda self: self._supports_connection(OtpConnection))
     def otp(self):
+        if "_YK_NO_OTP" in os.environ:
+            logger.info("Connection type blocked for testing")
+            raise ConnectionException(self._device.fingerprint, "otp", Exception())
         try:
             return self._create_connection(OtpConnection)
         except (ValueError, OSError) as e:
@@ -378,6 +384,9 @@ class UsbDeviceNode(AbstractDeviceNode):
 
     @child(condition=lambda self: self._supports_connection(FidoConnection))
     def fido(self):
+        if "_YK_NO_FIDO" in os.environ:
+            logger.info("Connection type blocked for testing")
+            raise ConnectionException(self._device.fingerprint, "fido", Exception())
         try:
             return self._create_connection(FidoConnection)
         except (ValueError, OSError) as e:
