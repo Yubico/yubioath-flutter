@@ -5,13 +5,13 @@ allprojects {
     }
 
     project.ext {
-        minSdkVersion = 21
+        minSdkVersion = 24
         targetSdkVersion = 35
-        compileSdkVersion = 35
+        compileSdkVersion = 36
 
-        yubiKitVersion = "2.8.1"
+        yubiKitVersion = "2.9.0"
         junitVersion = "4.13.2"
-        mockitoVersion = "5.18.0"
+        mockitoVersion = "5.19.0"
     }
 }
 
