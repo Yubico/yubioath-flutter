@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-22.04-arm
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         sparse-checkout: .github/workflows/env
 
@@ -44,7 +44,7 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Check app versions
       run: |
@@ -52,7 +52,7 @@ jobs:
         git diff --exit-code
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v5
+      uses: astral-sh/setup-uv@v6
       with:
         enable-cache: true
 
