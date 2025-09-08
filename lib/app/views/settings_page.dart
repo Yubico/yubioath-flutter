@@ -121,6 +121,7 @@ class _SettingsSectionItem extends StatelessWidget {
 
 class _ThemeModeView extends ConsumerWidget {
   final bool isDialog;
+
   const _ThemeModeView({required this.isDialog});
 
   @override
@@ -129,34 +130,36 @@ class _ThemeModeView extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final supportedThemes = ref.read(supportedThemesProvider);
 
-    final content = Column(
-      children: [
-        ListTitle(l10n.s_options),
-        ...supportedThemes.map(
-          (e) => RadioListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+    final content = RadioGroup(
+      groupValue: themeMode,
+      onChanged: (mode) {
+        if (mode != null) {
+          ref.read(themeModeProvider.notifier).setThemeMode(mode);
+          if (isDialog) {
+            Navigator.pop(context, mode);
+          }
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.s_options),
+          ...supportedThemes.map(
+            (e) => RadioListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              title: Transform.translate(
+                offset: Offset(4, 0),
+                child: Text(e.getDisplayName(l10n)),
+              ),
+              value: e,
+              key: keys.themeModeOption(e),
+              toggleable: true,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 22),
-            title: Transform.translate(
-              offset: Offset(4, 0),
-              child: Text(e.getDisplayName(l10n)),
-            ),
-            value: e,
-            key: keys.themeModeOption(e),
-            groupValue: themeMode,
-            toggleable: true,
-            onChanged: (mode) {
-              if (mode != null) {
-                ref.read(themeModeProvider.notifier).setThemeMode(mode);
-                if (isDialog) {
-                  Navigator.pop(context, e);
-                }
-              }
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
     if (isDialog) {
       return ResponsiveDialog(
@@ -173,6 +176,7 @@ class _ThemeModeView extends ConsumerWidget {
 class _ThemeModeItem extends ConsumerWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _ThemeModeItem({required this.selected, required this.expanded});
 
   @override
@@ -192,6 +196,7 @@ class _ThemeModeItem extends ConsumerWidget {
 
 class _HelpView extends ConsumerWidget {
   final bool isDialog;
+
   const _HelpView({required this.isDialog});
 
   @override
@@ -294,6 +299,7 @@ class _HelpView extends ConsumerWidget {
 class _HelpItem extends ConsumerWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _HelpItem({required this.selected, required this.expanded});
 
   @override
@@ -312,6 +318,7 @@ class _HelpItem extends ConsumerWidget {
 
 class _IconsView extends ConsumerStatefulWidget {
   final bool isDialog;
+
   const _IconsView({required this.isDialog});
 
   @override
@@ -320,6 +327,7 @@ class _IconsView extends ConsumerStatefulWidget {
 
 class _IconsViewState extends ConsumerState<_IconsView> {
   bool _replacing = false;
+
   Uri get _learnMoreAegisUri => Uri.parse('https://yubi.co/ya-custom-icons');
 
   Future<void> _importIconPack(
@@ -413,7 +421,8 @@ class _IconsViewState extends ConsumerState<_IconsView> {
             ActionListItem(
               borderRadius: widget.isDialog ? 0 : null,
               icon: const Icon(Symbols.delete),
-              title: 'Remove icon pack', // replace if non-empty
+              title: 'Remove icon pack',
+              // replace if non-empty
               subtitle: 'Delete the active icon pack',
               onTap: iconPack != null && !isLoading
                   ? (context) async {
@@ -457,6 +466,7 @@ class _IconsViewState extends ConsumerState<_IconsView> {
 class _IconsItem extends ConsumerWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _IconsItem({required this.selected, required this.expanded});
 
   @override
@@ -475,6 +485,7 @@ class _IconsItem extends ConsumerWidget {
 
 class _LanguageView extends ConsumerWidget {
   final bool isDialog;
+
   const _LanguageView({required this.isDialog});
 
   Widget _buildLocaleTitle(
@@ -562,45 +573,47 @@ class _LanguageView extends ConsumerWidget {
     );
 
     final itemRadius = isDialog ? 0.0 : null;
-    final content = Column(
-      children: [
-        ListTitle(l10n.s_options),
-        ...supportedLocales.map(
-          (e) => RadioListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+    final content = RadioGroup(
+      groupValue: currentLocale,
+      onChanged: (value) {
+        if (value != null) {
+          ref.read(currentLocaleProvider.notifier).setLocale(value);
+          if (isDialog) {
+            Navigator.pop(context, value);
+          }
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.s_options),
+          ...supportedLocales.map(
+            (e) => RadioListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              title: Transform.translate(
+                offset: Offset(4, 0),
+                child: _buildLocaleTitle(context, e, status),
+              ),
+              value: e,
+              toggleable: true,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 22),
-            title: Transform.translate(
-              offset: Offset(4, 0),
-              child: _buildLocaleTitle(context, e, status),
-            ),
-            value: e,
-            groupValue: currentLocale,
-            toggleable: true,
-            onChanged: (value) {
-              if (value != null) {
-                ref.read(currentLocaleProvider.notifier).setLocale(value);
-                if (isDialog) {
-                  Navigator.pop(context, e);
-                }
-              }
-            },
           ),
-        ),
-        ActionListSection(
-          l10n.s_community,
-          fullWidth: isDialog,
-          children: [
-            ActionListItem(
-              borderRadius: itemRadius,
-              icon: Icon(Symbols.open_in_new),
-              title: l10n.l_localization_project,
-              onTap: (_) => launchCrowdinUrl(),
-            ),
-          ],
-        ),
-      ],
+          ActionListSection(
+            l10n.s_community,
+            fullWidth: isDialog,
+            children: [
+              ActionListItem(
+                borderRadius: itemRadius,
+                icon: Icon(Symbols.open_in_new),
+                title: l10n.l_localization_project,
+                onTap: (_) => launchCrowdinUrl(),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
     if (isDialog) {
       return ResponsiveDialog(
@@ -617,6 +630,7 @@ class _LanguageView extends ConsumerWidget {
 class _LanguageItem extends ConsumerWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _LanguageItem({required this.selected, required this.expanded});
 
   @override
@@ -636,6 +650,7 @@ class _LanguageItem extends ConsumerWidget {
 
 class _ToggleReadersView extends ConsumerWidget {
   final bool isDialog;
+
   const _ToggleReadersView({required this.isDialog});
 
   @override
@@ -689,6 +704,7 @@ class _ToggleReadersView extends ConsumerWidget {
 class _ToggleReadersItem extends StatelessWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _ToggleReadersItem({required this.selected, required this.expanded});
 
   @override
@@ -707,6 +723,7 @@ class _ToggleReadersItem extends StatelessWidget {
 
 class _LogsView extends ConsumerStatefulWidget {
   final bool isDialog;
+
   const _LogsView({required this.isDialog});
 
   @override
@@ -720,27 +737,34 @@ class _LogsViewState extends ConsumerState<_LogsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
-    final tiles = Levels.LEVELS.map(
-      (e) => RadioListTile<Level>(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 22),
-        title: Transform.translate(
-          offset: Offset(4, 0),
-          child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
-        ),
-        value: e,
-        groupValue: logLevel,
-        toggleable: true,
-        onChanged: (value) {
-          if (value != null) {
-            ref.read(logLevelProvider.notifier).setLogLevel(value);
-            if (widget.isDialog) {
-              Navigator.pop(context, e);
-            }
+    final logLevelRadioGroup = RadioGroup(
+      groupValue: logLevel,
+      onChanged: (value) {
+        if (value != null) {
+          ref.read(logLevelProvider.notifier).setLogLevel(value);
+          if (widget.isDialog) {
+            Navigator.pop(context, value);
           }
-        },
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.s_logging_level),
+          ...Levels.LEVELS.map(
+            (e) => RadioListTile<Level>(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              title: Transform.translate(
+                offset: Offset(4, 0),
+                child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
+              ),
+              value: e,
+              toggleable: true,
+            ),
+          ),
+        ],
       ),
     );
 
@@ -748,8 +772,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTitle(l10n.s_logging_level),
-        ...tiles,
+        logLevelRadioGroup,
         ActionListSection(
           l10n.s_actions,
           fullWidth: widget.isDialog,
@@ -854,6 +877,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
 class _LogsItem extends ConsumerWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _LogsItem({required this.selected, required this.expanded});
 
   @override
@@ -875,44 +899,46 @@ class _LogsItem extends ConsumerWidget {
 
 class _NfcTapActionView extends ConsumerWidget {
   final bool isDialog;
+
   const _NfcTapActionView({required this.isDialog});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final tapAction = ref.watch(androidNfcTapActionProvider);
-    return Column(
-      children: [
-        ListTitle(l10n.l_on_yk_nfc_tap),
-        ...NfcTapAction.values.map(
-          (e) => RadioListTile<NfcTapAction>(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+    return RadioGroup(
+      groupValue: tapAction,
+      onChanged: (mode) {
+        if (mode != null) {
+          ref.read(androidNfcTapActionProvider.notifier).setTapAction(mode);
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.l_on_yk_nfc_tap),
+          ...NfcTapAction.values.map(
+            (e) => RadioListTile<NfcTapAction>(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              title: Transform.translate(
+                offset: Offset(4, 0),
+                child: Text(e.getDescription(l10n)),
+              ),
+              value: e,
+              toggleable: true,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 22),
-            title: Transform.translate(
-              offset: Offset(4, 0),
-              child: Text(e.getDescription(l10n)),
-            ),
-            value: e,
-            groupValue: tapAction,
-            toggleable: true,
-            onChanged: (mode) {
-              if (mode != null) {
-                ref
-                    .read(androidNfcTapActionProvider.notifier)
-                    .setTapAction(mode);
-              }
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 class _NfcKbdLayoutView extends ConsumerWidget {
   final bool isDialog;
+
   const _NfcKbdLayoutView({required this.isDialog});
 
   Future<String?> _selectKbdLayout(
@@ -923,21 +949,23 @@ class _NfcKbdLayoutView extends ConsumerWidget {
     context: context,
     builder: (BuildContext context) {
       final l10n = AppLocalizations.of(context);
-      return SimpleDialog(
-        title: Text(l10n.s_choose_kbd_layout),
-        children: available
-            .map(
-              (e) => RadioListTile<String>(
-                title: Text(e),
-                value: e,
-                toggleable: true,
-                groupValue: currentKbdLayout,
-                onChanged: (mode) {
-                  Navigator.pop(context, e);
-                },
-              ),
-            )
-            .toList(),
+      return RadioGroup(
+        groupValue: currentKbdLayout,
+        onChanged: (mode) {
+          Navigator.pop(context, mode);
+        },
+        child: SimpleDialog(
+          title: Text(l10n.s_choose_kbd_layout),
+          children: available
+              .map(
+                (e) => RadioListTile<String>(
+                  title: Text(e),
+                  value: e,
+                  toggleable: true,
+                ),
+              )
+              .toList(),
+        ),
       );
     },
   );
@@ -973,6 +1001,7 @@ class _NfcKbdLayoutView extends ConsumerWidget {
 
 class _NfcBypassTouchView extends ConsumerWidget {
   final bool isDialog;
+
   const _NfcBypassTouchView({required this.isDialog});
 
   @override
@@ -1003,6 +1032,7 @@ class _NfcBypassTouchView extends ConsumerWidget {
 
 class _NfcSilenceSoundsView extends ConsumerWidget {
   final bool isDialog;
+
   const _NfcSilenceSoundsView({required this.isDialog});
 
   @override
@@ -1033,6 +1063,7 @@ class _NfcSilenceSoundsView extends ConsumerWidget {
 
 class _UsbOpenAppView extends ConsumerWidget {
   final bool isDialog;
+
   const _UsbOpenAppView({required this.isDialog});
 
   @override
@@ -1068,6 +1099,7 @@ class _UsbOpenAppView extends ConsumerWidget {
 
 class _NfcAndUsbView extends ConsumerWidget {
   final bool isDialog;
+
   const _NfcAndUsbView({required this.isDialog});
 
   @override
@@ -1102,6 +1134,7 @@ class _NfcAndUsbView extends ConsumerWidget {
 class _NfcAndUsbItem extends ConsumerWidget {
   final SettingsSection? selected;
   final bool expanded;
+
   const _NfcAndUsbItem({required this.selected, required this.expanded});
 
   @override
