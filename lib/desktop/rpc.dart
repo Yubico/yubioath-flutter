@@ -133,11 +133,7 @@ class RpcSession {
   }
 
   Future<void> initialize() async {
-    final process = await Process.start(
-      executable,
-      [],
-      environment: {'YKMAN_NO_EXLUSIVE': 'ON'},
-    );
+    final process = await Process.start(executable, []);
     _log.debug('Helper process started');
     process.stderr
         .transform(const Utf8Decoder())
