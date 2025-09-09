@@ -49,6 +49,7 @@ import com.yubico.authenticator.device.noScp11bNfcSupport
 import com.yubico.authenticator.fido.FidoManager
 import com.yubico.authenticator.fido.FidoViewModel
 import com.yubico.authenticator.logging.FlutterLog
+import com.yubico.authenticator.logging.Log
 import com.yubico.authenticator.management.ManagementManager
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
@@ -123,6 +124,9 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.setLevel(defaultLogLevel)
+        logger.info("Application startup")
 
         if (isPortraitOnly()) {
             forcePortraitOrientation()
@@ -801,4 +805,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only)
+
+    private val defaultLogLevel =
+        if (BuildConfig.DEBUG) Log.LogLevel.DEBUG else Log.LogLevel.INFO
 }
