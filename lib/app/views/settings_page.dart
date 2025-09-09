@@ -412,18 +412,17 @@ class _IconsViewState extends ConsumerState<_IconsView> {
               ),
               title: _getIconPackTitle(iconPack, l10n),
               subtitle: isLoading
-                  ? 'Loading...'
+                  ? l10n.s_loading
                   : iconPack != null
                   ? '${iconPack.name} (${iconPack.version})'
-                  : 'Load Aegis Icon packs',
+                  : l10n.l_load_icon_pack_desc,
               onTap: (context) => _importIconPack(context, ref, iconPack),
             ),
             ActionListItem(
               borderRadius: widget.isDialog ? 0 : null,
               icon: const Icon(Symbols.delete),
-              title: 'Remove icon pack',
-              // replace if non-empty
-              subtitle: 'Delete the active icon pack',
+              title: l10n.s_remove_icon_pack, // replace if non-empty
+              subtitle: l10n.l_remove_icon_pack_desc,
               onTap: iconPack != null && !isLoading
                   ? (context) async {
                       final removePackStatus = await ref
@@ -1159,7 +1158,7 @@ class _ConfirmResetDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return BasicDialog(
       icon: Icon(Symbols.delete_forever),
-      title: Text('Reset settings?'),
+      title: Text(l10n.q_reset_settings),
       actions: [
         TextButton(
           onPressed: () {
@@ -1169,7 +1168,7 @@ class _ConfirmResetDialog extends StatelessWidget {
         ),
       ],
       content: Text(
-        'This will restore all settings to their default values.',
+        l10n.p_reset_settings_confirmation_desc,
         style: Theme.of(
           context,
         ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),

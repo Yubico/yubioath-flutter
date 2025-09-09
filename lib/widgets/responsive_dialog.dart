@@ -90,30 +90,41 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
   Widget _buildDialog(BuildContext context) {
     return PopScope(
       canPop: widget.allowCancel,
-      child: AlertDialog(
-        title: widget.title,
-        titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
-        contentPadding: const EdgeInsets.symmetric(vertical: 8),
-        content: SizedBox(
-          width: widget.dialogMaxWidth,
-          child: Container(
-            key: _childKey,
-            child: SingleChildScrollView(child: widget.builder(context, false)),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          chipTheme: Theme.of(context).chipTheme.copyWith(
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest,
           ),
         ),
-        actions: [
-          if (widget.showDialogCloseButton)
-            TextButton(
-              key: closeButton,
-              onPressed: widget.allowCancel
-                  ? () {
-                      Navigator.of(context).pop();
-                    }
-                  : null,
-              child: Text(_getCancelText(context)),
+        child: AlertDialog(
+          title: widget.title,
+          titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+          content: SizedBox(
+            width: widget.dialogMaxWidth,
+            child: Container(
+              key: _childKey,
+              child: SingleChildScrollView(
+                child: widget.builder(context, false),
+              ),
             ),
-          ...widget.actions,
-        ],
+          ),
+          actions: [
+            if (widget.showDialogCloseButton)
+              TextButton(
+                key: closeButton,
+                onPressed: widget.allowCancel
+                    ? () {
+                        Navigator.of(context).pop();
+                      }
+                    : null,
+                child: Text(_getCancelText(context)),
+              ),
+            ...widget.actions,
+          ],
+        ),
       ),
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) {

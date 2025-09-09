@@ -184,7 +184,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         ? 'white'
         : 'green';
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 12),
+      padding: const EdgeInsets.symmetric(vertical: 18.0),
       child: Image.asset(
         'assets/graphics/yubico-$color.png',
         alignment: Alignment.centerLeft,
@@ -196,21 +196,13 @@ class _AppPageState extends ConsumerState<AppPage> {
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
+      width: isDesktop ? 280 : null,
       child: SafeArea(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: CloseButton(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                _buildLogo(context),
-                const SizedBox(width: 48),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: _buildLogo(context),
             ),
             Expanded(
               child: Material(
