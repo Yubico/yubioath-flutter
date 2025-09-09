@@ -57,7 +57,7 @@ class AppTheme {
       colorScheme: colorScheme,
       fontFamily: 'Roboto',
       appBarTheme: const AppBarTheme(
-        color: Colors.transparent,
+        backgroundColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarIconBrightness: Brightness.dark,
           statusBarColor: Colors.transparent,
@@ -95,7 +95,7 @@ class AppTheme {
       fontFamily: 'Roboto',
       scaffoldBackgroundColor: colorScheme.surface,
       appBarTheme: const AppBarTheme(
-        color: Colors.transparent,
+        backgroundColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarIconBrightness: Brightness.light,
           statusBarColor: Colors.transparent,

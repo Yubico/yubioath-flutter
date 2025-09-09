@@ -47,7 +47,7 @@ Visit https://yubico.com to learn more.
 
 |Android
 |Android 13 & above
-|Android 5 (Lollipop)
+|Android 7 (Nougat)
 |===
 
 === Installation

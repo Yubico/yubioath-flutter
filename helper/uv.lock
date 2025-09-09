@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10, <4"
 
 [[package]]
@@ -37,7 +37,7 @@ requires-dist = [
     { name = "mss", specifier = ">=9.0.1,<10" },
     { name = "pillow", specifier = ">=10.2.0,<11" },
     { name = "pyscard", specifier = ">=2.0,<3" },
-    { name = "yubikey-manager", git = "https://github.com/Yubico/yubikey-manager.git" },
+    { name = "yubikey-manager", specifier = ">=5.8.0,<6" },
     { name = "zxing-cpp", specifier = ">=2.2.0,<3" },
 ]
 
@@ -628,8 +628,8 @@ wheels = [
 
 [[package]]
 name = "yubikey-manager"
-version = "5.8.0.dev0"
-source = { git = "https://github.com/Yubico/yubikey-manager.git#2880ba2471b8f40e1d195cb174e87aeac1acf3a5" }
+version = "5.8.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "cryptography" },
@@ -637,6 +637,10 @@ dependencies = [
     { name = "keyring" },
     { name = "pyscard" },
     { name = "pywin32", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b3/09/ba3ca95ed3c8adfb7f8288a33048a963dcc5741eb3e819a8451b65e36a59/yubikey_manager-5.8.0.tar.gz", hash = "sha256:3af0da65e1fdd46763c94ee74e2da55a4b6e7771da776c197f5f4b4581738560", size = 228631, upload-time = "2025-09-03T07:38:01.421Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/90/38/9329015cc1a28d48dc6ef863b1b9afe98f5382b8d1836906a0ef5ccfe29b/yubikey_manager-5.8.0-py3-none-any.whl", hash = "sha256:66586ad3d465ac7e7293eedcaf70b88b0be74b7be33d5d4d49990b6a828bafb3", size = 231941, upload-time = "2025-09-03T07:38:03.272Z" },
 ]
 
 [[package]]
