@@ -58,7 +58,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   desktop_drop: e52397f93b3daec9fe1d504f1d5a21b76403d8ae
   file_picker: e716a70a9fe5fd9e09ebc922d7541464289443af
-  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
   local_notifier: e9506bc66fc70311e8bc7291fb70f743c081e4ff
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   screen_retriever_macos: 776e0fa5d42c6163d2bf772d22478df4b302b161
@@ -67,6 +67,6 @@ SPEC CHECKSUMS:
   url_launcher_macos: c82c93949963e55b228a30115bd219499a6fe404
   window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
 
-PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
+PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
 
 COCOAPODS: 1.16.2

@@ -217,41 +217,45 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                         ),
                         const SizedBox(width: 16.0),
                         Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 2.0),
-                              Text(
-                                l10n.s_output_format,
-                                style: textTheme.bodyLarge,
-                              ),
-                              ...GenerateType.values.map(
-                                (e) => ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 0.0,
-                                  ),
-                                  visualDensity: VisualDensity(vertical: -4),
-                                  title: Text(
-                                    e.getDisplayName(l10n),
-                                    style: textTheme.bodyMedium,
-                                  ),
-                                  leading: Radio<GenerateType>(
-                                    value: e,
-                                    groupValue: _generateType,
-                                    onChanged:
-                                        (_keyType == KeyType.x25519 &&
-                                                e == GenerateType.publicKey) ||
-                                            _keyType != KeyType.x25519
-                                        ? (value) {
-                                            setState(() {
-                                              _generateType = e;
-                                            });
-                                          }
-                                        : null,
+                          child: RadioGroup(
+                            groupValue: _generateType,
+                            onChanged: (generateType) {
+                              if (generateType != null) {
+                                (_keyType == KeyType.x25519 &&
+                                            generateType ==
+                                                GenerateType.publicKey) ||
+                                        _keyType != KeyType.x25519
+                                    ? {
+                                        setState(() {
+                                          _generateType = generateType;
+                                        }),
+                                      }
+                                    : null;
+                              }
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 2.0),
+                                Text(
+                                  l10n.s_output_format,
+                                  style: textTheme.bodyLarge,
+                                ),
+                                ...GenerateType.values.map(
+                                  (e) => ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 0.0,
+                                    ),
+                                    visualDensity: VisualDensity(vertical: -4),
+                                    title: Text(
+                                      e.getDisplayName(l10n),
+                                      style: textTheme.bodyMedium,
+                                    ),
+                                    leading: Radio<GenerateType>(value: e),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],
