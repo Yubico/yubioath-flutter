@@ -121,7 +121,7 @@ class Ctap2Node(RpcNode):
         self._connection.close()
         self._device.reinsert(reinsert_cb=signal_status, event=event)
 
-        self._connection = self._device.open_connection(FidoConnection)
+        self._connection = self._device.open_connection(type(self._connection))
         self.ctap = Ctap2(self._connection)
 
         logger.debug("Performing reset...")

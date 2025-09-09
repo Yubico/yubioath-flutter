@@ -143,21 +143,22 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final usbTransport = widget.data.node.transport == Transport.usb;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / _totalSteps;
-    final needsElevation =
+    final winNonElevated =
         Platform.isWindows &&
-        _application == Capability.fido2 &&
         !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
+    final needsElevation = winNonElevated && _application == Capability.fido2;
 
     // show the progress widgets on desktop, or on Android when using USB
     final showResetProgress =
         _resetting && (!Platform.isAndroid || usbTransport);
 
     if (widget.data.info.config.enabledCapabilities[widget
-                .data
-                .node
-                .transport]! &
-            Capability.fido2.value !=
-        0) {
+                    .data
+                    .node
+                    .transport]! &
+                Capability.fido2.value !=
+            0 &&
+        !winNonElevated) {
       final ctapInfo =
           ref.watch(fidoStateProvider(widget.data.node.path)).value?.info ?? {};
       _longTouch = ctapInfo['long_touch_for_reset'] == true;
