@@ -336,7 +336,7 @@ class PivManager(
 
                 PivStateMetadata(
                     managementKeyMetadata,
-                    if (supportsBio and !supportsFido) {
+                    if (supportsBio and !supportsFido and piv.version.isLessThan(5, 8, 0)) {
                         // The default PIN flag may be set incorrectly on BIO MPE when FIDO2 is disabled
                         pinMetadata.copy(defaultValue = false)
                     } else {

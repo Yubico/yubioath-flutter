@@ -145,12 +145,17 @@ class PivNode(RpcNode):
         except NotSupportedError:
             supports_bio = False
 
-        if metadata and (supports_bio and CAPABILITY.FIDO2 not in self._capabilities):
+        version = self.session.version
+        if (
+            metadata
+            and (supports_bio and CAPABILITY.FIDO2 not in self._capabilities)
+            and version < (5, 8, 0)
+        ):
             # The default PIN flag may be set incorrectly on BIO MPE when FIDO2 is disabled
             metadata["pin_metadata"]["default_value"] = False
 
         return dict(
-            version=self.session.version,
+            version=version,
             authenticated=self._authenticated,
             derived_key=self._pivman_data.has_derived_key,
             stored_key=self._pivman_data.has_stored_key,
