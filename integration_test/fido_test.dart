@@ -153,6 +153,13 @@ void main() {
       expect($(cred.credentialId), findsAny);
 
       await $(deleteCredentialAction).tap();
+
+      // Unlock with PIN if needed (can happen when using PPUAT)
+      final pinConfirmationField = $(pinConfirmationEntry);
+      if (pinConfirmationField.exists) {
+        await pinConfirmationField.enterText(normalPin);
+        await $(unlockFido2WithPinConfirmation).tap();
+      }
       await $(deleteButton).tap();
 
       expect(
