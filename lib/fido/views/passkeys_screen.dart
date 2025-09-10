@@ -400,9 +400,11 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                       await (Actions.invoke(context, intent)
                           as Future<dynamic>?);
                   if (deleted == true && _selected == intent.target) {
-                    setState(() {
-                      _selected = null;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _selected = null;
+                      });
+                    }
                   }
                   return deleted;
                 },

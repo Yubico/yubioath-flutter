@@ -8,6 +8,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
 
@@ -115,6 +116,7 @@ class _FidoPinConfirmationDialog
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
+          key: unlockFido2WithPinConfirmation,
           onPressed:
               !_pinIsWrong &&
                   _pinController.text.length >= widget.state.minPinLength &&
@@ -132,6 +134,7 @@ class _FidoPinConfirmationDialog
               [
                     Text(l10n.p_fido2_pin_required),
                     AppTextField(
+                      key: pinConfirmationEntry,
                       autofocus: true,
                       obscureText: _isObscure,
                       autofillHints: const [AutofillHints.password],
