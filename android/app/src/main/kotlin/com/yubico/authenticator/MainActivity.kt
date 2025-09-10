@@ -807,5 +807,5 @@ class MainActivity : FlutterFragmentActivity() {
     private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only)
 
     private val defaultLogLevel =
-        if (BuildConfig.DEBUG) Log.LogLevel.DEBUG else Log.LogLevel.INFO
+        if (BuildConfig.DEBUG) Log.LogLevel.TRAFFIC else Log.LogLevel.INFO
 }
