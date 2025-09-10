@@ -316,6 +316,7 @@
     "s_fido_pin_protection": "FIDO PIN 保護",
     "s_pin_change_required": "需要更改 PIN 碼",
     "l_enter_fido2_pin": "輸入 YubiKey 的 FIDO2 PIN 碼",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN 碼被封鎖；出廠重設 FIDO 應用程式",
     "l_pin_blocked": "PIN 碼已被封鎖",
     "l_set_pin_first": "需要 PIN 碼",
