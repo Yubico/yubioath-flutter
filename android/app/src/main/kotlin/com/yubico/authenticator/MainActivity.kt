@@ -821,7 +821,7 @@ class MainActivity : FlutterFragmentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
-    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only)
+    private fun isPortraitOnly() = false //resources.getBoolean(R.bool.portrait_only)
 
     private val defaultLogLevel =
         if (BuildConfig.DEBUG) Log.LogLevel.TRAFFIC else Log.LogLevel.INFO
