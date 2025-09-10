@@ -994,6 +994,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "警告！PIV に保存されたすべてのデータが YubiKey から削除されます。削除されたデータは回復できません。",
     "p_warning_piv_reset_desc": "秘密鍵と証明書が含まれます。PIN、PUK、および管理キーが工場出荷時のデフォルト値にリセットされます。",
     "p_warning_global_reset": "警告！資格情報を含めた保存されているすべてのデータが YubiKey から削除されます。削除されたデータは回復できません。",

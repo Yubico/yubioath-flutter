@@ -994,6 +994,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "警告！存储在 PIV 上的所有数据将不可逆地从您的 Yubikey 删除。",
     "p_warning_piv_reset_desc": "这包括私钥和证书。您的 PIN、PUK 和管理密钥将被重置为出厂默认值。",
     "p_warning_global_reset": "警告！这将不可逆地删除 YubiKey 中所有已保存的数据，包括证书。",

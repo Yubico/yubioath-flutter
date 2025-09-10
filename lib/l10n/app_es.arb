@@ -994,6 +994,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "¡Advertencia! Todos los datos almacenados para PIV se eliminarán irrevocablemente de tu YubiKey.",
     "p_warning_piv_reset_desc": "Esto incluye claves privadas y certificados. Su PIN, PUK y clave de administración se restablecerán a sus valores predeterminados de fábrica.",
     "p_warning_global_reset": "¡Advertencia! Esto borrará irrevocablemente todos los datos guardados, incluidas las credenciales, de tu YubiKey.",

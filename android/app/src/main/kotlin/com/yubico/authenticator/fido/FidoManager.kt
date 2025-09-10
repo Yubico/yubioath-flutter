@@ -160,6 +160,8 @@ class FidoManager(
 
                 "enableEnterpriseAttestation" -> enableEnterpriseAttestation()
 
+                "getFidoResetProperties" -> getFidoResetProperties()
+
                 else -> throw NotImplementedError()
             }
         }
@@ -675,6 +677,26 @@ class FidoManager(
                 return@useSession JSONObject(
                     mapOf(
                         "success" to true,
+                    )
+                ).toString()
+            } catch (e: Exception) {
+                logger.error("Failed to enable enterprise attestation. ", e)
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to false,
+                    )
+                ).toString()
+            }
+        }
+
+    private suspend fun getFidoResetProperties(): String =
+        connectionHelper.useSession { fidoSession ->
+            try {
+                return@useSession JSONObject(
+                    mapOf(
+                        "success" to true,
+                        "long_touch_for_reset" to fidoSession.cachedInfo.longTouchForReset,
+                        "transports_for_reset" to fidoSession.cachedInfo.transportsForReset
                     )
                 ).toString()
             } catch (e: Exception) {

@@ -994,6 +994,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Cảnh báo! Tất cả dữ liệu được lưu trữ cho PIV sẽ bị xóa vĩnh viễn khỏi YubiKey của bạn.",
     "p_warning_piv_reset_desc": "Điều này bao gồm các khóa riêng và chứng chỉ. PIN, PUK và khóa quản lý của bạn sẽ được đặt lại về giá trị mặc định của nhà máy.",
     "p_warning_global_reset": "Cảnh báo! Điều này sẽ xóa vĩnh viễn tất cả dữ liệu đã lưu, bao gồm các thông tin xác thực, khỏi YubiKey của bạn.",

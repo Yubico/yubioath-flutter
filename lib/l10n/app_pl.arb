@@ -994,6 +994,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Ostrzeżenie! Wszystkie dane przechowywane w aplikacji PIV zostaną nieodwracalnie usunięte z klucza YubiKey.",
     "p_warning_piv_reset_desc": "Obejmuje to klucze prywatne i certyfikaty. Kod PIN, PUK i klucz zarządzania zostaną zresetowane do domyślnych wartości fabrycznych.",
     "p_warning_global_reset": "Ostrzeżenie! Spowoduje to nieodwracalne usunięcie wszystkich zapisanych danych, w tym poświadczeń, z klucza YubiKey.",
