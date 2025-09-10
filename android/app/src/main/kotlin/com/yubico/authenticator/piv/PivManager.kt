@@ -563,7 +563,7 @@ class PivManager(
         } else null
         val certificate = runPivOperation { piv.getCertificate(slot) }
 
-        PivSlot(
+        return PivSlot(
             slotId = slot.value,
             metadata = metadata?.let(::SlotMetadata),
             certificate = certificate,
