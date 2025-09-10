@@ -43,6 +43,7 @@
     "s_overwrite": "Prepísať",
     "s_done": "Hotovo",
     "s_success": null,
+    "s_loading": null,
     "s_more": null,
     "s_label": "Menovka",
     "s_name": "Názov",
@@ -80,6 +81,8 @@
     "s_settings": "Nastavenia",
     "s_reset_settings": null,
     "l_reset_settings_desc": null,
+    "q_reset_settings": null,
+    "p_reset_settings_confirmation_desc": null,
     "s_general": null,
     "s_support": null,
     "l_settings_desc": "Zmeniť predvoľby aplikácie",
@@ -314,6 +317,7 @@
     "s_fido_pin_protection": "Ochrana FIDO PIN kódom",
     "s_pin_change_required": "Vyžaduje sa zmena PIN kódu",
     "l_enter_fido2_pin": "Zadajte FIDO2 PIN kód pre svoj kľúč YubiKey",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN je zablokovaný; obnoviť výrobné nastavenie aplikácie FIDO",
     "l_pin_blocked": "PIN je zablokovaný",
     "l_set_pin_first": "Vyžaduje sa PIN kód",
@@ -395,6 +399,7 @@
     },
     "s_dismiss": "Zamietnuť",
     "p_default_pin_puk_key_desc": "Odporúča sa zmeniť predvolený PIN kód, PUK kód a spravovací kľúč.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Varovanie: Používa sa predvolený PIN kód",
     "l_warning_default_puk": "Varovanie: Používa sa predvolený PUK kód",
     "l_default_pin_used": "Používa sa predvolený PIN",
@@ -991,6 +996,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Varovanie! Všetky údaje uložené pre PIV budú z vášho YubiKey nenávratne vymazané.",
     "p_warning_piv_reset_desc": "To zahŕňa súkromné kľúče a certifikáty. Vaše PIN, PUK a kľúč na spravovanie sa obnovia na predvolené hodnoty z výroby.",
     "p_warning_global_reset": "Varovanie! Týmto sa z vášho YubiKey nenávratne vymažú všetky uložené údaje vrátane poverení.",
@@ -1028,7 +1041,9 @@
     "s_replace_icon_pack": "Nahradiť balík ikon",
     "l_loading_icon_pack": "Načítanie balíka ikon\u2026",
     "s_load_icon_pack": "Načítať balík ikon",
+    "l_load_icon_pack_desc": null,
     "s_remove_icon_pack": "Odstrániť balík ikon",
+    "l_remove_icon_pack_desc": null,
     "l_icon_pack_removed": "Balík ikon bol odstránený",
     "l_remove_icon_pack_failed": "Chyba pri odstraňovaní balíka ikon",
     "s_choose_icon_pack": "Vyberte si balík ikon",

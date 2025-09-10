@@ -56,10 +56,14 @@ class _DesktopOtpStateNotifier extends OtpStateNotifier {
     });
 
     final result = await _session.command('get');
+    final version = Version.fromJson(result['data']['info']['version']);
     final interfaces = (result['children'] as Map).keys.toSet();
 
-    // Will try to connect over ccid first
-    for (final iface in [UsbInterface.otp, UsbInterface.ccid]) {
+    // Prefer CCID for newer devices
+    final order = version.isAtLeast(5, 4, 3)
+        ? [UsbInterface.ccid, UsbInterface.otp]
+        : [UsbInterface.otp, UsbInterface.ccid];
+    for (final iface in order) {
       if (interfaces.contains(iface.name)) {
         final path = [iface.name, 'yubiotp'];
         try {

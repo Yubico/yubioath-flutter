@@ -43,6 +43,7 @@
     "s_overwrite": "Overwrite",
     "s_done": "Done",
     "s_success": "Success",
+    "s_loading": "Loading\u2026",
     "s_more": "More",
     "s_label": "Label",
     "s_name": "Name",
@@ -80,6 +81,8 @@
     "s_settings": "Settings",
     "s_reset_settings": "Reset settings",
     "l_reset_settings_desc": "Restore settings to default",
+    "q_reset_settings": "Reset settings?",
+    "p_reset_settings_confirmation_desc": "This will restore all settings to their default values.",
     "s_general": "General",
     "s_support": "Support",
     "l_settings_desc": "Change application preferences",
@@ -314,6 +317,7 @@
     "s_fido_pin_protection": "FIDO PIN protection",
     "s_pin_change_required": "PIN change required",
     "l_enter_fido2_pin": "Enter the FIDO2 PIN for your YubiKey",
+    "p_fido2_pin_required": "The action you are about to perform requires the FIDO2 PIN to be entered.",
     "l_pin_blocked_reset": "PIN is blocked; factory reset the FIDO application",
     "l_pin_blocked": "PIN is blocked",
     "l_set_pin_first": "A PIN is required",
@@ -395,6 +399,7 @@
     },
     "s_dismiss": "Dismiss",
     "p_default_pin_puk_key_desc": "It is recommended to change the default PIN, PUK and management key.",
+    "p_default_pin_puk_key_fips_desc": "For FIPS compliance it is required to change the default PIN, PUK and management key.",
     "l_warning_default_pin": "Warning: Default PIN used",
     "l_warning_default_puk": "Warning: Default PUK used",
     "l_default_pin_used": "Default PIN used",
@@ -991,6 +996,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": "FIDO reset is disabled for this transport: {transport}.",
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Warning! All data stored for PIV will be irrevocably deleted from your YubiKey.",
     "p_warning_piv_reset_desc": "This includes private keys and certificates. Your PIN, PUK, and management key will be reset to their factory default values.",
     "p_warning_global_reset": "Warning! This will irrevocably delete all saved data, including credentials, from your YubiKey.",
@@ -1028,7 +1041,9 @@
     "s_replace_icon_pack": "Replace icon pack",
     "l_loading_icon_pack": "Loading icon pack\u2026",
     "s_load_icon_pack": "Load icon pack",
+    "l_load_icon_pack_desc": "Load icon pack from file",
     "s_remove_icon_pack": "Remove icon pack",
+    "l_remove_icon_pack_desc": "Delete the active icon pack",
     "l_icon_pack_removed": "Icon pack removed",
     "l_remove_icon_pack_failed": "Error removing icon pack",
     "s_choose_icon_pack": "Choose icon pack",

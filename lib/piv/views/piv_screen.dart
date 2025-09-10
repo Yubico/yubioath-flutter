@@ -330,7 +330,11 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                           if (showPinDefaultBanner)
                             MaterialBanner(
                               padding: EdgeInsets.all(18),
-                              content: Text(l10n.p_default_pin_puk_key_desc),
+                              content: Text(
+                                fipsUnready
+                                    ? l10n.p_default_pin_puk_key_fips_desc
+                                    : l10n.p_default_pin_puk_key_desc,
+                              ),
                               leading: Icon(
                                 Icons.warning_amber,
                                 color: theme.colorScheme.primary,

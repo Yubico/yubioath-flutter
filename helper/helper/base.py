@@ -14,11 +14,20 @@
 
 import inspect
 import logging
+from enum import Enum, unique
 from functools import partial
 
 from yubikit.core import InvalidPinError
 
 logger = logging.getLogger(__name__)
+
+
+@unique
+class SECRETSTORE(str, Enum):
+    UNKNOWN = "unknown"
+    ALLOWED = "allowed"
+    FAILED = "failed"
+    # DENIED = "denied"  # Maybe failed is enough?
 
 
 def encode_bytes(value: bytes) -> str:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 
 import 'apdu_exception.dart';
 import 'cancellation_exception.dart';
+import 'ctap_exception.dart';
 import 'tag_lost_exception.dart';
 
 extension Decoder on PlatformException {
@@ -26,6 +27,8 @@ extension Decoder on PlatformException {
   bool _isApduException() => code == 'ApduException';
 
   bool _isTagLostException() => code == 'TagLostException';
+
+  bool _isCtapException() => code == 'CtapException';
 
   Exception decode() {
     if (_isCancellation()) {
@@ -48,6 +51,20 @@ extension Decoder on PlatformException {
 
     if (_isTagLostException()) {
       return TagLostException('NFC communication issue', details);
+    }
+
+    if (message != null && _isCtapException()) {
+      final regExp = RegExp(
+        r'^com.yubico.yubikit.core.fido.CtapException: CTAP error: 0x(.*)$',
+      );
+      final firstMatch = regExp.firstMatch(message!);
+      if (firstMatch != null) {
+        final hexSw = firstMatch.group(1);
+        final error = int.tryParse(hexSw!, radix: 16);
+        if (error != null) {
+          return CtapException(error, 'Error: 0x$hexSw', details);
+        }
+      }
     }
 
     // original exception

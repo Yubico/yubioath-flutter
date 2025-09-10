@@ -43,6 +43,7 @@
     "s_overwrite": "Sobreescribir",
     "s_done": "Hecho",
     "s_success": null,
+    "s_loading": null,
     "s_more": null,
     "s_label": "Etiqueta",
     "s_name": "Nombre",
@@ -80,6 +81,8 @@
     "s_settings": "Ajustes",
     "s_reset_settings": null,
     "l_reset_settings_desc": null,
+    "q_reset_settings": null,
+    "p_reset_settings_confirmation_desc": null,
     "s_general": null,
     "s_support": null,
     "l_settings_desc": "Cambiar las preferencias de la aplicación",
@@ -314,6 +317,7 @@
     "s_fido_pin_protection": "PIN de protección FIDO",
     "s_pin_change_required": "Cambio de PIN requerido",
     "l_enter_fido2_pin": "Ingresa el PIN FIDO2 para tu YubiKey",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN bloqueado; restablecer los valores de fábrica de la aplicación FIDO",
     "l_pin_blocked": "PIN bloqueado",
     "l_set_pin_first": "Se requiere un PIN",
@@ -395,6 +399,7 @@
     },
     "s_dismiss": "Descartar",
     "p_default_pin_puk_key_desc": "Se recomienda cambiar el PIN, el PUK y la clave de administración predeterminados.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Advertencia: PIN predeterminado usado",
     "l_warning_default_puk": "Advertencia: PUK predeterminado usado",
     "l_default_pin_used": "PIN por defecto usado",
@@ -991,6 +996,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "¡Advertencia! Todos los datos almacenados para PIV se eliminarán irrevocablemente de tu YubiKey.",
     "p_warning_piv_reset_desc": "Esto incluye claves privadas y certificados. Su PIN, PUK y clave de administración se restablecerán a sus valores predeterminados de fábrica.",
     "p_warning_global_reset": "¡Advertencia! Esto borrará irrevocablemente todos los datos guardados, incluidas las credenciales, de tu YubiKey.",
@@ -1028,7 +1041,9 @@
     "s_replace_icon_pack": "Reemplazar paquete de íconos",
     "l_loading_icon_pack": "Cargando paquete de íconos\u2026",
     "s_load_icon_pack": "Cargar paquete de íconos",
+    "l_load_icon_pack_desc": null,
     "s_remove_icon_pack": "Remover paquete de íconos",
+    "l_remove_icon_pack_desc": null,
     "l_icon_pack_removed": "Paquete de íconos removido",
     "l_remove_icon_pack_failed": "Error removiendo el paquete de íconos",
     "s_choose_icon_pack": "Elegir paquete de íconos",

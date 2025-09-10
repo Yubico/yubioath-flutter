@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.yubico.authenticator.logging
 
 import ch.qos.logback.classic.Level
-import com.yubico.authenticator.BuildConfig
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -33,11 +32,7 @@ object Log {
         ERROR
     }
 
-    private var level = if (BuildConfig.DEBUG) {
-        LogLevel.DEBUG
-    } else {
-        LogLevel.INFO
-    }
+    private var level = LogLevel.INFO
 
     init {
         setLevel(level)

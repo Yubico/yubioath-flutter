@@ -15,107 +15,46 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 const defaultPrimaryColor = Colors.lightGreen;
 
 class AppTheme {
-  static ThemeData getTheme(Brightness brightness, Color primaryColor) =>
-      switch (brightness) {
-        Brightness.light => getLightTheme(primaryColor),
-        Brightness.dark => getDarkTheme(primaryColor),
-      };
+  static ThemeData getLightTheme(Color primaryColor) =>
+      _themeData(Brightness.light, primaryColor);
+  static ThemeData getDarkTheme(Color primaryColor) =>
+      _themeData(Brightness.dark, primaryColor);
 
   static ProgressIndicatorThemeData _progressIndicatorThemeData() =>
       // ignore: deprecated_member_use
       ProgressIndicatorThemeData(year2023: false);
 
   static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) {
-    const darkSurface = Color(0xff282828);
+    const darkSurface = Color(0xff1e1e1e);
     return switch (brightness) {
       Brightness.dark => ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: brightness,
         surface: darkSurface,
-        surfaceContainerHigh: darkSurface.withValues(alpha: 0.9),
-        onSurface: const Color(0xeeffffff),
-        onSurfaceVariant: const Color(0xaaffffff),
       ),
       Brightness.light => ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: brightness,
-        onSurface: const Color(0xbb000000),
-        onSurfaceVariant: const Color(0x99000000),
       ),
     };
   }
 
-  static ThemeData getLightTheme(Color primaryColor) {
-    final colorScheme = _colorScheme(Brightness.light, primaryColor);
+  static ThemeData _themeData(Brightness brightness, Color primaryColor) {
+    final colorScheme = _colorScheme(brightness, primaryColor);
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       fontFamily: 'Roboto',
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-        ),
-      ),
       listTileTheme: const ListTileThemeData(
         // For alignment under menu button
         contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
         visualDensity: VisualDensity.compact,
       ),
-      tooltipTheme: const TooltipThemeData(
-        waitDuration: Duration(milliseconds: 500),
-        textStyle: TextStyle(color: Color(0xff3c3c3c)),
-        decoration: BoxDecoration(
-          color: Color(0xffe2e2e6),
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        ),
-      ),
       chipTheme: ChipThemeData(
-        backgroundColor: colorScheme.surfaceContainerHighest,
-        labelStyle: TextStyle(
-          fontFamily: 'Roboto',
-          color: colorScheme.onSurface,
-        ),
-      ),
-      progressIndicatorTheme: _progressIndicatorThemeData(),
-    );
-  }
-
-  static ThemeData getDarkTheme(Color primaryColor) {
-    final colorScheme = _colorScheme(Brightness.dark, primaryColor);
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme,
-      fontFamily: 'Roboto',
-      scaffoldBackgroundColor: colorScheme.surface,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.light,
-          statusBarColor: Colors.transparent,
-        ),
-      ),
-      listTileTheme: const ListTileThemeData(
-        // For alignment under menu button
-        contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
-        visualDensity: VisualDensity.compact,
-      ),
-      tooltipTheme: const TooltipThemeData(
-        waitDuration: Duration(milliseconds: 500),
-        textStyle: TextStyle(color: Color(0xffE2E2E6)),
-        decoration: BoxDecoration(
-          color: Color(0xff3c3c3c),
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        ),
-      ),
-      chipTheme: ChipThemeData(
-        backgroundColor: colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
           fontFamily: 'Roboto',
           color: colorScheme.onSurface,

@@ -15,16 +15,19 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../app/state.dart';
 import '../../app/views/action_list.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
 import '../models.dart';
+import 'actions.dart';
 import 'add_fingerprint_dialog.dart';
 import 'enterprise_attestation_dialog.dart';
 import 'pin_dialog.dart';
@@ -39,19 +42,22 @@ bool fingerprintsShowActionsNotifier(FidoState state) {
 
 Widget passkeysBuildActions(
   BuildContext context,
+  WidgetRef ref,
   DeviceNode node,
   FidoState state,
-) => _fidoBuildActions(context, node, state);
+) => _fidoBuildActions(context, ref, node, state);
 
 Widget fingerprintsBuildActions(
   BuildContext context,
+  WidgetRef ref,
   DeviceNode node,
   FidoState state,
   int fingerprints,
-) => _fidoBuildActions(context, node, state, fingerprints);
+) => _fidoBuildActions(context, ref, node, state, fingerprints);
 
 Widget _fidoBuildActions(
   BuildContext context,
+  WidgetRef ref,
   DeviceNode node,
   FidoState state, [
   int? fingerprints,
@@ -69,6 +75,7 @@ Widget _fidoBuildActions(
       enterpriseAttestation == false &&
       !(state.alwaysUv && !state.hasPin) &&
       !(!state.unlocked && state.hasPin);
+  final withContext = ref.read(withContextProvider);
 
   return Column(
     children: [
@@ -150,13 +157,26 @@ Widget _fidoBuildActions(
                   ? l10n.l_set_pin_first
                   : l10n.s_disabled,
               onTap: canEnableEnterpriseAttestation
-                  ? (context) {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            EnableEnterpriseAttestationDialog(node.path),
-                      );
+                  ? (context) async {
+                      if (state.hasPin &&
+                          !state.unlocked &&
+                          !await withContext(
+                            (context) =>
+                                unlockFido(context, ref, node.path, state),
+                          )) {
+                        return;
+                      }
+
+                      await withContext((context) {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                        return showDialog<bool?>(
+                          context: context,
+                          builder: (context) =>
+                              EnableEnterpriseAttestationDialog(node.path),
+                        );
+                      });
                     }
                   : null,
             ),

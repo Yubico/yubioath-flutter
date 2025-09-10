@@ -43,6 +43,7 @@
     "s_overwrite": "Écraser",
     "s_done": "Terminé",
     "s_success": null,
+    "s_loading": null,
     "s_more": null,
     "s_label": "Étiquette",
     "s_name": "Nom",
@@ -80,6 +81,8 @@
     "s_settings": "Réglages",
     "s_reset_settings": null,
     "l_reset_settings_desc": null,
+    "q_reset_settings": null,
+    "p_reset_settings_confirmation_desc": null,
     "s_general": null,
     "s_support": null,
     "l_settings_desc": "Modifier les préférences de l'application",
@@ -314,6 +317,7 @@
     "s_fido_pin_protection": "Protection PIN FIDO",
     "s_pin_change_required": "Changement PIN requise",
     "l_enter_fido2_pin": "Saisissez le PIN FIDO2 de votre YubiKey",
+    "p_fido2_pin_required": null,
     "l_pin_blocked_reset": "PIN bloqué, réinitialisez FIDO aux paramètres d'usine",
     "l_pin_blocked": "Le code PIN est bloqué",
     "l_set_pin_first": "Un code PIN est nécessaire",
@@ -395,6 +399,7 @@
     },
     "s_dismiss": "Fermer",
     "p_default_pin_puk_key_desc": "Il est recommandé de changer le code PIN, le code PUK et la clé de gestion par défaut.",
+    "p_default_pin_puk_key_fips_desc": null,
     "l_warning_default_pin": "Avertissement : Code PIN par défaut utilisé",
     "l_warning_default_puk": "Attention : PUK par défaut utilisé",
     "l_default_pin_used": "Code PIN par défaut utilisé",
@@ -991,6 +996,14 @@
             }
         }
     },
+    "p_reset_not_allowed_over": null,
+    "@p_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
     "p_warning_piv_reset": "Attention\u00a0! Toutes les données PIV seront définitivement supprimées de votre YubiKey.",
     "p_warning_piv_reset_desc": "Cela inclut les clés privées et les certificats. Vos PIN, PUK et clé de gestion seront réinitialisés à leurs valeurs d'usine.",
     "p_warning_global_reset": "Attention\u00a0! Cela supprimera définitivement toutes les données enregistrées, notamment les identifiants, de votre YubiKey.",
@@ -1028,7 +1041,9 @@
     "s_replace_icon_pack": "Remplacer le pack d'icônes",
     "l_loading_icon_pack": "Chargement du pack d'icônes\u2026",
     "s_load_icon_pack": "Charger le pack d'icônes",
+    "l_load_icon_pack_desc": null,
     "s_remove_icon_pack": "Retirer le pack d'icônes",
+    "l_remove_icon_pack_desc": null,
     "l_icon_pack_removed": "Pack d'icônes supprimé",
     "l_remove_icon_pack_failed": "Erreur lors de la suppression du pack d'icônes",
     "s_choose_icon_pack": "Choisir un pack d'icônes",

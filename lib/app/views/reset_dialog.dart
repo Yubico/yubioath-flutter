@@ -15,9 +15,11 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -28,6 +30,7 @@ import '../../core/state.dart';
 import '../../desktop/models.dart';
 import '../../desktop/state.dart';
 import '../../exception/cancellation_exception.dart';
+import '../../exception/ctap_exception.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../../generated/l10n/app_localizations.dart';
@@ -93,6 +96,29 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     _totalSteps = nfc ? 2 : 4;
     _globalReset = _isGlobalReset();
     _application = !_globalReset ? widget.application : null;
+
+    // on Android & USB we have to query the FIDO reset parameters
+    if (isAndroid && !nfc) {
+      Future.microtask(() {
+        MethodChannel(
+          'android.fido.methods',
+        ).invokeMethod('getFidoResetProperties').then((response) {
+          try {
+            final fidoResetProperties = jsonDecode(response);
+            if (fidoResetProperties['success'] == true) {
+              setState(() {
+                _updateResetParameters(
+                  fidoResetProperties['long_touch_for_reset'],
+                  fidoResetProperties['transports_for_reset'],
+                );
+              });
+            }
+          } catch (e) {
+            _log.error('Failed to get FIDO reset properties');
+          }
+        });
+      });
+    }
   }
 
   @override
@@ -133,6 +159,22 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     return isBio && (enabled & Capability.piv.value) != 0;
   }
 
+  void _updateResetParameters(
+    bool longTouchForReset,
+    List<dynamic> transportsForReset,
+  ) {
+    _longTouch = longTouchForReset;
+
+    if (transportsForReset.isNotEmpty &&
+        !transportsForReset.contains(widget.data.node.transport.name)) {
+      _fidoDisabledRequiredTransports = [
+        for (var t in transportsForReset) Transport.values.byName(t),
+      ];
+    } else {
+      _fidoDisabledRequiredTransports = [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasFeature = ref.watch(featureProvider);
@@ -143,34 +185,32 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final usbTransport = widget.data.node.transport == Transport.usb;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / _totalSteps;
-    final needsElevation =
+    final winNonElevated =
         Platform.isWindows &&
-        _application == Capability.fido2 &&
         !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
+    final needsElevation = winNonElevated && _application == Capability.fido2;
 
     // show the progress widgets on desktop, or on Android when using USB
     final showResetProgress =
         _resetting && (!Platform.isAndroid || usbTransport);
 
     if (widget.data.info.config.enabledCapabilities[widget
-                .data
-                .node
-                .transport]! &
-            Capability.fido2.value !=
-        0) {
-      final ctapInfo =
-          ref.watch(fidoStateProvider(widget.data.node.path)).value?.info ?? {};
-      _longTouch = ctapInfo['long_touch_for_reset'] == true;
+                    .data
+                    .node
+                    .transport]! &
+                Capability.fido2.value !=
+            0 &&
+        !winNonElevated) {
+      if (isDesktop) {
+        // on desktop we have direct access to the ctap info
+        final ctapInfo =
+            ref.watch(fidoStateProvider(widget.data.node.path)).value?.info ??
+            {};
 
-      final transportsForReset =
-          ctapInfo['transports_for_reset'] as List? ?? [];
-      if (transportsForReset.isNotEmpty &&
-          !transportsForReset.contains(widget.data.node.transport.name)) {
-        _fidoDisabledRequiredTransports = [
-          for (var t in transportsForReset) Transport.values.byName(t),
-        ];
-      } else {
-        _fidoDisabledRequiredTransports = [];
+        _updateResetParameters(
+          ctapInfo['long_touch_for_reset'] == true,
+          ctapInfo['transports_for_reset'] as List? ?? [],
+        );
       }
     }
 
@@ -270,6 +310,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                         } else {
                                           errorMessage = e.message;
                                         }
+                                      } else if (e is CtapException &&
+                                          e.error == 0x30) {
+                                        // NOT_ALLOWED
+                                        errorMessage = l10n
+                                            .p_reset_not_allowed_over(
+                                              widget.data.node.transport
+                                                  .getDisplayName(l10n),
+                                            );
                                       } else {
                                         errorMessage = e.toString();
                                       }
