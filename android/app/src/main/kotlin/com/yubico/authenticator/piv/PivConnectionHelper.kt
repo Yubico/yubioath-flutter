@@ -61,7 +61,7 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
         NfcState.waitForNfcKeyRemoval = waitForNfcKeyRemoval
         return deviceManager.withKey(
             onUsb = { useSmartCardConnectionUsb(it, onComplete, block) },
-            onNfc = { useSmartCardConnectionNfc(block) },
+            onNfc = { useSmartCardConnectionNfc(onComplete, block) },
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
@@ -78,13 +78,17 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
     }
 
     suspend fun <T> useSmartCardConnectionNfc(
+        onComplete: ((SmartCardConnection) -> Unit)? = null,
         block: (SmartCardConnection) -> T
     ): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
                     outer.resumeWith(runCatching {
-                        block.invoke(it.value)
+                        val connection = it.value
+                        block.invoke(connection).also {
+                            onComplete?.invoke(connection)
+                        }
                     })
                 }
             }

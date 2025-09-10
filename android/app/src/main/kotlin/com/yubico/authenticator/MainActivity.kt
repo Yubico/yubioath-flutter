@@ -546,11 +546,7 @@ class MainActivity : FlutterFragmentActivity() {
         val pivContextManager = PivManager(
             messenger,
             deviceManager,
-            this,
-            appMethodChannel,
-            nfcOverlayManager,
             pivViewModel,
-            viewModel
         )
         val managementContextManager = ManagementManager(messenger, deviceManager)
 

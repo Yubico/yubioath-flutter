@@ -50,6 +50,28 @@ class PivViewModel : ViewModel() {
     private val _slots = MutableLiveData<List<PivSlot>?>()
     val slots: LiveData<List<PivSlot>?> = _slots
 
+    fun deleteSlot(slot: Slot, deleteCert: Boolean, deleteKey: Boolean) {
+        val currentSlots = _slots.value ?: return
+        val updatedSlots = currentSlots.map { pivSlot ->
+            if (pivSlot.slotId != slot.value) return@map pivSlot
+
+            var updated = pivSlot
+            if (deleteCert) {
+                updated =
+                    updated.copy(
+                        certificate = null,
+                        certInfo = null,
+                        publicKeyMatch = null
+                    )
+            }
+            if (deleteKey) {
+                updated = updated.copy(metadata = null)
+            }
+            updated
+        }
+        _slots.postValue(updatedSlots)
+    }
+
     fun updateSlots(slots: List<PivSlot>?) {
         _slots.postValue(slots)
     }
@@ -68,6 +90,13 @@ class PivViewModel : ViewModel() {
         val slotId = Slot.fromStringAlias(slotAlias).value
         _slots.postValue(_slots.value?.map { slot ->
             if (slot.slotId == slotId) slot.copy(metadata = metadata, certificate = certificate)
+            else slot
+        })
+    }
+
+    fun updateSlot(pivSlot: PivSlot) {
+        _slots.postValue(_slots.value?.map { slot ->
+            if (slot.slotId == pivSlot.slotId) pivSlot
             else slot
         })
     }

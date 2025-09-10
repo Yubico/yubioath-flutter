@@ -16,11 +16,7 @@
 
 package com.yubico.authenticator.piv
 
-import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.MainActivity
-import com.yubico.authenticator.MainViewModel
-import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.piv.KeyMaterialParser.getLeafCertificates
@@ -81,11 +77,7 @@ typealias PivAction = (Result<SmartCardConnection, Exception>) -> Unit
 class PivManager(
     messenger: BinaryMessenger,
     deviceManager: DeviceManager,
-    lifecycleOwner: LifecycleOwner,
-    appMethodChannel: MainActivity.AppMethodChannel,
-    nfcOverlayManager: NfcOverlayManager,
     private val pivViewModel: PivViewModel,
-    mainViewModel: MainViewModel
 ) : AppContextManager(deviceManager) {
 
     private val managementKeyStorage: MutableMap<String, ByteArray> = mutableMapOf()
@@ -198,10 +190,6 @@ class PivManager(
         val fips = (deviceManager.deviceInfo?.fipsCapable ?: 0) and Capability.PIV.bit != 0
         val session = YubiKitPivSession(connection, if (fips) deviceManager.scpKeyParams else null)
 
-//        if (!unlockOnConnect.compareAndSet(false, true)) {
-//            tryToUnlockOathSession(session)
-//        }
-
         return session
     }
 
@@ -276,45 +264,38 @@ class PivManager(
             currentSerial
         )
 
-        // update UI with data from current PIV session
-        updatePivState(connection)
-
         val sameDevice = previousSerial.value == currentSerial
 
-        if (device is NfcYubiKeyDevice && sameDevice) {
-            requestHandled = connectionHelper.invokePending(smartCardConnection)
+        if (!sameDevice || !connectionHelper.hasPending()) {
 
-        } else {
+            connectionHelper.cancelPending()
 
-            if (!sameDevice) {
-                // different key
-                logger.debug("This is a different key than previous, invalidating the PIN token")
-                connectionHelper.cancelPending()
+            val (state, slots) = try {
+                val piv = getPivSession(connection)
+                readPivState(piv) to getSlots(piv)
+            } catch (e: Exception) {
+                logger.error("Error reading piv session. ", e)
+                null to null
             }
-        }
 
-        // update UI with data from new PIV session after operation performed
-        update(connection)
+            if (state == null) {
+                pivViewModel.clearState()
+            } else {
+                pivViewModel.setState(state)
+                pivViewModel.updateSlots(slots)
+            }
+        } else if (device is NfcYubiKeyDevice && connectionHelper.hasPending()) {
+            requestHandled = connectionHelper.invokePending(smartCardConnection)
+        }
         return requestHandled
     }
 
     private var pivmanData: PivmanData? = null
 
-    /**
-     * rereads the PIV state and slots
-     */
-    private fun update(connection: SmartCardConnection) {
-        updatePivState(connection)
-        updatePivSlots(connection)
-    }
+    private fun readPivState(connection: SmartCardConnection): PivState =
+        readPivState(getPivSession(connection))
 
-    private fun updatePivSlots(connection: SmartCardConnection) {
-        val piv = getPivSession(connection)
-        pivViewModel.updateSlots(getSlots(piv))
-    }
-
-    private fun updatePivState(connection: SmartCardConnection) {
-        val piv = getPivSession(connection)
+    private fun readPivState(piv: YubiKitPivSession): PivState {
         pivmanData = PivmanUtils.getPivmanData(piv)
 
         val supportsBio = try {
@@ -348,19 +329,21 @@ class PivManager(
                 null to piv.pinAttempts
             }
 
-        pivViewModel.setState(
-            PivState(
-                piv,
-                authenticated = false,
-                derivedKey = pivmanData?.hasDerivedKey ?: false,
-                storedKey = pivmanData?.hasStoredKey ?: false,
-                pinAttempts = pinAttempts,
-                supportsBio = supportsBio,
-                chuid = getObject(piv, ObjectId.CHUID)?.byteArrayToHexString(),
-                ccc = getObject(piv, ObjectId.CAPABILITY)?.byteArrayToHexString(),
-                metadata = pivStateMetadata
-            )
+        return PivState(
+            piv,
+            authenticated = false,
+            derivedKey = pivmanData?.hasDerivedKey ?: false,
+            storedKey = pivmanData?.hasStoredKey ?: false,
+            pinAttempts = pinAttempts,
+            supportsBio = supportsBio,
+            chuid = getObject(piv, ObjectId.CHUID)?.byteArrayToHexString(),
+            ccc = getObject(piv, ObjectId.CAPABILITY)?.byteArrayToHexString(),
+            metadata = pivStateMetadata
         )
+    }
+
+    private fun updatePivState(connection: SmartCardConnection) {
+        pivViewModel.setState(readPivState(connection))
     }
 
     private fun getObject(piv: YubiKitPivSession, id: Int): ByteArray? =
@@ -570,30 +553,35 @@ class PivManager(
 
     private fun getSlots(piv: YubiKitPivSession): List<PivSlot> =
         try {
-            val supportsMetadata = piv.supports(YubiKitPivSession.FEATURE_METADATA)
-            pivViewModel.updateSlots(null)
-
-            val slotList = Slot.entries.minus(Slot.ATTESTATION).map {
-                val metadata = if (supportsMetadata) {
-                    runPivOperation { piv.getSlotMetadata(it) }
-                } else null
-                val certificate = runPivOperation { piv.getCertificate(it) }
-
-                PivSlot(
-                    slotId = it.value,
-                    metadata = metadata?.let(::SlotMetadata),
-                    certificate = certificate,
-                    publicKeyMatch = null
-                )
+            Slot.entries.minus(Slot.ATTESTATION).map {
+                getSlot(it, piv)
             }
+        } finally {
 
-            slotList
+        }
+
+    private fun getSlot(slot: Slot, piv: YubiKitPivSession): PivSlot =
+        try {
+            val supportsMetadata = piv.supports(FEATURE_METADATA)
+            val metadata = if (supportsMetadata) {
+                runPivOperation { piv.getSlotMetadata(slot) }
+            } else null
+            val certificate = runPivOperation { piv.getCertificate(slot) }
+
+            PivSlot(
+                slotId = slot.value,
+                metadata = metadata?.let(::SlotMetadata),
+                certificate = certificate,
+                publicKeyMatch = null
+            )
         } finally {
 
         }
 
     private suspend fun delete(slot: Slot, deleteCert: Boolean, deleteKey: Boolean): String =
-        connectionHelper.useSmartCardConnection(::update) {
+        connectionHelper.useSmartCardConnection({
+            pivViewModel.deleteSlot(slot, deleteCert, deleteKey)
+        }) {
             try {
                 val piv = getPivSession(it)
                 val serial = pivViewModel.currentSerial()
@@ -623,9 +611,13 @@ class PivManager(
         overwriteKey: Boolean,
         includeCertificate: Boolean
     ): String =
-        connectionHelper.useSmartCardConnection(::update) {
+        connectionHelper.useSmartCardConnection({  connection ->
+            val piv = getPivSession(connection)
+            pivViewModel.updateSlot(getSlot(src, piv))
+            pivViewModel.updateSlot(getSlot(dst, piv))
+        }) { connection ->
             try {
-                val piv = getPivSession(it)
+                val piv = getPivSession(connection)
                 val serial = pivViewModel.currentSerial()
 
                 doVerifyPin(piv, serial)
@@ -761,7 +753,10 @@ class PivManager(
         validFrom: String?,
         validTo: String?
     ): String =
-        connectionHelper.useSmartCardConnection(::update, true) {
+        connectionHelper.useSmartCardConnection({ connection ->
+            val piv = getPivSession(connection)
+            pivViewModel.updateSlot(getSlot(slot, piv))
+        }, true) {
             try {
                 val piv = getPivSession(it)
 
@@ -850,7 +845,6 @@ class PivManager(
         }
     }
 
-
     private suspend fun importFile(
         slot: Slot,
         data: String,
@@ -858,7 +852,10 @@ class PivManager(
         pinPolicy: PinPolicy,
         touchPolicy: TouchPolicy
     ): String =
-        connectionHelper.useSmartCardConnection(::update) {
+        connectionHelper.useSmartCardConnection({  connection ->
+            val piv = getPivSession(connection)
+            pivViewModel.updateSlot(getSlot(slot, piv))
+        }) {
             try {
                 val piv = getPivSession(it)
                 val serial = pivViewModel.currentSerial()
