@@ -42,6 +42,7 @@
     "s_import": "インポート",
     "s_overwrite": "上書き",
     "s_done": "完了",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "ラベル",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "警告！YubiKey から証明書が削除されます。",
     "p_warning_delete_key": "警告！YubiKeyから秘密鍵を削除します。",
     "p_warning_delete_certificate_and_key": "警告！証明書と秘密鍵を YubiKey から削除します。",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "PIV スロット {slot} の証明書を削除します。",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "スキャンの準備完了",
     "s_nfc_hold_still": "そのまま保持してください\u2026",
     "s_nfc_tap_your_yubikey": "YubiKey をタップしてください",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "スキャンに失敗しました。もう一度お試しください",
     "@_usb": {},
 

@@ -265,11 +265,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                         void Function()? close;
                         try {
                           close = await withContext<void Function()>(
-                            (context) async => showMessage(
-                              context,
-                              l10n.l_importing_file,
-                              duration: const Duration(seconds: 30),
-                            ),
+                            (context) async => !Platform.isAndroid
+                                ? showMessage(
+                                    context,
+                                    l10n.l_importing_file,
+                                    duration: const Duration(seconds: 30),
+                                  )
+                                : () {},
                           );
                           await ref
                               .read(

@@ -42,6 +42,7 @@
     "s_import": "导入",
     "s_overwrite": "覆写",
     "s_done": "完成",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "标签",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "警告！此操作将从您的 YubiKey 中删除证书。",
     "p_warning_delete_key": "警告！此操作将从您的 Yubikey 中删除私钥。",
     "p_warning_delete_certificate_and_key": "警告！此操作将从您的 YubiKey 中删除证书和私钥。",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "这将删除 PIV 槽位 {slot}中的证书。",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "已准备好扫描",
     "s_nfc_hold_still": "保持不动\u2026",
     "s_nfc_tap_your_yubikey": "读取您的 YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "扫描失败，请重试",
     "@_usb": {},
 

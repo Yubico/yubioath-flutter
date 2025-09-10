@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +24,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../android/app_methods.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
+import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../features.dart' as features;
 import '../keys.dart' as keys;
@@ -178,9 +182,12 @@ class PivActions extends ConsumerWidget {
                       fileName: fileName,
                       allowedExtensions: [fileExt],
                       type: FileType.custom,
+                      bytes: isAndroid
+                          ? Uint8List.fromList(utf8.encode(data!))
+                          : null,
                       lockParentWindow: true,
                     );
-                    if (filePath != null) {
+                    if (!isAndroid && filePath != null) {
                       // Windows only: Append extension if missing
                       if (Platform.isWindows &&
                           !filePath.toLowerCase().endsWith('.$fileExt')) {
@@ -203,6 +210,10 @@ class PivActions extends ConsumerWidget {
                 (context) => _authIfNeeded(context, ref, devicePath, pivState),
               )) {
                 return false;
+              }
+
+              if (Platform.isAndroid) {
+                await preserveConnectedDeviceWhenPaused();
               }
 
               final picked = await withContext((context) async {
@@ -238,9 +249,17 @@ class PivActions extends ConsumerWidget {
           ExportIntent: CallbackAction<ExportIntent>(
             onInvoke: (intent) async {
               final l10n = AppLocalizations.of(context);
-              final (metadata, cert) = await ref
-                  .read(pivSlotsProvider(devicePath).notifier)
-                  .read(intent.slot.slot);
+
+              SlotMetadata? metadata;
+              String? cert;
+
+              try {
+                (metadata, cert) = await ref
+                    .read(pivSlotsProvider(devicePath).notifier)
+                    .read(intent.slot.slot);
+              } on CancellationException catch (_) {
+                return false;
+              }
 
               String title;
               String message;
@@ -270,6 +289,9 @@ class PivActions extends ConsumerWidget {
                   fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
                   allowedExtensions: [fileExt],
                   type: FileType.custom,
+                  bytes: isAndroid
+                      ? Uint8List.fromList(utf8.encode(data))
+                      : null,
                   lockParentWindow: true,
                 );
               });
@@ -278,13 +300,15 @@ class PivActions extends ConsumerWidget {
                 return false;
               }
 
-              // Windows only: Append extension if missing
-              if (Platform.isWindows &&
-                  !filePath.toLowerCase().endsWith('.$fileExt')) {
-                filePath += '.$fileExt';
+              if (!isAndroid) {
+                // Windows only: Append extension if missing
+                if (Platform.isWindows &&
+                    !filePath.toLowerCase().endsWith('.$fileExt')) {
+                  filePath += '.$fileExt';
+                }
+                final file = File(filePath);
+                await file.writeAsString(data, flush: true);
               }
-              final file = File(filePath);
-              await file.writeAsString(data, flush: true);
 
               await withContext((context) async {
                 showMessage(context, message);

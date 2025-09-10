@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ import 'package:flutter/services.dart';
 import 'apdu_exception.dart';
 import 'cancellation_exception.dart';
 import 'ctap_exception.dart';
+import 'tag_lost_exception.dart';
 
 extension Decoder on PlatformException {
   bool _isCancellation() => code == 'CancellationException';
 
   bool _isApduException() => code == 'ApduException';
+
+  bool _isTagLostException() => code == 'TagLostException';
 
   bool _isCtapException() => code == 'CtapException';
 
@@ -44,6 +47,10 @@ extension Decoder on PlatformException {
           return ApduException(sw, 'SW: 0x$hexSw', details);
         }
       }
+    }
+
+    if (_isTagLostException()) {
+      return TagLostException('NFC communication issue', details);
     }
 
     if (message != null && _isCtapException()) {

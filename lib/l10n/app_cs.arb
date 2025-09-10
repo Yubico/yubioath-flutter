@@ -42,6 +42,7 @@
     "s_import": "Importovat",
     "s_overwrite": "Přepsat",
     "s_done": "Hotovo",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "Jmenovka",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "Varování! Tato akce odstraní certifikát z vašeho YubiKey.",
     "p_warning_delete_key": "Varování! Tato akce odstraní soukromý klíč z vašeho YubiKey.",
     "p_warning_delete_certificate_and_key": "Varování! Tato akce odstraní certifikát a soukromý klíč z vašeho YubiKey.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Tímto odstraníte certifikát v PIV slotu {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "Připraveno ke skenování",
     "s_nfc_hold_still": "Neodstraňujte YubiKey\u2026",
     "s_nfc_tap_your_yubikey": "Přiložte YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Nepodařilo se naskenovat, zkuste to znovu",
     "@_usb": {},
 

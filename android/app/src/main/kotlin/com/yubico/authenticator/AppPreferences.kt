@@ -76,6 +76,7 @@ class AppPreferences(context: Context) {
             "passkeys" -> OperationContext.FidoPasskeys
             "fingerprints" -> OperationContext.FidoFingerprints
             "accounts" -> OperationContext.Oath
+            "certificates" -> OperationContext.Piv
             else -> OperationContext.Default
         }
 

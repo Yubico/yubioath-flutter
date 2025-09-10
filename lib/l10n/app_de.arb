@@ -42,6 +42,7 @@
     "s_import": "Importieren",
     "s_overwrite": "Überschreiben",
     "s_done": "Erledigt",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "Namen",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "Achtung! Diese Aktion löscht das Zertifikat von deinem YubiKey.",
     "p_warning_delete_key": "Achtung! Diese Aktion löscht den privaten Schlüssel von deinem YubiKey.",
     "p_warning_delete_certificate_and_key": "Achtung! Diese Aktion löscht das Zertifikat und den privaten Schlüssel von deinem YubiKey.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Dadurch wird das Zertifikat im PIV-Slot {slot} gelöscht.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "Bereit zum Scannen",
     "s_nfc_hold_still": "Deinen YubiKey nicht bewegen\u2026",
     "s_nfc_tap_your_yubikey": "Halte Deinen YubiKey an den Leser",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Scanvorgang fehlgeschlagen, versuche es nochmal",
     "@_usb": {},
 

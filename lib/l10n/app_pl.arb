@@ -42,6 +42,7 @@
     "s_import": "Importuj",
     "s_overwrite": "Nadpisz",
     "s_done": "Gotowe",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "Etykieta",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu z klucza YubiKey.",
     "p_warning_delete_key": "Ostrzeżenie! Spowoduje to usunięcie klucza prywatnego z YubiKey.",
     "p_warning_delete_certificate_and_key": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu i klucza prywatnego z YubiKey.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Spowoduje to usunięcie certyfikatu ze slotu PIV {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "Gotowy do skanowania",
     "s_nfc_hold_still": "Nie ruszaj się\u2026",
     "s_nfc_tap_your_yubikey": "Zbliż klucz YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Nie udało się zeskanować. Spróbuj ponownie",
     "@_usb": {},
 

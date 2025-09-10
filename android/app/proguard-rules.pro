@@ -61,3 +61,17 @@
 -keepattributes *Annotation*
 
 -keep public class ch.qos.logback.classic.android.LogcatAppender
+
+
+-keep class org.bouncycastle.** { *; }
+
+# these are not part of Android SDK
+-dontwarn javax.naming.Binding
+-dontwarn javax.naming.NamingEnumeration
+-dontwarn javax.naming.NamingException
+-dontwarn javax.naming.directory.Attribute
+-dontwarn javax.naming.directory.Attributes
+-dontwarn javax.naming.directory.DirContext
+-dontwarn javax.naming.directory.InitialDirContext
+-dontwarn javax.naming.directory.SearchControls
+-dontwarn javax.naming.directory.SearchResult

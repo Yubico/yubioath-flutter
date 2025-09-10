@@ -42,6 +42,7 @@
     "s_import": "Importera",
     "s_overwrite": "Skriv över",
     "s_done": "Klar",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "Etikett",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "Varning för detta! Denna åtgärd kommer att radera certifikatet från YubiKey.",
     "p_warning_delete_key": "Varning för detta! Denna åtgärd raderar den privata nyckeln från din YubiKey.",
     "p_warning_delete_certificate_and_key": "Varning för detta! Denna åtgärd raderar certifikatet och den privata nyckeln från din YubiKey.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Detta kommer att radera certifikatet i PIV slot {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "Redo att skanna",
     "s_nfc_hold_still": "Håll stilla\u2026",
     "s_nfc_tap_your_yubikey": "Tryck på din YubiKey",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Misslyckades med skanningen, försök igen",
     "@_usb": {},
 

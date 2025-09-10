@@ -42,6 +42,7 @@
     "s_import": "Nhập khẩu",
     "s_overwrite": "Ghi đè",
     "s_done": "Xong",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "Nhãn",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "Cảnh báo! Hành động này sẽ xóa chứng chỉ khỏi YubiKey của bạn.",
     "p_warning_delete_key": "Cảnh báo! Hành động này sẽ xóa khóa riêng khỏi YubiKey của bạn.",
     "p_warning_delete_certificate_and_key": "Cảnh báo! Hành động này sẽ xóa chứng chỉ và khóa riêng khỏi YubiKey của bạn.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": null,
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "Sẵn sàng để quét",
     "s_nfc_hold_still": "Giữ yên\u2026",
     "s_nfc_tap_your_yubikey": "Nhấn vào YubiKey của bạn",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Không quét được, hãy thử lại",
     "@_usb": {},
 

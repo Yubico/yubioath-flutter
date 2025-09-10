@@ -54,6 +54,8 @@ import com.yubico.authenticator.management.ManagementManager
 import com.yubico.authenticator.oath.AppLinkMethodChannel
 import com.yubico.authenticator.oath.OathManager
 import com.yubico.authenticator.oath.OathViewModel
+import com.yubico.authenticator.piv.PivManager
+import com.yubico.authenticator.piv.PivViewModel
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.NfcStateDispatcher
@@ -78,11 +80,13 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
+import java.security.Security
 import java.util.concurrent.Executors
 import javax.crypto.Mac
 
@@ -92,6 +96,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
     private val oathViewModel: OathViewModel by viewModels()
     private val fidoViewModel: FidoViewModel by viewModels()
+    private val pivViewModel: PivViewModel by viewModels()
 
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
@@ -127,6 +132,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         Log.setLevel(defaultLogLevel)
         logger.info("Application startup")
+
+        Security.removeProvider("BC")
+        Security.insertProviderAt(BouncyCastleProvider(), 1)
 
         if (isPortraitOnly()) {
             forcePortraitOrientation()
@@ -371,7 +379,7 @@ class MainActivity : FlutterFragmentActivity() {
                     logger.debug("Processing pending action in context {}", it)
                     if (it.processYubiKey(device)) {
                         if (device is NfcYubiKeyDevice) {
-                            appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                            appMethodChannel.nfcStateChanged(NfcState.getSuccessState())
                         }
                     }
                     if (device is NfcYubiKeyDevice) {
@@ -421,6 +429,7 @@ class MainActivity : FlutterFragmentActivity() {
                     OperationContext.Oath,
                     OperationContext.FidoPasskeys,
                     OperationContext.FidoFingerprints,
+                    OperationContext.Piv,
                     OperationContext.Home
                 )
 
@@ -443,7 +452,7 @@ class MainActivity : FlutterFragmentActivity() {
                 val requestHandled = it.processYubiKey(device)
                 if (requestHandled) {
                     if (device is NfcYubiKeyDevice) {
-                        appMethodChannel.nfcStateChanged(NfcState.SUCCESS)
+                        appMethodChannel.nfcStateChanged(NfcState.getSuccessState())
                     }
                 }
                 if (!switchedContextManager && device is NfcYubiKeyDevice) {
@@ -453,7 +462,7 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             } catch (e: Exception) {
                 logger.debug("Caught Exception during YubiKey processing: ", e)
-                appMethodChannel.nfcStateChanged(NfcState.FAILURE)
+                appMethodChannel.nfcStateChanged(NfcState.getFailureState())
             }
         }
 
@@ -501,6 +510,8 @@ class MainActivity : FlutterFragmentActivity() {
             fidoViewModel.fingerprints.streamTo(this, messenger, "android.fido.fingerprints"),
             fidoViewModel.resetState.streamTo(this, messenger, "android.fido.reset"),
             fidoViewModel.registerFingerprint.streamTo(this, messenger, "android.fido.registerFp"),
+            pivViewModel.state.streamTo(this, messenger, "android.piv.state"),
+            pivViewModel.slots.streamTo(this, messenger, "android.piv.slots")
         )
 
         viewModel.appContext.observe(this) {
@@ -532,6 +543,11 @@ class MainActivity : FlutterFragmentActivity() {
             fidoViewModel,
             viewModel
         )
+        val pivContextManager = PivManager(
+            messenger,
+            deviceManager,
+            pivViewModel,
+        )
         val managementContextManager = ManagementManager(messenger, deviceManager)
 
         contextManagers = mapOf(
@@ -540,6 +556,7 @@ class MainActivity : FlutterFragmentActivity() {
             OperationContext.FidoPasskeys to fidoContextManager,
             OperationContext.FidoFingerprints to fidoContextManager,
             OperationContext.Management to managementContextManager,
+            OperationContext.Piv to pivContextManager,
             // currently not supported
             OperationContext.FidoU2f to homeContextManager,
             OperationContext.HsmAuth to homeContextManager,

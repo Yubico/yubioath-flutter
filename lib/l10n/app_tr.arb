@@ -42,6 +42,7 @@
     "s_import": "İçe Aktar",
     "s_overwrite": "Geçerli Olanın Üzerine Yaz",
     "s_done": "Tamamlandı",
+    "s_success": null,
     "s_loading": null,
     "s_more": null,
     "s_label": "Etiket",
@@ -712,6 +713,7 @@
     "p_warning_delete_certificate": "Uyarı! Bu işlem sertifikayı YubiKey'inizden silecektir.",
     "p_warning_delete_key": "Uyarı! Bu işlem özel anahtarı YubiKey'inizden silecektir.",
     "p_warning_delete_certificate_and_key": "Uyarı! Bu işlem sertifikayı ve özel anahtarı YubiKey'inizden silecektir.",
+    "p_warning_usb_preferred": null,
     "p_delete_certificate_desc": "Bu işlem {slot} PIV yuvasındaki sertifikayı silecektir.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -1086,6 +1088,7 @@
     "s_nfc_ready_to_scan": "Taramaya hazır",
     "s_nfc_hold_still": "Aynı yerde tutmaya devam edin\u2026",
     "s_nfc_tap_your_yubikey": "YubiKey'inize dokunun",
+    "s_nfc_remove_key": null,
     "l_nfc_failed_to_scan": "Tarama başarısız, tekrar deneyin",
     "@_usb": {},
 
