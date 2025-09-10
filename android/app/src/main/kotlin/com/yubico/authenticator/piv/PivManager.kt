@@ -552,57 +552,47 @@ class PivManager(
     }
 
     private fun getSlots(piv: YubiKitPivSession): List<PivSlot> =
-        try {
-            Slot.entries.minus(Slot.ATTESTATION).map {
-                getSlot(it, piv)
-            }
-        } finally {
-
+        Slot.entries.minus(Slot.ATTESTATION).map {
+            getSlot(it, piv)
         }
 
-    private fun getSlot(slot: Slot, piv: YubiKitPivSession): PivSlot =
-        try {
-            val supportsMetadata = piv.supports(FEATURE_METADATA)
-            val metadata = if (supportsMetadata) {
-                runPivOperation { piv.getSlotMetadata(slot) }
-            } else null
-            val certificate = runPivOperation { piv.getCertificate(slot) }
+    private fun getSlot(slot: Slot, piv: YubiKitPivSession): PivSlot {
+        val supportsMetadata = piv.supports(FEATURE_METADATA)
+        val metadata = if (supportsMetadata) {
+            runPivOperation { piv.getSlotMetadata(slot) }
+        } else null
+        val certificate = runPivOperation { piv.getCertificate(slot) }
 
-            PivSlot(
-                slotId = slot.value,
-                metadata = metadata?.let(::SlotMetadata),
-                certificate = certificate,
-                publicKeyMatch = null
-            )
-        } finally {
-
-        }
+        PivSlot(
+            slotId = slot.value,
+            metadata = metadata?.let(::SlotMetadata),
+            certificate = certificate,
+            publicKeyMatch = null
+        )
+    }
 
     private suspend fun delete(slot: Slot, deleteCert: Boolean, deleteKey: Boolean): String =
         connectionHelper.useSmartCardConnection({
             pivViewModel.deleteSlot(slot, deleteCert, deleteKey)
         }) {
-            try {
-                val piv = getPivSession(it)
-                val serial = pivViewModel.currentSerial()
-                doVerifyPin(piv, serial)
-                doAuthenticate(piv, serial)
+            val piv = getPivSession(it)
+            val serial = pivViewModel.currentSerial()
+            doVerifyPin(piv, serial)
+            doAuthenticate(piv, serial)
 
-                if (!deleteCert && !deleteKey) {
-                    throw IllegalArgumentException("Missing delete option")
-                }
-
-                if (deleteCert) {
-                    piv.deleteCertificate(slot)
-                    piv.putObject(ObjectId.CHUID, generateChuid())
-                }
-
-                if (deleteKey) {
-                    piv.deleteKey(slot)
-                }
-                ""
-            } finally {
+            if (!deleteCert && !deleteKey) {
+                throw IllegalArgumentException("Missing delete option")
             }
+
+            if (deleteCert) {
+                piv.deleteCertificate(slot)
+                piv.putObject(ObjectId.CHUID, generateChuid())
+            }
+
+            if (deleteKey) {
+                piv.deleteKey(slot)
+            }
+            ""
         }
 
     private suspend fun moveKey(
@@ -611,36 +601,33 @@ class PivManager(
         overwriteKey: Boolean,
         includeCertificate: Boolean
     ): String =
-        connectionHelper.useSmartCardConnection({  connection ->
+        connectionHelper.useSmartCardConnection({ connection ->
             val piv = getPivSession(connection)
             pivViewModel.updateSlot(getSlot(src, piv))
             pivViewModel.updateSlot(getSlot(dst, piv))
         }) { connection ->
-            try {
-                val piv = getPivSession(connection)
-                val serial = pivViewModel.currentSerial()
+            val piv = getPivSession(connection)
+            val serial = pivViewModel.currentSerial()
 
-                doVerifyPin(piv, serial)
-                doAuthenticate(piv, serial)
+            doVerifyPin(piv, serial)
+            doAuthenticate(piv, serial)
 
-                val sourceObject = if (includeCertificate) {
-                    piv.getObject(src.objectId)
-                } else null
+            val sourceObject = if (includeCertificate) {
+                piv.getObject(src.objectId)
+            } else null
 
-                if (overwriteKey) {
-                    piv.deleteKey(dst)
-                }
-
-                piv.moveKey(src, dst)
-
-                sourceObject?.let {
-                    piv.putObject(dst.objectId, it)
-                    piv.deleteCertificate(src)
-                    piv.putObject(ObjectId.CHUID, generateChuid())
-                }
-                ""
-            } finally {
+            if (overwriteKey) {
+                piv.deleteKey(dst)
             }
+
+            piv.moveKey(src, dst)
+
+            sourceObject?.let {
+                piv.putObject(dst.objectId, it)
+                piv.deleteCertificate(src)
+                piv.putObject(ObjectId.CHUID, generateChuid())
+            }
+            ""
         }
 
     private fun generateChuid(): ByteArray {
@@ -728,9 +715,7 @@ class PivManager(
         }.toString()
     } catch (_: InvalidPasswordException) {
         JSONObject(mapOf("status" to false)).toString()
-    } finally {
     }
-
 
     private fun getX500Name(data: String) = X500Name(data)
 
@@ -824,8 +809,6 @@ class PivManager(
                 ).toString()
             } catch (e: Exception) {
                 throw e
-            } finally {
-
             }
         }
 
@@ -917,7 +900,6 @@ class PivManager(
             } catch (e: Exception) {
                 logger.error("Caught ", e)
                 throw e
-            } finally {
             }
         }
 
@@ -925,17 +907,14 @@ class PivManager(
         slot: Slot
     ): String =
         connectionHelper.useSmartCardConnection(waitForNfcKeyRemoval = true) { piv ->
-            try {
-                JSONObject(
-                    mapOf(
-                        "id" to slot.value,
-                        "name" to slot.stringAlias,
-                        "metadata" to pivViewModel.getMetadata(slot.stringAlias),
-                        "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem(),
-                    )
-                ).toString()
-            } finally {
-            }
+            JSONObject(
+                mapOf(
+                    "id" to slot.value,
+                    "name" to slot.stringAlias,
+                    "metadata" to pivViewModel.getMetadata(slot.stringAlias),
+                    "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem(),
+                )
+            ).toString()
         }
 
     override fun onDisconnected() {
