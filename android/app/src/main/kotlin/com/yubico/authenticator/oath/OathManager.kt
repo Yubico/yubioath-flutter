@@ -16,9 +16,6 @@
 
 package com.yubico.authenticator.oath
 
-import android.annotation.TargetApi
-import android.content.Context
-import android.os.Build
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -38,9 +35,7 @@ import com.yubico.authenticator.oath.data.YubiKitOathType
 import com.yubico.authenticator.oath.data.calculateSteamCode
 import com.yubico.authenticator.oath.data.isSteamCredential
 import com.yubico.authenticator.oath.keystore.ClearingMemProvider
-import com.yubico.authenticator.oath.keystore.KeyProvider
 import com.yubico.authenticator.oath.keystore.KeyStoreProvider
-import com.yubico.authenticator.oath.keystore.SharedPrefProvider
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
@@ -61,7 +56,6 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.URI
-import java.util.TimerTask
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
 
@@ -82,20 +76,9 @@ class OathManager(
 
     private val oathChannel = MethodChannel(messenger, "android.oath.methods")
 
-    private val keyManager by lazy {
-        KeyManager(
-            compatUtil.from(Build.VERSION_CODES.M) {
-                createKeyStoreProviderM()
-            }.otherwise(
-                SharedPrefProvider(lifecycleOwner as Context)
-            ), memoryKeyProvider
-        )
-    }
+    private val keyManager = KeyManager(KeyStoreProvider(), ClearingMemProvider())
 
     private val logger = LoggerFactory.getLogger(OathManager::class.java)
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun createKeyStoreProviderM(): KeyProvider = KeyStoreProvider()
 
     private val unlockOnConnect = AtomicBoolean(true)
     private var pendingAction: OathAction? = null
@@ -520,9 +503,9 @@ class OathManager(
         }
 
     private fun forgetPassword(): String {
-        keyManager.clearAll()
-        logger.debug("Cleared all keys.")
         oathViewModel.currentSession()?.let {
+            logger.trace("Forget password for device id {}", it.deviceId)
+            keyManager.removeKey(it.deviceId)
             oathViewModel.setSessionState(
                 it.copy(
                     isLocked = it.isAccessKeySet,

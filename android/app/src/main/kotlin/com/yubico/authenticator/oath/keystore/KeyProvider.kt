@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package com.yubico.authenticator.oath.keystore
 
-import android.annotation.TargetApi
-import android.os.Build
-import android.security.keystore.KeyProperties
-import com.yubico.authenticator.compatUtil
 import com.yubico.yubikit.oath.AccessKey
 
 interface KeyProvider {
@@ -27,14 +23,6 @@ interface KeyProvider {
     fun getKey(deviceId: String): AccessKey?
     fun putKey(deviceId: String, secret: ByteArray)
     fun removeKey(deviceId: String)
-    fun clearAll()
 }
 
 fun getAlias(deviceId: String) = "$deviceId,0"
-
-val KEY_ALGORITHM_HMAC_SHA1 = compatUtil.from(Build.VERSION_CODES.M) {
-    getHmacSha1AlgorithmNameM()
-}.otherwise("HmacSHA1")
-
-@TargetApi(Build.VERSION_CODES.M)
-fun getHmacSha1AlgorithmNameM() = KeyProperties.KEY_ALGORITHM_HMAC_SHA1
