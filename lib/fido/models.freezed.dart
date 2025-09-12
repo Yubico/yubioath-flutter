@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FidoState {
 
- Map<String, dynamic> get info; bool get unlocked; bool get unlockedRead;// TODO: Need to implement support on Android
- int? get pinRetries;
+ Map<String, dynamic> get info; bool get unlocked; bool get unlockedRead; int? get pinRetries;
 /// Create a copy of FidoState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -213,7 +212,7 @@ return $default(_that.info,_that.unlocked,_that.unlockedRead,_that.pinRetries);c
 @JsonSerializable()
 
 class _FidoState extends FidoState {
-   _FidoState({required final  Map<String, dynamic> info, required this.unlocked, this.unlockedRead = false, this.pinRetries}): _info = info,super._();
+   _FidoState({required final  Map<String, dynamic> info, required this.unlocked, required this.unlockedRead, this.pinRetries}): _info = info,super._();
   factory _FidoState.fromJson(Map<String, dynamic> json) => _$FidoStateFromJson(json);
 
  final  Map<String, dynamic> _info;
@@ -224,8 +223,7 @@ class _FidoState extends FidoState {
 }
 
 @override final  bool unlocked;
-@override@JsonKey() final  bool unlockedRead;
-// TODO: Need to implement support on Android
+@override final  bool unlockedRead;
 @override final  int? pinRetries;
 
 /// Create a copy of FidoState
