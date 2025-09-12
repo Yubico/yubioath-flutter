@@ -38,7 +38,7 @@ data class CertInfo(
         KeyType.fromKey(certificate.publicKey).value.toUByte(),
         certificate.subjectDN.toString(),
         certificate.issuerDN.toString(),
-        certificate.serialNumber.toByteArray().byteArrayToHexString(),
+        certificate.serialNumber.toByteArray().toHexString(),
         certificate.notBefore.isoFormat(),
         certificate.notAfter.isoFormat(),
         certificate.fingerprint()

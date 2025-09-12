@@ -29,9 +29,7 @@ import com.yubico.authenticator.piv.data.PivState
 import com.yubico.authenticator.piv.data.PivStateMetadata
 import com.yubico.authenticator.piv.data.PivmanData
 import com.yubico.authenticator.piv.data.SlotMetadata
-import com.yubico.authenticator.piv.data.byteArrayToHexString
 import com.yubico.authenticator.piv.data.fingerprint
-import com.yubico.authenticator.piv.data.hexStringToByteArray
 import com.yubico.authenticator.piv.data.isoFormat
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.withConnection
@@ -101,7 +99,7 @@ class PivManager(
                 "reset" -> reset()
 
                 "authenticate" -> authenticate(
-                    (args["key"] as String).hexStringToByteArray()
+                    (args["key"] as String).hexToByteArray()
                 )
 
                 "verifyPin" -> verifyPin(
@@ -119,7 +117,7 @@ class PivManager(
                 )
 
                 "setManagementKey" -> setManagementKey(
-                    (args["key"] as String).hexStringToByteArray(),
+                    (args["key"] as String).hexToByteArray(),
                     ManagementKeyType.fromValue((args["keyType"] as Integer).toByte()),
                     args["storeKey"] as Boolean
                 )
@@ -336,8 +334,8 @@ class PivManager(
             storedKey = pivmanData?.hasStoredKey ?: false,
             pinAttempts = pinAttempts,
             supportsBio = supportsBio,
-            chuid = getObject(piv, ObjectId.CHUID)?.byteArrayToHexString(),
-            ccc = getObject(piv, ObjectId.CAPABILITY)?.byteArrayToHexString(),
+            chuid = getObject(piv, ObjectId.CHUID)?.toHexString(),
+            ccc = getObject(piv, ObjectId.CAPABILITY)?.toHexString(),
             metadata = pivStateMetadata
         )
     }
@@ -362,7 +360,7 @@ class PivManager(
     companion object {
         val defaultPin = "123456".toCharArray()
         val defaultManagementKey =
-            "010203040506070801020304050607080102030405060708".hexStringToByteArray()
+            "010203040506070801020304050607080102030405060708".hexToByteArray()
     }
 
     private fun doAuthenticate(piv: PivSession, serial: String) =
@@ -633,7 +631,7 @@ class PivManager(
     private fun generateChuid(): ByteArray {
         // Non-Federal Issuer FASC-N
         // [9999-9999-999999-0-1-0000000000300001]
-        val fascN = "D4E739DA739CED39CE739D836858210842108421C84210C3EB".hexStringToByteArray()
+        val fascN = "D4E739DA739CED39CE739D836858210842108421C84210C3EB".hexToByteArray()
 
         // Expires on: 2030-01-01 -> "20300101" ASCII
         val expiry = "20300101".toByteArray(StandardCharsets.US_ASCII)
@@ -816,7 +814,7 @@ class PivManager(
         data: String,
         password: String?
     ): KeyMaterial = try {
-        parse(data.hexStringToByteArray(), password?.toCharArray())
+        parse(data.hexToByteArray(), password?.toCharArray())
     } catch (e: Exception) {
         when (e) {
             is IllegalArgumentException, is IOException -> KeyMaterial(
@@ -894,7 +892,7 @@ class PivManager(
                             metadata?.publicKey?.toPublicKey()?.toPem()
                         },
                         "certificate" to
-                                certificate?.encoded?.byteArrayToHexString()
+                                certificate?.encoded?.toHexString()
                     )
                 ).toString()
             } catch (e: Exception) {

@@ -23,7 +23,6 @@ import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.device.Info
 import com.yubico.authenticator.setHandler
 import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
-import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.core.UsbInterface.Mode
 import com.yubico.yubikit.core.YubiKeyDevice
@@ -125,8 +124,8 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
                 it.updateDeviceConfig(
                     deviceConfigFromMap(config),
                     reboot,
-                    HexCodec.hexStringToBytes(currentLockCode),
-                    HexCodec.hexStringToBytes(newLockCode)
+                    currentLockCode?.hexToByteArray(),
+                    newLockCode?.hexToByteArray()
                 )
             }
             if (!reboot) {
@@ -222,20 +221,6 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
                 }
             }
             return builder.build()
-        }
-    }
-
-    private object HexCodec {
-        @OptIn(ExperimentalStdlibApi::class)
-        fun hexStringToBytes(hex: String?): ByteArray? = hex?.let {
-            try {
-                if (it.isNotEmpty())
-                    it.hexToByteArray()
-                else
-                    null
-            } catch (_: IllegalArgumentException) {
-                null
-            }
         }
     }
 }
