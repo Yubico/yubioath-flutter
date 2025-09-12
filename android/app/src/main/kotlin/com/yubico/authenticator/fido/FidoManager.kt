@@ -72,12 +72,6 @@ class FidoManager(
     mainViewModel: MainViewModel
 ) : AppContextManager(deviceManager) {
 
-    @OptIn(ExperimentalStdlibApi::class)
-    private object HexCodec {
-        fun bytesToHexString(bytes: ByteArray) : String = bytes.toHexString()
-        fun hexStringToBytes(hex: String) : ByteArray = hex.hexToByteArray()
-    }
-
     companion object {
         val updateDeviceInfo = AtomicBoolean(false)
         fun getPreferredPinUvAuthProtocol(infoData: InfoData): PinUvAuthProtocol {
@@ -516,7 +510,7 @@ class FidoManager(
 
         val enrollments: Map<ByteArray, String?> = bioEnrollment.enumerateEnrollments()
         return enrollments.map { enrollment ->
-            FidoFingerprint(HexCodec.bytesToHexString(enrollment.key), enrollment.value)
+            FidoFingerprint(enrollment.key.toHexString(), enrollment.value)
         }
 
     }
@@ -536,7 +530,7 @@ class FidoManager(
 
 
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
-            bioEnrollment.removeEnrollment(HexCodec.hexStringToBytes(templateId))
+            bioEnrollment.removeEnrollment(templateId.hexToByteArray())
             fidoViewModel.removeFingerprint(templateId)
             fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin(), pinRetries))
             return@useSession JSONObject(
@@ -560,7 +554,7 @@ class FidoManager(
                 )
 
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
-            bioEnrollment.setName(HexCodec.hexStringToBytes(templateId), name)
+            bioEnrollment.setName(templateId.hexToByteArray(), name)
             fidoViewModel.renameFingerprint(templateId, name)
             fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin(), pinRetries))
             return@useSession JSONObject(
@@ -639,7 +633,7 @@ class FidoManager(
                 Logger.debug(logger, "Set name to {}", name)
             }
 
-            val templateIdHexString = HexCodec.bytesToHexString(templateId)
+            val templateIdHexString = templateId.toHexString()
             fidoViewModel.addFingerprint(FidoFingerprint(templateIdHexString, name))
             fidoViewModel.setSessionState(Session(fidoSession.info, pinStore.hasPin(), pinRetries))
 

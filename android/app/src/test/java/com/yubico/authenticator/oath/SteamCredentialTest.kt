@@ -94,10 +94,6 @@ class SteamCredentialTest {
         )
     }
 
-    private fun String.fromHexString(): ByteArray = ByteArray(this.length / 2) {
-        (this[it * 2 + 1].digitToInt(16) + (this[it * 2].digitToInt(16) * 16)).toByte()
-    }
-
     // OathSession always calculating specific response
     private fun sessionWith(response: String) =
         mock(YubiKitOathSession::class.java).also {
@@ -106,7 +102,7 @@ class SteamCredentialTest {
                     isA(ByteArray::class.java),
                     isA(ByteArray::class.java)
                 )
-            ).thenReturn(response.fromHexString())
+            ).thenReturn(response.hexToByteArray())
         }
 
     // valid Steam Credential mock
