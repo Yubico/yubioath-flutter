@@ -76,7 +76,7 @@ class FidoResetHelper(
     private val fidoViewModel: FidoViewModel,
     private val mainViewModel: MainViewModel,
     private val connectionHelper: FidoConnectionHelper,
-    private val pinStore: FidoPinStore
+    private val afterReset: () -> Unit
 ) {
 
     var inProgress = false
@@ -243,9 +243,17 @@ class FidoResetHelper(
     private fun doReset(fidoSession: YubiKitFidoSession) {
         logger.debug("Calling FIDO reset")
         fidoSession.reset(resetCommandState)
-        fidoViewModel.setSessionState(Session(fidoSession.info, true, null))
+        fidoViewModel.setSessionState(
+            Session(
+                fidoSession.info,
+                unlocked = true,
+                unlockedRead = false,
+                null
+            )
+        )
         fidoViewModel.updateCredentials(emptyList())
-        pinStore.setPin(null)
+        fidoViewModel.updateFingerprints(emptyList())
+        afterReset.invoke()
     }
 
     companion object {
