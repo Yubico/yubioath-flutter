@@ -2,14 +2,14 @@ group 'com.yubico.authenticator.flutter_plugins.qrscanner_zxing'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '2.2.10'
+    ext.kotlin_version = '2.2.20'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.12.2'
+        classpath 'com.android.tools.build:gradle:8.12.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    def camerax_version = "1.4.2"
+    def camerax_version = "1.5.0"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
