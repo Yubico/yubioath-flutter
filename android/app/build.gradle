@@ -115,7 +115,7 @@ dependencies {
 
     implementation 'com.github.tony19:logback-android:3.0.0'
 
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.80'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.81'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.79'
 
     // testing dependencies
