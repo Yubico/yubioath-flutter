@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@
 package com.yubico.authenticator.fido.data
 
 import com.yubico.authenticator.JsonSerializable
+import com.yubico.authenticator.fido.PersistentPinUvAuthTokenStore
 import com.yubico.authenticator.jsonSerializer
+import com.yubico.yubikit.fido.client.CredentialManager
+import com.yubico.yubikit.fido.ctap.CredentialManagement
 import com.yubico.yubikit.fido.ctap.Ctap2Session.InfoData
-import kotlinx.serialization.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 typealias YubiKitFidoSession = com.yubico.yubikit.fido.ctap.Ctap2Session
 
@@ -41,7 +45,7 @@ data class Options(
         infoData.getOptionsBoolean("ep"),
     )
 
-    fun sameDevice(other: Options) : Boolean {
+    fun sameDevice(other: Options): Boolean {
         if (this === other) return true
 
         if (clientPin != other.clientPin) return false
@@ -125,11 +129,18 @@ data class SessionInfo(
 data class Session(
     val info: SessionInfo,
     val unlocked: Boolean,
+    @SerialName("unlocked_read")
+    val unlockedRead: Boolean,
     @SerialName("pin_retries")
     val pinRetries: Int?
 ) : JsonSerializable {
-   constructor(infoData: InfoData, unlocked: Boolean, pinRetries: Int?) : this(
-        SessionInfo(infoData), unlocked, pinRetries
+    constructor(
+        infoData: InfoData,
+        unlocked: Boolean,
+        unlockedRead: Boolean,
+        pinRetries: Int?
+    ) : this(
+        SessionInfo(infoData), unlocked, unlockedRead, pinRetries
     )
 
     override fun toJson(): String {
