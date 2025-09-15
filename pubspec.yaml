@@ -90,7 +90,7 @@ dev_dependencies:
   freezed: ^3.2.0
   json_serializable: ^6.9.5
   analyzer:
-  analyzer_plugin:
+  analyzer_plugin: 0.13.7
   custom_lint_builder:
   custom_lint:
   lint:
