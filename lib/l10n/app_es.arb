@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "Tus credenciales OATH, así como cualquier contraseña establecida, serán removidas de esta YubiKey. Asegúrate de desactivarlas desde sus respectivos sitios web para evitar ser bloqueado de tus cuentas.",
     "p_warning_deletes_accounts": "¡Advertencia! Esto borrará irrevocablemente todas las cuentas U2F y FIDO2, incluidas las passkeys, de tu YubiKey.",
     "p_warning_disable_accounts": "Tus credenciales, así como cualquier PIN establecido, se eliminarán de esta YubiKey. Asegúrate de desvincularlos de los respectivos sitios web para evitar quedar bloqueado/a de tus cuentas.",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"

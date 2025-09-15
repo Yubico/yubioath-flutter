@@ -79,10 +79,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   late bool _globalReset;
   late bool _longTouch;
 
-  // If empty, FIDO reset is enabled for the current transport.
-  // Otherwise, the reset is disabled for the current transport and requires
-  // one of the listed transports to be used instead.
-  List<Transport> _fidoDisabledRequiredTransports = [];
+  // If true, FIDO reset is disabled for the current transport.
+  bool _fidoTransportDisabled = false;
   StreamSubscription<InteractionEvent>? _subscription;
   InteractionEvent? _interaction;
   int _currentStep = -1;
@@ -165,14 +163,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   ) {
     _longTouch = longTouchForReset;
 
-    if (transportsForReset.isNotEmpty &&
-        !transportsForReset.contains(widget.data.node.transport.name)) {
-      _fidoDisabledRequiredTransports = [
-        for (var t in transportsForReset) Transport.values.byName(t),
-      ];
-    } else {
-      _fidoDisabledRequiredTransports = [];
-    }
+    _fidoTransportDisabled =
+        transportsForReset.isNotEmpty &&
+        !transportsForReset.contains(widget.data.node.transport.name);
   }
 
   @override
@@ -180,6 +173,10 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final hasFeature = ref.watch(featureProvider);
     final supported =
         widget.data.info.supportedCapabilities[widget.data.node.transport] ?? 0;
+
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     final l10n = AppLocalizations.of(context);
     final usbTransport = widget.data.node.transport == Transport.usb;
@@ -242,7 +239,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
             onPressed: !_resetting
                 ? switch (_application) {
                     Capability.fido2 =>
-                      _fidoDisabledRequiredTransports.isEmpty
+                      !_fidoTransportDisabled
                           ? () async {
                               _subscription = ref
                                   .read(
@@ -314,7 +311,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                           e.error == 0x30) {
                                         // NOT_ALLOWED
                                         errorMessage = l10n
-                                            .p_reset_not_allowed_over(
+                                            .l_reset_not_allowed_over(
                                               widget.data.node.transport
                                                   .getDisplayName(l10n),
                                             );
@@ -486,21 +483,37 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     ] else ...[
                       Text(switch (_application) {
                         Capability.oath => l10n.p_warning_disable_credentials,
+
                         Capability.piv => l10n.p_warning_piv_reset_desc,
-                        Capability.fido2 =>
-                          _fidoDisabledRequiredTransports.isEmpty
-                              ? l10n.p_warning_disable_accounts
-                              : l10n.p_transports_required_for_reset(
-                                  _fidoDisabledRequiredTransports
-                                      .map((t) => t.getDisplayName(l10n))
-                                      .join(', '),
-                                ),
+                        Capability.fido2 => l10n.p_warning_disable_accounts,
                         _ =>
                           _globalReset
                               ? l10n.p_warning_global_reset_desc
                               : l10n.p_factory_reset_desc,
                       }),
                     ],
+                    if (_application == Capability.fido2 &&
+                        _fidoTransportDisabled)
+                      Row(
+                        children: [
+                          Icon(
+                            Symbols.warning_amber,
+                            size: 14.0,
+                            color: colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 8.0),
+                          Flexible(
+                            child: Text(
+                              l10n.l_reset_not_allowed_over(
+                                widget.data.node.transport.getDisplayName(l10n),
+                              ),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.tertiary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (showResetProgress)
                       if (_application == Capability.fido2 &&
                           _currentStep >= 0) ...[

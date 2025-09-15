@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "Deine OATH Anmeldedaten und sämtliche Passwörter werden von diesem YubiKey entfernt. Deaktiviere die Anmeldedaten unbedingt zuerst auf den zugehörigen Webseiten, bevor du fortfährst, um nicht aus deinen Konten ausgesperrt zu werden.",
     "p_warning_deletes_accounts": "Achtung! Dies löscht alle U2F und FIDO2 Konten dauerhaft von deinem YubiKey.",
     "p_warning_disable_accounts": "Deine Anmeldedaten und sämtliche PINs werden von diesem YubiKey entfernt. Deaktiviere die Anmeldedaten unbedingt zuerst auf den zugehörigen Webseiten, bevor du fortfährst, um nicht aus deinen Konten ausgesperrt zu werden.",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"

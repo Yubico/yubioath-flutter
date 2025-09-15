@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "Twoje poświadczenia OATH, a także ustawione hasła, zostaną usunięte z klucza YubiKey. Upewnij się, że poświadczenia zostały wyłączone, aby uniknąć zablokowania kont.",
     "p_warning_deletes_accounts": "Ostrzeżenie! Spowoduje to nieodwracalne usunięcie wszystkich kont U2F i FIDO2 z klucza YubiKey.",
     "p_warning_disable_accounts": "Twoje poświadczenia, a także ustawione kody PIN, zostaną usunięte z klucza YubiKey. Upewnij się, że poświadczenia zostały wyłączone, aby uniknąć zablokowania kont.",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"

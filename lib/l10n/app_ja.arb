@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "あなたの OATH 認証情報、および設定されているパスワードは、この YubiKey から削除されます。アカウントにログインできなくならないように、それぞれのウェブサイトから該当する認証情報を無効にしてください。",
     "p_warning_deletes_accounts": "警告！パスキーを含めたすべての U2F および FIDO2 アカウントが YubiKey から削除されます。削除されたデータは回復できません。",
     "p_warning_disable_accounts": "あなたの認証情報および設定された PIN は、この YubiKey から削除されます。アカウントにログインできなくならないように、それぞれのウェブサイトから該当する認証情報を無効にしてください。",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"

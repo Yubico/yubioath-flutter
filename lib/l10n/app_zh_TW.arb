@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
     "p_warning_deletes_accounts": "警告！這將不可撤銷地從您的 YubiKey 刪除所有 U2F 和 FIDO2 帳戶，包括密碼。",
     "p_warning_disable_accounts": "您的 OATH 認證以及任何設定的密碼都會從此 YubiKey 中移除。請務必從其各自的網站停用這些功能，以免被鎖在您的帳戶之外。",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"

@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "Vos informations d'identification OATH, ainsi que tout mot de passe défini, seront supprimés de cette clé YubiKey. Veillez à les désactiver à partir de leurs sites web respectifs afin d'éviter que vos comptes ne soient verrouillés.",
     "p_warning_deletes_accounts": "Attention\u00a0! Cela supprimera définitivement tous les comptes U2F et FIDO2, notamment les passkeys, de votre YubiKey.",
     "p_warning_disable_accounts": "Vos informations d'identification, ainsi que tout code PIN défini, seront supprimés de cette YubiKey. Veillez à les désactiver à partir de leurs sites web respectifs pour éviter que vos comptes ne soient verrouillés.",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"

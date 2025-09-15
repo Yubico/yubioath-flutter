@@ -980,16 +980,8 @@
     "p_warning_disable_credentials": "Vaše poverenia OATH, ako aj všetky nastavené heslá budú z tohto kľúča YubiKey odstránené. Nezabudnite ich deaktivovať na príslušných webových stránkach, aby ste sa vyhli zablokovaniu svojich účtov.",
     "p_warning_deletes_accounts": "Varovanie! Tým sa z vášho YubiKey nenávratne odstránia všetky účty U2F a FIDO2 vrátane prístupových kľúčov.",
     "p_warning_disable_accounts": "Vaše poverovacie údaje, ako aj všetky nastavené PIN kódy budú z tohto YubiKey odstránené. Nezabudnite ich deaktivovať na príslušných webových stránkach, aby ste sa vyhli zablokovaniu svojich účtov.",
-    "p_transports_required_for_reset": null,
-    "@p_transports_required_for_reset": {
-        "placeholders": {
-            "transports": {
-                "type": "String"
-            }
-        }
-    },
-    "p_reset_not_allowed_over": null,
-    "@p_reset_not_allowed_over": {
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
                 "type": "String"
