@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.yubico.authenticator.oath.keystore
 
+import android.security.keystore.KeyProperties
 import com.yubico.yubikit.oath.AccessKey
 import java.util.*
 import javax.crypto.Mac
@@ -47,7 +48,7 @@ class ClearingMemProvider : KeyProvider {
 
     override fun putKey(deviceId: String, secret: ByteArray) {
         current = Pair(deviceId,
-            Mac.getInstance(KEY_ALGORITHM_HMAC_SHA1)
+            Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
                 .apply {
                     init(SecretKeySpec(secret, algorithm))
                 }
@@ -58,7 +59,7 @@ class ClearingMemProvider : KeyProvider {
         current = null
     }
 
-    override fun clearAll() {
+    fun clearAll() {
         current = null
     }
 

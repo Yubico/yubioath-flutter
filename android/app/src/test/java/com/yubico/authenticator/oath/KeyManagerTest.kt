@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,6 @@ class MockKeyProvider : KeyProvider {
 
     override fun removeKey(deviceId: String) {
         map.remove(deviceId)
-    }
-
-    override fun clearAll() {
-        map.clear()
     }
 }
 
@@ -117,17 +113,6 @@ class KeyManagerTest {
 
         Assert.assertNotNull(keyManager.getKey(device2Id))
         Assert.assertNull(keyManager.getKey(device1Id))
-    }
-
-    @Test
-    fun `clears all keys`() {
-        keyManager.addKey(device1Id, secret1, true)
-        keyManager.addKey(device2Id, secret2, false)
-
-        keyManager.clearAll()
-
-        Assert.assertNull(keyManager.getKey(device1Id))
-        Assert.assertNull(keyManager.getKey(device2Id))
     }
 
     @Test
