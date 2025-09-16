@@ -148,9 +148,11 @@ class _ThemeModeView extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              contentPadding: isDesktop
+                  ? EdgeInsets.symmetric(horizontal: 22)
+                  : null,
               title: Transform.translate(
-                offset: Offset(4, 0),
+                offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text(e.getDisplayName(l10n)),
               ),
               value: e,
@@ -590,9 +592,11 @@ class _LanguageView extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              contentPadding: isDesktop
+                  ? EdgeInsets.symmetric(horizontal: 22)
+                  : null,
               title: Transform.translate(
-                offset: Offset(4, 0),
+                offset: Offset(isDesktop ? 4 : 0, 0),
                 child: _buildLocaleTitle(context, e, status),
               ),
               value: e,
@@ -754,9 +758,11 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 22),
+              contentPadding: isDesktop
+                  ? EdgeInsets.symmetric(horizontal: 22)
+                  : null,
               title: Transform.translate(
-                offset: Offset(4, 0),
+                offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
               value: e,
@@ -920,11 +926,7 @@ class _NfcTapActionView extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 22),
-              title: Transform.translate(
-                offset: Offset(4, 0),
-                child: Text(e.getDescription(l10n)),
-              ),
+              title: Text(e.getDescription(l10n)),
               value: e,
               toggleable: true,
             ),
@@ -974,26 +976,29 @@ class _NfcKbdLayoutView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final tapAction = ref.watch(androidNfcTapActionProvider);
     final clipKbdLayout = ref.watch(androidNfcKbdLayoutProvider);
-    return ListTile(
+    final enabled =
+        tapAction == NfcTapAction.copy ||
+        tapAction == NfcTapAction.launchAndCopy;
+    return ActionListItem(
       key: keys.nfcKeyboardLayoutSetting,
-      title: Text(l10n.l_kbd_layout_for_static),
-      subtitle: Text(clipKbdLayout),
-      leading: Icon(Symbols.keyboard),
-      enabled:
-          tapAction == NfcTapAction.copy ||
-          tapAction == NfcTapAction.launchAndCopy,
-      onTap: () async {
-        final newValue = await _selectKbdLayout(
-          context,
-          ref.watch(androidNfcSupportedKbdLayoutsProvider),
-          clipKbdLayout,
-        );
-        if (newValue != null) {
-          await ref
-              .read(androidNfcKbdLayoutProvider.notifier)
-              .setKeyboardLayout(newValue);
-        }
-      },
+      borderRadius: isDialog ? 0 : null,
+      title: l10n.l_kbd_layout_for_static,
+      subtitle: clipKbdLayout,
+      icon: Icon(Symbols.keyboard),
+      onTap: enabled
+          ? (context) async {
+              final newValue = await _selectKbdLayout(
+                context,
+                ref.watch(androidNfcSupportedKbdLayoutsProvider),
+                clipKbdLayout,
+              );
+              if (newValue != null) {
+                await ref
+                    .read(androidNfcKbdLayoutProvider.notifier)
+                    .setKeyboardLayout(newValue);
+              }
+            }
+          : null,
     );
   }
 }
@@ -1007,23 +1012,26 @@ class _NfcBypassTouchView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final nfcBypassTouch = ref.watch(androidNfcBypassTouchProvider);
-    return SwitchListTile(
+    return ActionListItem(
       key: keys.nfcBypassTouchSetting,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+      borderRadius: isDialog ? 0 : null,
+      title: l10n.l_bypass_touch_requirement,
+      subtitle: nfcBypassTouch
+          ? l10n.l_bypass_touch_requirement_on
+          : l10n.l_bypass_touch_requirement_off,
+      icon: Icon(Symbols.touch_app),
+      trailing: Switch(
+        value: nfcBypassTouch,
+        onChanged: (value) {
+          ref
+              .read(androidNfcBypassTouchProvider.notifier)
+              .setNfcBypassTouch(value);
+        },
       ),
-      secondary: Icon(Symbols.touch_app),
-      title: Text(l10n.l_bypass_touch_requirement),
-      subtitle: Text(
-        nfcBypassTouch
-            ? l10n.l_bypass_touch_requirement_on
-            : l10n.l_bypass_touch_requirement_off,
-      ),
-      value: nfcBypassTouch,
-      onChanged: (value) {
+      onTap: (context) {
         ref
             .read(androidNfcBypassTouchProvider.notifier)
-            .setNfcBypassTouch(value);
+            .setNfcBypassTouch(!nfcBypassTouch);
       },
     );
   }
@@ -1038,23 +1046,26 @@ class _NfcSilenceSoundsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final nfcSilenceSounds = ref.watch(androidNfcSilenceSoundsProvider);
-    return SwitchListTile(
+    return ActionListItem(
       key: keys.nfcSilenceSoundsSettings,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+      borderRadius: isDialog ? 0 : null,
+      title: l10n.s_silence_nfc_sounds,
+      subtitle: nfcSilenceSounds
+          ? l10n.l_silence_nfc_sounds_on
+          : l10n.l_silence_nfc_sounds_off,
+      icon: Icon(Symbols.volume_up),
+      trailing: Switch(
+        value: nfcSilenceSounds,
+        onChanged: (value) {
+          ref
+              .read(androidNfcSilenceSoundsProvider.notifier)
+              .setNfcSilenceSounds(value);
+        },
       ),
-      secondary: Icon(Symbols.volume_up),
-      title: Text(l10n.s_silence_nfc_sounds),
-      subtitle: Text(
-        nfcSilenceSounds
-            ? l10n.l_silence_nfc_sounds_on
-            : l10n.l_silence_nfc_sounds_off,
-      ),
-      value: nfcSilenceSounds,
-      onChanged: (value) {
+      onTap: (context) {
         ref
             .read(androidNfcSilenceSoundsProvider.notifier)
-            .setNfcSilenceSounds(value);
+            .setNfcSilenceSounds(!nfcSilenceSounds);
       },
     );
   }
@@ -1072,23 +1083,26 @@ class _UsbOpenAppView extends ConsumerWidget {
     return Column(
       children: [
         ListTitle(l10n.l_on_yk_usb_insert),
-        SwitchListTile(
+        ActionListItem(
           key: keys.usbOpenAppSetting,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+          borderRadius: isDialog ? 0 : null,
+          title: l10n.l_launch_ya,
+          subtitle: usbOpenApp
+              ? l10n.l_launch_app_on_usb_on
+              : l10n.l_launch_app_on_usb_off,
+          icon: Icon(Symbols.usb),
+          trailing: Switch(
+            value: usbOpenApp,
+            onChanged: (value) {
+              ref
+                  .read(androidUsbLaunchAppProvider.notifier)
+                  .setUsbLaunchApp(value);
+            },
           ),
-          secondary: Icon(Symbols.usb),
-          title: Text(l10n.l_launch_app_on_usb),
-          subtitle: Text(
-            usbOpenApp
-                ? l10n.l_launch_app_on_usb_on
-                : l10n.l_launch_app_on_usb_off,
-          ),
-          value: usbOpenApp,
-          onChanged: (value) {
+          onTap: (context) {
             ref
                 .read(androidUsbLaunchAppProvider.notifier)
-                .setUsbLaunchApp(value);
+                .setUsbLaunchApp(!usbOpenApp);
           },
         ),
       ],
