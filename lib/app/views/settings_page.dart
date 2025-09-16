@@ -23,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../android/app_methods.dart';
 import '../../android/models.dart';
 import '../../android/state.dart';
 import '../../core/models.dart';
@@ -338,6 +339,9 @@ class _IconsViewState extends ConsumerState<_IconsView> {
     IconPack? iconPack,
   ) async {
     final l10n = AppLocalizations.of(context);
+    if (isAndroid) {
+      await preserveConnectedDeviceWhenPaused();
+    }
     final result = await FilePicker.platform.pickFiles(
       allowedExtensions: ['zip'],
       type: FileType.custom,
