@@ -199,7 +199,7 @@ Exception handlePlatformException(
         toast(l10n.l_add_account_func_missing, popStack: true);
         return CancellationException();
       } else if (pe.code == 'IllegalArgumentException') {
-        toast(l10n.l_add_account_already_exists);
+        toast(l10n.l_account_already_exists);
         return CancellationException();
       }
   }
