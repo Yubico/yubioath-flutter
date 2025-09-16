@@ -75,3 +75,6 @@
 -dontwarn javax.naming.directory.InitialDirContext
 -dontwarn javax.naming.directory.SearchControls
 -dontwarn javax.naming.directory.SearchResult
+
+# don't ubfuscate exception names
+-keep class com.yubico.yubikit.core.** extends java.lang.Exception { *; }
