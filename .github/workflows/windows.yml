@@ -113,6 +113,9 @@ jobs:
     - name: download artifacts
       uses: actions/download-artifact@v5
 
+    - name: ls
+      run: ls
+      
     - name: docker login
       uses: docker/login-action@v3
       with:
