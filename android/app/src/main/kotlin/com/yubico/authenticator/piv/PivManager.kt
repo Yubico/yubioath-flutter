@@ -467,7 +467,10 @@ class PivManager(
         }
 
     private suspend fun verifyPin(pin: CharArray): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            waitForNfcKeyRemoval = true
+        ) {
             try {
                 val piv = getPivSession(it)
                 val serial = pivViewModel.currentSerial()
