@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Код OTP скопирован из YubiKey в буфер обмена.</string>
+    <string name="p_ndef_set_password">Пароль успешно скопирован из YubiKey в буфер обмена.</string>
+    <string name="p_ndef_parse_failure">Не удалось обработать OTP код из YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Не удалось получить доступ к буферу обмена при попытке скопировать код OTP из YubiKey.</string>
+</resources>

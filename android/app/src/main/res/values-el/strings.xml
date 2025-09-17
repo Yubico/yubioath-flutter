@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Επιτυχής αντιγραφή κωδικού OTP από το YubiKey στο πρόχειρο.</string>
+    <string name="p_ndef_set_password">Επιτυχής αντιγραφή κωδικού πρόσβασης από το YubiKey στο πρόχειρο.</string>
+    <string name="p_ndef_parse_failure">Αποτυχία ανάλυσης κωδικού OTP από το YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Αποτυχία πρόσβασης στο πρόχειρο κατά την προσπάθεια αντιγραφής κωδικού OTP από το YubiKey.</string>
+</resources>

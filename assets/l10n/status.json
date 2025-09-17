@@ -11,36 +11,48 @@
     "translated": 100,
     "proofread": 100
   },
-  "es": {
-    "translated": 100,
-    "proofread": 100
+  "el": {
+    "translated": 92,
+    "proofread": 0
   },
-  "fr": {
-    "translated": 100,
+  "es": {
+    "translated": 94,
     "proofread": 94
   },
+  "fr": {
+    "translated": 94,
+    "proofread": 88
+  },
   "ja": {
-    "translated": 97,
-    "proofread": 67
+    "translated": 100,
+    "proofread": 63
   },
   "pl": {
     "translated": 100,
-    "proofread": 97
+    "proofread": 94
+  },
+  "ru": {
+    "translated": 77,
+    "proofread": 12
   },
   "sk": {
     "translated": 100,
     "proofread": 100
   },
   "sv": {
-    "translated": 100,
-    "proofread": 12
+    "translated": 96,
+    "proofread": 11
   },
   "tr": {
-    "translated": 97,
+    "translated": 94,
+    "proofread": 0
+  },
+  "uk": {
+    "translated": 100,
     "proofread": 0
   },
   "vi": {
-    "translated": 86,
+    "translated": 80,
     "proofread": 0
   },
   "zh": {
@@ -48,7 +60,7 @@
     "proofread": 0
   },
   "zh_TW": {
-    "translated": 100,
+    "translated": 94,
     "proofread": 0
   }
 }

@@ -87,7 +87,7 @@
     "s_certificates": "Chứng chỉ",
     "s_security_key": "Khóa bảo mật",
     "s_slots": "Khe cắm",
-    "s_help_and_about": "Trợ giúp và giới thiệu",
+    "s_help_and_about": null,
     "s_help": null,
     "s_app_information": null,
     "s_home": "Trang chủ",
@@ -1045,7 +1045,7 @@
 
     "s_nfc_and_usb_options": null,
     "l_nfc_and_usb_options_desc": null,
-    "l_on_yk_nfc_tap": "Khi chạm NFC trên YubiKey",
+    "l_on_yk_nfc_tap": null,
     "l_on_yk_usb_insert": null,
     "l_do_nothing": "Không làm gì",
     "l_launch_ya": "Khởi chạy Yubico Authenticator",

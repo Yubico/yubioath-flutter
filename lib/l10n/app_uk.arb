@@ -1,0 +1,1123 @@
+{
+    "@@locale": "uk",
+
+    "app_name": "Yubico  Authenticator",
+    "native_language_name": "Українська",
+    "@native_language_name": {
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
+    },
+    "s_translated": "Перекладено: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "Схвалено: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": "Неповний переклад",
+    "p_translation_progress_desc": "Індикатори відображають прогрес перекладу.",
+    "s_community": "Спільнота",
+    "l_localization_project": "Проєкт локалізації",
+
+    "s_save": "Зберегти",
+    "s_cancel": "Скасувати",
+    "s_close": "Закрити",
+    "s_delete": "Видалити",
+    "s_move": "Перемістити",
+    "s_quit": "Вийти",
+    "s_enable": "Увімкнути",
+    "s_enabled": "Увімкнено",
+    "s_disabled": "Відключено",
+    "s_status": "Статус",
+    "s_unlock": "Розблокувати",
+    "s_calculate": "Розрахувати",
+    "s_import": "Імпортувати",
+    "s_overwrite": "Перезаписати",
+    "s_done": "Готово",
+    "s_success": "Успіх",
+    "s_loading": "Завантаження\u2026",
+    "s_more": "Більше",
+    "s_label": "Мітка",
+    "s_name": "Ім'я",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "Опції",
+    "s_details": "Деталі",
+    "s_show_window": "Показати вікно",
+    "s_hide_window": "Приховати вікно",
+    "s_show_navigation": "Показати навігацію",
+    "s_expand_navigation": "Розгорнути панель навігації",
+    "s_collapse_navigation": "Згорнути панель навігації",
+    "s_expand_collapse_navigation": "Розгорнути/згорнути панель навігації",
+    "s_show_menu": "Показати меню",
+    "s_toggle_menu_bar": "Перемикання рядка меню",
+    "s_more_info": "Більше інформації",
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "<none>",
+
+    "s_about": "Про програму",
+    "s_algorithm": "Алгоритм",
+    "s_appearance": "Зовнішній вигляд",
+    "s_actions": "Дії",
+    "s_manage": "Керувати",
+    "s_setup": "Установка",
+    "s_device": "Пристрій",
+    "s_application": "Застосування",
+    "s_settings": "Налаштування",
+    "s_reset_settings": "Скинути налаштування",
+    "l_reset_settings_desc": "Відновлення налаштувань до заводських значень",
+    "q_reset_settings": "Скинути налаштування?",
+    "p_reset_settings_confirmation_desc": "Це відновить усі налаштування до значень за замовчуванням.",
+    "s_support": "Підтримка",
+    "s_certificates": "Сертифікати",
+    "s_security_key": "Ключ безпеки",
+    "s_slots": "Слоти",
+    "s_help_and_about": "Довідка та інформація",
+    "s_help": "Допомога",
+    "s_app_information": "Інформація про заявку",
+    "s_home": "Головна",
+    "s_user_guide": "Посібник користувача",
+    "s_i_need_help": "Мені потрібна допомога",
+    "s_terms_of_use": "Умови використання",
+    "s_privacy_policy": "Політика конфіденційності",
+    "s_open_src_licenses": "Ліцензії з відкритим кодом",
+    "s_please_wait": "Будь ласка, зачекайте\u2026",
+    "s_secret_key": "Секретний ключ",
+    "s_show_secret_key": "Показати секретний ключ",
+    "s_hide_secret_key": "Приховати секретний ключ",
+    "s_private_key": "Закритий ключ",
+    "s_public_key": "Відкритий ключ",
+    "s_invalid_length": "Недійсна довжина",
+    "l_invalid_format_allowed_chars": "Недійсний формат, дозволені символи: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "Недійсні символи для вибраної клавіатури",
+    "s_require_touch": "Вимагати дотику",
+    "q_have_account_info": "Маєте інформацію про обліковий запис?",
+    "s_debugging_tools": "Інструменти налагодження",
+    "s_run_diagnostics": "Виконати діагностику",
+    "l_run_diagnostics_desc": "Виконайте діагностику для усунення несправностей",
+    "s_logging_level": "Рівень журналу",
+    "s_current_log_level": "Рівень журналу: {level}",
+    "@s_current_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "Кількість символів",
+    "@_language": {},
+
+    "s_language": "Мова",
+    "@_theme": {},
+
+    "s_app_theme": "Тема програми",
+    "s_system_default": "Системні за замовчуванням",
+    "s_light_mode": "Світлий режим",
+    "s_dark_mode": "Темний режим",
+    "@_layout": {},
+
+    "s_list_layout": "Макет списку",
+    "s_grid_layout": "Макет сітки",
+    "s_mixed_layout": "Змішане планування",
+    "s_select_layout": "Виберіть макет",
+    "@_yubikey_selection": {},
+
+    "s_select_to_scan": "Виберіть для сканування",
+    "s_hide_reader": "Приховати читача",
+    "s_show_hidden_readers": "Показати прихованих читачів",
+    "s_toggle_readers": "Перемикання читачів",
+    "l_toggle_readers_desc": "Показати або приховати читачів",
+    "s_sn_serial": "Серійний номер:{serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "Прошивка: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "Серійний номер: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "Версія прошивки: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "Сумісний з FIPS",
+    "l_fips_approved": "Схвалено FIPS",
+    "@_yubikey_interactions": {},
+
+    "l_insert_yk": "Вставте свій YubiKey",
+    "l_insert_or_tap_yk": "Вставте або торкніться YubiKey",
+    "l_unplug_yk": "Від’єднайте свій YubiKey",
+    "l_reinsert_yk": "Знову вставте свій YubiKey",
+    "l_place_on_nfc_reader": "Прикладіть свій YubiKey до NFC-зчитувача",
+    "l_replace_yk_on_reader": "Поверніть свій YubiKey на зчитувач",
+    "l_remove_yk_from_reader": "Вийміть свій YubiKey зі зчитувача NFC",
+    "p_try_reinsert_yk": "Спробуйте вийняти та знову вставити свій YubiKey.",
+    "s_touch_required": "Потрібен дотик",
+    "l_touch_button_now": "Натисніть кнопку на вашому YubiKey зараз",
+    "l_long_touch_button_now": "Натисніть і утримуйте кнопку на вашому YubiKey протягом 10 секунд",
+    "l_keep_touching_yk": "Продовжуйте торкатися свого YubiKey кілька разів\u2026",
+    "@_capabilities": {},
+
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "Аутентифікація YubiHSM",
+    "@_app_configuration": {},
+
+    "s_toggle_applications": "Перемикання програм",
+    "s_toggle_interfaces": "Перемикання інтерфейсів",
+    "p_toggle_applications_desc": "Увімкнути або вимкнути програми через доступні транспортні мережі.",
+    "p_toggle_interfaces_desc": "Увімкнути або вимкнути USB-інтерфейси.",
+    "l_toggle_applications_desc": "Увімкнення/вимкнення програми",
+    "l_toggle_interfaces_desc": "Увімкнення/вимкнення інтерфейсів",
+    "s_reconfiguring_yk": "Переналаштування YubiKey\u2026",
+    "s_config_updated": "Конфігурацію оновлено",
+    "l_config_updated_reinsert": "Конфігурацію оновлено, вийміть та знову вставте свій YubiKey",
+    "s_fido_disabled": "FIDO2 вимкнено",
+    "l_webauthn_req_fido2": "Для WebAuthn потрібно ввімкнути застосунок FIDO2 на вашому YubiKey",
+    "s_lock_code": "Код блокування",
+    "l_wrong_lock_code": "Неправильний код блокування",
+    "s_show_lock_code": "Показати код блокування",
+    "s_hide_lock_code": "Приховати код блокування",
+    "p_lock_code_required_desc": "Дія, яку ви збираєтеся виконати, вимагає введення коду блокування конфігурації.",
+    "@_connectivity_issues": {},
+
+    "l_helper_not_responding": "Допоміжний процес не відповідає",
+    "l_yk_no_access": "Цей YubiKey недоступний",
+    "s_yk_inaccessible": "Пристрій недоступний",
+    "l_open_connection_failed": "Не вдалося відкрити з'єднання",
+    "l_ccid_connection_failed": "Не вдалося відкрити підключення смарт-картки",
+    "p_ccid_service_unavailable": "Переконайтеся, що ваш сервіс смарт-карт працює.",
+    "p_pcscd_unavailable": "Переконайтеся, що pcscd встановлено та працює.",
+    "l_no_yk_present": "YubiKey відсутній",
+    "s_unknown_type": "Невідомий тип",
+    "s_unknown_device": "Нерозпізнаний пристрій",
+    "s_restricted_nfc": "Активація NFC",
+    "l_deactivate_restricted_nfc": "Як активувати NFC",
+    "p_deactivate_restricted_nfc_desc": "Підключіть свій YubiKey до будь-якого джерела живлення USB, такого як комп'ютер, щонайменше на 3 секунди.\n\nПісля підключення NFC активується та буде готовий до використання.",
+    "p_deactivate_restricted_nfc_footer": "Ваш YubiKey оснащений функцією обмеженого NFC, призначеною для захисту від бездротових маніпуляцій під час транспортування. Це означає, що операції NFC тимчасово вимкнені, доки ви їх не активуєте.",
+    "s_unsupported_yk": "Непідтримуваний YubiKey",
+    "p_operation_failed_try_again": "Операція не вдалася, спробуйте ще раз.",
+    "l_configuration_unsupported": "Конфігурація не підтримується",
+    "p_scp_unsupported": "Для зв'язку через NFC YubiKey потрібна технологія, яка не підтримується цим телефоном. Будь ласка, підключіть YubiKey до USB-порту телефону.",
+    "@_general_errors": {},
+
+    "l_error_occurred": "Сталася помилка",
+    "s_application_error": "Помилка програми",
+    "l_import_error": "Помилка імпорту",
+    "l_file_not_found": "Файл не знайдено",
+    "l_file_too_big": "Розмір файлу занадто великий",
+    "l_filesystem_error": "Помилка роботи файлової системи",
+    "@_pins": {},
+
+    "s_pin": "PIN",
+    "s_puk": "PUK",
+    "s_set_pin": "Встановити PIN-код",
+    "s_change_pin": "Змінити PIN-код",
+    "s_change_puk": "Змінити PUK-код",
+    "s_show_pin": "Показати PIN-код",
+    "s_hide_pin": "Приховати PIN-код",
+    "s_show_puk": "Показати PUK",
+    "s_hide_puk": "Приховати PUK-код",
+    "s_current_pin": "Поточний PIN-код",
+    "s_current_puk": "Поточний PUK-код",
+    "s_new_pin": "Новий PIN-код",
+    "s_new_puk": "Новий PUK-код",
+    "s_confirm_pin": "Підтвердьте PIN-код",
+    "s_confirm_puk": "Підтвердьте PUK-код",
+    "s_unblock_pin": "Скинути PIN-код",
+    "l_pin_mismatch": "PIN-коди не збігаються",
+    "l_puk_mismatch": "PUK-коди не збігаються",
+    "s_pin_set": "PIN-код встановлено",
+    "s_puk_set": "Набір PUK-коду",
+    "l_set_pin_failed": "Не вдалося встановити PIN-код:{message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": "{retries, plural, few {{retries} спроби, що залишилися} many {{retries} спроби, що залишилися}=1{{retries} спроба залишилася}other{{retries} спроби, що залишилися}}",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Неправильний PIN-код, {retries, plural, few {{retries} спроби, що залишилися} many {{retries} спроби, що залишилися}=1{{retries} спроби, що залишилися}other{{retries} спроби, що залишилися}}",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "Неправильний PUK-код, {retries, plural, few {{retries} спроби, що залишилися} many {{retries} спроби, що залишилися}=1{{retries} спроби, що залишилися}other{{retries} спроби, що залишилися}}",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "Захист PIN-коду FIDO",
+    "s_pin_change_required": "Потрібна зміна PIN-коду",
+    "l_enter_fido2_pin": "Введіть PIN-код FIDO2 для вашого YubiKey",
+    "p_fido2_pin_required": "Дія, яку ви збираєтеся виконати, вимагає введення PIN-коду FIDO2.",
+    "l_pin_blocked_reset": "PIN-код заблоковано; скиньте налаштування програми FIDO до заводських",
+    "l_pin_blocked": "ПІН-код заблоковано",
+    "l_set_pin_first": "Потрібен PIN-код",
+    "l_unlock_pin_first": "Розблокувати за допомогою PIN-коду",
+    "l_pin_soft_locked": "ПІН-код заблоковано, доки YubiKey не буде вийнято та знову вставлено",
+    "l_pin_change_required_desc": "Перш ніж ви зможете користуватися цією програмою, необхідно встановити новий PIN-код",
+    "p_new_fido2_pin_requirements": "PIN-код має містити {min_length}-{max_length} символів і може містити літери, цифри та спеціальні символи.",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "PIN-код має містити {min_length}-{max_length} символів завдовжки, щонайменше {unique_characters} унікальних символів і не бути поширеним PIN-кодом, як-от \"{common_pin}\". Він може містити літери, цифри та спеціальні символи.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_ep_attestation": "Атестація підприємства",
+    "s_ep_attestation_enabled": "Атестацію підприємства ввімкнено",
+    "q_enable_ep_attestation": "Увімкнути корпоративну атестацію?",
+    "p_enable_ep_attestation_desc": "Це активує корпоративну атестацію, що дозволить авторизованим доменам унікально ідентифікувати ваш YubiKey.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "Після ввімкнення корпоративну атестацію можна вимкнути лише шляхом скидання налаштувань FIDO до заводських.",
+    "s_pin_required": "Потрібен PIN-код",
+    "p_pin_required_desc": "Дія, яку ви збираєтеся виконати, вимагає введення PIN-коду PIV.",
+    "l_piv_pin_blocked": "Заблоковано, використовуйте PUK для скидання",
+    "p_piv_pin_blocked_desc": "PIN-код заблоковано. Використайте PUK-код, щоб скинути його.",
+    "p_piv_pin_blocked_bio_desc": "PIN-код заблоковано. Потрібне скидання до заводських налаштувань.",
+    "l_piv_pin_puk_blocked": "Заблоковано, потрібне скидання до заводських налаштувань",
+    "p_piv_pin_puk_blocked_desc": "PIN-код та PUK-код заблоковано. Потрібне скидання налаштувань програми PIV до заводських.",
+    "p_new_piv_pin_puk_requirements": "{name} має містити щонайменше {length} символів.",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "{name} має містити щонайменше {length} символів, щонайменше 2 унікальних символи та не бути поширеним {name}, як-от \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "Новий {name} не відповідає вимогам складності.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "Відхилити",
+    "p_default_pin_puk_key_desc": "Рекомендується змінити PIN-код, PUK-код та ключ керування за замовчуванням.",
+    "p_default_pin_puk_key_fips_desc": "Для відповідності стандарту FIPS необхідно змінити PIN-код, PUK-код та ключ керування за замовчуванням.",
+    "l_warning_default_pin": "Увага: Використано PIN-код за замовчуванням",
+    "l_warning_default_puk": "Увага: Використано PUK за замовчуванням",
+    "l_default_pin_used": "Використано PIN-код за замовчуванням",
+    "l_default_puk_used": "Використано PUK за замовчуванням",
+    "l_pin_complexity": "Застосовується складність PIN-коду",
+    "@_passwords": {},
+
+    "s_password": "Пароль",
+    "s_manage_password": "Керувати паролем",
+    "s_set_password": "Встановити пароль",
+    "s_password_set": "Пароль встановлено",
+    "s_show_password": "Показати пароль",
+    "s_hide_password": "Приховати пароль",
+    "l_password_protection": "Захист облікових записів паролем",
+    "s_new_password": "Новий пароль",
+    "s_current_password": "Поточний пароль",
+    "s_confirm_password": "Підтвердьте пароль",
+    "l_password_mismatch": "Паролі не збігаються",
+    "s_wrong_password": "Неправильний пароль",
+    "p_wrong_password": "Неправильний пароль. Якщо ви не знаєте свій пароль, вам потрібно буде скинути налаштування YubiKey.",
+    "s_remove_password": "Видалити пароль",
+    "s_password_removed": "Пароль видалено",
+    "s_remember_password": "Запам'ятати пароль",
+    "s_clear_saved_password": "Очистити збережений пароль",
+    "s_password_forgotten": "Забули пароль",
+    "l_keystore_unavailable": "Сховище ключів ОС недоступне",
+    "l_remember_pw_failed": "Не вдалося згадати пароль",
+    "l_unlock_first": "Розблокувати паролем",
+    "l_set_password_first": "Встановити пароль",
+    "l_enter_oath_pw": "Введіть пароль OATH для вашого YubiKey",
+    "p_new_password_requirements": "Пароль може містити літери, цифри та спеціальні символи.",
+    "@_management_key": {},
+
+    "s_management_key": "Ключ управління",
+    "s_current_management_key": "Поточний ключ управління",
+    "s_new_management_key": "Новий ключ управління",
+    "l_change_management_key": "Ключ управління змінами",
+    "l_management_key_changed": "Ключ керування змінено",
+    "l_default_key_used": "Використано ключ керування за замовчуванням",
+    "s_generate_random": "Генерувати випадкові",
+    "s_use_default": "Використовувати за замовчуванням",
+    "l_warning_default_key": "Попередження: Використано ключ за замовчуванням",
+    "s_protect_key": "Захист за допомогою PIN-коду",
+    "p_protect_key_desc": "Використовуйте PIN-код замість ключа керування під час операцій, що потребують автентифікації за допомогою ключа керування.",
+    "s_management_key_algorithm": "Алгоритм ключа управління",
+    "p_management_key_algorithm_desc": "Алгоритм вибору ключа керування.",
+    "l_pin_protected_key": "Замість цього можна використовувати PIN-код",
+    "l_wrong_key": "Неправильний ключ",
+    "l_unlock_piv_management": "Розблокування керування PIV",
+    "p_unlock_piv_management_desc": "Дія, яку ви збираєтеся виконати, вимагає ключа керування PIV.",
+    "@_oath_accounts": {},
+
+    "l_account": "Обліковий запис: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "Облікові записи",
+    "s_no_accounts": "Немає облікових записів",
+    "l_results_for": "Результати для \"{query}\"",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "Початок роботи з обліковими записами OTP",
+    "l_no_accounts_desc": "Додайте облікові записи до свого YubiKey від будь-якого постачальника послуг, який підтримує OATH TOTP/HOTP",
+    "s_add_account": "Додати обліковий запис",
+    "p_add_account_desc": "Відскануйте QR-код або введіть дані облікових даних вручну.",
+    "s_add_accounts": "Додати обліковий запис(и)",
+    "l_drop_qr_description": "Вставте QR-код, щоб додати обліковий запис(и)",
+    "p_add_account_three_ways": "Існує три способи додавання облікових записів.",
+    "s_scanning": "Сканування (рекомендовано)",
+    "p_scanning_desc": "Перш ніж сканувати QR-код, переконайтеся, що повний код видно на екрані.",
+    "s_drag_and_drop": "Перетягування",
+    "p_drag_and_drop_desc": "Зображення з QR-кодом можна розмістити будь-де в області перегляду облікових записів.",
+    "s_manually": "Вручну",
+    "p_manually_desc": "Дані облікового запису можна ввести у форму вручну.",
+    "s_account_added": "Обліковий запис додано",
+    "l_account_add_failed": "Не вдалося додати обліковий запис:{message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "Потрібен пароль",
+    "l_add_account_unlock_required": "Потрібне розблокування",
+    "l_add_account_func_missing": "Функціональність відсутня або вимкнена",
+    "l_account_name_required": "Ваш обліковий запис повинен мати ім'я",
+    "l_name_already_exists": "Це ім'я вже існує для емітента",
+    "l_account_already_exists": "Цей обліковий запис вже існує на YubiKey",
+    "l_invalid_character_issuer": "Недійсний символ: ':' не дозволено в емітенті",
+    "l_select_accounts": "Виберіть обліковий запис(и) для додавання до YubiKey",
+    "s_pin_account": "Закріпити обліковий запис",
+    "s_unpin_account": "Відкріпити обліковий запис",
+    "s_no_pinned_accounts": "Немає закріплених облікових записів",
+    "s_pinned": "Закріплено",
+    "l_pin_account_desc": "Тримайте важливі облікові записи разом",
+    "s_rename_account": "Перейменувати обліковий запис",
+    "l_rename_account_desc": "Редагувати емітента/назву рахунку",
+    "s_account_renamed": "Обліковий запис перейменовано",
+    "l_rename_account_failed": "Не вдалося перейменувати обліковий запис: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "Це змінить спосіб відображення облікового запису у списку.",
+    "s_delete_account": "Видалити обліковий запис",
+    "q_delete_account": "Видалити обліковий запис?",
+    "l_delete_account_desc": "Видаліть обліковий запис з вашого YubiKey",
+    "s_account_deleted": "Обліковий запис видалено",
+    "p_warning_delete_account": "Увага! Ця дія призведе до видалення облікового запису з вашого YubiKey.",
+    "p_warning_disable_credential": "Обов’язково вимкніть цей обліковий запис у сервісі, в якому він зареєстрований, щоб уникнути блокування.",
+    "s_account_name": "Ім'я облікового запису",
+    "s_search_accounts": "Пошук облікових записів",
+    "l_accounts_used": "Використано {used} з {capacity} облікових записів",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} цифр",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} сек",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_issuer_optional": "Емітент (необов'язково)",
+    "s_counter_based": "На основі лічильника",
+    "s_time_based": "Залежно від часу",
+    "l_copy_code_desc": "Вставте код в іншу програму",
+    "l_calculate_code_desc": "Отримайте новий код з вашого YubiKey",
+    "@_fido_credentials": {},
+
+    "s_rp_id": "Ідентифікатор RP",
+    "s_user_id": "Ідентифікатор користувача",
+    "s_credential_id": "Ідентифікатор облікових даних",
+    "s_display_name": "Відображуване ім'я",
+    "s_user_name": "Ім'я користувача",
+    "s_passkeys": "Ключі доступу",
+    "s_no_passkeys": "Без ключів доступу",
+    "l_ready_to_use": "Готовий до використання",
+    "l_register_sk_on_websites": "Зареєструватися як ключ безпеки на вебсайтах",
+    "l_no_discoverable_accounts": "Ключі доступу не збережено",
+    "p_non_passkeys_note": "Облікові дані без ключа доступу можуть існувати, але їх не можна перерахувати.",
+    "s_delete_passkey": "Видалити ключ доступу",
+    "q_delete_passkey": "Видалити ключ доступу?",
+    "l_delete_passkey_desc": "Видаліть ключ доступу з YubiKey",
+    "s_passkey_deleted": "Ключ доступу видалено",
+    "p_warning_delete_passkey": "Увага! Ця дія видалить ключ доступу з вашого YubiKey.",
+    "p_warning_delete_passkey_desc": "Ви більше не зможете використовувати цей ключ доступу для служби, де він зареєстрований.",
+    "l_do_not_remove_yk_delete": "Не видаляйте YubiKey під час видалення",
+    "s_search_passkeys": "Пошук ключів доступу",
+    "p_passkeys_used": "Використано {used} з {max} ключів доступу.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "Біометрія",
+    "l_fingerprint": "Відбиток пальця: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "Відбитки пальців",
+    "l_fingerprint_captured": "Відбиток пальця успішно знято!",
+    "s_fingerprint_added": "Відбиток пальця додано",
+    "l_adding_fingerprint_failed": "Помилка додавання відбитка пальця: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "Помилка налаштування імені: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "Налаштування відбитків пальців",
+    "p_setup_fingerprints_desc": "Перш ніж використовувати ключ, необхідно налаштувати відбитки пальців.",
+    "s_add_fingerprint": "Додати відбиток пальця",
+    "s_delete_fingerprint": "Видалити відбиток пальця",
+    "q_delete_fingerprint": "Видалити відбиток пальця?",
+    "l_delete_fingerprint_desc": "Видаліть відбиток пальця з YubiKey",
+    "s_fingerprint_deleted": "Відбиток пальця видалено",
+    "p_warning_delete_fingerprint": "Це видалить відбиток пальця з вашого YubiKey.",
+    "s_fingerprints_get_started": "Почніть роботу з відбитками пальців",
+    "p_set_fingerprints_desc": "Перш ніж можна буде зареєструвати відбитки пальців, потрібно встановити PIN-код.",
+    "l_no_fps_added": "Відбитки пальців не додано",
+    "s_rename_fp": "Перейменувати відбиток пальця",
+    "l_rename_fp_desc": "Змінити назву",
+    "s_fingerprint_renamed": "Відбиток пальця перейменовано",
+    "l_rename_fp_failed": "Помилка перейменування: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "Додайте один або декілька (до п'яти) відбитків пальців",
+    "l_fingerprints_used": "{used}/5 зареєстрованих відбитків пальців",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "Натисніть пальцем на YubiKey, щоб розпочати.",
+    "l_name_fingerprint": "Назвіть цей відбиток пальця",
+    "@_fido_errors": {},
+
+    "l_user_action_timeout_error": "Не вдалося через неактивність користувача",
+    "l_wrong_inserted_yk_error": "Повторно вставлений YubiKey не відповідає початковому пристрою",
+    "l_failed_connecting_to_fido": "Не вдалося підключитися до інтерфейсу FIDO",
+    "@_certificates": {},
+
+    "l_self_signed_certificate": "Самопідписаний сертифікат",
+    "l_certificate_signing_request": "Запит на підпис сертифіката (CSR)",
+    "s_certificate": "Сертифікат",
+    "s_subject": "Тема",
+    "l_export_csr_file": "Зберегти CSR у файл",
+    "l_export_public_key": "Експортувати відкритий ключ",
+    "l_export_public_key_file": "Зберегти відкритий ключ у файл",
+    "l_export_public_key_desc": "Експортувати відкритий ключ у файл",
+    "l_public_key_exported": "Експортовано відкритий ключ",
+    "l_export_certificate": "Експортний сертифікат",
+    "l_export_certificate_file": "Експорт сертифіката у файл",
+    "l_export_certificate_desc": "Експортувати сертифікат у файл",
+    "l_certificate_exported": "Сертифікат експортовано",
+    "l_select_import_file": "Виберіть файл для імпорту",
+    "l_import_file": "Імпортувати файл",
+    "l_import_desc": "Імпорт ключа та/або сертифіката",
+    "l_import_nothing": "Немає чого імпортувати",
+    "l_importing_file": "Імпорт файлу\u2026",
+    "s_file_imported": "Файл імпортовано",
+    "l_unsupported_key_type": "Непідтримуваний тип ключа",
+    "l_delete_certificate": "Видалити сертифікат",
+    "q_delete_certificate": "Видалити сертифікат?",
+    "l_delete_certificate_desc": "Видаліть сертифікат з вашого YubiKey",
+    "l_delete_key": "Видалити ключ",
+    "q_delete_key": "Видалити ключ?",
+    "l_delete_key_desc": "Вийміть ключ зі свого YubiKey",
+    "l_delete_certificate_or_key": "Видалити сертифікат/ключ",
+    "q_delete_certificate_or_key": "Видалити сертифікат/ключ?",
+    "l_delete_certificate_or_key_desc": "Видаліть сертифікат або ключ зі свого YubiKey",
+    "l_move_key": "Перемістити ключ",
+    "l_move_key_desc": "Переміщення ключа з одного слота PIV в інший",
+    "l_change_defaults": "Зміна кодів доступу за замовчуванням",
+    "s_issuer": "Емітент",
+    "s_serial": "Серійний",
+    "s_certificate_fingerprint": "Відбиток пальця",
+    "s_valid_from": "Дійсний з",
+    "s_valid_to": "Дійсний до",
+    "l_no_certificate": "Сертифікат не завантажено",
+    "l_key_no_certificate": "Ключ без завантаженого сертифіката",
+    "s_generate_key": "Згенерувати ключ",
+    "l_generate_desc": "Згенерувати новий сертифікат або CSR",
+    "p_generate_desc": "Це згенерує новий ключ на слоті YubiKey у PIV {slot}.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "Згенеровано закритий ключ",
+    "p_select_what_to_delete": "Виберіть, що видалити зі слота.",
+    "p_warning_delete_certificate": "Увага! Ця дія видалить сертифікат з вашого YubiKey.",
+    "p_warning_delete_key": "Увага! Ця дія видалить закритий ключ з вашого YubiKey.",
+    "p_warning_delete_certificate_and_key": "Увага! Ця дія видалить сертифікат і закритий ключ з вашого YubiKey.",
+    "p_warning_usb_preferred": "Для ключів RSA краще використовувати USB. NFC може призвести до помилок.",
+    "p_delete_certificate_desc": "Це видалить сертифікат у слоті PIV {slot}.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "Це видалить закритий ключ у слоті PIV {slot}.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "Це видалить сертифікат і закритий ключ у слоті PIV {slot}.",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "Сертифікат видалено",
+    "l_key_deleted": "Ключ видалено",
+    "l_certificate_and_key_deleted": "Сертифікат і ключ видалено",
+    "l_include_certificate": "Включити сертифікат",
+    "l_select_destination_slot": "Виберіть слот призначення",
+    "q_move_key_confirm": "Перемістити закритий ключ у слот PIV {from_slot}?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "Перемістити закритий ключ зі слота PIV {from_slot} до слота {to_slot}?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "Перемістити закритий ключ і сертифікат зі слота PIV {from_slot} до слота {to_slot}?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "Вибраний файл захищено паролем.",
+    "p_import_items_desc": "Наступні елементи будуть імпортовані в слот PIV {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "Відкритий ключ сертифіката не збігається із закритим ключем у слоті",
+    "l_key_moved": "Ключ переміщено",
+    "l_key_and_certificate_moved": "Ключ і сертифікат переміщено",
+    "p_subject_desc": "Визначне ім'я (DN), відформатоване відповідно до специфікації RFC 4514.",
+    "l_rfc4514_invalid": "Недійсний формат RFC 4514",
+    "rfc4514_examples": "Приклади:\nCN=Приклад назви\nCN=jsmith,DC=приклад,DC=net",
+    "s_allow_fingerprint": "Дозволити відбиток пальця",
+    "s_pin_policy": "Політика щодо PIN-кодів",
+    "s_output_format": "Вихідний формат",
+    "s_expiration_date": "Термін дії",
+    "p_algorithm_desc": "Ключовий алгоритм для використання.",
+    "p_expiration_date_desc": "Дата закінчення терміну дії сертифіката, за замовчуванням 1 рік (лише для сертифіката).",
+    "p_key_options_bio_desc": "Дозволити використання біометричних даних замість PIN-коду.",
+    "q_overwrite_slot": "Перезаписати слот?",
+    "p_overwrite_slot_desc": "Це назавжди перезапише існуючий вміст у слоті {slot}.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "Сертифікат буде перезаписано",
+    "l_overwrite_key": "Закритий ключ буде перезаписано",
+    "l_overwrite_key_maybe": "Будь-який існуючий закритий ключ у слоті буде перезаписано",
+    "@_piv_slots": {},
+
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "Автентифікація",
+    "s_slot_9c": "Цифровий підпис",
+    "s_slot_9d": "Управління ключами",
+    "s_slot_9e": "Автентифікація картки",
+    "s_retired_slot": "Керування ключами, що вийшло з експлуатації",
+    "@_otp_slots": {},
+
+    "s_otp_slot_one": "Короткий дотик",
+    "s_otp_slot_two": "Довгий дотик",
+    "l_otp_slot_empty": "Слот порожній",
+    "l_otp_slot_configured": "Слот налаштовано",
+    "@_otp_slot_configurations": {},
+
+    "l_yubiotp_desc": "Запрограмуйте облікові дані Yubico OTP",
+    "s_challenge_response": "Виклик-відповідь",
+    "l_challenge_response_desc": "Запрограмуйте облікові дані для запиту та відповіді",
+    "s_static_password": "Статичний пароль",
+    "l_static_password_desc": "Налаштуйте статичний пароль",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "Запрограмуйте облікові дані на основі HMAC-SHA1",
+    "s_public_id": "Публічний ідентифікатор",
+    "s_private_id": "Приватне посвідчення особи",
+    "s_use_serial": "Використовуйте серійний номер",
+    "l_select_file": "Вибрати файл",
+    "l_no_export_file": "Немає файлу експорту",
+    "s_no_export": "Експорт заборонено",
+    "s_export": "Експорт",
+    "l_export_configuration_file": "Експорт конфігурації у файл",
+    "l_exported_can_be_uploaded_at": "Експортовані облікові дані можна завантажити за адресою {url}",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "l_keyboard_layout": "Розкладка клавіатури {layout}",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+    "@_otp_slot_actions": {},
+
+    "s_delete_slot": "Видалити облікові дані",
+    "q_delete_slot": "Видалити облікові дані?",
+    "l_delete_slot_desc": "Видалити облікові дані з гнізда",
+    "p_warning_delete_slot_configuration": "Увага! Ця дія назавжди видалить облікові дані зі слота {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "Облікові дані видалено",
+    "s_swap": "Обмін",
+    "s_swap_slots": "Поміняйте слоти",
+    "q_swap_slots": "Поміняти місцями слоти?",
+    "l_swap_slots_desc": "Поміняти місцями короткий/довгий дотик",
+    "p_swap_slots_desc": "Це змінить конфігурацію двох слотів.",
+    "l_slots_swapped": "Конфігурації слотів помінялися місцями",
+    "l_slot_credential_configured": "Налаштовані облікові дані {type}",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "Налаштовано облікові дані {type} та експортовано до {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "Додати ⏎",
+    "l_append_enter_desc": "Додати натискання клавіші Enter після введення одноразового пароля OTP",
+    "@_otp_errors": {},
+
+    "p_otp_swap_error": "Не вдалося поміняти місцями слоти! Переконайтеся, що YubiKey не має обмеженого доступу.",
+    "l_wrong_access_code": "Неправильний код доступу",
+    "@_otp_access_code": {},
+
+    "s_access_code": "Код доступу",
+    "s_show_access_code": "Показати код доступу",
+    "s_hide_access_code": "Приховати код доступу",
+    "p_enter_access_code": "Введіть код доступу для слота {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "@_permissions": {},
+
+
+    "s_enable_nfc": "Увімкнути NFC",
+    "s_request_access": "Запит доступу",
+    "s_permission_denied": "Дозвіл відхилено",
+    "l_elevating_permissions": "Підвищення дозволів\u2026",
+    "s_review_permissions": "Перегляд дозволів",
+    "s_open_windows_settings": "Відкрийте параметри Windows",
+    "l_admin_privileges_required": "Потрібні права адміністратора",
+    "p_elevated_permissions_required": "Для керування цим пристроєм потрібні підвищені права. Або ж ви можете скористатися параметрами Windows для керування конфігурацією FIDO.",
+    "p_webauthn_elevated_permissions_required": "Для керування WebAuthn потрібні підвищені права. Або ж ви можете скористатися параметрами Windows для керування конфігурацією FIDO.",
+    "p_ms_store_permission_note": "Версія програми з Microsoft Store зазвичай не може підвищувати дозволи через обмеження ізольованого програмного середовища Windows. Ми рекомендуємо встановити Yubico Authenticator з нашого офіційного інсталятора .msi.",
+    "p_need_camera_permission": "Yubico Authenticator потребує доступу до камери для сканування QR-кодів.",
+    "@_qr_codes": {},
+
+    "s_qr_scan": "Відскануйте QR-код",
+    "l_invalid_qr": "Недійсний QR-код",
+    "l_qr_not_found": "QR-код не знайдено",
+    "l_qr_scanned": "Відсканований QR-код",
+    "l_qr_file_too_large": "Файл занадто великий (max {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "Недійсний файл зображення",
+    "l_qr_select_file": "Виберіть файл за допомогою QR-коду",
+    "l_qr_not_read": "Не вдалося прочитати QR-код: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "Наведіть камеру на QR-код, щоб відсканувати його",
+    "q_want_to_scan": "Хочете просканувати?",
+    "q_no_qr": "Немає QR-коду?",
+    "s_enter_manually": "Ввести вручну",
+    "s_read_from_file": "Читати з файлу",
+    "@_factory_reset": {},
+
+    "s_reset": "Скинути",
+    "s_factory_reset": "Скидання до заводських налаштувань",
+    "l_factory_reset_desc": "Відновлення налаштувань YubiKey за замовчуванням",
+    "l_factory_reset_required": "Потрібне скидання до заводських налаштувань",
+    "l_oath_application_reset": "Скидання налаштувань програми OATH",
+    "l_fido_app_reset": "Скидання програми FIDO",
+    "l_reset_failed": "Помилка під час скидання налаштувань: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "Скидання програми PIV",
+    "p_factory_reset_an_app": "Скидання налаштувань програми на вашому YubiKey до заводських.",
+    "p_factory_reset_desc": "Дані зберігаються в кількох програмах на YubiKey, деякі з яких можна скинути до заводських налаштувань незалежно одна від одної.\n\nВиберіть програму вище для скидання.",
+    "p_warning_factory_reset": "Виберіть програму вище для скидання налаштувань.",
+    "p_warning_disable_credentials": "Ваші облікові дані OATH, а також будь-який встановлений пароль будуть видалені з цього YubiKey. Обов’язково вимкніть їх на відповідних веб-сайтах, щоб уникнути блокування ваших облікових записів.",
+    "p_warning_deletes_accounts": "Увага! Це безповоротно видалить усі облікові записи U2F та FIDO2, включаючи ключі доступу, з вашого YubiKey.",
+    "p_warning_disable_accounts": "Ваші облікові дані, а також будь-який встановлений PIN-код будуть видалені з цього YubiKey. Обов’язково вимкніть їх на відповідних веб-сайтах, щоб уникнути блокування ваших облікових записів.",
+    "l_reset_not_allowed_over": "Скидання FIDO вимкнено через {transport}",
+    "@l_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
+    "p_warning_piv_reset": "Увага! Усі дані, що зберігаються для PIV, будуть безповоротно видалені з вашого YubiKey.",
+    "p_warning_piv_reset_desc": "Це включає закриті ключі та сертифікати. Ваші PIN-код, PUK-код і ключ керування будуть скинуті до заводських значень за замовчуванням.",
+    "p_warning_global_reset": "Увага! Це безповоротно видалить усі збережені дані, включаючи облікові дані, з вашого YubiKey.",
+    "p_warning_global_reset_desc": "Скиньте налаштування програм на вашому YubiKey до заводських. PIN-код буде скинуто до заводського значення за замовчуванням, а зареєстровані відбитки пальців будуть видалені. Будь-які ключі, сертифікати чи інші облікові дані будуть видалені назавжди.",
+    "@_copy_to_clipboard": {},
+
+    "l_copy_to_clipboard": "Копіювати в буфер обміну",
+    "s_code_copied": "Код скопійовано",
+    "l_code_copied_clipboard": "Код скопійовано в буфер обміну",
+    "s_copy_log": "Копіювати журнал",
+    "l_copy_log_clipboard": "Копіювати журнал у буфер обміну",
+    "l_log_copied": "Журнал скопійовано в буфер обміну",
+    "l_diagnostics_copied": "Діагностичні дані скопійовано в буфер обміну",
+    "p_target_copied_clipboard": "{label} скопійовано в буфер обміну.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "@_custom_icons": {},
+
+    "s_custom_icons": "Користувацькі значки",
+    "l_set_icons_for_accounts": "Встановіть значки для облікових записів",
+    "p_custom_icons_description": "Пакети значків можуть зробити ваші облікові записи простішими.",
+    "p_custom_icons_format_desc": "Пакети значків використовують формат {aegis_icon_pack}. Ви можете завантажити готовий пакет значків або створити свій власний.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "Замінити пакет значків",
+    "l_loading_icon_pack": "Завантаження пакета значків\u2026",
+    "s_load_icon_pack": "Завантажити пакет значків",
+    "l_load_icon_pack_desc": "Завантажити пакет значків з файлу",
+    "s_remove_icon_pack": "Видалити пакет значків",
+    "l_remove_icon_pack_desc": "Видалити активний пакет значків",
+    "l_icon_pack_removed": "Пакет значків видалено",
+    "l_remove_icon_pack_failed": "Помилка видалення пакета значків",
+    "s_choose_icon_pack": "Виберіть пакет значків",
+    "l_icon_pack_imported": "Пакет значків імпортовано",
+    "l_import_icon_pack_failed": "Помилка імпорту пакета значків: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "Недійсний пакет значків",
+    "l_icon_pack_copy_failed": "Не вдалося скопіювати файли пакета значків",
+    "@_android_settings": {},
+
+    "s_nfc_and_usb_options": "Опції NFC та USB",
+    "l_nfc_and_usb_options_desc": "Налаштувати дію для YubiKey",
+    "l_on_yk_nfc_tap": "Увімкнено NFC-дотик",
+    "l_on_yk_usb_insert": "Увімкнено USB-вставка",
+    "l_do_nothing": "Нічого не робити",
+    "l_launch_ya": "Запустіть Yubico Authenticator",
+    "l_copy_otp_clipboard": "Копіювати одноразовий пароль OTP у буфер обміну",
+    "l_launch_and_copy_otp": "Запустіть програму та скопіюйте OTP",
+    "l_kbd_layout_for_static": "Розкладка клавіатури (для статичного пароля)",
+    "s_choose_kbd_layout": "Виберіть розкладку клавіатури",
+    "l_bypass_touch_requirement": "Вимога обходу дотику",
+    "l_bypass_touch_requirement_on": "Облікові записи, що потребують дотику, автоматично відображаються через NFC",
+    "l_bypass_touch_requirement_off": "Облікові записи, що потребують дотику, потребують додаткового дотику через NFC",
+    "s_silence_nfc_sounds": "Вимкнення звуків NFC",
+    "l_silence_nfc_sounds_on": "При дотику NFC звуки не відтворюватимуться",
+    "l_silence_nfc_sounds_off": "Звук відтворюватиметься при дотику до NFC",
+    "l_launch_app_on_usb_on": "Це запобігає використанню YubiKey іншими програмами через USB",
+    "l_launch_app_on_usb_off": "Інші програми можуть використовувати YubiKey через USB",
+    "s_allow_screenshots": "Дозволити скріншоти",
+    "l_allow_screenshots_desc": "Дозволити іншим програмам робити знімки екрана",
+    "@_nfc": {},
+
+    "s_nfc_ready_to_scan": "Готовий до сканування",
+    "s_nfc_hold_still": "Тримайся нерухомо\u2026",
+    "s_nfc_tap_your_yubikey": "Торкніться свого YubiKey",
+    "s_nfc_remove_key": "Видалити YubiKey",
+    "l_nfc_failed_to_scan": "Не вдалося сканувати, спробуйте ще раз",
+    "@_usb": {},
+
+    "s_usb_processing": "Зчитування даних з YubiKey",
+    "s_usb_dont_remove": "Не виймай ключ\u2026",
+    "l_usb_read_error": "Не вдалося прочитати дані з YubiKey",
+    "@_ndef": {},
+
+    "p_ndef_set_otp": "Код OTP успішно скопійовано з YubiKey в буфер обміну.",
+    "p_ndef_set_password": "Пароль успішно скопійовано з YubiKey в буфер обміну.",
+    "p_ndef_parse_failure": "Не вдалося розібрати код OTP з YubiKey.",
+    "p_ndef_set_clip_failure": "Не вдалося отримати доступ до буфера обміну під час спроби копіювання коду OTP з YubiKey.",
+    "@_key_customization": {},
+
+    "s_set_label": "Встановити мітку",
+    "s_set_color": "Встановити колір",
+    "s_change_label": "Змінити мітку",
+    "p_set_will_add_custom_name": "Це надасть вашому YubiKey власну назву.",
+    "p_rename_will_change_custom_name": "Це змінить мітку вашого YubiKey.",
+    "@_shortcuts": {},
+
+    "s_keyboard_shortcuts": "Комбінації клавіш",
+    "s_global_shortcuts": "Глобальні скорочення",
+    "s_application_shortcuts": "Ярлики програм",
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": "Закрити {app}",
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": "Приховати {app}",
+    "s_search": "Пошук",
+    "s_next_device": "Наступний пристрій",
+    "s_previous_device": "Попередній пристрій",
+    "s_open_settings": "Відкрити налаштування",
+    "s_open_item": "Відкрити елемент",
+    "s_edit_item": "Редагувати елемент",
+    "s_delete_item": "Видалити елемент",
+    "s_calculate_oath_code": "Розрахувати код OATH",
+    "s_open_keyboard_shortcuts": "Відкрити комбінації клавіш",
+    "@_eof": {}
+
+}
