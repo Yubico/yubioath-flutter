@@ -418,7 +418,10 @@ class PivManager(
         }
 
     private suspend fun authenticate(managementKey: ByteArray): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            waitForNfcKeyRemoval = true
+        ) {
             val serial = pivViewModel.currentSerial()
             try {
                 managementKeyStorage[serial] = managementKey
