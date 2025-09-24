@@ -934,7 +934,17 @@ class PivManager(
                 mapOf(
                     "id" to slot.value,
                     "name" to slot.stringAlias,
-                    "metadata" to pivViewModel.getMetadata(slot.stringAlias),
+                    "metadata" to pivViewModel.getMetadata(slot.stringAlias)?.let { slotMetadata ->
+                        JSONObject(
+                            mapOf(
+                                "key_type" to slotMetadata.keyType.toInt(),
+                                "pin_policy" to slotMetadata.pinPolicy,
+                                "touch_policy" to slotMetadata.touchPolicy,
+                                "generated" to slotMetadata.generated,
+                                "public_key" to slotMetadata.publicKey?.toPublicKey()?.toPem()
+                            )
+                        )
+                    },
                     "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem(),
                 )
             ).toString()
