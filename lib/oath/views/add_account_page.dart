@@ -192,7 +192,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       oathState = ref
           .watch(oathStateProvider(deviceNode.path))
           .maybeWhen(data: (data) => data, orElse: () => null);
-      _credentials = ref
+      _credentials ??= ref
           .watch(credentialListProvider(deviceNode.path))
           ?.map((e) => e.credential)
           .toList();

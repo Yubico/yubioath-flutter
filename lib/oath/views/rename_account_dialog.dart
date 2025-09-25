@@ -178,8 +178,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     // is this credential name/issuer of valid format
     final nameNotEmpty = name.isNotEmpty;
 
+    // issuer field does not contain a colon character
+    final issuerNoColon = !_issuerController.text.contains(':');
+
     // can we rename with the new values
-    final isValid = isUnique && nameNotEmpty;
+    final isValid = isUnique && nameNotEmpty && issuerNoColon;
 
     return ResponsiveDialog(
       title: Text(l10n.s_rename_account),
@@ -209,6 +212,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                         labelText: l10n.s_issuer_optional,
                         helperText:
                             '', // Prevents dialog resizing when disabled
+                        errorText: issuerNoColon
+                            ? null
+                            : l10n.l_invalid_character_issuer,
                         icon: const Icon(Symbols.business),
                       ),
                       textInputAction: TextInputAction.next,

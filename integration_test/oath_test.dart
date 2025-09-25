@@ -24,7 +24,7 @@ extension on PatrolTester {
     bool requireTouch = false,
   }) async {
     if (isAndroid) {
-      // The camera view breaks the test on Android, add programatically
+      // The camera view breaks the test on Android, add programmatically
       await read(
         credentialListProvider(data.node.path).notifier,
       ).addAccount(cred.toUri(), requireTouch: requireTouch);
