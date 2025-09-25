@@ -925,7 +925,7 @@
     "l_admin_privileges_required": "Administrator-Rechte erforderlich",
     "p_elevated_permissions_required": "Die Verwaltung dieses Geräts benötigt erweiterte Berechtigungen. Alternativ kannst Du die Windows Einstellungen zur Verwaltung der FIDO Konfiguration verwenden.",
     "p_webauthn_elevated_permissions_required": "WebAuthn-Verwaltung benötigt erweiterte Berechtigungen.",
-    "p_ms_store_permission_note": "Yubico Authenticator benötigt Administrator Rechte für diese Aktion.\nAufgrund von Einschränkungen des Microsoft Stores kann diese Version keine Erweiterung der Rechte anfordern. Bitte wähle eine der beiden Optionen:\n- Starte mit Administratorrechten: Schließe die App, klicke mit der rechten Maustaste auf das App Icon und wähle \"Als Administrator ausführen\" aus.\n- Installiere die App manuell: Lade hierzu den offiziellen .msi Installer von der Yubico Authenticator Seite herunter (die Installation erfordert eventuell Administratorrechte).",
+    "p_ms_store_permission_note": "Die Microsoft Store-Version der App kann aufgrund der Sandboxing-Beschränkungen von Windows in der Regel keine höheren Berechtigungen vergeben. Wir empfehlen die Installation von Yubico Authenticator über unser offizielles .msi-Installationsprogramm.",
     "p_need_camera_permission": "Yubico Authenticator benötigt Zugriff auf die Kamera um QR-Codes aufnehmen zu können.",
     "@_qr_codes": {},
 

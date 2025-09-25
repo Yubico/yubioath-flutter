@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Попробуйте снять и снова вставить свой YubiKey.",
     "s_touch_required": "Требуется касание",
     "l_touch_button_now": "Прикоснись к кнопке на своем YubiKey прямо сейчас",
-    "l_long_touch_button_now": "Нажмите и удерживайте кнопку YubiKey в течение 10 секунд",
+    "l_long_touch_button_now": "Нажмите и удерживайте кнопку на вашем YubiKey в течение 10 секунд",
     "l_keep_touching_yk": "Продолжайте постоянно прикасаться к своему YubiKey\u2026",
     "@_capabilities": {},
 
@@ -208,7 +208,7 @@
     "s_capability_hsmauth": "YubiHSM Auth",
     "@_app_configuration": {},
 
-    "s_toggle_applications": "YubiHSM Auth",
+    "s_toggle_applications": "Переключить приложения",
     "s_toggle_interfaces": "Переключать интерфейсы",
     "p_toggle_applications_desc": "Включайте или отключайте приложения через доступные транспортные средства.",
     "p_toggle_interfaces_desc": "Включение или выключение USB-интерфейсов.",
@@ -216,10 +216,10 @@
     "l_toggle_interfaces_desc": "Включение / выключение интерфейсов",
     "s_reconfiguring_yk": "Перенастройка YubiKey\u2026",
     "s_config_updated": "Обновлена конфигурация",
-    "l_config_updated_reinsert": "Обновлена конфигурация, удален и повторно установлен YubiKey",
+    "l_config_updated_reinsert": "Обновлена конфигурация, извлеките и снова вставьте YubiKey",
     "s_fido_disabled": "FIDO2 отключен",
     "l_webauthn_req_fido2": "WebAuthn требует, чтобы приложение FIDO2 было включено на вашем YubiKey",
-    "s_lock_code": "Код замка",
+    "s_lock_code": "Код блокировки",
     "l_wrong_lock_code": "Неправильный код блокировки",
     "s_show_lock_code": "Показать код блокировки",
     "s_hide_lock_code": "Скрыть код блокировки",
@@ -314,7 +314,7 @@
     "l_pin_blocked": "PIN-код заблокирован",
     "l_set_pin_first": "Требуется PIN-код",
     "l_unlock_pin_first": "Разблокировка с помощью PIN-кода",
-    "l_pin_soft_locked": "PIN-код заблокирован до тех пор, пока YubiKey не будет удален и вставлен снова",
+    "l_pin_soft_locked": "PIN-код был заблокирован до тех пор, пока YubiKey не будет извлечен и вставлен заново",
     "l_pin_change_required_desc": "Прежде чем вы сможете использовать это приложение, необходимо установить новый PIN-код",
     "p_new_fido2_pin_requirements": "PIN-код должен состоять из символов {min_length}-{max_length} и может содержать буквы, цифры и специальные символы.",
     "@p_new_fido2_pin_requirements": {
@@ -839,7 +839,7 @@
     "s_no_export": null,
     "s_export": "Экспорт",
     "l_export_configuration_file": "Экспорт конфигурации в файл",
-    "l_exported_can_be_uploaded_at": null,
+    "l_exported_can_be_uploaded_at": "Экспортированные учетные данные можно загрузить на сайт {url}",
     "@l_exported_can_be_uploaded_at": {
         "placeholders": {
             "url": {
@@ -847,7 +847,7 @@
             }
         }
     },
-    "l_keyboard_layout": null,
+    "l_keyboard_layout": "Клавиатура {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
             "layout": {
@@ -921,12 +921,12 @@
     "s_permission_denied": "Доступ запрещен",
     "l_elevating_permissions": null,
     "s_review_permissions": "Просмотр разрешений",
-    "s_open_windows_settings": null,
+    "s_open_windows_settings": "Открыть Параметры Windows",
     "l_admin_privileges_required": "Требуются права администратора",
     "p_elevated_permissions_required": null,
     "p_webauthn_elevated_permissions_required": null,
-    "p_ms_store_permission_note": null,
-    "p_need_camera_permission": null,
+    "p_ms_store_permission_note": "Версия приложения для Microsoft Store, как правило, не может повысить разрешения из-за ограничений в песочнице Windows. Мы рекомендуем установить Yubico Authenticator с нашего официального установщика .msi.",
+    "p_need_camera_permission": "Yubico Authenticator требует разрешения камеры для сканирования QR-кодов.",
     "@_qr_codes": {},
 
     "s_qr_scan": "Сканировать QR-код",
@@ -954,7 +954,7 @@
     "l_point_camera_scan": "Наведите камеру на QR-код, чтобы отсканировать его",
     "q_want_to_scan": "Хотите отсканировать?",
     "q_no_qr": "Нет QR-кода?",
-    "s_enter_manually": null,
+    "s_enter_manually": "Ввести вручную",
     "s_read_from_file": "Прочитать из файла",
     "@_factory_reset": {},
 
@@ -997,7 +997,7 @@
     "s_code_copied": "Код скопирован",
     "l_code_copied_clipboard": "Код скопирован в буфер обмена",
     "s_copy_log": "Скопировать лог",
-    "l_copy_log_clipboard": null,
+    "l_copy_log_clipboard": "Скопировать лог в буфер обмена",
     "l_log_copied": "Лог скопирован в буфер обмена",
     "l_diagnostics_copied": "Диагностические данные скопированы в буфер обмена",
     "p_target_copied_clipboard": "{label} скопирован в буфер обмена.",
@@ -1021,16 +1021,16 @@
             }
         }
     },
-    "s_replace_icon_pack": null,
-    "l_loading_icon_pack": null,
-    "s_load_icon_pack": null,
-    "l_load_icon_pack_desc": null,
-    "s_remove_icon_pack": null,
-    "l_remove_icon_pack_desc": null,
-    "l_icon_pack_removed": null,
-    "l_remove_icon_pack_failed": null,
-    "s_choose_icon_pack": null,
-    "l_icon_pack_imported": null,
+    "s_replace_icon_pack": "Заменить набор значков",
+    "l_loading_icon_pack": "Загрузка набора значков\u2026",
+    "s_load_icon_pack": "Загрузить набор значков",
+    "l_load_icon_pack_desc": "Загрузить набор значков из файла",
+    "s_remove_icon_pack": "Удалить набор значков",
+    "l_remove_icon_pack_desc": "Удалить активный набор значков",
+    "l_icon_pack_removed": "Набор значков удалён",
+    "l_remove_icon_pack_failed": "Ошибка удаления набора значков",
+    "s_choose_icon_pack": "Выбрать набор значков",
+    "l_icon_pack_imported": "Пакет значков импортирован",
     "l_import_icon_pack_failed": null,
     "@l_import_icon_pack_failed": {
         "placeholders": {
@@ -1039,21 +1039,21 @@
             }
         }
     },
-    "l_invalid_icon_pack": null,
-    "l_icon_pack_copy_failed": null,
+    "l_invalid_icon_pack": "Недопустимый набор иконок",
+    "l_icon_pack_copy_failed": "Не удалось скопировать файлы набора значков",
     "@_android_settings": {},
 
-    "s_nfc_and_usb_options": null,
-    "l_nfc_and_usb_options_desc": null,
+    "s_nfc_and_usb_options": "Настройки NFC & USB",
+    "l_nfc_and_usb_options_desc": "Настроить действие для YubiKey",
     "l_on_yk_nfc_tap": null,
     "l_on_yk_usb_insert": null,
     "l_do_nothing": null,
     "l_launch_ya": null,
-    "l_copy_otp_clipboard": null,
+    "l_copy_otp_clipboard": "Скопировать OTP в буфер обмена",
     "l_launch_and_copy_otp": null,
     "l_kbd_layout_for_static": null,
-    "s_choose_kbd_layout": null,
-    "l_bypass_touch_requirement": null,
+    "s_choose_kbd_layout": "Выберите раскладку клавиатуры",
+    "l_bypass_touch_requirement": "Обход требования к прикосновению",
     "l_bypass_touch_requirement_on": null,
     "l_bypass_touch_requirement_off": null,
     "s_silence_nfc_sounds": null,
@@ -1061,8 +1061,8 @@
     "l_silence_nfc_sounds_off": null,
     "l_launch_app_on_usb_on": null,
     "l_launch_app_on_usb_off": null,
-    "s_allow_screenshots": null,
-    "l_allow_screenshots_desc": null,
+    "s_allow_screenshots": "Разрешить скриншоты",
+    "l_allow_screenshots_desc": "Разрешить другим приложениям делать снимки экрана",
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": null,
@@ -1072,7 +1072,7 @@
     "l_nfc_failed_to_scan": null,
     "@_usb": {},
 
-    "s_usb_processing": null,
+    "s_usb_processing": "Чтение данных на YubiKey",
     "s_usb_dont_remove": null,
     "l_usb_read_error": "Не удалось считать данные из YubiKey",
     "@_ndef": {},
@@ -1083,7 +1083,7 @@
     "p_ndef_set_clip_failure": "Не удалось получить доступ к буферу обмена при попытке скопировать код OTP из YubiKey.",
     "@_key_customization": {},
 
-    "s_set_label": null,
+    "s_set_label": "Установить метку",
     "s_set_color": "Установить цвет",
     "s_change_label": "Изменить метку",
     "p_set_will_add_custom_name": "Это даст вашему YubiKey пользовательское имя.",
@@ -1091,7 +1091,7 @@
     "@_shortcuts": {},
 
     "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
+    "s_global_shortcuts": "Горячие клавиши",
     "s_application_shortcuts": null,
     "@s_quit_app": {
         "placeholders": {
@@ -1100,7 +1100,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "Закрыть {app}",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1108,11 +1108,11 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
+    "s_hide_app": "Скрыть {app}",
+    "s_search": "Поиск",
+    "s_next_device": "Следующее устройство",
+    "s_previous_device": "Предыдущее устройство",
+    "s_open_settings": "Открыть настройки",
     "s_open_item": null,
     "s_edit_item": null,
     "s_delete_item": null,
