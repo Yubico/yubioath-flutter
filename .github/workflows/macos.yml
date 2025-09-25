@@ -36,26 +36,6 @@ jobs:
       with:
         enable-cache: true
 
-    - name: Cache helper
-      id: cache-helper
-      uses: actions/cache@v4
-      with:
-        path: |
-          build/macos/helper
-          assets/licenses/helper.json
-        key: ${{ env.CACHE_KEY }}
-
-    - name: Install dependencies
-      if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        brew update
-        brew install swig
-        python -m pip install --upgrade pip
-
-    - name: Build the Helper
-      if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: ./build-helper.sh
-
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -74,6 +54,7 @@ jobs:
 
     - name: Build the app
       run: |
+        mkdir -p build/macos/helper
         export VERSION_NAME=`./set-version.py | head -n 1 | sed 's/-.*$//g'`
         flutter build macos --build-name=$VERSION_NAME
 
