@@ -1,4 +1,4 @@
-* Version 7.3.0 (unreleased)
+* Version 7.3.0 (released 2025-09-30)
  ** Settings are now a separate section from the Home view
  ** Android: Added PIV support
  ** Improvements to YubiKey connections used over USB to help with permissions issues (desktop)
