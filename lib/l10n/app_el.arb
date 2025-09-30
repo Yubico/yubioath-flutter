@@ -1,0 +1,1123 @@
+{
+    "@@locale": "el",
+
+    "app_name": "Επαληθευτής Yubico",
+    "native_language_name": "Ελληνικά",
+    "@native_language_name": {
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
+    },
+    "s_translated": "Μεταφρασμένο: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "Διορθωμένο: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": "Ελλιπής μετάφραση",
+    "p_translation_progress_desc": "Οι δείκτες προόδου αντικατοπτρίζουν την ωριμότητα της μετάφρασης.",
+    "s_community": null,
+    "l_localization_project": null,
+
+    "s_save": "Αποθήκευση",
+    "s_cancel": "Άκυρο",
+    "s_close": "Κλείσιμο",
+    "s_delete": "Διαγραφή",
+    "s_move": "Μετακίνηση",
+    "s_quit": "Έξοδος",
+    "s_enable": "Ενεργοποίηση",
+    "s_enabled": "Ενεργοποιημένο",
+    "s_disabled": "Απενεργοποιημένο",
+    "s_status": "Κατάσταση",
+    "s_unlock": "Ξεκλείδωμα",
+    "s_calculate": "Υπολογισμός",
+    "s_import": "Εισαγωγή",
+    "s_overwrite": "Αντικατάσταση",
+    "s_done": "Τέλος",
+    "s_success": null,
+    "s_loading": null,
+    "s_more": null,
+    "s_label": "Ετικέτα",
+    "s_name": "Όνομα",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "Επιλογές",
+    "s_details": "Λεπτομέρειες",
+    "s_show_window": "Εμφάνιση παραθύρου",
+    "s_hide_window": "Απόκρυψη παραθύρου",
+    "s_show_navigation": "Εμφάνιση πλοήγησης",
+    "s_expand_navigation": "Επέκταση γραμμής πλοήγησης",
+    "s_collapse_navigation": "Σύμπτυξη γραμμής πλοήγησης",
+    "s_expand_collapse_navigation": "Επέκταση/σύμπτυξη γραμμής πλοήγησης",
+    "s_show_menu": "Εμφάνιση μενού",
+    "s_toggle_menu_bar": "Εναλλαγή γραμμής μενού",
+    "s_more_info": "Περισσότερες πληροφορίες",
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "<κανένα>",
+
+    "s_about": "Πληροφορίες",
+    "s_algorithm": "Αλγόριθμος",
+    "s_appearance": "Εμφάνιση",
+    "s_actions": "Ενέργειες",
+    "s_manage": "Διαχείριση",
+    "s_setup": "Ρύθμιση",
+    "s_device": "Συσκευή",
+    "s_application": "Εφαρμογή",
+    "s_settings": "Ρυθμίσεις",
+    "s_reset_settings": null,
+    "l_reset_settings_desc": null,
+    "q_reset_settings": null,
+    "p_reset_settings_confirmation_desc": null,
+    "s_support": null,
+    "s_certificates": "Πιστοποιητικά",
+    "s_security_key": "Κλειδί ασφαλείας",
+    "s_slots": "Υποδοχές",
+    "s_help_and_about": null,
+    "s_help": null,
+    "s_app_information": null,
+    "s_home": "Αρχική",
+    "s_user_guide": "Οδηγός χρήσης",
+    "s_i_need_help": "Χρειάζομαι βοήθεια",
+    "s_terms_of_use": "Όροι χρήσης",
+    "s_privacy_policy": "Πολιτική απορρήτου",
+    "s_open_src_licenses": "Άδειες ανοιχτού κώδικα",
+    "s_please_wait": "Παρακαλώ περιμένετε\u2026",
+    "s_secret_key": "Μυστικό κλειδί",
+    "s_show_secret_key": "Εμφάνιση μυστικού κλειδιού",
+    "s_hide_secret_key": "Απόκρυψη μυστικού κλειδιού",
+    "s_private_key": "Ιδιωτικό κλειδί",
+    "s_public_key": "Δημόσιο κλειδί",
+    "s_invalid_length": "Μη έγκυρο μήκος",
+    "l_invalid_format_allowed_chars": "Μη έγκυρη μορφή, επιτρεπόμενοι χαρακτήρες: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "Μη έγκυροι χαρακτήρες για το επιλεγμένο πληκτρολόγιο",
+    "s_require_touch": "Απαίτηση αφής",
+    "q_have_account_info": "Έχετε πληροφορίες λογαριασμού;",
+    "s_debugging_tools": null,
+    "s_run_diagnostics": "Εκτέλεση διαγνωστικών",
+    "l_run_diagnostics_desc": null,
+    "s_logging_level": null,
+    "s_current_log_level": null,
+    "@s_current_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "Αριθμός χαρακτήρων",
+    "@_language": {},
+
+    "s_language": "Γλώσσα",
+    "@_theme": {},
+
+    "s_app_theme": "Θέμα εφαρμογής",
+    "s_system_default": "Προεπιλογή συστήματος",
+    "s_light_mode": "Φωτεινή λειτουργία",
+    "s_dark_mode": "Σκοτεινή λειτουργία",
+    "@_layout": {},
+
+    "s_list_layout": "Διάταξη λίστας",
+    "s_grid_layout": "Διάταξη πλέγματος",
+    "s_mixed_layout": "Μικτή διάταξη",
+    "s_select_layout": "Επιλογή διάταξης",
+    "@_yubikey_selection": {},
+
+    "s_select_to_scan": "Επιλογή για σάρωση",
+    "s_hide_reader": "Απόκρυψη αναγνώστη",
+    "s_show_hidden_readers": "Εμφάνιση κρυφών αναγνωστών",
+    "s_toggle_readers": "Εναλλαγή αναγνωστών",
+    "l_toggle_readers_desc": "Εμφάνιση ή απόκρυψη αναγνωστών",
+    "s_sn_serial": "S/N: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "F/W: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "Αριθμός σειράς: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "Έκδοση υλικολογισμικού: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "Συμβατό με FIPS",
+    "l_fips_approved": "Εγκεκριμένο κατά FIPS",
+    "@_yubikey_interactions": {},
+
+    "l_insert_yk": "Εισαγάγετε το YubiKey σας",
+    "l_insert_or_tap_yk": "Εισαγάγετε ή ακουμπήστε ένα YubiKey",
+    "l_unplug_yk": "Αποσυνδέστε το YubiKey σας",
+    "l_reinsert_yk": "Επανεισαγάγετε το YubiKey σας",
+    "l_place_on_nfc_reader": "Τοποθετήστε το YubiKey σας στον αναγνώστη NFC",
+    "l_replace_yk_on_reader": "Τοποθετήστε ξανά το YubiKey σας στον αναγνώστη",
+    "l_remove_yk_from_reader": "Αφαιρέστε το YubiKey σας από τον αναγνώστη NFC",
+    "p_try_reinsert_yk": "Δοκιμάστε να αφαιρέσετε και να επανεισαγάγετε το YubiKey σας.",
+    "s_touch_required": "Απαιτείται άγγιγμα",
+    "l_touch_button_now": "Αγγίξτε το κουμπί στο YubiKey σας τώρα",
+    "l_long_touch_button_now": null,
+    "l_keep_touching_yk": "Συνεχίστε να αγγίζετε επανειλημμένα το YubiKey σας\u2026",
+    "@_capabilities": {},
+
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM Auth",
+    "@_app_configuration": {},
+
+    "s_toggle_applications": "Εναλλαγή εφαρμογών",
+    "s_toggle_interfaces": "Εναλλαγή διεπαφών",
+    "p_toggle_applications_desc": "Ενεργοποίηση ή απενεργοποίηση εφαρμογών μέσω των διαθέσιμων τρόπων μεταφοράς.",
+    "p_toggle_interfaces_desc": "Ενεργοποίηση ή απενεργοποίηση διεπαφών USB.",
+    "l_toggle_applications_desc": "Ενεργοποίηση/απενεργοποίηση εφαρμογών",
+    "l_toggle_interfaces_desc": "Ενεργοποίηση/απενεργοποίηση διεπαφών",
+    "s_reconfiguring_yk": "Επαναδιαμόρφωση YubiKey\u2026",
+    "s_config_updated": "Η διαμόρφωση ενημερώθηκε",
+    "l_config_updated_reinsert": "Η διαμόρφωση ενημερώθηκε, αφαιρέστε και επανεισαγάγετε το YubiKey σας",
+    "s_fido_disabled": "Το FIDO2 είναι απενεργοποιημένο",
+    "l_webauthn_req_fido2": "Το WebAuthn απαιτεί την ενεργοποίηση της εφαρμογής FIDO2 στο YubiKey σας",
+    "s_lock_code": "Κωδικός κλειδώματος",
+    "l_wrong_lock_code": "Λανθασμένος κωδικός κλειδώματος",
+    "s_show_lock_code": "Εμφάνιση κωδικού κλειδώματος",
+    "s_hide_lock_code": "Απόκρυψη κωδικού κλειδώματος",
+    "p_lock_code_required_desc": "Η ενέργεια που πρόκειται να εκτελέσετε απαιτεί την εισαγωγή του κωδικού κλειδώματος διαμόρφωσης.",
+    "@_connectivity_issues": {},
+
+    "l_helper_not_responding": "Η βοηθητική διεργασία δεν αποκρίνεται",
+    "l_yk_no_access": "Δεν είναι δυνατή η πρόσβαση σε αυτό το YubiKey",
+    "s_yk_inaccessible": "Μη προσβάσιμη συσκευή",
+    "l_open_connection_failed": "Αποτυχία ανοίγματος σύνδεσης",
+    "l_ccid_connection_failed": "Αποτυχία ανοίγματος σύνδεσης έξυπνης κάρτας",
+    "p_ccid_service_unavailable": "Βεβαιωθείτε ότι η υπηρεσία έξυπνης κάρτας λειτουργεί.",
+    "p_pcscd_unavailable": "Βεβαιωθείτε ότι το pcscd είναι εγκατεστημένο και εκτελείται.",
+    "l_no_yk_present": "Δεν υπάρχει YubiKey",
+    "s_unknown_type": "Άγνωστος τύπος",
+    "s_unknown_device": "Μη αναγνωρισμένη συσκευή",
+    "s_restricted_nfc": "Ενεργοποίηση NFC",
+    "l_deactivate_restricted_nfc": "Πώς να ενεργοποιήσετε το NFC",
+    "p_deactivate_restricted_nfc_desc": "Συνδέστε το YubiKey σας σε οποιαδήποτε πηγή τροφοδοσίας USB, όπως έναν υπολογιστή, για τουλάχιστον 3 δευτερόλεπτα.\n\nΜόλις τροφοδοτηθεί, το NFC θα ενεργοποιηθεί και θα είναι έτοιμο για χρήση.",
+    "p_deactivate_restricted_nfc_footer": "Το YubiKey σας είναι εξοπλισμένο με Περιορισμένο NFC, μια λειτουργία σχεδιασμένη για προστασία από ασύρματη παραποίηση κατά την αποστολή. Αυτό σημαίνει ότι οι λειτουργίες NFC είναι προσωρινά απενεργοποιημένες μέχρι να τις ενεργοποιήσετε.",
+    "s_unsupported_yk": "Μη υποστηριζόμενο YubiKey",
+    "p_operation_failed_try_again": "Η λειτουργία απέτυχε, παρακαλώ προσπαθήστε ξανά.",
+    "l_configuration_unsupported": "Η διαμόρφωση δεν υποστηρίζεται",
+    "p_scp_unsupported": "Για επικοινωνία μέσω NFC, το YubiKey απαιτεί τεχνολογία η οποία δεν υποστηρίζεται από αυτό το τηλέφωνο. Παρακαλούμε συνδέστε το YubiKey στη θύρα USB του τηλεφώνου.",
+    "@_general_errors": {},
+
+    "l_error_occurred": "Παρουσιάστηκε σφάλμα",
+    "s_application_error": "Σφάλμα εφαρμογής",
+    "l_import_error": "Σφάλμα εισαγωγής",
+    "l_file_not_found": "Το αρχείο δεν βρέθηκε",
+    "l_file_too_big": "Το μέγεθος του αρχείου είναι πολύ μεγάλο",
+    "l_filesystem_error": "Σφάλμα λειτουργίας συστήματος αρχείων",
+    "@_pins": {},
+
+    "s_pin": "PIN",
+    "s_puk": "PUK",
+    "s_set_pin": "Ορισμός PIN",
+    "s_change_pin": "Αλλαγή PIN",
+    "s_change_puk": "Αλλαγή PUK",
+    "s_show_pin": "Εμφάνιση PIN",
+    "s_hide_pin": "Απόκρυψη PIN",
+    "s_show_puk": "Εμφάνιση PUK",
+    "s_hide_puk": "Απόκρυψη PUK",
+    "s_current_pin": "Τρέχον PIN",
+    "s_current_puk": "Τρέχον PUK",
+    "s_new_pin": "Νέο PIN",
+    "s_new_puk": "Νέο PUK",
+    "s_confirm_pin": "Επιβεβαίωση PIN",
+    "s_confirm_puk": "Επιβεβαίωση PUK",
+    "s_unblock_pin": "Επαναφορά PIN",
+    "l_pin_mismatch": "Τα PIN δεν ταιριάζουν",
+    "l_puk_mismatch": "Τα PUK δεν ταιριάζουν",
+    "s_pin_set": "Το PIN ορίστηκε",
+    "s_puk_set": "Το PUK ορίστηκε",
+    "l_set_pin_failed": "Αποτυχία ορισμού PIN: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": null,
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": null,
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": null,
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "Προστασία PIN FIDO",
+    "s_pin_change_required": "Απαιτείται αλλαγή PIN",
+    "l_enter_fido2_pin": "Εισαγάγετε το PIN FIDO2 για το YubiKey σας",
+    "p_fido2_pin_required": null,
+    "l_pin_blocked_reset": "Το PIN είναι μπλοκαρισμένο. Κάντε επαναφορά εργοστασιακών ρυθμίσεων της εφαρμογής FIDO",
+    "l_pin_blocked": "Το PIN είναι μπλοκαρισμένο",
+    "l_set_pin_first": "Απαιτείται PIN",
+    "l_unlock_pin_first": "Ξεκλείδωμα με PIN",
+    "l_pin_soft_locked": "Το PIN έχει μπλοκαριστεί μέχρι να αφαιρεθεί και να επανεισαχθεί το YubiKey",
+    "l_pin_change_required_desc": "Πρέπει να οριστεί νέο PIN για να μπορέσετε να χρησιμοποιήσετε αυτήν την εφαρμογή",
+    "p_new_fido2_pin_requirements": "Ένα PIN πρέπει να έχει μήκος {min_length}-{max_length} χαρακτήρες και μπορεί να περιέχει γράμματα, αριθμούς και ειδικούς χαρακτήρες.",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "Ένα PIN πρέπει να έχει μήκος {min_length}-{max_length} χαρακτήρες, να περιέχει τουλάχιστον {unique_characters} μοναδικούς χαρακτήρες και να μην είναι ένα κοινώς χρησιμοποιούμενο PIN, όπως το \"{common_pin}\". Μπορεί να περιέχει γράμματα, αριθμούς και ειδικούς χαρακτήρες.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_ep_attestation": "Εταιρική Πιστοποίηση (Enterprise Attestation)",
+    "s_ep_attestation_enabled": "Η Εταιρική Πιστοποίηση είναι ενεργοποιημένη",
+    "q_enable_ep_attestation": "Ενεργοποίηση Εταιρικής Πιστοποίησης;",
+    "p_enable_ep_attestation_desc": "Αυτό θα ενεργοποιήσει την Εταιρική Πιστοποίηση, επιτρέποντας σε εξουσιοδοτημένους τομείς να αναγνωρίζουν μοναδικά το YubiKey σας.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "Μόλις ενεργοποιηθεί, η Εταιρική Πιστοποίηση μπορεί να απενεργοποιηθεί μόνο με την εκτέλεση επαναφοράς εργοστασιακών ρυθμίσεων FIDO.",
+    "s_pin_required": "Απαιτείται PIN",
+    "p_pin_required_desc": "Η ενέργεια που πρόκειται να εκτελέσετε απαιτεί την εισαγωγή του PIN PIV.",
+    "l_piv_pin_blocked": "Μπλοκαρισμένο, χρησιμοποιήστε το PUK για επαναφορά",
+    "p_piv_pin_blocked_desc": "Το PIN είναι μπλοκαρισμένο. Χρησιμοποιήστε το PUK για να το επαναφέρετε.",
+    "p_piv_pin_blocked_bio_desc": "Το PIN είναι μπλοκαρισμένο. Απαιτείται επαναφορά εργοστασιακών ρυθμίσεων.",
+    "l_piv_pin_puk_blocked": "Μπλοκαρισμένο, απαιτείται επαναφορά εργοστασιακών ρυθμίσεων",
+    "p_piv_pin_puk_blocked_desc": "Τόσο το PIN όσο και το PUK είναι μπλοκαρισμένα. Απαιτείται επαναφορά εργοστασιακών ρυθμίσεων της εφαρμογής PIV.",
+    "p_new_piv_pin_puk_requirements": "Ένα {name} πρέπει να έχει μήκος τουλάχιστον {length} χαρακτήρες.",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "Ένα {name} πρέπει να έχει μήκος τουλάχιστον {length} χαρακτήρες, να περιέχει τουλάχιστον 2 μοναδικούς χαρακτήρες και να μην είναι ένα κοινώς χρησιμοποιούμενο {name}, όπως το \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "Το νέο {name} δεν πληροί τις απαιτήσεις πολυπλοκότητας.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "Παράβλεψη",
+    "p_default_pin_puk_key_desc": "Συνιστάται η αλλαγή του προεπιλεγμένου PIN, PUK και κλειδιού διαχείρισης.",
+    "p_default_pin_puk_key_fips_desc": null,
+    "l_warning_default_pin": "Προειδοποίηση: Χρησιμοποιείται προεπιλεγμένο PIN",
+    "l_warning_default_puk": "Προειδοποίηση: Χρησιμοποιείται προεπιλεγμένο PUK",
+    "l_default_pin_used": "Χρησιμοποιήθηκε προεπιλεγμένο PIN",
+    "l_default_puk_used": "Χρησιμοποιήθηκε προεπιλεγμένο PUK",
+    "l_pin_complexity": "Επιβολή πολυπλοκότητας PIN",
+    "@_passwords": {},
+
+    "s_password": "Κωδικός πρόσβασης",
+    "s_manage_password": "Διαχείριση κωδικού πρόσβασης",
+    "s_set_password": "Ορισμός κωδικού πρόσβασης",
+    "s_password_set": "Ο κωδικός πρόσβασης ορίστηκε",
+    "s_show_password": "Εμφάνιση κωδικού πρόσβασης",
+    "s_hide_password": "Απόκρυψη κωδικού πρόσβασης",
+    "l_password_protection": "Προστασία λογαριασμών με κωδικό πρόσβασης",
+    "s_new_password": "Νέος κωδικός πρόσβασης",
+    "s_current_password": "Τρέχων κωδικός πρόσβασης",
+    "s_confirm_password": "Επιβεβαίωση κωδικού πρόσβασης",
+    "l_password_mismatch": "Οι κωδικοί πρόσβασης δεν ταιριάζουν",
+    "s_wrong_password": "Λανθασμένος κωδικός πρόσβασης",
+    "p_wrong_password": "Λανθασμένος κωδικός πρόσβασης. Εάν δεν γνωρίζετε τον κωδικό πρόσβασής σας, θα χρειαστεί να επαναφέρετε το YubiKey.",
+    "s_remove_password": "Κατάργηση κωδικού πρόσβασης",
+    "s_password_removed": "Ο κωδικός πρόσβασης καταργήθηκε",
+    "s_remember_password": "Απομνημόνευση κωδικού πρόσβασης",
+    "s_clear_saved_password": "Εκκαθάριση αποθηκευμένου κωδικού πρόσβασης",
+    "s_password_forgotten": "Ο κωδικός πρόσβασης ξεχάστηκε",
+    "l_keystore_unavailable": "Το Keystore του λειτουργικού συστήματος δεν είναι διαθέσιμο",
+    "l_remember_pw_failed": "Αποτυχία απομνημόνευσης κωδικού πρόσβασης",
+    "l_unlock_first": "Ξεκλείδωμα με κωδικό πρόσβασης",
+    "l_set_password_first": "Ορισμός κωδικού πρόσβασης",
+    "l_enter_oath_pw": "Εισαγάγετε τον κωδικό πρόσβασης OATH για το YubiKey σας",
+    "p_new_password_requirements": "Ένας κωδικός πρόσβασης μπορεί να περιέχει γράμματα, αριθμούς και ειδικούς χαρακτήρες.",
+    "@_management_key": {},
+
+    "s_management_key": "Κλειδί διαχείρισης",
+    "s_current_management_key": "Τρέχον κλειδί διαχείρισης",
+    "s_new_management_key": "Νέο κλειδί διαχείρισης",
+    "l_change_management_key": "Αλλαγή κλειδιού διαχείρισης",
+    "l_management_key_changed": "Το κλειδί διαχείρισης άλλαξε",
+    "l_default_key_used": "Χρησιμοποιήθηκε προεπιλεγμένο κλειδί διαχείρισης",
+    "s_generate_random": "Δημιουργία τυχαίου",
+    "s_use_default": "Χρήση προεπιλογής",
+    "l_warning_default_key": "Προειδοποίηση: Χρησιμοποιήθηκε προεπιλεγμένο κλειδί",
+    "s_protect_key": "Προστασία με PIN",
+    "p_protect_key_desc": "Χρησιμοποιήστε το PIN αντί του κλειδιού διαχείρισης κατά τις λειτουργίες που απαιτούν έλεγχο ταυτότητας κλειδιού διαχείρισης.",
+    "s_management_key_algorithm": "Αλγόριθμος κλειδιού διαχείρισης",
+    "p_management_key_algorithm_desc": "Ο αλγόριθμος που θα επιλεγεί για το κλειδί διαχείρισης.",
+    "l_pin_protected_key": "Το PIN μπορεί να χρησιμοποιηθεί αντ' αυτού",
+    "l_wrong_key": "Λανθασμένο κλειδί",
+    "l_unlock_piv_management": "Ξεκλείδωμα διαχείρισης PIV",
+    "p_unlock_piv_management_desc": "Η ενέργεια που πρόκειται να εκτελέσετε απαιτεί το κλειδί διαχείρισης PIV.",
+    "@_oath_accounts": {},
+
+    "l_account": "Λογαριασμός: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "Λογαριασμοί",
+    "s_no_accounts": "Δεν υπάρχουν λογαριασμοί",
+    "l_results_for": "Αποτελέσματα για \"{query}\"",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "Ξεκινήστε με λογαριασμούς OTP",
+    "l_no_accounts_desc": "Προσθέστε λογαριασμούς στο YubiKey σας από οποιονδήποτε πάροχο υπηρεσιών που υποστηρίζει OATH TOTP/HOTP",
+    "s_add_account": "Προσθήκη λογαριασμού",
+    "p_add_account_desc": "Σαρώστε τον κωδικό QR ή εισαγάγετε τα στοιχεία διαπιστευτηρίου μη αυτόματα.",
+    "s_add_accounts": "Προσθήκη λογαριασμού(ών)",
+    "l_drop_qr_description": "Σύρετε τον κωδικό QR για προσθήκη λογαριασμού(ών)",
+    "p_add_account_three_ways": "Υπάρχουν τρεις τρόποι προσθήκης λογαριασμών.",
+    "s_scanning": "Σάρωση (συνιστάται)",
+    "p_scanning_desc": "Πριν από τη σάρωση ενός κωδικού QR, βεβαιωθείτε ότι ο πλήρης κωδικός είναι ορατός στην οθόνη.",
+    "s_drag_and_drop": "Μεταφορά και απόθεση",
+    "p_drag_and_drop_desc": "Μια εικόνα που περιέχει έναν κωδικό QR μπορεί να αποθετηθεί οπουδήποτε στην προβολή Λογαριασμών.",
+    "s_manually": "Μη αυτόματα",
+    "p_manually_desc": "Τα στοιχεία διαπιστευτηρίου λογαριασμού μπορούν να εισαχθούν μη αυτόματα στη φόρμα.",
+    "s_account_added": "Ο λογαριασμός προστέθηκε",
+    "l_account_add_failed": "Αποτυχία προσθήκης λογαριασμού: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "Απαιτείται κωδικός πρόσβασης",
+    "l_add_account_unlock_required": "Απαιτείται ξεκλείδωμα",
+    "l_add_account_func_missing": "Η λειτουργικότητα λείπει ή είναι απενεργοποιημένη",
+    "l_account_name_required": "Ο λογαριασμός σας πρέπει να έχει όνομα",
+    "l_name_already_exists": "Αυτό το όνομα υπάρχει ήδη για τον εκδότη",
+    "l_account_already_exists": "Αυτός ο λογαριασμός υπάρχει ήδη στο YubiKey",
+    "l_invalid_character_issuer": "Μη έγκυρος χαρακτήρας: Το ':' δεν επιτρέπεται στον εκδότη",
+    "l_select_accounts": "Επιλέξτε λογαριασμό(ούς) για προσθήκη στο YubiKey",
+    "s_pin_account": "Καρφίτσωμα λογαριασμού",
+    "s_unpin_account": "Ξεκαρφίτσωμα λογαριασμού",
+    "s_no_pinned_accounts": "Δεν υπάρχουν καρφιτσωμένοι λογαριασμοί",
+    "s_pinned": "Καρφιτσωμένο",
+    "l_pin_account_desc": "Διατηρήστε τους σημαντικούς λογαριασμούς σας μαζί",
+    "s_rename_account": "Μετονομασία λογαριασμού",
+    "l_rename_account_desc": "Επεξεργασία εκδότη/ονόματος του λογαριασμού",
+    "s_account_renamed": "Ο λογαριασμός μετονομάστηκε",
+    "l_rename_account_failed": "Αποτυχία μετονομασίας λογαριασμού: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "Αυτό θα αλλάξει τον τρόπο εμφάνισης του λογαριασμού στη λίστα.",
+    "s_delete_account": "Διαγραφή λογαριασμού",
+    "q_delete_account": "Διαγραφή λογαριασμού;",
+    "l_delete_account_desc": "Κατάργηση του λογαριασμού από το YubiKey σας",
+    "s_account_deleted": "Ο λογαριασμός διαγράφηκε",
+    "p_warning_delete_account": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει τον λογαριασμό από το YubiKey σας.",
+    "p_warning_disable_credential": "Βεβαιωθείτε ότι έχετε απενεργοποιήσει αυτόν τον λογαριασμό από την υπηρεσία με την οποία είναι καταχωρημένος για να αποφύγετε τον αποκλεισμό.",
+    "s_account_name": "Όνομα λογαριασμού",
+    "s_search_accounts": "Αναζήτηση λογαριασμών",
+    "l_accounts_used": "{used} από {capacity} λογαριασμοί σε χρήση",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} ψηφία",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} δευτ.",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_issuer_optional": "Εκδότης (προαιρετικό)",
+    "s_counter_based": "Βάσει μετρητή",
+    "s_time_based": "Βάσει χρόνου",
+    "l_copy_code_desc": "Επικολλήστε τον κωδικό σε άλλη εφαρμογή",
+    "l_calculate_code_desc": "Λάβετε νέο κωδικό από το YubiKey σας",
+    "@_fido_credentials": {},
+
+    "s_rp_id": "Αναγνωριστικό RP",
+    "s_user_id": "Αναγνωριστικό χρήστη",
+    "s_credential_id": "Αναγνωριστικό διαπιστευτηρίου",
+    "s_display_name": "Εμφανιζόμενο όνομα",
+    "s_user_name": "Όνομα χρήστη",
+    "s_passkeys": "Κλειδιά πρόσβασης (Passkeys)",
+    "s_no_passkeys": "Δεν υπάρχουν κλειδιά πρόσβασης",
+    "l_ready_to_use": "Έτοιμο για χρήση",
+    "l_register_sk_on_websites": "Εγγραφή ως Κλειδί Ασφαλείας σε ιστοσελίδες",
+    "l_no_discoverable_accounts": "Δεν υπάρχουν αποθηκευμένα κλειδιά πρόσβασης",
+    "p_non_passkeys_note": "Ενδέχεται να υπάρχουν διαπιστευτήρια που δεν είναι κλειδιά πρόσβασης, αλλά δεν είναι δυνατή η εμφάνισή τους.",
+    "s_delete_passkey": "Διαγραφή κλειδιού πρόσβασης",
+    "q_delete_passkey": "Διαγραφή κλειδιού πρόσβασης;",
+    "l_delete_passkey_desc": "Κατάργηση του κλειδιού πρόσβασης από το YubiKey",
+    "s_passkey_deleted": "Το κλειδί πρόσβασης διαγράφηκε",
+    "p_warning_delete_passkey": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το κλειδί πρόσβασης από το YubiKey σας.",
+    "p_warning_delete_passkey_desc": "Δεν θα μπορείτε πλέον να χρησιμοποιείτε αυτό το κλειδί πρόσβασης για την υπηρεσία όπου είναι καταχωρημένο.",
+    "l_do_not_remove_yk_delete": null,
+    "s_search_passkeys": "Αναζήτηση κλειδιών πρόσβασης",
+    "p_passkeys_used": "{used} από {max} κλειδιά πρόσβασης σε χρήση.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "Βιομετρικά στοιχεία",
+    "l_fingerprint": "Δακτυλικό αποτύπωμα: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "Δακτυλικά αποτυπώματα",
+    "l_fingerprint_captured": "Το δακτυλικό αποτύπωμα καταγράφηκε με επιτυχία!",
+    "s_fingerprint_added": "Το δακτυλικό αποτύπωμα προστέθηκε",
+    "l_adding_fingerprint_failed": "Σφάλμα προσθήκης δακτυλικού αποτυπώματος: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "Σφάλμα ορισμού ονόματος: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "Ρύθμιση δακτυλικών αποτυπωμάτων",
+    "p_setup_fingerprints_desc": "Τα δακτυλικά αποτυπώματα πρέπει να ρυθμιστούν για να μπορεί να χρησιμοποιηθεί το κλειδί.",
+    "s_add_fingerprint": "Προσθήκη δακτυλικού αποτυπώματος",
+    "s_delete_fingerprint": "Διαγραφή δακτυλικού αποτυπώματος",
+    "q_delete_fingerprint": "Διαγραφή δακτυλικού αποτυπώματος;",
+    "l_delete_fingerprint_desc": "Κατάργηση του δακτυλικού αποτυπώματος από το YubiKey",
+    "s_fingerprint_deleted": "Το δακτυλικό αποτύπωμα διαγράφηκε",
+    "p_warning_delete_fingerprint": "Αυτό θα διαγράψει το δακτυλικό αποτύπωμα από το YubiKey σας.",
+    "s_fingerprints_get_started": "Ξεκινήστε με τα δακτυλικά αποτυπώματα",
+    "p_set_fingerprints_desc": "Για να είναι δυνατή η καταχώρηση δακτυλικών αποτυπωμάτων, πρέπει να οριστεί ένα PIN.",
+    "l_no_fps_added": "Δεν έχουν προστεθεί δακτυλικά αποτυπώματα",
+    "s_rename_fp": "Μετονομασία δακτυλικού αποτυπώματος",
+    "l_rename_fp_desc": "Αλλαγή ονόματος",
+    "s_fingerprint_renamed": "Το δακτυλικό αποτύπωμα μετονομάστηκε",
+    "l_rename_fp_failed": "Σφάλμα μετονομασίας: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "Προσθέστε ένα ή περισσότερα (έως πέντε) δακτυλικά αποτυπώματα",
+    "l_fingerprints_used": "{used}/5 δακτυλικά αποτυπώματα καταχωρήθηκαν",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "Πιέστε το δάχτυλό σας πάνω στο YubiKey για να ξεκινήσετε.",
+    "l_name_fingerprint": "Ονομάστε αυτό το δακτυλικό αποτύπωμα",
+    "@_fido_errors": {},
+
+    "l_user_action_timeout_error": "Απέτυχε λόγω αδράνειας χρήστη",
+    "l_wrong_inserted_yk_error": "Το επανεισαχθέν YubiKey δεν ταιριάζει με την αρχική συσκευή",
+    "l_failed_connecting_to_fido": "Αποτυχία σύνδεσης στη διεπαφή FIDO",
+    "@_certificates": {},
+
+    "l_self_signed_certificate": "Αυτο-υπογεγραμμένο πιστοποιητικό",
+    "l_certificate_signing_request": "Αίτημα Υπογραφής Πιστοποιητικού (CSR)",
+    "s_certificate": "Πιστοποιητικό",
+    "s_subject": "Θέμα",
+    "l_export_csr_file": "Αποθήκευση CSR σε αρχείο",
+    "l_export_public_key": "Εξαγωγή δημόσιου κλειδιού",
+    "l_export_public_key_file": "Αποθήκευση δημόσιου κλειδιού σε αρχείο",
+    "l_export_public_key_desc": "Εξαγωγή του δημόσιου κλειδιού σε αρχείο",
+    "l_public_key_exported": "Το δημόσιο κλειδί εξήχθη",
+    "l_export_certificate": "Εξαγωγή πιστοποιητικού",
+    "l_export_certificate_file": "Εξαγωγή πιστοποιητικού σε αρχείο",
+    "l_export_certificate_desc": "Εξαγωγή του πιστοποιητικού σε αρχείο",
+    "l_certificate_exported": "Το πιστοποιητικό εξήχθη",
+    "l_select_import_file": "Επιλογή αρχείου για εισαγωγή",
+    "l_import_file": "Εισαγωγή αρχείου",
+    "l_import_desc": "Εισαγωγή κλειδιού ή/και πιστοποιητικού",
+    "l_import_nothing": "Τίποτα για εισαγωγή",
+    "l_importing_file": "Εισαγωγή αρχείου\u2026",
+    "s_file_imported": "Το αρχείο εισήχθη",
+    "l_unsupported_key_type": "Μη υποστηριζόμενος τύπος κλειδιού",
+    "l_delete_certificate": "Διαγραφή πιστοποιητικού",
+    "q_delete_certificate": "Διαγραφή πιστοποιητικού;",
+    "l_delete_certificate_desc": "Κατάργηση του πιστοποιητικού από το YubiKey σας",
+    "l_delete_key": "Διαγραφή κλειδιού",
+    "q_delete_key": "Διαγραφή κλειδιού;",
+    "l_delete_key_desc": "Κατάργηση του κλειδιού από το YubiKey σας",
+    "l_delete_certificate_or_key": "Διαγραφή πιστοποιητικού/κλειδιού",
+    "q_delete_certificate_or_key": "Διαγραφή πιστοποιητικού/κλειδιού;",
+    "l_delete_certificate_or_key_desc": "Κατάργηση του πιστοποιητικού ή του κλειδιού από το YubiKey σας",
+    "l_move_key": "Μετακίνηση κλειδιού",
+    "l_move_key_desc": "Μετακίνηση κλειδιού από μια υποδοχή PIV σε άλλη",
+    "l_change_defaults": "Αλλαγή προεπιλεγμένων κωδικών πρόσβασης",
+    "s_issuer": "Εκδότης",
+    "s_serial": "Σειριακός αριθμός",
+    "s_certificate_fingerprint": "Δακτυλικό αποτύπωμα",
+    "s_valid_from": "Έγκυρο από",
+    "s_valid_to": "Έγκυρο έως",
+    "l_no_certificate": "Δεν έχει φορτωθεί πιστοποιητικό",
+    "l_key_no_certificate": "Φορτώθηκε κλειδί χωρίς πιστοποιητικό",
+    "s_generate_key": "Δημιουργία κλειδιού",
+    "l_generate_desc": "Δημιουργία νέου πιστοποιητικού ή CSR",
+    "p_generate_desc": "Αυτό θα δημιουργήσει ένα νέο κλειδί στο YubiKey στην υποδοχή PIV {slot}.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "Το ιδιωτικό κλειδί δημιουργήθηκε",
+    "p_select_what_to_delete": "Επιλέξτε τι θα διαγραφεί από την υποδοχή.",
+    "p_warning_delete_certificate": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το πιστοποιητικό από το YubiKey σας.",
+    "p_warning_delete_key": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το ιδιωτικό κλειδί από το YubiKey σας.",
+    "p_warning_delete_certificate_and_key": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το πιστοποιητικό και το ιδιωτικό κλειδί από το YubiKey σας.",
+    "p_warning_usb_preferred": null,
+    "p_delete_certificate_desc": "Αυτό θα διαγράψει το πιστοποιητικό στην υποδοχή PIV {slot}.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "Αυτό θα διαγράψει το ιδιωτικό κλειδί στην υποδοχή PIV {slot}.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "Αυτό θα διαγράψει το πιστοποιητικό και το ιδιωτικό κλειδί στην υποδοχή PIV {slot}.",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "Το πιστοποιητικό διαγράφηκε",
+    "l_key_deleted": "Το κλειδί διαγράφηκε",
+    "l_certificate_and_key_deleted": "Το πιστοποιητικό και το κλειδί διαγράφηκαν",
+    "l_include_certificate": "Συμπερίληψη πιστοποιητικού",
+    "l_select_destination_slot": "Επιλογή υποδοχής προορισμού",
+    "q_move_key_confirm": "Μετακίνηση του ιδιωτικού κλειδιού στην υποδοχή PIV {from_slot};",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "Μετακίνηση του ιδιωτικού κλειδιού από την υποδοχή PIV {from_slot} στην υποδοχή {to_slot};",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "Μετακίνηση του ιδιωτικού κλειδιού και του πιστοποιητικού από την υποδοχή PIV {from_slot} στην υποδοχή {to_slot};",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "Το επιλεγμένο αρχείο προστατεύεται με κωδικό πρόσβασης.",
+    "p_import_items_desc": "Το(α) ακόλουθο(α) στοιχείο(α) θα εισαχθεί(ούν) στην υποδοχή PIV {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "Το δημόσιο κλειδί του πιστοποιητικού δεν ταιριάζει με το ιδιωτικό κλειδί στην υποδοχή",
+    "l_key_moved": "Το κλειδί μετακινήθηκε",
+    "l_key_and_certificate_moved": "Το κλειδί και το πιστοποιητικό μετακινήθηκαν",
+    "p_subject_desc": "Ένα διακεκριμένο όνομα (DN) μορφοποιημένο σύμφωνα με τις προδιαγραφές RFC 4514.",
+    "l_rfc4514_invalid": "Μη έγκυρη μορφή RFC 4514",
+    "rfc4514_examples": "Παραδείγματα:\nCN=Παράδειγμα Ονόματος\nCN=jsmith,DC=example,DC=net",
+    "s_allow_fingerprint": "Να επιτρέπεται το δακτυλικό αποτύπωμα",
+    "s_pin_policy": "Πολιτική PIN",
+    "s_output_format": "Μορφή εξόδου",
+    "s_expiration_date": "Ημερομηνία λήξης",
+    "p_algorithm_desc": "Αλγόριθμος κλειδιού προς χρήση.",
+    "p_expiration_date_desc": "Ημερομηνία λήξης του πιστοποιητικού, προεπιλογή 1 έτος (μόνο πιστοποιητικό).",
+    "p_key_options_bio_desc": "Να επιτρέπεται η χρήση βιομετρικών στοιχείων αντί για PIN.",
+    "q_overwrite_slot": "Αντικατάσταση υποδοχής;",
+    "p_overwrite_slot_desc": "Αυτό θα αντικαταστήσει οριστικά το υπάρχον περιεχόμενο στην υποδοχή {slot}.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "Το πιστοποιητικό θα αντικατασταθεί",
+    "l_overwrite_key": "Το ιδιωτικό κλειδί θα αντικατασταθεί",
+    "l_overwrite_key_maybe": "Οποιοδήποτε υπάρχον ιδιωτικό κλειδί στην υποδοχή θα αντικατασταθεί",
+    "@_piv_slots": {},
+
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "Έλεγχος ταυτότητας",
+    "s_slot_9c": "Ψηφιακή Υπογραφή",
+    "s_slot_9d": "Διαχείριση Κλειδιών",
+    "s_slot_9e": "Έλεγχος Ταυτότητας Κάρτας",
+    "s_retired_slot": "Διαχείριση Αποσυρμένων Κλειδιών",
+    "@_otp_slots": {},
+
+    "s_otp_slot_one": "Σύντομο άγγιγμα",
+    "s_otp_slot_two": "Παρατεταμένο άγγιγμα",
+    "l_otp_slot_empty": "Η υποδοχή είναι κενή",
+    "l_otp_slot_configured": "Η υποδοχή είναι διαμορφωμένη",
+    "@_otp_slot_configurations": {},
+
+    "l_yubiotp_desc": "Προγραμματισμός διαπιστευτηρίου Yubico OTP",
+    "s_challenge_response": "Ερώτηση-απόκριση",
+    "l_challenge_response_desc": "Προγραμματισμός διαπιστευτηρίου ερώτησης-απόκρισης",
+    "s_static_password": "Στατικός κωδικός πρόσβασης",
+    "l_static_password_desc": "Διαμόρφωση στατικού κωδικού πρόσβασης",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "Προγραμματισμός διαπιστευτηρίου βάσει HMAC-SHA1",
+    "s_public_id": "Δημόσιο αναγνωριστικό",
+    "s_private_id": "Ιδιωτικό αναγνωριστικό",
+    "s_use_serial": "Χρήση σειριακού αριθμού",
+    "l_select_file": "Επιλογή αρχείου",
+    "l_no_export_file": "Δεν υπάρχει αρχείο εξαγωγής",
+    "s_no_export": "Χωρίς εξαγωγή",
+    "s_export": "Εξαγωγή",
+    "l_export_configuration_file": "Εξαγωγή διαμόρφωσης σε αρχείο",
+    "l_exported_can_be_uploaded_at": "Τα εξαγόμενα διαπιστευτήρια μπορούν να μεταφορτωθούν στη διεύθυνση {url}",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "l_keyboard_layout": "Πληκτρολόγιο {layout}",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+    "@_otp_slot_actions": {},
+
+    "s_delete_slot": "Διαγραφή διαπιστευτηρίου",
+    "q_delete_slot": "Διαγραφή διαπιστευτηρίου;",
+    "l_delete_slot_desc": "Κατάργηση διαπιστευτηρίου από την υποδοχή",
+    "p_warning_delete_slot_configuration": "Προειδοποίηση! Αυτή η ενέργεια θα καταργήσει οριστικά το διαπιστευτήριο από την υποδοχή {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "Το διαπιστευτήριο διαγράφηκε",
+    "s_swap": "Ανταλλαγή",
+    "s_swap_slots": "Ανταλλαγή υποδοχών",
+    "q_swap_slots": "Ανταλλαγή υποδοχών;",
+    "l_swap_slots_desc": "Ανταλλαγή σύντομου/παρατεταμένου αγγίγματος",
+    "p_swap_slots_desc": "Αυτό θα ανταλλάξει τη διαμόρφωση των δύο υποδοχών.",
+    "l_slots_swapped": "Οι διαμορφώσεις των υποδοχών ανταλλάχθηκαν",
+    "l_slot_credential_configured": "Διαμορφωμένο διαπιστευτήριο {type}",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "Διαμορφωμένο διαπιστευτήριο {type} και εξαγωγή στο {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "Προσθήκη ⏎",
+    "l_append_enter_desc": "Προσθήκη ενός πατήματος Enter μετά την εκπομπή του OTP",
+    "@_otp_errors": {},
+
+    "p_otp_swap_error": "Αποτυχία ανταλλαγής υποδοχών! Βεβαιωθείτε ότι το YubiKey δεν έχει περιορισμένη πρόσβαση.",
+    "l_wrong_access_code": "Λανθασμένος κωδικός πρόσβασης",
+    "@_otp_access_code": {},
+
+    "s_access_code": "Κωδικός πρόσβασης",
+    "s_show_access_code": "Εμφάνιση κωδικού πρόσβασης",
+    "s_hide_access_code": "Απόκρυψη κωδικού πρόσβασης",
+    "p_enter_access_code": "Εισαγάγετε τον κωδικό πρόσβασης για την υποδοχή {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "@_permissions": {},
+
+
+    "s_enable_nfc": "Ενεργοποίηση NFC",
+    "s_request_access": "Αίτηση πρόσβασης",
+    "s_permission_denied": "Άρνηση άδειας",
+    "l_elevating_permissions": "Ανύψωση δικαιωμάτων\u2026",
+    "s_review_permissions": "Έλεγχος δικαιωμάτων",
+    "s_open_windows_settings": "Άνοιγμα ρυθμίσεων Windows",
+    "l_admin_privileges_required": "Απαιτούνται δικαιώματα διαχειριστή",
+    "p_elevated_permissions_required": "Η διαχείριση αυτής της συσκευής απαιτεί αυξημένα δικαιώματα. Εναλλακτικά, μπορείτε να χρησιμοποιήσετε τις Ρυθμίσεις των Windows για τη διαχείριση της διαμόρφωσης FIDO.",
+    "p_webauthn_elevated_permissions_required": "Η διαχείριση WebAuthn απαιτεί αυξημένα δικαιώματα. Εναλλακτικά, μπορείτε να χρησιμοποιήσετε τις Ρυθμίσεις των Windows για τη διαχείριση της διαμόρφωσης FIDO.",
+    "p_ms_store_permission_note": null,
+    "p_need_camera_permission": "Το Yubico Authenticator χρειάζεται δικαιώματα Κάμερας για τη σάρωση κωδικών QR.",
+    "@_qr_codes": {},
+
+    "s_qr_scan": "Σάρωση κωδικού QR",
+    "l_invalid_qr": "Μη έγκυρος κωδικός QR",
+    "l_qr_not_found": "Δεν βρέθηκε κωδικός QR",
+    "l_qr_scanned": "Σαρωμένος κωδικός QR",
+    "l_qr_file_too_large": "Το αρχείο είναι πολύ μεγάλο (μέγ. {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "Μη έγκυρο αρχείο εικόνας",
+    "l_qr_select_file": "Επιλογή αρχείου με κωδικό QR",
+    "l_qr_not_read": "Αποτυχία ανάγνωσης κωδικού QR: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "Στρέψτε την κάμερά σας σε έναν κωδικό QR για να τον σαρώσετε",
+    "q_want_to_scan": "Θέλετε να σαρώσετε;",
+    "q_no_qr": "Δεν υπάρχει κωδικός QR;",
+    "s_enter_manually": "Εισαγωγή μη αυτόματα",
+    "s_read_from_file": "Ανάγνωση από αρχείο",
+    "@_factory_reset": {},
+
+    "s_reset": "Επαναφορά",
+    "s_factory_reset": "Επαναφορά εργοστασιακών ρυθμίσεων",
+    "l_factory_reset_desc": "Επαναφορά προεπιλογών YubiKey",
+    "l_factory_reset_required": "Απαιτείται επαναφορά εργοστασιακών ρυθμίσεων",
+    "l_oath_application_reset": "Επαναφορά εφαρμογής OATH",
+    "l_fido_app_reset": "Επαναφορά εφαρμογής FIDO",
+    "l_reset_failed": "Σφάλμα κατά την επαναφορά: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "Επαναφορά εφαρμογής PIV",
+    "p_factory_reset_an_app": "Επαναφορά εργοστασιακών ρυθμίσεων μιας εφαρμογής στο YubiKey σας.",
+    "p_factory_reset_desc": "Τα δεδομένα αποθηκεύονται σε πολλαπλές εφαρμογές στο YubiKey, ορισμένες από τις οποίες μπορούν να επαναφερθούν στις εργοστασιακές ρυθμίσεις ανεξάρτητα η μία από την άλλη.\n\nΕπιλέξτε μια εφαρμογή παραπάνω για επαναφορά.",
+    "p_warning_factory_reset": "Προειδοποίηση! Αυτό θα διαγράψει αμετάκλητα όλους τους λογαριασμούς OATH TOTP/HOTP από το YubiKey σας.",
+    "p_warning_disable_credentials": "Τα διαπιστευτήριά σας OATH, καθώς και οποιοσδήποτε ορισμένος κωδικός πρόσβασης, θα καταργηθούν από αυτό το YubiKey. Βεβαιωθείτε ότι τα έχετε απενεργοποιήσει από τις αντίστοιχες ιστοσελίδες τους για να αποφύγετε τον αποκλεισμό από τους λογαριασμούς σας.",
+    "p_warning_deletes_accounts": "Προειδοποίηση! Αυτό θα διαγράψει αμετάκλητα όλους τους λογαριασμούς U2F και FIDO2, συμπεριλαμβανομένων των κλειδιών πρόσβασης, από το YubiKey σας.",
+    "p_warning_disable_accounts": "Τα διαπιστευτήριά σας, καθώς και οποιοδήποτε ορισμένο PIN, θα καταργηθούν από αυτό το YubiKey. Βεβαιωθείτε ότι τα έχετε απενεργοποιήσει από τις αντίστοιχες ιστοσελίδες τους για να αποφύγετε τον αποκλεισμό από τους λογαριασμούς σας.",
+    "l_reset_not_allowed_over": null,
+    "@l_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
+    "p_warning_piv_reset": "Προειδοποίηση! Όλα τα δεδομένα που είναι αποθηκευμένα για το PIV θα διαγραφούν αμετάκλητα από το YubiKey σας.",
+    "p_warning_piv_reset_desc": "Αυτό περιλαμβάνει ιδιωτικά κλειδιά και πιστοποιητικά. Το PIN, το PUK και το κλειδί διαχείρισής σας θα επαναφερθούν στις εργοστασιακές προεπιλεγμένες τιμές τους.",
+    "p_warning_global_reset": "Προειδοποίηση! Αυτό θα διαγράψει αμετάκλητα όλα τα αποθηκευμένα δεδομένα, συμπεριλαμβανομένων των διαπιστευτηρίων, από το YubiKey σας.",
+    "p_warning_global_reset_desc": "Επαναφορά εργοστασιακών ρυθμίσεων των εφαρμογών στο YubiKey σας. Το PIN θα επαναφερθεί στην εργοστασιακή προεπιλεγμένη τιμή του και τα καταχωρημένα δακτυλικά αποτυπώματα θα καταργηθούν. Οποιαδήποτε κλειδιά, πιστοποιητικά ή άλλα διαπιστευτήρια θα καταργηθούν οριστικά.",
+    "@_copy_to_clipboard": {},
+
+    "l_copy_to_clipboard": "Αντιγραφή στο πρόχειρο",
+    "s_code_copied": "Ο κωδικός αντιγράφηκε",
+    "l_code_copied_clipboard": "Ο κωδικός αντιγράφηκε στο πρόχειρο",
+    "s_copy_log": "Αντιγραφή αρχείου καταγραφής",
+    "l_copy_log_clipboard": null,
+    "l_log_copied": "Το αρχείο καταγραφής αντιγράφηκε στο πρόχειρο",
+    "l_diagnostics_copied": "Τα διαγνωστικά δεδομένα αντιγράφηκαν στο πρόχειρο",
+    "p_target_copied_clipboard": "Το {label} αντιγράφηκε στο πρόχειρο.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "@_custom_icons": {},
+
+    "s_custom_icons": "Προσαρμοσμένα εικονίδια",
+    "l_set_icons_for_accounts": "Ορισμός εικονιδίων για λογαριασμούς",
+    "p_custom_icons_description": "Τα πακέτα εικονιδίων μπορούν να κάνουν τους λογαριασμούς σας πιο εύκολα διακριτούς με οικεία λογότυπα και χρώματα.",
+    "p_custom_icons_format_desc": "Τα πακέτα εικονιδίων χρησιμοποιούν τη μορφή {aegis_icon_pack}. Μπορείτε να κατεβάσετε ένα έτοιμο πακέτο εικονιδίων ή να δημιουργήσετε το δικό σας.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "Αντικατάσταση πακέτου εικονιδίων",
+    "l_loading_icon_pack": "Φόρτωση πακέτου εικονιδίων\u2026",
+    "s_load_icon_pack": "Φόρτωση πακέτου εικονιδίων",
+    "l_load_icon_pack_desc": null,
+    "s_remove_icon_pack": "Κατάργηση πακέτου εικονιδίων",
+    "l_remove_icon_pack_desc": null,
+    "l_icon_pack_removed": "Το πακέτο εικονιδίων καταργήθηκε",
+    "l_remove_icon_pack_failed": "Σφάλμα κατάργησης πακέτου εικονιδίων",
+    "s_choose_icon_pack": "Επιλογή πακέτου εικονιδίων",
+    "l_icon_pack_imported": "Το πακέτο εικονιδίων εισήχθη",
+    "l_import_icon_pack_failed": "Σφάλμα εισαγωγής πακέτου εικονιδίων: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "Μη έγκυρο πακέτο εικονιδίων",
+    "l_icon_pack_copy_failed": "Αποτυχία αντιγραφής αρχείων πακέτου εικονιδίων",
+    "@_android_settings": {},
+
+    "s_nfc_and_usb_options": null,
+    "l_nfc_and_usb_options_desc": null,
+    "l_on_yk_nfc_tap": null,
+    "l_on_yk_usb_insert": null,
+    "l_do_nothing": "Καμία ενέργεια",
+    "l_launch_ya": "Εκκίνηση του Yubico Authenticator",
+    "l_copy_otp_clipboard": "Αντιγραφή OTP στο πρόχειρο",
+    "l_launch_and_copy_otp": "Εκκίνηση εφαρμογής και αντιγραφή OTP",
+    "l_kbd_layout_for_static": "Διάταξη πληκτρολογίου (για στατικό κωδικό πρόσβασης)",
+    "s_choose_kbd_layout": "Επιλογή διάταξης πληκτρολογίου",
+    "l_bypass_touch_requirement": "Παράκαμψη απαίτησης αφής",
+    "l_bypass_touch_requirement_on": "Οι λογαριασμοί που απαιτούν άγγιγμα εμφανίζονται αυτόματα μέσω NFC",
+    "l_bypass_touch_requirement_off": "Οι λογαριασμοί που απαιτούν άγγιγμα χρειάζονται ένα επιπλέον άγγιγμα μέσω NFC",
+    "s_silence_nfc_sounds": "Σίγαση ήχων NFC",
+    "l_silence_nfc_sounds_on": "Δεν θα αναπαράγονται ήχοι κατά το άγγιγμα NFC",
+    "l_silence_nfc_sounds_off": "Θα αναπαραχθεί ήχος κατά το άγγιγμα NFC",
+    "l_launch_app_on_usb_on": "Αυτό εμποδίζει άλλες εφαρμογές να χρησιμοποιούν το YubiKey μέσω USB",
+    "l_launch_app_on_usb_off": "Άλλες εφαρμογές μπορούν να χρησιμοποιούν το YubiKey μέσω USB",
+    "s_allow_screenshots": "Να επιτρέπονται τα στιγμιότυπα οθόνης",
+    "l_allow_screenshots_desc": null,
+    "@_nfc": {},
+
+    "s_nfc_ready_to_scan": "Έτοιμο για σάρωση",
+    "s_nfc_hold_still": "Μείνετε ακίνητοι\u2026",
+    "s_nfc_tap_your_yubikey": "Αγγίξτε το YubiKey σας",
+    "s_nfc_remove_key": null,
+    "l_nfc_failed_to_scan": "Αποτυχία σάρωσης, προσπαθήστε ξανά",
+    "@_usb": {},
+
+    "s_usb_processing": "Ανάγνωση δεδομένων από το YubiKey",
+    "s_usb_dont_remove": "Μην αφαιρείτε το κλειδί\u2026",
+    "l_usb_read_error": "Αποτυχία ανάγνωσης δεδομένων από το YubiKey",
+    "@_ndef": {},
+
+    "p_ndef_set_otp": "Επιτυχής αντιγραφή κωδικού OTP από το YubiKey στο πρόχειρο.",
+    "p_ndef_set_password": "Επιτυχής αντιγραφή κωδικού πρόσβασης από το YubiKey στο πρόχειρο.",
+    "p_ndef_parse_failure": "Αποτυχία ανάλυσης κωδικού OTP από το YubiKey.",
+    "p_ndef_set_clip_failure": "Αποτυχία πρόσβασης στο πρόχειρο κατά την προσπάθεια αντιγραφής κωδικού OTP από το YubiKey.",
+    "@_key_customization": {},
+
+    "s_set_label": "Ορισμός ετικέτας",
+    "s_set_color": "Ορισμός χρώματος",
+    "s_change_label": "Αλλαγή ετικέτας",
+    "p_set_will_add_custom_name": "Αυτό θα δώσει στο YubiKey σας ένα προσαρμοσμένο όνομα.",
+    "p_rename_will_change_custom_name": "Αυτό θα αλλάξει την ετικέτα του YubiKey σας.",
+    "@_shortcuts": {},
+
+    "s_keyboard_shortcuts": "Συντομεύσεις πληκτρολογίου",
+    "s_global_shortcuts": "Καθολικές συντομεύσεις",
+    "s_application_shortcuts": "Συντομεύσεις εφαρμογής",
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": "Έξοδος από {app}",
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": "Απόκρυψη {app}",
+    "s_search": "Αναζήτηση",
+    "s_next_device": "Επόμενη συσκευή",
+    "s_previous_device": "Προηγούμενη συσκευή",
+    "s_open_settings": "Άνοιγμα ρυθμίσεων",
+    "s_open_item": "Άνοιγμα στοιχείου",
+    "s_edit_item": "Επεξεργασία στοιχείου",
+    "s_delete_item": "Διαγραφή στοιχείου",
+    "s_calculate_oath_code": "Υπολογισμός κωδικού OATH",
+    "s_open_keyboard_shortcuts": "Άνοιγμα συντομεύσεων πληκτρολογίου",
+    "@_eof": {}
+
+}

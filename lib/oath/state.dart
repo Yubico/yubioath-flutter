@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class AccountsSearchNotifier extends StateNotifier<String> {
 }
 
 final oathLayoutProvider =
-    StateNotifierProvider.autoDispose<OathLayoutNotfier, OathLayout>((ref) {
+    StateNotifierProvider.autoDispose<OathLayoutNotifier, OathLayout>((ref) {
       final device = ref.watch(currentDeviceProvider);
       List<OathPair> credentials = device != null
           ? ref.read(
@@ -53,7 +53,7 @@ final oathLayoutProvider =
       final pinnedCreds = credentials.where(
         (entry) => favorites.contains(entry.credential.id),
       );
-      return OathLayoutNotfier(
+      return OathLayoutNotifier(
         'OATH_STATE_LAYOUT',
         ref.watch(prefProvider),
         credentials,
@@ -61,10 +61,10 @@ final oathLayoutProvider =
       );
     });
 
-class OathLayoutNotfier extends StateNotifier<OathLayout> {
+class OathLayoutNotifier extends StateNotifier<OathLayout> {
   final String _key;
   final SharedPreferences _prefs;
-  OathLayoutNotfier(
+  OathLayoutNotifier(
     this._key,
     this._prefs,
     List<OathPair> credentials,

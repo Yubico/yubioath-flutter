@@ -32,6 +32,7 @@ import com.yubico.authenticator.piv.data.SlotMetadata
 import com.yubico.authenticator.piv.data.fingerprint
 import com.yubico.authenticator.piv.data.isoFormat
 import com.yubico.authenticator.setHandler
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyConnection
@@ -69,6 +70,7 @@ import java.text.SimpleDateFormat
 import java.util.Arrays
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.atomic.AtomicBoolean
 
 typealias PivAction = (Result<SmartCardConnection, Exception>) -> Unit
 
@@ -228,6 +230,10 @@ class PivManager(
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 requestHandled = processYubiKey(connection, device)
             }
+
+            if (updateDeviceInfo.getAndSet(false)) {
+                deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
+            }
         } catch (e: Exception) {
 
             logger.error("Cancelling pending action. Cause: ", e)
@@ -351,7 +357,10 @@ class PivManager(
 
 
     private suspend fun reset(): String =
-        connectionHelper.useSmartCardConnection {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            updateDeviceInfo = true
+        ) {
             val piv = getPivSession(it)
             piv.reset()
             ""
@@ -361,6 +370,7 @@ class PivManager(
         val defaultPin = "123456".toCharArray()
         val defaultManagementKey =
             "010203040506070801020304050607080102030405060708".hexToByteArray()
+        val updateDeviceInfo = AtomicBoolean(false)
     }
 
     private fun doAuthenticate(piv: PivSession, serial: String) =
@@ -418,7 +428,10 @@ class PivManager(
         }
 
     private suspend fun authenticate(managementKey: ByteArray): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            waitForNfcKeyRemoval = true
+        ) {
             val serial = pivViewModel.currentSerial()
             try {
                 managementKeyStorage[serial] = managementKey
@@ -467,7 +480,10 @@ class PivManager(
         }
 
     private suspend fun verifyPin(pin: CharArray): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            waitForNfcKeyRemoval = true
+        ) {
             try {
                 val piv = getPivSession(it)
                 val serial = pivViewModel.currentSerial()
@@ -479,7 +495,10 @@ class PivManager(
         }
 
     private suspend fun changePin(pin: CharArray, newPin: CharArray): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            updateDeviceInfo = true
+        ) {
             try {
                 val piv = getPivSession(it)
                 handlePinPukErrors { PivmanUtils.pivmanChangePin(piv, pin, newPin) }
@@ -490,7 +509,10 @@ class PivManager(
         }
 
     private suspend fun changePuk(puk: CharArray, newPuk: CharArray): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            updateDeviceInfo = true
+        ) {
             try {
                 val piv = getPivSession(it)
                 handlePinPukErrors { piv.changePuk(puk, newPuk) }
@@ -505,7 +527,10 @@ class PivManager(
         keyType: ManagementKeyType,
         storeKey: Boolean
     ): String =
-        connectionHelper.useSmartCardConnection(::updatePivState) {
+        connectionHelper.useSmartCardConnection(
+            onComplete = ::updatePivState,
+            updateDeviceInfo = true
+        ) {
             val piv = getPivSession(it)
             doVerifyPin(piv, pivViewModel.currentSerial())
             doAuthenticate(piv, pivViewModel.currentSerial())
@@ -909,7 +934,17 @@ class PivManager(
                 mapOf(
                     "id" to slot.value,
                     "name" to slot.stringAlias,
-                    "metadata" to pivViewModel.getMetadata(slot.stringAlias),
+                    "metadata" to pivViewModel.getMetadata(slot.stringAlias)?.let { slotMetadata ->
+                        JSONObject(
+                            mapOf(
+                                "key_type" to slotMetadata.keyType.toInt(),
+                                "pin_policy" to slotMetadata.pinPolicy,
+                                "touch_policy" to slotMetadata.touchPolicy,
+                                "generated" to slotMetadata.generated,
+                                "public_key" to slotMetadata.publicKey?.toPublicKey()?.toPem()
+                            )
+                        )
+                    },
                     "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem(),
                 )
             ).toString()

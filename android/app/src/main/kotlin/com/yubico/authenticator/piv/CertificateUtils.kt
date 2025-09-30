@@ -19,6 +19,7 @@ package com.yubico.authenticator.piv
 import com.yubico.yubikit.piv.KeyType
 import com.yubico.yubikit.piv.PivSession
 import com.yubico.yubikit.piv.Slot
+import com.yubico.yubikit.piv.jca.PivProvider
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.edec.EdECObjectIdentifiers
 import org.bouncycastle.cert.X509CertificateHolder
@@ -41,6 +42,8 @@ import java.util.Date
 import javax.security.auth.x500.X500Principal
 import java.security.cert.X509Certificate
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier
+import java.security.KeyStore
+import java.security.PrivateKey
 import java.security.SecureRandom
 import java.security.Signature
 
@@ -148,10 +151,14 @@ class PivContentSigner(
     @Throws(OperatorCreationException::class)
     override fun getSignature(): ByteArray {
         try {
-            val toBeSigned = buffer.toByteArray()
-            val signature = Signature.getInstance(signatureAlgorithm.jcaName)
-            // TODO use JCA
-            return session.sign(slot, keyAlg, toBeSigned, signature)
+            val provider = PivProvider(session)
+            val keyStore = KeyStore.getInstance("YKPiv", provider)
+            keyStore.load(null)
+
+            return Signature.getInstance(signatureAlgorithm.jcaName, provider).apply {
+                initSign(keyStore.getKey(slot.stringAlias, null) as PrivateKey)
+                update(buffer.toByteArray())
+            }.sign()
         } catch (e: GeneralSecurityException) {
             throw OperatorCreationException("PIV signing failed", e)
         }
