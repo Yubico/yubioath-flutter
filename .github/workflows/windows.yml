@@ -112,6 +112,8 @@ jobs:
 
     - name: download artifacts
       uses: actions/download-artifact@v5
+      with:
+        path: yubioath-desktop-windows
 
     - name: docker login
       uses: docker/login-action@v3

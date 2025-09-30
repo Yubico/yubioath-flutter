@@ -49,16 +49,16 @@
     "s_name": "İsim",
     "s_usb": "Taşınabilir Bellek",
     "s_nfc": "NFC",
-    "s_options": "Şeçenekler",
+    "s_options": "Seçenekler",
     "s_details": "Ayrıntılar",
     "s_show_window": "Pencereyi göster",
     "s_hide_window": "Pencereyi gizle",
     "s_show_navigation": "Navigasyonu göster",
-    "s_expand_navigation": null,
-    "s_collapse_navigation": null,
-    "s_expand_collapse_navigation": null,
+    "s_expand_navigation": "Gezinme çubuğunu genişlet",
+    "s_collapse_navigation": "Gezinme çubuğunu daralt",
+    "s_expand_collapse_navigation": "Gezinme çubuğunu genişlet/daralt",
     "s_show_menu": "Menüyü göster",
-    "s_toggle_menu_bar": null,
+    "s_toggle_menu_bar": "Menü çubuğunu aç/kapat",
     "s_more_info": "Daha fazla bilgi",
     "l_bullet": "• {item}",
     "@l_bullet": {
@@ -87,7 +87,7 @@
     "s_certificates": "Sertifikalar",
     "s_security_key": "Güvenlik Anahtarı",
     "s_slots": "Yuvalar",
-    "s_help_and_about": "Yardım ve hakkında",
+    "s_help_and_about": null,
     "s_help": null,
     "s_app_information": null,
     "s_home": "Ana sayfa",
@@ -147,7 +147,7 @@
     "s_select_to_scan": "Taramak için seçin",
     "s_hide_reader": "Okuyucuyu gizle",
     "s_show_hidden_readers": "Gizli okuyucuları göster",
-    "s_toggle_readers": "Okuyucuları değiştir",
+    "s_toggle_readers": "Okuyucuları aç/kapat",
     "l_toggle_readers_desc": "Okuyucuları göster veya gizle",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
@@ -353,7 +353,7 @@
     "p_pin_required_desc": "Gerçekleştirmek üzere olduğunuz eylem PIV PIN kodunun girilmesini gerektirir.",
     "l_piv_pin_blocked": "Engellendi, sıfırlamak için PUK kullanın",
     "p_piv_pin_blocked_desc": "PIN bloke edilmiştir. Sıfırlamak için PUK kullanın.",
-    "p_piv_pin_blocked_bio_desc": null,
+    "p_piv_pin_blocked_bio_desc": "PIN bloke edilmiştir. Fabrika ayarlarına sıfırlama gerekiyor.",
     "l_piv_pin_puk_blocked": "Bloke edildi, fabrika ayarlarına sıfırlama gerekli",
     "p_piv_pin_puk_blocked_desc": "Hem PIN hem de PUK bloke edilmiştir. PIV uygulamasının fabrika ayarlarına sıfırlanması gerekmektedir.",
     "p_new_piv_pin_puk_requirements": "Bir {name} en az {length} karakter uzunluğunda olmalıdır.",
@@ -486,7 +486,6 @@
     },
     "l_add_account_password_required": "Şifre gerekli",
     "l_add_account_unlock_required": "Kilidin açılması gerekli",
-    "l_add_account_already_exists": "Hesap zaten mevcut",
     "l_add_account_func_missing": "Bu özellik mevcut değil ya da devre dışı bırakılmış",
     "l_account_name_required": "Hesabınızın bir adı olmalıdır",
     "l_name_already_exists": "Bu adda sağlayıcı zaten mevcut",
@@ -517,7 +516,7 @@
     "p_warning_delete_account": "Uyarı! Bu işlem, hesabı YubiKey'inizden silecektir.",
     "p_warning_disable_credential": "Kilitlenmeyi önlemek için bu hesabın kayıtlı olduğu hizmetten devre dışı bıraktığınızdan emin olun.",
     "s_account_name": "Hesap adı",
-    "s_search_accounts": "Hesapları Ara",
+    "s_search_accounts": "Hesap ara",
     "l_accounts_used": "Toplam {capacity} hesap kapasitesinin, {used} tanesi kullanılıyor",
     "@l_accounts_used": {
         "placeholders": {
@@ -1046,7 +1045,7 @@
 
     "s_nfc_and_usb_options": null,
     "l_nfc_and_usb_options_desc": null,
-    "l_on_yk_nfc_tap": "YubiKey NFC dokunuşunda",
+    "l_on_yk_nfc_tap": null,
     "l_on_yk_usb_insert": null,
     "l_do_nothing": "Hiçbir şey yapma",
     "l_launch_ya": "Yubico Kimlik Doğrulayıcısını başlatın",
@@ -1060,7 +1059,6 @@
     "s_silence_nfc_sounds": "NFC seslerini sustur",
     "l_silence_nfc_sounds_on": "NFC dokunuşunda hiçbir ses oynatılmayacaktır",
     "l_silence_nfc_sounds_off": "NFC dokunuşunda ses oynatılacaktır",
-    "l_launch_app_on_usb": "YubiKey bağlandığında başlat",
     "l_launch_app_on_usb_on": "Bu, diğer uygulamaların USB üzerinden YubiKey'i kullanmasını engeller",
     "l_launch_app_on_usb_off": "Diğer uygulamalar USB üzerinden YubiKey'i kullanabilir",
     "s_allow_screenshots": "Ekran görüntülerine izin ver",
@@ -1092,9 +1090,9 @@
     "p_rename_will_change_custom_name": "Bu, YubiKey'inizin etiketini değiştirecektir.",
     "@_shortcuts": {},
 
-    "s_keyboard_shortcuts": null,
-    "s_global_shortcuts": null,
-    "s_application_shortcuts": null,
+    "s_keyboard_shortcuts": "Klavye kısayolları",
+    "s_global_shortcuts": "Genel kısayollar",
+    "s_application_shortcuts": "Uygulama kısayolları",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1102,7 +1100,7 @@
             }
         }
     },
-    "s_quit_app": null,
+    "s_quit_app": "{app} çık",
     "@s_hide_app": {
         "placeholders": {
             "app": {
@@ -1110,16 +1108,16 @@
             }
         }
     },
-    "s_hide_app": null,
-    "s_search": null,
-    "s_next_device": null,
-    "s_previous_device": null,
-    "s_open_settings": null,
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_hide_app": "{app} gizle",
+    "s_search": "Ara",
+    "s_next_device": "Sonraki cihaz",
+    "s_previous_device": "Önceki cihaz",
+    "s_open_settings": "Ayarları aç",
+    "s_open_item": "Öğeyi aç",
+    "s_edit_item": "Öğeyi düzenle",
+    "s_delete_item": "Öğeyi sil",
+    "s_calculate_oath_code": "OATH kodunu hesapla",
+    "s_open_keyboard_shortcuts": "Klavye kısayollarını aç",
     "@_eof": {}
 
 }

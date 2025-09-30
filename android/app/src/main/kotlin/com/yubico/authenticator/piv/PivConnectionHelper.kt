@@ -17,11 +17,16 @@
 package com.yubico.authenticator.piv
 
 import com.yubico.authenticator.device.DeviceManager
+import com.yubico.authenticator.device.Info
+import com.yubico.authenticator.device.unknownDeviceWithCapability
+import com.yubico.authenticator.yubikit.DeviceInfoHelper.Companion.getDeviceInfo
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.authenticator.yubikit.withConnection
+import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
+import com.yubico.yubikit.support.DeviceUtil
 import org.slf4j.LoggerFactory
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
@@ -56,11 +61,13 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
     suspend fun <T> useSmartCardConnection(
         onComplete: ((SmartCardConnection) -> Unit)? = null,
         waitForNfcKeyRemoval: Boolean = false,
+        updateDeviceInfo: Boolean = false,
         block: (SmartCardConnection) -> T
     ): T {
+        PivManager.updateDeviceInfo.set(updateDeviceInfo)
         NfcState.waitForNfcKeyRemoval = waitForNfcKeyRemoval
         return deviceManager.withKey(
-            onUsb = { useSmartCardConnectionUsb(it, onComplete, block) },
+            onUsb = { useSmartCardConnectionUsb(it, onComplete, updateDeviceInfo, block) },
             onNfc = { useSmartCardConnectionNfc(onComplete, block) },
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
@@ -72,9 +79,23 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
     suspend fun <T> useSmartCardConnectionUsb(
         device: UsbYubiKeyDevice,
         onComplete: ((SmartCardConnection) -> Unit)? = null,
+        updateDeviceInfo: Boolean,
         block: (SmartCardConnection) -> T
     ): T = device.withConnection<SmartCardConnection, T> { connection ->
-        block(connection).also { onComplete?.invoke(connection) }
+        block(connection).also {
+            onComplete?.invoke(connection)
+            if (updateDeviceInfo) {
+                val pid = device.pid
+                runCatching {
+                    deviceManager.setDeviceInfo(runCatching {
+                        val deviceInfo = DeviceUtil.readInfo(connection, pid)
+                        val name = DeviceUtil.getName(deviceInfo, pid.type)
+                        Info(name, false, pid.value, deviceInfo)
+                    }.getOrNull())
+
+                }
+            }
+        }
     }
 
     suspend fun <T> useSmartCardConnectionNfc(
