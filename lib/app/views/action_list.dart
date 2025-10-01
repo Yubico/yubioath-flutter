@@ -46,14 +46,6 @@ class ActionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final theme =
-    //     ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
-
-    // final (foreground, background) = switch (actionStyle) {
-    //   ActionStyle.normal => (theme.onSecondary, theme.secondary),
-    //   ActionStyle.primary => (theme.onPrimary, theme.primary),
-    //   ActionStyle.error => (theme.onError, theme.error),
-    // };
     final theme = Theme.of(context);
 
     return GestureDetector(
@@ -77,7 +69,7 @@ class ActionListItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: theme.textTheme.bodyMedium!.fontSize,
                 ),
-                maxLines: 2,
+                maxLines: isDesktop ? 2 : 6,
                 overflow: TextOverflow.ellipsis,
               )
             : null,
