@@ -56,7 +56,7 @@ if [ "$OS" = "macos" ]; then
 fi
 
 rm -rf ../$OUTPUT/helper
-uv run pyinstaller authenticator-helper.spec --distpath ../$OUTPUT
+uv run --no-sync pyinstaller authenticator-helper.spec --distpath ../$OUTPUT
 cd ..
 
 # Fixup permissions (should probably be more strict)
