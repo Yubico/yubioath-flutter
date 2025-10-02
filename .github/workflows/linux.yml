@@ -24,40 +24,27 @@ jobs:
 
     - name: Install dependencies
       run: |
-        export PYVER_MINOR=${PYVER%.*}
-        echo "PYVER_MINOR: $PYVER_MINOR"
         apt-get update
         apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
         add-apt-repository -y ppa:git-core/ppa
-        add-apt-repository -y ppa:deadsnakes/ppa
-        apt-get install -qq git python$PYVER_MINOR-dev python$PYVER_MINOR-venv
+        apt-get install -qq git
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python
-        ln -s `which python$PYVER_MINOR` /usr/local/bin/python3
-        PYVER_TEMP=`/usr/local/bin/python --version`
-        export PYVERINST=${PYVER_TEMP#* }
-        echo "PYVERINST=$PYVERINST" >> $GITHUB_ENV
-        echo "Installed python version: $PYVERINST"
-
-    - name: Verify Python version
-      if: ${{ env.PYVERINST != env.PYVER }}
-      run: |
-        echo "Python version not compatible"
-        echo "Installed python version: $PYVERINST"
-        echo "Expected: $PYVER"
-        exit 1
 
     - uses: actions/checkout@v5
-
-    - name: Check app versions
-      run: |
-        python set-version.py
-        git diff --exit-code
 
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:
         enable-cache: true
+
+    - name: Install Python
+      run: |
+        uv python install $PYVER
+
+    - name: Check app versions
+      run: |
+        uv run python set-version.py
+        git diff --exit-code
 
     - name: Cache helper
       id: cache-helper
@@ -94,8 +81,7 @@ jobs:
       env:
         SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
       run: |
-        uv tool install pre-commit
-        pre-commit run --all-files
+        uvx pre-commit run --all-files
         flutter test
 
     - name: Build the app
