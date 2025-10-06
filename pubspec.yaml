@@ -86,7 +86,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
-  build_runner: ^2.7.0
+  build_runner: ^2.9.0
   freezed: ^3.2.0
   json_serializable: ^6.9.5
   analyzer:
