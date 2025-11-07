@@ -109,11 +109,13 @@ String _getIcon() {
 }
 
 // copy from tray_manager package
-// tray_manager-0.5.0/lib/src/helpers/sandbox.dart
+// tray_manager-0.5.1/lib/src/helpers/sandbox.dart
 bool _runningInSandbox() {
-  // Check if running in a Flatpak or Snap sandbox
+  // Check if running in a Flatpak, Snap, Docker or Podman sandbox
   return Platform.environment.containsKey('FLATPAK_ID') ||
-      Platform.environment.containsKey('SNAP');
+      Platform.environment.containsKey('SNAP') ||
+      (Platform.environment['container']?.isNotEmpty == true) ||
+      FileSystemEntity.isFileSync('/.dockerenv');
 }
 
 class _Systray extends TrayListener {
