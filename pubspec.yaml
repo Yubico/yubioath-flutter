@@ -65,7 +65,7 @@ dependencies:
   path: ^1.9.1
   file_picker: ^10.3.1
   archive: ^4.0.7
-  crypto: ^3.0.2
+  crypto: ^3.0.7
   tray_manager: ^0.5.0
   local_notifier: ^0.1.5
   io: ^1.0.4
