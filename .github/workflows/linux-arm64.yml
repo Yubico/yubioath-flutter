@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-22.04-arm
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         sparse-checkout: .github/workflows/env
 
@@ -44,7 +44,7 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Check app versions
       run: |
@@ -52,7 +52,7 @@ jobs:
         git diff --exit-code
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
 
@@ -128,7 +128,7 @@ jobs:
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: yubioath-desktop-linux-arm64
         path: deploy
