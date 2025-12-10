@@ -58,7 +58,7 @@ jobs:
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
-        apt-get install -qq swig libpcsclite-dev build-essential cmake
+        apt-get install -qq swig libpcsclite-dev build-essential cmake gcc-12 g++-12
         ./build-helper.sh
 
     - name: Install Flutter dependencies
