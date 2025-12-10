@@ -35,12 +35,13 @@ if [ "$OS" = "macos" ]; then
 		mkdir -p $HELPER
 
 		# Export exact versions
-          	uv pip freeze  > $HELPER/requirements.txt
+		uv pip freeze  > $HELPER/requirements.txt
 		grep cryptography $HELPER/requirements.txt > $HELPER/cryptography.txt
 		grep cffi $HELPER/requirements.txt > $HELPER/cffi.txt
 		grep pillow $HELPER/requirements.txt > $HELPER/pillow.txt
+		grep zxing-cpp $HELPER/requirements.txt > $HELPER/zxingcpp.txt
 		# Remove non-universal packages
-		uv pip uninstall cryptography cffi pillow
+		uv pip uninstall cryptography cffi pillow zxing-cpp
 		# Build cffi from source to get universal build
 		uv pip install --upgrade -r $HELPER/cffi.txt --no-binary cffi
 		# Explicitly install pre-build universal build of cryptography
@@ -52,6 +53,8 @@ if [ "$OS" = "macos" ]; then
 		uv run delocate-merge $HELPER/pillow*.whl
 		UNIVERSAL_WHL=$(ls $HELPER/pillow*universal2.whl)
 		uv pip install --upgrade $UNIVERSAL_WHL
+		# Build zxing-cpp from source to get universal build
+		uv pip install --upgrade -r $HELPER/zxingcpp.txt --no-binary zxing-cpp
 	fi
 fi
 
