@@ -30,6 +30,7 @@ if [ "$OS" = "macos" ]; then
 		export MACOSX_DEPLOYMENT_TARGET="10.15"
 		export CFLAGS="-arch x86_64 -arch arm64"
 		export ARCHFLAGS="-arch x86_64 -arch arm64"
+		export CMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 		HELPER="../$OUTPUT/helper"
 		rm -rf $HELPER
 		mkdir -p $HELPER
