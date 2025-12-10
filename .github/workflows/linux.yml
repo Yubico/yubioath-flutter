@@ -58,6 +58,8 @@ jobs:
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
+        add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        apt update -y
         apt-get install -qq swig libpcsclite-dev build-essential cmake gcc-12 g++-12
         ./build-helper.sh
 
