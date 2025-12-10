@@ -25,6 +25,7 @@ class Toast extends StatefulWidget {
   final void Function() onComplete;
   final Color? backgroundColor;
   final TextStyle? textStyle;
+
   const Toast(
     this.message,
     this.duration, {
@@ -153,7 +154,11 @@ void Function() showToast(
     Overlay.of(context).insert(entry!);
   });
 
-  SemanticsService.announce(message, TextDirection.ltr);
+  SemanticsService.sendAnnouncement(
+    View.of(context),
+    message,
+    TextDirection.ltr,
+  );
 
   return close;
 }

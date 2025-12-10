@@ -166,7 +166,11 @@ UserInteractionController _dialogUserInteraction(
   void Function()? onCancel,
 }) {
   String a11yLabel = '$title $description';
-  SemanticsService.announce(a11yLabel, TextDirection.ltr);
+  SemanticsService.sendAnnouncement(
+    View.of(context),
+    a11yLabel,
+    TextDirection.ltr,
+  );
   var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(
