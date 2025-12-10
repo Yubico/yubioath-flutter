@@ -60,7 +60,9 @@ jobs:
       run: |
         add-apt-repository ppa:ubuntu-toolchain-r/test -y
         apt update -y
-        apt-get install -qq swig libpcsclite-dev build-essential cmake gcc-12 g++-12
+        apt-get install -qq swig libpcsclite-dev build-essential cmake gcc-13 g++-13
+        update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /usr/bin/g++ g++ /usr/bin/g++-13 
+        update-alternatives --config gcc
         ./build-helper.sh
 
     - name: Install Flutter dependencies
