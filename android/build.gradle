@@ -6,12 +6,12 @@ allprojects {
 
     project.ext {
         minSdkVersion = 24
-        targetSdkVersion = 35
+        targetSdkVersion = 36
         compileSdkVersion = 36
 
-        yubiKitVersion = "2.9.0"
+        yubiKitVersion = "3.0.0"
         junitVersion = "4.13.2"
-        mockitoVersion = "5.19.0"
+        mockitoVersion = "5.21.0"
     }
 }
 

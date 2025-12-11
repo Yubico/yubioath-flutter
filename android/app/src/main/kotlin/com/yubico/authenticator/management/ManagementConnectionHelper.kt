@@ -48,7 +48,7 @@ class ManagementConnectionHelper(
         }
     }
 
-    suspend fun <T> useDevice(block: (YubiKeyDevice) -> T): T =
+    suspend fun <T: Any> useDevice(block: (YubiKeyDevice) -> T): T =
         deviceManager.withKey(
             onUsb = { useUsbDevice(it, block) },
             onNfc = { useNfcDevice(block) },
@@ -60,12 +60,12 @@ class ManagementConnectionHelper(
             }
         )
 
-    private suspend fun <T> useUsbDevice(
+    private suspend fun <T: Any> useUsbDevice(
         device: UsbYubiKeyDevice,
         block: suspend (YubiKeyDevice) -> T
     ): T = block(device)
 
-    private suspend fun <T> useNfcDevice(
+    private suspend fun <T: Any> useNfcDevice(
         block: (YubiKeyDevice) -> T
     ): Result<T, Throwable> {
         try {
@@ -76,7 +76,7 @@ class ManagementConnectionHelper(
                     })
                 }
             }
-            return Result.success(result!!)
+            return Result.success(result)
         } catch (cancelled: CancellationException) {
             return Result.failure(cancelled)
         } catch (error: Throwable) {

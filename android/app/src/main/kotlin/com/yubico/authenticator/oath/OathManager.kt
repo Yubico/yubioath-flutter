@@ -746,7 +746,7 @@ class OathManager(
         return credential.data
     }
 
-    private suspend fun <T> useOathSession(
+    private suspend fun <T: Any> useOathSession(
         unlock: Boolean = true,
         updateDeviceInfo: Boolean = false,
         block: (YubiKitOathSession) -> T
@@ -765,7 +765,7 @@ class OathManager(
         )
     }
 
-    private suspend fun <T> useSessionUsb(
+    private suspend fun <T: Any> useSessionUsb(
         device: UsbYubiKeyDevice,
         updateDeviceInfo: Boolean = false,
         block: (YubiKitOathSession) -> T
@@ -777,7 +777,7 @@ class OathManager(
         }
     }
 
-    private suspend fun <T> useSessionNfc(
+    private suspend fun <T:Any> useSessionNfc(
         block: (YubiKitOathSession) -> T,
     ): Result<T, Throwable> {
         try {
@@ -790,7 +790,7 @@ class OathManager(
                 // here the coroutine is suspended and waits till pendingAction is
                 // invoked - the pending action result will resume this coroutine
             }
-            return Result.success(result!!)
+            return Result.success(result)
         } catch (cancelled: CancellationException) {
             return Result.failure(cancelled)
         } catch (e: Exception) {
