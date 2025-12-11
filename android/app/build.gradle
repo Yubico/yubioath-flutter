@@ -124,3 +124,12 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$project.mockitoVersion"
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
 }
+
+// disable OssLicensesTask during testing
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(":app:test") || taskGraph.allTasks.any { it.name.contains("Test") }) {
+        tasks.matching { it.name.contains("OssLicensesTask") }.configureEach { task ->
+            task.enabled = false
+        }
+    }
+}
