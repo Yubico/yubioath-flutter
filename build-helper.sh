@@ -55,7 +55,7 @@ if [ "$OS" = "macos" ]; then
 		UNIVERSAL_WHL=$(ls $HELPER/pillow*universal2.whl)
 		uv pip install --upgrade $UNIVERSAL_WHL
 		# Build zxing-cpp from source to get universal build
-		uv pip install --upgrade -r $HELPER/zxingcpp.txt --no-binary :all: --no-cache-dir --force-reinstall --verbose
+		uv pip install --upgrade -r $HELPER/zxingcpp.txt --no-binary :all: --no-cache-dir --force-reinstall
 	fi
 fi
 
